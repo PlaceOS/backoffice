@@ -33,7 +33,7 @@ import { DomainStateService } from './domain-state.service';
                     </button>
                 </item-selection>
                 <div class="flex h-1/2 flex-1 flex-col">
-                    <ng-container *ngIf="item?.id">
+                    @if (item?.id) {
                         <item-details
                             [can_edit]="true"
                             [item]="item"
@@ -53,7 +53,7 @@ import { DomainStateService } from './domain-state.service';
                         >
                             <router-outlet></router-outlet>
                         </div>
-                    </ng-container>
+                    }
                 </div>
                 <button
                     class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-9"

@@ -10,21 +10,24 @@ export interface BannerDetails {
 @Component({
     selector: 'global-banner',
     template: `
-        <div
-            class="flex w-full items-center space-x-4 p-4"
-            [class.bg-info]="banner.type === 'info' || !banner.type"
-            [class.text-info-content]="banner.type === 'info' || !banner.type"
-            [class.bg-warning]="banner.type === 'warn'"
-            [class.text-warning-content]="banner.type === 'warn'"
-            [class.bg-error]="banner.type === 'error'"
-            [class.text-error-content]="banner.type === 'error'"
-            *ngIf="!has_viewed"
-        >
-            <div class="flex-1">{{ banner?.content }}</div>
-            <button icon (click)="close()">
-                <app-icon>close</app-icon>
-            </button>
-        </div>
+        @if (!has_viewed) {
+            <div
+                class="flex w-full items-center space-x-4 p-4"
+                [class.bg-info]="banner.type === 'info' || !banner.type"
+                [class.text-info-content]="
+                    banner.type === 'info' || !banner.type
+                "
+                [class.bg-warning]="banner.type === 'warn'"
+                [class.text-warning-content]="banner.type === 'warn'"
+                [class.bg-error]="banner.type === 'error'"
+                [class.text-error-content]="banner.type === 'error'"
+            >
+                <div class="flex-1">{{ banner?.content }}</div>
+                <button icon (click)="close()">
+                    <app-icon>close</app-icon>
+                </button>
+            </div>
+        }
     `,
     styles: [
         `
@@ -34,7 +37,7 @@ export interface BannerDetails {
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class GlobalBannerComponent {
     public get has_viewed() {

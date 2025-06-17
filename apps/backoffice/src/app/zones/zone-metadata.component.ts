@@ -5,10 +5,12 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 @Component({
     selector: 'zone-metadata',
     template: `
-        <metadata-display *ngIf="item" [item]="item"></metadata-display>
+        @if (item) {
+            <metadata-display [item]="item"></metadata-display>
+        }
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ZoneMetadataComponent {
     public get item(): PlaceZone {

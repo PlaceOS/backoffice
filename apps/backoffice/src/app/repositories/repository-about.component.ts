@@ -39,9 +39,11 @@ import { RepositoriesStateService } from './repositories-state.service';
                 >
                     <a [href]="local_url" target="_blank">
                         {{ item.folder_name }}
-                        <span class="opacity-30" *ngIf="!item.folder_name">
-                            {{ 'REPOS.FOLDER_NAME_EMPTY' | translate }}
-                        </span>
+                        @if (!item.folder_name) {
+                            <span class="opacity-30">
+                                {{ 'REPOS.FOLDER_NAME_EMPTY' | translate }}
+                            </span>
+                        }
                     </a>
                 </div>
                 <div class="flex items-center text-sm font-medium">
@@ -114,12 +116,11 @@ import { RepositoriesStateService } from './repositories-state.service';
                         "
                     >
                         {{ item.commit_hash || 'HEAD' }}
-                        <span
-                            class="mono select-text break-words"
-                            *ngIf="commit && commit !== item.commit_hash"
-                        >
-                            ({{ commit }})
-                        </span>
+                        @if (commit && commit !== item.commit_hash) {
+                            <span class="mono select-text break-words">
+                                ({{ commit }})
+                            </span>
+                        }
                     </code>
                 </div>
                 <button
@@ -128,9 +129,11 @@ import { RepositoriesStateService } from './repositories-state.service';
                     [disabled]="pulling"
                     (click)="pullLatestCommit()"
                 >
-                    <ng-container *ngIf="!pulling; else spinner">
+                    @if (!pulling) {
                         {{ 'COMMON.GIT_PULL_LATEST' | translate }}
-                    </ng-container>
+                    } @else {
+                        <mat-spinner diameter="32"></mat-spinner>
+                    }
                 </button>
             </div>
         </section>
@@ -146,9 +149,6 @@ import { RepositoriesStateService } from './repositories-state.service';
                 ></div>
             </div>
         }
-        <ng-template #spinner>
-            <mat-spinner diameter="32"></mat-spinner>
-        </ng-template>
     `,
     styles: [
         `

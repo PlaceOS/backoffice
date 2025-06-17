@@ -98,40 +98,56 @@ import { BehaviorSubject } from 'rxjs';
         </ng-template>
 
         <ng-template #auth_type_template let-data="data">
-            <div class="p-4" [ngSwitch]="data">
-                <span *ngSwitchCase="0">{{
-                    'ADMIN.BROKERS_AUTH_TYPE_CERT' | translate
-                }}</span>
-                <span *ngSwitchCase="2">{{
-                    'ADMIN.BROKERS_AUTH_TYPE_PASS' | translate
-                }}</span>
-                <span *ngSwitchDefault>{{
-                    'ADMIN.BROKERS_AUTH_TYPE_NONE' | translate
-                }}</span>
+            <div class="p-4">
+                @switch (data) {
+                    @case (0) {
+                        <span>{{
+                            'ADMIN.BROKERS_AUTH_TYPE_CERT' | translate
+                        }}</span>
+                    }
+                    @case (2) {
+                        <span>{{
+                            'ADMIN.BROKERS_AUTH_TYPE_PASS' | translate
+                        }}</span>
+                    }
+                    @default {
+                        <span>{{
+                            'ADMIN.BROKERS_AUTH_TYPE_NONE' | translate
+                        }}</span>
+                    }
+                }
             </div>
         </ng-template>
         <ng-template #tls_template let-data="data">
-            <div
-                *ngIf="data"
-                class="mx-auto flex h-8 w-8 items-center justify-center rounded bg-success"
-            >
-                <app-icon class="text-xl text-success-content">lock</app-icon>
-            </div>
-            <div
-                *ngIf="!data"
-                class="mx-auto flex h-8 w-8 items-center justify-center rounded bg-error"
-            >
-                <app-icon class="text-xl text-error-content">
-                    lock_open
-                </app-icon>
-            </div>
+            @if (data) {
+                <div
+                    class="mx-auto flex h-8 w-8 items-center justify-center rounded bg-success"
+                >
+                    <app-icon class="text-xl text-success-content"
+                        >lock</app-icon
+                    >
+                </div>
+            }
+            @if (!data) {
+                <div
+                    class="mx-auto flex h-8 w-8 items-center justify-center rounded bg-error"
+                >
+                    <app-icon class="text-xl text-error-content">
+                        lock_open
+                    </app-icon>
+                </div>
+            }
         </ng-template>
         <ng-template #filters_template let-data="data">
             <div class="p-4">
-                <code *ngIf="data">{{ data | json }}</code>
-                <span class="text-xs opacity-30" *ngIf="!data">
-                    {{ 'ADMIN.BROKERS_FILTERS_EMPTY' | translate }}
-                </span>
+                @if (data) {
+                    <code>{{ data | json }}</code>
+                }
+                @if (!data) {
+                    <span class="text-xs opacity-30">
+                        {{ 'ADMIN.BROKERS_FILTERS_EMPTY' | translate }}
+                    </span>
+                }
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
@@ -162,7 +178,7 @@ import { BehaviorSubject } from 'rxjs';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class AdminBrokersComponent extends AsyncHandler implements OnInit {
     private _change = new BehaviorSubject<number>(0);

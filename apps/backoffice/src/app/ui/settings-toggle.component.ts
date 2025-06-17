@@ -11,13 +11,14 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
             [class.border-info]="value"
             (click)="setValue(!value)"
         >
-            <div
-                class="absolute inset-0 bg-info opacity-10"
-                *ngIf="value"
-            ></div>
+            @if (value) {
+                <div class="absolute inset-0 bg-info opacity-10"></div>
+            }
             <div class="ml-2 flex flex-1 items-center space-x-2 text-left">
                 <div>{{ name }}<ng-content></ng-content></div>
-                <app-icon *ngIf="info" [matTooltip]="info">info</app-icon>
+                @if (info) {
+                    <app-icon [matTooltip]="info">info</app-icon>
+                }
             </div>
             <mat-checkbox
                 [(ngModel)]="value"

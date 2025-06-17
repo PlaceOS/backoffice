@@ -12,107 +12,119 @@ import { notifyError, notifySuccess } from '../common/notifications';
         <header class="border-b border-base-200">
             <h2>
                 {{ 'DRIVERS.UPDATE' | translate }}
-                <span *ngIf="!loading">
-                    -
-                    {{
-                        'DRIVERS.UPDATE_COUNT'
-                            | translate
-                                : {
-                                      count:
-                                          (drivers_with_updates | async)
-                                              ?.total || 0,
-                                  }
-                    }}
-                </span>
+                @if (!loading) {
+                    <span>
+                        -
+                        {{
+                            'DRIVERS.UPDATE_COUNT'
+                                | translate
+                                    : {
+                                          count:
+                                              (drivers_with_updates | async)
+                                                  ?.total || 0,
+                                      }
+                        }}
+                    </span>
+                }
             </h2>
-            <button btn icon matRipple mat-dialog-close *ngIf="!loading">
-                <app-icon>close</app-icon>
-            </button>
+            @if (!loading) {
+                <button btn icon matRipple mat-dialog-close>
+                    <app-icon>close</app-icon>
+                </button>
+            }
         </header>
-        <main
-            *ngIf="(drivers_with_updates | async) && !loading; else load_state"
-            class="max-h-[65vh] w-[80vw] max-w-[48rem] overflow-auto"
-        >
-            <table>
-                <thead class="text-left">
-                    <tr>
-                        <th>
-                            <mat-checkbox
-                                [checked]="all_selected"
-                                [indeterminate]="some_selected"
-                                (change)="toggleAll($event.checked)"
-                            ></mat-checkbox>
-                        </th>
-                        <th>{{ 'COMMON.FIELD_NAME' | translate }}</th>
-                        <th>{{ 'COMMON.VERSION_CURRENT' | translate }}</th>
-                        <th>{{ 'COMMON.VERSION_LATEST' | translate }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <ng-container
-                        *ngIf="drivers_with_updates | async as drivers"
-                    >
-                        <ng-container
-                            *ngIf="drivers.total > 0; else empty_state"
-                        >
-                            <tr *ngFor="let driver of drivers.data">
-                                <td>
-                                    <mat-checkbox
-                                        [ngModel]="
-                                            selected_drivers.includes(driver.id)
-                                        "
-                                        (ngModelChange)="
-                                            toggleDriver(driver.id, $event)
-                                        "
-                                    ></mat-checkbox>
-                                </td>
-                                <td>{{ driver.name }}</td>
-                                <td>
-                                    <code [matTooltip]="driver.commit">{{
-                                        driver.commit | slice: 0 : 9
-                                    }}</code>
-                                </td>
-                                <td>
-                                    <code [matTooltip]="driver.commit">{{
-                                        driver.update_info.commit | slice: 0 : 9
-                                    }}</code>
-                                </td>
-                            </tr>
-                        </ng-container>
-                    </ng-container>
-                    <ng-template #empty_state>
+        @if ((drivers_with_updates | async) && !loading) {
+            <main class="max-h-[65vh] w-[80vw] max-w-[48rem] overflow-auto">
+                <table>
+                    <thead class="text-left">
                         <tr>
-                            <td colspan="4" class="opacity-30">
-                                {{ 'DRIVERS.NO_UPDATES' | translate }}
-                            </td>
+                            <th>
+                                <mat-checkbox
+                                    [checked]="all_selected"
+                                    [indeterminate]="some_selected"
+                                    (change)="toggleAll($event.checked)"
+                                ></mat-checkbox>
+                            </th>
+                            <th>{{ 'COMMON.FIELD_NAME' | translate }}</th>
+                            <th>{{ 'COMMON.VERSION_CURRENT' | translate }}</th>
+                            <th>{{ 'COMMON.VERSION_LATEST' | translate }}</th>
                         </tr>
-                    </ng-template>
-                </tbody>
-            </table>
-        </main>
-        <footer
-            *ngIf="!loading"
-            class="flex justify-end space-x-2 border-t border-base-200 p-2"
-        >
-            <button
-                btn
-                matRipple
-                [disabled]="selected_drivers.length <= 0"
-                (click)="updateDrivers()"
-            >
-                {{ 'DRIVERS.UPDATE_SELECTED' | translate }} ({{
-                    selected_drivers.length
-                }})
-            </button>
-        </footer>
-        <ng-template #load_state>
+                    </thead>
+                    <tbody>
+                        @if (drivers_with_updates | async; as drivers) {
+                            @if (drivers.total > 0) {
+                                @for (driver of drivers.data; track driver) {
+                                    <tr>
+                                        <td>
+                                            <mat-checkbox
+                                                [ngModel]="
+                                                    selected_drivers.includes(
+                                                        driver.id
+                                                    )
+                                                "
+                                                (ngModelChange)="
+                                                    toggleDriver(
+                                                        driver.id,
+                                                        $event
+                                                    )
+                                                "
+                                            ></mat-checkbox>
+                                        </td>
+                                        <td>{{ driver.name }}</td>
+                                        <td>
+                                            <code
+                                                [matTooltip]="driver.commit"
+                                                >{{
+                                                    driver.commit | slice: 0 : 9
+                                                }}</code
+                                            >
+                                        </td>
+                                        <td>
+                                            <code
+                                                [matTooltip]="driver.commit"
+                                                >{{
+                                                    driver.update_info.commit
+                                                        | slice: 0 : 9
+                                                }}</code
+                                            >
+                                        </td>
+                                    </tr>
+                                }
+                            } @else {
+                                <tr>
+                                    <td colspan="4" class="opacity-30">
+                                        {{ 'DRIVERS.NO_UPDATES' | translate }}
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </main>
+        } @else {
             <div
                 class="flex h-48 w-[20rem] flex-col items-center justify-center space-y-2"
             >
                 <mat-spinner [diameter]="32"></mat-spinner>
                 <p>{{ 'DRIVERS.LOADING' | translate }}</p>
             </div>
-        </ng-template>
+        }
+        @if (!loading) {
+            <footer
+                class="flex justify-end space-x-2 border-t border-base-200 p-2"
+            >
+                <button
+                    btn
+                    matRipple
+                    [disabled]="selected_drivers.length <= 0"
+                    (click)="updateDrivers()"
+                >
+                    {{ 'DRIVERS.UPDATE_SELECTED' | translate }} ({{
+                        selected_drivers.length
+                    }})
+                </button>
+            </footer>
+        }
     `,
     styles: [
         `

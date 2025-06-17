@@ -8,150 +8,187 @@ import { isValidDomain } from '../../common/validation';
 @Component({
     selector: 'domain-form',
     template: `
-        <form domain *ngIf="form" class="flex flex-col" [formGroup]="form">
-            <div class="fieldset">
-                <div class="field" *ngIf="form.controls.name">
-                    <label
-                        for="domain-name"
-                        [class.error]="
-                            form.controls.name.invalid &&
-                            form.controls.name.touched
-                        "
-                    >
-                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="domain-name"
-                            [placeholder]="'COMMON.FIELD_NAME' | translate"
-                            formControlName="name"
-                            required
-                        />
-                        <mat-error *ngIf="form.controls.name.invalid">
-                            {{ 'DOMAINS.NAME_REQUIRED' | translate }}
-                        </mat-error>
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.domain">
-                    <label
-                        for="domain"
-                        [class.error]="
-                            form.controls.domain.invalid &&
-                            form.controls.domain.touched
-                        "
-                    >
-                        {{ 'DOMAINS.NAME' | translate }}
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="domain"
-                            [placeholder]="
-                                'DOMAINS.NAME_PLACEHOLDER' | translate
-                            "
-                            formControlName="domain"
-                        />
-                        <mat-error>{{
-                            'DOMAINS.DOMAIN_REQUIRED' | translate
-                        }}</mat-error>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="field" *ngIf="form.controls.login_url">
-                <label
-                    for="login-url"
-                    [class.error]="
-                        form.controls.login_url.invalid &&
-                        form.controls.login_url.touched
-                    "
-                >
-                    {{ 'DOMAINS.LOGIN_URL' | translate }}
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="login-url"
-                        [placeholder]="'DOMAINS.LOGIN_URL' | translate"
-                        formControlName="login_url"
-                    />
-                    <mat-error *ngIf="form.controls.login_url.invalid">
-                        {{ 'DOMAINS.LOGIN_URL_REQUIRED' | translate }}
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <div class="field" *ngIf="form.controls.logout_url">
-                <label
-                    for="logout-url"
-                    [class.error]="
-                        form.controls.logout_url.invalid &&
-                        form.controls.logout_url.touched
-                    "
-                >
-                    {{ 'DOMAINS.LOGOUT_URL' | translate }}
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="logout-url"
-                        [placeholder]="'DOMAINS.LOGOUT_URL' | translate"
-                        formControlName="logout_url"
-                    />
-                    <mat-error *ngIf="form.controls.logout_url.invalid">
-                        {{ 'DOMAINS.LOGOUT_URL_REQUIRED' | translate }}
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <div class="field" *ngIf="form.controls.description">
-                <label for="description">{{
-                    'COMMON.FIELD_DESCRIPTION' | translate
-                }}</label>
-                <mat-form-field appearance="outline">
-                    <textarea
-                        matInput
-                        name="description"
-                        [placeholder]="'COMMON.FIELD_DESCRIPTION' | translate"
-                        formControlName="description"
-                    ></textarea>
-                </mat-form-field>
-            </div>
-            <div class="field" *ngIf="form.controls.email_domains">
-                <label
-                    [class.error]="
-                        form.controls.email_domains.invalid &&
-                        form.controls.email_domains.touched
-                    "
-                >
-                    {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
-                </label>
-                <mat-form-field appearance="outline" class="w-full">
-                    <mat-chip-grid #chipList aria-label="Image List">
-                        <mat-chip-row
-                            *ngFor="let item of email_domain_list"
-                            (removed)="removeEmailDomain(item)"
-                        >
-                            <div class="max-w-md truncate">{{ item }}</div>
-                            <button
-                                matChipRemove
-                                [attr.aria-label]="
-                                    'COMMON.ITEM_REMOVE'
-                                        | translate: { item: item }
+        @if (form) {
+            <form domain class="flex flex-col" [formGroup]="form">
+                <div class="fieldset">
+                    @if (form.controls.name) {
+                        <div class="field">
+                            <label
+                                for="domain-name"
+                                [class.error]="
+                                    form.controls.name.invalid &&
+                                    form.controls.name.touched
                                 "
                             >
-                                <app-icon>cancel</app-icon>
-                            </button>
-                        </mat-chip-row>
-                    </mat-chip-grid>
-                    <input
-                        [placeholder]="'DOMAINS.EMAIL_DOMAINS' | translate"
-                        [matChipInputFor]="chipList"
-                        [matChipInputSeparatorKeyCodes]="separators"
-                        [matChipInputAddOnBlur]="true"
-                        (matChipInputTokenEnd)="addEmailDomain($event)"
-                    />
-                </mat-form-field>
-            </div>
-        </form>
+                                {{ 'COMMON.FIELD_NAME' | translate
+                                }}<span>*</span>
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="domain-name"
+                                    [placeholder]="
+                                        'COMMON.FIELD_NAME' | translate
+                                    "
+                                    formControlName="name"
+                                    required
+                                />
+                                @if (form.controls.name.invalid) {
+                                    <mat-error>
+                                        {{
+                                            'DOMAINS.NAME_REQUIRED' | translate
+                                        }}
+                                    </mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    }
+                    @if (form.controls.domain) {
+                        <div class="field">
+                            <label
+                                for="domain"
+                                [class.error]="
+                                    form.controls.domain.invalid &&
+                                    form.controls.domain.touched
+                                "
+                            >
+                                {{ 'DOMAINS.NAME' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="domain"
+                                    [placeholder]="
+                                        'DOMAINS.NAME_PLACEHOLDER' | translate
+                                    "
+                                    formControlName="domain"
+                                />
+                                <mat-error>{{
+                                    'DOMAINS.DOMAIN_REQUIRED' | translate
+                                }}</mat-error>
+                            </mat-form-field>
+                        </div>
+                    }
+                </div>
+                @if (form.controls.login_url) {
+                    <div class="field">
+                        <label
+                            for="login-url"
+                            [class.error]="
+                                form.controls.login_url.invalid &&
+                                form.controls.login_url.touched
+                            "
+                        >
+                            {{ 'DOMAINS.LOGIN_URL' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="login-url"
+                                [placeholder]="'DOMAINS.LOGIN_URL' | translate"
+                                formControlName="login_url"
+                            />
+                            @if (form.controls.login_url.invalid) {
+                                <mat-error>
+                                    {{
+                                        'DOMAINS.LOGIN_URL_REQUIRED' | translate
+                                    }}
+                                </mat-error>
+                            }
+                        </mat-form-field>
+                    </div>
+                }
+                @if (form.controls.logout_url) {
+                    <div class="field">
+                        <label
+                            for="logout-url"
+                            [class.error]="
+                                form.controls.logout_url.invalid &&
+                                form.controls.logout_url.touched
+                            "
+                        >
+                            {{ 'DOMAINS.LOGOUT_URL' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="logout-url"
+                                [placeholder]="'DOMAINS.LOGOUT_URL' | translate"
+                                formControlName="logout_url"
+                            />
+                            @if (form.controls.logout_url.invalid) {
+                                <mat-error>
+                                    {{
+                                        'DOMAINS.LOGOUT_URL_REQUIRED'
+                                            | translate
+                                    }}
+                                </mat-error>
+                            }
+                        </mat-form-field>
+                    </div>
+                }
+                @if (form.controls.description) {
+                    <div class="field">
+                        <label for="description">{{
+                            'COMMON.FIELD_DESCRIPTION' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <textarea
+                                matInput
+                                name="description"
+                                [placeholder]="
+                                    'COMMON.FIELD_DESCRIPTION' | translate
+                                "
+                                formControlName="description"
+                            ></textarea>
+                        </mat-form-field>
+                    </div>
+                }
+                @if (form.controls.email_domains) {
+                    <div class="field">
+                        <label
+                            [class.error]="
+                                form.controls.email_domains.invalid &&
+                                form.controls.email_domains.touched
+                            "
+                        >
+                            {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline" class="w-full">
+                            <mat-chip-grid #chipList aria-label="Image List">
+                                @for (item of email_domain_list; track item) {
+                                    <mat-chip-row
+                                        (removed)="removeEmailDomain(item)"
+                                    >
+                                        <div class="max-w-md truncate">
+                                            {{ item }}
+                                        </div>
+                                        <button
+                                            matChipRemove
+                                            [attr.aria-label]="
+                                                'COMMON.ITEM_REMOVE'
+                                                    | translate: { item: item }
+                                            "
+                                        >
+                                            <app-icon>cancel</app-icon>
+                                        </button>
+                                    </mat-chip-row>
+                                }
+                            </mat-chip-grid>
+                            <input
+                                [placeholder]="
+                                    'DOMAINS.EMAIL_DOMAINS' | translate
+                                "
+                                [matChipInputFor]="chipList"
+                                [matChipInputSeparatorKeyCodes]="separators"
+                                [matChipInputAddOnBlur]="true"
+                                (matChipInputTokenEnd)="addEmailDomain($event)"
+                            />
+                        </mat-form-field>
+                    </div>
+                }
+            </form>
+        }
     `,
     styles: [
         `
@@ -167,7 +204,7 @@ import { isValidDomain } from '../../common/validation';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class DomainFormComponent {
     /** Group of form fields used for creating the system */

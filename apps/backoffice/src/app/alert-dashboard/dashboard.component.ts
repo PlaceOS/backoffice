@@ -29,35 +29,41 @@ const SYSTEMS = {};
                 </div>
             </div>
             <div class="h-1/2 w-full flex-1 space-y-4 overflow-auto p-4">
-                <div
-                    class="divide-base-100/50 border-base-100/50 divide-y border"
-                    *ngFor="let sys of systems | async"
-                >
-                    <div class="bg-[#212121] p-2 text-base-100">
-                        <h2 class="text-xl">
-                            {{ sys.display_name || sys.name }} ({{ sys.id }})
-                        </h2>
-                    </div>
+                @for (sys of systems | async; track sys) {
                     <div
-                        *ngFor="let ev of sys.events"
-                        [class.bg-error]="!ev.value"
-                        [class.bg-teal-800]="ev.value"
-                        class="flex items-center px-2 text-base-100"
+                        class="divide-base-100/50 border-base-100/50 divide-y border"
                     >
-                        <div class="w-1/6">{{ ev.mod }}</div>
-                        <div class="flex-1">{{ ev.driver_id }}</div>
-                        <div class="w-1/6">{{ ev.ip }}</div>
-                        <div class="w-1/6">
-                            {{ ev.value ? 'Connected' : 'Disconnected' }}
+                        <div class="bg-[#212121] p-2 text-base-100">
+                            <h2 class="text-xl">
+                                {{ sys.display_name || sys.name }} ({{
+                                    sys.id
+                                }})
+                            </h2>
                         </div>
-                        <div class="w-1/6">
-                            {{ ev.timestamp * 1000 | dateFrom }}
-                        </div>
-                        <button btn icon>
-                            <app-icon class="text-xl">done</app-icon>
-                        </button>
+                        @for (ev of sys.events; track ev) {
+                            <div
+                                [class.bg-error]="!ev.value"
+                                [class.bg-teal-800]="ev.value"
+                                class="flex items-center px-2 text-base-100"
+                            >
+                                <div class="w-1/6">{{ ev.mod }}</div>
+                                <div class="flex-1">{{ ev.driver_id }}</div>
+                                <div class="w-1/6">{{ ev.ip }}</div>
+                                <div class="w-1/6">
+                                    {{
+                                        ev.value ? 'Connected' : 'Disconnected'
+                                    }}
+                                </div>
+                                <div class="w-1/6">
+                                    {{ ev.timestamp * 1000 | dateFrom }}
+                                </div>
+                                <button btn icon>
+                                    <app-icon class="text-xl">done</app-icon>
+                                </button>
+                            </div>
+                        }
                     </div>
-                </div>
+                }
             </div>
         </div>
     `,
@@ -68,7 +74,7 @@ const SYSTEMS = {};
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class MqttDashboardComponent {
     public readonly systems = new BehaviorSubject([]);

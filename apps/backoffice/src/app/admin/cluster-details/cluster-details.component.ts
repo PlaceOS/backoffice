@@ -22,10 +22,8 @@ import { PlaceClusterNode } from './cluster-node.component';
             <div class="text-2xl">{{ 'ADMIN.CLUSTERS' | translate }}</div>
         </div>
         <div class="flex max-h-full flex-wrap overflow-auto">
-            <ng-container
-                *ngIf="cluster_list && cluster_list.length; else empty_state"
-            >
-                <ng-container *ngIf="!active_cluster; else process_state">
+            @if (cluster_list && cluster_list.length) {
+                @if (!active_cluster) {
                     @for (cluster of cluster_list; track cluster.id) {
                         <div
                             class="m-2 space-y-2 rounded-lg border border-base-200 bg-base-100 p-2 shadow"
@@ -61,28 +59,26 @@ import { PlaceClusterNode } from './cluster-node.component';
                             </button>
                         </div>
                     }
-                </ng-container>
-            </ng-container>
-        </div>
-        <ng-template #empty_state>
-            <div
-                class="absolute inset-0 flex flex-col items-center justify-center space-y-8 opacity-30"
-            >
-                <app-icon class="text-8xl">hub</app-icon>
-                <div class="text">
-                    {{ 'ADMIN.CLUSTERS_LIST_EMPTY' | translate }}
+                } @else {
+                    <engine-cluster-task-list
+                        [cluster]="active_cluster"
+                        (close)="active_cluster = null"
+                    ></engine-cluster-task-list>
+                }
+            } @else {
+                <div
+                    class="absolute inset-0 flex flex-col items-center justify-center space-y-8 opacity-30"
+                >
+                    <app-icon class="text-8xl">hub</app-icon>
+                    <div class="text">
+                        {{ 'ADMIN.CLUSTERS_LIST_EMPTY' | translate }}
+                    </div>
                 </div>
-            </div>
-        </ng-template>
-        <ng-template #process_state>
-            <engine-cluster-task-list
-                [cluster]="active_cluster"
-                (close)="active_cluster = null"
-            ></engine-cluster-task-list>
-        </ng-template>
+            }
+        </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class PlaceClusterDetailsComponent
     extends AsyncHandler

@@ -160,34 +160,37 @@ export interface StaffTenantModalData {
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div
-                    class="flex flex-wrap items-center space-x-0 sm:space-x-2"
-                    *ngIf="
-                        form.value.platform !== 'google' &&
-                        !form.value.delegated
-                    "
-                >
-                    <div class="flex flex-1 flex-col">
-                        <label>
-                            {{ 'ADMIN.TENANTS_SERVICE_ACCOUNT' | translate }}
-                        </label>
-                        <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                formControlName="service_account"
-                                [placeholder]="
-                                    'ADMIN.TENANTS_SERVICE_ACCOUNT' | translate
-                                "
-                            />
-                            <mat-error>
+                @if (
+                    form.value.platform !== 'google' && !form.value.delegated
+                ) {
+                    <div
+                        class="flex flex-wrap items-center space-x-0 sm:space-x-2"
+                    >
+                        <div class="flex flex-1 flex-col">
+                            <label>
                                 {{
-                                    'ADMIN.TENANTS_SERVICE_ACCOUNT_ERROR'
-                                        | translate
+                                    'ADMIN.TENANTS_SERVICE_ACCOUNT' | translate
                                 }}
-                            </mat-error>
-                        </mat-form-field>
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    formControlName="service_account"
+                                    [placeholder]="
+                                        'ADMIN.TENANTS_SERVICE_ACCOUNT'
+                                            | translate
+                                    "
+                                />
+                                <mat-error>
+                                    {{
+                                        'ADMIN.TENANTS_SERVICE_ACCOUNT_ERROR'
+                                            | translate
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
                     </div>
-                </div>
+                }
                 <div class="mb-6 flex items-center">
                     <settings-toggle
                         [name]="'ADMIN.TENANTS_DELEGATED' | translate"
@@ -196,183 +199,194 @@ export interface StaffTenantModalData {
                     >
                     </settings-toggle>
                 </div>
-                <form *ngIf="credentials" [formGroup]="credentials">
-                    <ng-container
-                        *ngFor="let item of credentials.controls | keyvalue"
-                    >
-                        <div
-                            class="flex flex-col"
-                            [class.hidden]="item.value?.disabled"
-                        >
-                            <label class="capitalize">
-                                {{ name_map[item.key] || item.key }}
-                                <span
-                                    *ngIf="
+                @if (credentials) {
+                    <form [formGroup]="credentials">
+                        @for (
+                            item of credentials.controls | keyvalue;
+                            track item
+                        ) {
+                            <div
+                                class="flex flex-col"
+                                [class.hidden]="item.value?.disabled"
+                            >
+                                <label class="capitalize">
+                                    {{ name_map[item.key] || item.key }}
+                                    @if (
                                         item.key !== 'conference_type' &&
                                         !form.value.id
-                                    "
-                                    >*</span
-                                >
-                            </label>
-                            <mat-form-field appearance="outline">
-                                <ng-container [ngSwitch]="item.key">
+                                    ) {
+                                        <span>*</span>
+                                    }
+                                </label>
+                                <mat-form-field appearance="outline">
+                                    @switch (item.key) {
+                                        @default {
+                                            <input
+                                                matInput
+                                                [formControlName]="item.key"
+                                                [placeholder]="
+                                                    name_map[item.key] ||
+                                                    item.key
+                                                "
+                                            />
+                                        }
+                                        @case ('signing_key') {
+                                            <textarea
+                                                matInput
+                                                [formControlName]="item.key"
+                                                [placeholder]="
+                                                    name_map[item.key] ||
+                                                    item.key
+                                                "
+                                            ></textarea>
+                                        }
+                                    }
+                                    <mat-error>
+                                        {{
+                                            'ADMIN.TENANT_ITEM_REQUIRED'
+                                                | translate: { name: item.key }
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        }
+                    </form>
+                }
+                @if (form.value.platform === 'office365') {
+                    <div class="mb-4 flex items-center">
+                        <settings-toggle
+                            [name]="'ADMIN.TENANTS_CONFIG_OUTLOOK' | translate"
+                            class="w-1/2"
+                            [(ngModel)]="show_outlook"
+                            [ngModelOptions]="{ standalone: true }"
+                        >
+                        </settings-toggle>
+                    </div>
+                }
+                @if (show_outlook && form.get('outlook_config')) {
+                    <form formGroupName="outlook_config">
+                        <div
+                            class="flex flex-wrap items-center space-x-0 sm:space-x-2"
+                        >
+                            <div class="flex flex-1 flex-col">
+                                <label>
+                                    {{ 'ADMIN.TENANTS_APP_ID' | translate }}
+                                    <span>*</span>
+                                </label>
+                                <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        *ngSwitchDefault
-                                        [formControlName]="item.key"
+                                        formControlName="app_id"
                                         [placeholder]="
-                                            name_map[item.key] || item.key
+                                            'ADMIN.TENANTS_APP_ID' | translate
                                         "
                                     />
-                                    <textarea
+                                    <mat-error>{{
+                                        'ADMIN.TENANTS_APP_ID_REQUIRED'
+                                            | translate
+                                    }}</mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="flex flex-1 flex-col">
+                                <label>{{
+                                    'ADMIN.TENANTS_APP_DOMAIN' | translate
+                                }}</label>
+                                <mat-form-field appearance="outline">
+                                    <input
                                         matInput
-                                        *ngSwitchCase="'signing_key'"
-                                        [formControlName]="item.key"
+                                        formControlName="app_domain"
                                         [placeholder]="
-                                            name_map[item.key] || item.key
+                                            'ADMIN.TENANTS_APP_DOMAIN'
+                                                | translate
                                         "
-                                    ></textarea>
-                                </ng-container>
-                                <mat-error>
+                                    />
+                                    <mat-error>
+                                        {{
+                                            'ADMIN.TENANTS_APP_DOMAIN_REQUIRED'
+                                                | translate
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-wrap items-center space-x-0 sm:space-x-2"
+                        >
+                            <div class="flex flex-1 flex-col">
+                                <label>
                                     {{
-                                        'ADMIN.TENANT_ITEM_REQUIRED'
-                                            | translate: { name: item.key }
-                                    }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                    </ng-container>
-                </form>
-                <div
-                    class="mb-4 flex items-center"
-                    *ngIf="form.value.platform === 'office365'"
-                >
-                    <settings-toggle
-                        [name]="'ADMIN.TENANTS_CONFIG_OUTLOOK' | translate"
-                        class="w-1/2"
-                        [(ngModel)]="show_outlook"
-                        [ngModelOptions]="{ standalone: true }"
-                    >
-                    </settings-toggle>
-                </div>
-                <form
-                    *ngIf="show_outlook && form.get('outlook_config')"
-                    formGroupName="outlook_config"
-                >
-                    <div
-                        class="flex flex-wrap items-center space-x-0 sm:space-x-2"
-                    >
-                        <div class="flex flex-1 flex-col">
-                            <label>
-                                {{ 'ADMIN.TENANTS_APP_ID' | translate }}
-                                <span>*</span>
-                            </label>
-                            <mat-form-field appearance="outline">
-                                <input
-                                    matInput
-                                    formControlName="app_id"
-                                    [placeholder]="
-                                        'ADMIN.TENANTS_APP_ID' | translate
-                                    "
-                                />
-                                <mat-error>{{
-                                    'ADMIN.TENANTS_APP_ID_REQUIRED' | translate
-                                }}</mat-error>
-                            </mat-form-field>
-                        </div>
-                        <div class="flex flex-1 flex-col">
-                            <label>{{
-                                'ADMIN.TENANTS_APP_DOMAIN' | translate
-                            }}</label>
-                            <mat-form-field appearance="outline">
-                                <input
-                                    matInput
-                                    formControlName="app_domain"
-                                    [placeholder]="
-                                        'ADMIN.TENANTS_APP_DOMAIN' | translate
-                                    "
-                                />
-                                <mat-error>
-                                    {{
-                                        'ADMIN.TENANTS_APP_DOMAIN_REQUIRED'
-                                            | translate
-                                    }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div
-                        class="flex flex-wrap items-center space-x-0 sm:space-x-2"
-                    >
-                        <div class="flex flex-1 flex-col">
-                            <label>
-                                {{ 'ADMIN.TENANTS_APP_RESOURCE' | translate }}
-                            </label>
-                            <mat-form-field appearance="outline">
-                                <input
-                                    matInput
-                                    formControlName="app_resource"
-                                    [placeholder]="
                                         'ADMIN.TENANTS_APP_RESOURCE' | translate
-                                    "
-                                />
-                                <mat-error>
-                                    {{
-                                        'ADMIN.TENANTS_APP_RESOURCE_REQUIRED'
-                                            | translate
                                     }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                        <div class="flex flex-1 flex-col">
-                            <label>
-                                {{
-                                    'ADMIN.TENANTS_SOURCE_LOCATION' | translate
-                                }}
-                            </label>
-                            <mat-form-field appearance="outline">
-                                <input
-                                    matInput
-                                    formControlName="source_location"
-                                    [placeholder]="
+                                </label>
+                                <mat-form-field appearance="outline">
+                                    <input
+                                        matInput
+                                        formControlName="app_resource"
+                                        [placeholder]="
+                                            'ADMIN.TENANTS_APP_RESOURCE'
+                                                | translate
+                                        "
+                                    />
+                                    <mat-error>
+                                        {{
+                                            'ADMIN.TENANTS_APP_RESOURCE_REQUIRED'
+                                                | translate
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="flex flex-1 flex-col">
+                                <label>
+                                    {{
                                         'ADMIN.TENANTS_SOURCE_LOCATION'
                                             | translate
-                                    "
-                                />
-                                <mat-error>
-                                    {{
-                                        'ADMIN.TENANTS_SOURCE_LOCATION_REQUIRED'
-                                            | translate
                                     }}
-                                </mat-error>
-                            </mat-form-field>
+                                </label>
+                                <mat-form-field appearance="outline">
+                                    <input
+                                        matInput
+                                        formControlName="source_location"
+                                        [placeholder]="
+                                            'ADMIN.TENANTS_SOURCE_LOCATION'
+                                                | translate
+                                        "
+                                    />
+                                    <mat-error>
+                                        {{
+                                            'ADMIN.TENANTS_SOURCE_LOCATION_REQUIRED'
+                                                | translate
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
                         </div>
-                    </div>
-                    <div
-                        class="flex flex-wrap items-center space-x-0 sm:space-x-4"
-                    >
-                        <div class="flex flex-1 flex-col">
-                            <label>
-                                {{ 'ADMIN.TENANTS_BASE_PATH' | translate }}
-                            </label>
-                            <mat-form-field appearance="outline">
-                                <input
-                                    matInput
-                                    formControlName="base_path"
-                                    [placeholder]="
-                                        'ADMIN.TENANTS_BASE_PATH' | translate
-                                    "
-                                />
-                                <mat-error>
-                                    {{
-                                        'ADMIN.TENANTS_BASE_PATH_REQUIRED'
-                                            | translate
-                                    }}
-                                </mat-error>
-                            </mat-form-field>
+                        <div
+                            class="flex flex-wrap items-center space-x-0 sm:space-x-4"
+                        >
+                            <div class="flex flex-1 flex-col">
+                                <label>
+                                    {{ 'ADMIN.TENANTS_BASE_PATH' | translate }}
+                                </label>
+                                <mat-form-field appearance="outline">
+                                    <input
+                                        matInput
+                                        formControlName="base_path"
+                                        [placeholder]="
+                                            'ADMIN.TENANTS_BASE_PATH'
+                                                | translate
+                                        "
+                                    />
+                                    <mat-error>
+                                        {{
+                                            'ADMIN.TENANTS_BASE_PATH_REQUIRED'
+                                                | translate
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                }
                 <div class="flex flex-col space-y-2">
                     <label>{{
                         'ADMIN.TENANTS_BOOKING_LIMITS' | translate

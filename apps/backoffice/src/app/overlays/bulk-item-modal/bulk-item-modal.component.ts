@@ -43,9 +43,11 @@ export interface BulkItemModalData<T = HashMap<any>> {
             <h3 class="text-xl font-medium">
                 {{ 'COMMON.BULK_ADD' | translate: { type: type } }}
             </h3>
-            <button btn icon mat-dialog-close *ngIf="!loading">
-                <app-icon>close</app-icon>
-            </button>
+            @if (!loading) {
+                <button btn icon mat-dialog-close>
+                    <app-icon>close</app-icon>
+                </button>
+            }
         </div>
         <main>
             @switch (flow_step) {
@@ -116,7 +118,7 @@ export interface BulkItemModalData<T = HashMap<any>> {
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class BulkItemModalComponent<T = HashMap<any>> {
     /** Current step in the bulk add flow */

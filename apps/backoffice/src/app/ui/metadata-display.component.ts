@@ -48,109 +48,107 @@ function replaceDescTag(inputString, newContent) {
                 />
             </mat-form-field>
         </div>
-        <div
-            class="mt-4 space-y-2"
-            *ngIf="metadata && metadata.length > 0; else empty_state"
-        >
-            @for (item of metadata; track item.name) {
-                <div
-                    block
-                    [id]="'md-block-' + item.name"
-                    class="rounded border border-base-300"
-                    [class.shadow]="show_view === item.name"
-                    [class.opacity-30]="item.match === false"
-                    [formGroup]="form_map[item.name]"
-                >
+        @if (metadata && metadata.length > 0) {
+            <div class="mt-4 space-y-2">
+                @for (item of metadata; track item.name) {
                     <div
-                        header
-                        class="flex items-center space-x-2 bg-base-200 px-2 py-1"
+                        block
+                        [id]="'md-block-' + item.name"
+                        class="rounded border border-base-300"
+                        [class.shadow]="show_view === item.name"
+                        [class.opacity-30]="item.match === false"
+                        [formGroup]="form_map[item.name]"
                     >
-                        <h3 class="px-2 font-mono text-xs font-medium">
-                            {{ form_map[item.name].controls.name.value }}
-                        </h3>
-                        <div class="flex-1"></div>
                         <div
-                            class="rounded border border-base-300 px-2 py-1 font-mono text-xs"
+                            header
+                            class="flex items-center space-x-2 bg-base-200 px-2 py-1"
                         >
-                            {{ item.updated_at | dateFrom }}
+                            <h3 class="px-2 font-mono text-xs font-medium">
+                                {{ form_map[item.name].controls.name.value }}
+                            </h3>
+                            <div class="flex-1"></div>
+                            <div
+                                class="rounded border border-base-300 px-2 py-1 font-mono text-xs"
+                            >
+                                {{ item.updated_at | dateFrom }}
+                            </div>
+                            <div
+                                class="flex items-center rounded-full border border-base-300 bg-base-100"
+                            >
+                                <button
+                                    icon
+                                    matRipple
+                                    (click)="saveMetadata(item)"
+                                    [disabled]="!edited[item.name]"
+                                    [matTooltip]="'COMMON.SAVE' | translate"
+                                >
+                                    <icon class="text-xl">save</icon>
+                                </button>
+                                <button
+                                    icon
+                                    matRipple
+                                    (click)="editMetadataDetails(item)"
+                                    [matTooltip]="
+                                        'COMMON.METADATA_EDIT' | translate
+                                    "
+                                >
+                                    <icon class="text-xl">edit</icon>
+                                </button>
+                                <button
+                                    icon
+                                    matRipple
+                                    (click)="viewHistory(item)"
+                                    [matTooltip]="
+                                        'COMMON.METADATA_HISTORY' | translate
+                                    "
+                                >
+                                    <icon class="text-xl">history</icon>
+                                </button>
+                                <button
+                                    icon
+                                    matRipple
+                                    class="text-error"
+                                    (click)="deleteMetadata(item.name)"
+                                    [matTooltip]="
+                                        'COMMON.METADATA_REMOVE' | translate
+                                    "
+                                >
+                                    <icon class="text-xl">delete</icon>
+                                </button>
+                            </div>
+                            <button icon matRipple (click)="toggleView(item)">
+                                <icon class="text-2xl">{{
+                                    show_view === item.name
+                                        ? 'keyboard_arrow_down'
+                                        : 'chevron_right'
+                                }}</icon>
+                            </button>
                         </div>
                         <div
-                            class="flex items-center rounded-full border border-base-300 bg-base-100"
+                            body
+                            class="overflow-hidden"
+                            [@show]="show_view === item.name ? 'show' : 'hide'"
                         >
-                            <button
-                                icon
-                                matRipple
-                                (click)="saveMetadata(item)"
-                                [disabled]="!edited[item.name]"
-                                [matTooltip]="'COMMON.SAVE' | translate"
-                            >
-                                <icon class="text-xl">save</icon>
-                            </button>
-                            <button
-                                icon
-                                matRipple
-                                (click)="editMetadataDetails(item)"
-                                [matTooltip]="
-                                    'COMMON.METADATA_EDIT' | translate
-                                "
-                            >
-                                <icon class="text-xl">edit</icon>
-                            </button>
-                            <button
-                                icon
-                                matRipple
-                                (click)="viewHistory(item)"
-                                [matTooltip]="
-                                    'COMMON.METADATA_HISTORY' | translate
-                                "
-                            >
-                                <icon class="text-xl">history</icon>
-                            </button>
-                            <button
-                                icon
-                                matRipple
-                                class="text-error"
-                                (click)="deleteMetadata(item.name)"
-                                [matTooltip]="
-                                    'COMMON.METADATA_REMOVE' | translate
-                                "
-                            >
-                                <icon class="text-xl">delete</icon>
-                            </button>
-                        </div>
-                        <button icon matRipple (click)="toggleView(item)">
-                            <icon class="text-2xl">{{
-                                show_view === item.name
-                                    ? 'keyboard_arrow_down'
-                                    : 'chevron_right'
-                            }}</icon>
-                        </button>
-                    </div>
-                    <div
-                        body
-                        class="overflow-hidden"
-                        [@show]="show_view === item.name ? 'show' : 'hide'"
-                    >
-                        <div class="border-t border-base-300 p-1">
-                            <settings-form-field
-                                formControlName="details"
-                                lang="json"
-                                [schema]="this.schema_map[item.name]"
-                                [readonly]="false"
-                            ></settings-form-field>
+                            <div class="border-t border-base-300 p-1">
+                                <settings-form-field
+                                    formControlName="details"
+                                    lang="json"
+                                    [schema]="this.schema_map[item.name]"
+                                    [readonly]="false"
+                                ></settings-form-field>
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
-        <ng-template #empty_state>
+                }
+            </div>
+        } @else {
             <div
                 class="flex w-full flex-col items-center justify-center space-y-8 p-16 opacity-30"
             >
                 <app-icon class="text-8xl">settings_alert</app-icon>
                 <div>{{ 'COMMON.METADATA_EMPTY' | translate }}</div>
             </div>
-        </ng-template>
+        }
         <ng-template #load_state>
             <mat-spinner diameter="32"></mat-spinner>
         </ng-template>

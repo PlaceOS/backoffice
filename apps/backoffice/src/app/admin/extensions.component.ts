@@ -55,12 +55,11 @@ export interface BackofficeExtension {
                             (ngModelChange)="setDomain($event)"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            <mat-option
-                                *ngFor="let domain of domain_list"
-                                [value]="domain"
-                            >
-                                {{ domain.name }}
-                            </mat-option>
+                            @for (domain of domain_list; track domain) {
+                                <mat-option [value]="domain">
+                                    {{ domain.name }}
+                                </mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                     <button btn matRipple (click)="editExtension()">

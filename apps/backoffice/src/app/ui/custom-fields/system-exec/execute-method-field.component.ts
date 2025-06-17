@@ -22,38 +22,39 @@ import { ModuleLike } from './select-module.component';
                     [(ngModel)]="module"
                     (ngModelChange)="fn = null"
                 ></select-system-module>
-                <select-module-method
-                    *ngIf="module"
-                    [system]="system"
-                    [module]="module"
-                    [(ngModel)]="fn"
-                    (ngModelChange)="
-                        fn?.order?.length === 0 ? postArguments({}) : ''
-                    "
-                ></select-module-method>
-                <function-arguments
-                    *ngIf="fn"
-                    [method]="fn"
-                    [ngModel]="arguments"
-                    (valid)="valid = $event"
-                    (ngModelChange)="postArguments($event)"
-                ></function-arguments>
-                <div
-                    class="flex w-full items-center space-x-2"
-                    *ngIf="can_execute"
-                >
-                    <button class="inverse flex-1" btn (click)="clear()">
-                        {{ 'COMMON.EXECUTE_CLEAR' | translate }}
-                    </button>
-                    <button
-                        class="flex-1"
-                        [disabled]="!fn || !valid"
-                        btn
-                        (click)="execute()"
-                    >
-                        {{ 'COMMON.EXECUTE_PERFORM' | translate }}
-                    </button>
-                </div>
+                @if (module) {
+                    <select-module-method
+                        [system]="system"
+                        [module]="module"
+                        [(ngModel)]="fn"
+                        (ngModelChange)="
+                            fn?.order?.length === 0 ? postArguments({}) : ''
+                        "
+                    ></select-module-method>
+                }
+                @if (fn) {
+                    <function-arguments
+                        [method]="fn"
+                        [ngModel]="arguments"
+                        (valid)="valid = $event"
+                        (ngModelChange)="postArguments($event)"
+                    ></function-arguments>
+                }
+                @if (can_execute) {
+                    <div class="flex w-full items-center space-x-2">
+                        <button class="inverse flex-1" btn (click)="clear()">
+                            {{ 'COMMON.EXECUTE_CLEAR' | translate }}
+                        </button>
+                        <button
+                            class="flex-1"
+                            [disabled]="!fn || !valid"
+                            btn
+                            (click)="execute()"
+                        >
+                            {{ 'COMMON.EXECUTE_PERFORM' | translate }}
+                        </button>
+                    </div>
+                }
             </div>
             @if (loading) {
                 <div

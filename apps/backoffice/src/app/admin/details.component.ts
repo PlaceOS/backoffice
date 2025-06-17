@@ -45,13 +45,14 @@ export interface PlaceServiceDetails {
                 <span class="mono ml-2 opacity-60">Backoffice</span>
             </h3>
             <div class="flex-1"></div>
-            <button
-                *ngIf="backoffice_logs"
-                class="p-2 text-xs underline"
-                (click)="changelog(backoffice_logs)"
-            >
-                {{ 'ADMIN.VIEW_CHANGELOG' | translate }}
-            </button>
+            @if (backoffice_logs) {
+                <button
+                    class="p-2 text-xs underline"
+                    (click)="changelog(backoffice_logs)"
+                >
+                    {{ 'ADMIN.VIEW_CHANGELOG' | translate }}
+                </button>
+            }
         </div>
         <section
             class="mb-4 inline-grid gap-2 rounded border border-base-200 p-4"
@@ -99,68 +100,75 @@ export interface PlaceServiceDetails {
                 {{ 'ADMIN.BACKEND_SERVICES' | translate }}
                 <span class="mono ml-2 opacity-60">API</span>
             </div>
-            <code class="bg-base-300" *ngIf="backend_version">
-                {{ backend_version }}
-            </code>
+            @if (backend_version) {
+                <code class="bg-base-300">
+                    {{ backend_version }}
+                </code>
+            }
             <div class="flex-1"></div>
-            <button
-                *ngIf="changelog_data"
-                class="p-2 text-xs underline"
-                (click)="changelog(changelog_data)"
-            >
-                {{ 'ADMIN.VIEW_CHANGELOG' | translate }}
-            </button>
+            @if (changelog_data) {
+                <button
+                    class="p-2 text-xs underline"
+                    (click)="changelog(changelog_data)"
+                >
+                    {{ 'ADMIN.VIEW_CHANGELOG' | translate }}
+                </button>
+            }
         </div>
         <section class="-mx-2 flex flex-wrap py-2">
-            <ng-container *ngIf="api_details.length > 0; else empty_state">
-                <div
-                    class="m-2 min-w-[40%] flex-1 overflow-hidden rounded border border-base-200 bg-base-100"
-                    *ngFor="let api of api_details"
-                >
-                    <h3 class="mono w-full border-b border-base-200 px-4 py-2">
-                        {{ api.service }}
-                    </h3>
+            @if (api_details.length > 0) {
+                @for (api of api_details; track api) {
                     <div
-                        class="inline-grid gap-2 p-4"
-                        [style.gridTemplateColumns]="'7.5rem auto'"
+                        class="m-2 min-w-[40%] flex-1 overflow-hidden rounded border border-base-200 bg-base-100"
                     >
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'COMMON.GIT_COMMIT' | translate }}
-                        </div>
-                        <div>
-                            <code>{{ api.commit | slice: 0 : 8 }}</code>
-                        </div>
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'COMMON.VERSION' | translate }}
-                        </div>
-                        <div>
-                            <code>{{ api.version }}</code>
-                        </div>
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'ADMIN.PLATFORM' | translate }}
-                        </div>
-                        <div>
-                            <code>{{ api.platform_version }}</code>
-                        </div>
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'ADMIN.BUILT_AT' | translate }}
-                        </div>
-                        <div class="text-sm">
-                            {{ api.build_time | date: 'MMM d, y, h:mm a' }}
+                        <h3
+                            class="mono w-full border-b border-base-200 px-4 py-2"
+                        >
+                            {{ api.service }}
+                        </h3>
+                        <div
+                            class="inline-grid gap-2 p-4"
+                            [style.gridTemplateColumns]="'7.5rem auto'"
+                        >
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'COMMON.GIT_COMMIT' | translate }}
+                            </div>
+                            <div>
+                                <code>{{ api.commit | slice: 0 : 8 }}</code>
+                            </div>
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'COMMON.VERSION' | translate }}
+                            </div>
+                            <div>
+                                <code>{{ api.version }}</code>
+                            </div>
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'ADMIN.PLATFORM' | translate }}
+                            </div>
+                            <div>
+                                <code>{{ api.platform_version }}</code>
+                            </div>
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'ADMIN.BUILT_AT' | translate }}
+                            </div>
+                            <div class="text-sm">
+                                {{ api.build_time | date: 'MMM d, y, h:mm a' }}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </ng-container>
-        </section>
-        <ng-template #empty_state>
-            <div class="flex w-full flex-col items-center justify-center p-24">
+                }
+            } @else {
                 <div
-                    class="rounded-lg border border-base-300 bg-base-200 p-4 opacity-30"
+                    class="flex w-full flex-col items-center justify-center p-24"
                 >
-                    {{ 'ADMIN.BACKEND_SERVICES_EMPTY' | translate }}
+                    <div
+                        class="rounded-lg border border-base-300 bg-base-200 p-4 opacity-30"
+                    >
+                        {{ 'ADMIN.BACKEND_SERVICES_EMPTY' | translate }}
+                    </div>
                 </div>
-            </div>
-        </ng-template>
+            }
+        </section>
     `,
     styles: [
         `

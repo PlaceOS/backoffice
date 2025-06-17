@@ -50,41 +50,43 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
             [loading]="loading"
             (save)="save()"
         >
-            <div class="flex flex-col" *ngIf="is_new">
-                <label for="type"
-                    >{{ 'DOMAINS.AUTHENTICATION_SOURCE_TYPE' | translate }}:
-                </label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="type"
-                        [(ngModel)]="active_type"
-                        (ngModelChange)="setType($event)"
-                        [placeholder]="
-                            'DOMAINS.AUTHENTICATION_SOURCE_SELECT' | translate
-                        "
-                    >
-                        <mat-option
-                            *ngFor="let type of source_types"
-                            [value]="type.id"
+            @if (is_new) {
+                <div class="flex flex-col">
+                    <label for="type"
+                        >{{ 'DOMAINS.AUTHENTICATION_SOURCE_TYPE' | translate }}:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <mat-select
+                            name="type"
+                            [(ngModel)]="active_type"
+                            (ngModelChange)="setType($event)"
+                            [placeholder]="
+                                'DOMAINS.AUTHENTICATION_SOURCE_SELECT'
+                                    | translate
+                            "
                         >
-                            {{ type.name }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <ng-container *ngIf="item">
-                <ng-container [ngSwitch]="type">
-                    <ng-container *ngSwitchCase="'saml'">
+                            @for (type of source_types; track type) {
+                                <mat-option [value]="type.id">
+                                    {{ type.name }}
+                                </mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            }
+            @if (item) {
+                @switch (type) {
+                    @case ('saml') {
                         <saml-source-form [form]="form"></saml-source-form>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'ldap'">
+                    }
+                    @case ('ldap') {
                         <ldap-source-form [form]="form"></ldap-source-form>
-                    </ng-container>
-                    <ng-container *ngSwitchDefault>
+                    }
+                    @default {
                         <oauth-source-form [form]="form"></oauth-source-form>
-                    </ng-container>
-                </ng-container>
-            </ng-container>
+                    }
+                }
+            }
         </fullscreen-modal-shell>
     `,
     styles: [``],

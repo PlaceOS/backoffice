@@ -79,7 +79,7 @@ import { ZonesStateService } from './zones-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class ZoneSystemsComponent {
     public readonly filter$ = new BehaviorSubject<string>('');

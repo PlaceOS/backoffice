@@ -42,7 +42,7 @@ import { TableColumn } from '../../ui/simple-table.component';
         </ng-template>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ListComponent implements OnChanges {
     /** List of bulk items to add */

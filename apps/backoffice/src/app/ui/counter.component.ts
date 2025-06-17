@@ -29,9 +29,11 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
                 value
                 class="relative z-0 flex h-12 min-w-16 flex-1 items-center justify-center rounded-none border-y border-base-300 p-1 focus-within:z-20"
             >
-                <span *ngIf="!focused">
-                    {{ (render_fn ? render_fn(value) : value) || '0' }}
-                </span>
+                @if (!focused) {
+                    <span>
+                        {{ (render_fn ? render_fn(value) : value) || '0' }}
+                    </span>
+                }
                 <input
                     type="text"
                     class="absolute inset-0 p-2 opacity-0 focus:opacity-100"
@@ -63,7 +65,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
             multi: true,
         },
     ],
-    standalone: false
+    standalone: false,
 })
 export class CounterComponent implements ControlValueAccessor {
     /** Size of a single step */

@@ -19,37 +19,23 @@ export interface SelectItemModalData<T = any> {
             <h3 class="text-xl font-medium">
                 {{ 'COMMON.ITEM_ADD' | translate: { item: name } }}
             </h3>
-            <button btn icon mat-dialog-close *ngIf="!loading">
-                <app-icon>close</app-icon>
-            </button>
+            @if (!loading) {
+                <button btn icon mat-dialog-close>
+                    <app-icon>close</app-icon>
+                </button>
+            }
         </div>
-        <main
-            *ngIf="!loading; else load_state"
-            class="h-[65vh] w-[32rem] max-w-[calc(100vw-2rem)] px-2 pt-2"
-        >
-            <item-search-field
-                class="block h-full"
-                [query_fn]="query_fn"
-                [exclude]="filter_fn"
-                [(ngModel)]="item"
-                [display_list]="true"
-            ></item-search-field>
-        </main>
-        <footer
-            *ngIf="!loading"
-            class="flex justify-end border-t border-base-200 px-4 py-2"
-        >
-            <button
-                btn
-                matRipple
-                type="submit"
-                (click)="submit()"
-                [disabled]="!item"
-            >
-                {{ 'COMMON.ITEM_ADD_SELECTED' | translate }}
-            </button>
-        </footer>
-        <ng-template #load_state>
+        @if (!loading) {
+            <main class="h-[65vh] w-[32rem] max-w-[calc(100vw-2rem)] px-2 pt-2">
+                <item-search-field
+                    class="block h-full"
+                    [query_fn]="query_fn"
+                    [exclude]="filter_fn"
+                    [(ngModel)]="item"
+                    [display_list]="true"
+                ></item-search-field>
+            </main>
+        } @else {
             <main class="info-block">
                 <div class="icon">
                     <mat-spinner diameter="32"></mat-spinner>
@@ -58,10 +44,23 @@ export interface SelectItemModalData<T = any> {
                     {{ 'COMMON.PROCESSING_REQUEST' | translate }}
                 </div>
             </main>
-        </ng-template>
+        }
+        @if (!loading) {
+            <footer class="flex justify-end border-t border-base-200 px-4 py-2">
+                <button
+                    btn
+                    matRipple
+                    type="submit"
+                    (click)="submit()"
+                    [disabled]="!item"
+                >
+                    {{ 'COMMON.ITEM_ADD_SELECTED' | translate }}
+                </button>
+            </footer>
+        }
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class SelectItemModalComponent extends AsyncHandler {
     /** Emitter for user action on the modal */

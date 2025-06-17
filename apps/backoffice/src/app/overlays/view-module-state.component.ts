@@ -32,64 +32,68 @@ export interface ModuleStateModalData {
                 <app-icon>close</app-icon>
             </button>
         </div>
-        <main
-            class="flex h-[40rem] max-h-[70vh] w-[80vw] flex-col space-y-2 overflow-auto p-4"
-            *ngIf="!loading; else load_state"
-        >
-            <div class="mb-2 flex items-center space-x-2">
-                <div
-                    class="relative min-w-48 rounded border border-base-300 px-4 py-2"
-                >
+        @if (!loading) {
+            <main
+                class="flex h-[40rem] max-h-[70vh] w-[80vw] flex-col space-y-2 overflow-auto p-4"
+            >
+                <div class="mb-2 flex items-center space-x-2">
                     <div
-                        class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
+                        class="relative min-w-48 rounded border border-base-300 px-4 py-2"
                     >
-                        {{ 'SYSTEMS.SINGULAR' | translate }}
+                        <div
+                            class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
+                        >
+                            {{ 'SYSTEMS.SINGULAR' | translate }}
+                        </div>
+                        <div class="truncate">
+                            {{ system?.display_name || system?.name }}
+                        </div>
+                        <div class="text-xs opacity-30">{{ system?.id }}</div>
                     </div>
-                    <div class="truncate">
-                        {{ system?.display_name || system?.name }}
-                    </div>
-                    <div class="text-xs opacity-30">{{ system?.id }}</div>
-                </div>
-                <div
-                    class="relative min-w-48 rounded border border-base-300 px-4 py-2"
-                >
                     <div
-                        class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
+                        class="relative min-w-48 rounded border border-base-300 px-4 py-2"
                     >
-                        {{ 'MODULES.SINGULAR' | translate }}
+                        <div
+                            class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
+                        >
+                            {{ 'MODULES.SINGULAR' | translate }}
+                        </div>
+                        <div class="truncate">
+                            {{ module?.custom_name || module?.name }}
+                        </div>
+                        <div class="text-xs opacity-30">
+                            {{ device_classes[module?.id] }}
+                        </div>
                     </div>
-                    <div class="truncate">
-                        {{ module?.custom_name || module?.name }}
-                    </div>
-                    <div class="text-xs opacity-30">
-                        {{ device_classes[module?.id] }}
+                    <div class="w-px flex-1"></div>
+                    <div>
+                        <button
+                            btn
+                            matRipple
+                            class="w-40"
+                            (click)="updateState()"
+                        >
+                            {{ 'MODULES.STATE_UPDATE' | translate }}
+                        </button>
                     </div>
                 </div>
-                <div class="w-px flex-1"></div>
-                <div>
-                    <button btn matRipple class="w-40" (click)="updateState()">
-                        {{ 'MODULES.STATE_UPDATE' | translate }}
-                    </button>
+                <div class="pb-4">
+                    <settings-form-field
+                        [ngModel]="state"
+                        [readonly]="true"
+                    ></settings-form-field>
                 </div>
-            </div>
-            <div class="pb-4">
-                <settings-form-field
-                    [ngModel]="state"
-                    [readonly]="true"
-                ></settings-form-field>
-            </div>
-        </main>
-        <ng-template #load_state>
+            </main>
+        } @else {
             <main
                 class="flex h-[70vh] w-[80vw] flex-col items-center justify-center"
             >
                 <mat-spinner diameter="32"></mat-spinner>
-
                 <div>
                     {{ 'MODULES.STATE_LOADING' | translate }}
                 </div>
             </main>
-        </ng-template>
+        }
     `,
     styles: [``],
     standalone: false,

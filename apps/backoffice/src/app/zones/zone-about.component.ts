@@ -8,12 +8,13 @@ import { marked } from 'marked';
 @Component({
     selector: 'zone-about',
     template: `
-        <div
-            class="mono mb-2 w-full rounded bg-warning p-2 text-center text-xs text-warning-content"
-            *ngIf="requires_parent"
-        >
-            {{ 'ZONES.TAG_WARNING' | translate }}
-        </div>
+        @if (requires_parent) {
+            <div
+                class="mono mb-2 w-full rounded bg-warning p-2 text-center text-xs text-warning-content"
+            >
+                {{ 'ZONES.TAG_WARNING' | translate }}
+            </div>
+        }
         <section class="mb-4 flex space-x-2">
             @if ((systems | async)?.length) {
                 <div
@@ -35,19 +36,19 @@ import { marked } from 'marked';
                                     'ZONES.SELECT_SYSTEM' | translate
                                 "
                             >
-                                <mat-option
-                                    *ngFor="let system of systems | async"
-                                    [value]="system"
-                                >
-                                    {{ system.name }}
-                                </mat-option>
+                                @for (system of systems | async; track system) {
+                                    <mat-option [value]="system">
+                                        {{ system.name }}
+                                    </mat-option>
+                                }
                             </mat-select>
                         </mat-form-field>
-                        <execute-method-field
-                            *ngIf="active_system && active_system.id"
-                            [zone]="item?.id"
-                            [system]="active_system"
-                        ></execute-method-field>
+                        @if (active_system && active_system.id) {
+                            <execute-method-field
+                                [zone]="item?.id"
+                                [system]="active_system"
+                            ></execute-method-field>
+                        }
                     </div>
                 </div>
             }
@@ -119,15 +120,18 @@ import { marked } from 'marked';
                         {{ 'ZONES.TAGS' | translate }}
                     </div>
                     <div class="-mx-1 flex flex-1 flex-wrap">
-                        <div
-                            *ngFor="let tag of tag_list"
-                            class="mono m-1 h-6 rounded bg-base-200 px-2 py-1 text-[0.625rem]"
-                        >
-                            {{ tag }}
-                        </div>
-                        <span *ngIf="!tag_list?.length" class="opacity-30">
-                            {{ 'ZONES.TAGS_EMPTY' | translate }}
-                        </span>
+                        @for (tag of tag_list; track tag) {
+                            <div
+                                class="mono m-1 h-6 rounded bg-base-200 px-2 py-1 text-[0.625rem]"
+                            >
+                                {{ tag }}
+                            </div>
+                        }
+                        @if (!tag_list?.length) {
+                            <span class="opacity-30">
+                                {{ 'ZONES.TAGS_EMPTY' | translate }}
+                            </span>
+                        }
                     </div>
                 }
                 <div class="flex items-center text-sm font-medium">

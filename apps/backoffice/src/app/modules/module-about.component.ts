@@ -15,38 +15,38 @@ import { ModuleStateService } from './module-state.service';
                 class="inline-grid flex-1 gap-2 rounded border border-base-200 p-4 sm:w-1/3"
                 [style.gridTemplateColumns]="'4.5rem auto'"
             >
-                <ng-container *ngIf="item.notes">
+                @if (item.notes) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'MODULES.NOTES' | translate }}
                     </div>
                     <div>{{ item.notes }}</div>
-                </ng-container>
-                <ng-container *ngIf="item.ip">
+                }
+                @if (item.ip) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'MODULES.IP_ADDRESS' | translate }}
                     </div>
                     <div class="mono">{{ item.ip }}</div>
-                </ng-container>
-                <ng-container *ngIf="item.port > 1">
+                }
+                @if (item.port > 1) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'MODULES.PORT_NUMBER' | translate }}
                     </div>
                     <div class="mono">{{ item.port }}</div>
-                </ng-container>
-                <ng-container *ngIf="item.tls || item.udp">
+                }
+                @if (item.tls || item.udp) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'MODULES.PROTOCOL' | translate }}
                     </div>
                     <div class="flex items-center">
-                        <code *ngIf="item.tls" class="bg-success text-base-100">
-                            TLS
-                        </code>
-                        <code *ngIf="item.udp" class="bg-success text-base-100">
-                            UDP
-                        </code>
+                        @if (item.tls) {
+                            <code class="bg-success text-base-100"> TLS </code>
+                        }
+                        @if (item.udp) {
+                            <code class="bg-success text-base-100"> UDP </code>
+                        }
                     </div>
-                </ng-container>
-                <ng-container *ngIf="driver | async">
+                }
+                @if (driver | async) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'DRIVERS.SINGULAR' | translate }}
                     </div>
@@ -61,8 +61,8 @@ import { ModuleStateService } from './module-state.service';
                                     '&gt;'
                         }}
                     </a>
-                </ng-container>
-                <ng-container *ngIf="system | async">
+                }
+                @if (system | async) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'SYSTEMS.SINGULAR' | translate }}
                     </div>
@@ -76,8 +76,8 @@ import { ModuleStateService } from './module-state.service';
                     >
                         {{ (system | async).name }}
                     </a>
-                </ng-container>
-                <ng-container *ngIf="edge | async">
+                }
+                @if (edge | async) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.EDGE' | translate }}
                     </div>
@@ -98,11 +98,12 @@ import { ModuleStateService } from './module-state.service';
                             yPosition="top"
                             xPosition="center"
                         >
-                            <app-icon
-                                *ngIf="(edge | async).description"
-                                class="rounded-full border border-base-200"
-                                >info</app-icon
-                            >
+                            @if ((edge | async).description) {
+                                <app-icon
+                                    class="rounded-full border border-base-200"
+                                    >info</app-icon
+                                >
+                            }
                         </button>
                     </div>
                     <ng-template #edge_desc_template>
@@ -115,7 +116,7 @@ import { ModuleStateService } from './module-state.service';
                             >
                         </div>
                     </ng-template>
-                </ng-container>
+                }
                 <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
@@ -146,15 +147,16 @@ import { ModuleStateService } from './module-state.service';
                         {{ item.updated_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <button
-                    btn
-                    matRipple
-                    class="col-span-2 flex w-full items-center"
-                    *ngIf="item.has_runtime_error"
-                    (click)="viewErrors()"
-                >
-                    {{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }}
-                </button>
+                @if (item.has_runtime_error) {
+                    <button
+                        btn
+                        matRipple
+                        class="col-span-2 flex w-full items-center"
+                        (click)="viewErrors()"
+                    >
+                        {{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }}
+                    </button>
+                }
             </div>
             <div
                 class="inline-flex flex-1 flex-col rounded border border-base-200 sm:w-1/3"
@@ -172,13 +174,14 @@ import { ModuleStateService } from './module-state.service';
                         [disabled]="item.running || stopping"
                         (click)="toggleModuleState()"
                     >
-                        <div class="text" *ngIf="!stopping">
-                            {{ 'MODULES.START' | translate }}
-                        </div>
-                        <mat-spinner
-                            diameter="32"
-                            *ngIf="stopping"
-                        ></mat-spinner>
+                        @if (!stopping) {
+                            <div class="text">
+                                {{ 'MODULES.START' | translate }}
+                            </div>
+                        }
+                        @if (stopping) {
+                            <mat-spinner diameter="32"></mat-spinner>
+                        }
                     </button>
                     <button
                         btn
@@ -187,34 +190,34 @@ import { ModuleStateService } from './module-state.service';
                         [disabled]="!item.running || stopping"
                         (click)="toggleModuleState()"
                     >
-                        <div class="text" *ngIf="!stopping">
-                            {{ 'MODULES.STOP' | translate }}
-                        </div>
-                        <mat-spinner
-                            diameter="32"
-                            *ngIf="stopping"
-                        ></mat-spinner>
+                        @if (!stopping) {
+                            <div class="text">
+                                {{ 'MODULES.STOP' | translate }}
+                            </div>
+                        }
+                        @if (stopping) {
+                            <mat-spinner diameter="32"></mat-spinner>
+                        }
                     </button>
                 </div>
             </div>
         </section>
         <hr class="my-4" />
-        <section
-            *ngIf="item.settings && (other_settings | async); else load_state"
-        >
-            <a-settings-form
-                [id]="item.id"
-                [merge]="true"
-                [settings]="item.settings"
-                [merge_settings]="(other_settings | async) || []"
-            ></a-settings-form>
-        </section>
-        <ng-template #load_state>
+        @if (item.settings && (other_settings | async)) {
+            <section>
+                <a-settings-form
+                    [id]="item.id"
+                    [merge]="true"
+                    [settings]="item.settings"
+                    [merge_settings]="(other_settings | async) || []"
+                ></a-settings-form>
+            </section>
+        } @else {
             <div class="m-auto flex flex-col items-center justify-center p-8">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
                 <p>{{ 'MODULES.LOADING_SETTINGS' | translate }}</p>
             </div>
-        </ng-template>
+        }
     `,
     styles: [
         `

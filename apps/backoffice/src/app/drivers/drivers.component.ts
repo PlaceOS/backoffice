@@ -38,7 +38,7 @@ import { DriverStateService } from './driver-state.service';
                             </button>
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
-                            <ng-container *ngIf="item?.id">
+                            @if (item?.id) {
                                 <item-details
                                     [can_edit]="true"
                                     [item]="item"
@@ -57,18 +57,19 @@ import { DriverStateService } from './driver-state.service';
                                 >
                                     <router-outlet></router-outlet>
                                 </div>
-                            </ng-container>
+                            }
                         </div>
-                        <button
-                            class="absolute bottom-16 left-1 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-8"
-                            [matTooltip]="'DRIVERS.UPDATE' | translate"
-                            matTooltipPosition="right"
-                            matRipple
-                            *ngIf="updates_available | async"
-                            (click)="showUpdateList()"
-                        >
-                            <app-icon class="text-3xl">update</app-icon>
-                        </button>
+                        @if (updates_available | async) {
+                            <button
+                                class="absolute bottom-16 left-1 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-8"
+                                [matTooltip]="'DRIVERS.UPDATE' | translate"
+                                matTooltipPosition="right"
+                                matRipple
+                                (click)="showUpdateList()"
+                            >
+                                <app-icon class="text-3xl">update</app-icon>
+                            </button>
+                        }
                         <button
                             class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-9"
                             [matTooltip]="'DRIVERS.NEW' | translate"
@@ -80,16 +81,16 @@ import { DriverStateService } from './driver-state.service';
                         </button>
                     </div>
                 </div>
-                <app-debug-output
-                    below
-                    *ngIf="debug_position === 'below'"
-                ></app-debug-output>
+                @if (debug_position === 'below') {
+                    <app-debug-output below></app-debug-output>
+                }
             </div>
-            <app-debug-output
-                side
-                *ngIf="debug_position === 'side'"
-                class="h-full max-w-[30rem]"
-            ></app-debug-output>
+            @if (debug_position === 'side') {
+                <app-debug-output
+                    side
+                    class="h-full max-w-[30rem]"
+                ></app-debug-output>
+            }
         </div>
     `,
     styles: [``],

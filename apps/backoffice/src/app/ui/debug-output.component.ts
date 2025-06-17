@@ -14,132 +14,136 @@ import { Point } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'app-debug-output',
     template: `
-        <ng-container *ngIf="is_enabled">
-            <div
-                [class]="
-                    debug_position === 'floating'
-                        ? 'absolute bottom-2 right-2'
-                        : 'h-full w-full'
-                "
-                (window:resize)="onWindowResize()"
-                *ngIf="is_shown"
-            >
+        @if (is_enabled) {
+            @if (is_shown) {
                 <div
-                    class="relative z-10 flex flex-col overflow-hidden border border-base-200 bg-[#212121] text-white shadow"
-                    content
-                    #content
-                    [@show]="is_shown ? 'show' : 'hide'"
-                    [style.height]="
-                        debug_position === 'side' ? '100%' : height + 'px'
+                    [class]="
+                        debug_position === 'floating'
+                            ? 'absolute bottom-2 right-2'
+                            : 'h-full w-full'
                     "
-                    [style.width]="
-                        debug_position === 'below' ? '100%' : width + 'px'
-                    "
+                    (window:resize)="onWindowResize()"
                 >
-                    <div class="p-3 text-sm">
-                        {{
-                            'COMMON.MESSAGE_COUNT'
-                                | translate: { count: event_count }
-                        }}
-                    </div>
-                    <new-terminal
-                        [lines]="logs"
-                        [resize]="resize"
-                    ></new-terminal>
-                    <!-- <a-terminal [content]="logs" [resize]="resize"></a-terminal> -->
                     <div
-                        class="absolute -top-2 left-0 right-0 h-4 select-none"
-                        ns-resize
-                        (mousedown)="startResize($event, 'y')"
-                        (touchstart)="startResize($event, 'y')"
-                    ></div>
-                    <div
-                        class="absolute -left-2 bottom-0 top-0 w-4 select-none"
-                        ew-resize
-                        (mousedown)="startResize($event, 'x')"
-                        (touchstart)="startResize($event, 'x')"
-                    ></div>
-                    <div
-                        class="absolute -left-2 -top-2 h-4 w-4 select-none"
-                        nwse-resize
-                        (mousedown)="startResize($event, 'xy')"
-                        (touchstart)="startResize($event, 'xy')"
-                    ></div>
-                    <div
-                        actions
-                        class="absolute bottom-2 right-2 flex items-center space-x-2"
+                        class="relative z-10 flex flex-col overflow-hidden border border-base-200 bg-[#212121] text-white shadow"
+                        content
+                        #content
+                        [@show]="is_shown ? 'show' : 'hide'"
+                        [style.height]="
+                            debug_position === 'side' ? '100%' : height + 'px'
+                        "
+                        [style.width]="
+                            debug_position === 'below' ? '100%' : width + 'px'
+                        "
                     >
-                        <button
-                            btn
-                            icon
-                            class="rounded-full bg-neutral-focus text-neutral-content shadow"
-                            (click)="downloadLogs()"
+                        <div class="p-3 text-sm">
+                            {{
+                                'COMMON.MESSAGE_COUNT'
+                                    | translate: { count: event_count }
+                            }}
+                        </div>
+                        <new-terminal
+                            [lines]="logs"
+                            [resize]="resize"
+                        ></new-terminal>
+                        <!-- <a-terminal [content]="logs" [resize]="resize"></a-terminal> -->
+                        <div
+                            class="absolute -top-2 left-0 right-0 h-4 select-none"
+                            ns-resize
+                            (mousedown)="startResize($event, 'y')"
+                            (touchstart)="startResize($event, 'y')"
+                        ></div>
+                        <div
+                            class="absolute -left-2 bottom-0 top-0 w-4 select-none"
+                            ew-resize
+                            (mousedown)="startResize($event, 'x')"
+                            (touchstart)="startResize($event, 'x')"
+                        ></div>
+                        <div
+                            class="absolute -left-2 -top-2 h-4 w-4 select-none"
+                            nwse-resize
+                            (mousedown)="startResize($event, 'xy')"
+                            (touchstart)="startResize($event, 'xy')"
+                        ></div>
+                        <div
+                            actions
+                            class="absolute bottom-2 right-2 flex items-center space-x-2"
                         >
-                            <app-icon
+                            <button
+                                btn
+                                icon
+                                class="rounded-full bg-neutral-focus text-neutral-content shadow"
+                                (click)="downloadLogs()"
+                            >
+                                <app-icon
+                                    [matTooltip]="
+                                        'COMMON.DEBUG_DOWNLOAD_MESSAGES'
+                                            | translate
+                                    "
+                                >
+                                    download
+                                </app-icon>
+                            </button>
+                            <button
+                                btn
+                                icon
+                                class="rounded-full bg-neutral-focus text-neutral-content shadow"
+                                (click)="toggleDebugPosition()"
+                            >
+                                <app-icon
+                                    [matTooltip]="
+                                        'COMMON.DEBUG_TOGGLE_POSITION'
+                                            | translate
+                                    "
+                                    >{{
+                                        debug_position === 'side'
+                                            ? 'border_bottom'
+                                            : 'border_right'
+                                    }}</app-icon
+                                >
+                            </button>
+                            <button
+                                btn
+                                icon
+                                class="rounded-full bg-neutral-focus text-neutral-content shadow"
+                                (click)="clearDebugMessages()"
+                            >
+                                <app-icon
+                                    [matTooltip]="
+                                        'COMMON.DEBUG_CLEAR_MESSAGES'
+                                            | translate
+                                    "
+                                >
+                                    clear_all
+                                </app-icon>
+                            </button>
+                            <button
+                                btn
+                                icon
+                                (click)="clearBindings()"
+                                class="rounded-full bg-neutral-focus text-neutral-content shadow"
                                 [matTooltip]="
-                                    'COMMON.DEBUG_DOWNLOAD_MESSAGES' | translate
+                                    'COMMON.DEBUG_UNBIND_MODULES' | translate
                                 "
                             >
-                                download
-                            </app-icon>
-                        </button>
-                        <button
-                            btn
-                            icon
-                            class="rounded-full bg-neutral-focus text-neutral-content shadow"
-                            (click)="toggleDebugPosition()"
-                        >
-                            <app-icon
+                                <app-icon>cancel_presentation</app-icon>
+                            </button>
+                            <button
+                                btn
+                                icon
+                                (click)="close()"
+                                class="rounded-full bg-neutral-focus text-neutral-content shadow"
                                 [matTooltip]="
-                                    'COMMON.DEBUG_TOGGLE_POSITION' | translate
-                                "
-                                >{{
-                                    debug_position === 'side'
-                                        ? 'border_bottom'
-                                        : 'border_right'
-                                }}</app-icon
-                            >
-                        </button>
-                        <button
-                            btn
-                            icon
-                            class="rounded-full bg-neutral-focus text-neutral-content shadow"
-                            (click)="clearDebugMessages()"
-                        >
-                            <app-icon
-                                [matTooltip]="
-                                    'COMMON.DEBUG_CLEAR_MESSAGES' | translate
+                                    'COMMON.DEBUG_CLOSE_CONSOLE' | translate
                                 "
                             >
-                                clear_all
-                            </app-icon>
-                        </button>
-                        <button
-                            btn
-                            icon
-                            (click)="clearBindings()"
-                            class="rounded-full bg-neutral-focus text-neutral-content shadow"
-                            [matTooltip]="
-                                'COMMON.DEBUG_UNBIND_MODULES' | translate
-                            "
-                        >
-                            <app-icon>cancel_presentation</app-icon>
-                        </button>
-                        <button
-                            btn
-                            icon
-                            (click)="close()"
-                            class="rounded-full bg-neutral-focus text-neutral-content shadow"
-                            [matTooltip]="
-                                'COMMON.DEBUG_CLOSE_CONSOLE' | translate
-                            "
-                        >
-                            <app-icon>close</app-icon>
-                        </button>
+                                <app-icon>close</app-icon>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </ng-container>
+            }
+        }
     `,
     styles: [
         `
@@ -183,7 +187,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
         `,
     ],
     animations: [ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR],
-    standalone: false
+    standalone: false,
 })
 export class DebugOutputComponent extends AsyncHandler implements OnInit {
     /** Whether display output is shown */

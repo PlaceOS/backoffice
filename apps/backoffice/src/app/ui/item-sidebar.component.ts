@@ -39,11 +39,12 @@ import { ActiveItemService } from '../common/item.service';
                             'COMMON.SEARCH_FOR' | translate: { name: title }
                         "
                     />
-                    <mat-spinner
-                        *ngIf="loading | async"
-                        diameter="24"
-                        class="absolute right-2 top-1/2 mr-2 -translate-y-1/2"
-                    ></mat-spinner>
+                    @if (loading | async) {
+                        <mat-spinner
+                            diameter="24"
+                            class="absolute right-2 top-1/2 mr-2 -translate-y-1/2"
+                        ></mat-spinner>
+                    }
                 </div>
                 @if (filter_options?.length) {
                     <button
@@ -81,97 +82,105 @@ import { ActiveItemService } from '../common/item.service';
                 {{ 'COMMON.TOTAL_ITEMS' | translate: { count: t } : t }}
             </p>
             <div class="flex h-1/2 flex-1 flex-col">
-                <cdk-virtual-scroll-viewport
-                    no-x-scroll
-                    itemSize="64"
-                    (scroll)="(is_scrolled)"
-                    (scrolledIndexChange)="atBottom()"
-                    *ngIf="(items | async)?.length; else empty_state"
-                    class="relative h-1/2 w-full flex-1"
-                >
-                    <a
-                        *cdkVirtualFor="
-                            let item of items | async;
-                            trackBy: trackByFn
-                        "
-                        [routerLink]="
-                            subroute
-                                ? ['/', route, item.id, subroute]
-                                : ['/', route, item.id]
-                        "
-                        routerLinkActive="active"
-                        [routerLinkActiveOptions]="{
-                            exact: false,
-                            __change_detection_hack__: item.id + subroute,
-                        }"
-                        [matTooltip]="
-                            item.update_available &&
-                            item.commit !== item.update_info.commit
-                                ? ('COMMON.UPDATE_AVAILABLE' | translate)
-                                : ''
-                        "
-                        class="relative m-2 flex w-[23rem] max-w-[calc(100%-1rem)] flex-col rounded px-2 py-2"
-                        (click)="show = false"
+                @if ((items | async)?.length) {
+                    <cdk-virtual-scroll-viewport
+                        no-x-scroll
+                        itemSize="64"
+                        (scroll)="(is_scrolled)"
+                        (scrolledIndexChange)="atBottom()"
+                        class="relative h-1/2 w-full flex-1"
                     >
-                        <p class="w-full truncate">
-                            {{ item.name }}
-                        </p>
-                        <div class="inline-block w-full overflow-hidden">
-                            <span
-                                extra
-                                class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded px-2 py-1 text-xs opacity-60"
-                                *ngIf="item.extra"
-                            >
-                                {{ item.extra }}
-                            </span>
-                        </div>
-                        <app-icon
-                            class="absolute -right-1 -top-1 rotate-12 text-2xl text-info"
-                            *ngIf="
+                        <a
+                            *cdkVirtualFor="
+                                let item of items | async;
+                                trackBy: trackByFn
+                            "
+                            [routerLink]="
+                                subroute
+                                    ? ['/', route, item.id, subroute]
+                                    : ['/', route, item.id]
+                            "
+                            routerLinkActive="active"
+                            [routerLinkActiveOptions]="{
+                                exact: false,
+                                __change_detection_hack__: item.id + subroute,
+                            }"
+                            [matTooltip]="
                                 item.update_available &&
                                 item.commit !== item.update_info.commit
+                                    ? ('COMMON.UPDATE_AVAILABLE' | translate)
+                                    : ''
                             "
+                            class="relative m-2 flex w-[23rem] max-w-[calc(100%-1rem)] flex-col rounded px-2 py-2"
+                            (click)="show = false"
                         >
-                            new_releases
-                        </app-icon>
+                            <p class="w-full truncate">
+                                {{ item.name }}
+                            </p>
+                            <div class="inline-block w-full overflow-hidden">
+                                @if (item.extra) {
+                                    <span
+                                        extra
+                                        class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded px-2 py-1 text-xs opacity-60"
+                                    >
+                                        {{ item.extra }}
+                                    </span>
+                                }
+                            </div>
+                            @if (
+                                item.update_available &&
+                                item.commit !== item.update_info.commit
+                            ) {
+                                <app-icon
+                                    class="absolute -right-1 -top-1 rotate-12 text-2xl text-info"
+                                >
+                                    new_releases
+                                </app-icon>
+                            }
+                            @if (item.zone_issues) {
+                                <div
+                                    class="absolute -right-1 -top-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full bg-warning text-2xl text-warning-content"
+                                    [matTooltip]="
+                                        (item.zone_issues === 'system'
+                                            ? 'SYSTEMS.MISCONFIGURED'
+                                            : 'ZONES.MISCONFIGURED'
+                                        ) | translate
+                                    "
+                                >
+                                    <app-icon> brightness_alert </app-icon>
+                                </div>
+                            }
+                            @if (item.has_runtime_error) {
+                                <div
+                                    class="absolute -right-1 -top-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full bg-error text-2xl text-error-content"
+                                    [matTooltip]="'MODULES.ERROR' | translate"
+                                >
+                                    <app-icon> error </app-icon>
+                                </div>
+                            }
+                        </a>
                         <div
-                            class="absolute -right-1 -top-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full bg-warning text-2xl text-warning-content"
-                            *ngIf="item.zone_issues"
-                            [matTooltip]="
-                                (item.zone_issues === 'system'
-                                    ? 'SYSTEMS.MISCONFIGURED'
-                                    : 'ZONES.MISCONFIGURED'
-                                ) | translate
-                            "
+                            class="bg-base-200 p-2 text-center text-sm opacity-30"
                         >
-                            <app-icon> brightness_alert </app-icon>
+                            {{ 'COMMON.END_OF_LIST' | translate }}
                         </div>
-                        <div
-                            class="absolute -right-1 -top-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full bg-error text-2xl text-error-content"
-                            *ngIf="item.has_runtime_error"
-                            [matTooltip]="'MODULES.ERROR' | translate"
-                        >
-                            <app-icon> error </app-icon>
-                        </div>
-                    </a>
-                    <div class="bg-base-200 p-2 text-center text-sm opacity-30">
-                        {{ 'COMMON.END_OF_LIST' | translate }}
+                    </cdk-virtual-scroll-viewport>
+                } @else {
+                    <div
+                        class="flex flex-col items-center justify-center p-8 opacity-30"
+                    >
+                        <p>
+                            {{
+                                (search
+                                    ? 'COMMON.SEARCH_EMPTY'
+                                    : 'COMMON.LIST_EMPTY'
+                                ) | translate: { name: title }
+                            }}
+                        </p>
                     </div>
-                </cdk-virtual-scroll-viewport>
+                }
             </div>
         </div>
-        <ng-template #empty_state>
-            <div
-                class="flex flex-col items-center justify-center p-8 opacity-30"
-            >
-                <p>
-                    {{
-                        (search ? 'COMMON.SEARCH_EMPTY' : 'COMMON.LIST_EMPTY')
-                            | translate: { name: title }
-                    }}
-                </p>
-            </div>
-        </ng-template>
     `,
     styles: [
         `

@@ -16,26 +16,26 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
         <div
             class="-mt-2 flex max-h-[65vh] max-w-[80vw] flex-wrap overflow-auto px-2"
         >
-            <div
-                class="m-2 flex min-w-[40%] flex-1 flex-col"
-                *ngFor="let field of field_list"
-            >
-                <label class="uppercase" [for]="field.id">{{ field.id }}</label>
-                <mat-form-field appearance="outline" class="no-subscript">
-                    <mat-select
-                        [name]="field.id"
-                        [(ngModel)]="field_mapping[field.id]"
-                        placeholder="Select field"
-                    >
-                        <mat-option
-                            *ngFor="let type of source_fields"
-                            [value]="type.id"
+            @for (field of field_list; track field) {
+                <div class="m-2 flex min-w-[40%] flex-1 flex-col">
+                    <label class="uppercase" [for]="field.id">{{
+                        field.id
+                    }}</label>
+                    <mat-form-field appearance="outline" class="no-subscript">
+                        <mat-select
+                            [name]="field.id"
+                            [(ngModel)]="field_mapping[field.id]"
+                            placeholder="Select field"
                         >
-                            {{ type.name }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
+                            @for (type of source_fields; track type) {
+                                <mat-option [value]="type.id">
+                                    {{ type.name }}
+                                </mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            }
         </div>
         <div class="flex items-center justify-end space-x-4 p-4">
             <button
@@ -52,7 +52,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class MatchFieldsComponent implements OnChanges, OnInit {
     /** List of bulk items to add */

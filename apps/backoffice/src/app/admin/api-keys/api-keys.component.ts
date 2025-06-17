@@ -22,12 +22,11 @@ import { APIKeyService } from './api-keys.service';
                             (ngModelChange)="setDomain($event)"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            <mat-option
-                                *ngFor="let domain of domain_list | async"
-                                [value]="domain"
-                            >
-                                {{ domain.name }}
-                            </mat-option>
+                            @for (domain of domain_list | async; track domain) {
+                                <mat-option [value]="domain">
+                                    {{ domain.name }}
+                                </mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                     <button
@@ -41,30 +40,33 @@ import { APIKeyService } from './api-keys.service';
                     </button>
                 </div>
             </div>
-            <div
-                class="my-4 flex items-start space-x-2"
-                *ngIf="last_key | async"
-            >
-                <div
-                    class="min-w-[24rem] rounded border border-base-200 shadow"
-                >
-                    <div class="!w-full border-b bg-base-200 px-2 pb-1">
-                        <label class="m-0 p-0">
-                            {{ 'ADMIN.APP_KEYS_LAST_DETAILS' | translate }} ({{
-                                (last_key | async)?.name || 'Unanamed API Key'
-                            }})
-                        </label>
-                    </div>
-                    <div class="p-2">
-                        <div
-                            class="mono cursor-pointer select-all break-words text-xs opacity-60"
-                            (click)="copyKey()"
-                        >
-                            {{ (last_key | async)?.x_api_key }}
+            @if (last_key | async) {
+                <div class="my-4 flex items-start space-x-2">
+                    <div
+                        class="min-w-[24rem] rounded border border-base-200 shadow"
+                    >
+                        <div class="!w-full border-b bg-base-200 px-2 pb-1">
+                            <label class="m-0 p-0">
+                                {{
+                                    'ADMIN.APP_KEYS_LAST_DETAILS' | translate
+                                }}
+                                ({{
+                                    (last_key | async)?.name ||
+                                        'Unanamed API Key'
+                                }})
+                            </label>
+                        </div>
+                        <div class="p-2">
+                            <div
+                                class="mono cursor-pointer select-all break-words text-xs opacity-60"
+                                (click)="copyKey()"
+                            >
+                                {{ (last_key | async)?.x_api_key }}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
             <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
@@ -115,25 +117,31 @@ import { APIKeyService } from './api-keys.service';
         </div>
         <ng-template #scopes_template let-data="data">
             <div class="flex flex-wrap px-4 py-2">
-                <code *ngFor="let scope of data" class="m-1 text-xs">
-                    {{ scope }}
-                </code>
+                @for (scope of data; track scope) {
+                    <code class="m-1 text-xs">
+                        {{ scope }}
+                    </code>
+                }
             </div>
         </ng-template>
         <ng-template #description_template let-data="data">
             <div class="p-4 text-xs">
                 {{ data }}
-                <span class="opacity-30" *ngIf="!data">{{
-                    'COMMON.DESCRIPTION_EMPTY' | translate
-                }}</span>
+                @if (!data) {
+                    <span class="opacity-30">{{
+                        'COMMON.DESCRIPTION_EMPTY' | translate
+                    }}</span>
+                }
             </div>
         </ng-template>
         <ng-template #access_template let-data="data">
             <div class="p-4 font-mono text-xs uppercase">
                 {{ data }}
-                <span class="opacity-30" *ngIf="!data">{{
-                    'ADMIN.APP_KEYS_PERMISSIONS_EMPTY' | translate
-                }}</span>
+                @if (!data) {
+                    <span class="opacity-30">{{
+                        'ADMIN.APP_KEYS_PERMISSIONS_EMPTY' | translate
+                    }}</span>
+                }
             </div>
         </ng-template>
         <ng-template #data_from_template let-data="data">

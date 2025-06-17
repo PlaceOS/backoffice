@@ -64,7 +64,7 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class DomainUsersComponent {
     public readonly users = this._service.users;

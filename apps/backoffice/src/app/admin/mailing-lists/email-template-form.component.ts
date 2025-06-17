@@ -36,22 +36,24 @@ export function extractTextFromHTML(html_string: string) {
                                 formControlName="trigger"
                             >
                                 <mat-option value="">None</mat-option>
-                                <mat-option
-                                    *ngFor="let template of definitions | async"
-                                    [value]="template.id"
-                                >
-                                    <div
-                                        class="my-2 flex flex-col-reverse leading-tight"
-                                    >
-                                        <div class="text-xs opacity-30">
-                                            {{ template.name_details[0] }}
+                                @for (
+                                    template of definitions | async;
+                                    track template
+                                ) {
+                                    <mat-option [value]="template.id">
+                                        <div
+                                            class="my-2 flex flex-col-reverse leading-tight"
+                                        >
+                                            <div class="text-xs opacity-30">
+                                                {{ template.name_details[0] }}
+                                            </div>
+                                            <div class="text-sm">
+                                                {{ template.name_details[1] }}
+                                                <span class="opacity-0">:</span>
+                                            </div>
                                         </div>
-                                        <div class="text-sm">
-                                            {{ template.name_details[1] }}
-                                            <span class="opacity-0">:</span>
-                                        </div>
-                                    </div>
-                                </mat-option>
+                                    </mat-option>
+                                }
                             </mat-select>
                             <mat-error>A trigger is required</mat-error>
                         </mat-form-field>
@@ -67,27 +69,29 @@ export function extractTextFromHTML(html_string: string) {
                         Placeholders
                     </button>
                     <mat-menu #tracking_menu="matMenu" class="max-h-[24rem]">
-                        <button
-                            mat-menu-item
-                            *ngFor="let field of active_trigger?.fields || []"
-                            (click)="copyField(field.name)"
-                        >
-                            <div class="flex flex-col leading-tight">
-                                <div class="font-mono text-sm">
-                                    {{ field.name }}
+                        @for (
+                            field of active_trigger?.fields || [];
+                            track field
+                        ) {
+                            <button
+                                mat-menu-item
+                                (click)="copyField(field.name)"
+                            >
+                                <div class="flex flex-col leading-tight">
+                                    <div class="font-mono text-sm">
+                                        {{ field.name }}
+                                    </div>
+                                    <div class="text-xs opacity-30">
+                                        {{ field.description }}
+                                    </div>
                                 </div>
-                                <div class="text-xs opacity-30">
-                                    {{ field.description }}
-                                </div>
-                            </div>
-                        </button>
-                        <button
-                            mat-menu-item
-                            *ngIf="!(active_trigger?.fields || []).length"
-                            [disabled]="true"
-                        >
-                            No placeholders available
-                        </button>
+                            </button>
+                        }
+                        @if (!(active_trigger?.fields || []).length) {
+                            <button mat-menu-item [disabled]="true">
+                                No placeholders available
+                            </button>
+                        }
                     </mat-menu>
                 </div>
                 <div class="flex items-center space-x-4">

@@ -13,7 +13,7 @@ import { DriverStateService } from './driver-state.service';
                 class="inline-grid flex-1 gap-2 rounded border border-base-200 p-4 sm:w-1/3"
                 [style.gridTemplateColumns]="'6rem auto'"
             >
-                <ng-container *ngIf="item.default_uri">
+                @if (item.default_uri) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'DRIVERS.DEFAULT_URI' | translate }}
                     </div>
@@ -25,13 +25,13 @@ import { DriverStateService } from './driver-state.service';
                             >{{ item.default_uri }}</a
                         >
                     </div>
-                </ng-container>
-                <ng-container *ngIf="item.default_port">
+                }
+                @if (item.default_port) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'DRIVERS.DEFAULT_PORT' | translate }}
                     </div>
                     <div class="mono text-sm">{{ item.default_port }}</div>
-                </ng-container>
+                }
                 <div class="flex items-center text-sm font-medium">
                     {{ 'REPOS.SINGULAR' | translate }}
                 </div>
@@ -154,19 +154,20 @@ import { DriverStateService } from './driver-state.service';
             </div>
         }
         <hr class="my-4" />
-        <section *ngIf="item.settings; else load_state">
-            <a-settings-form
-                [merge]="true"
-                [id]="item.id"
-                [settings]="item.settings"
-            ></a-settings-form>
-        </section>
-        <ng-template #load_state>
+        @if (item.settings) {
+            <section>
+                <a-settings-form
+                    [merge]="true"
+                    [id]="item.id"
+                    [settings]="item.settings"
+                ></a-settings-form>
+            </section>
+        } @else {
             <div class="flex flex-col items-center justify-center">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
                 <p>{{ 'DRIVERS.LOADING_SETTINGS' | translate }}</p>
             </div>
-        </ng-template>
+        }
     `,
     styles: [
         `

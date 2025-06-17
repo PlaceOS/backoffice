@@ -54,63 +54,65 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                         >search</app-icon
                     >
                 </div>
-                <div class="suffix" matSuffix *ngIf="loading">
-                    <mat-spinner diameter="16"></mat-spinner>
-                </div>
+                @if (loading) {
+                    <div class="suffix" matSuffix>
+                        <mat-spinner diameter="16"></mat-spinner>
+                    </div>
+                }
             </mat-form-field>
-            <ng-container *ngIf="display_list">
-                <div
-                    class="h-[50vh] flex-1 space-y-2 overflow-auto"
-                    *ngIf="item_list?.length; else empty_state"
-                >
-                    <button
-                        matRipple
-                        *ngFor="let option of item_list"
-                        (click)="search$.next(option); setValue(option)"
-                        class="w-full rounded px-4 py-2 text-left hover:bg-base-200"
+            @if (display_list) {
+                @if (item_list?.length) {
+                    <div class="h-[50vh] flex-1 space-y-2 overflow-auto">
+                        @for (option of item_list; track option) {
+                            <button
+                                matRipple
+                                (click)="search$.next(option); setValue(option)"
+                                class="w-full rounded px-4 py-2 text-left hover:bg-base-200"
+                            >
+                                <div class="leading-tight">
+                                    <ng-container
+                                        *ngTemplateOutlet="
+                                            item_option;
+                                            context: { option: option }
+                                        "
+                                    ></ng-container>
+                                </div>
+                            </button>
+                        }
+                    </div>
+                } @else {
+                    <div
+                        class="flex min-h-48 flex-col items-center justify-center p-8 opacity-30"
                     >
-                        <div class="leading-tight">
-                            <ng-container
-                                *ngTemplateOutlet="
-                                    item_option;
-                                    context: { option: option }
-                                "
-                            ></ng-container>
-                        </div>
-                    </button>
-                </div>
-            </ng-container>
-            <ng-template #empty_state>
-                <div
-                    class="flex min-h-48 flex-col items-center justify-center p-8 opacity-30"
-                >
-                    <p class="text-sm">
-                        {{
-                            search_str?.length
-                                ? 'No matching ' +
-                                  (name || 'item') +
-                                  ' for search string'
-                                : 'No ' +
-                                  (name || 'items') +
-                                  ' available to search'
-                        }}
-                    </p>
-                </div>
-            </ng-template>
+                        <p class="text-sm">
+                            {{
+                                search_str?.length
+                                    ? 'No matching ' +
+                                      (name || 'item') +
+                                      ' for search string'
+                                    : 'No ' +
+                                      (name || 'items') +
+                                      ' available to search'
+                            }}
+                        </p>
+                    </div>
+                }
+            }
             <mat-autocomplete #auto="matAutocomplete">
-                <mat-option
-                    *ngFor="let option of item_list"
-                    [value]="option.name || option.id"
-                    (click)="search$.next(option); setValue(option)"
-                    class="leading-tight"
-                >
-                    <ng-container
-                        *ngTemplateOutlet="
-                            item_option;
-                            context: { option: option }
-                        "
-                    ></ng-container>
-                </mat-option>
+                @for (option of item_list; track option) {
+                    <mat-option
+                        [value]="option.name || option.id"
+                        (click)="search$.next(option); setValue(option)"
+                        class="leading-tight"
+                    >
+                        <ng-container
+                            *ngTemplateOutlet="
+                                item_option;
+                                context: { option: option }
+                            "
+                        ></ng-container>
+                    </mat-option>
+                }
             </mat-autocomplete>
             <ng-template #item_option let-option="option">
                 <div class="flex h-5 items-center justify-between">
@@ -118,9 +120,11 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                         name
                         [innerHTML]="item_name[option.id] | sanitize"
                     ></div>
-                    <code *ngIf="option.notes" class="truncate !text-xs">{{
-                        option.notes
-                    }}</code>
+                    @if (option.notes) {
+                        <code class="truncate !text-xs">{{
+                            option.notes
+                        }}</code>
+                    }
                 </div>
                 <div class="text-xs opacity-60">
                     {{ option.id }}
@@ -161,7 +165,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             multi: true,
         },
     ],
-    standalone: false
+    standalone: false,
 })
 export class ItemSearchFieldComponent<T extends Identity = any>
     extends AsyncHandler

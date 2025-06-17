@@ -27,22 +27,23 @@ import { EdgeModalComponent } from './edge-modal.component';
 @Component({
     selector: '[admin-edge]',
     template: `
-        <div
-            *ngIf="(last_change | async)?.x_api_key"
-            (click)="copyKey(item.x_api_key)"
-            matRipple
-            [matTooltip]="'Copy API Key for ' + item.name"
-            class="absolute right-4 top-4 flex max-w-[calc(100%-11rem)] cursor-pointer items-center overflow-hidden rounded border border-base-200 bg-base-100 shadow"
-        >
+        @if ((last_change | async)?.x_api_key) {
             <div
-                class="flex h-full w-1/2 flex-1 items-center border-r border-base-200 p-2"
+                (click)="copyKey(item.x_api_key)"
+                matRipple
+                [matTooltip]="'Copy API Key for ' + item.name"
+                class="absolute right-4 top-4 flex max-w-[calc(100%-11rem)] cursor-pointer items-center overflow-hidden rounded border border-base-200 bg-base-100 shadow"
             >
-                <code class="flex-1 truncate">{{ item.x_api_key }}</code>
+                <div
+                    class="flex h-full w-1/2 flex-1 items-center border-r border-base-200 p-2"
+                >
+                    <code class="flex-1 truncate">{{ item.x_api_key }}</code>
+                </div>
+                <button btn icon class="rounded-none">
+                    <app-icon>content_copy</app-icon>
+                </button>
             </div>
-            <button btn icon class="rounded-none">
-                <app-icon>content_copy</app-icon>
-            </button>
-        </div>
+        }
         <div class="flex h-full w-full flex-col">
             <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">
@@ -127,9 +128,11 @@ import { EdgeModalComponent } from './edge-modal.component';
         <ng-template #description_template let-data="data">
             <div class="w-full select-text overflow-hidden px-4 py-2 text-xs">
                 {{ data }}
-                <span class="opacity-30" *ngIf="!data">
-                    {{ 'COMMON.DESCRIPTION_EMPTY' | translate }}
-                </span>
+                @if (!data) {
+                    <span class="opacity-30">
+                        {{ 'COMMON.DESCRIPTION_EMPTY' | translate }}
+                    </span>
+                }
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">

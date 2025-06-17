@@ -16,25 +16,25 @@ export interface ChangelogModalData {
             [heading]="'COMMON.CHANGELOG' | translate"
             [hide_confirm]="true"
         >
-            <div
-                class="markdown items-start"
-                *ngIf="changelog; else empty_state"
-                [innerHTML]="changelog | safe: 'html'"
-            ></div>
-        </fullscreen-modal-shell>
-        <ng-template #empty_state>
-            <div
-                class="flex h-[50vh] w-full flex-col items-center justify-center space-y-4"
-            >
-                <app-icon class="text-7xl">playlist_remove</app-icon>
-                <div class="text">
-                    {{ 'COMMON.CHANGELOG_EMPTY' | translate }}
+            @if (changelog) {
+                <div
+                    class="markdown items-start"
+                    [innerHTML]="changelog | safe: 'html'"
+                ></div>
+            } @else {
+                <div
+                    class="flex h-[50vh] w-full flex-col items-center justify-center space-y-4"
+                >
+                    <app-icon class="text-7xl">playlist_remove</app-icon>
+                    <div class="text">
+                        {{ 'COMMON.CHANGELOG_EMPTY' | translate }}
+                    </div>
                 </div>
-            </div>
-        </ng-template>
+            }
+        </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ChangelogModalComponent extends AsyncHandler {
     /** Whether the changelog is loading */

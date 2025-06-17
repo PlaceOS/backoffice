@@ -51,21 +51,22 @@ import { Identity } from '../../common/types';
             </button>
             <mat-error><ng-content></ng-content></mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline" *ngIf="show_select">
-            <mat-select
-                #select
-                [value]="time"
-                [disabled]="disabled"
-                (valueChange)="setValue($event)"
-            >
-                <mat-option
-                    *ngFor="let option of time_options"
-                    [value]="option.id"
+        @if (show_select) {
+            <mat-form-field appearance="outline">
+                <mat-select
+                    #select
+                    [value]="time"
+                    [disabled]="disabled"
+                    (valueChange)="setValue($event)"
                 >
-                    {{ option.name }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+                    @for (option of time_options; track option) {
+                        <mat-option [value]="option.id">
+                            {{ option.name }}
+                        </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        }
     `,
     styles: [
         `
@@ -81,7 +82,7 @@ import { Identity } from '../../common/types';
             multi: true,
         },
     ],
-    standalone: false
+    standalone: false,
 })
 export class TimeFieldComponent
     extends AsyncHandler

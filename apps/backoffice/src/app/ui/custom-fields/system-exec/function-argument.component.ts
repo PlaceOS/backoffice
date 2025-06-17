@@ -45,51 +45,54 @@ const validateType = (type) => (control: AbstractControl) => {
 @Component({
     selector: 'function-arguments',
     template: `
-        <form class="pl-8" *ngIf="form; else empty_state" [formGroup]="form">
-            <div
-                field
-                class="relative flex items-center space-x-2"
-                *ngFor="let key of method.order; let i = index"
-            >
-                <div
-                    class="absolute left-0 w-4 -translate-x-full -translate-y-1/2 transform border-b-2 border-l-2 border-base-200"
-                    [class.h-6]="i === 0"
-                    [class.h-14]="i !== 0"
-                ></div>
-                <!-- <label [for]="key">{{ key }}</label> -->
-                <mat-form-field class="h-14 w-1/2 flex-1" appearance="outline">
-                    <input
-                        [name]="key"
-                        matInput
-                        [formControlName]="key"
-                        [placeholder]="
-                            key + (defaults[key] ? ' = ' + defaults[key] : '')
-                        "
-                    />
-                </mat-form-field>
-                <div
-                    class="w-16 rounded px-2 py-1 text-center text-xs"
-                    [class.bg-success]="required[key]"
-                    [class.text-success-content]="required[key]"
-                    [class.bg-base-200]="!required[key]"
-                    [class.text-base-content]="!required[key]"
-                >
-                    {{
-                        (required[key]
-                            ? 'COMMON.EXECUTE_REQUIRED'
-                            : 'COMMON.EXECUTE_OPTIONAL'
-                        ) | translate
-                    }}
-                </div>
-            </div>
-        </form>
-        <ng-template #empty_state>
+        @if (form) {
+            <form class="pl-8" [formGroup]="form">
+                @for (key of method.order; track key; let i = $index) {
+                    <div field class="relative flex items-center space-x-2">
+                        <div
+                            class="absolute left-0 w-4 -translate-x-full -translate-y-1/2 transform border-b-2 border-l-2 border-base-200"
+                            [class.h-6]="i === 0"
+                            [class.h-14]="i !== 0"
+                        ></div>
+                        <!-- <label [for]="key">{{ key }}</label> -->
+                        <mat-form-field
+                            class="h-14 w-1/2 flex-1"
+                            appearance="outline"
+                        >
+                            <input
+                                [name]="key"
+                                matInput
+                                [formControlName]="key"
+                                [placeholder]="
+                                    key +
+                                    (defaults[key] ? ' = ' + defaults[key] : '')
+                                "
+                            />
+                        </mat-form-field>
+                        <div
+                            class="w-16 rounded px-2 py-1 text-center text-xs"
+                            [class.bg-success]="required[key]"
+                            [class.text-success-content]="required[key]"
+                            [class.bg-base-200]="!required[key]"
+                            [class.text-base-content]="!required[key]"
+                        >
+                            {{
+                                (required[key]
+                                    ? 'COMMON.EXECUTE_REQUIRED'
+                                    : 'COMMON.EXECUTE_OPTIONAL'
+                                ) | translate
+                            }}
+                        </div>
+                    </div>
+                }
+            </form>
+        } @else {
             <div class="flex items-center justify-center space-x-2 p-4">
                 <p class="opacity-30">
                     {{ 'COMMON.EXECUTE_NO_ARGS' | translate }}
                 </p>
             </div>
-        </ng-template>
+        }
     `,
     styles: [
         `
@@ -105,7 +108,7 @@ const validateType = (type) => (control: AbstractControl) => {
             multi: true,
         },
     ],
-    standalone: false
+    standalone: false,
 })
 export class FunctionArgumentComponent
     extends AsyncHandler

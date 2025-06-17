@@ -35,281 +35,320 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
 @Component({
     selector: 'repository-form',
     template: `
-        <form repository *ngIf="form" class="flex flex-col" [formGroup]="form">
-            <div class="field" *ngIf="form.controls.name">
-                <label
-                    for="repository-name"
-                    [class.error]="
-                        form.controls.name.invalid && form.controls.name.touched
-                    "
-                >
-                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="repository-name"
-                        [placeholder]="'COMMON.FIELD_NAME' | translate"
-                        formControlName="name"
-                        required
-                    />
-                    <mat-error>{{
-                        'REPOS.NAME_REQUIRED' | translate
-                    }}</mat-error>
-                </mat-form-field>
-            </div>
-            <div class="fieldset">
-                <div
-                    class="field"
-                    *ngIf="
+        @if (form) {
+            <form repository class="flex flex-col" [formGroup]="form">
+                @if (form.controls.name) {
+                    <div class="field">
+                        <label
+                            for="repository-name"
+                            [class.error]="
+                                form.controls.name.invalid &&
+                                form.controls.name.touched
+                            "
+                        >
+                            {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="repository-name"
+                                [placeholder]="'COMMON.FIELD_NAME' | translate"
+                                formControlName="name"
+                                required
+                            />
+                            <mat-error>{{
+                                'REPOS.NAME_REQUIRED' | translate
+                            }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                }
+                <div class="fieldset">
+                    @if (
                         !is_edit &&
                         form.controls.repo_type &&
                         form.controls.folder_name
-                    "
-                >
-                    <label for="type">
-                        {{ 'REPOS.FOLDER_NAME' | translate }}
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <mat-select name="type" formControlName="repo_type">
-                            <mat-option
-                                *ngFor="let type of repo_types"
-                                [value]="type.id"
-                            >
-                                {{ type.name }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.folder_name">
-                    <label
-                        for="folder-name"
-                        [class.error]="
-                            form.controls.folder_name.invalid &&
-                            form.controls.folder_name.touched
-                        "
-                    >
-                        {{ 'REPOS.FOLDER_NAME' | translate }}<span>*</span>
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="folder-name"
-                            [placeholder]="'REPOS.FOLDER_NAME' | translate"
-                            formControlName="folder_name"
-                            required
-                        />
-                        <mat-error>{{
-                            'REPOS.FOLDER_NAME_REQUIRED' | translate
-                        }}</mat-error>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="field" *ngIf="form.controls.uri && !hide_uri">
-                <label
-                    for="uri"
-                    [class.error]="
-                        form.controls.uri.invalid && form.controls.uri.touched
-                    "
-                >
-                    {{ 'REPOS.URI' | translate }}<span>*</span>
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="uri"
-                        [placeholder]="'REPOS.URI' | translate"
-                        formControlName="uri"
-                        required
-                    />
-                    <mat-error>{{
-                        'REPOS.URI_REQUIRED' | translate
-                    }}</mat-error>
-                </mat-form-field>
-            </div>
-            <div class="fieldset">
-                <div class="field" *ngIf="form.controls.username">
-                    <label for="repo-u"
-                        >{{ 'REPOS.USERNAME' | translate }}
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="repo-u"
-                            autocomplete="off"
-                            [placeholder]="'REPOS.USERNAME' | translate"
-                            formControlName="username"
-                        />
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.password">
-                    <label for="repo-p">
-                        {{ 'REPOS.PASSWORD' | translate }}
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="repo-pwd"
-                            autocomplete="new-password"
-                            [type]="show_password ? 'text' : 'password'"
-                            [placeholder]="'COMMON.PASSWORD' | translate"
-                            formControlName="password"
-                        />
-                        <app-icon
-                            matSuffix
-                            (click)="show_password = !show_password"
-                        >
-                            visibility
-                        </app-icon>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="field" *ngIf="form.controls.branch">
-                <label
-                    for="repository-name"
-                    [class.error]="
-                        form.controls.branch.invalid &&
-                        form.controls.branch.touched
-                    "
-                >
-                    {{ 'REPOS.BRANCH' | translate }}<span>*</span>
-                </label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="type"
-                        formControlName="branch"
-                        [placeholder]="'Select Branch'"
-                        [disabled]="!(branch_list | async)?.length"
-                    >
-                        <mat-option
-                            *ngFor="let branch of branch_list | async"
-                            [value]="branch"
-                        >
-                            {{ branch }}
-                        </mat-option>
-                    </mat-select>
-                    <mat-error>{{
-                        'REPOS.BRANCH_REQUIRED' | translate
-                    }}</mat-error>
-                </mat-form-field>
-            </div>
-            <div class="field commit">
-                <label for="commit"> {{ 'REPOS.COMMIT' | translate }}</label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        formControlName="commit_hash"
-                        placeholder="Select commit"
-                        [disabled]="!(commit_list | async)?.length"
-                    >
-                        <mat-select-trigger>
-                            <div class="flex items-center space-x-4">
-                                <div class="flex-1 truncate">
-                                    {{
-                                        base_commit?.subject || 'Latest commit'
-                                    }}
-                                </div>
-                                <div
-                                    class="!mr-4 rounded bg-base-200 px-1.5 font-mono text-[0.625rem]"
+                    ) {
+                        <div class="field">
+                            <label for="type">
+                                {{ 'REPOS.FOLDER_NAME' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <mat-select
+                                    name="type"
+                                    formControlName="repo_type"
                                 >
-                                    {{
-                                        form.value.commit_hash || 'HEAD'
-                                            | slice: 0 : 8
-                                    }}
-                                </div>
-                            </div>
-                        </mat-select-trigger>
-                        <mat-option
-                            *ngFor="let commit of commit_list | async"
-                            [value]="commit.hash"
-                        >
-                            <div
-                                class="flex w-[calc(100%-2.20rem)] flex-1 items-center space-x-2"
-                                [class.!w-full]="
-                                    form.value.commit_hash === commit.hash
+                                    @for (type of repo_types; track type) {
+                                        <mat-option [value]="type.id">
+                                            {{ type.name }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    }
+                    @if (form.controls.folder_name) {
+                        <div class="field">
+                            <label
+                                for="folder-name"
+                                [class.error]="
+                                    form.controls.folder_name.invalid &&
+                                    form.controls.folder_name.touched
                                 "
-                                (click)="base_commit = commit"
                             >
-                                <div
-                                    class="flex w-1/2 flex-1 flex-col truncate leading-tight"
+                                {{ 'REPOS.FOLDER_NAME' | translate
+                                }}<span>*</span>
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="folder-name"
+                                    [placeholder]="
+                                        'REPOS.FOLDER_NAME' | translate
+                                    "
+                                    formControlName="folder_name"
+                                    required
+                                />
+                                <mat-error>{{
+                                    'REPOS.FOLDER_NAME_REQUIRED' | translate
+                                }}</mat-error>
+                            </mat-form-field>
+                        </div>
+                    }
+                </div>
+                @if (form.controls.uri && !hide_uri) {
+                    <div class="field">
+                        <label
+                            for="uri"
+                            [class.error]="
+                                form.controls.uri.invalid &&
+                                form.controls.uri.touched
+                            "
+                        >
+                            {{ 'REPOS.URI' | translate }}<span>*</span>
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="uri"
+                                [placeholder]="'REPOS.URI' | translate"
+                                formControlName="uri"
+                                required
+                            />
+                            <mat-error>{{
+                                'REPOS.URI_REQUIRED' | translate
+                            }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                }
+                <div class="fieldset">
+                    @if (form.controls.username) {
+                        <div class="field">
+                            <label for="repo-u"
+                                >{{ 'REPOS.USERNAME' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="repo-u"
+                                    autocomplete="off"
+                                    [placeholder]="'REPOS.USERNAME' | translate"
+                                    formControlName="username"
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
+                    @if (form.controls.password) {
+                        <div class="field">
+                            <label for="repo-p">
+                                {{ 'REPOS.PASSWORD' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="repo-pwd"
+                                    autocomplete="new-password"
+                                    [type]="show_password ? 'text' : 'password'"
+                                    [placeholder]="
+                                        'COMMON.PASSWORD' | translate
+                                    "
+                                    formControlName="password"
+                                />
+                                <app-icon
+                                    matSuffix
+                                    (click)="show_password = !show_password"
                                 >
-                                    <div class="truncate">
-                                        {{ commit.subject }}
+                                    visibility
+                                </app-icon>
+                            </mat-form-field>
+                        </div>
+                    }
+                </div>
+                @if (form.controls.branch) {
+                    <div class="field">
+                        <label
+                            for="repository-name"
+                            [class.error]="
+                                form.controls.branch.invalid &&
+                                form.controls.branch.touched
+                            "
+                        >
+                            {{ 'REPOS.BRANCH' | translate }}<span>*</span>
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                name="type"
+                                formControlName="branch"
+                                [placeholder]="'Select Branch'"
+                                [disabled]="!(branch_list | async)?.length"
+                            >
+                                @for (
+                                    branch of branch_list | async;
+                                    track branch
+                                ) {
+                                    <mat-option [value]="branch">
+                                        {{ branch }}
+                                    </mat-option>
+                                }
+                            </mat-select>
+                            <mat-error>{{
+                                'REPOS.BRANCH_REQUIRED' | translate
+                            }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                }
+                <div class="field commit">
+                    <label for="commit">
+                        {{ 'REPOS.COMMIT' | translate }}</label
+                    >
+                    <mat-form-field appearance="outline">
+                        <mat-select
+                            formControlName="commit_hash"
+                            placeholder="Select commit"
+                            [disabled]="!(commit_list | async)?.length"
+                        >
+                            <mat-select-trigger>
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex-1 truncate">
+                                        {{
+                                            base_commit?.subject ||
+                                                'Latest commit'
+                                        }}
                                     </div>
                                     <div
-                                        class="truncate font-mono text-[0.625rem] text-base-content opacity-30"
+                                        class="!mr-4 rounded bg-base-200 px-1.5 font-mono text-[0.625rem]"
                                     >
-                                        {{ commit.date | date: 'medium' }}
+                                        {{
+                                            form.value.commit_hash || 'HEAD'
+                                                | slice: 0 : 8
+                                        }}
                                     </div>
                                 </div>
-                                <code
-                                    class="rounded bg-base-200 p-1 text-xs"
-                                    *ngIf="commit.author"
-                                    >{{ commit.author }}</code
-                                >
-                                <code class="rounded bg-base-200 p-1 text-xs">{{
-                                    commit.hash | slice: 0 : 8
-                                }}</code>
-                            </div>
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <!-- <mat-form-field appearance="outline">
-                    <mat-select
-                        name="type"
-                        formControlName="commit_hash"
-                        placeholder="Select commit"
-                        [disabled]="!(commit_list | async)?.length"
+                            </mat-select-trigger>
+                            @for (commit of commit_list | async; track commit) {
+                                <mat-option [value]="commit.hash">
+                                    <div
+                                        class="flex w-[calc(100%-2.20rem)] flex-1 items-center space-x-2"
+                                        [class.!w-full]="
+                                            form.value.commit_hash ===
+                                            commit.hash
+                                        "
+                                        (click)="base_commit = commit"
+                                    >
+                                        <div
+                                            class="flex w-1/2 flex-1 flex-col truncate leading-tight"
+                                        >
+                                            <div class="truncate">
+                                                {{ commit.subject }}
+                                            </div>
+                                            <div
+                                                class="truncate font-mono text-[0.625rem] text-base-content opacity-30"
+                                            >
+                                                {{
+                                                    commit.date | date: 'medium'
+                                                }}
+                                            </div>
+                                        </div>
+                                        @if (commit.author) {
+                                            <code
+                                                class="rounded bg-base-200 p-1 text-xs"
+                                                >{{ commit.author }}</code
+                                            >
+                                        }
+                                        <code
+                                            class="rounded bg-base-200 p-1 text-xs"
+                                            >{{
+                                                commit.hash | slice: 0 : 8
+                                            }}</code
+                                        >
+                                    </div>
+                                </mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                    <!-- <mat-form-field appearance="outline">
+                <mat-select
+                  name="type"
+                  formControlName="commit_hash"
+                  placeholder="Select commit"
+                  [disabled]="!(commit_list | async)?.length"
+                  >
+                  <mat-option
+                    *ngFor="let commit of commit_list | async"
+                    [value]="commit.hash"
                     >
-                        <mat-option
-                            *ngFor="let commit of commit_list | async"
-                            [value]="commit.hash"
+                    <div class="flex items-center space-x-2">
+                      <div
+                        class="flex w-1/2 flex-1 flex-col truncate leading-tight"
                         >
-                            <div class="flex items-center space-x-2">
-                                <div
-                                    class="flex w-1/2 flex-1 flex-col truncate leading-tight"
-                                >
-                                    <div>{{ commit.subject }}</div>
-                                    <div class="text-xs opacity-30">
-                                        {{ commit.date | date: 'medium' }}
-                                    </div>
-                                </div>
-                                <div class="hidden">&nbsp;|&nbsp;</div>
-                                <code class="text-xs">{{
-                                    commit.hash | slice: 0 : 8
-                                }}</code>
-                                <code class="text-xs" *ngIf="commit.author">{{
-                                    commit.author
-                                }}</code>
-                            </div>
-                        </mat-option>
-                    </mat-select>
-                    <mat-error>{{
-                        'REPOS.COMMIT_REQUIRED' | translate
-                    }}</mat-error>
-                </mat-form-field> -->
-            </div>
-            <div class="field" *ngIf="can_change_commit && is_interface">
-                <settings-form-field
-                    name="Follow latest commit"
-                    [ngModel]="follow_latest"
-                    [ngModelOptions]="{ standalone: true }"
-                    (ngModelChange)="setFollow($event)"
-                ></settings-form-field>
-            </div>
-            <div class="field" *ngIf="form.controls.description">
-                <label for="description">
-                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
-                </label>
-                <mat-form-field appearance="outline">
-                    <textarea
-                        matInput
-                        name="description"
-                        [placeholder]="'COMMON.FIELD_DESCRIPTION' | translate"
-                        formControlName="description"
-                    ></textarea>
-                </mat-form-field>
-            </div>
-        </form>
+                        <div>{{ commit.subject }}</div>
+                        <div class="text-xs opacity-30">
+                          {{ commit.date | date: 'medium' }}
+                        </div>
+                      </div>
+                      <div class="hidden">&nbsp;|&nbsp;</div>
+                      <code class="text-xs">{{
+                        commit.hash | slice: 0 : 8
+                      }}</code>
+                      <code class="text-xs" *ngIf="commit.author">{{
+                        commit.author
+                      }}</code>
+                    </div>
+                  </mat-option>
+                </mat-select>
+                <mat-error>{{
+                  'REPOS.COMMIT_REQUIRED' | translate
+                }}</mat-error>
+              </mat-form-field> -->
+                </div>
+                @if (can_change_commit && is_interface) {
+                    <div class="field">
+                        <settings-form-field
+                            name="Follow latest commit"
+                            [ngModel]="follow_latest"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="setFollow($event)"
+                        ></settings-form-field>
+                    </div>
+                }
+                @if (form.controls.description) {
+                    <div class="field">
+                        <label for="description">
+                            {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <textarea
+                                matInput
+                                name="description"
+                                [placeholder]="
+                                    'COMMON.FIELD_DESCRIPTION' | translate
+                                "
+                                formControlName="description"
+                            ></textarea>
+                        </mat-form-field>
+                    </div>
+                }
+            </form>
+        }
     `,
     styles: [``],
     standalone: false,

@@ -54,12 +54,13 @@ import { SystemStateService } from './system-state.service';
                     {{ 'COMMON.SAVE_CHANGES' | translate }}
                 </button>
             </section>
-            <div
-                class="mono mb-2 rounded bg-warning p-2 text-center text-xs text-warning-content"
-                *ngIf="zone_issues | async"
-            >
-                {{ zone_issues | async }}
-            </div>
+            @if (zone_issues | async) {
+                <div
+                    class="mono mb-2 rounded bg-warning p-2 text-center text-xs text-warning-content"
+                >
+                    {{ zone_issues | async }}
+                </div>
+            }
             <section class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
@@ -115,9 +116,13 @@ import { SystemStateService } from './system-state.service';
                         class="w-full select-text overflow-hidden px-4 py-2 text-xs"
                     >
                         {{ data }}
-                        <span class="opacity-30" *ngIf="!data">
-                            {{ 'SYSTEMS.ZONE_DESCRIPTION_EMPTY' | translate }}
-                        </span>
+                        @if (!data) {
+                            <span class="opacity-30">
+                                {{
+                                    'SYSTEMS.ZONE_DESCRIPTION_EMPTY' | translate
+                                }}
+                            </span>
+                        }
                     </div>
                 </ng-template>
                 <ng-template #actions_template let-row="row">

@@ -30,7 +30,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class ActionFieldComponent {
     /** Name of the field */

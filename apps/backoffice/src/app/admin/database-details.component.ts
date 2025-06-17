@@ -22,9 +22,13 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                     [disabled]="reindexing"
                     (click)="reindex()"
                 >
-                    <ng-container *ngIf="!reindexing; else spinner">
+                    @if (!reindexing) {
                         {{ 'ADMIN.DATABASE_REINDEX' | translate }}
-                    </ng-container>
+                    } @else {
+                        <div class="my-1 flex w-full justify-center">
+                            <mat-spinner diameter="32"></mat-spinner>
+                        </div>
+                    }
                 </button>
             </div>
             <div
@@ -39,17 +43,16 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                     [disabled]="backfilling"
                     (click)="backfill()"
                 >
-                    <ng-container *ngIf="!backfilling; else spinner">
+                    @if (!backfilling) {
                         {{ 'ADMIN.DATABASE_BACKFILL' | translate }}
-                    </ng-container>
+                    } @else {
+                        <div class="my-1 flex w-full justify-center">
+                            <mat-spinner diameter="32"></mat-spinner>
+                        </div>
+                    }
                 </button>
             </div>
         </div>
-        <ng-template #spinner>
-            <div class="my-1 flex w-full justify-center">
-                <mat-spinner diameter="32"></mat-spinner>
-            </div>
-        </ng-template>
     `,
     styles: [
         `
@@ -70,7 +73,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class PlaceDatabaseDetailsComponent {
     /** Whether backend is reindexing the database */

@@ -37,52 +37,50 @@ export interface TriggerConditionData {
             [loading]="loading"
             (save)="save()"
         >
-            <form
-                trigger-condition
-                class="flex flex-col"
-                *ngIf="form"
-                [formGroup]="form"
-            >
-                <div class="field" *ngIf="form.controls.condition_type">
-                    <label for="type">
-                        {{ 'TRIGGERS.CONDITION_FIELD_TYPE' | translate }}
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
-                            name="type"
-                            formControlName="condition_type"
-                        >
-                            <mat-option
-                                *ngFor="let type of condition_types"
-                                [value]="type.id"
-                            >
-                                {{
-                                    (type.id === 'compare'
-                                        ? 'TRIGGERS.CONDITION_COMPARE'
-                                        : 'TRIGGERS.CONDITION_TIME'
-                                    ) | translate
-                                }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <ng-container
-                    *ngIf="
-                        form.controls.condition_type.value === 'compare';
-                        else time_form
-                    "
+            @if (form) {
+                <form
+                    trigger-condition
+                    class="flex flex-col"
+                    [formGroup]="form"
                 >
-                    <trigger-condition-comparison-form
-                        [form]="form"
-                        [system]="system"
-                    ></trigger-condition-comparison-form>
-                </ng-container>
-            </form>
-            <ng-template #time_form>
-                <trigger-condition-time-form
-                    [form]="form"
-                ></trigger-condition-time-form>
-            </ng-template>
+                    @if (form.controls.condition_type) {
+                        <div class="field">
+                            <label for="type">
+                                {{
+                                    'TRIGGERS.CONDITION_FIELD_TYPE' | translate
+                                }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <mat-select
+                                    name="type"
+                                    formControlName="condition_type"
+                                >
+                                    @for (type of condition_types; track type) {
+                                        <mat-option [value]="type.id">
+                                            {{
+                                                (type.id === 'compare'
+                                                    ? 'TRIGGERS.CONDITION_COMPARE'
+                                                    : 'TRIGGERS.CONDITION_TIME'
+                                                ) | translate
+                                            }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    }
+                    @if (form.controls.condition_type.value === 'compare') {
+                        <trigger-condition-comparison-form
+                            [form]="form"
+                            [system]="system"
+                        ></trigger-condition-comparison-form>
+                    } @else {
+                        <trigger-condition-time-form
+                            [form]="form"
+                        ></trigger-condition-time-form>
+                    }
+                </form>
+            }
         </fullscreen-modal-shell>
     `,
     styles: [``],

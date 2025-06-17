@@ -29,12 +29,13 @@ export interface FrameMessage {
 @Component({
     selector: 'app-extension-outlet',
     template: `
-        <iframe
-            *ngIf="url && app_loaded"
-            #frame
-            class="absolute inset-0 h-full w-full border-none"
-            [src]="url | safe: 'resource'"
-        ></iframe>
+        @if (url && app_loaded) {
+            <iframe
+                #frame
+                class="absolute inset-0 h-full w-full border-none"
+                [src]="url | safe: 'resource'"
+            ></iframe>
+        }
     `,
     standalone: false,
 })

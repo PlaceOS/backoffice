@@ -36,54 +36,61 @@ export interface DisplayItem {
                     <a class="mono text-xs opacity-60" (click)="copyID()">
                         {{ item?.id }}
                     </a>
-                    <div
-                        class="rounded-xl bg-info px-2 py-1 text-xs text-info-content"
-                        *ngIf="driver_type"
-                    >
-                        {{ driver_type }}
-                    </div>
-                    <div
-                        class="mono rounded-xl bg-info px-2 py-1 text-xs text-info-content"
-                        *ngIf="domain"
-                    >
-                        {{ domain }}
-                    </div>
-                    <div
-                        class="rounded-xl bg-info px-2 py-1 text-xs uppercase text-info-content"
-                        *ngFor="let tag of tags"
-                    >
-                        {{ tag }}
-                    </div>
-                    <div
-                        class="rounded-xl bg-error px-2 py-1 text-xs text-error-content"
-                        *ngIf="
-                            item?.running !== null &&
-                            item?.running !== undefined
-                        "
-                        [class.!bg-success]="item?.running"
-                        [class.!text-success-content]="item?.running"
-                    >
-                        {{
-                            (item?.running ? 'COMMON.ONLINE' : 'COMMON.OFFLINE')
-                                | translate
-                        }}
-                    </div>
-                    <div
-                        class="rounded-xl bg-info px-2 py-1 text-xs text-info-content"
-                        *ngIf="item?.edge_id"
-                        [matTooltip]="item?.edge_id"
-                    >
-                        {{ 'COMMON.EDGE' | translate }}
-                    </div>
-                    <div
-                        class="flex items-center space-x-2 rounded-xl bg-success px-2 py-1 text-xs text-success-content"
-                        *ngIf="item?.tls"
-                    >
-                        <app-icon>lock</app-icon>
-                        <div class="text">
-                            {{ 'COMMON.SECURE' | translate }}
+                    @if (driver_type) {
+                        <div
+                            class="rounded-xl bg-info px-2 py-1 text-xs text-info-content"
+                        >
+                            {{ driver_type }}
                         </div>
-                    </div>
+                    }
+                    @if (domain) {
+                        <div
+                            class="mono rounded-xl bg-info px-2 py-1 text-xs text-info-content"
+                        >
+                            {{ domain }}
+                        </div>
+                    }
+                    @for (tag of tags; track tag) {
+                        <div
+                            class="rounded-xl bg-info px-2 py-1 text-xs uppercase text-info-content"
+                        >
+                            {{ tag }}
+                        </div>
+                    }
+                    @if (
+                        item?.running !== null && item?.running !== undefined
+                    ) {
+                        <div
+                            class="rounded-xl bg-error px-2 py-1 text-xs text-error-content"
+                            [class.!bg-success]="item?.running"
+                            [class.!text-success-content]="item?.running"
+                        >
+                            {{
+                                (item?.running
+                                    ? 'COMMON.ONLINE'
+                                    : 'COMMON.OFFLINE'
+                                ) | translate
+                            }}
+                        </div>
+                    }
+                    @if (item?.edge_id) {
+                        <div
+                            class="rounded-xl bg-info px-2 py-1 text-xs text-info-content"
+                            [matTooltip]="item?.edge_id"
+                        >
+                            {{ 'COMMON.EDGE' | translate }}
+                        </div>
+                    }
+                    @if (item?.tls) {
+                        <div
+                            class="flex items-center space-x-2 rounded-xl bg-success px-2 py-1 text-xs text-success-content"
+                        >
+                            <app-icon>lock</app-icon>
+                            <div class="text">
+                                {{ 'COMMON.SECURE' | translate }}
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
             <button icon matRipple [matMenuTriggerFor]="action_menu">
@@ -91,18 +98,19 @@ export interface DisplayItem {
             </button>
         </div>
         <mat-menu #action_menu="matMenu" class="min-w-[22rem]">
-            <button
-                *ngIf="can_edit"
-                mat-menu-item
-                class="flex items-center space-x-2"
-                (click)="edit.emit(); editItem()"
-            >
-                <app-icon class="text-2xl">edit</app-icon>
-                <div class="flex-1">
-                    {{ 'COMMON.EDIT_TYPE' | translate: { name: type } }}
-                </div>
-                <span class="keycap">E</span>
-            </button>
+            @if (can_edit) {
+                <button
+                    mat-menu-item
+                    class="flex items-center space-x-2"
+                    (click)="edit.emit(); editItem()"
+                >
+                    <app-icon class="text-2xl">edit</app-icon>
+                    <div class="flex-1">
+                        {{ 'COMMON.EDIT_TYPE' | translate: { name: type } }}
+                    </div>
+                    <span class="keycap">E</span>
+                </button>
+            }
             <button
                 mat-menu-item
                 class="flex items-center space-x-2"
@@ -147,23 +155,24 @@ export interface DisplayItem {
                     <div class="flex-1">
                         {{ item.label | translate }}
                     </div>
-                    <span class="keycap" *ngIf="item.keycap">{{
-                        item.keycap
-                    }}</span>
+                    @if (item.keycap) {
+                        <span class="keycap">{{ item.keycap }}</span>
+                    }
                 </button>
             }
-            <button
-                *ngIf="can_edit"
-                mat-menu-item
-                class="flex items-center space-x-2"
-                (click)="delete.emit(); deleteItem()"
-            >
-                <app-icon class="text-2xl text-error">delete</app-icon>
-                <div class="flex-1">
-                    {{ 'COMMON.DELETE_TYPE' | translate: { name: type } }}
-                </div>
-                <span class="keycap">⌦</span>
-            </button>
+            @if (can_edit) {
+                <button
+                    mat-menu-item
+                    class="flex items-center space-x-2"
+                    (click)="delete.emit(); deleteItem()"
+                >
+                    <app-icon class="text-2xl text-error">delete</app-icon>
+                    <div class="flex-1">
+                        {{ 'COMMON.DELETE_TYPE' | translate: { name: type } }}
+                    </div>
+                    <span class="keycap">⌦</span>
+                </button>
+            }
         </mat-menu>
     `,
     styles: [``],

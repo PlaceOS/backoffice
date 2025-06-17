@@ -45,31 +45,32 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 </a>
                 <div class="w-full flex-1 space-y-2 overflow-auto pb-2">
                     @for (link of links; track link.name) {
-                        <a
-                            btn
-                            link
-                            matRipple
-                            class="clear mx-auto w-[calc(100%-1rem)] text-left hover:bg-base-100"
-                            [routerLink]="[link.route]"
-                            routerLinkActive="!bg-secondary text-secondary-content"
-                            [matTooltip]="
-                                compact ? (link.name | translate) : ''
-                            "
-                            matTooltipPosition="right"
-                            *ngIf="!link.show_on || link.show_on()"
-                        >
-                            <div
-                                class="flex w-full items-center space-x-2"
-                                [class.sm:justify-center]="compact"
+                        @if (!link.show_on || link.show_on()) {
+                            <a
+                                btn
+                                link
+                                matRipple
+                                class="clear mx-auto w-[calc(100%-1rem)] text-left hover:bg-base-100"
+                                [routerLink]="[link.route]"
+                                routerLinkActive="!bg-secondary text-secondary-content"
+                                [matTooltip]="
+                                    compact ? (link.name | translate) : ''
+                                "
+                                matTooltipPosition="right"
                             >
-                                <app-icon class="text-xl">{{
-                                    link.icon
-                                }}</app-icon>
-                                <p [class.sm:hidden]="compact">
-                                    {{ link.name | translate }}
-                                </p>
-                            </div>
-                        </a>
+                                <div
+                                    class="flex w-full items-center space-x-2"
+                                    [class.sm:justify-center]="compact"
+                                >
+                                    <app-icon class="text-xl">{{
+                                        link.icon
+                                    }}</app-icon>
+                                    <p [class.sm:hidden]="compact">
+                                        {{ link.name | translate }}
+                                    </p>
+                                </div>
+                            </a>
+                        }
                     }
                     <button
                         class="absolute left-1 top-1 sm:hidden"
@@ -81,72 +82,76 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     </button>
                 </div>
             </div>
-            <div
-                class="m-2 flex flex-col space-y-2 rounded-xl border border-base-300 p-2"
-                *ngIf="debug_enabled"
-            >
+            @if (debug_enabled) {
                 <div
-                    class="mono rounded-xl bg-info p-1 text-center text-xs text-info-content"
+                    class="m-2 flex flex-col space-y-2 rounded-xl border border-base-300 p-2"
                 >
-                    {{ 'COMMON.DEBUG_ENABLED' | translate }}
-                </div>
-                <p class="p-1 text-center text-xs">
-                    {{
-                        'COMMON.DEBUG_LISTENING_MSG'
-                            | translate: { modules: debug_module_count }
-                    }}<br />
-                    {{
-                        'COMMON.DEBUG_MSG_COUNT_MSG'
-                            | translate: { count: debug_message_count }
-                    }}
-                </p>
-                <div actions class="flex items-center justify-center space-x-2">
-                    <button
-                        icon
-                        matRipple
-                        (click)="toggleDebugPosition()"
-                        class="bg-base-200"
+                    <div
+                        class="mono rounded-xl bg-info p-1 text-center text-xs text-info-content"
                     >
-                        <app-icon matTooltip="Toggle Position">{{
-                            debug_position === 'side'
-                                ? 'border_bottom'
-                                : 'border_right'
-                        }}</app-icon>
-                    </button>
-                    <button
-                        icon
-                        matRipple
-                        (click)="clearDebugMessages()"
-                        class="bg-base-200"
+                        {{ 'COMMON.DEBUG_ENABLED' | translate }}
+                    </div>
+                    <p class="p-1 text-center text-xs">
+                        {{
+                            'COMMON.DEBUG_LISTENING_MSG'
+                                | translate: { modules: debug_module_count }
+                        }}<br />
+                        {{
+                            'COMMON.DEBUG_MSG_COUNT_MSG'
+                                | translate: { count: debug_message_count }
+                        }}
+                    </p>
+                    <div
+                        actions
+                        class="flex items-center justify-center space-x-2"
                     >
-                        <app-icon matTooltip="Clear Messages"
-                            >clear_all</app-icon
+                        <button
+                            icon
+                            matRipple
+                            (click)="toggleDebugPosition()"
+                            class="bg-base-200"
                         >
-                    </button>
-                    <button
-                        icon
-                        matRipple
-                        (click)="clearBindings()"
-                        class="bg-base-200"
-                    >
-                        <app-icon
-                            className="backoffice-uninstall"
-                            matTooltip="Unbind Modules"
-                        ></app-icon>
-                    </button>
-                    <button
-                        icon
-                        matRipple
-                        (click)="openDebug()"
-                        class="bg-base-200"
-                    >
-                        <app-icon
-                            className="backoffice-notification"
-                            matTooltip="Open Console"
-                        ></app-icon>
-                    </button>
+                            <app-icon matTooltip="Toggle Position">{{
+                                debug_position === 'side'
+                                    ? 'border_bottom'
+                                    : 'border_right'
+                            }}</app-icon>
+                        </button>
+                        <button
+                            icon
+                            matRipple
+                            (click)="clearDebugMessages()"
+                            class="bg-base-200"
+                        >
+                            <app-icon matTooltip="Clear Messages"
+                                >clear_all</app-icon
+                            >
+                        </button>
+                        <button
+                            icon
+                            matRipple
+                            (click)="clearBindings()"
+                            class="bg-base-200"
+                        >
+                            <app-icon
+                                className="backoffice-uninstall"
+                                matTooltip="Unbind Modules"
+                            ></app-icon>
+                        </button>
+                        <button
+                            icon
+                            matRipple
+                            (click)="openDebug()"
+                            class="bg-base-200"
+                        >
+                            <app-icon
+                                className="backoffice-notification"
+                                matTooltip="Open Console"
+                            ></app-icon>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            }
             <button
                 matRipple
                 class="flex min-h-16 items-center space-x-2 border-t border-base-300 p-2 text-left"

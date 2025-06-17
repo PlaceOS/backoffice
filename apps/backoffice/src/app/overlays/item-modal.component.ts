@@ -75,52 +75,47 @@ export interface CreateEditModalData<T extends Identity = any> {
             [loading]="loading"
             (save)="submit()"
         >
-            <ng-container [ngSwitch]="item_type">
-                <repository-form
-                    *ngSwitchCase="'repository'"
-                    [form]="form"
-                ></repository-form>
-                <trigger-form
-                    *ngSwitchCase="'trigger'"
-                    [form]="form"
-                ></trigger-form>
-                <system-trigger-form
-                    *ngSwitchCase="'system-trigger'"
-                    [form]="form"
-                ></system-trigger-form>
-
-                <application-form
-                    *ngSwitchCase="'application'"
-                    [form]="form"
-                ></application-form>
-
-                <domain-form
-                    *ngSwitchCase="'domain'"
-                    [form]="form"
-                ></domain-form>
-
-                <user-form *ngSwitchCase="'user'" [form]="form"></user-form>
-
-                <driver-form
-                    *ngSwitchCase="'driver'"
-                    [form]="form"
-                    (waiting)="can_submit = !$event"
-                ></driver-form>
-                <zone-form *ngSwitchCase="'zone'" [form]="form"></zone-form>
-
-                <module-form
-                    *ngSwitchCase="'module'"
-                    [form]="form"
-                    [readonly]="readonly"
-                ></module-form>
-
-                <broker-form
-                    *ngSwitchCase="'broker'"
-                    [form]="form"
-                ></broker-form>
-
-                <system-form *ngSwitchDefault [form]="form"></system-form>
-            </ng-container>
+            @switch (item_type) {
+                @case ('repository') {
+                    <repository-form [form]="form"></repository-form>
+                }
+                @case ('trigger') {
+                    <trigger-form [form]="form"></trigger-form>
+                }
+                @case ('system-trigger') {
+                    <system-trigger-form [form]="form"></system-trigger-form>
+                }
+                @case ('application') {
+                    <application-form [form]="form"></application-form>
+                }
+                @case ('domain') {
+                    <domain-form [form]="form"></domain-form>
+                }
+                @case ('user') {
+                    <user-form [form]="form"></user-form>
+                }
+                @case ('driver') {
+                    <driver-form
+                        [form]="form"
+                        (waiting)="can_submit = !$event"
+                    ></driver-form>
+                }
+                @case ('zone') {
+                    <zone-form [form]="form"></zone-form>
+                }
+                @case ('module') {
+                    <module-form
+                        [form]="form"
+                        [readonly]="readonly"
+                    ></module-form>
+                }
+                @case ('broker') {
+                    <broker-form [form]="form"></broker-form>
+                }
+                @default {
+                    <system-form [form]="form"></system-form>
+                }
+            }
         </fullscreen-modal-shell>
     `,
     styles: [''],

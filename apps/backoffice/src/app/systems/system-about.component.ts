@@ -14,7 +14,7 @@ import { SystemStateService } from './system-state.service';
                     class="inline-grid w-full gap-2 rounded border border-base-200 p-4"
                     [style.gridTemplateColumns]="'7.5rem auto'"
                 >
-                    <ng-container *ngIf="item?.support_url">
+                    @if (item?.support_url) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.SUPPORT_URL' | translate }}
                         </div>
@@ -25,8 +25,8 @@ import { SystemStateService } from './system-state.service';
                         >
                             {{ item?.support_url }}
                         </a>
-                    </ng-container>
-                    <ng-container *ngIf="item?.email">
+                    }
+                    @if (item?.email) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.BOOKABLE' | translate }}
                         </div>
@@ -38,8 +38,8 @@ import { SystemStateService } from './system-state.service';
                                 ) | translate
                             }}
                         </div>
-                    </ng-container>
-                    <ng-container *ngIf="item?.email">
+                    }
+                    @if (item?.email) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.PUBLIC' | translate }}
                         </div>
@@ -49,14 +49,14 @@ import { SystemStateService } from './system-state.service';
                                     | translate
                             }}
                         </div>
-                    </ng-container>
-                    <ng-container *ngIf="item?.code">
+                    }
+                    @if (item?.code) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.CODE' | translate }}
                         </div>
                         <div>{{ item?.code }}</div>
-                    </ng-container>
-                    <ng-container *ngIf="item?.email">
+                    }
+                    @if (item?.email) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.EMAIL' | translate }}
                         </div>
@@ -66,13 +66,13 @@ import { SystemStateService } from './system-state.service';
                             target="_blank"
                             >{{ item?.email }}</a
                         >
-                    </ng-container>
-                    <ng-container *ngIf="item?.capacity">
+                    }
+                    @if (item?.capacity) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.CAPACITY' | translate }}
                         </div>
                         <div>{{ item?.capacity }}</div>
-                    </ng-container>
+                    }
                     @if (item?.map_id) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.MAP_ID' | translate }}
@@ -166,20 +166,21 @@ import { SystemStateService } from './system-state.service';
             </div>
         }
         <hr class="my-4 text-base-300" />
-        <section *ngIf="item?.settings && other_settings; else load_state">
-            <a-settings-form
-                [id]="item?.id"
-                [merge]="true"
-                [settings]="item?.settings"
-                [merge_settings]="(other_settings | async) || []"
-            ></a-settings-form>
-        </section>
-        <ng-template #load_state>
+        @if (item?.settings && other_settings) {
+            <section>
+                <a-settings-form
+                    [id]="item?.id"
+                    [merge]="true"
+                    [settings]="item?.settings"
+                    [merge_settings]="(other_settings | async) || []"
+                ></a-settings-form>
+            </section>
+        } @else {
             <div class="flex flex-col items-center justify-center p-8">
                 <mat-spinner class="mb-4" [diameter]="32"></mat-spinner>
                 <p>{{ 'SYSTEMS.LOADING_SETTINGS' | translate }}</p>
             </div>
-        </ng-template>
+        }
     `,
     styles: [
         `

@@ -36,60 +36,62 @@ export interface TableColumn {
                 ondrop.emit([$event.previousIndex, $event.currentIndex])
             "
         >
-            <div
-                *ngIf="can_reorder"
-                class="sticky top-0 z-10 flex min-h-full items-center justify-between border-r border-base-200 bg-base-300 px-2"
-                [style.gridArea]="gridSquare(1, 1)"
-            ></div>
-            <div
-                *ngIf="selectable"
-                class="sticky top-0 z-10 flex min-h-full items-center justify-between border-r border-base-200 bg-base-300 px-2"
-                [style.gridArea]="gridSquare(1, 1 + (can_reorder ? 1 : 0))"
-            >
-                <mat-checkbox
-                    [checked]="selected.length === (data$ | async)?.length"
-                    [indeterminate]="
-                        selected.length > 0 &&
-                        selected.length < (data$ | async)?.length
-                    "
-                    (change)="selectAll($event.checked)"
-                ></mat-checkbox>
-            </div>
-            <button
-                header
-                matRipple
-                *ngFor="let column of active_columns; let i = index"
-                [id]="'column-' + column.key"
-                class="sticky top-0 z-10 flex min-h-full items-center justify-between border-base-200 bg-base-300 p-4"
-                [style.gridArea]="
-                    gridSquare(
-                        1,
-                        1 + i + (selectable ? 1 : 0) + (can_reorder ? 1 : 0)
-                    )
-                "
-                [class.pointer-events-none]="
-                    !can_sort || column.sortable === false
-                "
-                (click)="setSort(column.key)"
-                [class.active]="sort?.key === column.key"
-                [class.border-r]="i !== active_columns.length - 1"
-                [class.width]="column.size"
-            >
-                <div class="font-medium">{{ column.name || column.key }}</div>
-                <app-icon
-                    class="text-[1.25em]"
-                    *ngIf="can_sort && column.sortable !== false"
+            @if (can_reorder) {
+                <div
+                    class="sticky top-0 z-10 flex min-h-full items-center justify-between border-r border-base-200 bg-base-300 px-2"
+                    [style.gridArea]="gridSquare(1, 1)"
+                ></div>
+            }
+            @if (selectable) {
+                <div
+                    class="sticky top-0 z-10 flex min-h-full items-center justify-between border-r border-base-200 bg-base-300 px-2"
+                    [style.gridArea]="gridSquare(1, 1 + (can_reorder ? 1 : 0))"
                 >
-                    {{
-                        sort?.key === column.key && sort?.reverse
-                            ? 'arrow_upward'
-                            : 'arrow_downward'
-                    }}
-                </app-icon>
-            </button>
-            <ng-container
-                *ngFor="let row of (data$ | async) || []; let i = index"
-            >
+                    <mat-checkbox
+                        [checked]="selected.length === (data$ | async)?.length"
+                        [indeterminate]="
+                            selected.length > 0 &&
+                            selected.length < (data$ | async)?.length
+                        "
+                        (change)="selectAll($event.checked)"
+                    ></mat-checkbox>
+                </div>
+            }
+            @for (column of active_columns; track column; let i = $index) {
+                <button
+                    header
+                    matRipple
+                    [id]="'column-' + column.key"
+                    class="sticky top-0 z-10 flex min-h-full items-center justify-between border-base-200 bg-base-300 p-4"
+                    [style.gridArea]="
+                        gridSquare(
+                            1,
+                            1 + i + (selectable ? 1 : 0) + (can_reorder ? 1 : 0)
+                        )
+                    "
+                    [class.pointer-events-none]="
+                        !can_sort || column.sortable === false
+                    "
+                    (click)="setSort(column.key)"
+                    [class.active]="sort?.key === column.key"
+                    [class.border-r]="i !== active_columns.length - 1"
+                    [class.width]="column.size"
+                >
+                    <div class="font-medium">
+                        {{ column.name || column.key }}
+                    </div>
+                    @if (can_sort && column.sortable !== false) {
+                        <app-icon class="text-[1.25em]">
+                            {{
+                                sort?.key === column.key && sort?.reverse
+                                    ? 'arrow_upward'
+                                    : 'arrow_downward'
+                            }}
+                        </app-icon>
+                    }
+                </button>
+            }
+            @for (row of (data$ | async) || []; track row; let i = $index) {
                 @if (can_reorder) {
                     <div
                         class="grid"
@@ -136,77 +138,81 @@ export interface TableColumn {
                         "
                     ></ng-container>
                 }
-            </ng-container>
-            <div
-                *ngIf="!(data$ | async)?.length"
-                [style.gridArea]="2 + '/1/' + 2 + '/' + -1"
-                class="flex items-center justify-center p-4 opacity-30"
-            >
-                {{ empty_message }}
-            </div>
+            }
+            @if (!(data$ | async)?.length) {
+                <div
+                    [style.gridArea]="2 + '/1/' + 2 + '/' + -1"
+                    class="flex items-center justify-center p-4 opacity-30"
+                >
+                    {{ empty_message }}
+                </div>
+            }
             <!-- TODO: Add pagination -->
         </div>
         <ng-template #row_template let-row="row" let-i="index">
-            <div
-                *ngIf="selectable"
-                class="z-0 flex min-h-full items-center justify-between border-r border-base-200 px-2"
-                [style.gridArea]="gridSquare(2 + i, 1 + (can_reorder ? 1 : 0))"
-                [class.border-b]="i !== (data$ | async)?.length - 1"
-                [style.background]="color[i]"
-                (mouseenter)="active_row = i"
-                (touchstart)="active_row = i"
-            >
-                <mat-checkbox
-                    [checked]="selected.includes(i)"
-                    (change)="select(i, $event.checked)"
-                ></mat-checkbox>
-            </div>
-            <div
-                *ngFor="let column of active_columns; let j = index"
-                class="relative z-0 flex min-h-full items-center justify-between border-base-200"
-                [style.gridArea]="
-                    gridSquare(
-                        2 + i,
-                        1 + j + (selectable ? 1 : 0) + (can_reorder ? 1 : 0)
-                    )
-                "
-                [class.border-b]="i !== (data$ | async)?.length - 1"
-                [class.border-r]="j !== active_columns.length - 1"
-                [class.width]="column.size"
-                (mouseenter)="active_row = i"
-                (touchstart)="active_row = i"
-                [style.background]="color[i]"
-            >
-                <ng-container [ngSwitch]="columnType(column)">
-                    <div class="p-4" *ngSwitchDefault>
-                        {{ row[column.key] }}
-                        <span
-                            *ngIf="row[column.key] == null"
-                            class="opacity-30"
-                        >
-                            N/A
-                        </span>
-                    </div>
-                    <ng-container *ngSwitchCase="'template'">
-                        <ng-container
-                            *ngTemplateOutlet="
-                                column.content;
-                                context: {
-                                    first: i === 0,
-                                    last:
-                                        i === (data$ | async)?.length - 1 ||
-                                        i === (data$ | async)?.length - 1,
-                                    index: i,
-                                    data: row[column.key],
-                                    row: row,
-                                    key: column.key,
-                                    name: column.name || column.key,
+            @if (selectable) {
+                <div
+                    class="z-0 flex min-h-full items-center justify-between border-r border-base-200 px-2"
+                    [style.gridArea]="
+                        gridSquare(2 + i, 1 + (can_reorder ? 1 : 0))
+                    "
+                    [class.border-b]="i !== (data$ | async)?.length - 1"
+                    [style.background]="color[i]"
+                    (mouseenter)="active_row = i"
+                    (touchstart)="active_row = i"
+                >
+                    <mat-checkbox
+                        [checked]="selected.includes(i)"
+                        (change)="select(i, $event.checked)"
+                    ></mat-checkbox>
+                </div>
+            }
+            @for (column of active_columns; track column; let j = $index) {
+                <div
+                    class="relative z-0 flex min-h-full items-center justify-between border-base-200"
+                    [style.gridArea]="
+                        gridSquare(
+                            2 + i,
+                            1 + j + (selectable ? 1 : 0) + (can_reorder ? 1 : 0)
+                        )
+                    "
+                    [class.border-b]="i !== (data$ | async)?.length - 1"
+                    [class.border-r]="j !== active_columns.length - 1"
+                    [class.width]="column.size"
+                    (mouseenter)="active_row = i"
+                    (touchstart)="active_row = i"
+                    [style.background]="color[i]"
+                >
+                    @switch (columnType(column)) {
+                        @default {
+                            <div class="p-4">
+                                {{ row[column.key] }}
+                                @if (row[column.key] == null) {
+                                    <span class="opacity-30"> N/A </span>
                                 }
-                            "
-                        ></ng-container>
-                    </ng-container>
-                </ng-container>
-            </div>
+                            </div>
+                        }
+                        @case ('template') {
+                            <ng-container
+                                *ngTemplateOutlet="
+                                    column.content;
+                                    context: {
+                                        first: i === 0,
+                                        last:
+                                            i === (data$ | async)?.length - 1 ||
+                                            i === (data$ | async)?.length - 1,
+                                        index: i,
+                                        data: row[column.key],
+                                        row: row,
+                                        key: column.key,
+                                        name: column.name || column.key,
+                                    }
+                                "
+                            ></ng-container>
+                        }
+                    }
+                </div>
+            }
         </ng-template>
     `,
     styles: [

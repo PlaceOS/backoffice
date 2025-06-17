@@ -45,114 +45,148 @@ export interface TriggerActionModalData {
             [loading]="loading"
             (save)="save()"
         >
-            <form
-                trigger-action
-                *ngIf="form"
-                class="flex w-[36rem] max-w-[calc(100vw-4rem)] flex-col"
-                [formGroup]="form"
-            >
-                <div class="field" *ngIf="form.controls.action_type">
-                    <label for="type">
-                        {{ 'TRIGGERS.ACTION_FIELD_TYPE' | translate }}:
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <mat-select name="type" formControlName="action_type">
-                            <mat-option
-                                *ngFor="let type of action_types"
-                                [value]="type.id"
-                            >
-                                {{ type.name }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <ng-container [ngSwitch]="form.controls.action_type.value">
-                    <ng-container *ngSwitchCase="'emails'">
-                        <div class="field" *ngIf="form.controls.emails">
-                            <label
-                                for="description"
-                                [class.error]="
-                                    form.controls.emails.touched &&
-                                    form.controls.emails.errors
-                                "
-                            >
-                                {{
-                                    'TRIGGERS.ACTION_EMAIL_ADDRESS' | translate
-                                }}
-                                <span>*</span>
+            @if (form) {
+                <form
+                    trigger-action
+                    class="flex w-[36rem] max-w-[calc(100vw-4rem)] flex-col"
+                    [formGroup]="form"
+                >
+                    @if (form.controls.action_type) {
+                        <div class="field">
+                            <label for="type">
+                                {{ 'TRIGGERS.ACTION_FIELD_TYPE' | translate }}:
                             </label>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-chip-grid
-                                    #chipList
-                                    [aria-label]="
-                                        'TRIGGERS.ACTION_EMAIL_ADDRESS'
-                                            | translate
-                                    "
+                            <mat-form-field appearance="outline">
+                                <mat-select
+                                    name="type"
+                                    formControlName="action_type"
                                 >
-                                    <mat-chip-row
-                                        *ngFor="let item of email_list"
-                                        (removed)="removeEmail(item)"
+                                    @for (type of action_types; track type) {
+                                        <mat-option [value]="type.id">
+                                            {{ type.name }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    }
+                    @switch (form.controls.action_type.value) {
+                        @case ('emails') {
+                            @if (form.controls.emails) {
+                                <div class="field">
+                                    <label
+                                        for="description"
+                                        [class.error]="
+                                            form.controls.emails.touched &&
+                                            form.controls.emails.errors
+                                        "
                                     >
-                                        <div class="max-w-md truncate">
-                                            {{ item }}
-                                        </div>
-                                        <button
-                                            matChipRemove
-                                            [attr.aria-label]="
-                                                'COMMON.REMOVE_ITEM'
-                                                    | translate: { item: item }
+                                        {{
+                                            'TRIGGERS.ACTION_EMAIL_ADDRESS'
+                                                | translate
+                                        }}
+                                        <span>*</span>
+                                    </label>
+                                    <mat-form-field
+                                        appearance="outline"
+                                        class="w-full"
+                                    >
+                                        <mat-chip-grid
+                                            #chipList
+                                            [aria-label]="
+                                                'TRIGGERS.ACTION_EMAIL_ADDRESS'
+                                                    | translate
                                             "
                                         >
-                                            <app-icon>cancel</app-icon>
-                                        </button>
-                                    </mat-chip-row>
-                                </mat-chip-grid>
-                                <input
-                                    [(ngModel)]="new_email"
-                                    [ngModelOptions]="{ standalone: true }"
-                                    [placeholder]="
-                                        'TRIGGERS.ACTION_EMAIL_ADDRESS_LIST'
-                                            | translate
-                                    "
-                                    [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separators"
-                                    [matChipInputAddOnBlur]="true"
-                                    (matChipInputTokenEnd)="
-                                        addEmail($event.value); new_email = ''
-                                    "
-                                />
-                            </mat-form-field>
-                        </div>
-                        <div class="field" *ngIf="form.controls.content">
-                            <label for="content">{{
-                                'TRIGGERS.ACTION_EMAIL_BODY' | translate
-                            }}</label>
-                            <mat-form-field appearance="outline">
-                                <textarea
-                                    matInput
-                                    name="content"
-                                    placeholder="Email body contents..."
-                                    formControlName="content"
-                                ></textarea>
-                            </mat-form-field>
-                        </div>
-                    </ng-container>
-                    <ng-container *ngSwitchDefault>
-                        <div class="field" *ngIf="form.controls.method_call">
-                            <label for="content">
-                                {{
-                                    'TRIGGERS.ACTION_EXECUTE_SELECT' | translate
-                                }}
-                            </label>
-                            <execute-method-field
-                                formControlName="method_call"
-                                [system]="system"
-                                [can_execute]="false"
-                            ></execute-method-field>
-                        </div>
-                    </ng-container>
-                </ng-container>
-            </form>
+                                            @for (
+                                                item of email_list;
+                                                track item
+                                            ) {
+                                                <mat-chip-row
+                                                    (removed)="
+                                                        removeEmail(item)
+                                                    "
+                                                >
+                                                    <div
+                                                        class="max-w-md truncate"
+                                                    >
+                                                        {{ item }}
+                                                    </div>
+                                                    <button
+                                                        matChipRemove
+                                                        [attr.aria-label]="
+                                                            'COMMON.REMOVE_ITEM'
+                                                                | translate
+                                                                    : {
+                                                                          item: item,
+                                                                      }
+                                                        "
+                                                    >
+                                                        <app-icon
+                                                            >cancel</app-icon
+                                                        >
+                                                    </button>
+                                                </mat-chip-row>
+                                            }
+                                        </mat-chip-grid>
+                                        <input
+                                            [(ngModel)]="new_email"
+                                            [ngModelOptions]="{
+                                                standalone: true,
+                                            }"
+                                            [placeholder]="
+                                                'TRIGGERS.ACTION_EMAIL_ADDRESS_LIST'
+                                                    | translate
+                                            "
+                                            [matChipInputFor]="chipList"
+                                            [matChipInputSeparatorKeyCodes]="
+                                                separators
+                                            "
+                                            [matChipInputAddOnBlur]="true"
+                                            (matChipInputTokenEnd)="
+                                                addEmail($event.value);
+                                                new_email = ''
+                                            "
+                                        />
+                                    </mat-form-field>
+                                </div>
+                            }
+                            @if (form.controls.content) {
+                                <div class="field">
+                                    <label for="content">{{
+                                        'TRIGGERS.ACTION_EMAIL_BODY' | translate
+                                    }}</label>
+                                    <mat-form-field appearance="outline">
+                                        <textarea
+                                            matInput
+                                            name="content"
+                                            placeholder="Email body contents..."
+                                            formControlName="content"
+                                        ></textarea>
+                                    </mat-form-field>
+                                </div>
+                            }
+                        }
+                        @default {
+                            @if (form.controls.method_call) {
+                                <div class="field">
+                                    <label for="content">
+                                        {{
+                                            'TRIGGERS.ACTION_EXECUTE_SELECT'
+                                                | translate
+                                        }}
+                                    </label>
+                                    <execute-method-field
+                                        formControlName="method_call"
+                                        [system]="system"
+                                        [can_execute]="false"
+                                    ></execute-method-field>
+                                </div>
+                            }
+                        }
+                    }
+                </form>
+            }
         </fullscreen-modal-shell>
     `,
     styles: [``],

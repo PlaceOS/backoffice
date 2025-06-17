@@ -32,9 +32,11 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                         <div class="truncate">
                             {{ parent_name || id }}
                         </div>
-                        <div class="text-xs opacity-30" *ngIf="parent_name">
-                            {{ id }}
-                        </div>
+                        @if (parent_name) {
+                            <div class="text-xs opacity-30">
+                                {{ id }}
+                            </div>
+                        }
                     </div>
                     <div
                         class="relative flex h-14 min-w-48 items-center rounded border border-base-300 px-4 py-2"
@@ -57,35 +59,10 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                             [(ngModel)]="first"
                             placeholder="Select metadata version"
                         >
-                            <mat-option
-                                *ngFor="let item of history"
-                                [value]="item"
-                                (click)="select(0, item)"
-                                class="leading-tight"
-                            >
-                                <div class="">
-                                    {{ item.updated_at | date: 'mediumDate' }},
-                                    {{ item.updated_at | date: 'shortTime' }}
-                                </div>
-                                <div class="truncate text-xs opacity-30">
-                                    {{ item.description }}
-                                </div>
-                            </mat-option>
-                        </mat-select>
-                        <mat-hint *ngIf="first" class="truncate">{{
-                            first.description
-                        }}</mat-hint>
-                    </mat-form-field>
-                    <mat-form-field appearance="outline" class="w-[20rem]">
-                        <mat-select
-                            [(ngModel)]="second"
-                            placeholder="Compare with"
-                        >
-                            @for (item of history; track item.updated_at) {
+                            @for (item of history; track item) {
                                 <mat-option
-                                    *ngIf="item !== first"
                                     [value]="item"
-                                    (click)="select(1, item)"
+                                    (click)="select(0, item)"
                                     class="leading-tight"
                                 >
                                     <div class="">
@@ -103,29 +80,70 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                                 </mat-option>
                             }
                         </mat-select>
-                        <mat-hint *ngIf="second" class="truncate">{{
-                            second.description
-                        }}</mat-hint>
+                        @if (first) {
+                            <mat-hint class="truncate">{{
+                                first.description
+                            }}</mat-hint>
+                        }
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="w-[20rem]">
+                        <mat-select
+                            [(ngModel)]="second"
+                            placeholder="Compare with"
+                        >
+                            @for (item of history; track item.updated_at) {
+                                @if (item !== first) {
+                                    <mat-option
+                                        [value]="item"
+                                        (click)="select(1, item)"
+                                        class="leading-tight"
+                                    >
+                                        <div class="">
+                                            {{
+                                                item.updated_at
+                                                    | date: 'mediumDate'
+                                            }},
+                                            {{
+                                                item.updated_at
+                                                    | date: 'shortTime'
+                                            }}
+                                        </div>
+                                        <div
+                                            class="truncate text-xs opacity-30"
+                                        >
+                                            {{ item.description }}
+                                        </div>
+                                    </mat-option>
+                                }
+                            }
+                        </mat-select>
+                        @if (second) {
+                            <mat-hint class="truncate">{{
+                                second.description
+                            }}</mat-hint>
+                        }
                     </mat-form-field>
                 </div>
                 <div class="relative w-full flex-1 px-4">
-                    <diff-viewer
-                        *ngIf="first_details || second_details"
-                        [modified]="second_details || ''"
-                        [original]="first_details || ''"
-                    ></diff-viewer>
-                    <div
-                        *ngIf="!(first_details && second_details)"
-                        class="flex h-full w-full items-center justify-center rounded-lg bg-base-200 opacity-40"
-                    >
-                        Select 2 versions of the metadata to get started
-                    </div>
+                    @if (first_details || second_details) {
+                        <diff-viewer
+                            [modified]="second_details || ''"
+                            [original]="first_details || ''"
+                        ></diff-viewer>
+                    }
+                    @if (!(first_details && second_details)) {
+                        <div
+                            class="flex h-full w-full items-center justify-center rounded-lg bg-base-200 opacity-40"
+                        >
+                            Select 2 versions of the metadata to get started
+                        </div>
+                    }
                 </div>
             </main>
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class MetadataHistoryModalComponent implements OnInit {
     public readonly id = this._data.id;

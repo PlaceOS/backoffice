@@ -64,15 +64,16 @@ import { APIKeyService } from './api-keys.service';
                     >
                     <mat-form-field appearance="outline">
                         <mat-chip-grid #chipList aria-label="Scopes">
-                            <mat-chip
-                                *ngFor="let scope of scope_list"
-                                [selectable]="true"
-                                [removable]="true"
-                                (removed)="removeScope(scope)"
-                            >
-                                {{ scope }}
-                                <app-icon matChipRemove>close</app-icon>
-                            </mat-chip>
+                            @for (scope of scope_list; track scope) {
+                                <mat-chip
+                                    [selectable]="true"
+                                    [removable]="true"
+                                    (removed)="removeScope(scope)"
+                                >
+                                    {{ scope }}
+                                    <app-icon matChipRemove>close</app-icon>
+                                </mat-chip>
+                            }
                             <input
                                 matInput
                                 placeholder="Scopes..."
@@ -87,12 +88,15 @@ import { APIKeyService } from './api-keys.service';
                             'ADMIN.APP_KEYS_SCOPES_REQUIRED' | translate
                         }}</mat-error>
                         <mat-autocomplete #auto="matAutocomplete">
-                            <mat-option
-                                *ngFor="let option of scopes | async"
-                                (click)="addScope({ input: {}, value: option })"
-                            >
-                                {{ option }}
-                            </mat-option>
+                            @for (option of scopes | async; track option) {
+                                <mat-option
+                                    (click)="
+                                        addScope({ input: {}, value: option })
+                                    "
+                                >
+                                    {{ option }}
+                                </mat-option>
+                            }
                         </mat-autocomplete>
                     </mat-form-field>
                 </div>
@@ -128,47 +132,50 @@ import { APIKeyService } from './api-keys.service';
                                 [placeholder]="'USERS.SEARCH' | translate"
                             />
                         </mat-form-field>
-                        <button
-                            mat-menu-item
-                            *ngFor="let item of users | async | slice: 0 : 10"
-                            (click)="
-                                form.patchValue({
-                                    user: item,
-                                    user_id: item.id,
-                                });
-                                setSearch('')
-                            "
-                            [class.text-secondary]="
-                                form.value.user?.id === item.id
-                            "
-                        >
-                            <div class="flex w-full items-center space-x-4">
-                                <div class="flex-1 leading-tight">
-                                    <div>{{ item.name }}</div>
-                                    <div class="text-xs opacity-30">
-                                        {{ item.email }}
+                        @for (
+                            item of users | async | slice: 0 : 10;
+                            track item
+                        ) {
+                            <button
+                                mat-menu-item
+                                (click)="
+                                    form.patchValue({
+                                        user: item,
+                                        user_id: item.id,
+                                    });
+                                    setSearch('')
+                                "
+                                [class.text-secondary]="
+                                    form.value.user?.id === item.id
+                                "
+                            >
+                                <div class="flex w-full items-center space-x-4">
+                                    <div class="flex-1 leading-tight">
+                                        <div>{{ item.name }}</div>
+                                        <div class="text-xs opacity-30">
+                                            {{ item.email }}
+                                        </div>
                                     </div>
+                                    @if (item.sys_admin || item.support) {
+                                        <code class="px-2">{{
+                                            (item.sys_admin
+                                                ? 'COMMON.USER_ADMIN'
+                                                : 'COMMON.USER_SUPPORT'
+                                            ) | translate
+                                        }}</code>
+                                    }
                                 </div>
-                                <code
-                                    *ngIf="item.sys_admin || item.support"
-                                    class="px-2"
-                                    >{{
-                                        (item.sys_admin
-                                            ? 'COMMON.USER_ADMIN'
-                                            : 'COMMON.USER_SUPPORT'
-                                        ) | translate
-                                    }}</code
-                                >
-                            </div>
-                        </button>
-                        <button
-                            mat-menu-item
-                            [disabled]="true"
-                            *ngIf="!(users | async)?.length"
-                            class="min-w-[20rem] text-center"
-                        >
-                            No results
-                        </button>
+                            </button>
+                        }
+                        @if (!(users | async)?.length) {
+                            <button
+                                mat-menu-item
+                                [disabled]="true"
+                                class="min-w-[20rem] text-center"
+                            >
+                                No results
+                            </button>
+                        }
                     </mat-menu>
                 </div>
                 <div class="flex flex-col">

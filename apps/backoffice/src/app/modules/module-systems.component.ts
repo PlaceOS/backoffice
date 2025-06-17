@@ -81,7 +81,7 @@ import { ModuleStateService } from './module-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class ModuleSystemsComponent {
     /** Subject holding the value of the search */

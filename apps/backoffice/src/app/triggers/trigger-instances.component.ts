@@ -86,7 +86,7 @@ import { TriggerStateService } from './trigger-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class TriggerInstancesComponent {
     /** List of systems associated with the trigger */

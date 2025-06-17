@@ -60,9 +60,11 @@ import { ZonesStateService } from './zones-state.service';
         <ng-template #description_template let-data="data">
             <div class="w-full select-text overflow-hidden px-4 py-2 text-xs">
                 {{ data }}
-                <span class="opacity-30" *ngIf="!data">
-                    {{ 'ZONES.DESCRIPTION_EMPTY' | translate }}
-                </span>
+                @if (!data) {
+                    <span class="opacity-30">
+                        {{ 'ZONES.DESCRIPTION_EMPTY' | translate }}
+                    </span>
+                }
             </div>
         </ng-template>
     `,
@@ -74,7 +76,7 @@ import { ZonesStateService } from './zones-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class ZoneChildrenComponent {
     public readonly filter$ = new BehaviorSubject<string>('');

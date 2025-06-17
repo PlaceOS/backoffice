@@ -78,28 +78,29 @@ import { i18n } from '../../common/locale.service';
                         encryption_level = available_levels[$event].id
                     "
                 >
-                    <mat-tab
-                        *ngFor="let option of available_levels"
-                        [label]="
-                            option.name +
-                            (option.id !== 4 &&
-                            form.controls['settings' + option.id].dirty
-                                ? ' *'
-                                : '')
-                        "
-                    >
-                    </mat-tab>
+                    @for (option of available_levels; track option) {
+                        <mat-tab
+                            [label]="
+                                option.name +
+                                (option.id !== 4 &&
+                                form.controls['settings' + option.id].dirty
+                                    ? ' *'
+                                    : '')
+                            "
+                        >
+                        </mat-tab>
+                    }
                 </mat-tab-group>
-                <ng-container
-                    *ngFor="let option of available_levels; let i = index"
-                >
-                    <ng-container
-                        *ngIf="
-                            form &&
-                            encryption_level === option.id &&
-                            form.controls['settings' + option.id]
-                        "
-                    >
+                @for (
+                    option of available_levels;
+                    track option;
+                    let i = $index
+                ) {
+                    @if (
+                        form &&
+                        encryption_level === option.id &&
+                        form.controls['settings' + option.id]
+                    ) {
                         <div
                             [class.error-border]="
                                 form.controls['settings' + option.id]?.errors
@@ -115,46 +116,44 @@ import { i18n } from '../../common/locale.service';
                                 "
                             ></settings-form-field>
                         </div>
-                        <div
-                            class="error-display"
-                            *ngIf="
-                                form.controls['settings' + option.id]?.errors
-                            "
-                        >
-                            {{
-                                form.controls['settings' + option.id].errors
-                                    .yaml
-                            }}
-                        </div>
-                        <div
-                            class="border-gray-300 mb-4 flex items-center justify-between space-x-2 rounded-b border-b border-l border-r p-1"
-                            *ngIf="option.name !== 'Merged'"
-                        >
-                            <div class="pl-2 text-xs">
+                        @if (form.controls['settings' + option.id]?.errors) {
+                            <div class="error-display">
                                 {{
-                                    (
-                                        settings[i - 1]?.modified_by_id
-                                        | user
-                                        | async
-                                    )?.name
+                                    form.controls['settings' + option.id].errors
+                                        .yaml
                                 }}
                             </div>
-                            <code
-                                class="text-xs"
-                                [matTooltip]="
-                                    settings[i - 1]?.updated_at * 1000 || 0
-                                        | date: 'medium'
-                                "
+                        }
+                        @if (option.name !== 'Merged') {
+                            <div
+                                class="border-gray-300 mb-4 flex items-center justify-between space-x-2 rounded-b border-b border-l border-r p-1"
                             >
-                                {{ 'COMMON.LAST_EDIT' | translate }}:
-                                {{
-                                    settings[i - 1]?.updated_at * 1000
-                                        | dateFrom
-                                }}
-                            </code>
-                        </div>
-                    </ng-container>
-                </ng-container>
+                                <div class="pl-2 text-xs">
+                                    {{
+                                        (
+                                            settings[i - 1]?.modified_by_id
+                                            | user
+                                            | async
+                                        )?.name
+                                    }}
+                                </div>
+                                <code
+                                    class="text-xs"
+                                    [matTooltip]="
+                                        settings[i - 1]?.updated_at * 1000 || 0
+                                            | date: 'medium'
+                                    "
+                                >
+                                    {{ 'COMMON.LAST_EDIT' | translate }}:
+                                    {{
+                                        settings[i - 1]?.updated_at * 1000
+                                            | dateFrom
+                                    }}
+                                </code>
+                            </div>
+                        }
+                    }
+                }
             </form>
         }
         <ng-template #spinner>

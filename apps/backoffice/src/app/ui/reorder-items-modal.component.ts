@@ -25,23 +25,23 @@ export interface ReorderItemsOptions {
                 class="flex w-full flex-col divide-y divide-base-200 rounded border border-base-200"
                 (cdkDropListDropped)="drop($event)"
             >
-                <div
-                    *ngFor="let item of items | async; let i = index"
-                    class="flex items-center space-x-2 p-2"
-                    cdkDrag
-                >
-                    <div
-                        class="flex h-8 min-w-8 items-center justify-center rounded-full bg-base-200 text-sm font-medium"
-                    >
-                        {{ i + 1 }}
+                @for (item of items | async; track item; let i = $index) {
+                    <div class="flex items-center space-x-2 p-2" cdkDrag>
+                        <div
+                            class="flex h-8 min-w-8 items-center justify-center rounded-full bg-base-200 text-sm font-medium"
+                        >
+                            {{ i + 1 }}
+                        </div>
+                        <div class="flex-1 px-2">{{ item.name }}</div>
+                        @if (changed.length) {
+                            <div></div>
+                        }
+                        <div
+                            class="h-12 w-full border-4 border-dashed border-base-300 bg-base-200"
+                            *cdkDragPlaceholder
+                        ></div>
                     </div>
-                    <div class="flex-1 px-2">{{ item.name }}</div>
-                    <div *ngIf="changed.length"></div>
-                    <div
-                        class="h-12 w-full border-4 border-dashed border-base-300 bg-base-200"
-                        *cdkDragPlaceholder
-                    ></div>
-                </div>
+                }
             </div>
         </main>
         <footer
@@ -59,7 +59,7 @@ export interface ReorderItemsOptions {
         </footer>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ReorderItemsModalComponent {
     public readonly items = new BehaviorSubject([]);

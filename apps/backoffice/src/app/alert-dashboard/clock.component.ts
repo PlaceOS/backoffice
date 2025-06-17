@@ -40,7 +40,7 @@ import { AsyncHandler } from '../common/async-handler.class';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class DashboardClockComponent extends AsyncHandler implements OnInit {
     /** Angle to display the hour hand of the clock at */

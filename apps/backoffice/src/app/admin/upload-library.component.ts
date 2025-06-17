@@ -99,12 +99,11 @@ export interface UploadInfo {
                             (ngModelChange)="domain.next($event)"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            <mat-option
-                                *ngFor="let domain of domain_list | async"
-                                [value]="domain"
-                            >
-                                {{ domain.name }}
-                            </mat-option>
+                            @for (domain of domain_list | async; track domain) {
+                                <mat-option [value]="domain">
+                                    {{ domain.name }}
+                                </mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                     <button btn matRipple class="relative h-12 w-32">

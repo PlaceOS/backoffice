@@ -101,12 +101,14 @@ import { DomainStateService } from './domain-state.service';
                     <app-icon>visibility</app-icon>
                 </button>
                 <div class="p-2 font-mono text-xs">
-                    <span
-                        *ngIf="!show_secret[row.id]"
-                        class="rounded bg-base-200 p-2"
-                        >{{ 'DOMAINS.SECRET_HIDDEN' | translate }}</span
-                    >
-                    <span *ngIf="show_secret[row.id]">{{ row.secret }}</span>
+                    @if (!show_secret[row.id]) {
+                        <span class="rounded bg-base-200 p-2">{{
+                            'DOMAINS.SECRET_HIDDEN' | translate
+                        }}</span>
+                    }
+                    @if (show_secret[row.id]) {
+                        <span>{{ row.secret }}</span>
+                    }
                 </div>
             </div>
         </ng-template>

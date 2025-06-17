@@ -11,280 +11,326 @@ import { TIMEZONES_IANA } from '../../common/timezones';
 @Component({
     selector: 'system-form',
     template: `
-        <form
-            system
-            class="flex w-full flex-col"
-            *ngIf="form"
-            [formGroup]="form"
-        >
-            <div class="field" *ngIf="form.controls.zone">
-                <label
-                    for="zone"
-                    [class.error]="
-                        form.controls.zone.invalid && form.controls.zone.touched
-                    "
-                >
-                    {{ 'ZONES.SINGULAR' | translate }}<span>*</span>
-                </label>
-                <item-search-field
-                    name="zone"
-                    [query_fn]="query_fn"
-                    formControlName="zone"
-                ></item-search-field>
-                <div
-                    class="error"
-                    *ngIf="
-                        form.controls.zone.invalid && form.controls.zone.touched
-                    "
-                >
-                    {{ 'SYSTEMS.ZONE_REQUIRED' | translate }}
-                </div>
-            </div>
-            <div class="fieldset">
-                <div class="field" *ngIf="form.controls.name">
-                    <label
-                        for="system-name"
-                        [class.error]="
-                            form.controls.name.invalid &&
-                            form.controls.name.touched
-                        "
-                    >
-                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="system-name"
-                            placeholder="System Name"
-                            formControlName="name"
-                            required
-                        />
-                        <mat-error *ngIf="form.controls.name.invalid">{{
-                            'SYSTEMS.NAME_REQUIRED' | translate
-                        }}</mat-error>
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.email">
-                    <label
-                        for="system-email"
-                        [class.error]="
-                            form.controls.email.invalid &&
-                            form.controls.email.touched
-                        "
-                    >
-                        {{ 'COMMON.FIELD_EMAIL' | translate }}
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="system-email"
-                            [placeholder]="'COMMON.FIELD_EMAIL' | translate"
-                            formControlName="email"
-                        />
-                        <mat-error *ngIf="form.controls.email.invalid">{{
-                            'SYSTEMS.EMAIL_REQUIRED' | translate
-                        }}</mat-error>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="fieldset">
-                <div class="field" *ngIf="form.controls.display_name">
-                    <label for="display-name">
-                        {{ 'SYSTEMS.DISPLAY_NAME' | translate }}
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="display-name"
-                            [placeholder]="'SYSTEMS.DISPLAY_NAME' | translate"
-                            formControlName="display_name"
-                        />
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.display_name">
-                    <label for="code-name"
-                        >{{ 'SYSTEMS.CODE' | translate }}
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="code-name"
-                            [placeholder]="'SYSTEMS.CODE' | translate"
-                            formControlName="code"
-                        />
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="field" *ngIf="form.controls.support_url">
-                <label
-                    for="support-url"
-                    [class.error]="
-                        form.controls.support_url.invalid &&
-                        form.controls.support_url.touched
-                    "
-                >
-                    {{ 'SYSTEMS.SUPPORT_URL' | translate }}
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="support-url"
-                        [placeholder]="'SYSTEMS.SUPPORT_URL' | translate"
-                        formControlName="support_url"
-                    />
-                    <mat-error *ngIf="form.controls.support_url.invalid">
-                        {{ 'SYSTEMS.URL_VALID' | translate }}
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <div class="fieldset mb-4">
-                <div class="field" *ngIf="form.controls.installed_ui_devices">
-                    <label
-                        for="ui-devices"
-                        [class.error]="
-                            form.controls.installed_ui_devices.invalid &&
-                            form.controls.installed_ui_devices.touched
-                        "
-                    >
-                        {{ 'SYSTEMS.PANEL_COUNT' | translate }}
-                    </label>
-                    <a-counter
-                        formControlName="installed_ui_devices"
-                        [min]="0"
-                        [max]="999"
-                    ></a-counter>
-                </div>
-                <div class="field" *ngIf="form.controls.capacity">
-                    <label
-                        for="capacity"
-                        [class.error]="
-                            form.controls.capacity.invalid &&
-                            form.controls.capacity.touched
-                        "
-                    >
-                        {{ 'SYSTEMS.CAPACITY' | translate }}
-                    </label>
-                    <a-counter
-                        formControlName="capacity"
-                        [min]="0"
-                        [max]="999"
-                    ></a-counter>
-                </div>
-            </div>
-            <div class="mb-4 flex items-center space-x-4">
-                <settings-toggle
-                    [name]="'SYSTEMS.BOOKABLE' | translate"
-                    class="flex-1"
-                    formControlName="bookable"
-                ></settings-toggle>
-                <settings-toggle
-                    [name]="'SYSTEMS.SIGNAGE' | translate"
-                    class="flex-1"
-                    formControlName="signage"
-                ></settings-toggle>
-                <settings-toggle
-                    [name]="'SYSTEMS.PUBLIC' | translate"
-                    class="flex-1"
-                    formControlName="public"
-                ></settings-toggle>
-            </div>
-            <div class="field" *ngIf="form.controls.description">
-                <label for="description">
-                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
-                </label>
-                <mat-form-field appearance="outline">
-                    <textarea
-                        matInput
-                        name="description"
-                        [placeholder]="'COMMON.FIELD_DESCRIPTION' | translate"
-                        formControlName="description"
-                    ></textarea>
-                </mat-form-field>
-            </div>
-            <div class="field" *ngIf="form.controls.features">
-                <label
-                    [class.error]="
-                        form.controls.features.invalid &&
-                        form.controls.features.touched
-                    "
-                >
-                    {{ 'SYSTEMS.FEATURES' | translate }}
-                </label>
-                <mat-form-field appearance="outline" class="w-full">
-                    <mat-chip-grid #chipList aria-label="Image List">
-                        <mat-chip-row
-                            *ngFor="let item of feature_list"
-                            (removed)="removeFeature(item)"
+        @if (form) {
+            <form system class="flex w-full flex-col" [formGroup]="form">
+                @if (form.controls.zone) {
+                    <div class="field">
+                        <label
+                            for="zone"
+                            [class.error]="
+                                form.controls.zone.invalid &&
+                                form.controls.zone.touched
+                            "
                         >
-                            <div class="max-w-md truncate">{{ item }}</div>
-                            <button
-                                matChipRemove
-                                [attr.aria-label]="
-                                    'SYSTEMS.REMOVE_ITEM'
-                                        | translate: { item: item }
+                            {{ 'ZONES.SINGULAR' | translate }}<span>*</span>
+                        </label>
+                        <item-search-field
+                            name="zone"
+                            [query_fn]="query_fn"
+                            formControlName="zone"
+                        ></item-search-field>
+                        @if (
+                            form.controls.zone.invalid &&
+                            form.controls.zone.touched
+                        ) {
+                            <div class="error">
+                                {{ 'SYSTEMS.ZONE_REQUIRED' | translate }}
+                            </div>
+                        }
+                    </div>
+                }
+                <div class="fieldset">
+                    @if (form.controls.name) {
+                        <div class="field">
+                            <label
+                                for="system-name"
+                                [class.error]="
+                                    form.controls.name.invalid &&
+                                    form.controls.name.touched
                                 "
                             >
-                                <app-icon>cancel</app-icon>
-                            </button>
-                        </mat-chip-row>
-                    </mat-chip-grid>
-                    <input
-                        [placeholder]="'SYSTEMS.FEATURES' | translate"
-                        [matChipInputFor]="chipList"
-                        [matChipInputSeparatorKeyCodes]="separators"
-                        [matChipInputAddOnBlur]="true"
-                        (matChipInputTokenEnd)="addFeature($event)"
-                    />
-                </mat-form-field>
-            </div>
-            <div class="field" *ngIf="form.controls.map_id">
-                <label for="map_id">{{ 'SYSTEMS.MAP_ID' | translate }}</label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="map_id"
-                        placeholder="Map SVG ID selector e.g. area-01.10-status"
-                        formControlName="map_id"
-                    />
-                </mat-form-field>
-            </div>
-            <div class="field">
-                <label for="timezone">{{
-                    'COMMON.TIMEZONE' | translate
-                }}</label>
-                <mat-form-field appearance="outline">
-                    <div class="prefix" matPrefix>
-                        <app-icon class="relative -left-0.5 text-2xl">
-                            search
-                        </app-icon>
+                                {{ 'COMMON.FIELD_NAME' | translate
+                                }}<span>*</span>
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="system-name"
+                                    placeholder="System Name"
+                                    formControlName="name"
+                                    required
+                                />
+                                @if (form.controls.name.invalid) {
+                                    <mat-error>{{
+                                        'SYSTEMS.NAME_REQUIRED' | translate
+                                    }}</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    }
+                    @if (form.controls.email) {
+                        <div class="field">
+                            <label
+                                for="system-email"
+                                [class.error]="
+                                    form.controls.email.invalid &&
+                                    form.controls.email.touched
+                                "
+                            >
+                                {{ 'COMMON.FIELD_EMAIL' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="system-email"
+                                    [placeholder]="
+                                        'COMMON.FIELD_EMAIL' | translate
+                                    "
+                                    formControlName="email"
+                                />
+                                @if (form.controls.email.invalid) {
+                                    <mat-error>{{
+                                        'SYSTEMS.EMAIL_REQUIRED' | translate
+                                    }}</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    }
+                </div>
+                <div class="fieldset">
+                    @if (form.controls.display_name) {
+                        <div class="field">
+                            <label for="display-name">
+                                {{ 'SYSTEMS.DISPLAY_NAME' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="display-name"
+                                    [placeholder]="
+                                        'SYSTEMS.DISPLAY_NAME' | translate
+                                    "
+                                    formControlName="display_name"
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
+                    @if (form.controls.display_name) {
+                        <div class="field">
+                            <label for="code-name"
+                                >{{ 'SYSTEMS.CODE' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="code-name"
+                                    [placeholder]="'SYSTEMS.CODE' | translate"
+                                    formControlName="code"
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
+                </div>
+                @if (form.controls.support_url) {
+                    <div class="field">
+                        <label
+                            for="support-url"
+                            [class.error]="
+                                form.controls.support_url.invalid &&
+                                form.controls.support_url.touched
+                            "
+                        >
+                            {{ 'SYSTEMS.SUPPORT_URL' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="support-url"
+                                [placeholder]="
+                                    'SYSTEMS.SUPPORT_URL' | translate
+                                "
+                                formControlName="support_url"
+                            />
+                            @if (form.controls.support_url.invalid) {
+                                <mat-error>
+                                    {{ 'SYSTEMS.URL_VALID' | translate }}
+                                </mat-error>
+                            }
+                        </mat-form-field>
                     </div>
-                    <input
-                        matInput
-                        formControlName="timezone"
-                        [placeholder]="'COMMON.TIMEZONE' | translate"
-                        [matAutocomplete]="auto"
-                    />
-                </mat-form-field>
-                <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option
-                        *ngFor="let tz of filtered_timezones"
-                        [value]="tz"
-                    >
-                        {{ tz }}
-                    </mat-option>
-                    <mat-option *ngIf="!timezones.length" [disabled]="true">
-                        {{ 'COMMON.TIMEZONE_EMPTY' | translate }}
-                    </mat-option>
-                </mat-autocomplete>
-            </div>
-            <div class="field" *ngIf="form.controls.images">
-                <label for="images">{{ 'COMMON.IMAGES' | translate }}</label>
-                <image-list-field
-                    name="images"
-                    formControlName="images"
-                ></image-list-field>
-            </div>
-        </form>
+                }
+                <div class="fieldset mb-4">
+                    @if (form.controls.installed_ui_devices) {
+                        <div class="field">
+                            <label
+                                for="ui-devices"
+                                [class.error]="
+                                    form.controls.installed_ui_devices
+                                        .invalid &&
+                                    form.controls.installed_ui_devices.touched
+                                "
+                            >
+                                {{ 'SYSTEMS.PANEL_COUNT' | translate }}
+                            </label>
+                            <a-counter
+                                formControlName="installed_ui_devices"
+                                [min]="0"
+                                [max]="999"
+                            ></a-counter>
+                        </div>
+                    }
+                    @if (form.controls.capacity) {
+                        <div class="field">
+                            <label
+                                for="capacity"
+                                [class.error]="
+                                    form.controls.capacity.invalid &&
+                                    form.controls.capacity.touched
+                                "
+                            >
+                                {{ 'SYSTEMS.CAPACITY' | translate }}
+                            </label>
+                            <a-counter
+                                formControlName="capacity"
+                                [min]="0"
+                                [max]="999"
+                            ></a-counter>
+                        </div>
+                    }
+                </div>
+                <div class="mb-4 flex items-center space-x-4">
+                    <settings-toggle
+                        [name]="'SYSTEMS.BOOKABLE' | translate"
+                        class="flex-1"
+                        formControlName="bookable"
+                    ></settings-toggle>
+                    <settings-toggle
+                        [name]="'SYSTEMS.SIGNAGE' | translate"
+                        class="flex-1"
+                        formControlName="signage"
+                    ></settings-toggle>
+                    <settings-toggle
+                        [name]="'SYSTEMS.PUBLIC' | translate"
+                        class="flex-1"
+                        formControlName="public"
+                    ></settings-toggle>
+                </div>
+                @if (form.controls.description) {
+                    <div class="field">
+                        <label for="description">
+                            {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <textarea
+                                matInput
+                                name="description"
+                                [placeholder]="
+                                    'COMMON.FIELD_DESCRIPTION' | translate
+                                "
+                                formControlName="description"
+                            ></textarea>
+                        </mat-form-field>
+                    </div>
+                }
+                @if (form.controls.features) {
+                    <div class="field">
+                        <label
+                            [class.error]="
+                                form.controls.features.invalid &&
+                                form.controls.features.touched
+                            "
+                        >
+                            {{ 'SYSTEMS.FEATURES' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline" class="w-full">
+                            <mat-chip-grid #chipList aria-label="Image List">
+                                @for (item of feature_list; track item) {
+                                    <mat-chip-row
+                                        (removed)="removeFeature(item)"
+                                    >
+                                        <div class="max-w-md truncate">
+                                            {{ item }}
+                                        </div>
+                                        <button
+                                            matChipRemove
+                                            [attr.aria-label]="
+                                                'SYSTEMS.REMOVE_ITEM'
+                                                    | translate: { item: item }
+                                            "
+                                        >
+                                            <app-icon>cancel</app-icon>
+                                        </button>
+                                    </mat-chip-row>
+                                }
+                            </mat-chip-grid>
+                            <input
+                                [placeholder]="'SYSTEMS.FEATURES' | translate"
+                                [matChipInputFor]="chipList"
+                                [matChipInputSeparatorKeyCodes]="separators"
+                                [matChipInputAddOnBlur]="true"
+                                (matChipInputTokenEnd)="addFeature($event)"
+                            />
+                        </mat-form-field>
+                    </div>
+                }
+                @if (form.controls.map_id) {
+                    <div class="field">
+                        <label for="map_id">{{
+                            'SYSTEMS.MAP_ID' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="map_id"
+                                placeholder="Map SVG ID selector e.g. area-01.10-status"
+                                formControlName="map_id"
+                            />
+                        </mat-form-field>
+                    </div>
+                }
+                <div class="field">
+                    <label for="timezone">{{
+                        'COMMON.TIMEZONE' | translate
+                    }}</label>
+                    <mat-form-field appearance="outline">
+                        <div class="prefix" matPrefix>
+                            <app-icon class="relative -left-0.5 text-2xl">
+                                search
+                            </app-icon>
+                        </div>
+                        <input
+                            matInput
+                            formControlName="timezone"
+                            [placeholder]="'COMMON.TIMEZONE' | translate"
+                            [matAutocomplete]="auto"
+                        />
+                    </mat-form-field>
+                    <mat-autocomplete #auto="matAutocomplete">
+                        @for (tz of filtered_timezones; track tz) {
+                            <mat-option [value]="tz">
+                                {{ tz }}
+                            </mat-option>
+                        }
+                        @if (!timezones.length) {
+                            <mat-option [disabled]="true">
+                                {{ 'COMMON.TIMEZONE_EMPTY' | translate }}
+                            </mat-option>
+                        }
+                    </mat-autocomplete>
+                </div>
+                @if (form.controls.images) {
+                    <div class="field">
+                        <label for="images">{{
+                            'COMMON.IMAGES' | translate
+                        }}</label>
+                        <image-list-field
+                            name="images"
+                            formControlName="images"
+                        ></image-list-field>
+                    </div>
+                }
+            </form>
+        }
     `,
     styles: [
         `
@@ -300,7 +346,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class SystemFormComponent extends AsyncHandler {
     public timezones: string[] = [];

@@ -22,75 +22,72 @@ export interface MetadataDetailsModalData {
                 <app-icon>close</app-icon>
             </button>
         </header>
-        <main
-            *ngIf="form"
-            [formGroup]="form"
-            class="flex w-[32rem] flex-col p-4"
-        >
-            <label
-                for="property-name"
-                [class.error]="
-                    form.controls.name.invalid && form.controls.name.touched
-                "
-                >Name<span class="text-pending">*</span>:</label
-            >
-            <mat-form-field appearance="outline">
-                <input
-                    matInput
-                    name="property-name"
-                    placeholder="Property Name"
-                    formControlName="name"
-                    required
-                />
-                <mat-error>{{
-                    form.controls.name?.errors?.name
-                        ? 'Property name must be unique'
-                        : 'Property name is required'
-                }}</mat-error>
-            </mat-form-field>
-            <label for="description">Description:</label>
-            <mat-form-field appearance="outline">
-                <textarea
-                    matInput
-                    name="description"
-                    placeholder="Description"
-                    formControlName="description"
-                ></textarea>
-            </mat-form-field>
-            <label for="system-email">Editors:</label>
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-chip-grid #chipList aria-label="Image List">
-                    <mat-chip-row
-                        *ngFor="let item of editors"
-                        (removed)="removeEditor(item)"
-                    >
-                        <div class="max-w-md truncate">{{ item }}</div>
-                        <button
-                            matChipRemove
-                            [attr.aria-label]="'Remove ' + item"
-                        >
-                            <app-icon>cancel</app-icon>
-                        </button>
-                    </mat-chip-row>
-                </mat-chip-grid>
-                <input
-                    placeholder="Editors..."
-                    [matChipInputFor]="chipList"
-                    [matChipInputSeparatorKeyCodes]="separators"
-                    [matChipInputAddOnBlur]="true"
-                    (matChipInputTokenEnd)="addEditor($event)"
-                />
-            </mat-form-field>
-            <label for="schema">Schema:</label>
-            <mat-form-field appearance="outline">
-                <input
-                    matInput
-                    name="schema"
-                    placeholder="Schema"
-                    formControlName="schema"
-                />
-            </mat-form-field>
-        </main>
+        @if (form) {
+            <main [formGroup]="form" class="flex w-[32rem] flex-col p-4">
+                <label
+                    for="property-name"
+                    [class.error]="
+                        form.controls.name.invalid && form.controls.name.touched
+                    "
+                    >Name<span class="text-pending">*</span>:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="property-name"
+                        placeholder="Property Name"
+                        formControlName="name"
+                        required
+                    />
+                    <mat-error>{{
+                        form.controls.name?.errors?.name
+                            ? 'Property name must be unique'
+                            : 'Property name is required'
+                    }}</mat-error>
+                </mat-form-field>
+                <label for="description">Description:</label>
+                <mat-form-field appearance="outline">
+                    <textarea
+                        matInput
+                        name="description"
+                        placeholder="Description"
+                        formControlName="description"
+                    ></textarea>
+                </mat-form-field>
+                <label for="system-email">Editors:</label>
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-chip-grid #chipList aria-label="Image List">
+                        @for (item of editors; track item) {
+                            <mat-chip-row (removed)="removeEditor(item)">
+                                <div class="max-w-md truncate">{{ item }}</div>
+                                <button
+                                    matChipRemove
+                                    [attr.aria-label]="'Remove ' + item"
+                                >
+                                    <app-icon>cancel</app-icon>
+                                </button>
+                            </mat-chip-row>
+                        }
+                    </mat-chip-grid>
+                    <input
+                        placeholder="Editors..."
+                        [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separators"
+                        [matChipInputAddOnBlur]="true"
+                        (matChipInputTokenEnd)="addEditor($event)"
+                    />
+                </mat-form-field>
+                <label for="schema">Schema:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="schema"
+                        placeholder="Schema"
+                        formControlName="schema"
+                    />
+                </mat-form-field>
+            </main>
+        }
         <footer
             class="flex items-center justify-end space-x-2 border-t border-base-200 px-4 py-2"
         >
@@ -106,7 +103,7 @@ export interface MetadataDetailsModalData {
         </footer>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class MetadataDetailsModalComponent implements OnInit {
     public form = new FormGroup({

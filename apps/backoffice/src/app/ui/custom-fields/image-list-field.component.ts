@@ -56,92 +56,105 @@ export interface UploadDetails {
                     (change)="uploadImages($event)"
                 />
             </div>
-            <div
-                image
-                *ngFor="let url of list; let i = index"
-                class="relative h-32 w-36 flex-shrink-0 overflow-hidden rounded bg-base-200 bg-cover bg-center"
-                [style.transform]="'translate(-' + offset + '00%)'"
-            >
-                <img
-                    auth
-                    [source]="url"
-                    class="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 object-contain"
-                />
-                <div overlay class="absolute inset-0 z-20 text-base-100">
-                    <div bg class="absolute inset-0 bg-black opacity-0"></div>
-                    <div
-                        actions
-                        class="absolute left-0 right-0 top-0 flex items-center justify-center space-x-2 opacity-0"
-                    >
-                        <button icon (click)="copyLink(url)">
-                            <app-icon>link</app-icon>
-                        </button>
-                        <button icon (click)="viewImage(url)">
-                            <app-icon>visibility</app-icon>
-                        </button>
-                        <button icon (click)="removeImage(url)">
-                            <app-icon>close</app-icon>
-                        </button>
+            @for (url of list; track url; let i = $index) {
+                <div
+                    image
+                    class="relative h-32 w-36 flex-shrink-0 overflow-hidden rounded bg-base-200 bg-cover bg-center"
+                    [style.transform]="'translate(-' + offset + '00%)'"
+                >
+                    <img
+                        auth
+                        [source]="url"
+                        class="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 object-contain"
+                    />
+                    <div overlay class="absolute inset-0 z-20 text-base-100">
+                        <div
+                            bg
+                            class="absolute inset-0 bg-black opacity-0"
+                        ></div>
+                        <div
+                            actions
+                            class="absolute left-0 right-0 top-0 flex items-center justify-center space-x-2 opacity-0"
+                        >
+                            <button icon (click)="copyLink(url)">
+                                <app-icon>link</app-icon>
+                            </button>
+                            <button icon (click)="viewImage(url)">
+                                <app-icon>visibility</app-icon>
+                            </button>
+                            <button icon (click)="removeImage(url)">
+                                <app-icon>close</app-icon>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div
-                image
-                *ngFor="let item of uploads | async; let i = index"
-                class="border-base-content/10 /5 flex h-32 w-36 flex-shrink-0 items-center justify-center rounded border bg-base-200 bg-cover bg-center"
-                [style.transform]="'translate(-' + offset + '00%)'"
-                [matTooltip]="item.error"
-                (click)="retryUpload(item)"
-            >
-                <mat-progress-spinner
-                    *ngIf="!item.error"
-                    [value]="item.progress"
-                    [diameter]="64"
-                    mode="determinate"
-                ></mat-progress-spinner>
-                <app-icon *ngIf="item.error" class="text-6xl text-error"
-                    >warning</app-icon
-                >
+            }
+            @for (item of uploads | async; track item; let i = $index) {
                 <div
-                    overlay
-                    *ngIf="item.error"
-                    class="absolute inset-0 flex items-center justify-center text-base-100 hover:bg-base-content hover:bg-opacity-50"
+                    image
+                    class="border-base-content/10 /5 flex h-32 w-36 flex-shrink-0 items-center justify-center rounded border bg-base-200 bg-cover bg-center"
+                    [style.transform]="'translate(-' + offset + '00%)'"
+                    [matTooltip]="item.error"
+                    (click)="retryUpload(item)"
                 >
-                    <app-icon class="text-3xl opacity-0">refresh</app-icon>
+                    @if (!item.error) {
+                        <mat-progress-spinner
+                            [value]="item.progress"
+                            [diameter]="64"
+                            mode="determinate"
+                        ></mat-progress-spinner>
+                    }
+                    @if (item.error) {
+                        <app-icon class="text-6xl text-error">warning</app-icon>
+                    }
+                    @if (item.error) {
+                        <div
+                            overlay
+                            class="absolute inset-0 flex items-center justify-center text-base-100 hover:bg-base-content hover:bg-opacity-50"
+                        >
+                            <app-icon class="text-3xl opacity-0"
+                                >refresh</app-icon
+                            >
+                        </div>
+                    }
                 </div>
-            </div>
-            <button
-                icon
-                matRipple
-                *ngIf="length > view_space"
-                [disabled]="offset === 0"
-                class="absolute left-0 top-1/2 -translate-y-1/2 transform bg-base-100"
-                (click)="offset = offset - 1"
-            >
-                <app-icon>chevron_left</app-icon>
-            </button>
-            <button
-                icon
-                matRipple
-                *ngIf="length > view_space"
-                [disabled]="offset >= length - view_space"
-                class="absolute right-0 top-1/2 -translate-y-1/2 transform bg-base-100"
-                (click)="offset = offset + 1"
-            >
-                <app-icon>chevron_right</app-icon>
-            </button>
+            }
+            @if (length > view_space) {
+                <button
+                    icon
+                    matRipple
+                    [disabled]="offset === 0"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 transform bg-base-100"
+                    (click)="offset = offset - 1"
+                >
+                    <app-icon>chevron_left</app-icon>
+                </button>
+            }
+            @if (length > view_space) {
+                <button
+                    icon
+                    matRipple
+                    [disabled]="offset >= length - view_space"
+                    class="absolute right-0 top-1/2 -translate-y-1/2 transform bg-base-100"
+                    (click)="offset = offset + 1"
+                >
+                    <app-icon>chevron_right</app-icon>
+                </button>
+            }
         </div>
         <mat-form-field appearance="outline" class="w-full">
             <mat-chip-grid #chipList aria-label="Image List">
-                <mat-chip-row
-                    *ngFor="let item of list"
-                    (removed)="removeImage(item)"
-                >
-                    <div class="max-w-md truncate">{{ item }}</div>
-                    <button matChipRemove [attr.aria-label]="'Remove ' + item">
-                        <app-icon>cancel</app-icon>
-                    </button>
-                </mat-chip-row>
+                @for (item of list; track item) {
+                    <mat-chip-row (removed)="removeImage(item)">
+                        <div class="max-w-md truncate">{{ item }}</div>
+                        <button
+                            matChipRemove
+                            [attr.aria-label]="'Remove ' + item"
+                        >
+                            <app-icon>cancel</app-icon>
+                        </button>
+                    </mat-chip-row>
+                }
             </mat-chip-grid>
             <input
                 [placeholder]="'COMMON.IMAGE_ADD_URL' | translate"

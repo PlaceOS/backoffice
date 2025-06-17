@@ -30,22 +30,28 @@ import { UploadPermissions } from '../common/uploads';
                     {{ 'COMMON.PUBLIC' | translate }}</mat-checkbox
                 >
             </div>
-            <div class="flex flex-col space-y-2" *ngIf="!is_public">
-                <label> {{ 'COMMON.PERMISSIONS' | translate }}</label>
-                <mat-form-field appearance="outline">
-                    <mat-select [(ngModel)]="permissions">
-                        <mat-option value="none">
-                            {{ 'COMMON.NONE' | translate }}</mat-option
-                        >
-                        <mat-option value="support">
-                            {{ 'COMMON.USER_SUPPORT' | translate }}</mat-option
-                        >
-                        <mat-option value="admin">
-                            {{ 'COMMON.USER_ADMIN' | translate }}</mat-option
-                        >
-                    </mat-select>
-                </mat-form-field>
-            </div>
+            @if (!is_public) {
+                <div class="flex flex-col space-y-2">
+                    <label> {{ 'COMMON.PERMISSIONS' | translate }}</label>
+                    <mat-form-field appearance="outline">
+                        <mat-select [(ngModel)]="permissions">
+                            <mat-option value="none">
+                                {{ 'COMMON.NONE' | translate }}</mat-option
+                            >
+                            <mat-option value="support">
+                                {{
+                                    'COMMON.USER_SUPPORT' | translate
+                                }}</mat-option
+                            >
+                            <mat-option value="admin">
+                                {{
+                                    'COMMON.USER_ADMIN' | translate
+                                }}</mat-option
+                            >
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            }
         </main>
         <footer
             class="flex items-center justify-end space-x-2 border-t border-base-200 px-4 py-2"
@@ -63,7 +69,7 @@ import { UploadPermissions } from '../common/uploads';
         </footer>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class UploadPermissionsModalComponent {
     /** File to upload */

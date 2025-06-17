@@ -23,7 +23,7 @@ import { BackofficeUsersService } from '../users/users.service';
         ></div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class DiffViewerComponent
     extends AsyncHandler

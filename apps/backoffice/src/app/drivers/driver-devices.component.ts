@@ -59,14 +59,15 @@ import { DriverStateService } from './driver-state.service';
                 [empty_message]="'DRIVERS.MODULES_EMPTY' | translate"
             ></simple-table>
             <ng-template #state_template let-row="row">
-                <i
-                    *ngIf="row.system"
-                    binding
-                    [(model)]="row.connected"
-                    [sys]="row.system.id"
-                    [mod]="row"
-                    bind="connected"
-                ></i>
+                @if (row.system) {
+                    <i
+                        binding
+                        [(model)]="row.connected"
+                        [sys]="row.system.id"
+                        [mod]="row"
+                        bind="connected"
+                    ></i>
+                }
                 <div
                     class="mx-auto h-2 w-2 rounded-full"
                     [class.bg-base-content]="!row.running"
@@ -116,32 +117,34 @@ import { DriverStateService } from './driver-state.service';
                                         : { count: systems[row.id]?.length }
                             }}
                         </div>
-                        <div
-                            *ngIf="loading_systems"
-                            class="flex items-center space-x-2 p-2 text-sm"
-                        >
-                            <mat-spinner [diameter]="32"></mat-spinner>
-                            <span>{{
-                                'DRIVERS.LOADING_SYSTEMS' | translate
-                            }}</span>
-                        </div>
-                        <a
-                            mat-menu-item
-                            *ngFor="let system of systems[row.id] || []"
-                            class="leading-tight"
-                            [routerLink]="['/systems', system.id]"
-                        >
+                        @if (loading_systems) {
                             <div
-                                class="flex h-full flex-col justify-center px-2"
+                                class="flex items-center space-x-2 p-2 text-sm"
                             >
-                                <div class="text-base">
-                                    {{ system.display_name || system.name }}
-                                </div>
-                                <div class="text-xs opacity-60">
-                                    {{ system.id }}
-                                </div>
+                                <mat-spinner [diameter]="32"></mat-spinner>
+                                <span>{{
+                                    'DRIVERS.LOADING_SYSTEMS' | translate
+                                }}</span>
                             </div>
-                        </a>
+                        }
+                        @for (system of systems[row.id] || []; track system) {
+                            <a
+                                mat-menu-item
+                                class="leading-tight"
+                                [routerLink]="['/systems', system.id]"
+                            >
+                                <div
+                                    class="flex h-full flex-col justify-center px-2"
+                                >
+                                    <div class="text-base">
+                                        {{ system.display_name || system.name }}
+                                    </div>
+                                    <div class="text-xs opacity-60">
+                                        {{ system.id }}
+                                    </div>
+                                </div>
+                            </a>
+                        }
                     </mat-menu>
                 </div>
             </ng-template>
@@ -160,7 +163,7 @@ import { DriverStateService } from './driver-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class DriverModulesComponent extends AsyncHandler {
     public loading_systems = false;

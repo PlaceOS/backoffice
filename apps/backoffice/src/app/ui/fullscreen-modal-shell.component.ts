@@ -15,9 +15,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                 <h2 class="text-xl font-medium">
                     {{ heading }}
                 </h2>
-                <button icon matRipple mat-dialog-close *ngIf="!loading">
-                    <app-icon>close</app-icon>
-                </button>
+                @if (!loading) {
+                    <button icon matRipple mat-dialog-close>
+                        <app-icon>close</app-icon>
+                    </button>
+                }
             </header>
             <main
                 class="z-0 mx-auto h-1/2 w-[39rem] max-w-full flex-1 space-y-8 px-4 py-2"
@@ -25,24 +27,26 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                 <ng-content></ng-content>
                 <div class="h-10 w-full"></div>
             </main>
-            <footer
-                class="fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-[39rem] max-w-full -translate-x-1/2 items-center justify-end rounded border border-base-100 bg-base-200 px-4 py-2"
-                *ngIf="!loading && !hide_confirm"
-            >
-                <button btn matRipple class="w-32" (click)="save.emit()">
-                    <div class="flex items-center space-x-2">
-                        <div>
-                            {{ confirm_text || ('COMMON.SAVE' | translate) }}
+            @if (!loading && !hide_confirm) {
+                <footer
+                    class="fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-[39rem] max-w-full -translate-x-1/2 items-center justify-end rounded border border-base-100 bg-base-200 px-4 py-2"
+                >
+                    <button btn matRipple class="w-32" (click)="save.emit()">
+                        <div class="flex items-center space-x-2">
+                            <div>
+                                {{
+                                    confirm_text || ('COMMON.SAVE' | translate)
+                                }}
+                            </div>
+                            @if (!confirm_text) {
+                                <div class="mono relative top-0.5 text-sm">
+                                    [S]
+                                </div>
+                            }
                         </div>
-                        <div
-                            class="mono relative top-0.5 text-sm"
-                            *ngIf="!confirm_text"
-                        >
-                            [S]
-                        </div>
-                    </div>
-                </button>
-            </footer>
+                    </button>
+                </footer>
+            }
         </div>
         <ng-template #load_state>
             <div

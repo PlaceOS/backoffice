@@ -27,39 +27,36 @@ import { ModuleLike } from './select-module.component';
 @Component({
     selector: 'select-module-method',
     template: `
-        <ng-container *ngIf="!loading; else load_state">
-            <mat-form-field
-                class="h-14 w-full"
-                appearance="outline"
-                *ngIf="(method_list | async)?.length; else empty_state"
-            >
-                <mat-select
-                    [placeholder]="'COMMON.EXECUTE_METHOD_SELECT' | translate"
-                    [(ngModel)]="method"
-                    (ngModelChange)="setValue($event)"
-                >
-                    <mat-option
-                        *ngFor="let method of method_list | async"
-                        [value]="method"
+        @if (!loading) {
+            @if ((method_list | async)?.length) {
+                <mat-form-field class="h-14 w-full" appearance="outline">
+                    <mat-select
+                        [placeholder]="
+                            'COMMON.EXECUTE_METHOD_SELECT' | translate
+                        "
+                        [(ngModel)]="method"
+                        (ngModelChange)="setValue($event)"
                     >
-                        {{ method.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </ng-container>
-        <ng-template #load_state>
+                        @for (method of method_list | async; track method) {
+                            <mat-option [value]="method">
+                                {{ method.name }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            } @else {
+                <div class="flex items-center justify-center space-x-2 p-4">
+                    <p class="opacity-30">
+                        {{ 'COMMON.EXECUTE_METHOD_EMPTY' | translate }}
+                    </p>
+                </div>
+            }
+        } @else {
             <div class="flex items-center justify-center space-x-2 p-4">
                 <mat-spinner diameter="32"></mat-spinner>
                 <p>{{ 'COMMON.EXECUTE_METHOD_LOADING' | translate }}</p>
             </div>
-        </ng-template>
-        <ng-template #empty_state>
-            <div class="flex items-center justify-center space-x-2 p-4">
-                <p class="opacity-30">
-                    {{ 'COMMON.EXECUTE_METHOD_EMPTY' | translate }}
-                </p>
-            </div>
-        </ng-template>
+        }
     `,
     styles: [``],
     providers: [
@@ -69,7 +66,7 @@ import { ModuleLike } from './select-module.component';
             multi: true,
         },
     ],
-    standalone: false
+    standalone: false,
 })
 export class SelectMethodComponent
     extends AsyncHandler

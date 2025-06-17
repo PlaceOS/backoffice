@@ -26,24 +26,26 @@ import { DomainStateService } from './domain-state.service';
             </div>
             <hr class="my-4 text-base-300" />
         }
-        <div
-            class="relative my-2 flex w-1/2 min-w-[20rem] flex-col rounded border border-base-200 p-4"
-            *ngIf="item.email_domains?.length"
-        >
+        @if (item.email_domains?.length) {
             <div
-                class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 p-2 text-sm font-medium"
+                class="relative my-2 flex w-1/2 min-w-[20rem] flex-col rounded border border-base-200 p-4"
             >
-                {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
+                <div
+                    class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 p-2 text-sm font-medium"
+                >
+                    {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
+                </div>
+                @for (domain of item.email_domains; track domain) {
+                    <button
+                        matRipple
+                        class="mono rounded p-2 text-left text-sm hover:bg-base-200"
+                        (click)="copyEmailDomain(domain)"
+                    >
+                        {{ domain }}
+                    </button>
+                }
             </div>
-            <button
-                matRipple
-                class="mono rounded p-2 text-left text-sm hover:bg-base-200"
-                *ngFor="let domain of item.email_domains"
-                (click)="copyEmailDomain(domain)"
-            >
-                {{ domain }}
-            </button>
-        </div>
+        }
         <header
             class="mb-2 flex h-16 w-full items-center justify-between rounded bg-base-200 px-2 text-lg font-medium"
         >
@@ -60,26 +62,30 @@ import { DomainStateService } from './domain-state.service';
                 <icon class="text-2xl">save</icon>
             </button>
         </header>
-        <section *ngIf="form" [formGroup]="form">
-            <mat-tab-group [(selectedIndex)]="index">
-                <mat-tab [label]="'DOMAINS.SETTINGS_CONFIG' | translate">
-                </mat-tab>
-                <mat-tab [label]="'DOMAINS.SETTINGS_INTERNALS' | translate">
-                </mat-tab>
-            </mat-tab-group>
-            <settings-form-field
-                *ngIf="index !== 1"
-                formControlName="config"
-                lang="json"
-                [readonly]="false"
-            ></settings-form-field>
-            <settings-form-field
-                *ngIf="index === 1"
-                formControlName="internals"
-                lang="json"
-                [readonly]="false"
-            ></settings-form-field>
-        </section>
+        @if (form) {
+            <section [formGroup]="form">
+                <mat-tab-group [(selectedIndex)]="index">
+                    <mat-tab [label]="'DOMAINS.SETTINGS_CONFIG' | translate">
+                    </mat-tab>
+                    <mat-tab [label]="'DOMAINS.SETTINGS_INTERNALS' | translate">
+                    </mat-tab>
+                </mat-tab-group>
+                @if (index !== 1) {
+                    <settings-form-field
+                        formControlName="config"
+                        lang="json"
+                        [readonly]="false"
+                    ></settings-form-field>
+                }
+                @if (index === 1) {
+                    <settings-form-field
+                        formControlName="internals"
+                        lang="json"
+                        [readonly]="false"
+                    ></settings-form-field>
+                }
+            </section>
+        }
     `,
     styles: [
         `

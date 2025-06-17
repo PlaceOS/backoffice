@@ -22,12 +22,11 @@ import { ActiveItemService } from '../common/item.service';
                     "
                     [placeholder]="'COMMON.SELECT_OLD_SETTING' | translate"
                 >
-                    <mat-option
-                        *ngFor="let option of history$ | async"
-                        [value]="option"
-                    >
-                        {{ option | formatSettings }}
-                    </mat-option>
+                    @for (option of history$ | async; track option) {
+                        <mat-option [value]="option">
+                            {{ option | formatSettings }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
             <div class="w-px flex-1"></div>
@@ -37,43 +36,35 @@ import { ActiveItemService } from '../common/item.service';
                     (ngModelChange)="active_setting.next($event)"
                     [placeholder]="'COMMON.SELECT_NEW_SETTING' | translate"
                 >
-                    <mat-option
-                        *ngFor="let option of settings$ | async"
-                        [value]="option"
-                    >
-                        {{ option | formatSettings }}
-                    </mat-option>
+                    @for (option of settings$ | async; track option) {
+                        <mat-option [value]="option">
+                            {{ option | formatSettings }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
         </div>
-        <div
-            class="w-full p-4"
-            *ngIf="
-                (active_setting | async) && (old_setting | async);
-                else empty_state
-            "
-        >
-            <diff-viewer
-                [modified]="(active_setting | async)?.settings_string"
-                [original]="(old_setting | async)?.settings_string"
-            ></diff-viewer>
-        </div>
-        <ng-template #empty_state>
-            <div
-                class="w-full p-16 text-center opacity-30"
-                *ngIf="(history$ | async).length; else no_history_state"
-            >
-                {{ 'COMMON.SETTINGS_COMPARE_SELECT_MSG' | translate }}
+        @if ((active_setting | async) && (old_setting | async)) {
+            <div class="w-full p-4">
+                <diff-viewer
+                    [modified]="(active_setting | async)?.settings_string"
+                    [original]="(old_setting | async)?.settings_string"
+                ></diff-viewer>
             </div>
-        </ng-template>
-        <ng-template #no_history_state>
-            <div class="w-full p-16 text-center opacity-30">
-                {{ 'COMMON.SELECTED_FIRST_VERSION' | translate }}
-            </div>
-        </ng-template>
+        } @else {
+            @if ((history$ | async).length) {
+                <div class="w-full p-16 text-center opacity-30">
+                    {{ 'COMMON.SETTINGS_COMPARE_SELECT_MSG' | translate }}
+                </div>
+            } @else {
+                <div class="w-full p-16 text-center opacity-30">
+                    {{ 'COMMON.SELECTED_FIRST_VERSION' | translate }}
+                </div>
+            }
+        }
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class SettingsHistoryViewComponent {
     public readonly active_setting = new BehaviorSubject<PlaceSettings>(null);

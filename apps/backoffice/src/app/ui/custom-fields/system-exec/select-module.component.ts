@@ -30,31 +30,26 @@ export interface ModuleLike {
 @Component({
     selector: `select-system-module`,
     template: `
-        <mat-form-field
-            class="h-14 w-full"
-            appearance="outline"
-            *ngIf="!loading; else load_state"
-        >
-            <mat-select
-                [placeholder]="'COMMON.EXECUTE_MODULE_SELECT' | translate"
-                [(ngModel)]="module"
-                (ngModelChange)="setValue($event)"
-            >
-                <mat-option
-                    [disabled]="!mod.running"
-                    *ngFor="let mod of modules | async"
-                    [value]="mod"
+        @if (!loading) {
+            <mat-form-field class="h-14 w-full" appearance="outline">
+                <mat-select
+                    [placeholder]="'COMMON.EXECUTE_MODULE_SELECT' | translate"
+                    [(ngModel)]="module"
+                    (ngModelChange)="setValue($event)"
                 >
-                    {{ mod.module }} {{ mod.index }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <ng-template #load_state>
+                    @for (mod of modules | async; track mod) {
+                        <mat-option [disabled]="!mod.running" [value]="mod">
+                            {{ mod.module }} {{ mod.index }}
+                        </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        } @else {
             <div class="flex items-center justify-center space-x-2 p-4">
                 <mat-spinner diameter="32"></mat-spinner>
                 <p>{{ 'COMMON.EXECUTE_MODULE_LOADING' | translate }}</p>
             </div>
-        </ng-template>
+        }
     `,
     styles: [``],
     providers: [
@@ -64,7 +59,7 @@ export interface ModuleLike {
             multi: true,
         },
     ],
-    standalone: false
+    standalone: false,
 })
 export class SelectModuleComponent
     extends AsyncHandler

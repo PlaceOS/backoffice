@@ -13,31 +13,32 @@ import { AsyncHandler } from '../common/async-handler.class';
                 {{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }} -
                 {{ (module | async)?.custom_name || (module | async)?.name }}
             </h3>
-            <button icon matRipple mat-dialog-close *ngIf="!loading">
-                <app-icon>close</app-icon>
-            </button>
+            @if (!loading) {
+                <button icon matRipple mat-dialog-close>
+                    <app-icon>close</app-icon>
+                </button>
+            }
         </header>
-        <main
-            class="max-h-[65vh] overflow-auto p-4"
-            *ngIf="!loading; else load_state"
-        >
-            <code *ngIf="(errors | async)?.length; else empty_state">
-                {{
-                    (errors | async)?.join(
-                        '
-'
-                    )
-                }}
-            </code>
-            <ng-template #empty_state>
-                <div
-                    class="flex h-64 w-[24rem] flex-col items-center justify-center space-y-2 opacity-30"
-                >
-                    {{ 'MODULES.RUNTIME_ERRORS_NO' | translate }}
-                </div>
-            </ng-template>
-        </main>
-        <ng-template #load_state>
+        @if (!loading) {
+            <main class="max-h-[65vh] overflow-auto p-4">
+                @if ((errors | async)?.length) {
+                    <code>
+                        {{
+                            (errors | async)?.join(
+                                '
+                '
+                            )
+                        }}
+                    </code>
+                } @else {
+                    <div
+                        class="flex h-64 w-[24rem] flex-col items-center justify-center space-y-2 opacity-30"
+                    >
+                        {{ 'MODULES.RUNTIME_ERRORS_NO' | translate }}
+                    </div>
+                }
+            </main>
+        } @else {
             <main
                 class="flex h-64 w-[24rem] flex-col items-center justify-center space-y-2"
             >
@@ -46,10 +47,10 @@ import { AsyncHandler } from '../common/async-handler.class';
                     {{ 'MODULES.RUNTIME_ERRORS_LOADING' | translate }}
                 </div>
             </main>
-        </ng-template>
+        }
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ModuleRuntimeErrorsModalComponent extends AsyncHandler {
     public loading = false;

@@ -17,20 +17,22 @@ import { UploadInfo } from './upload-library.component';
             <div
                 class="relative flex h-[65vh] max-h-[65vh] w-[80vw] max-w-[80vw] items-center justify-center overflow-hidden rounded-xl border border-base-200"
             >
-                <img
-                    *ngIf="type === 'image'"
-                    class="h-full w-full object-contain object-center"
-                    auth
-                    [source]="resource"
-                />
-                <video
-                    *ngIf="type === 'video'"
-                    class="h-full w-full object-contain object-center"
-                    auth
-                    [source]="resource"
-                    autoplay
-                    controls
-                ></video>
+                @if (type === 'image') {
+                    <img
+                        class="h-full w-full object-contain object-center"
+                        auth
+                        [source]="resource"
+                    />
+                }
+                @if (type === 'video') {
+                    <video
+                        class="h-full w-full object-contain object-center"
+                        auth
+                        [source]="resource"
+                        autoplay
+                        controls
+                    ></video>
+                }
                 <div
                     class="absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded-full border border-base-200 bg-base-100 px-2 py-1 font-mono text-sm"
                 >

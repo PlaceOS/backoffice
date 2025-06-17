@@ -34,26 +34,21 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
                 (blur)="model.focus = false; blur.emit($event)"
                 [placeholder]="placeholder"
             />
-            <button
-                icon
-                matRipple
-                *ngIf="
-                    model.speech && dictation && (model.focus || model.dictate)
-                "
-                [class.active]="model.dictate"
-                (click)="startDictation()"
-            >
-                <app-icon>mic</app-icon>
-            </button>
-            <button
-                icon
-                matRipple
-                class="close"
-                *ngIf="filter && clearable"
-                (click)="clear()"
-            >
-                <app-icon>close</app-icon>
-            </button>
+            @if (model.speech && dictation && (model.focus || model.dictate)) {
+                <button
+                    icon
+                    matRipple
+                    [class.active]="model.dictate"
+                    (click)="startDictation()"
+                >
+                    <app-icon>mic</app-icon>
+                </button>
+            }
+            @if (filter && clearable) {
+                <button icon matRipple class="close" (click)="clear()">
+                    <app-icon>close</app-icon>
+                </button>
+            }
             <ng-content></ng-content>
         </div>
     `,
@@ -79,7 +74,7 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class SearchbarComponent extends AsyncHandler {
     @Input() public filter: string;

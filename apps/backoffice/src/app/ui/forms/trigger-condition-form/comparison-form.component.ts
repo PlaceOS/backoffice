@@ -23,175 +23,177 @@ import { i18n } from '../../../common/locale.service';
 
 @Component({
     selector: 'trigger-condition-comparison-form',
-    template: `<div
-            class="trigger-condition form comparison"
-            *ngIf="form"
-            [formGroup]="form"
-        >
-            <ng-container
-                *ngTemplateOutlet="
-                    status_variable_form;
-                    context: { side: 'left' }
-                "
-            ></ng-container>
-            <div
-                *ngIf="form.controls.left.touched && form.controls.left.errors"
-                class="error"
-            >
-                {{ 'TRIGGERS.COMPARE_VARIABLE_ERROR' | translate }}
+    template: `@if (form) {
+            <div class="trigger-condition form comparison" [formGroup]="form">
+                <ng-container
+                    *ngTemplateOutlet="
+                        status_variable_form;
+                        context: { side: 'left' }
+                    "
+                ></ng-container>
+                @if (form.controls.left.touched && form.controls.left.errors) {
+                    <div class="error">
+                        {{ 'TRIGGERS.COMPARE_VARIABLE_ERROR' | translate }}
+                    </div>
+                }
+                @if (form.controls.operator) {
+                    <div class="field">
+                        <label for="operator" hidden>{{
+                            'TRIGGERS.COMPARE_OP' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                name="operator"
+                                formControlName="operator"
+                                [placeholder]="
+                                    'TRIGGERS.COMPARE_OP_SELECT' | translate
+                                "
+                            >
+                                @for (
+                                    operation of compare_types;
+                                    track operation
+                                ) {
+                                    <mat-option [value]="operation.id">
+                                        {{ operation.name }}
+                                    </mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                }
+                @if (form.controls.operator) {
+                    <div class="field">
+                        <label for="compared-to" hidden>{{
+                            'TRIGGERS.COMPARE_TO' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                name="compared-to"
+                                [(ngModel)]="rhs_type"
+                                (ngModelChange)="
+                                    form.controls.right.setValue(null)
+                                "
+                                [ngModelOptions]="{ standalone: true }"
+                            >
+                                @for (type of right_var_type; track type) {
+                                    <mat-option [value]="type.id">
+                                        {{ type.name }}
+                                    </mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                }
+                @if (rhs_type === 'constant' && form.controls.right) {
+                    <div class="field">
+                        <label for="constant" hidden>{{
+                            'TRIGGERS.COMPARE_TO' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="constant"
+                                formControlName="right"
+                                placeholder="true/false, 'string', 123.456"
+                            />
+                            <mat-error>{{
+                                'TRIGGERS.COMPARE_JSON_REQUIRED' | translate
+                            }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                } @else {
+                    <ng-container
+                        *ngTemplateOutlet="
+                            status_variable_form;
+                            context: { side: 'right' }
+                        "
+                    ></ng-container>
+                }
             </div>
-            <div class="field" *ngIf="form.controls.operator">
-                <label for="operator" hidden>{{
-                    'TRIGGERS.COMPARE_OP' | translate
-                }}</label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="operator"
-                        formControlName="operator"
-                        [placeholder]="'TRIGGERS.COMPARE_OP_SELECT' | translate"
-                    >
-                        <mat-option
-                            *ngFor="let operation of compare_types"
-                            [value]="operation.id"
-                        >
-                            {{ operation.name }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="field" *ngIf="form.controls.operator">
-                <label for="compared-to" hidden>{{
-                    'TRIGGERS.COMPARE_TO' | translate
-                }}</label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="compared-to"
-                        [(ngModel)]="rhs_type"
-                        (ngModelChange)="form.controls.right.setValue(null)"
-                        [ngModelOptions]="{ standalone: true }"
-                    >
-                        <mat-option
-                            *ngFor="let type of right_var_type"
-                            [value]="type.id"
-                        >
-                            {{ type.name }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div
-                class="field"
-                *ngIf="
-                    rhs_type === 'constant' && form.controls.right;
-                    else rhs_status_var
-                "
-            >
-                <label for="constant" hidden>{{
-                    'TRIGGERS.COMPARE_TO' | translate
-                }}</label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="constant"
-                        formControlName="right"
-                        placeholder="true/false, 'string', 123.456"
-                    />
-                    <mat-error>{{
-                        'TRIGGERS.COMPARE_JSON_REQUIRED' | translate
-                    }}</mat-error>
-                </mat-form-field>
-            </div>
-        </div>
-        <ng-template #rhs_status_var>
-            <ng-container
-                *ngTemplateOutlet="
-                    status_variable_form;
-                    context: { side: 'right' }
-                "
-            ></ng-container>
-        </ng-template>
+        }
         <ng-template #status_variable_form let-side="side">
             <div class="fieldset">
-                <div class="field" *ngIf="this[side + '_side']">
-                    <label for="type">{{
-                        'MODULES.SINGULAR' | translate
-                    }}</label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
-                            name="type"
-                            [(ngModel)]="this[side + '_side'].mod"
-                            (ngModelChange)="
-                                loadSystemStatusVariables($event, side)
-                            "
-                            [ngModelOptions]="{ standalone: true }"
-                            [placeholder]="
-                                'TRIGGERS.COMPARE_MODULE_SELECT' | translate
-                            "
-                        >
-                            <mat-option
-                                *ngFor="let mod of module_list"
-                                [value]="mod.name"
-                            >
-                                {{ mod.name }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div
-                    class="field"
-                    *ngIf="this[side + '_status_variables']?.length"
-                >
-                    <label [for]="side + '-status-var'">{{
-                        'TRIGGERS.COMPARE_VARIABLE' | translate
-                    }}</label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
-                            [name]="side + '-status-var'"
-                            [(ngModel)]="this[side + '_side'].status"
-                            (ngModelChange)="updateFormForSide(side)"
-                            [ngModelOptions]="{ standalone: true }"
-                            [placeholder]="
-                                'TRIGGERS.COMPARE_VARIABLE_SELECT' | translate
-                            "
-                        >
-                            <mat-option
-                                *ngFor="
-                                    let mod of this[side + '_status_variables']
+                @if (this[side + '_side']) {
+                    <div class="field">
+                        <label for="type">{{
+                            'MODULES.SINGULAR' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                name="type"
+                                [(ngModel)]="this[side + '_side'].mod"
+                                (ngModelChange)="
+                                    loadSystemStatusVariables($event, side)
                                 "
-                                [value]="mod.name"
+                                [ngModelOptions]="{ standalone: true }"
+                                [placeholder]="
+                                    'TRIGGERS.COMPARE_MODULE_SELECT' | translate
+                                "
                             >
-                                {{ mod.name }}
-                            </mat-option>
-                        </mat-select>
+                                @for (mod of module_list; track mod) {
+                                    <mat-option [value]="mod.name">
+                                        {{ mod.name }}
+                                    </mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                }
+                @if (this[side + '_status_variables']?.length) {
+                    <div class="field">
+                        <label [for]="side + '-status-var'">{{
+                            'TRIGGERS.COMPARE_VARIABLE' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                [name]="side + '-status-var'"
+                                [(ngModel)]="this[side + '_side'].status"
+                                (ngModelChange)="updateFormForSide(side)"
+                                [ngModelOptions]="{ standalone: true }"
+                                [placeholder]="
+                                    'TRIGGERS.COMPARE_VARIABLE_SELECT'
+                                        | translate
+                                "
+                            >
+                                @for (
+                                    mod of this[side + '_status_variables'];
+                                    track mod
+                                ) {
+                                    <mat-option [value]="mod.name">
+                                        {{ mod.name }}
+                                    </mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                }
+            </div>
+            @if (
+                this[side + '_status_variables'] &&
+                this[side + '_status_variables'].length
+            ) {
+                <div class="field">
+                    <label [for]="side + '-subkeys'">{{
+                        'TRIGGERS.COMPARE_SUBKEYS' | translate
+                    }}</label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            [ngModel]="this[side + '_keys']"
+                            (ngModelChange)="
+                                this[side + '_side'].keys = $event.split(',');
+                                updateFormForSide(side)
+                            "
+                            [name]="side + '-subkeys'"
+                            [placeholder]="
+                                'TRIGGERS.COMPARE_SUBKEYS_PLACEHOLDER'
+                                    | translate
+                            "
+                        />
                     </mat-form-field>
                 </div>
-            </div>
-            <div
-                class="field"
-                *ngIf="
-                    this[side + '_status_variables'] &&
-                    this[side + '_status_variables'].length
-                "
-            >
-                <label [for]="side + '-subkeys'">{{
-                    'TRIGGERS.COMPARE_SUBKEYS' | translate
-                }}</label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        [ngModel]="this[side + '_keys']"
-                        (ngModelChange)="
-                            this[side + '_side'].keys = $event.split(',');
-                            updateFormForSide(side)
-                        "
-                        [name]="side + '-subkeys'"
-                        [placeholder]="
-                            'TRIGGERS.COMPARE_SUBKEYS_PLACEHOLDER' | translate
-                        "
-                    />
-                </mat-form-field>
-            </div>
-        </ng-template> `,
+            }
+        </ng-template>`,
     styles: [``],
     standalone: false,
 })

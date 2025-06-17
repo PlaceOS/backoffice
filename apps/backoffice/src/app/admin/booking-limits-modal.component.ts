@@ -7,39 +7,42 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
 
 @Component({
     selector: 'booking-limits-modal',
-    template: ` <header>
+    template: `
+        <header>
             <h3>Edit Tenant Booking Limits</h3>
             <div class="flex-1"></div>
-            <button *ngIf="!loading" btn icon mat-dialog-close>
-                <app-icon>close</app-icon>
-            </button>
+            @if (!loading) {
+                <button btn icon mat-dialog-close>
+                    <app-icon>close</app-icon>
+                </button>
+            }
         </header>
-        <main
-            [formGroup]="form"
-            *ngIf="!loading; else load_state"
-            class="w-[512px] max-w-[100vw] overflow-auto"
-        >
-            <div class="flex flex-col">
-                <object-list-field
-                    formControlName="booking_limits"
-                    [fields]="['type', 'amount']"
-                ></object-list-field>
-            </div>
-        </main>
-        <footer
-            *ngIf="!loading"
-            class="flex justify-center border-t border-base-200 p-2"
-        >
-            <button btn class="w-32" (click)="save()">Save</button>
-        </footer>
-        <ng-template #load_state>
+        @if (!loading) {
+            <main
+                [formGroup]="form"
+                class="w-[512px] max-w-[100vw] overflow-auto"
+            >
+                <div class="flex flex-col">
+                    <object-list-field
+                        formControlName="booking_limits"
+                        [fields]="['type', 'amount']"
+                    ></object-list-field>
+                </div>
+            </main>
+        } @else {
             <main class="flex flex-col items-center justify-center p-8">
                 <mat-spinner class="mb-4" [diameter]="48"></mat-spinner>
                 <p>Saving booking limits for Staff API tenant...</p>
             </main>
-        </ng-template>`,
+        }
+        @if (!loading) {
+            <footer class="flex justify-center border-t border-base-200 p-2">
+                <button btn class="w-32" (click)="save()">Save</button>
+            </footer>
+        }
+    `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class BookingLimitsModalComponent {
     public readonly tenant = this._data.tenant;

@@ -49,12 +49,11 @@ export interface PlaceTenant {
                             (ngModelChange)="domain.next($event)"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            <mat-option
-                                *ngFor="let domain of domain_list"
-                                [value]="domain"
-                            >
-                                {{ domain.name }}
-                            </mat-option>
+                            @for (domain of domain_list; track domain) {
+                                <mat-option [value]="domain">
+                                    {{ domain.name }}
+                                </mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                     <button
@@ -167,7 +166,7 @@ export interface PlaceTenant {
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class PlaceStaffAPIComponent implements OnInit {
     /** Loading state */

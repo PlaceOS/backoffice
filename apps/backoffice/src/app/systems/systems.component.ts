@@ -34,7 +34,7 @@ import { SystemStateService } from './system-state.service';
                             </button>
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
-                            <ng-container *ngIf="item?.id">
+                            @if (item?.id) {
                                 <item-details
                                     [can_edit]="true"
                                     [item]="item"
@@ -53,7 +53,7 @@ import { SystemStateService } from './system-state.service';
                                 >
                                     <router-outlet></router-outlet>
                                 </div>
-                            </ng-container>
+                            }
                         </div>
                         <button
                             class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-9"
@@ -75,16 +75,16 @@ import { SystemStateService } from './system-state.service';
                         </button>
                     </div>
                 </div>
-                <app-debug-output
-                    below
-                    *ngIf="debug_position === 'below'"
-                ></app-debug-output>
+                @if (debug_position === 'below') {
+                    <app-debug-output below></app-debug-output>
+                }
             </div>
-            <app-debug-output
-                side
-                *ngIf="debug_position === 'side'"
-                class="h-full max-w-[30rem]"
-            ></app-debug-output>
+            @if (debug_position === 'side') {
+                <app-debug-output
+                    side
+                    class="h-full max-w-[30rem]"
+                ></app-debug-output>
+            }
         </div>
     `,
     styles: [``],

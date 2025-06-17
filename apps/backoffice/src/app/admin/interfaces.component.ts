@@ -33,10 +33,14 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
         <div class="h-12 w-full"></div>
         <ng-template #name_template let-row="row">
             <div class="p-4">
-                <div class="font-mono" *ngIf="row.name">{{ row.name }}</div>
-                <span class="text-xs opacity-30" *ngIf="!row.name">
-                    {{ 'ADMIN.INTERFACES_COMMIT_EMPTY' | translate }}
-                </span>
+                @if (row.name) {
+                    <div class="font-mono">{{ row.name }}</div>
+                }
+                @if (!row.name) {
+                    <span class="text-xs opacity-30">
+                        {{ 'ADMIN.INTERFACES_COMMIT_EMPTY' | translate }}
+                    </span>
+                }
             </div>
         </ng-template>
     `,
@@ -48,7 +52,7 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class AdminInterfacesComponent implements OnInit {
     /** List of interfaces */

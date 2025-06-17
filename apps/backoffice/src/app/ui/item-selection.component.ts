@@ -38,7 +38,7 @@ import { BackofficeUsersService } from '../users/users.service';
                 <span class="keycap mr-2 text-xs">K</span>
             </button>
         </div>
-        <ng-container *ngIf="show_view">
+        @if (show_view) {
             <div
                 class="bg-base-100/80 /30 absolute inset-0"
                 (click)="show = false"
@@ -65,11 +65,12 @@ import { BackofficeUsersService } from '../users/users.service';
                             'COMMON.SEARCH_FOR' | translate: { name: title }
                         "
                     />
-                    <mat-spinner
-                        *ngIf="loading | async"
-                        diameter="24"
-                        class="absolute right-2 top-1/2 mr-2 -translate-y-1/2"
-                    ></mat-spinner>
+                    @if (loading | async) {
+                        <mat-spinner
+                            diameter="24"
+                            class="absolute right-2 top-1/2 mr-2 -translate-y-1/2"
+                        ></mat-spinner>
+                    }
                 </div>
                 <p class="w-full px-4 text-sm opacity-60">
                     {{
@@ -78,67 +79,71 @@ import { BackofficeUsersService } from '../users/users.service';
                     }}
                 </p>
                 <div class="flex h-1/2 flex-1 flex-col">
-                    <cdk-virtual-scroll-viewport
-                        itemSize="48"
-                        (scroll)="(is_scrolled)"
-                        (scrolledIndexChange)="atBottom()"
-                        *ngIf="(items | async)?.length; else empty_state"
-                        class="h-[768px] max-h-[75vh]"
-                    >
-                        <a
-                            *cdkVirtualFor="
-                                let item of items | async;
-                                trackBy: trackByFn
-                            "
-                            [routerLink]="
-                                subroute
-                                    ? ['/', route, item.id, subroute]
-                                    : ['/', route, item.id]
-                            "
-                            routerLinkActive="active"
-                            [routerLinkActiveOptions]="{
-                                exact: false,
-                                __change_detection_hack__: item.id + subroute,
-                            }"
-                            class="m-2 block max-w-[calc(100vw-2rem)] rounded p-2"
-                            (click)="show = false"
+                    @if ((items | async)?.length) {
+                        <cdk-virtual-scroll-viewport
+                            itemSize="48"
+                            (scroll)="(is_scrolled)"
+                            (scrolledIndexChange)="atBottom()"
+                            class="h-[768px] max-h-[75vh]"
                         >
-                            <p class="flex-1 truncate">
-                                {{ item.name }}
-                            </p>
-                            <div
-                                class="inline-block w-full overflow-hidden"
-                                *ngIf="item.extra"
+                            <a
+                                *cdkVirtualFor="
+                                    let item of items | async;
+                                    trackBy: trackByFn
+                                "
+                                [routerLink]="
+                                    subroute
+                                        ? ['/', route, item.id, subroute]
+                                        : ['/', route, item.id]
+                                "
+                                routerLinkActive="active"
+                                [routerLinkActiveOptions]="{
+                                    exact: false,
+                                    __change_detection_hack__:
+                                        item.id + subroute,
+                                }"
+                                class="m-2 block max-w-[calc(100vw-2rem)] rounded p-2"
+                                (click)="show = false"
                             >
-                                <span
-                                    extra
-                                    class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded px-2 py-1 text-xs opacity-60"
-                                >
-                                    {{ item.extra }}
-                                </span>
+                                <p class="flex-1 truncate">
+                                    {{ item.name }}
+                                </p>
+                                @if (item.extra) {
+                                    <div
+                                        class="inline-block w-full overflow-hidden"
+                                    >
+                                        <span
+                                            extra
+                                            class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded px-2 py-1 text-xs opacity-60"
+                                        >
+                                            {{ item.extra }}
+                                        </span>
+                                    </div>
+                                }
+                            </a>
+                            <div
+                                class="bg-base-200 p-2 text-center text-sm opacity-30"
+                            >
+                                {{ 'COMMON.END_OF_LIST' | translate }}
                             </div>
-                        </a>
+                        </cdk-virtual-scroll-viewport>
+                    } @else {
                         <div
-                            class="bg-base-200 p-2 text-center text-sm opacity-30"
+                            class="flex flex-col items-center justify-center p-8 opacity-30"
                         >
-                            {{ 'COMMON.END_OF_LIST' | translate }}
+                            <p>
+                                {{
+                                    (search
+                                        ? 'COMMON.SEARCH_EMPTY'
+                                        : 'COMMON.LIST_EMPTY'
+                                    ) | translate: { name: title }
+                                }}
+                            </p>
                         </div>
-                    </cdk-virtual-scroll-viewport>
+                    }
                 </div>
             </div>
-        </ng-container>
-        <ng-template #empty_state>
-            <div
-                class="flex flex-col items-center justify-center p-8 opacity-30"
-            >
-                <p>
-                    {{
-                        (search ? 'COMMON.SEARCH_EMPTY' : 'COMMON.LIST_EMPTY')
-                            | translate: { name: title }
-                    }}
-                </p>
-            </div>
-        </ng-template>
+        }
     `,
     styles: [
         `

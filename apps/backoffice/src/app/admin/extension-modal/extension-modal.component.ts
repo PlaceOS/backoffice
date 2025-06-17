@@ -26,12 +26,13 @@ import { BackofficeExtension } from '../extensions.component';
                         </label>
                         <mat-form-field appearance="outline">
                             <mat-select formControlName="type">
-                                <mat-option
-                                    *ngFor="let type of available_types"
-                                    [value]="type"
-                                >
-                                    <span class="capitalize">{{ type }}</span>
-                                </mat-option>
+                                @for (type of available_types; track type) {
+                                    <mat-option [value]="type">
+                                        <span class="capitalize">{{
+                                            type
+                                        }}</span>
+                                    </mat-option>
+                                }
                             </mat-select>
                         </mat-form-field>
                     </div>
@@ -75,75 +76,83 @@ import { BackofficeExtension } from '../extensions.component';
                     </mat-form-field>
                 </div>
                 <div class="w-full">
-                    <label *ngIf="form.controls.conditions.value?.length">
-                        {{ 'ADMIN.EXTENSIONS_FIELD_CONDITIONS' | translate }}
-                    </label>
-                    <div
-                        class="fieldset"
-                        *ngFor="let condition of form.controls.conditions.value"
-                    >
-                        <div class="field">
-                            <mat-form-field appearance="outline">
-                                <input
-                                    matInput
-                                    name="condition-field"
-                                    [(ngModel)]="condition[0]"
-                                    [ngModelOptions]="{ standalone: true }"
-                                    [placeholder]="
-                                        'ADMIN.EXTENSIONS_CONDITION_FIELD'
-                                            | translate
-                                    "
-                                />
-                            </mat-form-field>
-                        </div>
-                        <div class="field">
-                            <mat-form-field appearance="outline">
-                                <mat-select
-                                    [(ngModel)]="condition[1]"
-                                    [ngModelOptions]="{ standalone: true }"
-                                    [placeholder]="
-                                        'ADMIN.EXTENSIONS_CONDITION_OP'
-                                            | translate
-                                    "
-                                >
-                                    <mat-option
-                                        *ngFor="let type of condition_ops"
-                                        [value]="type"
+                    @if (form.controls.conditions.value?.length) {
+                        <label>
+                            {{
+                                'ADMIN.EXTENSIONS_FIELD_CONDITIONS' | translate
+                            }}
+                        </label>
+                    }
+                    @for (
+                        condition of form.controls.conditions.value;
+                        track condition
+                    ) {
+                        <div class="fieldset">
+                            <div class="field">
+                                <mat-form-field appearance="outline">
+                                    <input
+                                        matInput
+                                        name="condition-field"
+                                        [(ngModel)]="condition[0]"
+                                        [ngModelOptions]="{ standalone: true }"
+                                        [placeholder]="
+                                            'ADMIN.EXTENSIONS_CONDITION_FIELD'
+                                                | translate
+                                        "
+                                    />
+                                </mat-form-field>
+                            </div>
+                            <div class="field">
+                                <mat-form-field appearance="outline">
+                                    <mat-select
+                                        [(ngModel)]="condition[1]"
+                                        [ngModelOptions]="{ standalone: true }"
+                                        [placeholder]="
+                                            'ADMIN.EXTENSIONS_CONDITION_OP'
+                                                | translate
+                                        "
                                     >
-                                        <span class="capitalize">{{
-                                            type
-                                        }}</span>
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                                        @for (
+                                            type of condition_ops;
+                                            track type
+                                        ) {
+                                            <mat-option [value]="type">
+                                                <span class="capitalize">{{
+                                                    type
+                                                }}</span>
+                                            </mat-option>
+                                        }
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="field">
+                                <mat-form-field appearance="outline">
+                                    <input
+                                        matInput
+                                        name="value"
+                                        [disabled]="
+                                            condition[1] === 'truthy' ||
+                                            condition[1] === 'falsy'
+                                        "
+                                        [(ngModel)]="condition[2]"
+                                        [ngModelOptions]="{ standalone: true }"
+                                        [placeholder]="
+                                            'ADMIN.EXTENSIONS_CONDITION_VALUE'
+                                                | translate
+                                        "
+                                    />
+                                </mat-form-field>
+                            </div>
+                            <button
+                                icon
+                                matRipple
+                                class="h-12 w-12 rounded border border-error text-error"
+                                (click)="removeCondition(condition)"
+                            >
+                                <app-icon>delete</app-icon>
+                            </button>
                         </div>
-                        <div class="field">
-                            <mat-form-field appearance="outline">
-                                <input
-                                    matInput
-                                    name="value"
-                                    [disabled]="
-                                        condition[1] === 'truthy' ||
-                                        condition[1] === 'falsy'
-                                    "
-                                    [(ngModel)]="condition[2]"
-                                    [ngModelOptions]="{ standalone: true }"
-                                    [placeholder]="
-                                        'ADMIN.EXTENSIONS_CONDITION_VALUE'
-                                            | translate
-                                    "
-                                />
-                            </mat-form-field>
-                        </div>
-                        <button
-                            icon
-                            matRipple
-                            class="h-12 w-12 rounded border border-error text-error"
-                            (click)="removeCondition(condition)"
-                        >
-                            <app-icon>delete</app-icon>
-                        </button>
-                    </div>
+                    }
                     <button btn class="w-full" (click)="addCondition()">
                         {{ 'ADMIN.EXTENSIONS_CONDITION_ADD' | translate }}
                     </button>
@@ -152,7 +161,7 @@ import { BackofficeExtension } from '../extensions.component';
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     /** Emitter for user action on the modal */

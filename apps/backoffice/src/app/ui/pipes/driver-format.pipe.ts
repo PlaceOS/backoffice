@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
     name: 'driverFormat',
-    standalone: false
+    standalone: false,
 })
 export class DriverFormatPipe implements PipeTransform {
     public transform(format: string): string {

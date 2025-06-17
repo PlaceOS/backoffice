@@ -34,12 +34,11 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                             <mat-option [value]="{}">{{
                                 'ADMIN.ALL_DOMAINS' | translate
                             }}</mat-option>
-                            <mat-option
-                                *ngFor="let domain of domain_list | async"
-                                [value]="domain"
-                            >
-                                {{ domain.name }}
-                            </mat-option>
+                            @for (domain of domain_list | async; track domain) {
+                                <mat-option [value]="domain">
+                                    {{ domain.name }}
+                                </mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                     <button btn matRipple class="w-40" (click)="edit()">

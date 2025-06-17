@@ -29,14 +29,15 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
                     class="mono hover:bg-base-content/10 p-1"
                 ></div>
             </cdk-virtual-scroll-viewport>
-            <div
-                class="absolute inset-0 flex select-none flex-col items-center justify-center text-base"
-                *ngIf="!(output_lines | async)?.length"
-            >
-                <p class="opacity-60">
-                    {{ 'COMMON.DEBUG_NO_MESSAGES' | translate }}
-                </p>
-            </div>
+            @if (!(output_lines | async)?.length) {
+                <div
+                    class="absolute inset-0 flex select-none flex-col items-center justify-center text-base"
+                >
+                    <p class="opacity-60">
+                        {{ 'COMMON.DEBUG_NO_MESSAGES' | translate }}
+                    </p>
+                </div>
+            }
             <div
                 class="absolute -top-11 right-0 flex items-center space-x-2 p-2"
             >
@@ -61,7 +62,7 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
         `,
     ],
     providers: [SanitizePipe],
-    standalone: false
+    standalone: false,
 })
 export class NewTerminalComponent extends AsyncHandler {
     @Input() public lines: string[] = [];

@@ -90,7 +90,7 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class DomainAuthenticationComponent {
     /** List of auth sources associated with the active domain */

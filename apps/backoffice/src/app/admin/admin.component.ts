@@ -21,23 +21,24 @@ import { BackofficeUsersService } from '../users/users.service';
                     <div
                         class="relative z-10 h-full space-y-2 overflow-auto border-r border-base-200 px-2 pt-10 sm:w-56 sm:py-4"
                     >
-                        <a
-                            btn
-                            matRipple
-                            *ngFor="let item of tab_list"
-                            class="clear w-auto min-w-full text-left hover:bg-base-200"
-                            [routerLink]="['/admin', item.id]"
-                            routerLinkActive="!bg-secondary text-secondary-content"
-                        >
-                            <div class="flex w-full items-center space-x-2">
-                                <app-icon class="text-2xl">{{
-                                    item.icon?.value
-                                }}</app-icon>
-                                <span class="hidden sm:block">{{
-                                    item.name
-                                }}</span>
-                            </div>
-                        </a>
+                        @for (item of tab_list; track item) {
+                            <a
+                                btn
+                                matRipple
+                                class="clear w-auto min-w-full text-left hover:bg-base-200"
+                                [routerLink]="['/admin', item.id]"
+                                routerLinkActive="!bg-secondary text-secondary-content"
+                            >
+                                <div class="flex w-full items-center space-x-2">
+                                    <app-icon class="text-2xl">{{
+                                        item.icon?.value
+                                    }}</app-icon>
+                                    <span class="hidden sm:block">{{
+                                        item.name
+                                    }}</span>
+                                </div>
+                            </a>
+                        }
                     </div>
                     <div
                         class="relative z-0 h-full w-1/2 flex-1 overflow-auto px-4"
@@ -53,16 +54,16 @@ import { BackofficeUsersService } from '../users/users.service';
                         <app-icon>menu</app-icon>
                     </button>
                 </div>
-                <app-debug-output
-                    below
-                    *ngIf="debug_position === 'below'"
-                ></app-debug-output>
+                @if (debug_position === 'below') {
+                    <app-debug-output below></app-debug-output>
+                }
             </div>
-            <app-debug-output
-                side
-                *ngIf="debug_position === 'side'"
-                class="h-full max-w-[30rem]"
-            ></app-debug-output>
+            @if (debug_position === 'side') {
+                <app-debug-output
+                    side
+                    class="h-full max-w-[30rem]"
+                ></app-debug-output>
+            }
         </div>
     `,
     styles: [

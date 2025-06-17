@@ -11,34 +11,24 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'bulk-item-csv-upload',
     template: `
-        <button
-            matRipple
-            class="relative mx-4 flex h-[24rem] w-[24rem] flex-col items-center justify-center space-y-4 rounded-xl border-4 border-dashed border-base-300 hover:bg-base-200"
-            *ngIf="!loading; else load_state"
-            [class.hover]="dragging"
-            (dragenter)="dragging = true"
-            (dragleave)="dragging = false"
-            (dragend)="dragging = false"
-        >
-            <app-icon class="text-6xl">cloud_upload</app-icon>
-            <div class="text">{{ 'COMMON.BULK_DROP_MSG' | translate }}</div>
-            <input
-                class="absolute inset-0 opacity-0"
-                type="file"
-                (change)="loadCSVData($event)"
-            />
-        </button>
-        <div class="p-4" *ngIf="template">
+        @if (!loading) {
             <button
-                btn
                 matRipple
-                class="w-full"
-                (click)="downloadTemplateCSV()"
+                class="relative mx-4 flex h-[24rem] w-[24rem] flex-col items-center justify-center space-y-4 rounded-xl border-4 border-dashed border-base-300 hover:bg-base-200"
+                [class.hover]="dragging"
+                (dragenter)="dragging = true"
+                (dragleave)="dragging = false"
+                (dragend)="dragging = false"
             >
-                {{ 'COMMON.BULK_DOWNLOAD' | translate }}
+                <app-icon class="text-6xl">cloud_upload</app-icon>
+                <div class="text">{{ 'COMMON.BULK_DROP_MSG' | translate }}</div>
+                <input
+                    class="absolute inset-0 opacity-0"
+                    type="file"
+                    (change)="loadCSVData($event)"
+                />
             </button>
-        </div>
-        <ng-template #load_state>
+        } @else {
             <div
                 class="flex h-[24rem] w-[24rem] flex-col items-center justify-center space-y-4"
             >
@@ -47,10 +37,22 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                     {{ 'COMMON.BULK_DROP_LOADING' | translate }}
                 </div>
             </div>
-        </ng-template>
+        }
+        @if (template) {
+            <div class="p-4">
+                <button
+                    btn
+                    matRipple
+                    class="w-full"
+                    (click)="downloadTemplateCSV()"
+                >
+                    {{ 'COMMON.BULK_DOWNLOAD' | translate }}
+                </button>
+            </div>
+        }
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class CsvUploadComponent {
     /** Data for the template CSV */

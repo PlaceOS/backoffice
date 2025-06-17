@@ -20,12 +20,11 @@ import { EmailStateService } from './email-state.service';
                             (ngModelChange)="setDomain($event)"
                             placeholder="Select Domain..."
                         >
-                            <mat-option
-                                *ngFor="let domain of domain_list | async"
-                                [value]="domain"
-                            >
-                                {{ domain.name }}
-                            </mat-option>
+                            @for (domain of domain_list | async; track domain) {
+                                <mat-option [value]="domain">
+                                    {{ domain.name }}
+                                </mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                     <a

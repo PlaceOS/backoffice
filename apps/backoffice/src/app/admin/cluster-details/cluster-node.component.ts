@@ -36,7 +36,9 @@ export interface PlaceClusterUsageStamp {
 @Component({
     selector: 'admin-cluster-node',
     template: `
-        <h4 *ngIf="show_name">{{ node?.hostname }}</h4>
+        @if (show_name) {
+            <h4>{{ node?.hostname }}</h4>
+        }
         <div class="mb-2 h-36 w-full rounded border border-base-300 p-2">
             <div basic-line-graph [lines]="lines" class="h-full w-full"></div>
         </div>
@@ -71,7 +73,7 @@ export interface PlaceClusterUsageStamp {
         </div>
     `,
     styles: [],
-    standalone: false
+    standalone: false,
 })
 export class AdminClusterNodeComponent implements OnChanges, OnInit {
     @Input() public show_name = true;

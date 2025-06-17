@@ -1,222 +1,240 @@
-<div class="driver form" *ngIf="form">
+@if (form) {
+  <div class="driver form">
     <div class="fieldset">
+      @if (form.controls.repository_id && !editing) {
         <div
-            class="field discovery"
-            *ngIf="form.controls.repository_id && !editing"
-        >
-            <label for="repo">{{ 'REPOS.SINGULAR' | translate }} </label>
+          class="field discovery"
+          >
+          <label for="repo">{{ 'REPOS.SINGULAR' | translate }} </label>
+          <item-search-field
+            [placeholder]="'REPOS.SEARCH' | translate"
+            [query_fn]="query_fn"
+            [ngModel]="base_repo"
+            [exclude]="exclude_fn"
+            (ngModelChange)="updateDriverList($event)"
+          ></item-search-field>
+        </div>
+      }
+      @if (form.controls.file_name && base_repo && !editing) {
+        <div
+          class="field discovery"
+          >
+          @if (!loading_drivers) {
+            <label for="driver">{{ 'DRIVERS.BASE' | translate }} </label>
             <item-search-field
-                [placeholder]="'REPOS.SEARCH' | translate"
-                [query_fn]="query_fn"
-                [ngModel]="base_repo"
-                [exclude]="exclude_fn"
-                (ngModelChange)="updateDriverList($event)"
+              [placeholder]="'DRIVERS.SEARCH' | translate"
+              [options]="driver_list"
+              [loading]="loading_drivers"
+              [ngModel]="base_driver"
+              (ngModelChange)="updateCommitList($event)"
             ></item-search-field>
+          } @else {
+            <div class="flex flex-col items-center justify-center space-y-4 p-8">
+              <mat-spinner diameter="32"></mat-spinner>
+              <div class="text">{{ 'DRIVERS.DRIVERS_LOADING' | translate }}</div>
+            </div>
+          }
         </div>
+      }
+      @if (form.controls.commit && base_driver) {
         <div
-            class="field discovery"
-            *ngIf="form.controls.file_name && base_repo && !editing"
-        >
-            <ng-container *ngIf="!loading_drivers; else load_driver_state">
-                <label for="driver">{{ 'DRIVERS.BASE' | translate }} </label>
-                <item-search-field
-                    [placeholder]="'DRIVERS.SEARCH' | translate"
-                    [options]="driver_list"
-                    [loading]="loading_drivers"
-                    [ngModel]="base_driver"
-                    (ngModelChange)="updateCommitList($event)"
-                ></item-search-field>
-            </ng-container>
-        </div>
-        <div
-            class="field discovery"
-            *ngIf="form.controls.commit && base_driver"
-        >
-            <ng-container *ngIf="!loading_commits; else load_commit_state">
-                <label for="commit">{{ 'DRIVERS.COMMIT' | translate }} </label>
-                <item-search-field
-                    [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
-                    [options]="commit_list"
-                    [loading]="loading_commits"
-                    [ngModel]="base_commit"
-                    (ngModelChange)="setDriverBase($event)"
-                ></item-search-field
-            ></ng-container>
-        </div>
-    </div>
-    <ng-container *ngIf="!loading; else load_state">
-        <ng-container *ngIf="!failed; else fail_state">
-            <form [formGroup]="form" class="flex flex-col">
-                <ng-container
-                    *ngIf="
-                        (form.controls.commit && form.controls.commit.value) ||
-                        base_commit
-                    "
-                >
-                    <div class="field" *ngIf="form.controls.name">
-                        <label
-                            for="driver-name"
+          class="field discovery"
+          >
+          @if (!loading_commits) {
+            <label for="commit">{{ 'DRIVERS.COMMIT' | translate }} </label>
+            <item-search-field
+              [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
+              [options]="commit_list"
+              [loading]="loading_commits"
+              [ngModel]="base_commit"
+              (ngModelChange)="setDriverBase($event)"
+              ></item-search-field
+              >
+            } @else {
+              <div class="flex flex-col items-center justify-center space-y-4 p-8">
+                <mat-spinner diameter="32"></mat-spinner>
+                <div class="text">{{ 'DRIVERS.COMMITS_LOADING' | translate }}</div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+      @if (!loading) {
+        @if (!failed) {
+          <form [formGroup]="form" class="flex flex-col">
+            @if (
+              (form.controls.commit && form.controls.commit.value) ||
+              base_commit
+              ) {
+              @if (form.controls.name) {
+                <div class="field">
+                  <label
+                    for="driver-name"
                             [class.error]="
                                 form.controls.name.invalid &&
                                 form.controls.name.touched
                             "
-                        >
-                            {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
-                        </label>
-                        <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                name="driver-name"
-                                [placeholder]="'COMMON.FIELD_NAME' | translate"
-                                formControlName="name"
-                                required
-                            />
-                            <mat-error *ngIf="form.controls.name.invalid">
-                                {{ 'DRIVERS.NAME_REQUIRED' | translate }}
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <div class="field" *ngIf="form.controls.role">
-                        <label for="role">
-                            {{ 'DRIVERS.ROLE' | translate }}
-                        </label>
-                        <mat-form-field appearance="outline">
-                            <mat-select name="role" formControlName="role">
-                                <mat-option
-                                    *ngFor="let type of role_types"
-                                    [value]="type.id"
-                                >
-                                    {{ type.name }}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="field" *ngIf="form.controls.description">
-                        <label for="description">
-                            {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
-                        </label>
-                        <mat-form-field appearance="outline">
-                            <textarea
-                                matInput
-                                name="description"
+                    >
+                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
+                  </label>
+                  <mat-form-field appearance="outline">
+                    <input
+                      matInput
+                      name="driver-name"
+                      [placeholder]="'COMMON.FIELD_NAME' | translate"
+                      formControlName="name"
+                      required
+                      />
+                    @if (form.controls.name.invalid) {
+                      <mat-error>
+                        {{ 'DRIVERS.NAME_REQUIRED' | translate }}
+                      </mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              }
+              @if (form.controls.role) {
+                <div class="field">
+                  <label for="role">
+                    {{ 'DRIVERS.ROLE' | translate }}
+                  </label>
+                  <mat-form-field appearance="outline">
+                    <mat-select name="role" formControlName="role">
+                      @for (type of role_types; track type) {
+                        <mat-option
+                          [value]="type.id"
+                          >
+                          {{ type.name }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              }
+              @if (form.controls.description) {
+                <div class="field">
+                  <label for="description">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                  </label>
+                  <mat-form-field appearance="outline">
+                    <textarea
+                      matInput
+                      name="description"
                                 [placeholder]="
                                     'COMMON.FIELD_DESCRIPTION' | translate
                                 "
-                                formControlName="description"
-                            ></textarea>
-                        </mat-form-field>
-                    </div>
-                    <div class="field" *ngIf="form.controls.module_name">
-                        <label
-                            for="module-name"
+                      formControlName="description"
+                    ></textarea>
+                  </mat-form-field>
+                </div>
+              }
+              @if (form.controls.module_name) {
+                <div class="field">
+                  <label
+                    for="module-name"
                             [class.error]="
                                 form.controls.module_name.invalid &&
                                 form.controls.module_name.touched
                             "
-                        >
-                            {{ 'DRIVERS.MODULE_NAME' | translate }}
-                            <span>*</span>
-                        </label>
-                        <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                name="module-name"
+                    >
+                    {{ 'DRIVERS.MODULE_NAME' | translate }}
+                    <span>*</span>
+                  </label>
+                  <mat-form-field appearance="outline">
+                    <input
+                      matInput
+                      name="module-name"
                                 [placeholder]="
                                     'DRIVERS.MODULE_NAME' | translate
                                 "
-                                formControlName="module_name"
-                                required
-                            />
-                            <mat-error
-                                *ngIf="form.controls.module_name.invalid"
-                            >
-                                {{ 'DRIVERS.MODULE_NAME_REQUIRED' | translate }}
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <div class="field" *ngIf="form.controls.default_uri">
-                        <label for="default-uri">{{
-                            'DRIVERS.DEFAULT_URI' | translate
-                        }}</label>
-                        <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                name="default-uri"
+                      formControlName="module_name"
+                      required
+                      />
+                    @if (form.controls.module_name.invalid) {
+                      <mat-error
+                        >
+                        {{ 'DRIVERS.MODULE_NAME_REQUIRED' | translate }}
+                      </mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              }
+              @if (form.controls.default_uri) {
+                <div class="field">
+                  <label for="default-uri">{{
+                    'DRIVERS.DEFAULT_URI' | translate
+                  }}</label>
+                  <mat-form-field appearance="outline">
+                    <input
+                      matInput
+                      name="default-uri"
                                 [placeholder]="
                                     'DRIVERS.DEFAULT_URI' | translate
                                 "
-                                formControlName="default_uri"
-                            />
-                        </mat-form-field>
-                    </div>
-                    <div class="fieldset">
-                        <div class="field" *ngIf="form.controls.default_port">
-                            <label
-                                for="default-port"
+                      formControlName="default_uri"
+                      />
+                  </mat-form-field>
+                </div>
+              }
+              <div class="fieldset">
+                @if (form.controls.default_port) {
+                  <div class="field">
+                    <label
+                      for="default-port"
                                 [class.error]="
                                     form.controls.default_port.invalid &&
                                     form.controls.default_port.touched
                                 "
-                            >
-                                {{ 'DRIVERS.DEFAULT_PORT' | translate }}
-                            </label>
-                            <mat-form-field appearance="outline">
-                                <input
-                                    matInput
-                                    name="default-port"
-                                    type="number"
+                      >
+                      {{ 'DRIVERS.DEFAULT_PORT' | translate }}
+                    </label>
+                    <mat-form-field appearance="outline">
+                      <input
+                        matInput
+                        name="default-port"
+                        type="number"
                                     [placeholder]="
                                         'DRIVERS.DEFAULT_PORT' | translate
                                     "
-                                    formControlName="default_port"
-                                />
-                                <mat-error
-                                    *ngIf="form.controls.default_port.invalid"
-                                >
-                                    {{ 'MODULES.PORT_REQUIRED' | translate }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                        <div
-                            class="field"
-                            *ngIf="form.controls.ignore_connected"
-                        >
-                            <div class="h-8 w-full"></div>
-                            <settings-toggle
-                                class="w-full"
-                                [name]="'MODULES.IGNORE_CONNECTED' | translate"
-                                formControlName="ignore_connected"
-                            ></settings-toggle>
-                        </div>
-                    </div>
-                </ng-container>
-            </form>
-        </ng-container>
-    </ng-container>
-</div>
-<ng-template #load_state>
-    <div class="flex flex-col items-center justify-center space-y-4 p-8">
-        <mat-spinner diameter="32"></mat-spinner>
-        <div class="text">{{ 'DRIVERS.DETAILS_LOADING' | translate }}</div>
-    </div>
-</ng-template>
-<ng-template #load_commit_state>
-    <div class="flex flex-col items-center justify-center space-y-4 p-8">
-        <mat-spinner diameter="32"></mat-spinner>
-        <div class="text">{{ 'DRIVERS.COMMITS_LOADING' | translate }}</div>
-    </div>
-</ng-template>
-<ng-template #load_driver_state>
-    <div class="flex flex-col items-center justify-center space-y-4 p-8">
-        <mat-spinner diameter="32"></mat-spinner>
-        <div class="text">{{ 'DRIVERS.DRIVERS_LOADING' | translate }}</div>
-    </div>
-</ng-template>
-<ng-template #fail_state>
-    <div class="info-block">
-        <div class="text text-center text-error">
-            {{ 'DRIVERS.DETAILS_ERROR_1' | translate }}<br />
-            {{ 'DRIVERS.DETAILS_ERROR_2' | translate }}
+                        formControlName="default_port"
+                        />
+                      @if (form.controls.default_port.invalid) {
+                        <mat-error
+                          >
+                          {{ 'MODULES.PORT_REQUIRED' | translate }}
+                        </mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+                }
+                @if (form.controls.ignore_connected) {
+                  <div
+                    class="field"
+                    >
+                    <div class="h-8 w-full"></div>
+                    <settings-toggle
+                      class="w-full"
+                      [name]="'MODULES.IGNORE_CONNECTED' | translate"
+                      formControlName="ignore_connected"
+                    ></settings-toggle>
+                  </div>
+                }
+              </div>
+            }
+          </form>
+        } @else {
+          <div class="info-block">
+            <div class="text text-center text-error">
+              {{ 'DRIVERS.DETAILS_ERROR_1' | translate }}<br />
+              {{ 'DRIVERS.DETAILS_ERROR_2' | translate }}
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="flex flex-col items-center justify-center space-y-4 p-8">
+          <mat-spinner diameter="32"></mat-spinner>
+          <div class="text">{{ 'DRIVERS.DETAILS_LOADING' | translate }}</div>
         </div>
+      }
     </div>
-</ng-template>
+  }

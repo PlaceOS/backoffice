@@ -47,37 +47,34 @@ import { SettingsService } from '../common/settings.service';
                 <app-icon>schedule</app-icon>
                 {{ 'COMMON.UPLOAD_HISTORY' | translate }}
             </button>
-            <button
-                matRipple
-                type="button"
-                *ngIf="languages.length > 1"
-                [matMenuTriggerFor]="lang_menu"
-            >
-                <app-icon>language</app-icon>
-
-                <div class="flex-1 text-left">
-                    {{ 'COMMON.LANGUAGE' | translate }}
-                </div>
-                <div
-                    class="max-w-24 truncate rounded bg-base-200 px-2 py-1 text-sm"
-                >
-                    {{ active_lang.name }}
-                </div>
-            </button>
-            <mat-menu #lang_menu="matMenu" xPosition="after" yPosition="above">
-                <button
-                    mat-menu-item
-                    *ngFor="let language of languages"
-                    class="w-60"
-                    (click)="setLanguage(language.id)"
-                >
+            @if (languages.length > 1) {
+                <button matRipple type="button" [matMenuTriggerFor]="lang_menu">
+                    <app-icon>language</app-icon>
+                    <div class="flex-1 text-left">
+                        {{ 'COMMON.LANGUAGE' | translate }}
+                    </div>
                     <div
-                        class="flex w-full items-center justify-between space-x-4"
+                        class="max-w-24 truncate rounded bg-base-200 px-2 py-1 text-sm"
                     >
-                        <div>{{ language.name }}</div>
-                        <div>{{ language.flag }}</div>
+                        {{ active_lang.name }}
                     </div>
                 </button>
+            }
+            <mat-menu #lang_menu="matMenu" xPosition="after" yPosition="above">
+                @for (language of languages; track language) {
+                    <button
+                        mat-menu-item
+                        class="w-60"
+                        (click)="setLanguage(language.id)"
+                    >
+                        <div
+                            class="flex w-full items-center justify-between space-x-4"
+                        >
+                            <div>{{ language.name }}</div>
+                            <div>{{ language.flag }}</div>
+                        </div>
+                    </button>
+                }
             </mat-menu>
             <a
                 matRipple

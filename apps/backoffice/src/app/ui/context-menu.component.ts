@@ -30,7 +30,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class ContextMenuComponent
     extends AsyncHandler

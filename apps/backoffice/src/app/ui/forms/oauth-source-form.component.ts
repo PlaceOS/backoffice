@@ -7,228 +7,282 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'oauth-source-form',
     template: `
-        <form
-            oauth-source
-            *ngIf="form"
-            class="flex flex-col"
-            [formGroup]="form"
-        >
-            <div class="field" *ngIf="form.controls.name">
-                <label
-                    for="auth-source-name"
-                    [class.error]="
-                        form.controls.name.invalid && form.controls.name.touched
-                    "
-                >
-                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="auth-source-name"
-                        [placeholder]="'COMMON.FIELD_NAME' | translate"
-                        formControlName="name"
-                        required
-                    />
-                    <mat-error *ngIf="form.controls.name.invalid">
-                        {{ 'DOMAINS.AUTHENTICATION_NAME_REQUIRE' | translate }}
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <div class="fieldset">
-                <div class="field" *ngIf="form.controls.client_id">
-                    <label for="client-id"
-                        >{{ 'DOMAINS.CLIENT_ID' | translate }}:</label
-                    >
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="client-id"
-                            [placeholder]="'DOMAINS.CLIENT_ID' | translate"
-                            formControlName="client_id"
-                        />
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.client_secret">
-                    <label for="client-secret"
-                        >{{ 'DOMAINS.CLIENT_SECRET' | translate }}:
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="client-secret"
-                            [placeholder]="'DOMAINS.CLIENT_SECRET' | translate"
-                            formControlName="client_secret"
-                        />
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="fieldset">
-                <div class="field" *ngIf="form.controls.site">
-                    <label for="site"
-                        >{{ 'DOMAINS.OAUTH_SITE' | translate }}:</label
-                    >
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="site"
-                            [placeholder]="
-                                'DOMAINS.OAUTH_SITE_PLACEHOLDER' | translate
+        @if (form) {
+            <form oauth-source class="flex flex-col" [formGroup]="form">
+                @if (form.controls.name) {
+                    <div class="field">
+                        <label
+                            for="auth-source-name"
+                            [class.error]="
+                                form.controls.name.invalid &&
+                                form.controls.name.touched
                             "
-                            formControlName="site"
-                        />
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.scope">
-                    <label for="scope"
-                        >{{ 'DOMAINS.OAUTH_SCOPES' | translate }}:</label
-                    >
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="scope"
-                            [placeholder]="'DOMAINS.OAUTH_SCOPES' | translate"
-                            formControlName="scope"
-                        />
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="fieldset">
-                <div class="field type" *ngIf="form.controls.token_method">
-                    <label for="token-method"
-                        >{{ 'DOMAINS.OAUTH_TOKEN_METHOD' | translate }}:
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
-                            name="token-method"
-                            formControlName="token_method"
                         >
-                            <mat-option
-                                *ngFor="let type of token_methods"
-                                [value]="type.id"
+                            {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="auth-source-name"
+                                [placeholder]="'COMMON.FIELD_NAME' | translate"
+                                formControlName="name"
+                                required
+                            />
+                            @if (form.controls.name.invalid) {
+                                <mat-error>
+                                    {{
+                                        'DOMAINS.AUTHENTICATION_NAME_REQUIRE'
+                                            | translate
+                                    }}
+                                </mat-error>
+                            }
+                        </mat-form-field>
+                    </div>
+                }
+                <div class="fieldset">
+                    @if (form.controls.client_id) {
+                        <div class="field">
+                            <label for="client-id"
+                                >{{ 'DOMAINS.CLIENT_ID' | translate }}:</label
                             >
-                                {{ type.name }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="client-id"
+                                    [placeholder]="
+                                        'DOMAINS.CLIENT_ID' | translate
+                                    "
+                                    formControlName="client_id"
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
+                    @if (form.controls.client_secret) {
+                        <div class="field">
+                            <label for="client-secret"
+                                >{{ 'DOMAINS.CLIENT_SECRET' | translate }}:
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="client-secret"
+                                    [placeholder]="
+                                        'DOMAINS.CLIENT_SECRET' | translate
+                                    "
+                                    formControlName="client_secret"
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
                 </div>
-                <div class="field type" *ngIf="form.controls.auth_scheme">
-                    <label for="auth-scheme"> Authentication Scheme: </label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
-                            name="auth-scheme"
-                            formControlName="auth_scheme"
+                <div class="fieldset">
+                    @if (form.controls.site) {
+                        <div class="field">
+                            <label for="site"
+                                >{{ 'DOMAINS.OAUTH_SITE' | translate }}:</label
+                            >
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="site"
+                                    [placeholder]="
+                                        'DOMAINS.OAUTH_SITE_PLACEHOLDER'
+                                            | translate
+                                    "
+                                    formControlName="site"
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
+                    @if (form.controls.scope) {
+                        <div class="field">
+                            <label for="scope"
+                                >{{
+                                    'DOMAINS.OAUTH_SCOPES' | translate
+                                }}:</label
+                            >
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="scope"
+                                    [placeholder]="
+                                        'DOMAINS.OAUTH_SCOPES' | translate
+                                    "
+                                    formControlName="scope"
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
+                </div>
+                <div class="fieldset">
+                    @if (form.controls.token_method) {
+                        <div class="field type">
+                            <label for="token-method"
+                                >{{ 'DOMAINS.OAUTH_TOKEN_METHOD' | translate }}:
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <mat-select
+                                    name="token-method"
+                                    formControlName="token_method"
+                                >
+                                    @for (type of token_methods; track type) {
+                                        <mat-option [value]="type.id">
+                                            {{ type.name }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    }
+                    @if (form.controls.auth_scheme) {
+                        <div class="field type">
+                            <label for="auth-scheme">
+                                Authentication Scheme:
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <mat-select
+                                    name="auth-scheme"
+                                    formControlName="auth_scheme"
+                                >
+                                    @for (type of auth_schemes; track type) {
+                                        <mat-option [value]="type.id">
+                                            {{
+                                                (type.id === 'request_body'
+                                                    ? 'DOMAINS.OAUTH_SCHEME_BODY'
+                                                    : 'DOMAINS.OAUTH_SCHEME_BASIC'
+                                                ) | translate
+                                            }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    }
+                </div>
+                @if (form.controls.token_url) {
+                    <div class="field">
+                        <label for="token-url"
+                            >{{ 'DOMAINS.OAUTH_TOKEN_URL' | translate }}:</label
                         >
-                            <mat-option
-                                *ngFor="let type of auth_schemes"
-                                [value]="type.id"
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="token-url"
+                                [placeholder]="
+                                    'DOMAINS.OAUTH_TOKEN_URL' | translate
+                                "
+                                formControlName="token_url"
+                            />
+                        </mat-form-field>
+                    </div>
+                }
+                <div class="fieldset">
+                    @if (form.controls.authorize_url) {
+                        <div class="field">
+                            <label for="authorize-url"
+                                >{{
+                                    'DOMAINS.OAUTH_AUTHORISE_URL' | translate
+                                }}:
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="authorize-url"
+                                    [placeholder]="
+                                        'DOMAINS.OAUTH_AUTHORISE_URL'
+                                            | translate
+                                    "
+                                    formControlName="authorize_url"
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
+                    @if (form.controls.raw_info_url) {
+                        <div class="field">
+                            <label for="info-url"
+                                >{{
+                                    'DOMAINS.OAUTH_PROFILE_URL' | translate
+                                }}:</label
                             >
-                                {{
-                                    (type.id === 'request_body'
-                                        ? 'DOMAINS.OAUTH_SCHEME_BODY'
-                                        : 'DOMAINS.OAUTH_SCHEME_BASIC'
-                                    ) | translate
-                                }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="raw_info_url"
+                                    [placeholder]="
+                                        'DOMAINS.OAUTH_PROFILE_URL' | translate
+                                    "
+                                    formControlName="raw_info_url"
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
                 </div>
-            </div>
-            <div class="field" *ngIf="form.controls.token_url">
-                <label for="token-url"
-                    >{{ 'DOMAINS.OAUTH_TOKEN_URL' | translate }}:</label
-                >
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="token-url"
-                        [placeholder]="'DOMAINS.OAUTH_TOKEN_URL' | translate"
-                        formControlName="token_url"
-                    />
-                </mat-form-field>
-            </div>
-            <div class="fieldset">
-                <div class="field" *ngIf="form.controls.authorize_url">
-                    <label for="authorize-url"
-                        >{{ 'DOMAINS.OAUTH_AUTHORISE_URL' | translate }}:
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="authorize-url"
-                            [placeholder]="
-                                'DOMAINS.OAUTH_AUTHORISE_URL' | translate
+                @if (form.controls.info_mappings) {
+                    <div class="field mb-4">
+                        <label for="client-secret"
+                            >{{
+                                'DOMAINS.OAUTH_INFO_MAPPINGS' | translate
+                            }}:</label
+                        >
+                        <object-list-field
+                            [(ngModel)]="info_mapping_list"
+                            (ngModelChange)="
+                                updateMappings(
+                                    $event,
+                                    form.controls.info_mappings
+                                )
                             "
-                            formControlName="authorize_url"
-                        />
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.raw_info_url">
-                    <label for="info-url"
-                        >{{ 'DOMAINS.OAUTH_PROFILE_URL' | translate }}:</label
-                    >
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="raw_info_url"
-                            [placeholder]="
-                                'DOMAINS.OAUTH_PROFILE_URL' | translate
+                            [ngModelOptions]="{ standalone: true }"
+                            [fields]="['PlaceOS', 'Remote']"
+                        ></object-list-field>
+                    </div>
+                }
+                @if (form.controls.authorize_params) {
+                    <div class="field mb-4">
+                        <label for="client-secret"
+                            >{{
+                                'DOMAINS.OAUTH_AUTHORISE_PARAMS' | translate
+                            }}:</label
+                        >
+                        <object-list-field
+                            [(ngModel)]="auth_params_list"
+                            (ngModelChange)="
+                                updateMappings(
+                                    $event,
+                                    form.controls.authorize_params,
+                                    false,
+                                    ['Parameter', 'Value']
+                                )
                             "
-                            formControlName="raw_info_url"
-                        />
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="field mb-4" *ngIf="form.controls.info_mappings">
-                <label for="client-secret"
-                    >{{ 'DOMAINS.OAUTH_INFO_MAPPINGS' | translate }}:</label
-                >
-                <object-list-field
-                    [(ngModel)]="info_mapping_list"
-                    (ngModelChange)="
-                        updateMappings($event, form.controls.info_mappings)
-                    "
-                    [ngModelOptions]="{ standalone: true }"
-                    [fields]="['PlaceOS', 'Remote']"
-                ></object-list-field>
-            </div>
-            <div class="field mb-4" *ngIf="form.controls.authorize_params">
-                <label for="client-secret"
-                    >{{ 'DOMAINS.OAUTH_AUTHORISE_PARAMS' | translate }}:</label
-                >
-                <object-list-field
-                    [(ngModel)]="auth_params_list"
-                    (ngModelChange)="
-                        updateMappings(
-                            $event,
-                            form.controls.authorize_params,
-                            false,
-                            ['Parameter', 'Value']
-                        )
-                    "
-                    [ngModelOptions]="{ standalone: true }"
-                    [fields]="['Parameter', 'Value']"
-                ></object-list-field>
-            </div>
-            <div class="field mb-4" *ngIf="form.controls.ensure_matching">
-                <label for="client-secret"
-                    >{{ 'DOMAINS.OAUTH_ENSURE_MATCHING' | translate }}:</label
-                >
-                <object-list-field
-                    [(ngModel)]="ensure_matching_list"
-                    (ngModelChange)="
-                        updateMappings(
-                            $event,
-                            form.controls.ensure_matching,
-                            true,
-                            ['Parameter', 'Value']
-                        )
-                    "
-                    [ngModelOptions]="{ standalone: true }"
-                    [fields]="['Parameter', 'Value']"
-                ></object-list-field>
-            </div>
-        </form>
+                            [ngModelOptions]="{ standalone: true }"
+                            [fields]="['Parameter', 'Value']"
+                        ></object-list-field>
+                    </div>
+                }
+                @if (form.controls.ensure_matching) {
+                    <div class="field mb-4">
+                        <label for="client-secret"
+                            >{{
+                                'DOMAINS.OAUTH_ENSURE_MATCHING' | translate
+                            }}:</label
+                        >
+                        <object-list-field
+                            [(ngModel)]="ensure_matching_list"
+                            (ngModelChange)="
+                                updateMappings(
+                                    $event,
+                                    form.controls.ensure_matching,
+                                    true,
+                                    ['Parameter', 'Value']
+                                )
+                            "
+                            [ngModelOptions]="{ standalone: true }"
+                            [fields]="['Parameter', 'Value']"
+                        ></object-list-field>
+                    </div>
+                }
+            </form>
+        }
     `,
     styles: [
         `
@@ -237,7 +291,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class OauthSourceFormComponent
     extends AsyncHandler

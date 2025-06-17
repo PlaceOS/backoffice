@@ -36,30 +36,32 @@ import { LocaleService, setTranslationService } from './common/locale.service';
     selector: 'placeos-root',
     template: `
         <div class="flex h-full w-full flex-col overflow-hidden">
-            <ng-container *ngIf="!(loading | async); else load_state">
+            @if (!(loading | async)) {
                 <global-banner></global-banner>
                 <div class="relative h-1/2 w-full flex-1">
                     <router-outlet></router-outlet>
                 </div>
-                <ng-container *ngIf="filter">
+                @if (filter) {
                     <global-search [(search)]="filter"></global-search>
-                </ng-container>
-                <app-upload-list *ngIf="!simple"></app-upload-list>
-            </ng-container>
-            <ng-template #load_state>
+                }
+                @if (!simple) {
+                    <app-upload-list></app-upload-list>
+                }
+            } @else {
                 <div
                     class="absolute inset-0 z-50 flex items-center justify-center"
                 >
                     <mat-spinner [diameter]="64"></mat-spinner>
                 </div>
-            </ng-template>
+            }
         </div>
-        <div
-            *ngIf="!online && !(loading | async)"
-            class="fixed bottom-2 left-1/2 z-[9999] -translate-x-1/2 rounded-3xl bg-error px-4 py-2 text-xs text-base-100 shadow"
-        >
-            Unable to reach server... Some features may not work.
-        </div>
+        @if (!online && !(loading | async)) {
+            <div
+                class="fixed bottom-2 left-1/2 z-[9999] -translate-x-1/2 rounded-3xl bg-error px-4 py-2 text-xs text-base-100 shadow"
+            >
+                Unable to reach server... Some features may not work.
+            </div>
+        }
     `,
     styleUrls: [
         './styles/app.component.scss',

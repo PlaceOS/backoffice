@@ -4,26 +4,27 @@ import { PlaceUser } from '@placeos/ts-client';
 @Component({
     selector: 'a-user-avatar',
     template: `
-        <div
-            class="flex items-center justify-center overflow-hidden rounded-full"
-            *ngIf="user"
-            [attr.user-id]="user.id"
-        >
+        @if (user) {
             <div
-                initials
-                class="uppercase text-base-content text-opacity-80"
-                *ngIf="!user.photo && !user.image; else image_state"
+                class="flex items-center justify-center overflow-hidden rounded-full"
+                [attr.user-id]="user.id"
             >
-                {{ initials }}
+                @if (!user.photo && !user.image) {
+                    <div
+                        initials
+                        class="uppercase text-base-content text-opacity-80"
+                    >
+                        {{ initials }}
+                    </div>
+                } @else {
+                    <img
+                        auth
+                        class="h-full w-full object-cover"
+                        [source]="user.photo || user.image"
+                    />
+                }
             </div>
-        </div>
-        <ng-template #image_state>
-            <img
-                auth
-                class="h-full w-full object-cover"
-                [source]="user.photo || user.image"
-            />
-        </ng-template>
+        }
     `,
     styles: [
         `
@@ -40,7 +41,7 @@ import { PlaceUser } from '@placeos/ts-client';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class UserAvatarComponent {
     /** User to display avatar for */

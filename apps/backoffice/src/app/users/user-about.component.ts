@@ -65,12 +65,12 @@ import { notifySuccess } from '../common/notifications';
                         {{ item?.email }}
                     </a>
                 </div>
-                <ng-container *ngIf="item?.department">
+                @if (item?.department) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'USERS.FIELD_DEPARTMENT' | translate }}
                     </div>
                     <div>{{ item?.department }}</div>
-                </ng-container>
+                }
                 <div class="flex items-center text-sm font-medium">
                     {{ 'USERS.AUTHORITY_ID' | translate }}
                 </div>
@@ -80,19 +80,23 @@ import { notifySuccess } from '../common/notifications';
                 <div class="flex items-center text-sm font-medium" for="groups">
                     {{ 'USERS.FIELD_GROUPS' | translate }}
                 </div>
-                <div
-                    *ngIf="item.groups?.length; else empty_group_state"
-                    class="-mx-1 flex flex-wrap"
-                >
-                    <button
-                        matRipple
-                        *ngFor="let group of item.groups"
-                        class="mono m-1 rounded bg-base-200 px-2 py-1 text-[0.625rem]"
-                        (click)="copyGroup(group)"
-                    >
-                        {{ group }}
-                    </button>
-                </div>
+                @if (item.groups?.length) {
+                    <div class="-mx-1 flex flex-wrap">
+                        @for (group of item.groups; track group) {
+                            <button
+                                matRipple
+                                class="mono m-1 rounded bg-base-200 px-2 py-1 text-[0.625rem]"
+                                (click)="copyGroup(group)"
+                            >
+                                {{ group }}
+                            </button>
+                        }
+                    </div>
+                } @else {
+                    <div class="opacity-30">
+                        {{ 'USERS.NO_GROUPS' | translate }}
+                    </div>
+                }
                 <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
@@ -108,7 +112,7 @@ import { notifySuccess } from '../common/notifications';
                         {{ item.created_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <ng-template *ngIf="item.updated_at">
+                @if (item.updated_at) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.UPDATED_AT' | translate }}
                     </div>
@@ -124,12 +128,9 @@ import { notifySuccess } from '../common/notifications';
                             {{ item.updated_at * 1000 | dateFrom }}
                         </span>
                     </div>
-                </ng-template>
+                }
             </div>
         </section>
-        <ng-template #empty_group_state>
-            <div class="opacity-30">{{ 'USERS.NO_GROUPS' | translate }}</div>
-        </ng-template>
     `,
     styles: [
         `

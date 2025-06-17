@@ -7,56 +7,55 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'object-list-field',
     template: `
-        <div class="object-list" *ngIf="fields && fields.length">
-            <div
-                class="header row h-6 text-sm"
-                *ngIf="active_list && active_list.length"
-            >
-                <div
-                    class="field capitalize"
-                    *ngFor="let field of fields"
-                    [attr.name]="field"
-                >
-                    {{ field }}
-                </div>
-                <div class="w-10"></div>
-            </div>
-            <div class="row" *ngFor="let item of active_list">
-                <div
-                    class="field"
-                    *ngFor="let field of fields"
-                    [attr.name]="field"
-                >
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            [name]="field"
-                            [placeholder]="field"
-                            [(ngModel)]="item[field]"
-                            (ngModelChange)="setValue(active_list)"
-                        />
-                    </mat-form-field>
-                </div>
-                <button
-                    btn
-                    icon
-                    class="h-12 w-12 rounded border border-error text-error"
-                    (click)="removeRow(item)"
-                >
-                    <app-icon>delete</app-icon>
-                </button>
-            </div>
-            <div class="row h-10 text-center">
-                <button btn type="button" class="w-full" (click)="addRow()">
-                    <div class="contents">
-                        <app-icon class="text-2xl">add</app-icon>
-                        <div class="text">
-                            {{ 'COMMON.NEW_ITEM' | translate }}
-                        </div>
+        @if (fields && fields.length) {
+            <div class="object-list">
+                @if (active_list && active_list.length) {
+                    <div class="header row h-6 text-sm">
+                        @for (field of fields; track field) {
+                            <div class="field capitalize" [attr.name]="field">
+                                {{ field }}
+                            </div>
+                        }
+                        <div class="w-10"></div>
                     </div>
-                </button>
+                }
+                @for (item of active_list; track item) {
+                    <div class="row">
+                        @for (field of fields; track field) {
+                            <div class="field" [attr.name]="field">
+                                <mat-form-field appearance="outline">
+                                    <input
+                                        matInput
+                                        [name]="field"
+                                        [placeholder]="field"
+                                        [(ngModel)]="item[field]"
+                                        (ngModelChange)="setValue(active_list)"
+                                    />
+                                </mat-form-field>
+                            </div>
+                        }
+                        <button
+                            btn
+                            icon
+                            class="h-12 w-12 rounded border border-error text-error"
+                            (click)="removeRow(item)"
+                        >
+                            <app-icon>delete</app-icon>
+                        </button>
+                    </div>
+                }
+                <div class="row h-10 text-center">
+                    <button btn type="button" class="w-full" (click)="addRow()">
+                        <div class="contents">
+                            <app-icon class="text-2xl">add</app-icon>
+                            <div class="text">
+                                {{ 'COMMON.NEW_ITEM' | translate }}
+                            </div>
+                        </div>
+                    </button>
+                </div>
             </div>
-        </div>
+        }
     `,
     styles: [
         `
@@ -105,7 +104,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
             multi: true,
         },
     ],
-    standalone: false
+    standalone: false,
 })
 export class ObjectListFieldComponent
     extends AsyncHandler

@@ -137,12 +137,11 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                             "
                             [multiple]="true"
                         >
-                            <mat-option
-                                *ngFor="let ext of ALLOWED_FILE_EXTENSIONS"
-                                [value]="ext"
-                            >
-                                {{ ext }}
-                            </mat-option>
+                            @for (ext of ALLOWED_FILE_EXTENSIONS; track ext) {
+                                <mat-option [value]="ext">
+                                    {{ ext }}
+                                </mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                 </div>
@@ -159,12 +158,11 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                             "
                             [multiple]="true"
                         >
-                            <mat-option
-                                *ngFor="let mime of ALLOWED_MIME_TYPES"
-                                [value]="mime"
-                            >
-                                {{ mime }}
-                            </mat-option>
+                            @for (mime of ALLOWED_MIME_TYPES; track mime) {
+                                <mat-option [value]="mime">
+                                    {{ mime }}
+                                </mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                 </div>

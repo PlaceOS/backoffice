@@ -21,12 +21,11 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                             (ngModelChange)="copySchema()"
                             [placeholder]="'ADMIN.SCHEMA_SELECT' | translate"
                         >
-                            <mat-option
-                                *ngFor="let schema of schema_list | async"
-                                [value]="schema"
-                            >
-                                {{ schema.name }}
-                            </mat-option>
+                            @for (schema of schema_list | async; track schema) {
+                                <mat-option [value]="schema">
+                                    {{ schema.name }}
+                                </mat-option>
+                            }
                             <mat-option
                                 (click)="newSchema(); $event.preventDefault()"
                             >
@@ -46,38 +45,41 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                     </button>
                 </div>
             </div>
-            <div class="mb-4 flex items-center space-x-2" *ngIf="schema_copy">
-                <div class="flex w-1/2 flex-1 flex-col">
-                    <label for="type"
-                        >{{ 'ADMIN.SCHEMA_NAME' | translate }}:
-                    </label>
-                    <mat-form-field
-                        class="no-subscript w-full"
-                        appearance="outline"
-                    >
-                        <input matInput [(ngModel)]="schema_copy.name" />
-                    </mat-form-field>
+            @if (schema_copy) {
+                <div class="mb-4 flex items-center space-x-2">
+                    <div class="flex w-1/2 flex-1 flex-col">
+                        <label for="type"
+                            >{{ 'ADMIN.SCHEMA_NAME' | translate }}:
+                        </label>
+                        <mat-form-field
+                            class="no-subscript w-full"
+                            appearance="outline"
+                        >
+                            <input matInput [(ngModel)]="schema_copy.name" />
+                        </mat-form-field>
+                    </div>
+                    <button btn class="mt-6 h-12 w-40" (click)="saveSchema()">
+                        {{ 'COMMON.SAVE' | translate }}
+                    </button>
                 </div>
-                <button btn class="mt-6 h-12 w-40" (click)="saveSchema()">
-                    {{ 'COMMON.SAVE' | translate }}
-                </button>
-            </div>
+            }
             <div class="relative h-1/2 flex-1">
-                <ng-container *ngIf="schema_copy; else empty_state">
+                @if (schema_copy) {
                     <settings-form-field
                         [(ngModel)]="schema_copy.schema"
                         lang="json"
                         [readonly]="false"
                     ></settings-form-field>
-                </ng-container>
+                } @else {
+                    <div
+                        class="absolute inset-0 flex items-center justify-center"
+                    >
+                        <p class="p-8 opacity-30">
+                            {{ 'ADMIN.SCHEMA_SELECT_MSG' | translate }}
+                        </p>
+                    </div>
+                }
             </div>
-            <ng-template #empty_state>
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <p class="p-8 opacity-30">
-                        {{ 'ADMIN.SCHEMA_SELECT_MSG' | translate }}
-                    </p>
-                </div>
-            </ng-template>
         </div>
     `,
     styles: [
@@ -93,7 +95,7 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class AdminSchemasComponent {
     public active_schema: JsonSchema;

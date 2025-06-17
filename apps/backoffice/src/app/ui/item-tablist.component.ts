@@ -20,35 +20,40 @@ export interface ItemTab {
                     [class.shadow]="scrolled"
                     [tabPanel]="tabPanel"
                 >
-                    <a
-                        class="tab"
-                        mat-tab-link
-                        *ngFor="let link of tabs"
-                        [routerLink]="
-                            '/' + base + '/' + item_id + '/' + link.id
-                        "
-                        [queryParams]="link.query || {}"
-                        routerLinkActive
-                        #rla="routerLinkActive"
-                        [active]="rla.isActive"
-                    >
-                        <app-icon class="text-xl" [icon]="link.icon"></app-icon
-                        >&nbsp;
-                        <div class="name">{{ link.name }}&nbsp;</div>
-                        <div
-                            class="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-base-200 px-1.5 text-xs"
-                            *ngIf="link.count || link.count === 0"
+                    @for (link of tabs; track link) {
+                        <a
+                            class="tab"
+                            mat-tab-link
+                            [routerLink]="
+                                '/' + base + '/' + item_id + '/' + link.id
+                            "
+                            [queryParams]="link.query || {}"
+                            routerLinkActive
+                            #rla="routerLinkActive"
+                            [active]="rla.isActive"
                         >
-                            {{ link.count || '0' }}
-                        </div>
-                    </a>
+                            <app-icon
+                                class="text-xl"
+                                [icon]="link.icon"
+                            ></app-icon
+                            >&nbsp;
+                            <div class="name">{{ link.name }}&nbsp;</div>
+                            @if (link.count || link.count === 0) {
+                                <div
+                                    class="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-base-200 px-1.5 text-xs"
+                                >
+                                    {{ link.count || '0' }}
+                                </div>
+                            }
+                        </a>
+                    }
                 </nav>
             </div>
         </div>
         <mat-tab-nav-panel #tabPanel class="hidden"></mat-tab-nav-panel>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ItemTablistComponent extends AsyncHandler implements OnInit {
     @Input() public base: string = 'systems';

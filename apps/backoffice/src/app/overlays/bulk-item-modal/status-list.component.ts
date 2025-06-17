@@ -13,46 +13,54 @@ import { Observable } from 'rxjs';
     selector: 'bulk-item-status-list',
     template: `
         <div class="flex flex-col items-center px-4 pb-4">
-            <div class="info" *ngIf="!done">
-                {{ 'COMMON.BULK_UPLOADING' | translate }}
-            </div>
-            <div
-                *ngFor="let item of list; let i = index"
-                class="flex w-[24rem] items-center rounded border border-base-200 p-2"
-            >
-                <div class="flex flex-1 flex-col justify-center px-2">
-                    <div class="name flex-1">{{ item.name }}</div>
-                    <div
-                        class="text-xs text-error"
-                        *ngIf="status[i] && status[i] !== 'done'"
-                    >
-                        {{ status[i] }}
+            @if (!done) {
+                <div class="info">
+                    {{ 'COMMON.BULK_UPLOADING' | translate }}
+                </div>
+            }
+            @for (item of list; track item; let i = $index) {
+                <div
+                    class="flex w-[24rem] items-center rounded border border-base-200 p-2"
+                >
+                    <div class="flex flex-1 flex-col justify-center px-2">
+                        <div class="name flex-1">{{ item.name }}</div>
+                        @if (status[i] && status[i] !== 'done') {
+                            <div class="text-xs text-error">
+                                {{ status[i] }}
+                            </div>
+                        }
+                    </div>
+                    <div class="status">
+                        @if (status[i] !== 'loading') {
+                            <div
+                                class="flex h-8 w-8 items-center justify-center rounded-full text-2xl shadow"
+                                [class.bg-error]="status[i] !== 'done'"
+                                [class.text-error-content]="
+                                    status[i] !== 'done'
+                                "
+                                [class.bg-success]="status[i] === 'done'"
+                                [class.text-success-content]="
+                                    status[i] === 'done'
+                                "
+                                [matTooltip]="status[i]"
+                            >
+                                <app-icon>
+                                    {{
+                                        status[i] === 'done' ? 'done' : 'close'
+                                    }}
+                                </app-icon>
+                            </div>
+                        }
+                        @if (status[i] === 'loading') {
+                            <mat-spinner diameter="24"></mat-spinner>
+                        }
                     </div>
                 </div>
-                <div class="status">
-                    <div
-                        *ngIf="status[i] !== 'loading'"
-                        class="flex h-8 w-8 items-center justify-center rounded-full text-2xl shadow"
-                        [class.bg-error]="status[i] !== 'done'"
-                        [class.text-error-content]="status[i] !== 'done'"
-                        [class.bg-success]="status[i] === 'done'"
-                        [class.text-success-content]="status[i] === 'done'"
-                        [matTooltip]="status[i]"
-                    >
-                        <app-icon>
-                            {{ status[i] === 'done' ? 'done' : 'close' }}
-                        </app-icon>
-                    </div>
-                    <mat-spinner
-                        *ngIf="status[i] === 'loading'"
-                        diameter="24"
-                    ></mat-spinner>
-                </div>
-            </div>
+            }
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class StatusListComponent implements OnChanges {
     /** List of bulk items to add */
