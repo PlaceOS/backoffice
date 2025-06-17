@@ -99,7 +99,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                 }
             }
             <mat-autocomplete #auto="matAutocomplete">
-                @for (option of item_list; track option) {
+                @for (option of item_list; track option.id) {
                     <mat-option
                         [value]="option.name || option.id"
                         (click)="search$.next(option); setValue(option)"

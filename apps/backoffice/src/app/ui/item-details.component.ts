@@ -50,7 +50,7 @@ export interface DisplayItem {
                             {{ domain }}
                         </div>
                     }
-                    @for (tag of tags; track tag) {
+                    @for (tag of tags; track $index) {
                         <div
                             class="rounded-xl bg-info px-2 py-1 text-xs uppercase text-info-content"
                         >

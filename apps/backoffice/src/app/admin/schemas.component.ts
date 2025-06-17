@@ -21,7 +21,10 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                             (ngModelChange)="copySchema()"
                             [placeholder]="'ADMIN.SCHEMA_SELECT' | translate"
                         >
-                            @for (schema of schema_list | async; track schema) {
+                            @for (
+                                schema of schema_list | async;
+                                track schema.id
+                            ) {
                                 <mat-option [value]="schema">
                                     {{ schema.name }}
                                 </mat-option>

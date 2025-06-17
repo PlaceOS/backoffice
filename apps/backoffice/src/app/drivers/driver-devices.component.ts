@@ -127,7 +127,10 @@ import { DriverStateService } from './driver-state.service';
                                 }}</span>
                             </div>
                         }
-                        @for (system of systems[row.id] || []; track system) {
+                        @for (
+                            system of systems[row.id] || [];
+                            track system.id
+                        ) {
                             <a
                                 mat-menu-item
                                 class="leading-tight"

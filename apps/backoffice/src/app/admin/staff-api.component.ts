@@ -49,7 +49,7 @@ export interface PlaceTenant {
                             (ngModelChange)="domain.next($event)"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            @for (domain of domain_list; track domain) {
+                            @for (domain of domain_list; track domain.id) {
                                 <mat-option [value]="domain">
                                     {{ domain.name }}
                                 </mat-option>

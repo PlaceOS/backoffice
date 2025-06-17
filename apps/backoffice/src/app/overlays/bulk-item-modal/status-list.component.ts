@@ -18,7 +18,7 @@ import { Observable } from 'rxjs';
                     {{ 'COMMON.BULK_UPLOADING' | translate }}
                 </div>
             }
-            @for (item of list; track item; let i = $index) {
+            @for (item of list; track item.id; let i = $index) {
                 <div
                     class="flex w-[24rem] items-center rounded border border-base-200 p-2"
                 >

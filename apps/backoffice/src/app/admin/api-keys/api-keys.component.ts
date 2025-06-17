@@ -22,7 +22,10 @@ import { APIKeyService } from './api-keys.service';
                             (ngModelChange)="setDomain($event)"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            @for (domain of domain_list | async; track domain) {
+                            @for (
+                                domain of domain_list | async;
+                                track domain.id
+                            ) {
                                 <mat-option [value]="domain">
                                     {{ domain.name }}
                                 </mat-option>
@@ -47,9 +50,7 @@ import { APIKeyService } from './api-keys.service';
                     >
                         <div class="!w-full border-b bg-base-200 px-2 pb-1">
                             <label class="m-0 p-0">
-                                {{
-                                    'ADMIN.APP_KEYS_LAST_DETAILS' | translate
-                                }}
+                                {{ 'ADMIN.APP_KEYS_LAST_DETAILS' | translate }}
                                 ({{
                                     (last_key | async)?.name ||
                                         'Unanamed API Key'

@@ -16,6 +16,7 @@ import { BackofficeExtension } from '../extensions.component';
                     | translate
             "
             [loading]="loading"
+            (save)="submit()"
         >
             <form [formGroup]="form">
                 <div class="fieldset">

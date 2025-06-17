@@ -21,7 +21,7 @@ import { BackofficeUsersService } from '../users/users.service';
                     <div
                         class="relative z-10 h-full space-y-2 overflow-auto border-r border-base-200 px-2 pt-10 sm:w-56 sm:py-4"
                     >
-                        @for (item of tab_list; track item) {
+                        @for (item of tab_list; track item.id) {
                             <a
                                 btn
                                 matRipple

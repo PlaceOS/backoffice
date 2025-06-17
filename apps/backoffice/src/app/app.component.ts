@@ -1,12 +1,12 @@
-import { Component, OnInit, Optional, ViewEncapsulation } from '@angular/core';
+import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SwUpdate } from '@angular/service-worker';
 import {
     Amazon,
     Azure,
     Google,
-    OpenStack,
     initialiseUploadService,
+    OpenStack,
 } from '@placeos/cloud-uploads';
 import {
     get,
@@ -73,6 +73,14 @@ import { LocaleService, setTranslationService } from './common/locale.service';
     standalone: false,
 })
 export class AppComponent extends AsyncHandler implements OnInit {
+    private _settings = inject(SettingsService);
+    private _users = inject(BackofficeUsersService);
+    private _cache = inject(SwUpdate);
+    private _snackbar = inject(MatSnackBar);
+    private _router = inject(Router);
+    private _route = inject(ActivatedRoute);
+    private _locale = inject(LocaleService, { optional: true });
+
     /** Whether the application is loading */
     private _loading = new BehaviorSubject<boolean>(false);
     /** Observable for whether the application is initialising */
@@ -93,18 +101,6 @@ export class AppComponent extends AsyncHandler implements OnInit {
 
     public get is_fools_day(): boolean {
         return false;
-    }
-
-    constructor(
-        private _settings: SettingsService,
-        private _users: BackofficeUsersService,
-        private _cache: SwUpdate,
-        private _snackbar: MatSnackBar,
-        private _router: Router,
-        private _route: ActivatedRoute,
-        @Optional() private _locale: LocaleService,
-    ) {
-        super();
     }
 
     public async ngOnInit() {

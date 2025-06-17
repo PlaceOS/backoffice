@@ -36,7 +36,10 @@ import { marked } from 'marked';
                                     'ZONES.SELECT_SYSTEM' | translate
                                 "
                             >
-                                @for (system of systems | async; track system) {
+                                @for (
+                                    system of systems | async;
+                                    track system.id
+                                ) {
                                     <mat-option [value]="system">
                                         {{ system.name }}
                                     </mat-option>

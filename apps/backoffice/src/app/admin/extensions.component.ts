@@ -55,7 +55,7 @@ export interface BackofficeExtension {
                             (ngModelChange)="setDomain($event)"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            @for (domain of domain_list; track domain) {
+                            @for (domain of domain_list; track domain.id) {
                                 <mat-option [value]="domain">
                                     {{ domain.name }}
                                 </mat-option>
@@ -233,8 +233,8 @@ export class PlaceExtensionsComponent implements OnInit {
             .pipe(first((_) => _.reason === 'done'))
             .subscribe(async (event) => {
                 ref.componentInstance.loading = true;
-                let ext_list = await nextValueFrom(this.extensions);
-                ext_list = ext_list.filter((i) => i.name !== item.name);
+                let ext_list = (await nextValueFrom(this.extensions)) || [];
+                ext_list = ext_list.filter((i) => i.name !== item?.name);
                 ext_list.push(event.metadata);
                 await this.updateDomain(ext_list);
                 ref.componentInstance.loading = false;

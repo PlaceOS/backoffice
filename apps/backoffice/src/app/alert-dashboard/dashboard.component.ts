@@ -29,7 +29,7 @@ const SYSTEMS = {};
                 </div>
             </div>
             <div class="h-1/2 w-full flex-1 space-y-4 overflow-auto p-4">
-                @for (sys of systems | async; track sys) {
+                @for (sys of systems | async; track sys.id) {
                     <div
                         class="divide-base-100/50 border-base-100/50 divide-y border"
                     >
@@ -40,7 +40,7 @@ const SYSTEMS = {};
                                 }})
                             </h2>
                         </div>
-                        @for (ev of sys.events; track ev) {
+                        @for (ev of sys.events; track ev.id) {
                             <div
                                 [class.bg-error]="!ev.value"
                                 [class.bg-teal-800]="ev.value"

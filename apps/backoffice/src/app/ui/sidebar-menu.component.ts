@@ -44,7 +44,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     />
                 </a>
                 <div class="w-full flex-1 space-y-2 overflow-auto pb-2">
-                    @for (link of links; track link.name) {
+                    @for (link of links; track $index) {
                         @if (!link.show_on || link.show_on()) {
                             <a
                                 btn

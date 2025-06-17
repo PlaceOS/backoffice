@@ -23,7 +23,7 @@
       @if (!done) {
         <div class="info">Creating item duplicates...</div>
       }
-      @for (itm of temp; track itm; let i = $index) {
+      @for (itm of temp; track itm.id; let i = $index) {
         <div class="item">
           <div class="name">{{ item.name }} ({{ i + 1 }})</div>
           <div class="status">

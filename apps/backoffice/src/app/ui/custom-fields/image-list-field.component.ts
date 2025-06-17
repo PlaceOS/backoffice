@@ -89,7 +89,7 @@ export interface UploadDetails {
                     </div>
                 </div>
             }
-            @for (item of uploads | async; track item; let i = $index) {
+            @for (item of uploads | async; track item.id; let i = $index) {
                 <div
                     image
                     class="border-base-content/10 /5 flex h-32 w-36 flex-shrink-0 items-center justify-center rounded border bg-base-200 bg-cover bg-center"

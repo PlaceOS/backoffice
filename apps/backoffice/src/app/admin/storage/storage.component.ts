@@ -34,7 +34,10 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                             <mat-option [value]="{}">{{
                                 'ADMIN.ALL_DOMAINS' | translate
                             }}</mat-option>
-                            @for (domain of domain_list | async; track domain) {
+                            @for (
+                                domain of domain_list | async;
+                                track domain.id
+                            ) {
                                 <mat-option [value]="domain">
                                     {{ domain.name }}
                                 </mat-option>

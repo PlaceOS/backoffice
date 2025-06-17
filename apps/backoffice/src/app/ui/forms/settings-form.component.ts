@@ -78,7 +78,7 @@ import { i18n } from '../../common/locale.service';
                         encryption_level = available_levels[$event].id
                     "
                 >
-                    @for (option of available_levels; track option) {
+                    @for (option of available_levels; track $index) {
                         <mat-tab
                             [label]="
                                 option.name +
@@ -93,7 +93,7 @@ import { i18n } from '../../common/locale.service';
                 </mat-tab-group>
                 @for (
                     option of available_levels;
-                    track option;
+                    track $index;
                     let i = $index
                 ) {
                     @if (

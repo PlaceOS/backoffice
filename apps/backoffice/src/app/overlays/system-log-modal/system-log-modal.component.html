@@ -14,7 +14,7 @@
           <td></td>
         </thead>
         <tbody>
-          @for (item of logs; track item) {
+          @for (item of logs; track item.id) {
             <tr class="item">
               <td>{{ item?.user?.name }}</td>
               <td>{{ item?.created_at | date }}</td>

@@ -59,7 +59,7 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                             [(ngModel)]="first"
                             placeholder="Select metadata version"
                         >
-                            @for (item of history; track item) {
+                            @for (item of history; track item.updated_at) {
                                 <mat-option
                                     [value]="item"
                                     (click)="select(0, item)"

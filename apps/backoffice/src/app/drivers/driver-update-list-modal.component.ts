@@ -53,7 +53,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
                     <tbody>
                         @if (drivers_with_updates | async; as drivers) {
                             @if (drivers.total > 0) {
-                                @for (driver of drivers.data; track driver) {
+                                @for (driver of drivers.data; track driver.id) {
                                     <tr>
                                         <td>
                                             <mat-checkbox

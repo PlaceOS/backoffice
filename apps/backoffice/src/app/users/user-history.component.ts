@@ -21,7 +21,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     </div>
                 </div>
                 <div table-body>
-                    @for (item of logs; track item) {
+                    @for (item of logs; track item.id) {
                         <div table-row>
                             <div class="w-1/3">
                                 {{ item.start | date: 'MMM d, y, h:mm a' }}

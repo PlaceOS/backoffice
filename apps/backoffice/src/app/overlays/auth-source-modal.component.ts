@@ -65,7 +65,7 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
                                     | translate
                             "
                         >
-                            @for (type of source_types; track type) {
+                            @for (type of source_types; track type.id) {
                                 <mat-option [value]="type.id">
                                     {{ type.name }}
                                 </mat-option>

@@ -16,7 +16,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
         <div
             class="-mt-2 flex max-h-[65vh] max-w-[80vw] flex-wrap overflow-auto px-2"
         >
-            @for (field of field_list; track field) {
+            @for (field of field_list; track field.id) {
                 <div class="m-2 flex min-w-[40%] flex-1 flex-col">
                     <label class="uppercase" [for]="field.id">{{
                         field.id
@@ -27,7 +27,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                             [(ngModel)]="field_mapping[field.id]"
                             placeholder="Select field"
                         >
-                            @for (type of source_fields; track type) {
+                            @for (type of source_fields; track type.id) {
                                 <mat-option [value]="type.id">
                                     {{ type.name }}
                                 </mat-option>

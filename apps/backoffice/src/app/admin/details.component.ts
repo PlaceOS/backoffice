@@ -117,7 +117,7 @@ export interface PlaceServiceDetails {
         </div>
         <section class="-mx-2 flex flex-wrap py-2">
             @if (api_details.length > 0) {
-                @for (api of api_details; track api) {
+                @for (api of api_details; track $index) {
                     <div
                         class="m-2 min-w-[40%] flex-1 overflow-hidden rounded border border-base-200 bg-base-100"
                     >
