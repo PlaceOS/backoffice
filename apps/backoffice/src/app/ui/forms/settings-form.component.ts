@@ -125,9 +125,12 @@ import { i18n } from '../../common/locale.service';
                                 }}
                             </div>
                         }
-                        @if (option.name !== 'Merged') {
+                        @if (
+                            option.name !== 'Merged' &&
+                            settings[i - 1]?.modified_by_id
+                        ) {
                             <div
-                                class="border-gray-300 mb-4 flex items-center justify-between space-x-2 rounded-b border-b border-l border-r p-1"
+                                class="border-gray-300 mb-4 flex items-center justify-between space-x-2 border-x border-b border-base-300 p-1"
                             >
                                 <div class="pl-2 text-xs">
                                     {{
