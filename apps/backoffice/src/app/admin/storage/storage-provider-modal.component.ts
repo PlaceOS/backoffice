@@ -1,6 +1,7 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { lastValueFrom } from 'rxjs';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { PlaceStorage, saveStorage } from './storage.fn';
@@ -175,7 +176,12 @@ import { PlaceStorage, saveStorage } from './storage.fn';
     styles: [``],
     standalone: false,
 })
-export class StorageProviderModalComponent {
+export class StorageProviderModalComponent implements OnInit {
+    private _data = inject<{ item?: PlaceStorage; domain?: string }>(
+        MAT_DIALOG_DATA,
+    );
+    private _dialog_ref = inject(MatDialogRef<StorageProviderModalComponent>);
+
     public readonly ALLOWED_FILE_EXTENSIONS = [
         'png',
         'webp',
@@ -232,7 +238,7 @@ export class StorageProviderModalComponent {
         access_key: new FormControl(this._data.item?.access_key || '', [
             Validators.required,
         ]),
-        access_secret: new FormControl('', [Validators.required]),
+        access_secret: new FormControl(''),
         endpoint: new FormControl(this._data.item?.endpoint || ''),
         ext_filter: new FormControl(this._data.item?.ext_filter || []),
         mime_filter: new FormControl(this._data.item?.mime_filter || []),
@@ -240,26 +246,29 @@ export class StorageProviderModalComponent {
     });
     public loading = false;
 
-    constructor(
-        @Inject(MAT_DIALOG_DATA)
-        private _data: { item?: PlaceStorage; domain?: string },
-        private _dialog_ref: MatDialogRef<StorageProviderModalComponent>,
-    ) {}
+    public ngOnInit() {
+        if (!this._data.item?.id) {
+            this.form.controls.access_secret.setValidators([
+                Validators.required,
+            ]);
+        }
+    }
 
     public async save() {
         this.form.markAllAsTouched();
         if (this.form.invalid) return;
         this.loading = true;
         this._dialog_ref.disableClose = true;
-
-        await saveStorage(this.form.value as PlaceStorage)
-            .toPromise()
-            .catch((e) => {
-                notifyError(i18n('ADMIN.STORAGE_SAVE_ERROR'));
-                this.loading = false;
-                this._dialog_ref.disableClose = false;
-                throw e;
-            });
+        const details = this.form.value as PlaceStorage;
+        if (details.id && !details.access_secret) {
+            delete (details as any).access_secret;
+        }
+        await lastValueFrom(saveStorage(details)).catch((e) => {
+            notifyError(i18n('ADMIN.STORAGE_SAVE_ERROR'));
+            this.loading = false;
+            this._dialog_ref.disableClose = false;
+            throw e;
+        });
         this.loading = false;
         this._dialog_ref.disableClose = false;
         notifySuccess(i18n('ADMIN.STORAGE_SAVE_SUCCESS'));
