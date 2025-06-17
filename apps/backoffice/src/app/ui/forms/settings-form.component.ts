@@ -77,6 +77,7 @@ import { i18n } from '../../common/locale.service';
                     (selectedIndexChange)="
                         encryption_level = available_levels[$event].id
                     "
+                    class="border-x border-t border-base-300"
                 >
                     @for (option of available_levels; track $index) {
                         <mat-tab

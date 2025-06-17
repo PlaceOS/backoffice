@@ -20,7 +20,7 @@ export interface EdgeModalData {
             [loading]="loading"
             (save)="save()"
         >
-            <form [formGroup]="form" class="overflow-auto p-4">
+            <form [formGroup]="form">
                 <div class="flex flex-1 flex-col">
                     <label>
                         {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>

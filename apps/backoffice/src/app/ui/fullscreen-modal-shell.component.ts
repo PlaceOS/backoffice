@@ -22,7 +22,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                 }
             </header>
             <main
-                class="z-0 mx-auto h-1/2 w-[39rem] max-w-full flex-1 space-y-8 px-4 py-2"
+                class="z-0 mx-auto h-1/2 w-[39rem] max-w-full flex-1 space-y-8 p-2"
             >
                 <ng-content></ng-content>
                 <div class="h-10 w-full"></div>

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { post } from '@placeos/ts-client';
@@ -8,43 +8,31 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
 @Component({
     selector: 'booking-limits-modal',
     template: `
-        <header>
-            <h3>Edit Tenant Booking Limits</h3>
-            <div class="flex-1"></div>
-            @if (!loading) {
-                <button btn icon mat-dialog-close>
-                    <app-icon>close</app-icon>
-                </button>
-            }
-        </header>
-        @if (!loading) {
-            <main
-                [formGroup]="form"
-                class="w-[512px] max-w-[100vw] overflow-auto"
-            >
-                <div class="flex flex-col">
-                    <object-list-field
-                        formControlName="booking_limits"
-                        [fields]="['type', 'amount']"
-                    ></object-list-field>
-                </div>
-            </main>
-        } @else {
-            <main class="flex flex-col items-center justify-center p-8">
-                <mat-spinner class="mb-4" [diameter]="48"></mat-spinner>
-                <p>Saving booking limits for Staff API tenant...</p>
-            </main>
-        }
-        @if (!loading) {
-            <footer class="flex justify-center border-t border-base-200 p-2">
-                <button btn class="w-32" (click)="save()">Save</button>
-            </footer>
-        }
+        <fullscreen-modal-shell
+            heading="Edit Tenant Booking Limits
+        "
+            [loading]="
+                loading ? 'Saving booking limits for Staff API tenant...' : ''
+            "
+            (save)="save()"
+        >
+            <div [formGroup]="form" class="flex flex-col">
+                <object-list-field
+                    formControlName="booking_limits"
+                    [fields]="['type', 'amount']"
+                ></object-list-field>
+            </div>
+        </fullscreen-modal-shell>
     `,
     styles: [``],
     standalone: false,
 })
 export class BookingLimitsModalComponent {
+    private _data: StaffTenantModalData = inject(MAT_DIALOG_DATA);
+    private _dialog_ref: MatDialogRef<BookingLimitsModalComponent> = inject(
+        MatDialogRef<BookingLimitsModalComponent>,
+    );
+
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;
 
@@ -54,10 +42,7 @@ export class BookingLimitsModalComponent {
 
     public loading = false;
 
-    constructor(
-        @Inject(MAT_DIALOG_DATA) private _data: StaffTenantModalData,
-        private _dialog_ref: MatDialogRef<BookingLimitsModalComponent>,
-    ) {
+    constructor() {
         const limits = this.tenant?.booking_limits || {};
         this.form.patchValue({
             booking_limits: Object.keys(limits).map((k) => ({

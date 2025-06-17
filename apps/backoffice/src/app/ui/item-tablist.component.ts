@@ -20,7 +20,7 @@ export interface ItemTab {
                     [class.shadow]="scrolled"
                     [tabPanel]="tabPanel"
                 >
-                    @for (link of tabs; track link) {
+                    @for (link of tabs; track link.id) {
                         <a
                             class="tab"
                             mat-tab-link

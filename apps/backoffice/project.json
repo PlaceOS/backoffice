@@ -26,7 +26,12 @@
                     {
                         "glob": "**/*",
                         "input": "node_modules/monaco-editor/min/",
-                        "output": "./assets/monaco/"
+                        "output": "./assets/monaco/min/"
+                    },
+                    {
+                        "glob": "**/*",
+                        "input": "node_modules/monaco-editor/min-maps/",
+                        "output": "./assets/monaco/min-maps/"
                     },
                     {
                         "input": "src/environments/dev",

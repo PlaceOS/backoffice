@@ -57,7 +57,7 @@ export interface TableColumn {
                     ></mat-checkbox>
                 </div>
             }
-            @for (column of active_columns; track column; let i = $index) {
+            @for (column of active_columns; track column.key; let i = $index) {
                 <button
                     header
                     matRipple
@@ -91,7 +91,11 @@ export interface TableColumn {
                     }
                 </button>
             }
-            @for (row of (data$ | async) || []; track row; let i = $index) {
+            @for (
+                row of (data$ | async) || [];
+                track row.id || $index;
+                let i = $index
+            ) {
                 @if (can_reorder) {
                     <div
                         class="grid"

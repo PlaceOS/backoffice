@@ -129,13 +129,17 @@ function replaceDescTag(inputString, newContent) {
                             class="overflow-hidden"
                             [@show]="show_view === item.name ? 'show' : 'hide'"
                         >
-                            <div class="border-t border-base-300 p-1">
-                                <settings-form-field
-                                    formControlName="details"
-                                    lang="json"
-                                    [schema]="this.schema_map[item.name]"
-                                    [readonly]="false"
-                                ></settings-form-field>
+                            <div
+                                class="h-[32.5rem] border-t border-base-300 p-1"
+                            >
+                                @if (show_view === item.name) {
+                                    <settings-form-field
+                                        formControlName="details"
+                                        lang="json"
+                                        [schema]="this.schema_map[item.name]"
+                                        [readonly]="false"
+                                    ></settings-form-field>
+                                }
                             </div>
                         </div>
                     </div>
