@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;a9c9b54ac1150998ce0ae85eb89bb6d8fd79aeab8edd84be4a671d3bf76cdf8a;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/admin/details.component.ts"],
+  "sourcesContent": ["\n            :host {\n                position: absolute;\n                top: 0;\n                left: 0;\n                padding: 1rem;\n                width: 100%;\n                height: 100%;\n                overflow: auto;\n            }\n        "],
+  "mappings": "AACY,MACI,SAAU,SACV,IAAK,EACL,KAAM,EAJtB,QAKyB,KACT,MAAO,KACP,OAAQ,KACR,SAAU,IACd",
+  "names": []
+}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["css;897f3038bc171a01a3115e12043e1097ca47c3c1965f84153c2dad27f4deb3b7;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/alert-dashboard/dashboard.component.ts"],
-  "sourcesContent": ["\n            :host > div {\n                z-index: 9999;\n            }\n        "],
-  "mappings": "AACY,KAAM,CAAE,IACJ,QAAS,IACb",
-  "names": []
-}

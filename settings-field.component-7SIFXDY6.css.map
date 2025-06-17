@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;ba34757712d3bc1afbf2aed649f6d5b4d1d22e7ddf36383130bbeab02758a07b;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/custom-fields/settings-field.component.ts"],
+  "sourcesContent": ["\n            [editor],\n            [editor] * {\n                user-select: initial;\n            }\n        "],
+  "mappings": "AACY,CAAC,QACD,CAAC,QAAQ,EACL,oBAAa,QAAb,YAAa,OACjB",
+  "names": []
+}

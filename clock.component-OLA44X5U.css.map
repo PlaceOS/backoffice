@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;ad89ac6d32c78caabe18fd68c2a3e134ffc604c58e28366bffed4961ac099e7b;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/metrics/clock.component.ts"],
+  "sourcesContent": ["\n            .hand {\n                transform-origin: 50% 100%;\n            }\n\n            .minute {\n                width: 2px;\n                border-radius: 1px;\n            }\n        "],
+  "mappings": "AACY,CAAC,KACG,iBAAkB,IAAI,IAC1B,CAEA,CAAC,OACG,MAAO,IANvB,cAO+B,GACnB",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;bfea75da5568c24d161727cc6e48b5a7f41bd972439f7f1d75792b0c5010b588;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/drivers/driver-update-list-modal.component.ts"],
+  "sourcesContent": ["\n            th {\n                padding: 0.25rem 0.5rem;\n            }\n        "],
+  "mappings": "AACY,GADZ,QAEyB,OAAQ,KACrB",
+  "names": []
+}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["css;49ab31e8c7c383cce06b1b392a7d2b436e79710eb45b7136a8c3bab5830ef23d;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/overlays/confirm-modal.component.ts"],
-  "sourcesContent": ["\n            .icon {\n                height: 1.2em;\n                width: 1.2em;\n                display: flex;\n                align-items: center;\n                justify-content: center;\n                font-size: 2em;\n            }\n        "],
-  "mappings": "AACY,CAAC,KACG,OAAQ,MACR,MAAO,MACP,QAAS,KACT,YAAa,OACb,gBAAiB,OACjB,UAAW,GACf",
-  "names": []
-}

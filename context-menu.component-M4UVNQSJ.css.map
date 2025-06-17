@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["css;726748c2414197d0b1210ead97f5552a150ccdc9b0475e0053e8ed5e76b597ad;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/context-menu.component.ts"],
-  "sourcesContent": ["\n            :host {\n                position: relative;\n            }\n        "],
-  "mappings": "AACY,MACI,SAAU,QACd",
-  "names": []
-}

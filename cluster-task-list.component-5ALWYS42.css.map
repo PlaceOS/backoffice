@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;443a5567f13006d95a1b487e5f9b4fa764eaabac0670607ba5ae1cbde85cd841;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/admin/cluster-details/cluster-task-list.component.ts"],
+  "sourcesContent": ["\n            :host {\n                display: flex;\n                flex-direction: column;\n                padding: 1rem;\n                height: 100%;\n                width: 100%;\n            }\n        "],
+  "mappings": "AACY,MACI,QAAS,KACT,eAAgB,OAHhC,QAIyB,KACT,OAAQ,KACR,MAAO,IACX",
+  "names": []
+}

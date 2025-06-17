@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["css;04b7a7094a437298576db2a062c3593f3d6712155227875ebf15729043ce208e;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/forms/domain-form.component.ts"],
-  "sourcesContent": ["\n            mat-checkbox {\n                margin-top: 2.5em;\n                margin-bottom: 1.5em;\n            }\n\n            @media screen and (max-width: 640px) {\n                mat-checkbox {\n                    margin-top: 0;\n                }\n            }\n        "],
-  "mappings": "AACY,aACI,WAAY,MACZ,cAAe,KACnB,CAEA,OAAO,OAAO,IAAI,CAAC,SAAS,EAAE,OAC1B,aACI,WAAY,CAChB,CACJ",
-  "names": []
-}

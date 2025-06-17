@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;77e2739fa1867a44e01a987495cc4bc852921c925043627500689e675cdb14b1;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/metadata-display.component.ts"],
+  "sourcesContent": ["\n            [block] {\n                transition: opacity 0.2s ease-in-out;\n            }\n        "],
+  "mappings": "AACY,CAAC,OACG,WAAY,QAAQ,IAAK,WAC7B",
+  "names": []
+}

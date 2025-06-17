@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;e3fe0ac1a7aea9ff8e552aa7adff00bda309fa6271efd1012dc94f7e3c575331;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/forms/saml-source-form.component.ts"],
+  "sourcesContent": ["\n            :host {\n                max-width: 100%;\n            }\n\n            .error-message {\n                color: var(--error);\n                font-size: 0.75em;\n                font-weight: 400;\n                padding: 0.5em;\n            }\n        "],
+  "mappings": "AACY,MACI,UAAW,IACf,CAEA,CAAC,cACG,MAAO,IAAI,SACX,UAAW,MACX,YAAa,IAR7B,QASyB,IACb",
+  "names": []
+}
