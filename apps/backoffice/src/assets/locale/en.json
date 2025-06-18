@@ -620,7 +620,7 @@
         "ROLE_NONE": "None",
         "FIELD_GROUPS": "User Groups",
         "FIELD_DEPARTMENT": "Department",
-        "AUTHORITY_ID": "Authority ID",
+        "AUTHORITY_ID": "Authority",
         "NO_GROUPS": "No user groups",
         "GROUP_COPIED": "User's group copied to clipboard",
         "FIELD_SESSION_START": "Session Start",

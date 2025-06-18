@@ -1,10 +1,19 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component } from '@angular/core';
-import { PlaceUser } from '@placeos/ts-client';
+import { Component, inject } from '@angular/core';
+import { PlaceUser, showDomain } from '@placeos/ts-client';
 
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    shareReplay,
+    switchMap,
+} from 'rxjs';
 import { i18n } from '../common/locale.service';
 import { notifySuccess } from '../common/notifications';
+
+let domain_obs;
 
 @Component({
     selector: 'user-about',
@@ -71,12 +80,21 @@ import { notifySuccess } from '../common/notifications';
                     </div>
                     <div>{{ item?.department }}</div>
                 }
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'USERS.AUTHORITY_ID' | translate }}
-                </div>
-                <div class="mono text-sm">
-                    {{ item?.authority_id }}
-                </div>
+                @if (authority | async) {
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'USERS.AUTHORITY_ID' | translate }}
+                    </div>
+                    <div class="mono text-sm">
+                        <a
+                            [routerLink]="['/domains', item?.authority_id]"
+                            class="underline"
+                        >
+                            {{ (authority | async)?.name }} ({{
+                                (authority | async)?.domain
+                            }})
+                        </a>
+                    </div>
+                }
                 <div class="flex items-center text-sm font-medium" for="groups">
                     {{ 'USERS.FIELD_GROUPS' | translate }}
                 </div>
@@ -143,14 +161,28 @@ import { notifySuccess } from '../common/notifications';
     standalone: false,
 })
 export class UserAboutComponent {
+    private _service = inject(ActiveItemService);
+    private _clipboard = inject(Clipboard);
+
+    public get authority() {
+        return domain_obs;
+    }
+
+    constructor() {
+        if (!domain_obs) {
+            domain_obs = this._service.item.pipe(
+                distinctUntilChanged(),
+                debounceTime(300),
+                filter((_) => !!_ && (_ as any).authority_id),
+                switchMap((i) => showDomain((i as any).authority_id)),
+                shareReplay(1),
+            );
+        }
+    }
+
     public get item(): PlaceUser {
         return (this._service.active_item as any) || {};
     }
-
-    constructor(
-        private _service: ActiveItemService,
-        private _clipboard: Clipboard,
-    ) {}
 
     public copyGroup(group: string) {
         this._clipboard.copy(group);
