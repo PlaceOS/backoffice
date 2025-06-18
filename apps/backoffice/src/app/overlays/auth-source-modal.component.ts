@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
@@ -93,6 +93,9 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
     standalone: false,
 })
 export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
+    private _dialog = inject<MatDialogRef<AuthSourceModalComponent>>(MatDialogRef);
+    private _data = inject<AuthSourceModalData>(MAT_DIALOG_DATA);
+
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
@@ -121,13 +124,6 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
             : this.item instanceof PlaceLDAPSource
               ? 'ldap'
               : 'oauth';
-    }
-
-    constructor(
-        private _dialog: MatDialogRef<AuthSourceModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: AuthSourceModalData,
-    ) {
-        super();
     }
 
     public ngOnInit() {

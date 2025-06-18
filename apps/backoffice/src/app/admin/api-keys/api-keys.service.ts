@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     create,
@@ -26,6 +26,8 @@ import { APIKeyModalComponent } from './api-key-modal.component';
 
 @Injectable()
 export class APIKeyService {
+    private _dialog = inject(MatDialog);
+
     private _search = new BehaviorSubject<string>('');
     private _domain = new BehaviorSubject<PlaceDomain>(null);
     private _last_key = new BehaviorSubject<PlaceAPIKeyDetails>(null);
@@ -81,8 +83,6 @@ export class APIKeyService {
         }),
         shareReplay(1),
     );
-
-    constructor(private _dialog: MatDialog) {}
 
     public setDomain(domain: PlaceDomain) {
         this._domain.next(domain);

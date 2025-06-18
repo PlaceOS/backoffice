@@ -1,5 +1,5 @@
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addSystemModule,
@@ -57,6 +57,10 @@ import { ViewResponseModalComponent } from '../overlays/view-response-modal.comp
     providedIn: 'root',
 })
 export class SystemStateService extends AsyncHandler {
+    private _state = inject(ActiveItemService);
+    private _debug = inject(PlaceDebugService);
+    private _dialog = inject(MatDialog);
+
     /** Observable of the active item */
     public readonly item = this._state.item;
 
@@ -236,14 +240,6 @@ export class SystemStateService extends AsyncHandler {
     /** Observable of the active item */
     public get active_item(): PlaceSystem {
         return this._state.active_item || ({} as any);
-    }
-
-    constructor(
-        private _state: ActiveItemService,
-        private _debug: PlaceDebugService,
-        private _dialog: MatDialog,
-    ) {
-        super();
     }
 
     /**

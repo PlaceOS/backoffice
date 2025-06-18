@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceDriver } from '@placeos/ts-client';
 import { marked } from 'marked';
 import { DriverStateService } from './driver-state.service';
@@ -184,6 +184,8 @@ import { DriverStateService } from './driver-state.service';
     standalone: false,
 })
 export class DriverAboutComponent {
+    private _service = inject(DriverStateService);
+
     public readonly updateDriver = () => this._service.updateDriver();
     public readonly recompile = () => this._service.recompileDriver();
     public readonly reload = () => this._service.reloadDriver();
@@ -197,6 +199,4 @@ export class DriverAboutComponent {
     public get description(): string {
         return marked(this.item.description || '', { async: false }) as string;
     }
-
-    constructor(private _service: DriverStateService) {}
 }

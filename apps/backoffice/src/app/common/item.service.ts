@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlaceResource } from '@placeos/ts-client';
@@ -51,6 +51,12 @@ export type ResourceType =
     providedIn: 'root',
 })
 export class ActiveItemService extends AsyncHandler {
+    private _router = inject(Router);
+    private _settings = inject(SettingsService);
+    private _hotkey = inject(HotkeysService);
+    private _dialog = inject(MatDialog);
+    private _user = inject(BackofficeUsersService);
+
     /** Whether active item is loading */
     private _loading = new BehaviorSubject<boolean>(false);
     /** Whether item list should show on mobile */
@@ -119,13 +125,7 @@ export class ActiveItemService extends AsyncHandler {
         this._search.next(str);
     }
 
-    constructor(
-        private _router: Router,
-        private _settings: SettingsService,
-        private _hotkey: HotkeysService,
-        private _dialog: MatDialog,
-        private _user: BackofficeUsersService,
-    ) {
+    constructor() {
         super();
         this._router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {

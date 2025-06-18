@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -82,6 +82,8 @@ import { ZonesStateService } from './zones-state.service';
     standalone: false,
 })
 export class ZoneSystemsComponent {
+    private _state = inject(ZonesStateService);
+
     public readonly filter$ = new BehaviorSubject<string>('');
     public readonly loading = this._state.loading;
 
@@ -99,6 +101,4 @@ export class ZoneSystemsComponent {
                   );
         }),
     );
-
-    constructor(private _state: ZonesStateService) {}
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -84,6 +84,8 @@ import { ModuleStateService } from './module-state.service';
     standalone: false,
 })
 export class ModuleSystemsComponent {
+    private _service = inject(ModuleStateService);
+
     /** Subject holding the value of the search */
     public readonly filter$ = new BehaviorSubject<string>('');
     /** Whether systems are being loaded */
@@ -103,6 +105,4 @@ export class ModuleSystemsComponent {
                 : systems;
         }),
     );
-
-    constructor(private _service: ModuleStateService) {}
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceCluster,
@@ -143,6 +143,8 @@ const task_details = {};
     standalone: false,
 })
 export class PlaceClusterTaskListComponent extends AsyncHandler {
+    private _dialog = inject(MatDialog);
+
     /** Cluster to display tasks details for */
     @Input() public cluster: PlaceCluster;
     /** Emitter for close events */
@@ -209,10 +211,6 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
         }),
         shareReplay(1),
     );
-
-    constructor(private _dialog: MatDialog) {
-        super();
-    }
 
     public ngOnInit() {
         this._poll.next(Date.now());

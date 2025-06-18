@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
@@ -146,6 +146,12 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
     standalone: false,
 })
 export class MetadataHistoryModalComponent implements OnInit {
+    private _data = inject<{
+    id: string;
+    parent_name: string;
+    name: string;
+}>(MAT_DIALOG_DATA);
+
     public readonly id = this._data.id;
     public readonly parent_name = this._data.parent_name;
     public readonly name = this._data.name;
@@ -156,11 +162,6 @@ export class MetadataHistoryModalComponent implements OnInit {
     public second = null;
     public first_details = '';
     public second_details = '';
-
-    constructor(
-        @Inject(MAT_DIALOG_DATA)
-        private _data: { id: string; parent_name: string; name: string },
-    ) {}
 
     public async ngOnInit() {
         const history = await listMetadataHistory(this._data.id, {

@@ -1,5 +1,5 @@
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceSystem,
@@ -33,6 +33,9 @@ import {
     providedIn: 'root',
 })
 export class TriggerStateService {
+    private _service = inject(ActiveItemService);
+    private _dialog = inject(MatDialog);
+
     private _change = new BehaviorSubject(0);
     private _loading = new BehaviorSubject<boolean>(false);
     public readonly item: Observable<PlaceTrigger> = this._service.item as any;
@@ -55,11 +58,6 @@ export class TriggerStateService {
     public get active_item(): PlaceTrigger {
         return this._service.active_item as any;
     }
-
-    constructor(
-        private _service: ActiveItemService,
-        private _dialog: MatDialog,
-    ) {}
 
     /**
      * Add new condition to trigger

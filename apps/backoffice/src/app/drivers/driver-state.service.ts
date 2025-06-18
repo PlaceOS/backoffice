@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceDriver,
@@ -23,6 +23,9 @@ import { DriverUpdateListModalComponent } from './driver-update-list-modal.compo
     providedIn: 'root',
 })
 export class DriverStateService {
+    private _state = inject(ActiveItemService);
+    private _dialog = inject(MatDialog);
+
     private _loading = new BehaviorSubject<boolean>(false);
     private _last_error = new BehaviorSubject<HashMap>(null);
     private _poll = new BehaviorSubject(0);
@@ -59,10 +62,7 @@ export class DriverStateService {
         return this._state.active_item;
     }
 
-    constructor(
-        private _state: ActiveItemService,
-        private _dialog: MatDialog,
-    ) {
+    constructor() {
         this.item.subscribe(() => this._last_error.next(null));
     }
 

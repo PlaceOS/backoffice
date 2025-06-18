@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
     PlaceSettings,
     querySettings,
@@ -67,6 +67,8 @@ import { ActiveItemService } from '../common/item.service';
     standalone: false,
 })
 export class SettingsHistoryViewComponent {
+    private _service = inject(ActiveItemService);
+
     public readonly active_setting = new BehaviorSubject<PlaceSettings>(null);
     public readonly old_setting = new BehaviorSubject<PlaceSettings>(null);
 
@@ -80,6 +82,4 @@ export class SettingsHistoryViewComponent {
     public readonly history$ = this.active_setting.pipe(
         switchMap((_) => (!_ ? of([]) : settingsHistory(_.id))),
     );
-
-    constructor(private _service: ActiveItemService) {}
 }

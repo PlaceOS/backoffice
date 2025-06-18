@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceDomain,
@@ -167,6 +167,8 @@ export interface BackofficeExtension {
     standalone: false,
 })
 export class PlaceExtensionsComponent implements OnInit {
+    private _dialog = inject(MatDialog);
+
     /** Loading state */
     public loading: string = '';
     /** List of available domains */
@@ -206,8 +208,6 @@ export class PlaceExtensionsComponent implements OnInit {
         }),
         shareReplay(1),
     );
-
-    constructor(private _dialog: MatDialog) {}
 
     public async ngOnInit() {
         this.loading = 'Loading domains...';

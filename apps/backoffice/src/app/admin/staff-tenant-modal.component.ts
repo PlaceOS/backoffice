@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
@@ -411,6 +411,9 @@ export interface StaffTenantModalData {
     standalone: false,
 })
 export class StaffTenantModalComponent implements OnInit {
+    private _data = inject<StaffTenantModalData>(MAT_DIALOG_DATA);
+    private _dialog_ref = inject<MatDialogRef<StaffTenantModalComponent>>(MatDialogRef);
+
     @Output() public readonly event = new EventEmitter<DialogEvent>();
 
     public readonly tenant = this._data.tenant;
@@ -468,11 +471,6 @@ export class StaffTenantModalComponent implements OnInit {
     public get credentials(): FormGroup {
         return this.form?.controls.credentials as any;
     }
-
-    constructor(
-        @Inject(MAT_DIALOG_DATA) private _data: StaffTenantModalData,
-        private _dialog_ref: MatDialogRef<StaffTenantModalComponent>,
-    ) {}
 
     public ngOnInit() {
         const limits = this.tenant?.booking_limits || {};

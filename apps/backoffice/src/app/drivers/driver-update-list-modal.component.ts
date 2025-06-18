@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { queryDrivers, updateDriver } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
@@ -136,6 +136,8 @@ import { notifyError, notifySuccess } from '../common/notifications';
     standalone: false,
 })
 export class DriverUpdateListModalComponent {
+    private _dialog_ref = inject<MatDialogRef<DriverUpdateListModalComponent>>(MatDialogRef);
+
     public loading = 'Loading drivers...';
     public driver_count = 0;
     private readonly _change = new BehaviorSubject(0);
@@ -166,10 +168,6 @@ export class DriverUpdateListModalComponent {
     public get some_selected() {
         return this.selected_drivers.length > 0 && !this.all_selected;
     }
-
-    constructor(
-        private _dialog_ref: MatDialogRef<DriverUpdateListModalComponent>,
-    ) {}
 
     public toggleDriver(id: string, state: boolean) {
         this.selected_drivers = this.selected_drivers.filter((_) => _ !== id);

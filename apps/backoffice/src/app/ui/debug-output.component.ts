@@ -1,10 +1,4 @@
-import {
-    Component,
-    ElementRef,
-    OnInit,
-    Renderer2,
-    ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild, inject } from '@angular/core';
 import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from 'apps/backoffice/src/app/common/angular-animations';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { PlaceDebugService } from 'apps/backoffice/src/app/common/debug.service';
@@ -190,6 +184,9 @@ import { Point } from 'apps/backoffice/src/app/common/types';
     standalone: false,
 })
 export class DebugOutputComponent extends AsyncHandler implements OnInit {
+    private _service = inject(PlaceDebugService);
+    private _renderer = inject(Renderer2);
+
     /** Whether display output is shown */
     public show_content: boolean = true;
     /** Display string for debug logs */
@@ -230,13 +227,6 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
 
     public get debug_position() {
         return this._service.position;
-    }
-
-    constructor(
-        private _service: PlaceDebugService,
-        private _renderer: Renderer2,
-    ) {
-        super();
     }
 
     public ngOnInit() {

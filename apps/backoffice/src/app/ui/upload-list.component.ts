@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
@@ -177,6 +177,10 @@ import { UploadsService } from '../common/uploads.service';
     standalone: false,
 })
 export class UploadListComponent extends AsyncHandler implements OnInit {
+    private _settings = inject(SettingsService);
+    private _uploads = inject(UploadsService);
+    private _dialog = inject(MatDialog);
+
     /** Whether upload list should be displayed */
     public show = false;
     /** Whether drop details overlay should be shown */
@@ -186,14 +190,6 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
 
     public get enabled() {
         return !this._settings.value('disable_uploads');
-    }
-
-    constructor(
-        private _settings: SettingsService,
-        private _uploads: UploadsService,
-        private _dialog: MatDialog,
-    ) {
-        super();
     }
 
     public ngOnInit() {

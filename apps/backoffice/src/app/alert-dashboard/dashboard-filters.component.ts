@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
     queryDrivers,
     queryModules,
@@ -60,6 +60,8 @@ import { MqttDashboardStateService } from './dashboard-state.service';
     styles: [``],
 })
 export class AlertDashboardFiltersComponent {
+    private _state = inject(MqttDashboardStateService);
+
     public readonly form = this._state.filters;
 
     public readonly findOrg = (q) => queryZones({ q, tags: 'org' });
@@ -69,6 +71,4 @@ export class AlertDashboardFiltersComponent {
     public readonly findSystem = (q) => querySystems({ q });
     public readonly findDriver = (q) => queryDrivers({});
     public readonly findModule = (q) => queryModules({ q });
-
-    constructor(private _state: MqttDashboardStateService) {}
 }

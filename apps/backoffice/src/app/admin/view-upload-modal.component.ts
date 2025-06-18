@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UploadInfo } from './upload-library.component';
 
@@ -45,14 +45,11 @@ import { UploadInfo } from './upload-library.component';
     standalone: false,
 })
 export class ViewUploadModalComponent {
+    private _data = inject<{
+    upload: UploadInfo;
+}>(MAT_DIALOG_DATA);
+
     public readonly resource = `/api/engine/v2/uploads/${this._data.upload.id}/url`;
     public readonly type = this._data.upload.mime_type.split('/')[0];
     public readonly name = this._data.upload.file_name;
-
-    constructor(
-        @Inject(MAT_DIALOG_DATA)
-        private _data: {
-            upload: UploadInfo;
-        },
-    ) {}
 }

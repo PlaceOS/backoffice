@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -165,6 +165,11 @@ import { BackofficeExtension } from '../extensions.component';
     standalone: false,
 })
 export class ExtensionModalComponent extends AsyncHandler implements OnInit {
+    private _data = inject<{
+    item: BackofficeExtension;
+}>(MAT_DIALOG_DATA);
+    private _hotkey = inject(HotkeysService);
+
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
 
@@ -188,13 +193,6 @@ export class ExtensionModalComponent extends AsyncHandler implements OnInit {
         url: new FormControl('', [Validators.required]),
         conditions: new FormControl([]),
     });
-
-    constructor(
-        @Inject(MAT_DIALOG_DATA) private _data: { item: BackofficeExtension },
-        private _hotkey: HotkeysService,
-    ) {
-        super();
-    }
 
     public ngOnInit() {
         this.subscription(

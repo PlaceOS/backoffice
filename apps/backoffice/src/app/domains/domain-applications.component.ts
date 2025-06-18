@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceApplication, PlaceDomain } from '@placeos/ts-client';
 
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
@@ -149,6 +149,8 @@ import { DomainStateService } from './domain-state.service';
     standalone: false,
 })
 export class DomainApplicationsComponent {
+    private _service = inject(DomainStateService);
+
     /** List of applications associated with the active domain */
     public readonly applications = this._service.applications;
     public readonly loading = this._service.loading;
@@ -164,8 +166,6 @@ export class DomainApplicationsComponent {
     public get item(): PlaceDomain {
         return this._service.active_item as any;
     }
-
-    constructor(private _service: DomainStateService) {}
 
     public copySecret(item: PlaceApplication) {
         this.show_secret[item.id] = false;

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { listZoneTags } from '@placeos/ts-client';
 import { shareReplay } from 'rxjs';
@@ -97,6 +97,12 @@ import { ZonesStateService } from './zones-state.service';
     standalone: false,
 })
 export class ZonesComponent extends AsyncHandler {
+    protected _service = inject(ZonesStateService);
+    protected _item = inject(ActiveItemService);
+    protected _route = inject(ActivatedRoute);
+    protected _router = inject(Router);
+    private _debug = inject(PlaceDebugService);
+
     public readonly name = 'zones';
     public open_menu = false;
 
@@ -155,16 +161,6 @@ export class ZonesComponent extends AsyncHandler {
                 icon: { content: 'schedule' },
             },
         ].concat(this.extensions);
-    }
-
-    constructor(
-        protected _service: ZonesStateService,
-        protected _item: ActiveItemService,
-        protected _route: ActivatedRoute,
-        protected _router: Router,
-        private _debug: PlaceDebugService,
-    ) {
-        super();
     }
 
     public ngOnInit(): void {

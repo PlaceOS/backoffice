@@ -1,10 +1,4 @@
-import {
-    AfterViewInit,
-    Component,
-    ElementRef,
-    Input,
-    ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild, inject } from '@angular/core';
 import { AsyncHandler } from '../common/async-handler.class';
 import { Point } from '../common/types';
 
@@ -34,14 +28,12 @@ export class BasicLineGraphComponent
     extends AsyncHandler
     implements AfterViewInit
 {
+    private _element = inject<ElementRef<HTMLElement>>(ElementRef);
+
     @Input() public lines: Point[][] = [];
 
     @ViewChild('canvas', { static: true })
     private _canvas_el: ElementRef<HTMLCanvasElement>;
-
-    constructor(private _element: ElementRef<HTMLElement>) {
-        super();
-    }
 
     public ngAfterViewInit() {
         this._setupCanvas();

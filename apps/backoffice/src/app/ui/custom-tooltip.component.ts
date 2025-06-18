@@ -14,6 +14,7 @@ import {
     TemplateRef,
     Type,
     ViewChild,
+    inject,
 } from '@angular/core';
 import { AsyncHandler } from '../common/async-handler.class';
 
@@ -58,6 +59,10 @@ export class CustomTooltipComponent<T = any>
     extends AsyncHandler
     implements OnChanges, OnDestroy
 {
+    private _element = inject<ElementRef<HTMLElement>>(ElementRef);
+    private _overlay = inject(Overlay);
+    private _injector = inject(Injector);
+
     /** Horizontal position of the rendered overlay */
     @Input('xPosition') public x_pos: 'start' | 'center' | 'end' = 'end';
     /** Vertical position of the rendered overlay */
@@ -87,14 +92,6 @@ export class CustomTooltipComponent<T = any>
         this.hover ? this.open() : '';
     @HostListener('mouseleave') public readonly onLeave = () =>
         this.hover ? this.close() : '';
-
-    constructor(
-        private _element: ElementRef<HTMLElement>,
-        private _overlay: Overlay,
-        private _injector: Injector,
-    ) {
-        super();
-    }
 
     public ngOnChanges(changes: SimpleChanges): void {
         this._updateInjector();

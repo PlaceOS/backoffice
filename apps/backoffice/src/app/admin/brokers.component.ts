@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import {
@@ -181,6 +181,8 @@ import { BehaviorSubject } from 'rxjs';
     standalone: false,
 })
 export class AdminBrokersComponent extends AsyncHandler implements OnInit {
+    private _dialog = inject(MatDialog);
+
     private _change = new BehaviorSubject<number>(0);
     public loading = false;
 
@@ -194,10 +196,6 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
         tap(() => (this.loading = false)),
         shareReplay(1),
     );
-
-    constructor(private _dialog: MatDialog) {
-        super();
-    }
 
     public ngOnInit() {
         this._change.next(Date.now());

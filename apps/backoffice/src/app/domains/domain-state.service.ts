@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addApplication,
@@ -51,6 +51,9 @@ export type PlaceAuthSource =
     providedIn: 'root',
 })
 export class DomainStateService {
+    private _state = inject(ActiveItemService);
+    private _dialog = inject(MatDialog);
+
     private _loading = new BehaviorSubject<boolean>(false);
 
     private _changed = new BehaviorSubject<number>(0);
@@ -139,11 +142,6 @@ export class DomainStateService {
     public get active_item() {
         return this._state.active_item;
     }
-
-    constructor(
-        private _state: ActiveItemService,
-        private _dialog: MatDialog,
-    ) {}
 
     public async update(domain: PlaceDomain) {
         const item = await updateDomain(domain.id, domain).toPromise();

@@ -1,5 +1,5 @@
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
     PlaceDriverRole,
@@ -214,6 +214,9 @@ import { ActiveItemService } from '../common/item.service';
     standalone: false,
 })
 export class ItemSidebarComponent extends AsyncHandler {
+    private _router = inject(Router);
+    private _service = inject(ActiveItemService);
+
     @Input() public title = 'Systems';
     @Input() public route = 'systems';
     @Input() public filter_options: string[] = [];
@@ -239,13 +242,6 @@ export class ItemSidebarComponent extends AsyncHandler {
 
     public get subroute() {
         return this._router.url.split('/')[3] || '';
-    }
-
-    constructor(
-        private _router: Router,
-        private _service: ActiveItemService,
-    ) {
-        super();
     }
 
     public ngAfterViewInit() {

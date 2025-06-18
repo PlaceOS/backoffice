@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceSystem } from '@placeos/ts-client';
 import { marked } from 'marked';
 import { SystemStateService } from './system-state.service';
@@ -197,6 +197,8 @@ import { SystemStateService } from './system-state.service';
     standalone: false,
 })
 export class SystemAboutComponent {
+    private _service = inject(SystemStateService);
+
     /** List of settings for associated modules, drivers and zones */
     public readonly other_settings = this._service.associated_settings;
 
@@ -211,6 +213,4 @@ export class SystemAboutComponent {
     public get description(): string {
         return marked(this.item.description || '', { async: false }) as string;
     }
-
-    constructor(private _service: SystemStateService) {}
 }

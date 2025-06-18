@@ -1,5 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
 
@@ -62,12 +62,12 @@ export interface ReorderItemsOptions {
     standalone: false,
 })
 export class ReorderItemsModalComponent {
+    private _data = inject<ReorderItemsOptions>(MAT_DIALOG_DATA);
+
     public readonly items = new BehaviorSubject([]);
     public type: string = this._data.type;
     public changed: string[] = [];
     public order: string[] = [];
-
-    constructor(@Inject(MAT_DIALOG_DATA) private _data: ReorderItemsOptions) {}
 
     public ngOnInit() {
         this.items.next(this._data.items);

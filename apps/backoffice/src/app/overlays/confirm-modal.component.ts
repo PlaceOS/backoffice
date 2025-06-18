@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -109,6 +109,8 @@ export const CONFIRM_METADATA = {};
     standalone: false,
 })
 export class ConfirmModalComponent extends AsyncHandler {
+    private _data = inject<ConfirmModalData>(MAT_DIALOG_DATA);
+
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Title of the confirm modal */
@@ -123,8 +125,4 @@ export class ConfirmModalComponent extends AsyncHandler {
     public readonly icon = this._data.icon;
     /** Loading state */
     public loading: string;
-
-    constructor(@Inject(MAT_DIALOG_DATA) private _data: ConfirmModalData) {
-        super();
-    }
 }

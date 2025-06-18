@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 
@@ -17,6 +17,9 @@ export interface DuplicateModalData {
     standalone: false,
 })
 export class DuplicateModalComponent {
+    private _data = inject<DuplicateModalData>(MAT_DIALOG_DATA);
+    private _dialog_ref = inject<MatDialogRef<DuplicateModalComponent>>(MatDialogRef);
+
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Number of times to duplicate the given item */
@@ -34,11 +37,6 @@ export class DuplicateModalComponent {
     public get item() {
         return this._data.item;
     }
-
-    constructor(
-        @Inject(MAT_DIALOG_DATA) private _data: DuplicateModalData,
-        private _dialog_ref: MatDialogRef<DuplicateModalComponent>,
-    ) {}
 
     /**
      * Create the specified number of duplicate items

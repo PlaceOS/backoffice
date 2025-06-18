@@ -1,6 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, ElementRef, forwardRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, forwardRef, ViewChild, inject } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Upload } from '@placeos/cloud-uploads';
@@ -204,6 +204,9 @@ export interface UploadDetails {
     standalone: false,
 })
 export class ImageListFieldComponent extends AsyncHandler {
+    private _clipboard = inject(Clipboard);
+    private _uploads = inject(UploadsService);
+
     /** List of images */
     public list: string[] = [];
     /** List of images */
@@ -226,13 +229,6 @@ export class ImageListFieldComponent extends AsyncHandler {
     }
 
     @ViewChild('image_list') private _list_el: ElementRef<HTMLDivElement>;
-
-    constructor(
-        private _clipboard: Clipboard,
-        private _uploads: UploadsService,
-    ) {
-        super();
-    }
 
     /** Form control on change handler */
     private _onChange: (_: string[]) => void;

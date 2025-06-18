@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { apiEndpoint, get } from '@placeos/ts-client';
 
@@ -186,6 +186,10 @@ export interface PlaceServiceDetails {
     standalone: false,
 })
 export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
+    private _users = inject(BackofficeUsersService);
+    private _dialog = inject(MatDialog);
+    private _cdr = inject(ChangeDetectorRef);
+
     /** Current details about the API */
     public api_details: PlaceServiceDetails[] = [];
     public changelog_data: string = '';
@@ -213,14 +217,6 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
             VERSION.time,
             ' h:mma',
         )}`;
-    }
-
-    constructor(
-        private _users: BackofficeUsersService,
-        private _dialog: MatDialog,
-        private _cdr: ChangeDetectorRef,
-    ) {
-        super();
     }
 
     public ngOnInit(): void {

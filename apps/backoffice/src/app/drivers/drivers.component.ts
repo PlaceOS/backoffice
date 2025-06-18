@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceDriver, queryModules } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
@@ -97,6 +97,10 @@ import { DriverStateService } from './driver-state.service';
     standalone: false,
 })
 export class DriversComponent extends AsyncHandler {
+    protected _service = inject(ActiveItemService);
+    private _drivers = inject(DriverStateService);
+    private _debug = inject(PlaceDebugService);
+
     public readonly name = 'drivers';
 
     public open_menu = false;
@@ -139,14 +143,6 @@ export class DriversComponent extends AsyncHandler {
                 icon: { content: 'schedule' },
             },
         ].concat(this.extensions);
-    }
-
-    constructor(
-        protected _service: ActiveItemService,
-        private _drivers: DriverStateService,
-        private _debug: PlaceDebugService,
-    ) {
-        super();
     }
 
     public ngOnInit(): void {

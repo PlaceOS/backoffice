@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceZone } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -100,6 +100,8 @@ import { ZonesStateService } from './zones-state.service';
     standalone: false,
 })
 export class ZoneTriggersComponent {
+    private _state = inject(ZonesStateService);
+
     public readonly filter$ = new BehaviorSubject<string>('');
     /** List of triggers associated with the zone */
     public readonly triggers = combineLatest([
@@ -125,6 +127,4 @@ export class ZoneTriggersComponent {
     public get item(): PlaceZone {
         return this._state.active_item as any;
     }
-
-    constructor(private _state: ZonesStateService) {}
 }

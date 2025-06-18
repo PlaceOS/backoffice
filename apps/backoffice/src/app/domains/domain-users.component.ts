@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceDomain } from '@placeos/ts-client';
 
 import { DomainStateService } from './domain-state.service';
@@ -67,12 +67,12 @@ import { DomainStateService } from './domain-state.service';
     standalone: false,
 })
 export class DomainUsersComponent {
+    private _service = inject(DomainStateService);
+
     public readonly users = this._service.users;
     public readonly loading = this._service.loading;
 
     public get item(): PlaceDomain {
         return this._service.active_item as any;
     }
-
-    constructor(private _service: DomainStateService) {}
 }

@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AsyncHandler } from '../../common/async-handler.class';
@@ -167,6 +167,11 @@ export function extractTextFromHTML(html_string: string) {
     standalone: false,
 })
 export class EmailTemplateFormComponent extends AsyncHandler {
+    private _state = inject(EmailStateService);
+    private _route = inject(ActivatedRoute);
+    private _router = inject(Router);
+    private _clipboard = inject(Clipboard);
+
     public loading = '';
     public template: EmailTemplate;
     public readonly definitions = this._state.template_definitions;
@@ -181,15 +186,6 @@ export class EmailTemplateFormComponent extends AsyncHandler {
         zone_id: new FormControl(''),
     });
     public active_trigger = null;
-
-    constructor(
-        private _state: EmailStateService,
-        private _route: ActivatedRoute,
-        private _router: Router,
-        private _clipboard: Clipboard,
-    ) {
-        super();
-    }
 
     public ngOnInit() {
         this.subscription(

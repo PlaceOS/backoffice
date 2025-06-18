@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addSystem,
@@ -178,6 +178,8 @@ export interface ExternalResource {
     standalone: false,
 })
 export class ResourceImportsComponent {
+    private _dialog = inject(MatDialog);
+
     public readonly loading = new BehaviorSubject<boolean>(false);
     public readonly domain = new BehaviorSubject<PlaceDomain>(null);
 
@@ -232,8 +234,6 @@ export class ResourceImportsComponent {
             startWith([]),
             shareReplay(1),
         );
-
-    constructor(private _dialog: MatDialog) {}
 
     public async ngOnInit() {
         const domain = authority();

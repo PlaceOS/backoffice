@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     moduleSettings,
@@ -29,6 +29,9 @@ import { ViewResponseModalComponent } from '../overlays/view-response-modal.comp
     providedIn: 'root',
 })
 export class ModuleStateService {
+    private _state = inject(ActiveItemService);
+    private _dialog = inject(MatDialog);
+
     private _loading = new BehaviorSubject<boolean>(false);
 
     public readonly loading = this._loading.asObservable();
@@ -78,11 +81,6 @@ export class ModuleStateService {
     public get active_item(): PlaceModule {
         return this._state.active_item as any;
     }
-
-    constructor(
-        private _state: ActiveItemService,
-        private _dialog: MatDialog,
-    ) {}
 
     public async toggleModuleState() {
         const method = this.active_item.running ? stopModule : startModule;

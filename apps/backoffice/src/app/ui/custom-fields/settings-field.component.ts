@@ -1,16 +1,6 @@
 /// <reference path="../../../../../../node_modules/monaco-editor/monaco.d.ts" />
 
-import {
-    Component,
-    ElementRef,
-    forwardRef,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    SimpleChanges,
-    ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, forwardRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { AsyncHandler } from '../../common/async-handler.class';
@@ -50,6 +40,8 @@ export class SettingsFieldComponent
     extends AsyncHandler
     implements OnInit, OnChanges, OnDestroy, ControlValueAccessor
 {
+    private _settings = inject(SettingsService);
+
     /** Whether form field is readonly */
     @Input() public readonly = true;
     /** Resize */
@@ -75,7 +67,7 @@ export class SettingsFieldComponent
     /** API object for the monaco editor */
     private editor: any;
 
-    constructor(private _settings: SettingsService) {
+    constructor() {
         super();
         if (!MODEL) {
             MODEL = {

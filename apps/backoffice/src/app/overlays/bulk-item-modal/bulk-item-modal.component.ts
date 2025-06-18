@@ -1,4 +1,4 @@
-import { Component, Inject, Type } from '@angular/core';
+import { Component, Type, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import {
@@ -121,6 +121,9 @@ export interface BulkItemModalData<T = HashMap<any>> {
     standalone: false,
 })
 export class BulkItemModalComponent<T = HashMap<any>> {
+    private _dialog_ref = inject<MatDialogRef<BulkItemModalComponent>>(MatDialogRef);
+    private _data = inject<BulkItemModalData<T>>(MAT_DIALOG_DATA);
+
     /** Current step in the bulk add flow */
     public flow_step: '' | 'match-fields' | 'list' | 'status' = '';
     /** List of items to bulk add */
@@ -143,10 +146,7 @@ export class BulkItemModalComponent<T = HashMap<any>> {
         return this._data.save;
     }
 
-    constructor(
-        private _dialog_ref: MatDialogRef<BulkItemModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: BulkItemModalData<T>,
-    ) {
+    constructor() {
         this.available_fields = this.getAvailableFields();
         this.template = this.generateTemplate();
     }

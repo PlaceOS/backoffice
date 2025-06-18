@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -63,6 +63,8 @@ export interface SelectItemModalData<T = any> {
     standalone: false,
 })
 export class SelectItemModalComponent extends AsyncHandler {
+    private _data = inject<SelectItemModalData>(MAT_DIALOG_DATA);
+
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether the item is being editing */
@@ -73,10 +75,6 @@ export class SelectItemModalComponent extends AsyncHandler {
     public loading: boolean;
 
     public readonly filter_fn = () => false;
-
-    constructor(@Inject(MAT_DIALOG_DATA) private _data: SelectItemModalData) {
-        super();
-    }
 
     public get query_fn(): (_: any) => Observable<any[]> {
         return this._data.query_fn;

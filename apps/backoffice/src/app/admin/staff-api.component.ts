@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     authority,
@@ -169,6 +169,8 @@ export interface PlaceTenant {
     standalone: false,
 })
 export class PlaceStaffAPIComponent implements OnInit {
+    private _dialog = inject(MatDialog);
+
     /** Loading state */
     public loading: string = '';
     /** List of available domains */
@@ -202,8 +204,6 @@ export class PlaceStaffAPIComponent implements OnInit {
         const after_time = getUnixTime(Date.now());
         return expiry && expiry >= after_time;
     }
-
-    constructor(private _dialog: MatDialog) {}
 
     public async ngOnInit() {
         this.loading = 'Loading domains...';

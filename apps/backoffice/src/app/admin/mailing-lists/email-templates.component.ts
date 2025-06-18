@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { authority } from '@placeos/ts-client';
 import { nextValueFrom } from '../../common/general';
 import { EmailStateService } from './email-state.service';
@@ -58,14 +58,14 @@ import { EmailStateService } from './email-state.service';
     standalone: false,
 })
 export class EmailTemplatesComponent implements OnInit {
+    private _service = inject(EmailStateService);
+
     public readonly loading = this._service.loading;
     public readonly domain = this._service.domain;
     public readonly domain_list = this._service.domain_list;
     public readonly templates = this._service.templates;
 
     public readonly setDomain = (d) => this._service.setDomain(d);
-
-    constructor(private _service: EmailStateService) {}
 
     public async ngOnInit() {
         const domain = authority();

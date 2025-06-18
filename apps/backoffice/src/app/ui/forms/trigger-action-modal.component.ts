@@ -1,10 +1,4 @@
-import {
-    Component,
-    EventEmitter,
-    Inject,
-    Output,
-    ViewChild,
-} from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceSystem,
@@ -193,6 +187,9 @@ export interface TriggerActionModalData {
     standalone: false,
 })
 export class TriggerActionModalComponent extends AsyncHandler {
+    private _dialog = inject<MatDialogRef<TriggerActionModalComponent>>(MatDialogRef);
+    private _data = inject<TriggerActionModalData>(MAT_DIALOG_DATA);
+
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
@@ -224,13 +221,6 @@ export class TriggerActionModalComponent extends AsyncHandler {
     /** Template system to use for status variable bindings */
     public get trigger(): PlaceTrigger {
         return this._data.trigger;
-    }
-
-    constructor(
-        private _dialog: MatDialogRef<TriggerActionModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData,
-    ) {
-        super();
     }
 
     public get email_list(): string[] {

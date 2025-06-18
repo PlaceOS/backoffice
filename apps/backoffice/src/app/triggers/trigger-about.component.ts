@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
     PlaceSystem,
     PlaceTrigger,
@@ -274,6 +274,8 @@ import { TriggerStateService } from './trigger-state.service';
     standalone: false,
 })
 export class TriggerAboutComponent extends AsyncHandler implements OnInit {
+    private _service = inject(TriggerStateService);
+
     /** System to use for conditions with systen variables and functions */
     public template_system: PlaceSystem;
     /** List of variable comparison trigger conditions */
@@ -302,10 +304,6 @@ export class TriggerAboutComponent extends AsyncHandler implements OnInit {
     /** HTML string for rendering the description */
     public get description(): string {
         return marked(this.item.description || '', { async: false }) as string;
-    }
-
-    constructor(private _service: TriggerStateService) {
-        super();
     }
 
     public ngOnInit(): void {

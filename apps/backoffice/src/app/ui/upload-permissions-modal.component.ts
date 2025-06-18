@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UploadPermissions } from '../common/uploads';
 
@@ -72,6 +72,11 @@ import { UploadPermissions } from '../common/uploads';
     standalone: false,
 })
 export class UploadPermissionsModalComponent {
+    private _dialog_ref = inject<MatDialogRef<UploadPermissionsModalComponent>>(MatDialogRef);
+    private _data = inject<{
+    file: File;
+}>(MAT_DIALOG_DATA);
+
     /** File to upload */
     public readonly file: File = this._data.file;
     /** Whether file should be public */
@@ -79,10 +84,7 @@ export class UploadPermissionsModalComponent {
     /** Permissions for file */
     public permissions: UploadPermissions = 'none';
 
-    constructor(
-        private _dialog_ref: MatDialogRef<UploadPermissionsModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: { file: File },
-    ) {
+    constructor() {
         this.file = this._data.file;
     }
 

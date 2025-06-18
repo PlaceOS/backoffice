@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { authority } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -54,6 +54,8 @@ import { SettingsService } from '../common/settings.service';
     standalone: false,
 })
 export class MetricsComponent extends AsyncHandler implements OnInit {
+    private _settings = inject(SettingsService);
+
     /** Whether to only render the metrics view */
     public fullscreen: boolean;
 
@@ -65,10 +67,6 @@ export class MetricsComponent extends AsyncHandler implements OnInit {
         return api_authority
             ? api_authority.metrics || api_authority.config.metrics
             : '';
-    }
-
-    constructor(private _settings: SettingsService) {
-        super();
     }
 
     public async ngOnInit() {

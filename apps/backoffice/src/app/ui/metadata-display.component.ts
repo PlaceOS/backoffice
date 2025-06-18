@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, Input, SimpleChanges, inject } from '@angular/core';
 import {
     AbstractControl,
     FormControl,
@@ -168,6 +168,9 @@ function replaceDescTag(inputString, newContent) {
     standalone: false,
 })
 export class MetadataDisplayComponent extends AsyncHandler {
+    private _dialog = inject(MatDialog);
+    private _schemas = inject(SchemaStateService);
+
     @Input() public item: any;
     /** List of metadata associated with the zone */
     public metadata: PlaceMetadata[] = [];
@@ -190,13 +193,6 @@ export class MetadataDisplayComponent extends AsyncHandler {
                 ? { name: true }
                 : null;
         };
-    }
-
-    constructor(
-        private _dialog: MatDialog,
-        private _schemas: SchemaStateService,
-    ) {
-        super();
     }
 
     public ngOnChanges(changes: SimpleChanges): void {

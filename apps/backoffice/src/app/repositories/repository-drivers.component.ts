@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceRepository } from '@placeos/ts-client';
 
 import { Router } from '@angular/router';
@@ -68,6 +68,9 @@ import { RepositoriesStateService } from './repositories-state.service';
     standalone: false,
 })
 export class RepositoryDriversComponent extends AsyncHandler {
+    private _service = inject(RepositoriesStateService);
+    private _router = inject(Router);
+
     /** Whether driver list is loading */
     public loading: boolean;
     /** List of drivers available in the repository */
@@ -78,13 +81,6 @@ export class RepositoryDriversComponent extends AsyncHandler {
     }
 
     public readonly newDriver = (d) => this._service.newDriver(d);
-
-    constructor(
-        private _service: RepositoriesStateService,
-        private _router: Router,
-    ) {
-        super();
-    }
 
     public ngOnInit() {
         this.timeout(

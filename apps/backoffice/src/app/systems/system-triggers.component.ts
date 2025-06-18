@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceTrigger } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -182,6 +182,8 @@ export interface TriggerInstanceState {
     standalone: false,
 })
 export class SystemTriggersComponent {
+    private _service = inject(SystemStateService);
+
     public readonly filter$ = new BehaviorSubject<string>('');
 
     public readonly loading = this._service.loading;
@@ -221,8 +223,6 @@ export class SystemTriggersComponent {
     public get item() {
         return this._service.active_item;
     }
-
-    constructor(private _service: SystemStateService) {}
 
     public updateComparisons(id: string): void {
         this.comparisons[id] = '';

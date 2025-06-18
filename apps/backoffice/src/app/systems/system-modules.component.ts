@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     loadModule,
@@ -363,6 +363,9 @@ import { SystemStateService } from './system-state.service';
     standalone: false,
 })
 export class SystemModulesComponent extends AsyncHandler {
+    private _service = inject(SystemStateService);
+    private _dialog = inject(MatDialog);
+
     /** Whether a device should be listened to */
     public device_listener: HashMap<boolean> = {};
     /** Store for ID of new module to add to system */
@@ -501,13 +504,6 @@ export class SystemModulesComponent extends AsyncHandler {
 
     public get item(): PlaceSystem {
         return this._service.active_item as any;
-    }
-
-    constructor(
-        private _service: SystemStateService,
-        private _dialog: MatDialog,
-    ) {
-        super();
     }
 
     /**

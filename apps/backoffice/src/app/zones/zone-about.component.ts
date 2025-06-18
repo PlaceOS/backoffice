@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
 
 import { ZonesStateService } from './zones-state.service';
@@ -208,6 +208,8 @@ import { marked } from 'marked';
     standalone: false,
 })
 export class ZoneAboutComponent {
+    private _service = inject(ZonesStateService);
+
     /** List of associated systems */
     public readonly systems = this._service.systems;
     /** Selected system */
@@ -234,6 +236,4 @@ export class ZoneAboutComponent {
             !this.item.parent_id
         );
     }
-
-    constructor(private _service: ZonesStateService) {}
 }

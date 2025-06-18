@@ -1,11 +1,4 @@
-import {
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    Output,
-    ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
@@ -77,6 +70,8 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
     standalone: false,
 })
 export class SearchbarComponent extends AsyncHandler {
+    private _users = inject(BackofficeUsersService);
+
     @Input() public filter: string;
     @Input() public limit: string;
     @Input() public dictation = true;
@@ -95,7 +90,7 @@ export class SearchbarComponent extends AsyncHandler {
         return this._users.dark_mode;
     }
 
-    constructor(private _users: BackofficeUsersService) {
+    constructor() {
         super();
         const win = window as any;
         this.model.speech = !!(

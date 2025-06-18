@@ -1,11 +1,5 @@
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import {
-    Component,
-    ElementRef,
-    Input,
-    SimpleChanges,
-    ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, Input, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -65,6 +59,8 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
     standalone: false,
 })
 export class NewTerminalComponent extends AsyncHandler {
+    private _sanitize_pipe = inject(SanitizePipe);
+
     @Input() public lines: string[] = [];
     @Input() public search = '';
     @Input() public resize = 0;
@@ -118,10 +114,6 @@ export class NewTerminalComponent extends AsyncHandler {
         catchError(() => of([])),
         shareReplay(1),
     );
-
-    constructor(private _sanitize_pipe: SanitizePipe) {
-        super();
-    }
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.lines && this.lines) {

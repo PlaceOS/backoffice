@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { shareReplay } from 'rxjs/operators';
 import { JsonSchema, SchemaStateService } from './schema-state.service';
 
@@ -101,11 +101,12 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
     standalone: false,
 })
 export class AdminSchemasComponent {
+    private _state = inject(SchemaStateService);
+
     public active_schema: JsonSchema;
     public schema_copy: JsonSchema;
 
     public readonly schema_list = this._state.schemas.pipe(shareReplay(1));
-    constructor(private _state: SchemaStateService) {}
 
     public copySchema() {
         if (!this.active_schema) return;

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
@@ -91,6 +91,10 @@ import { SystemStateService } from './system-state.service';
     standalone: false,
 })
 export class SystemsComponent extends AsyncHandler {
+    protected _service = inject(SystemStateService);
+    private _item = inject(ActiveItemService);
+    private _debug = inject(PlaceDebugService);
+
     public readonly name = 'systems';
     public open_menu = false;
     public scroll = 0;
@@ -149,14 +153,6 @@ export class SystemsComponent extends AsyncHandler {
                 icon: { content: 'schedule' },
             },
         ].concat(this.extensions);
-    }
-
-    constructor(
-        protected _service: SystemStateService,
-        private _item: ActiveItemService,
-        private _debug: PlaceDebugService,
-    ) {
-        super();
     }
 
     public ngOnInit(): void {

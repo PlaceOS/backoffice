@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceUser } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -54,14 +54,12 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
     standalone: false,
 })
 export class UserHistoryComponent extends AsyncHandler {
+    private _service = inject(ActiveItemService);
+
     public logs: { start: number; end: number; systems: string[] }[] = [];
 
     public get item(): PlaceUser {
         return this._service.active_item as any;
-    }
-
-    constructor(private _service: ActiveItemService) {
-        super();
     }
     public ngOnInit(): void {
         this.subscription(

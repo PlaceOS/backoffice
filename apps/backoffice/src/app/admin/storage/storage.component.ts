@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PlaceDomain, queryDomains } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
@@ -145,6 +145,8 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
     standalone: false,
 })
 export class StorageComponent {
+    private _dialog = inject(MatDialog);
+
     /** Loading state */
     public loading: string = '';
     /** List of available domains */
@@ -180,8 +182,6 @@ export class StorageComponent {
             }));
         }),
     );
-
-    constructor(private _dialog: MatDialog) {}
 
     public edit(item?: PlaceStorage) {
         const ref = this._dialog.open(StorageProviderModalComponent, {

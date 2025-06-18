@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
@@ -125,6 +125,10 @@ export class ItemCreateUpdateModalComponent
     extends AsyncHandler
     implements OnInit
 {
+    private _dialog_ref = inject<MatDialogRef<ItemCreateUpdateModalComponent>>(MatDialogRef);
+    private _data = inject<CreateEditModalData>(MAT_DIALOG_DATA);
+    private _hotkey = inject(HotkeysService);
+
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether the item is being editing */
@@ -175,14 +179,6 @@ export class ItemCreateUpdateModalComponent
         } else if (this.item instanceof PlaceMQTTBroker) {
             return 'broker';
         }
-    }
-
-    constructor(
-        private _dialog_ref: MatDialogRef<ItemCreateUpdateModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: CreateEditModalData,
-        private _hotkey: HotkeysService,
-    ) {
-        super();
     }
 
     /**

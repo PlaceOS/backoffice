@@ -1,14 +1,6 @@
 /// <reference path="../../../../../node_modules/monaco-editor/monaco.d.ts" />
 
-import {
-    Component,
-    ElementRef,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
-    ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { AsyncHandler } from '../common/async-handler.class';
 import { BackofficeUsersService } from '../users/users.service';
 
@@ -29,6 +21,8 @@ export class DiffViewerComponent
     extends AsyncHandler
     implements OnInit, OnChanges
 {
+    private _users = inject(BackofficeUsersService);
+
     /** Original version of the document */
     @Input() public original = '';
     /** Newer version of the document */
@@ -40,10 +34,6 @@ export class DiffViewerComponent
 
     @ViewChild('editor', { static: true })
     private _editor_el: ElementRef<HTMLDivElement>;
-
-    constructor(private _users: BackofficeUsersService) {
-        super();
-    }
 
     public ngOnInit() {
         this._createEditor();

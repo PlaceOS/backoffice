@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
@@ -71,6 +71,9 @@ import { DomainStateService } from './domain-state.service';
     standalone: false,
 })
 export class DomainsComponent extends AsyncHandler implements OnInit {
+    private _service = inject(DomainStateService);
+    protected _item = inject(ActiveItemService);
+
     public readonly name = 'domains';
 
     public open_menu = false;
@@ -85,13 +88,6 @@ export class DomainsComponent extends AsyncHandler implements OnInit {
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
-    }
-
-    constructor(
-        private _service: DomainStateService,
-        protected _item: ActiveItemService,
-    ) {
-        super();
     }
 
     public ngOnInit(): void {

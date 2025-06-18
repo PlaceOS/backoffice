@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
     apiKey,
@@ -40,6 +40,10 @@ export interface FrameMessage {
     standalone: false,
 })
 export class ExtensionOutletComponent extends AsyncHandler {
+    private _route = inject(ActivatedRoute);
+    private _location = inject(Location);
+    private _service = inject(ActiveItemService);
+
     public url = '';
     public app_loaded = false;
 
@@ -49,14 +53,6 @@ export class ExtensionOutletComponent extends AsyncHandler {
     };
 
     @ViewChild('frame') private _frame_el: ElementRef<HTMLIFrameElement>;
-
-    constructor(
-        private _route: ActivatedRoute,
-        private _location: Location,
-        private _service: ActiveItemService,
-    ) {
-        super();
-    }
 
     public ngOnInit(): void {
         onlineState()

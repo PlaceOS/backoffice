@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceRepositoryType } from '@placeos/ts-client';
 import { marked } from 'marked';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -170,6 +170,8 @@ import { RepositoriesStateService } from './repositories-state.service';
     standalone: false,
 })
 export class RepositoryAboutComponent extends AsyncHandler {
+    private _service = inject(RepositoriesStateService);
+
     /** Whether the latest commit is being pulled on the server */
     public pulling: boolean;
 
@@ -192,10 +194,6 @@ export class RepositoryAboutComponent extends AsyncHandler {
     /** HTML string for rendering the description */
     public get description(): string {
         return marked(this.item.description || '', { async: false }) as string;
-    }
-
-    constructor(private _service: RepositoriesStateService) {
-        super();
     }
 
     public ngOnInit(): void {

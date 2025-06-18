@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceEdge,
@@ -169,6 +169,9 @@ import { EdgeModalComponent } from './edge-modal.component';
     standalone: false,
 })
 export class PlaceEdgeComponent {
+    private _dialog = inject(MatDialog);
+    private _clipboard = inject(Clipboard);
+
     public loading: string = '';
 
     private _change = new BehaviorSubject<number>(0);
@@ -246,11 +249,6 @@ export class PlaceEdgeComponent {
         notifySuccess('Successfully removed Edge.');
         this._hide.next(i.id);
     };
-
-    constructor(
-        private _dialog: MatDialog,
-        private _clipboard: Clipboard,
-    ) {}
 
     public ngOnInit() {
         const edge_data = sessionStorage.getItem('BACKOFFICE.last_edge');

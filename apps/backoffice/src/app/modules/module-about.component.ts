@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceModule } from '@placeos/ts-client';
 
 import { MatDialog } from '@angular/material/dialog';
@@ -234,6 +234,9 @@ import { ModuleStateService } from './module-state.service';
     standalone: false,
 })
 export class ModuleAboutComponent {
+    private _service = inject(ModuleStateService);
+    private _dialog = inject(MatDialog);
+
     /** Driver for the active item */
     public readonly driver = this._service.driver;
     /** Control System for the active item */
@@ -248,11 +251,6 @@ export class ModuleAboutComponent {
     public get item(): PlaceModule {
         return this._service.active_item as any;
     }
-
-    constructor(
-        private _service: ModuleStateService,
-        private _dialog: MatDialog,
-    ) {}
 
     public async toggleModuleState() {
         this.stopping = true;

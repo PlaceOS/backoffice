@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceModule, querySystems } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -84,6 +84,9 @@ import { i18n } from '../common/locale.service';
     standalone: false,
 })
 export class ModulesComponent extends AsyncHandler {
+    private _service = inject(ActiveItemService);
+    private _debug = inject(PlaceDebugService);
+
     /** Number of systems for the active device */
     public system_count: number;
     public open_menu = false;
@@ -124,13 +127,6 @@ export class ModulesComponent extends AsyncHandler {
                 icon: { content: 'schedule' },
             },
         ].concat(this.extensions);
-    }
-
-    constructor(
-        private _service: ActiveItemService,
-        private _debug: PlaceDebugService,
-    ) {
-        super();
     }
 
     public ngOnInit(): void {

@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-    Component,
-    forwardRef,
-    Input,
-    OnChanges,
-    SimpleChanges,
-} from '@angular/core';
+import { Component, forwardRef, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
     addDays,
@@ -110,6 +104,8 @@ export class DateCalendarComponent
     extends AsyncHandler
     implements ControlValueAccessor, OnChanges
 {
+    private _settings = inject(SettingsService);
+
     @Input() public from = 0;
     @Input() public to = Date.now() * 10;
     @Input() public offset_weekday = 0;
@@ -123,10 +119,6 @@ export class DateCalendarComponent
     private _onChange: (_: number) => void;
     /** Form control on touch handler */
     private _onTouch: (_: number) => void;
-
-    constructor(private _settings: SettingsService) {
-        super();
-    }
 
     public ngOnInit() {
         this.generateDates();

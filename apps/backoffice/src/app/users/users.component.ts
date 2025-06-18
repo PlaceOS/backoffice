@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
@@ -78,6 +78,8 @@ import { i18n } from '../common/locale.service';
     standalone: false,
 })
 export class UsersComponent extends AsyncHandler {
+    protected _service = inject(ActiveItemService);
+
     public readonly name = 'users';
     public open_menu = false;
     public tab_list = [];
@@ -112,10 +114,6 @@ export class UsersComponent extends AsyncHandler {
                 icon: { content: 'history' },
             },
         ].concat(this.extensions);
-    }
-
-    constructor(protected _service: ActiveItemService) {
-        super();
     }
 
     public ngOnInit() {

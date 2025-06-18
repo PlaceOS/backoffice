@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceTrigger } from '@placeos/ts-client';
 
 import { HashMap } from 'apps/backoffice/src/app/common/types';
@@ -89,6 +89,8 @@ import { TriggerStateService } from './trigger-state.service';
     standalone: false,
 })
 export class TriggerInstancesComponent {
+    private _service = inject(TriggerStateService);
+
     /** List of systems associated with the trigger */
     public readonly instances = this._service.instances;
     public readonly loading = this._service.loading;
@@ -101,6 +103,4 @@ export class TriggerInstancesComponent {
     public get item(): PlaceTrigger {
         return this._service.active_item as any;
     }
-
-    constructor(private _service: TriggerStateService) {}
 }

@@ -1,15 +1,4 @@
-import {
-    Directive,
-    ElementRef,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    Output,
-    Renderer2,
-    SimpleChanges,
-} from '@angular/core';
+import { Directive, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, SimpleChanges, inject } from '@angular/core';
 import { authority, getModule, onlineState } from '@placeos/ts-client';
 
 import { filter, first } from 'rxjs/operators';
@@ -23,6 +12,9 @@ export class BindingDirective<T = any>
     extends AsyncHandler
     implements OnInit, OnChanges, OnDestroy
 {
+    private _element = inject<ElementRef<HTMLElement>>(ElementRef);
+    private _renderer = inject(Renderer2);
+
     /** ID of the system to bind */
     @Input() public sys = '';
     /** Class name of the module to bind */
@@ -47,13 +39,6 @@ export class BindingDirective<T = any>
 
     private _binding = false;
     private _old_model: T | null = null;
-
-    constructor(
-        private _element: ElementRef<HTMLElement>,
-        private _renderer: Renderer2,
-    ) {
-        super();
-    }
 
     public ngOnInit(): void {
         onlineState()

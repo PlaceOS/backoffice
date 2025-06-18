@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceSystem,
@@ -87,6 +87,9 @@ export interface TriggerConditionData {
     standalone: false,
 })
 export class TriggerConditionModalComponent extends AsyncHandler {
+    private _dialog = inject<MatDialogRef<TriggerConditionModalComponent>>(MatDialogRef);
+    private _data = inject<TriggerConditionData>(MAT_DIALOG_DATA);
+
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
@@ -115,13 +118,6 @@ export class TriggerConditionModalComponent extends AsyncHandler {
     /** Template system to use for status variable bindings */
     public get trigger(): PlaceTrigger {
         return this._data.trigger;
-    }
-
-    constructor(
-        private _dialog: MatDialogRef<TriggerConditionModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: TriggerConditionData,
-    ) {
-        super();
     }
 
     public async save() {

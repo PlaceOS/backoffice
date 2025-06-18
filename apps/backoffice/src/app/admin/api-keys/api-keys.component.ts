@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { authority } from '@placeos/ts-client';
 import { nextValueFrom } from '../../common/general';
 import { i18n } from '../../common/locale.service';
@@ -167,6 +167,9 @@ import { APIKeyService } from './api-keys.service';
     standalone: false,
 })
 export class AdminAPIKeysComponent implements OnInit {
+    private _service = inject(APIKeyService);
+    private _clipboard = inject(Clipboard);
+
     public readonly domain = this._service.active_domain;
     public readonly domain_list = this._service.available_domains;
     public readonly key_list = this._service.available_keys;
@@ -177,11 +180,6 @@ export class AdminAPIKeysComponent implements OnInit {
     public readonly setDomain = (d) => this._service.setDomain(d);
     public readonly newKey = () => this._service.newKey();
     public readonly deleteKey = (k) => this._service.removeKey(k);
-
-    constructor(
-        private _service: APIKeyService,
-        private _clipboard: Clipboard,
-    ) {}
 
     public async ngOnInit() {
         const domain = authority();

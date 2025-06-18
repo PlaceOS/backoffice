@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { logout } from '@placeos/ts-client';
 import { format } from 'date-fns';
 import { VERSION } from '../../environments/version';
@@ -111,6 +111,9 @@ import { SettingsService } from '../common/settings.service';
     standalone: false,
 })
 export class UserMenuTooltipComponent implements OnInit {
+    private _settings = inject(SettingsService);
+    private _locale = inject(LocaleService);
+
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
         return this._settings.get('theme') === 'dark';
@@ -141,11 +144,6 @@ export class UserMenuTooltipComponent implements OnInit {
             title,
         )}&body=${encodeURIComponent(description)}&labels=bug`;
     }
-
-    constructor(
-        private _settings: SettingsService,
-        private _locale: LocaleService,
-    ) {}
 
     public ngOnInit() {
         this.lang = this._locale.locale;

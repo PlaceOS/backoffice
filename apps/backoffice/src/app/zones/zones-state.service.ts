@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     listMetadata,
@@ -34,6 +34,9 @@ import {
     providedIn: 'root',
 })
 export class ZonesStateService {
+    private _service = inject(ActiveItemService);
+    private _dialog = inject(MatDialog);
+
     private _loading = new BehaviorSubject<boolean>(false);
     private _change = new BehaviorSubject<boolean>(false);
 
@@ -130,10 +133,7 @@ export class ZonesStateService {
         return this._service.active_item as any;
     }
 
-    constructor(
-        private _service: ActiveItemService,
-        private _dialog: MatDialog,
-    ) {
+    constructor() {
         setTimeout(() => this._change.next(!this._change.getValue()), 1000);
     }
 

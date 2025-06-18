@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { moduleRuntimeError, showModule } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
@@ -53,6 +53,8 @@ import { AsyncHandler } from '../common/async-handler.class';
     standalone: false,
 })
 export class ModuleRuntimeErrorsModalComponent extends AsyncHandler {
+    private _module_id = inject(MAT_DIALOG_DATA);
+
     public loading = false;
     public readonly id = new BehaviorSubject('');
     public readonly module = this.id.pipe(
@@ -69,10 +71,6 @@ export class ModuleRuntimeErrorsModalComponent extends AsyncHandler {
         tap(() => (this.loading = false)),
         shareReplay(1),
     );
-
-    constructor(@Inject(MAT_DIALOG_DATA) private _module_id: string) {
-        super();
-    }
 
     public ngOnInit() {
         this.id.next(this._module_id);

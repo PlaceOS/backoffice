@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { timer } from 'rxjs';
@@ -85,6 +85,11 @@ import { BackofficeUsersService } from '../users/users.service';
     standalone: false,
 })
 export class PlaceComponent extends AsyncHandler {
+    private _settings = inject(SettingsService);
+    private _service = inject(ActiveItemService);
+    private _users = inject(BackofficeUsersService);
+    private _debug = inject(PlaceDebugService);
+
     public tab_list = [];
     public open_menu = false;
 
@@ -178,15 +183,6 @@ export class PlaceComponent extends AsyncHandler {
             //     icon: { value: 'email' },
             // },
         ].concat(this.extensions);
-    }
-
-    constructor(
-        private _settings: SettingsService,
-        private _service: ActiveItemService,
-        private _users: BackofficeUsersService,
-        private _debug: PlaceDebugService,
-    ) {
-        super();
     }
 
     public async ngOnInit() {

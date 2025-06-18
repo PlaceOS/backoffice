@@ -1,10 +1,4 @@
-import {
-    Component,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
-} from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import {
     addSettings,
@@ -221,6 +215,9 @@ export class SettingsFormComponent
     extends AsyncHandler
     implements OnChanges, OnInit
 {
+    private _hotkey = inject(HotkeysService);
+    private _users = inject(BackofficeUsersService);
+
     /** ID of the parent object */
     @Input() id: string;
     /** List of settings for the  */
@@ -354,13 +351,6 @@ export class SettingsFormComponent
                 return i18n('COMMON.SETTINGS_ADMIN');
         }
         return i18n('COMMON.SETTINGS_ENCRYPTED');
-    }
-
-    constructor(
-        private _hotkey: HotkeysService,
-        private _users: BackofficeUsersService,
-    ) {
-        super();
     }
 
     public ngOnInit(): void {

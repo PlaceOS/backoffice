@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface ViewResponseModalData {
@@ -23,10 +23,12 @@ export interface ViewResponseModalData {
     standalone: false,
 })
 export class ViewResponseModalComponent {
+    private _data = inject<ViewResponseModalData>(MAT_DIALOG_DATA);
+
     public readonly title = this._data.title || '';
     public content_string: string;
 
-    constructor(@Inject(MAT_DIALOG_DATA) private _data: ViewResponseModalData) {
+    constructor() {
         this.updateContentString();
     }
 

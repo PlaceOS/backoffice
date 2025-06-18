@@ -1,11 +1,5 @@
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import {
-    Component,
-    ElementRef,
-    Input,
-    SimpleChanges,
-    ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, Input, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
     PlaceDriverRole,
@@ -162,6 +156,12 @@ import { BackofficeUsersService } from '../users/users.service';
     standalone: false,
 })
 export class ItemSelectionComponent extends AsyncHandler {
+    private _users = inject(BackofficeUsersService);
+    private _router = inject(Router);
+    private _settings = inject(SettingsService);
+    private _hotkeys = inject(HotkeysService);
+    private _service = inject(ActiveItemService);
+
     @Input() public show = true;
     @Input() public title;
     @Input() public route = 'systems';
@@ -188,16 +188,6 @@ export class ItemSelectionComponent extends AsyncHandler {
 
     public get subroute() {
         return this._router.url.split('/')[3] || '';
-    }
-
-    constructor(
-        private _users: BackofficeUsersService,
-        private _router: Router,
-        private _settings: SettingsService,
-        private _hotkeys: HotkeysService,
-        private _service: ActiveItemService,
-    ) {
-        super();
     }
 
     public ngOnInit() {

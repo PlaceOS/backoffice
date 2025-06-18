@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { PlaceDriverRole } from '@placeos/ts-client';
 import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
@@ -179,6 +179,10 @@ export interface DisplayItem {
     standalone: false,
 })
 export class ItemDetailsComponent {
+    private _service = inject(ActiveItemService);
+    private _users = inject(BackofficeUsersService);
+    private _clipboard = inject(Clipboard);
+
     @Input() public type = 'system';
     @Input() public item: DisplayItem;
     @Input() public can_edit = false;
@@ -217,12 +221,6 @@ export class ItemDetailsComponent {
     public get tags() {
         return (this.item as any)?.tags || [];
     }
-
-    constructor(
-        private _service: ActiveItemService,
-        private _users: BackofficeUsersService,
-        private _clipboard: Clipboard,
-    ) {}
 
     public get driver_type(): string {
         if (typeof this.item?.role !== 'number') return '';

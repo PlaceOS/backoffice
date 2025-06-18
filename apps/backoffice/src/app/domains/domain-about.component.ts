@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
 import { PlaceDomain } from '@placeos/ts-client';
@@ -98,6 +98,9 @@ import { DomainStateService } from './domain-state.service';
     standalone: false,
 })
 export class DomainAboutComponent extends AsyncHandler implements OnInit {
+    private _service = inject(DomainStateService);
+    private _clipboard = inject(Clipboard);
+
     /** Form group for edit domain settings */
     public form = new FormGroup({
         config: new FormControl('', [validateJSONString]),
@@ -113,13 +116,6 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
     /** HTML string for rendering the description */
     public get description(): string {
         return marked(this.item.description || '', { async: false }) as string;
-    }
-
-    constructor(
-        private _service: DomainStateService,
-        private _clipboard: Clipboard,
-    ) {
-        super();
     }
 
     public ngOnInit(): void {

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceModule,
@@ -102,6 +102,9 @@ export class ViewModuleStateModalComponent
     extends AsyncHandler
     implements OnInit
 {
+    private _dialog = inject<MatDialogRef<ViewModuleStateModalComponent>>(MatDialogRef);
+    private _data = inject<ModuleStateModalData>(MAT_DIALOG_DATA);
+
     /** Current state of the selected module */
     public state: string;
     /** Whether the module state is being loaded */
@@ -124,13 +127,6 @@ export class ViewModuleStateModalComponent
     /** Modules associated with the system */
     public get devices(): PlaceModule[] {
         return this._data.devices || [];
-    }
-
-    constructor(
-        private _dialog: MatDialogRef<ViewModuleStateModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: ModuleStateModalData,
-    ) {
-        super();
     }
 
     public ngOnInit() {

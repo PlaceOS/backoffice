@@ -1,10 +1,4 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    Optional,
-    Output,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AsyncHandler } from '../common/async-handler.class';
@@ -217,6 +211,13 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     standalone: false,
 })
 export class SidebarMenuComponent extends AsyncHandler {
+    private _tooltip = inject(CustomTooltipData, { optional: true });
+    private _debug = inject(PlaceDebugService);
+    private _settings = inject(SettingsService);
+    private _users = inject(BackofficeUsersService);
+    private _hotkey = inject(HotkeysService);
+    private _router = inject(Router);
+
     @Input() public open = true;
     @Output() public openChange = new EventEmitter();
     public items: any[] = [];
@@ -287,17 +288,6 @@ export class SidebarMenuComponent extends AsyncHandler {
     public toggleCompactMode() {
         this.compact = !this.compact;
         localStorage.setItem('BACKOFFICE.SIDEBAR_COMPACT', `${this.compact}`);
-    }
-
-    constructor(
-        @Optional() private _tooltip: CustomTooltipData,
-        private _debug: PlaceDebugService,
-        private _settings: SettingsService,
-        private _users: BackofficeUsersService,
-        private _hotkey: HotkeysService,
-        private _router: Router,
-    ) {
-        super();
     }
 
     public ngOnInit() {

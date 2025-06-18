@@ -1,5 +1,5 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
@@ -106,6 +106,9 @@ export interface MetadataDetailsModalData {
     standalone: false,
 })
 export class MetadataDetailsModalComponent implements OnInit {
+    private _dialog_ref = inject<MatDialogRef<MetadataDetailsModalComponent>>(MatDialogRef);
+    private _data = inject<MetadataDetailsModalData>(MAT_DIALOG_DATA);
+
     public form = new FormGroup({
         name: new FormControl(''),
         description: new FormControl(''),
@@ -123,11 +126,6 @@ export class MetadataDetailsModalComponent implements OnInit {
     public get editors() {
         return this.form?.controls.editors.value;
     }
-
-    constructor(
-        private _dialog_ref: MatDialogRef<MetadataDetailsModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: MetadataDetailsModalData,
-    ) {}
 
     public ngOnInit(): void {
         this.form.controls.name.setValidators(

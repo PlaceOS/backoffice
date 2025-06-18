@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, forwardRef, Input, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -78,6 +78,8 @@ import { ModuleLike } from './select-module.component';
     standalone: false,
 })
 export class ExecuteMethodFieldComponent implements ControlValueAccessor {
+    private _dialog = inject(MatDialog);
+
     @Input() public zone?: string;
     /** ID of the system to select the module from */
     @Input() public system: PlaceSystem;
@@ -95,8 +97,6 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     private _onChange: (_: TriggerFunction) => void;
     /** Form control on touch handler */
     private _onTouch: (_: TriggerFunction) => void;
-
-    constructor(private _dialog: MatDialog) {}
 
     /**
      * Update the form field value

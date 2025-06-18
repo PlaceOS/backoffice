@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { PlaceDatabase } from 'apps/backoffice/src/app/common/database.service';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
@@ -76,12 +76,12 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
     standalone: false,
 })
 export class PlaceDatabaseDetailsComponent {
+    private _engine_service = inject(PlaceDatabase);
+
     /** Whether backend is reindexing the database */
     public reindexing: boolean;
     /** Whether backend is reindexing the database */
     public backfilling: boolean;
-
-    constructor(private _engine_service: PlaceDatabase) {}
 
     public reindex() {
         this.reindexing = true;

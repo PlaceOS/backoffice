@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
     listMetadata,
     PlaceMetadata,
@@ -19,6 +19,8 @@ import { ActiveItemService } from '../common/item.service';
     providedIn: 'root',
 })
 export class UsersStateService {
+    private _service = inject(ActiveItemService);
+
     private _loading = new BehaviorSubject<boolean>(false);
     private _change = new BehaviorSubject<boolean>(false);
 
@@ -62,7 +64,7 @@ export class UsersStateService {
         return this._service.active_item as any;
     }
 
-    constructor(private _service: ActiveItemService) {
+    constructor() {
         setTimeout(() => this._change.next(!this._change.getValue()), 1000);
     }
 }

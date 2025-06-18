@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
     ActivatedRouteSnapshot,
     Route,
@@ -16,10 +16,9 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
     providedIn: 'root',
 })
 export class AuthorisedUserGuard {
-    constructor(
-        private _router: Router,
-        private _users: BackofficeUsersService,
-    ) {}
+    private _router = inject(Router);
+    private _users = inject(BackofficeUsersService);
+
 
     public async canActivate(
         next: ActivatedRouteSnapshot,

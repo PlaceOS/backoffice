@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { showSystem } from '@placeos/ts-client';
 import { startOfMinute } from 'date-fns';
 import { BehaviorSubject } from 'rxjs';
@@ -77,13 +77,15 @@ const SYSTEMS = {};
     standalone: false,
 })
 export class MqttDashboardComponent {
+    private _state = inject(MqttDashboardStateService);
+
     public readonly systems = new BehaviorSubject([]);
 
     public get time() {
         return startOfMinute(Date.now());
     }
 
-    constructor(private _state: MqttDashboardStateService) {
+    constructor() {
         this._state.connected
             .pipe(first((_) => _))
             .subscribe(() =>

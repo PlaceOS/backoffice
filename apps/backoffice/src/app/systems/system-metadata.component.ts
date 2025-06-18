@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceSystem } from '@placeos/ts-client';
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 
@@ -13,9 +13,9 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
     standalone: false,
 })
 export class SystemMetadataComponent {
+    private _service = inject(ActiveItemService);
+
     public get item(): PlaceSystem {
         return this._service.active_item as any;
     }
-
-    constructor(private _service: ActiveItemService) {}
 }

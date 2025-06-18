@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addDriver,
@@ -34,6 +34,9 @@ import {
     providedIn: 'root',
 })
 export class RepositoriesStateService {
+    private _state = inject(ActiveItemService);
+    private _dialog = inject(MatDialog);
+
     private _loading = new BehaviorSubject<boolean>(false);
 
     public readonly loading = this._loading.asObservable();
@@ -70,11 +73,6 @@ export class RepositoriesStateService {
     public get active_item(): PlaceRepository {
         return this._state.active_item as any;
     }
-
-    constructor(
-        private _state: ActiveItemService,
-        private _dialog: MatDialog,
-    ) {}
 
     public async pullLatestCommit() {
         const commit: any = await pullRepositoryChanges(this.active_item.id)

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -169,6 +169,8 @@ import { DriverStateService } from './driver-state.service';
     standalone: false,
 })
 export class DriverModulesComponent extends AsyncHandler {
+    private _service = inject(DriverStateService);
+
     public loading_systems = false;
     /** Subject holding the value of the search */
     public readonly filter$ = new BehaviorSubject<string>('');
@@ -198,10 +200,6 @@ export class DriverModulesComponent extends AsyncHandler {
     );
 
     public readonly removeModule = (d) => this._service.removeModule(d);
-
-    constructor(private _service: DriverStateService) {
-        super();
-    }
 
     public async loadSystems(mod: PlaceModule) {
         this.loading_systems = true;

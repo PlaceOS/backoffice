@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { SettingsService } from '../common/settings.service';
 
 export interface BannerDetails {
@@ -40,6 +40,8 @@ export interface BannerDetails {
     standalone: false,
 })
 export class GlobalBannerComponent {
+    private _settings = inject(SettingsService);
+
     public get has_viewed() {
         return (
             !this.banner?.content ||
@@ -50,8 +52,6 @@ export class GlobalBannerComponent {
     public get banner(): BannerDetails {
         return this._settings.value('banner');
     }
-
-    constructor(private _settings: SettingsService) {}
 
     public close() {
         localStorage.setItem('PLACE.last_banner', this.banner?.id || '');

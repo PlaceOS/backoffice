@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -37,14 +37,12 @@ export interface ChangelogModalData {
     standalone: false,
 })
 export class ChangelogModalComponent extends AsyncHandler {
+    private _data = inject<ChangelogModalData>(MAT_DIALOG_DATA);
+
     /** Whether the changelog is loading */
     public loading: boolean;
     /** Changelog Markdown */
     public item: string;
-
-    constructor(@Inject(MAT_DIALOG_DATA) private _data: ChangelogModalData) {
-        super();
-    }
 
     /** HTML string for rendering the change log */
     public get changelog(): string {

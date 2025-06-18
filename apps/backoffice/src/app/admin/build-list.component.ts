@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { del, get, PlaceEdge } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
@@ -132,6 +132,8 @@ function cancelBuildJob(id, q = {}) {
     standalone: false,
 })
 export class PlaceBuildListComponent {
+    private _dialog = inject(MatDialog);
+
     public loading = '';
 
     private _change = new BehaviorSubject<number>(0);
@@ -196,6 +198,4 @@ export class PlaceBuildListComponent {
         notifySuccess(i18n('ADMIN.BUILD_LIST_REMOVE_SUCCESS'));
         this._hide.next(i.id);
     };
-
-    constructor(private _dialog: MatDialog) {}
 }

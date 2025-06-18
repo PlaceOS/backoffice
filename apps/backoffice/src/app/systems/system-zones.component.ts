@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceSystem, PlaceZone, queryZones } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -155,6 +155,8 @@ import { SystemStateService } from './system-state.service';
     standalone: false,
 })
 export class SystemZonesComponent {
+    private _service = inject(SystemStateService);
+
     public order_changed = false;
 
     public show_original = false;
@@ -271,8 +273,6 @@ export class SystemZonesComponent {
     public get item(): PlaceSystem {
         return this._service.active_item as any;
     }
-
-    constructor(private _service: SystemStateService) {}
 
     public async reorder([previous, current]: [number, number]) {
         const zones = await nextValueFrom(this.zones);

@@ -1,11 +1,5 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import {
-    Component,
-    ElementRef,
-    EventEmitter,
-    Output,
-    ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -210,6 +204,8 @@ import { APIKeyService } from './api-keys.service';
     standalone: false,
 })
 export class APIKeyModalComponent {
+    private _service = inject(APIKeyService);
+
     @Output() public event = new EventEmitter<DialogEvent>();
     public form = new FormGroup({
         name: new FormControl('', [Validators.required]),
@@ -253,7 +249,7 @@ export class APIKeyModalComponent {
     public readonly removeScope = (i) =>
         removeChipItem(this.form.controls.scopes as any, i);
 
-    constructor(private _service: APIKeyService) {
+    constructor() {
         setTimeout(() => this.form.patchValue({ permissions: null }), 100);
     }
 

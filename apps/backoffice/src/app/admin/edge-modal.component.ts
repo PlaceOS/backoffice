@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { addEdge, PlaceEdge, updateEdge } from '@placeos/ts-client';
@@ -65,6 +65,9 @@ export interface EdgeModalData {
     standalone: false,
 })
 export class EdgeModalComponent {
+    private _data = inject<EdgeModalData>(MAT_DIALOG_DATA);
+    private _dialog_ref = inject<MatDialogRef<EdgeModalComponent>>(MatDialogRef);
+
     @Output() public readonly event = new EventEmitter<DialogEvent>();
 
     public readonly edge = this._data.edge;
@@ -75,11 +78,6 @@ export class EdgeModalComponent {
     });
 
     public loading = false;
-
-    constructor(
-        @Inject(MAT_DIALOG_DATA) private _data: EdgeModalData,
-        private _dialog_ref: MatDialogRef<EdgeModalComponent>,
-    ) {}
 
     public ngOnInit() {
         this.form.patchValue(this.edge);

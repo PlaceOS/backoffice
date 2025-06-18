@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
@@ -56,17 +56,13 @@ export interface ItemTab {
     standalone: false,
 })
 export class ItemTablistComponent extends AsyncHandler implements OnInit {
+    private _router = inject(Router);
+    private _hotkey = inject(HotkeysService);
+
     @Input() public base: string = 'systems';
     @Input() public item_id: string = '-';
     @Input() public tabs: ItemTab[] = [];
     @Input() public scrolled = false;
-
-    constructor(
-        private _router: Router,
-        private _hotkey: HotkeysService,
-    ) {
-        super();
-    }
 
     public ngOnInit() {
         this.subscription(

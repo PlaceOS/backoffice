@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -15,6 +15,9 @@ export interface SystemLogModalData {
     standalone: false,
 })
 export class SystemLogModalComponent extends AsyncHandler implements OnInit {
+    private _dialog = inject<MatDialogRef<SystemLogModalComponent>>(MatDialogRef);
+    private _data = inject<SystemLogModalData>(MAT_DIALOG_DATA);
+
     /** ID of the system to get logs for */
     public id: string;
     /** List of the available log entries for the set system */
@@ -25,13 +28,6 @@ export class SystemLogModalComponent extends AsyncHandler implements OnInit {
     public name: string;
     /** Whether the modal is closing */
     public closing: boolean;
-
-    constructor(
-        private _dialog: MatDialogRef<SystemLogModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: SystemLogModalData,
-    ) {
-        super();
-    }
 
     public ngOnInit(): void {
         this.id = this._data.sys_id;

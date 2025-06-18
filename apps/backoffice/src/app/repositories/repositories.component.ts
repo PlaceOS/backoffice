@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
@@ -70,6 +70,9 @@ import { RepositoriesStateService } from './repositories-state.service';
     standalone: false,
 })
 export class RepositoriesComponent extends AsyncHandler {
+    protected _service = inject(RepositoriesStateService);
+    protected _item = inject(ActiveItemService);
+
     public readonly name = 'repositories';
 
     public open_menu = false;
@@ -110,13 +113,6 @@ export class RepositoriesComponent extends AsyncHandler {
                       },
                   ]
         ).concat(this.extensions);
-    }
-
-    constructor(
-        protected _service: RepositoriesStateService,
-        protected _item: ActiveItemService,
-    ) {
-        super();
     }
 
     public async ngOnInit() {

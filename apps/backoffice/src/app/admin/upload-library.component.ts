@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     apiKey,
@@ -234,6 +234,10 @@ export interface UploadInfo {
     standalone: false,
 })
 export class UploadLibraryComponent extends AsyncHandler implements OnInit {
+    private _dialog = inject(MatDialog);
+    private _clipboard = inject(Clipboard);
+    private _uploads = inject(UploadsService);
+
     public readonly loading = new BehaviorSubject<boolean>(false);
     public readonly domain = new BehaviorSubject<PlaceDomain>(null);
 
@@ -261,14 +265,6 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         startWith([]),
         shareReplay(1),
     );
-
-    constructor(
-        private _dialog: MatDialog,
-        private _clipboard: Clipboard,
-        private _uploads: UploadsService,
-    ) {
-        super();
-    }
 
     public async ngOnInit() {
         const domain = authority();

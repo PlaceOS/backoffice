@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
     PlaceUser,
     PlaceUserQueryOptions,
@@ -24,6 +24,8 @@ type ServiceItem = PlaceUser;
     providedIn: 'root',
 })
 export class BackofficeUsersService extends AsyncHandler {
+    private _settings = inject(SettingsService);
+
     /** Name for a single user */
     public readonly singular: string = 'user';
     /** Behavior subject with the currently available list of users */
@@ -63,7 +65,7 @@ export class BackofficeUsersService extends AsyncHandler {
     /** Default method for filtering the available list */
     private _filter_fn: FilterFn<ServiceItem> = (_) => true;
 
-    constructor(private _settings: SettingsService) {
+    constructor() {
         super();
         onlineState()
             .pipe(first((_) => _))

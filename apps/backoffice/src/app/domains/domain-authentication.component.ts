@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlaceDomain } from '@placeos/ts-client';
 
 import { HashMap } from 'apps/backoffice/src/app/common/types';
@@ -93,6 +93,8 @@ import { DomainStateService } from './domain-state.service';
     standalone: false,
 })
 export class DomainAuthenticationComponent {
+    private _service = inject(DomainStateService);
+
     /** List of auth sources associated with the active domain */
     public readonly auth_sources = this._service.auth_sources;
     public readonly loading = this._service.loading;
@@ -108,6 +110,4 @@ export class DomainAuthenticationComponent {
     public get item(): PlaceDomain {
         return this._service.active_item as any;
     }
-
-    constructor(private _service: DomainStateService) {}
 }

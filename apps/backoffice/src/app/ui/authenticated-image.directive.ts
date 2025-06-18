@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, Input, SimpleChanges, inject } from '@angular/core';
 import { apiKey, authority, token } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 
@@ -9,11 +9,9 @@ const IMAGE_STORE = new Map<string, string>();
     standalone: false,
 })
 export class AuthenticatedImageDirective extends AsyncHandler {
-    @Input() public source: string;
+    private _image_el = inject<ElementRef<HTMLImageElement>>(ElementRef);
 
-    constructor(private _image_el: ElementRef<HTMLImageElement>) {
-        super();
-    }
+    @Input() public source: string;
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.source && this.source) this._loadImage();
