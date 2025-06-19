@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges, inject } from '@angular/core';
+import { Component, inject, Input, SimpleChanges } from '@angular/core';
 import {
     AbstractControl,
     FormControl,
@@ -97,7 +97,7 @@ function replaceDescTag(inputString, newContent) {
                                 <button
                                     icon
                                     matRipple
-                                    (click)="viewHistory(item)"
+                                    (click)="viewMetadataHistory(item)"
                                     [matTooltip]="
                                         'COMMON.METADATA_HISTORY' | translate
                                     "
