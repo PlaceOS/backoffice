@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import {
@@ -222,7 +222,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
         const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             data: {
                 item,
-                name: 'Broker',
+                name: 'ADMIN.BROKERS',
                 save: (item) => updateBroker(item.id, item),
             },
         });

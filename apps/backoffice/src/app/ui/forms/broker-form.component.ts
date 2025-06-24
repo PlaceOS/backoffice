@@ -73,7 +73,7 @@ import { i18n } from '../../common/locale.service';
                                 [placeholder]="
                                     'ADMIN.BROKERS_FIELD_HOST' | translate
                                 "
-                                formControlName="name"
+                                formControlName="host"
                                 required
                             />
                             <mat-error>{{
@@ -161,7 +161,7 @@ import { i18n } from '../../common/locale.service';
                                         [placeholder]="
                                             'ADMIN.BROKERS_USERNAME' | translate
                                         "
-                                        formControlName="name"
+                                        formControlName="username"
                                         required
                                     />
                                     <mat-error>{{
