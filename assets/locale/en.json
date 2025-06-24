@@ -828,7 +828,7 @@
         "BROKERS_HEADER": "MQTT Brokers",
         "BROKERS_ADD": "Add MQTT Broker",
         "BROKERS_NEW": "New MQTT Broker",
-        "BROKERS_EDIT": "New MQTT Broker",
+        "BROKERS_EDIT": "Edit MQTT Broker",
         "BROKERS_REMOVE": "Remove MQTT Broker",
         "BROKER_LIST_EMPTY": "No MQTT Brokers",
         "BROKERS_FIELD_HOST": "Host",
