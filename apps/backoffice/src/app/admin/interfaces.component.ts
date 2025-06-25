@@ -10,13 +10,11 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
         <div class="my-4 flex items-center justify-between space-x-2">
             <div class="text-2xl">PlaceOS Interfaces</div>
         </div>
-        <mat-progress-bar
-            mode="indeterminate"
+        <mat-progress-bar mode="indeterminate"
             class="w-full"
             [class.opacity-0]="!loading"
-        ></mat-progress-bar>
-        <simple-table
-            class="block min-w-[36rem] text-sm"
+         />
+        <simple-table class="block min-w-[36rem] text-sm"
             [data]="interfaces"
             [columns]="[
                 { key: 'id', name: 'REPOS.SINGULAR' | translate },
@@ -29,7 +27,7 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
             ]"
             [sortable]="true"
             empty_message="No interfaces"
-        ></simple-table>
+         />
         <div class="h-12 w-full"></div>
         <ng-template #name_template let-row="row">
             <div class="p-4">

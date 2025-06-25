@@ -1,9 +1,9 @@
 import {
-    Component,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
+  Component,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  input
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 
@@ -35,15 +35,15 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
 @Component({
     selector: 'repository-form',
     template: `
-        @if (form) {
-            <form repository class="flex flex-col" [formGroup]="form">
-                @if (form.controls.name) {
+        @if (form()) {
+            <form repository class="flex flex-col" [formGroup]="form()">
+                @if (form().controls.name) {
                     <div class="field">
                         <label
                             for="repository-name"
                             [class.error]="
-                                form.controls.name.invalid &&
-                                form.controls.name.touched
+                                form().controls.name.invalid &&
+                                form().controls.name.touched
                             "
                         >
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
@@ -65,8 +65,8 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                 <div class="fieldset">
                     @if (
                         !is_edit &&
-                        form.controls.repo_type &&
-                        form.controls.folder_name
+                        form().controls.repo_type &&
+                        form().controls.folder_name
                     ) {
                         <div class="field">
                             <label for="type">
@@ -86,13 +86,13 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.folder_name) {
+                    @if (form().controls.folder_name) {
                         <div class="field">
                             <label
                                 for="folder-name"
                                 [class.error]="
-                                    form.controls.folder_name.invalid &&
-                                    form.controls.folder_name.touched
+                                    form().controls.folder_name.invalid &&
+                                    form().controls.folder_name.touched
                                 "
                             >
                                 {{ 'REPOS.FOLDER_NAME' | translate
@@ -115,13 +115,13 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         </div>
                     }
                 </div>
-                @if (form.controls.uri && !hide_uri) {
+                @if (form().controls.uri && !hide_uri) {
                     <div class="field">
                         <label
                             for="uri"
                             [class.error]="
-                                form.controls.uri.invalid &&
-                                form.controls.uri.touched
+                                form().controls.uri.invalid &&
+                                form().controls.uri.touched
                             "
                         >
                             {{ 'REPOS.URI' | translate }}<span>*</span>
@@ -141,7 +141,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                     </div>
                 }
                 <div class="fieldset">
-                    @if (form.controls.username) {
+                    @if (form().controls.username) {
                         <div class="field">
                             <label for="repo-u"
                                 >{{ 'REPOS.USERNAME' | translate }}
@@ -157,7 +157,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.password) {
+                    @if (form().controls.password) {
                         <div class="field">
                             <label for="repo-p">
                                 {{ 'REPOS.PASSWORD' | translate }}
@@ -183,13 +183,13 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         </div>
                     }
                 </div>
-                @if (form.controls.branch) {
+                @if (form().controls.branch) {
                     <div class="field">
                         <label
                             for="repository-name"
                             [class.error]="
-                                form.controls.branch.invalid &&
-                                form.controls.branch.touched
+                                form().controls.branch.invalid &&
+                                form().controls.branch.touched
                             "
                         >
                             {{ 'REPOS.BRANCH' | translate }}<span>*</span>
@@ -238,7 +238,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                                         class="!mr-4 rounded bg-base-200 px-1.5 font-mono text-[0.625rem]"
                                     >
                                         {{
-                                            form.value.commit_hash || 'HEAD'
+                                            form().value.commit_hash || 'HEAD'
                                                 | slice: 0 : 8
                                         }}
                                     </div>
@@ -249,7 +249,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                                     <div
                                         class="flex w-[calc(100%-2.20rem)] flex-1 items-center space-x-2"
                                         [class.!w-full]="
-                                            form.value.commit_hash ===
+                                            form().value.commit_hash ===
                                             commit.hash
                                         "
                                         (click)="base_commit = commit"
@@ -330,7 +330,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         ></settings-form-field>
                     </div>
                 }
-                @if (form.controls.description) {
+                @if (form().controls.description) {
                     <div class="field">
                         <label for="description">
                             {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
@@ -358,7 +358,7 @@ export class RepositoryFormComponent
     implements OnInit, OnChanges
 {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
     /** List of commits available for repository */
     public commit_list = of([] as GitCommitDetails[]);
     /** List of branches available for repository */
@@ -375,16 +375,16 @@ export class RepositoryFormComponent
     public date_pipe = new DateFromPipe();
 
     public get hide_uri() {
-        return !this.is_interface && this.form.value.id;
+        return !this.is_interface && this.form().value.id;
     }
 
     public get is_interface() {
-        return this.form?.value?.repo_type === PlaceRepositoryType.Interface;
+        return this.form()?.value?.repo_type === PlaceRepositoryType.Interface;
     }
 
     /** Whether commit of the repo is allowed to be changed */
     public get can_change_commit(): boolean {
-        const value = this.form.value;
+        const value = this.form().value;
         return !!(
             'repo_type' in value &&
             value.repo_type !== PlaceRepositoryType.Interface
@@ -402,17 +402,18 @@ export class RepositoryFormComponent
     }
 
     public ngOnChanges(changes: SimpleChanges) {
-        if (changes.form && this.form) {
-            this.form.get('branch').disable();
+        const form = this.form();
+        if (changes.form && form) {
+            form.get('branch').disable();
             this.branch_list = merge(
                 timer(300),
-                this.form.get('uri').valueChanges,
-                this.form.get('username').valueChanges,
-                this.form.get('password').valueChanges,
+                form.get('uri').valueChanges,
+                form.get('username').valueChanges,
+                form.get('password').valueChanges,
             ).pipe(
                 debounceTime(300),
                 switchMap(() => {
-                    const { id, uri, username, password } = this.form.value;
+                    const { id, uri, username, password } = this.form().value;
                     return (
                         id
                             ? listRepositoryBranches(id)
@@ -427,15 +428,15 @@ export class RepositoryFormComponent
                 }),
                 tap((_) =>
                     _.length
-                        ? this.form.get('branch').enable()
-                        : this.form.get('branch').disable(),
+                        ? this.form().get('branch').enable()
+                        : this.form().get('branch').disable(),
                 ),
                 shareReplay(1),
             );
             const default_branch = this.branch_list.pipe(
                 debounceTime(300),
                 switchMap(() => {
-                    const { id, uri, username, password } = this.form.value;
+                    const { id, uri, username, password } = this.form().value;
                     return (
                         id
                             ? listRepositoryDefaultBranch(id)
@@ -453,24 +454,26 @@ export class RepositoryFormComponent
             this.subscription(
                 'default_branch',
                 combineLatest([this.branch_list, default_branch]).subscribe(
-                    ([list, branch]) =>
-                        !this.form.value.branch ||
-                        !list.includes(this.form.value.branch)
-                            ? this.form.patchValue({ branch })
-                            : '',
+                    ([list, branch]) => {
+              const formValue = this.form();
+              return !formValue.value.branch ||
+                        !list.includes(formValue.value.branch)
+                            ? formValue.patchValue({ branch })
+                            : '';
+            },
                 ),
             );
             this.commit_list = merge(
                 timer(300),
-                this.form.get('uri').valueChanges,
-                this.form.get('branch').valueChanges,
-                this.form.get('username').valueChanges,
-                this.form.get('password').valueChanges,
+                form.get('uri').valueChanges,
+                form.get('branch').valueChanges,
+                form.get('username').valueChanges,
+                form.get('password').valueChanges,
             ).pipe(
                 debounceTime(300),
                 switchMap(() => {
                     const { id, uri, branch, username, password } =
-                        this.form.value;
+                        this.form().value;
                     return (
                         id
                             ? listRepositoryCommits(id, { branch })
@@ -492,7 +495,7 @@ export class RepositoryFormComponent
                 ]),
                 tap((l) => {
                     const commit =
-                        l.find((c) => c.hash === this.form.value.commit_hash) ||
+                        l.find((c) => c.hash === this.form().value.commit_hash) ||
                         l[0];
                     this.base_commit = commit;
                 }),
@@ -503,10 +506,11 @@ export class RepositoryFormComponent
 
     public setFollow(value: boolean) {
         this.follow_latest = value;
+        const form = this.form();
         if (value) {
-            this.form.controls.commit_hash.setValue('HEAD');
-        } else if (!value && this.form.controls.commit_hash.value === 'HEAD') {
-            this.form.controls.commit_hash.setValue(this.commit_list[1].id);
+            this.form().controls.commit_hash.setValue('HEAD');
+        } else if (!value && form.controls.commit_hash.value === 'HEAD') {
+            form.controls.commit_hash.setValue(this.commit_list[1].id);
         }
     }
 }

@@ -2,11 +2,12 @@ import {
     Component,
     ElementRef,
     forwardRef,
-    Input,
+    input,
+    model,
     OnChanges,
     OnInit,
     SimpleChanges,
-    ViewChild,
+    viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable, of, Subject } from 'rxjs';
@@ -29,7 +30,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
         <div
             class="item-search-field flex max-h-full flex-col"
             form-field
-            [class.disabled]="disabled"
+            [class.disabled]="disabled()"
         >
             <mat-form-field appearance="outline">
                 <input
@@ -38,14 +39,16 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     #input
                     [(ngModel)]="search_str"
                     (ngModelChange)="search$.next($event)"
-                    [disabled]="disabled"
+                    [disabled]="disabled()"
                     [placeholder]="
-                        placeholder
-                            ? placeholder
-                            : 'Search' + (name ? ' for ' + name : '') + '...'
+                        placeholder()
+                            ? placeholder()
+                            : 'Search' +
+                              (name() ? ' for ' + name() : '') +
+                              '...'
                     "
                     [matAutocomplete]="auto"
-                    [matAutocompleteDisabled]="display_list"
+                    [matAutocompleteDisabled]="display_list()"
                     (focus)="search_str = ''; search$.next(' ')"
                     (blur)="resetSearchString()"
                 />
@@ -54,13 +57,13 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                         >search</app-icon
                     >
                 </div>
-                @if (loading) {
+                @if (loading()) {
                     <div class="suffix" matSuffix>
                         <mat-spinner diameter="16"></mat-spinner>
                     </div>
                 }
             </mat-form-field>
-            @if (display_list) {
+            @if (display_list()) {
                 @if (item_list?.length) {
                     <div class="h-[50vh] flex-1 space-y-2 overflow-auto">
                         @for (option of item_list; track option) {
@@ -88,10 +91,10 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                             {{
                                 search_str?.length
                                     ? 'No matching ' +
-                                      (name || 'item') +
+                                      (name() || 'item') +
                                       ' for search string'
                                     : 'No ' +
-                                      (name || 'items') +
+                                      (name() || 'items') +
                                       ' available to search'
                             }}
                         </p>
@@ -172,28 +175,32 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     implements OnInit, OnChanges, ControlValueAccessor
 {
     /** Name of the items being query'd */
-    @Input() public name: string;
+    public readonly name = input<string>(undefined);
     /** Placeholder to display on the form input */
-    @Input() public placeholder: string;
+    public readonly placeholder = input<string>(undefined);
     /** Limit available options to these */
-    @Input() public options: T[];
+    public readonly options = input<T[]>(undefined);
     /** Whether the form field should be disabled */
-    @Input() public disabled: boolean;
-    @Input() public display_list: boolean = false;
-    @Input() public clear_on_select: boolean = false;
+    public readonly disabled = input<boolean>(false);
+    public readonly display_list = input<boolean>(false);
+    public readonly clear_on_select = input<boolean>(false);
     /** Function for filtering out options */
-    @Input() public exclude: (_: T, search: string) => boolean = (v, search) =>
-        (v.name || '').toLowerCase().indexOf(search) < 0 &&
-        (v.driver?.name || '').toLowerCase().indexOf(search) < 0 &&
-        (v.email || '').toLowerCase().indexOf(search) < 0 &&
-        (v.notes || '').toLowerCase().indexOf(search) < 0 &&
-        (v.description || '').toLowerCase().indexOf(search) < 0;
+    public readonly exclude = input<(_: T, search: string) => boolean>(
+        (v, search) =>
+            (v.name || '').toLowerCase().indexOf(search) < 0 &&
+            (v.driver?.name || '').toLowerCase().indexOf(search) < 0 &&
+            (v.email || '').toLowerCase().indexOf(search) < 0 &&
+            (v.notes || '').toLowerCase().indexOf(search) < 0 &&
+            (v.description || '').toLowerCase().indexOf(search) < 0,
+    );
     /** Minimum number of characters needed to start a server query */
-    @Input('minLength') public min_length = 0;
+    public readonly min_length = input(0, { alias: 'minLength' });
     /** Whether item list is loading */
-    @Input() public loading: boolean;
+    public readonly loading = model<boolean>(false);
     /** Service used for searching items */
-    @Input() public query_fn: (_: string) => Observable<T[]> = () => of([]);
+    public readonly query_fn = input<(_: string) => Observable<T[]>>(() =>
+        of([]),
+    );
     /** Currently selected item */
     public active_item: T;
     /** Item list to display */
@@ -209,10 +216,12 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     /** Form control on touch handler */
     private _onTouch: (_: T) => void;
 
-    @ViewChild('input') private _input_el: ElementRef<HTMLInputElement>;
+    private readonly _input_el =
+        viewChild<ElementRef<HTMLInputElement>>('input');
 
     public get items() {
-        return this.options?.length ? this.options : this.item_list;
+        const options = this.options();
+        return options?.length ? options : this.item_list;
     }
 
     /** Map of item names to their IDs */
@@ -224,19 +233,21 @@ export class ItemSearchFieldComponent<T extends Identity = any>
             debounceTime(400),
             distinctUntilChanged(),
             switchMap((query) => {
-                this.loading = true;
-                return this.options && this.options.length > 0
-                    ? of(this.options)
-                    : !this.min_length || query.length >= this.min_length
-                      ? this.query_fn(query)
+                this.loading.set(true);
+                const options = this.options();
+                const min_length = this.min_length();
+                return options && options.length > 0
+                    ? of(options)
+                    : !min_length || query.length >= min_length
+                      ? this.query_fn()(query)
                       : of([]);
             }),
             catchError((_) => of([])),
             map((list: T[]) => {
-                this.loading = false;
+                this.loading.set(false);
                 return list.filter((item: any) =>
-                    this.exclude
-                        ? !this.exclude(
+                    this.exclude()
+                        ? !this.exclude()(
                               item,
                               (this.search_str || '').toLowerCase(),
                           )
@@ -269,14 +280,15 @@ export class ItemSearchFieldComponent<T extends Identity = any>
         this.timeout(
             'value',
             () => {
-                if (this.clear_on_select) {
+                if (this.clear_on_select()) {
                     this.active_item = null;
                     this.search_str = '';
                 } else if (this.active_item) {
                     this.search_str = this.active_item.name || this.search_str;
                 }
-                if (this._input_el?.nativeElement)
-                    this._input_el.nativeElement.value = this.search_str || '';
+                if (this._input_el()?.nativeElement)
+                    this._input_el().nativeElement.value =
+                        this.search_str || '';
             },
             50,
         );
@@ -324,7 +336,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     private _updateNameMap() {
         const map = {};
         const list = this.items || [];
-        for (let item of list) {
+        for (const item of list) {
             if (item instanceof PlaceModule) {
                 const detail =
                     item.role === PlaceDriverRole.Service

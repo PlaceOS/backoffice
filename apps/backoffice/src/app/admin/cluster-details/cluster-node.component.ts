@@ -1,11 +1,11 @@
 import {
-    Component,
-    ElementRef,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
-    ViewChild,
+  Component,
+  ElementRef,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  input,
+  viewChild
 } from '@angular/core';
 import { humanReadableByteCount } from '@placeos/ts-client';
 
@@ -36,8 +36,8 @@ export interface PlaceClusterUsageStamp {
 @Component({
     selector: 'admin-cluster-node',
     template: `
-        @if (show_name) {
-            <h4>{{ node?.hostname }}</h4>
+        @if (show_name()) {
+            <h4>{{ node()?.hostname }}</h4>
         }
         <div class="mb-2 h-36 w-full rounded border border-base-300 p-2">
             <div basic-line-graph [lines]="lines" class="h-full w-full"></div>
@@ -49,12 +49,12 @@ export interface PlaceClusterUsageStamp {
                 >
                     <div>{{ 'ADMIN.CLUSTERS_CPU_USAGE' | translate }}</div>
                     <div class="mono text-4xl font-medium">
-                        {{ node?.total_cpu.toFixed(0) }}%
+                        {{ node()?.total_cpu.toFixed(0) }}%
                     </div>
                     <div class="mono w-36 text-center text-xs">
                         {{
                             'ADMIN.CLUSTERS_CPU_CORES'
-                                | translate: { count: node?.cpu_count || 0 }
+                                | translate: { count: node()?.cpu_count || 0 }
                         }}
                     </div>
                 </div>
@@ -76,51 +76,50 @@ export interface PlaceClusterUsageStamp {
     standalone: false,
 })
 export class AdminClusterNodeComponent implements OnChanges, OnInit {
-    @Input() public show_name = true;
+    public readonly show_name = input(true);
     /** Node to display on the view */
-    @Input() public node: PlaceClusterNode;
+    public readonly node = input<PlaceClusterNode>(undefined);
     /** Historical data for node */
-    @Input() public history: PlaceClusterUsageStamp[];
+    public readonly history = input<PlaceClusterUsageStamp[]>(undefined);
     /** Store for the chart data object */
     // private _chart: Chart;
     /**  */
     public lines: Point[][] = [];
 
     public get used_memory() {
-        return humanReadableByteCount((this.node?.memory_usage || 0) * 1024)
+        return humanReadableByteCount((this.node()?.memory_usage || 0) * 1024)
             .replace('GB', '')
             .replace('MB', '')
             .trim();
     }
 
     public get total_memory() {
-        return humanReadableByteCount((this.node?.memory_total || 0) * 1024);
+        return humanReadableByteCount((this.node()?.memory_total || 0) * 1024);
     }
 
     public get memory_percentage() {
         return (
-            ((this.node?.memory_usage || 0) / (this.node?.memory_total || 1)) *
+            ((this.node()?.memory_usage || 0) / (this.node()?.memory_total || 1)) *
             100
         );
     }
 
-    @ViewChild('chart', { static: true })
-    public _chart_el: ElementRef<HTMLCanvasElement>;
+    public readonly _chart_el = viewChild<ElementRef<HTMLCanvasElement>>('chart');
 
     public ngOnInit() {
         this.generateCharts();
     }
 
     public ngOnChanges(changes: SimpleChanges) {
-        if (changes.history && this.history) {
+        if (changes.history && this.history()) {
             this.generateCharts();
         }
     }
 
     public generateCharts(): void {
         this.lines = [
-            this.history.map(({ cpu }, idx) => ({ x: idx, y: cpu })),
-            this.history.map(({ memory }, idx) => ({ x: idx, y: memory })),
+            this.history().map(({ cpu }, idx) => ({ x: idx, y: cpu })),
+            this.history().map(({ memory }, idx) => ({ x: idx, y: memory })),
         ];
     }
 }

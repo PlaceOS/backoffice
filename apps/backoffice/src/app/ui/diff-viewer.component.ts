@@ -1,6 +1,6 @@
 /// <reference path="../../../../../node_modules/monaco-editor/monaco.d.ts" />
 
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnChanges, OnInit, SimpleChanges, inject, input, viewChild } from '@angular/core';
 import { AsyncHandler } from '../common/async-handler.class';
 import { BackofficeUsersService } from '../users/users.service';
 
@@ -24,16 +24,15 @@ export class DiffViewerComponent
     private _users = inject(BackofficeUsersService);
 
     /** Original version of the document */
-    @Input() public original = '';
+    public readonly original = input('');
     /** Newer version of the document */
-    @Input() public modified = '';
+    public readonly modified = input('');
     /** Input language for syntax highlighting */
-    @Input() public lang = 'yaml';
+    public readonly lang = input('yaml');
 
     private _editor: any;
 
-    @ViewChild('editor', { static: true })
-    private _editor_el: ElementRef<HTMLDivElement>;
+    private readonly _editor_el = viewChild<ElementRef<HTMLDivElement>>('editor');
 
     public ngOnInit() {
         this._createEditor();
@@ -53,7 +52,7 @@ export class DiffViewerComponent
     private _createEditor() {
         this.unsub('editor');
         this._editor = monaco.editor.createDiffEditor(
-            this._editor_el.nativeElement,
+            this._editor_el().nativeElement,
             {
                 fontFamily: `"Fira Code", monospace`,
                 theme: !this._users.dark_mode ? 'vs' : 'vs-dark',
@@ -67,8 +66,8 @@ export class DiffViewerComponent
 
     private _updateModel() {
         if (!this._editor) return;
-        const m_model = monaco.editor.createModel(this.modified, 'text/plain');
-        const o_model = monaco.editor.createModel(this.original, 'text/plain');
+        const m_model = monaco.editor.createModel(this.modified(), 'text/plain');
+        const o_model = monaco.editor.createModel(this.original(), 'text/plain');
         this._editor.setModel({
             original: o_model,
             modified: m_model,

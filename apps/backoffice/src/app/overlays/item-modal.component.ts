@@ -77,43 +77,41 @@ export interface CreateEditModalData<T extends Identity = any> {
         >
             @switch (item_type) {
                 @case ('repository') {
-                    <repository-form [form]="form"></repository-form>
+                    <repository-form [form]="form" />
                 }
                 @case ('trigger') {
-                    <trigger-form [form]="form"></trigger-form>
+                    <trigger-form [form]="form" />
                 }
                 @case ('system-trigger') {
-                    <system-trigger-form [form]="form"></system-trigger-form>
+                    <system-trigger-form [form]="form" />
                 }
                 @case ('application') {
-                    <application-form [form]="form"></application-form>
+                    <application-form [form]="form" />
                 }
                 @case ('domain') {
-                    <domain-form [form]="form"></domain-form>
+                    <domain-form [form]="form" />
                 }
                 @case ('user') {
-                    <user-form [form]="form"></user-form>
+                    <user-form [form]="form" />
                 }
                 @case ('driver') {
-                    <driver-form
-                        [form]="form"
+                    <driver-form [form]="form"
                         (waiting)="can_submit = !$event"
-                    ></driver-form>
+                     />
                 }
                 @case ('zone') {
-                    <zone-form [form]="form"></zone-form>
+                    <zone-form [form]="form" />
                 }
                 @case ('module') {
-                    <module-form
-                        [form]="form"
+                    <module-form [form]="form"
                         [readonly]="readonly"
-                    ></module-form>
+                     />
                 }
                 @case ('broker') {
-                    <broker-form [form]="form"></broker-form>
+                    <broker-form [form]="form" />
                 }
                 @default {
-                    <system-form [form]="form"></system-form>
+                    <system-form [form]="form" />
                 }
             }
         </fullscreen-modal-shell>

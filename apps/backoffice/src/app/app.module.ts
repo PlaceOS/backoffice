@@ -18,7 +18,7 @@ import { AuthorisedUserGuard } from './ui/guards/authorised-user.guard';
 import { LocaleService } from './common/locale.service';
 import './mocks';
 
-import { registerLocaleData } from '@angular/common';
+import { CommonModule, registerLocaleData } from '@angular/common';
 import localeAr from '@angular/common/locales/ar';
 import localeEs from '@angular/common/locales/es';
 import localeFr from '@angular/common/locales/fr';
@@ -45,6 +45,7 @@ import localeZh from '@angular/common/locales/zh';
             // or after 30 seconds (whichever comes first).
             registrationStrategy: 'registerWhenStable:30000',
         }),
+        CommonModule,
     ],
     providers: [
         { provide: ErrorHandler, useClass: SentryService },

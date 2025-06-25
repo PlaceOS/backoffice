@@ -1,12 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 
 @Component({
     selector: 'system-trigger-form',
     template: `
-        <form system-trigger class="flex flex-col" [formGroup]="form">
+        <form system-trigger class="flex flex-col" [formGroup]="form()">
             <div class="mb-4 flex space-x-4">
-                @if (form.controls.name) {
+                @if (form().controls.name) {
                     <div
                         class="relative flex flex-1 items-center rounded border border-base-300 p-4"
                     >
@@ -16,11 +16,11 @@ import { UntypedFormGroup } from '@angular/forms';
                             {{ 'SYSTEMS.TRIGGER_NAME' | translate }}
                         </div>
                         <div class="text-xl">
-                            {{ form.controls.name.value }}
+                            {{ form().controls.name.value }}
                         </div>
                     </div>
                 }
-                @if (form.controls.name) {
+                @if (form().controls.name) {
                     <div
                         class="relative flex-1 rounded border border-base-300 p-4"
                     >
@@ -32,17 +32,17 @@ import { UntypedFormGroup } from '@angular/forms';
                         <div class="flex">
                             <div
                                 class="rounded-full px-4 py-2 text-sm"
-                                [class.bg-success]="form.value.triggered"
+                                [class.bg-success]="form().value.triggered"
                                 [class.text-success-content]="
-                                    form.value.triggered
+                                    form().value.triggered
                                 "
-                                [class.bg-error]="!form.value.triggered"
+                                [class.bg-error]="!form().value.triggered"
                                 [class.text-error-content]="
-                                    !form.value.triggered
+                                    !form().value.triggered
                                 "
                             >
                                 {{
-                                    (form.value.triggered
+                                    (form().value.triggered
                                         ? 'COMMON.TRUE'
                                         : 'COMMON.FALSE'
                                     ) | translate
@@ -76,5 +76,5 @@ import { UntypedFormGroup } from '@angular/forms';
 })
 export class SystemTriggerFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
 }

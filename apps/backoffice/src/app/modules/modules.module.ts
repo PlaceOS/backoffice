@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -17,11 +16,6 @@ import { ModulesComponent } from './modules.component';
         ModuleSystemsComponent,
         ModulesComponent,
     ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        RouterModule.forChild(ROUTES),
-        SharedContentModule,
-    ],
+    imports: [FormsModule, RouterModule.forChild(ROUTES), SharedContentModule],
 })
 export class AppModulesModule {}

@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, inject, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
     apiKey,
@@ -52,7 +52,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
         this.handleMessage(JSON.parse(m.data));
     };
 
-    @ViewChild('frame') private _frame_el: ElementRef<HTMLIFrameElement>;
+    private readonly _frame_el = viewChild<ElementRef<HTMLIFrameElement>>('frame');
 
     public ngOnInit(): void {
         onlineState()
@@ -71,7 +71,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
     }
 
     private async handleMessage(message: FrameMessage) {
-        if (!this._frame_el?.nativeElement) {
+        if (!this._frame_el()?.nativeElement) {
             return this.timeout('not_ready', () => this.handleMessage(message));
         }
         this.timeout(`on_message:${message.action}`, async () => {
@@ -106,7 +106,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
             .toPromise()
             .catch((e) => notifyError(i18n('COMMON.ITEM_ERROR')));
 
-        if (this._frame_el?.nativeElement) {
+        if (this._frame_el()?.nativeElement) {
             if (updated_item) {
                 notifySuccess(i18n('COMMON.ITEM_SAVE'));
             }
@@ -185,7 +185,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
     }
 
     private _postMessage(message: FrameMessage) {
-        this._frame_el?.nativeElement?.contentWindow?.postMessage(
+        this._frame_el()?.nativeElement?.contentWindow?.postMessage(
             JSON.stringify(message),
             '*',
         );

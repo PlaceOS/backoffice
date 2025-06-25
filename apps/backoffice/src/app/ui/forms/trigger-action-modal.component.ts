@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewChild, inject } from '@angular/core';
+import { Component, EventEmitter, Output, inject, viewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceSystem,
@@ -203,7 +203,7 @@ export class TriggerActionModalComponent extends AsyncHandler {
     /** Variable to hold new email addresses */
     public new_email = '';
 
-    @ViewChild('chipList') private chip_list: MatChipGrid;
+    private readonly chip_list = viewChild<MatChipGrid>('chipList');
 
     /** List of available trigger action types */
     public action_types: Identity[] = [];
@@ -251,7 +251,7 @@ export class TriggerActionModalComponent extends AsyncHandler {
             email_list.push(email);
         }
         this.form.controls.emails.setValue(email_list);
-        this.chip_list.errorState = !this.form.controls.emails.valid;
+        this.chip_list().errorState = !this.form.controls.emails.valid;
     }
 
     /**
@@ -265,7 +265,7 @@ export class TriggerActionModalComponent extends AsyncHandler {
             email_list.splice(index, 1);
         }
         this.form.controls.emails.setValue(email_list);
-        this.chip_list.errorState = !this.form.controls.emails.valid;
+        this.chip_list().errorState = !this.form.controls.emails.valid;
     }
 
     public save() {

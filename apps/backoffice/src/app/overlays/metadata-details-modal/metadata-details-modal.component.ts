@@ -14,10 +14,10 @@ export interface MetadataDetailsModalData {
 @Component({
     selector: 'app-metadata-details-modal',
     template: `
-        <header class="flex items-center justify-between space-x-4 p-2">
-            <div class="px-2 py-2 text-lg font-medium">
-                Update metadata details
-            </div>
+        <header
+            class="z-10 mx-auto my-2 w-[calc(100%-1rem)] rounded border border-base-100 bg-base-200 px-4 py-2"
+        >
+            <h2 class="text-xl font-medium">Update metadata details</h2>
             <button btn icon mat-dialog-close>
                 <app-icon>close</app-icon>
             </button>
@@ -29,7 +29,7 @@ export interface MetadataDetailsModalData {
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    >Name<span class="text-pending">*</span>:</label
+                    >Name<span required>*</span>:</label
                 >
                 <mat-form-field appearance="outline">
                     <input
@@ -89,7 +89,7 @@ export interface MetadataDetailsModalData {
             </main>
         }
         <footer
-            class="flex items-center justify-end space-x-2 border-t border-base-200 px-4 py-2"
+            class="mx-2 mb-2 flex items-center justify-end space-x-2 rounded bg-base-200 p-2"
         >
             <button
                 btn
@@ -106,7 +106,8 @@ export interface MetadataDetailsModalData {
     standalone: false,
 })
 export class MetadataDetailsModalComponent implements OnInit {
-    private _dialog_ref = inject<MatDialogRef<MetadataDetailsModalComponent>>(MatDialogRef);
+    private _dialog_ref =
+        inject<MatDialogRef<MetadataDetailsModalComponent>>(MatDialogRef);
     private _data = inject<MetadataDetailsModalData>(MAT_DIALOG_DATA);
 
     public form = new FormGroup({

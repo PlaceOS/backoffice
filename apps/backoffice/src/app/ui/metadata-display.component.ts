@@ -1,4 +1,4 @@
-import { Component, inject, Input, SimpleChanges } from '@angular/core';
+import { Component, inject, input, SimpleChanges } from '@angular/core';
 import {
     AbstractControl,
     FormControl,
@@ -154,7 +154,7 @@ function replaceDescTag(inputString, newContent) {
             </div>
         }
         <ng-template #load_state>
-            <mat-spinner diameter="32"></mat-spinner>
+            <mat-spinner diameter="32" />
         </ng-template>
     `,
     styles: [
@@ -171,7 +171,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
     private _dialog = inject(MatDialog);
     private _schemas = inject(SchemaStateService);
 
-    @Input() public item: any;
+    public readonly item = input<any>(undefined);
     /** List of metadata associated with the zone */
     public metadata: PlaceMetadata[] = [];
     /** Map of form field groups to metadata fields */
@@ -196,7 +196,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.item && this.item) {
+        if (changes.item && this.item()) {
             this.loadMetadata();
         }
     }
@@ -246,7 +246,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
             'confirm',
             ref.componentInstance.event.subscribe((event) => {
                 if (event.reason === 'done') {
-                    removeMetadata(this.item.id, { name: field }).subscribe(
+                    removeMetadata(this.item().id, { name: field }).subscribe(
                         () => {
                             notifySuccess(
                                 `Successfully removed "${field}" metadata.`,
@@ -307,7 +307,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
                       : 'User',
             };
         }
-        updateMetadata(this.item.id, {
+        updateMetadata(this.item().id, {
             ...value,
             description: new_desc,
             details: data,
@@ -319,7 +319,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
                 );
                 this.edited[field.name] = false;
                 if (field.name !== item.name) {
-                    removeMetadata(this.item.id, field)
+                    removeMetadata(this.item().id, field)
                         .toPromise()
                         .catch((err) =>
                             notifyError(
@@ -404,7 +404,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
     }
 
     private loadMetadata() {
-        listMetadata(this.item.id).subscribe((map) => {
+        listMetadata(this.item().id).subscribe((map) => {
             this.metadata = Object.keys(map)
                 .map((key) => map[key])
                 .sort((a, b) => a.name.localeCompare(b.name));
@@ -413,10 +413,11 @@ export class MetadataDisplayComponent extends AsyncHandler {
     }
 
     public viewMetadataHistory(item: PlaceMetadata) {
+        const itemValue = this.item();
         this._dialog.open(MetadataHistoryModalComponent, {
             data: {
-                id: this.item.id,
-                parent_name: this.item.display_name || this.item.name,
+                id: this.item().id,
+                parent_name: itemValue.display_name || itemValue.name,
                 name: item.name,
             },
         });

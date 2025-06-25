@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, input, viewChild } from '@angular/core';
 import { AsyncHandler } from '../common/async-handler.class';
 import { Point } from '../common/types';
 
@@ -30,10 +30,9 @@ export class BasicLineGraphComponent
 {
     private _element = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    @Input() public lines: Point[][] = [];
+    public readonly lines = input<Point[][]>([]);
 
-    @ViewChild('canvas', { static: true })
-    private _canvas_el: ElementRef<HTMLCanvasElement>;
+    private readonly _canvas_el = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
     public ngAfterViewInit() {
         this._setupCanvas();
@@ -41,10 +40,11 @@ export class BasicLineGraphComponent
     }
 
     private _setupCanvas() {
-        if (!this._canvas_el?.nativeElement) {
+        const _canvas_el = this._canvas_el();
+        if (!_canvas_el?.nativeElement) {
             return this.timeout('setup', () => this._setupCanvas());
         }
-        const canvas_el = this._canvas_el?.nativeElement!;
+        const canvas_el = _canvas_el?.nativeElement!;
         const container_box =
             this._element.nativeElement.getBoundingClientRect();
         canvas_el.width = container_box.width * 2;
@@ -52,10 +52,11 @@ export class BasicLineGraphComponent
     }
 
     private _drawGraph() {
-        if (!this._canvas_el?.nativeElement) return;
-        const ctx = this._canvas_el.nativeElement.getContext('2d');
+        const _canvas_el = this._canvas_el();
+        if (!_canvas_el?.nativeElement) return;
+        const ctx = _canvas_el.nativeElement.getContext('2d');
         if (!ctx) return;
-        let { width, height } = this._canvas_el.nativeElement;
+        let { width, height } = _canvas_el.nativeElement;
         ctx.clearRect(0, 0, width, height);
         ctx.save();
         const padding = 12;
@@ -88,12 +89,12 @@ export class BasicLineGraphComponent
         ctx.fillText('60s', axis_start.x, height + 4);
 
         // Draw Lines
-        for (const line of this.lines) {
+        for (const line of this.lines()) {
             this._drawLine(
                 ctx,
                 [axis_start.x, 0, width - axis_start.x, height - axis_start.y],
                 line,
-                COLORS[this.lines.indexOf(line) % COLORS.length],
+                COLORS[this.lines().indexOf(line) % COLORS.length],
             );
         }
 

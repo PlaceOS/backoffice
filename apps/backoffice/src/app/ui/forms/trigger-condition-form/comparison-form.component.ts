@@ -1,9 +1,9 @@
 import {
-    Component,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
+  Component,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  input
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import {
@@ -23,20 +23,20 @@ import { i18n } from '../../../common/locale.service';
 
 @Component({
     selector: 'trigger-condition-comparison-form',
-    template: `@if (form) {
-            <div class="trigger-condition form comparison" [formGroup]="form">
+    template: `@if (form()) {
+            <div class="trigger-condition form comparison" [formGroup]="form()">
                 <ng-container
                     *ngTemplateOutlet="
                         status_variable_form;
                         context: { side: 'left' }
                     "
                 ></ng-container>
-                @if (form.controls.left.touched && form.controls.left.errors) {
+                @if (form().controls.left.touched && form().controls.left.errors) {
                     <div class="error">
                         {{ 'TRIGGERS.COMPARE_VARIABLE_ERROR' | translate }}
                     </div>
                 }
-                @if (form.controls.operator) {
+                @if (form().controls.operator) {
                     <div class="field">
                         <label for="operator" hidden>{{
                             'TRIGGERS.COMPARE_OP' | translate
@@ -61,7 +61,7 @@ import { i18n } from '../../../common/locale.service';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.operator) {
+                @if (form().controls.operator) {
                     <div class="field">
                         <label for="compared-to" hidden>{{
                             'TRIGGERS.COMPARE_TO' | translate
@@ -71,7 +71,7 @@ import { i18n } from '../../../common/locale.service';
                                 name="compared-to"
                                 [(ngModel)]="rhs_type"
                                 (ngModelChange)="
-                                    form.controls.right.setValue(null)
+                                    form().controls.right.setValue(null)
                                 "
                                 [ngModelOptions]="{ standalone: true }"
                             >
@@ -84,7 +84,7 @@ import { i18n } from '../../../common/locale.service';
                         </mat-form-field>
                     </div>
                 }
-                @if (rhs_type === 'constant' && form.controls.right) {
+                @if (rhs_type === 'constant' && form().controls.right) {
                     <div class="field">
                         <label for="constant" hidden>{{
                             'TRIGGERS.COMPARE_TO' | translate
@@ -201,9 +201,9 @@ export class TriggerConditionComparisonFormComponent
     implements OnChanges, OnInit
 {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
     /** Systems used for templating the status variables */
-    @Input() public system: PlaceSystem;
+    public readonly system = input<PlaceSystem>(undefined);
     /** List of modules associated with the template system */
     public modules: PlaceModule[] = [];
     /** List of status variables associated with the selected module */
@@ -284,17 +284,18 @@ export class TriggerConditionComparisonFormComponent
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.system && this.system) {
+        if (changes.system && this.system()) {
             this.loadSystemModules();
         }
     }
 
     public updateFormForSide(side: 'left' | 'right') {
-        if (this.form.controls[side]) {
+        const form = this.form();
+        if (form.controls[side]) {
             if (!this[side + '_side'].keys) {
                 this[side + '_side'].keys = [];
             }
-            this.form.controls[side].setValue(this[side + '_side']);
+            form.controls[side].setValue(this[side + '_side']);
         }
     }
 
@@ -306,7 +307,7 @@ export class TriggerConditionComparisonFormComponent
         const name = (mod_name || '').split('_');
         if (!name[0]?.length) return;
         systemModuleState(
-            this.system.id,
+            this.system().id,
             name.length > 1
                 ? name.slice(0, name.length - 1).join('_')
                 : name[0],
@@ -327,7 +328,7 @@ export class TriggerConditionComparisonFormComponent
             () =>
                 notifyError(
                     i18n('TRIGGERS.COMPARE_VARIABLE_LOAD_ERROR', {
-                        system: this.system.id,
+                        system: this.system().id,
                         module: mod_name,
                     }),
                 ),
@@ -338,14 +339,15 @@ export class TriggerConditionComparisonFormComponent
      * Load the list of modules for the active system
      */
     private loadSystemModules() {
-        if (!this.system) {
+        const system = this.system();
+        if (!system) {
             return;
         }
-        queryModules({ control_system_id: this.system.id })
+        queryModules({ control_system_id: system.id })
             .pipe(map((resp) => resp.data))
             .subscribe((module_list) => {
                 this.modules = module_list;
-                const mod_list = this.system.modules;
+                const mod_list = this.system().modules;
                 this.modules.sort(
                     (a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id),
                 );
@@ -366,8 +368,9 @@ export class TriggerConditionComparisonFormComponent
      * Add pre-exisiting module detail to the available list
      */
     private addExistingModules() {
-        if (this.form.controls.left && this.form.controls.left.value) {
-            const module = this.form.controls.left.value.mod;
+        const form = this.form();
+        if (form.controls.left && form.controls.left.value) {
+            const module = form.controls.left.value.mod;
             if (!this.module_list.find((mod) => mod.name === module)) {
                 this.module_list.unshift({
                     id: 'old_left_value',
@@ -376,15 +379,15 @@ export class TriggerConditionComparisonFormComponent
                 });
             }
             this.loadSystemStatusVariables(module, 'left');
-            this.left_side = this.form.controls.left.value;
+            this.left_side = form.controls.left.value;
         }
         if (
-            this.form.controls.right &&
-            this.form.controls.right.value &&
-            this.form.controls.right.value.mod
+            form.controls.right &&
+            form.controls.right.value &&
+            form.controls.right.value.mod
         ) {
             this.rhs_type = 'status_var';
-            const module = this.form.controls.right.value.mod;
+            const module = form.controls.right.value.mod;
             if (!this.module_list.find((mod) => mod.name === module)) {
                 this.module_list.unshift({
                     id: 'old_right_value',
@@ -393,7 +396,7 @@ export class TriggerConditionComparisonFormComponent
                 });
             }
             this.loadSystemStatusVariables(module, 'right');
-            this.right_side = this.form.controls.right_side.value;
+            this.right_side = form.controls.right_side.value;
         }
     }
 

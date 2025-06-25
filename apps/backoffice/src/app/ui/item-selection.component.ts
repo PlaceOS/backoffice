@@ -1,5 +1,13 @@
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { Component, ElementRef, Input, SimpleChanges, ViewChild, inject } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    SimpleChanges,
+    inject,
+    input,
+    model,
+    viewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import {
     PlaceDriverRole,
@@ -27,7 +35,7 @@ import { BackofficeUsersService } from '../users/users.service';
             >
                 <app-icon class="ml-2 text-2xl">search</app-icon>
                 <p class="w-1/2 flex-1 p-2 text-left text-lg opacity-30">
-                    {{ 'COMMON.VIEW_TYPE' | translate: { name: title } }}
+                    {{ 'COMMON.VIEW_TYPE' | translate: { name: title() } }}
                 </p>
                 <span class="keycap mr-2 text-xs">K</span>
             </button>
@@ -35,8 +43,8 @@ import { BackofficeUsersService } from '../users/users.service';
         @if (show_view) {
             <div
                 class="bg-base-100/80 /30 absolute inset-0"
-                (click)="show = false"
-                (window:keydown.esc)="show = false"
+                (click)="show = false()"
+                (window:keydown.esc)="show = false()"
             ></div>
             <div
                 class="absolute left-1/2 top-2 flex w-[512px] max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded bg-base-100 shadow"
@@ -56,7 +64,7 @@ import { BackofficeUsersService } from '../users/users.service';
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
                         [placeholder]="
-                            'COMMON.SEARCH_FOR' | translate: { name: title }
+                            'COMMON.SEARCH_FOR' | translate: { name: title() }
                         "
                     />
                     @if (loading | async) {
@@ -87,8 +95,8 @@ import { BackofficeUsersService } from '../users/users.service';
                                 "
                                 [routerLink]="
                                     subroute
-                                        ? ['/', route, item.id, subroute]
-                                        : ['/', route, item.id]
+                                        ? ['/', route(), item.id, subroute]
+                                        : ['/', route(), item.id]
                                 "
                                 routerLinkActive="active"
                                 [routerLinkActiveOptions]="{
@@ -97,7 +105,7 @@ import { BackofficeUsersService } from '../users/users.service';
                                         item.id + subroute,
                                 }"
                                 class="m-2 block max-w-[calc(100vw-2rem)] rounded p-2"
-                                (click)="show = false"
+                                (click)="show = false()"
                             >
                                 <p class="flex-1 truncate">
                                     {{ item.name }}
@@ -130,7 +138,7 @@ import { BackofficeUsersService } from '../users/users.service';
                                     (search
                                         ? 'COMMON.SEARCH_EMPTY'
                                         : 'COMMON.LIST_EMPTY'
-                                    ) | translate: { name: title }
+                                    ) | translate: { name: title() }
                                 }}
                             </p>
                         </div>
@@ -162,9 +170,9 @@ export class ItemSelectionComponent extends AsyncHandler {
     private _hotkeys = inject(HotkeysService);
     private _service = inject(ActiveItemService);
 
-    @Input() public show = true;
-    @Input() public title;
-    @Input() public route = 'systems';
+    public readonly show = model(true);
+    public readonly title = input(undefined);
+    public readonly route = input('systems');
 
     public last_total = 0;
     public last_check = 0;
@@ -177,13 +185,13 @@ export class ItemSelectionComponent extends AsyncHandler {
     public total = this._service.count;
 
     /** Virtual scrolling viewport */
-    @ViewChild(CdkVirtualScrollViewport)
-    private viewport: CdkVirtualScrollViewport;
+    private readonly viewport = viewChild(CdkVirtualScrollViewport);
 
-    @ViewChild('search_input') private _input: ElementRef<HTMLInputElement>;
+    private readonly _input =
+        viewChild<ElementRef<HTMLInputElement>>('search_input');
 
     public get show_view() {
-        return this.show || !this._service.active_item;
+        return this.show() || !this._service.active_item;
     }
 
     public get subroute() {
@@ -193,8 +201,8 @@ export class ItemSelectionComponent extends AsyncHandler {
     public ngOnInit() {
         this.subscription(
             'loading',
-            this._service.loading.subscribe(
-                () => (this.show = !this._service.active_item),
+            this._service.loading.subscribe(() =>
+                this.show.set(!this._service.active_item),
             ),
         );
         this.subscription(
@@ -208,7 +216,7 @@ export class ItemSelectionComponent extends AsyncHandler {
     }
 
     public ngOnChanges(changes: SimpleChanges) {
-        if (changes.show && this.show) {
+        if (changes.show && this.show()) {
             this.focusInput();
         }
     }
@@ -219,12 +227,12 @@ export class ItemSelectionComponent extends AsyncHandler {
     }
 
     public open() {
-        this.show = true;
+        this.show.set(true);
         this.timeout('focus', () => this.focusInput());
     }
 
     public focusInput() {
-        this._input?.nativeElement.focus();
+        this._input()?.nativeElement.focus();
     }
 
     public updateSearch(str: string) {
@@ -251,11 +259,12 @@ export class ItemSelectionComponent extends AsyncHandler {
     public async atBottom() {
         const loading = await nextValueFrom(this.loading);
         if (loading || !this.is_stale) return;
-        if (!this.viewport) {
+        const viewport = this.viewport();
+        if (!viewport) {
             return this.timeout('atBottom', () => this.atBottom());
         }
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
+        const end = viewport.getRenderedRange().end;
+        const total = viewport.getDataLength();
         if (end >= total - 1) {
             this.last_total = total;
             this.last_check = Date.now();

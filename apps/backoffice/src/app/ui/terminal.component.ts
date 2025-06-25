@@ -1,12 +1,12 @@
 import {
-    Component,
-    ElementRef,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    SimpleChanges,
-    ViewChild,
+  Component,
+  ElementRef,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  input,
+  viewChild
 } from '@angular/core';
 import { Terminal } from '@xterm/xterm';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -36,16 +36,14 @@ export class TerminalComponent
     implements OnInit, OnChanges, OnDestroy
 {
     /** Contents to display on the terminal */
-    @Input() public content: string;
+    public readonly content = input<string>(undefined);
     /** Resizes terminal display on change */
-    @Input() public resize: boolean;
+    public readonly resize = input<boolean>(undefined);
     /** Local instance of an xterm terminal */
     public terminal: Terminal;
 
-    @ViewChild('terminal', { static: true })
-    public terminal_element: ElementRef<HTMLDivElement>;
-    @ViewChild('container', { static: true })
-    public container_el: ElementRef<HTMLDivElement>;
+    public readonly terminal_element = viewChild<ElementRef<HTMLDivElement>>('terminal');
+    public readonly container_el = viewChild<ElementRef<HTMLDivElement>>('container');
 
     public ngOnInit(): void {
         if (this.terminal) this.ngOnDestroy();
@@ -59,16 +57,16 @@ export class TerminalComponent
             },
             fontSize: 12,
         });
-        this.terminal.open(this.terminal_element.nativeElement);
+        this.terminal.open(this.terminal_element().nativeElement);
         this.timeout('init', () => {
             this.resizeTerminal();
-            this.updateTerminalContents(this.content || '');
+            this.updateTerminalContents(this.content() || '');
         });
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.content) {
-            this.updateTerminalContents(this.content || '');
+            this.updateTerminalContents(this.content() || '');
         }
         if (changes.resize) {
             this.timeout('resize', () => this.resizeTerminal());
@@ -84,10 +82,11 @@ export class TerminalComponent
      * Resize the terminal display to fill the container element
      */
     public resizeTerminal(): void {
-        if (!this.terminal || !this.container_el) return;
+        const container_el = this.container_el();
+        if (!this.terminal || !container_el) return;
         const font_size = this.terminal.options.fontSize;
         const line_height = this.terminal.options.lineHeight;
-        const box = this.container_el.nativeElement.getBoundingClientRect();
+        const box = container_el.nativeElement.getBoundingClientRect();
         const width = Math.floor(box.width / (font_size * 0.6));
         const height = Math.floor(
             box.height / (line_height * font_size * 1.28),

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceCluster,
@@ -34,7 +34,7 @@ const task_details = {};
                 <app-icon>arrow_back</app-icon>
             </button>
             <h3 class="text-lg font-medium">
-                {{ 'ADMIN.CLUSTER' | translate }} - {{ cluster?.hostname }}
+                {{ 'ADMIN.CLUSTER' | translate }} - {{ cluster()?.hostname }}
             </h3>
             <div class="flex-1"></div>
             <mat-form-field appearance="outline" class="h-12">
@@ -53,13 +53,11 @@ const task_details = {};
                 />
             </mat-form-field>
         </div>
-        <mat-progress-bar
-            mode="indeterminate"
+        <mat-progress-bar mode="indeterminate"
             class="w-full"
             [class.opacity-0]="!loading"
-        ></mat-progress-bar>
-        <simple-table
-            class="block min-w-[40rem] text-sm"
+         />
+        <simple-table class="block min-w-[40rem] text-sm"
             [data]="filtered_list"
             [columns]="[
                 {
@@ -93,7 +91,7 @@ const task_details = {};
             ]"
             [sortable]="true"
             [empty_message]="'ADMIN.CLUSTER_PROCESSES_EMPTY' | translate"
-        ></simple-table>
+         />
         <ng-template #name_template let-row="row">
             <div class="flex flex-col px-4 py-2 font-mono">
                 <div class="mb-1">{{ taskDetails(row.id).path }}</div>
@@ -146,9 +144,9 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
     private _dialog = inject(MatDialog);
 
     /** Cluster to display tasks details for */
-    @Input() public cluster: PlaceCluster;
+    public readonly cluster = input<PlaceCluster>(undefined);
     /** Emitter for close events */
-    @Output() public close = new EventEmitter<void>();
+    public readonly close = output<void>();
     /** Whether the task list is updating */
     public loading: boolean;
     /** ID of the process being killed */
@@ -184,7 +182,7 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
         filter(() => !this.loading),
         switchMap(() => {
             this.loading = true;
-            return queryProcesses(this.cluster.id, {
+            return queryProcesses(this.cluster().id, {
                 include_status: true,
             } as any).pipe(
                 catchError((_) => {
@@ -260,6 +258,6 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
     }
 
     public killProcess(process: PlaceProcess) {
-        return terminateProcess(this.cluster.id, process.id).toPromise();
+        return terminateProcess(this.cluster().id, process.id).toPromise();
     }
 }

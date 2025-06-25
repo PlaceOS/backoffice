@@ -1,4 +1,12 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
+import {
+    Component,
+    inject,
+    input,
+    model,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+} from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import {
     addSettings,
@@ -19,7 +27,15 @@ import { validateYAML } from 'apps/backoffice/src/app/systems/systems.utilities'
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
 
 import * as yaml from 'js-yaml';
+import { lastValueFrom } from 'rxjs';
 import { i18n } from '../../common/locale.service';
+
+type SettingsArray = [
+    PlaceSettings,
+    PlaceSettings,
+    PlaceSettings,
+    PlaceSettings,
+];
 
 @Component({
     selector: 'a-settings-form',
@@ -121,7 +137,7 @@ import { i18n } from '../../common/locale.service';
                         }
                         @if (
                             option.name !== 'Merged' &&
-                            settings[i - 1]?.modified_by_id
+                            settings()[i - 1]?.modified_by_id
                         ) {
                             <div
                                 class="border-gray-300 mb-4 flex items-center justify-between space-x-2 border-x border-b border-base-300 p-1"
@@ -129,7 +145,7 @@ import { i18n } from '../../common/locale.service';
                                 <div class="pl-2 text-xs">
                                     {{
                                         (
-                                            settings[i - 1]?.modified_by_id
+                                            settings()[i - 1]?.modified_by_id
                                             | user
                                             | async
                                         )?.name
@@ -138,13 +154,13 @@ import { i18n } from '../../common/locale.service';
                                 <code
                                     class="text-xs"
                                     [matTooltip]="
-                                        settings[i - 1]?.updated_at * 1000 || 0
-                                            | date: 'medium'
+                                        settings()[i - 1]?.updated_at * 1000 ||
+                                            0 | date: 'medium'
                                     "
                                 >
                                     {{ 'COMMON.LAST_EDIT' | translate }}:
                                     {{
-                                        settings[i - 1]?.updated_at * 1000
+                                        settings()[i - 1]?.updated_at * 1000
                                             | dateFrom
                                     }}
                                 </code>
@@ -155,7 +171,7 @@ import { i18n } from '../../common/locale.service';
             </form>
         }
         <ng-template #spinner>
-            <mat-spinner diameter="32"></mat-spinner>
+            <mat-spinner diameter="32" />
         </ng-template>
     `,
     styles: [
@@ -219,18 +235,13 @@ export class SettingsFormComponent
     private _users = inject(BackofficeUsersService);
 
     /** ID of the parent object */
-    @Input() id: string;
+    readonly id = input<string>(undefined);
     /** List of settings for the  */
-    @Input() settings: [
-        PlaceSettings,
-        PlaceSettings,
-        PlaceSettings,
-        PlaceSettings,
-    ];
+    readonly settings = model<SettingsArray>(undefined);
     /** Whether to display merged settings */
-    @Input() merge: boolean;
+    readonly merge = input<boolean>(undefined);
     /** List of settings to merge into the main settings */
-    @Input() merge_settings: PlaceSettings[];
+    readonly merge_settings = input<PlaceSettings[]>(undefined);
     /** Form fields for settings */
     public form: UntypedFormGroup;
     /** Whether a setting is being saved */
@@ -332,7 +343,7 @@ export class SettingsFormComponent
                 active: this.is_admin,
             },
         ];
-        if (this.merge) {
+        if (this.merge()) {
             levels.unshift({
                 id: EncryptionLevel.NeverDisplay + 1,
                 name: i18n('COMMON.SETTINGS_MERGED'),
@@ -366,7 +377,7 @@ export class SettingsFormComponent
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.merge) {
-            this.encryption_level = this.merge
+            this.encryption_level = this.merge()
                 ? EncryptionLevel.NeverDisplay + 1
                 : EncryptionLevel.None;
             this.available_levels = this.levels;
@@ -376,7 +387,7 @@ export class SettingsFormComponent
                 'upete_merge',
                 () => {
                     this.used_settings = this.processSettings(
-                        this.settings || [],
+                        this.settings() || [],
                     );
                     this.initForm();
                 },
@@ -384,7 +395,7 @@ export class SettingsFormComponent
             );
         }
         if (changes.settings) {
-            this.used_settings = this.processSettings(this.settings || []);
+            this.used_settings = this.processSettings(this.settings() || []);
             this.initForm();
         }
     }
@@ -398,36 +409,39 @@ export class SettingsFormComponent
                 ...item,
                 settings_string: this.form.controls[`settings${level}`].value,
             };
-            (this.settings[level].id
-                ? updateSettings(this.settings[level].id, details)
-                : addSettings(details)
-            )
-                .toPromise()
-                .then(
-                    (new_settings: PlaceSettings) => {
-                        this.saving[level] = false;
-                        this.settings[level] = new_settings;
-                        notifySuccess(
-                            i18n('COMMON.SETTINGS_SAVE_SUCCESS', {
-                                type: this.type(level),
-                            }),
-                        );
-                        this.used_settings = this.processSettings(
-                            this.settings || [],
-                        );
-                        this.initForm();
-                    },
-                    (err) => {
-                        this.saving[level] = false;
-                        notifyError(
-                            i18n('COMMON.SETTINGS_SAVE_ERROR', {
-                                error: JSON.stringify(
-                                    err.response || err.message || err,
-                                ),
-                            }),
-                        );
-                    },
-                );
+            const settings = this.settings();
+            lastValueFrom(
+                settings[level].id
+                    ? updateSettings(settings[level].id, details)
+                    : addSettings(details),
+            ).then(
+                (new_settings: PlaceSettings) => {
+                    this.saving[level] = false;
+                    this.settings.update((s) => ({
+                        ...s,
+                        [level]: new_settings,
+                    }));
+                    notifySuccess(
+                        i18n('COMMON.SETTINGS_SAVE_SUCCESS', {
+                            type: this.type(level),
+                        }),
+                    );
+                    this.used_settings = this.processSettings(
+                        this.settings() || [],
+                    );
+                    this.initForm();
+                },
+                (err) => {
+                    this.saving[level] = false;
+                    notifyError(
+                        i18n('COMMON.SETTINGS_SAVE_ERROR', {
+                            error: JSON.stringify(
+                                err.response || err.message || err,
+                            ),
+                        }),
+                    );
+                },
+            );
         }
     }
 
@@ -438,15 +452,16 @@ export class SettingsFormComponent
         }
         const promises = [];
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
-            if (this.settings[i] && !this.saving[i]) {
+            const settings = this.settings();
+            if (settings[i] && !this.saving[i]) {
                 this.saving[i] = true;
                 const details = {
-                    ...this.settings[i],
+                    ...settings[i],
                     settings_string: this.form.controls[`settings${i}`].value,
                 };
                 promises.push(
-                    this.settings[i].id
-                        ? updateSettings(this.settings[i].id, details)
+                    settings[i].id
+                        ? updateSettings(settings[i].id, details)
                         : addSettings(details),
                 );
             }
@@ -456,11 +471,11 @@ export class SettingsFormComponent
                 (results: PlaceSettings[]) => {
                     for (const result of results) {
                         this.saving[result.encryption_level] = false;
-                        this.settings[result.encryption_level] = result;
+                        this.settings()[result.encryption_level] = result;
                     }
                     notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
                     this.used_settings = this.processSettings(
-                        this.settings || [],
+                        this.settings() || [],
                     );
                     this.initForm();
                 },
@@ -484,7 +499,7 @@ export class SettingsFormComponent
         if (this.edited_count < 1) {
             return;
         }
-        this.used_settings = this.processSettings(this.settings || []);
+        this.used_settings = this.processSettings(this.settings() || []);
         this.initForm();
     }
 
@@ -519,7 +534,7 @@ export class SettingsFormComponent
             processed_settings.push(this.processSetting(settings[i]));
         }
         processed_settings.push(
-            this.merge
+            this.merge()
                 ? this.generateMergedSettings(processed_settings)
                 : settings[3],
         );
@@ -543,11 +558,11 @@ export class SettingsFormComponent
                 : '';
             return new PlaceSettings({
                 ...setting,
-                parent_id: this.id,
+                parent_id: this.id(),
                 settings_string,
             });
         }
-        return new PlaceSettings({ ...setting, parent_id: this.id });
+        return new PlaceSettings({ ...setting, parent_id: this.id() });
     }
 
     /** Genereate merged settings from all available settings */
@@ -555,8 +570,9 @@ export class SettingsFormComponent
         settings: PlaceSettings[] = [],
     ): PlaceSettings {
         const merge_settings =
-            this.merge_settings?.filter((item) => item.parent_id !== this.id) ||
-            [];
+            this.merge_settings()?.filter(
+                (item) => item.parent_id !== this.id(),
+            ) || [];
         const local_settings = (settings || []).map((item) => {
             let obj = {};
             try {
@@ -593,7 +609,7 @@ export class SettingsFormComponent
         return new PlaceSettings({
             id: 'merged',
             settings_string,
-            parent_id: this.id,
+            parent_id: this.id(),
             keys: Object.keys(merged_settings),
         });
     }
@@ -623,8 +639,8 @@ export class SettingsFormComponent
         display: string,
         settings: PlaceSettings,
         type: number,
-        prefix: string = '',
-        level: number = 0,
+        prefix = '',
+        level = 0,
     ) {
         for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
@@ -707,11 +723,7 @@ function itemUrl(id: string) {
  * @param find String to find in text
  * @param in_text Text to search for string
  */
-function calcRangeOfStringInText(
-    find: string,
-    in_text: string,
-    index: number = 0,
-) {
+function calcRangeOfStringInText(find: string, in_text: string, index = 0) {
     const lines = in_text.split('\n');
     let line = '';
     let line_number = 0;

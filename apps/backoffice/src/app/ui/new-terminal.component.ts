@@ -1,5 +1,13 @@
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { Component, ElementRef, Input, SimpleChanges, ViewChild, inject } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    SimpleChanges,
+    inject,
+    input,
+    model,
+    viewChild,
+} from '@angular/core';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -37,11 +45,13 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
             >
                 <input
                     class="bg-neutral-700 mono border-none p-1 text-sm"
-                    [(ngModel)]="search"
+                    [ngModel]="search()"
                     placeholder="🔍 Filter output"
-                    (ngModelChange)="search_string.next($event)"
+                    (ngModelChange)="
+                        search.set($event); search_string.next($event)
+                    "
                 />
-                <div>{{ search_count }} / {{ lines.length }}</div>
+                <div>{{ search_count }} / {{ lines().length }}</div>
             </div>
         </div>
     `,
@@ -61,19 +71,18 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
 export class NewTerminalComponent extends AsyncHandler {
     private _sanitize_pipe = inject(SanitizePipe);
 
-    @Input() public lines: string[] = [];
-    @Input() public search = '';
-    @Input() public resize = 0;
+    public readonly lines = input<string[]>([]);
+    public readonly search = model('');
+    public readonly resize = input(0);
 
     public search_count = 0;
     public item_count = 0;
     public old_count = 0;
     public line_length = 80;
 
-    @ViewChild(CdkVirtualScrollViewport, { static: true })
-    private _scroll_viewport: CdkVirtualScrollViewport;
-    @ViewChild('container', { static: true })
-    private _container_el: ElementRef<HTMLDivElement>;
+    private readonly _scroll_viewport = viewChild(CdkVirtualScrollViewport);
+    private readonly _container_el =
+        viewChild<ElementRef<HTMLDivElement>>('container');
 
     public readonly line_list = new BehaviorSubject<string[]>([]);
     public readonly search_string = new BehaviorSubject('');
@@ -93,17 +102,17 @@ export class NewTerminalComponent extends AsyncHandler {
             if (!this.old_count) this.old_count = this.item_count;
             this.item_count = out_lines.length;
             const offset =
-                this._scroll_viewport.getOffsetToRenderedContentStart();
-            const size = this._scroll_viewport.getViewportSize();
+                this._scroll_viewport().getOffsetToRenderedContentStart();
+            const size = this._scroll_viewport().getViewportSize();
             this.timeout(
                 'update_viewport',
                 () => {
-                    this._scroll_viewport?.checkViewportSize();
+                    this._scroll_viewport()?.checkViewportSize();
                     if (
                         (offset + size) / 24 > this.old_count - 7 ||
                         this.old_count < 5
                     ) {
-                        this._scroll_viewport.scrollToIndex(this.item_count);
+                        this._scroll_viewport().scrollToIndex(this.item_count);
                     }
                     this.old_count = 0;
                 },
@@ -116,11 +125,12 @@ export class NewTerminalComponent extends AsyncHandler {
     );
 
     public ngOnChanges(changes: SimpleChanges) {
-        if (changes.lines && this.lines) {
-            this.line_list.next(this.lines);
+        const lines = this.lines();
+        if (changes.lines && lines) {
+            this.line_list.next(lines);
         }
         if (changes.search) {
-            this.search_string.next(this.search || '');
+            this.search_string.next(this.search() || '');
         }
         if (changes.resize) {
             this._updateLineLength();
@@ -131,8 +141,8 @@ export class NewTerminalComponent extends AsyncHandler {
         this.line_length = Math.max(
             40,
             Math.floor(
-                this._container_el.nativeElement.getBoundingClientRect().width /
-                    8,
+                this._container_el().nativeElement.getBoundingClientRect()
+                    .width / 8,
             ),
         );
         this.line_list.next(this.line_list.getValue());

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
     selector: 'fullscreen-modal-shell,[fs-modal-shell]',
@@ -13,9 +13,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                 class="sticky top-0 z-10 mx-auto my-2 w-[39rem] max-w-full rounded border border-base-100 bg-base-200 px-4 py-2"
             >
                 <h2 class="text-xl font-medium">
-                    {{ heading }}
+                    {{ heading() }}
                 </h2>
-                @if (!loading) {
+                @if (!loading()) {
                     <button icon matRipple mat-dialog-close>
                         <app-icon>close</app-icon>
                     </button>
@@ -27,7 +27,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                 <ng-content></ng-content>
                 <div class="h-10 w-full"></div>
             </main>
-            @if (!loading && !hide_confirm) {
+            @if (!loading() && !hide_confirm()) {
                 <footer
                     class="fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-[39rem] max-w-full -translate-x-1/2 items-center justify-end rounded border border-base-100 bg-base-200 px-4 py-2"
                 >
@@ -35,10 +35,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                         <div class="flex items-center space-x-2">
                             <div>
                                 {{
-                                    confirm_text || ('COMMON.SAVE' | translate)
+                                    confirm_text() || ('COMMON.SAVE' | translate)
                                 }}
                             </div>
-                            @if (!confirm_text) {
+                            @if (!confirm_text()) {
                                 <div class="mono relative top-0.5 text-sm">
                                     [S]
                                 </div>
@@ -53,16 +53,16 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                 class="flex h-1/2 w-full flex-1 flex-col items-center justify-center p-12"
             >
                 <mat-spinner [diameter]="32"></mat-spinner>
-                <p class="text-center">{{ loading }}</p>
+                <p class="text-center">{{ loading() }}</p>
             </div>
         </ng-template>
     `,
     standalone: false,
 })
 export class FullscreenModalShellComponent {
-    @Input() public loading = '';
-    @Input() public heading = 'Fullscreen Modal';
-    @Input() public confirm_text = '';
-    @Input() public hide_confirm = false;
-    @Output() public save = new EventEmitter();
+    public readonly loading = input('');
+    public readonly heading = input('Fullscreen Modal');
+    public readonly confirm_text = input('');
+    public readonly hide_confirm = input(false);
+    public readonly save = output();
 }

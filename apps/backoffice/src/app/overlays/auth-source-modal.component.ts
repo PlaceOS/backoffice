@@ -77,13 +77,13 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
             @if (item) {
                 @switch (type) {
                     @case ('saml') {
-                        <saml-source-form [form]="form"></saml-source-form>
+                        <saml-source-form [form]="form" />
                     }
                     @case ('ldap') {
-                        <ldap-source-form [form]="form"></ldap-source-form>
+                        <ldap-source-form [form]="form" />
                     }
                     @default {
-                        <oauth-source-form [form]="form"></oauth-source-form>
+                        <oauth-source-form [form]="form" />
                     }
                 }
             }

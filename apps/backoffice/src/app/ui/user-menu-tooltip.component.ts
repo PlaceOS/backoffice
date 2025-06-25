@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { logout } from '@placeos/ts-client';
 import { format } from 'date-fns';
 import { VERSION } from '../../environments/version';
@@ -9,7 +9,9 @@ import { SettingsService } from '../common/settings.service';
 @Component({
     selector: 'user-menu-tooltip',
     template: `
-        <div class="m-2 divide-y divide-base-200 rounded bg-base-100 shadow">
+        <div
+            class="m-2 divide-y divide-base-200 rounded border border-base-300 bg-base-100 shadow"
+        >
             <a
                 matRipple
                 type="button"

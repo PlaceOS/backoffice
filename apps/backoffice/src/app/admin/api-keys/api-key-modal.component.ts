@@ -1,5 +1,5 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, ElementRef, EventEmitter, Output, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, inject, viewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -222,7 +222,7 @@ export class APIKeyModalComponent {
     public readonly search_str = new BehaviorSubject('');
     public readonly scopes = this._service.available_scopes;
 
-    @ViewChild('input') public _input_el: ElementRef<HTMLInputElement>;
+    public readonly _input_el = viewChild<ElementRef<HTMLInputElement>>('input');
 
     public readonly users = combineLatest([
         this._service.users,
@@ -241,7 +241,7 @@ export class APIKeyModalComponent {
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
     public readonly focusInput = () =>
-        setTimeout(() => this._input_el?.nativeElement?.focus(), 100);
+        setTimeout(() => this._input_el()?.nativeElement?.focus(), 100);
     public readonly setSearch = (s) => this._service.setSearch(s);
 
     public readonly addScope = (e) =>

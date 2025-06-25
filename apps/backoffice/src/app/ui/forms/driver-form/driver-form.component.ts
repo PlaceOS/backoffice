@@ -1,10 +1,9 @@
 import {
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    Output,
-    SimpleChanges,
+  Component,
+  OnChanges,
+  SimpleChanges,
+  input,
+  output
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import {
@@ -55,9 +54,9 @@ import { DateFromPipe } from '../../pipes/date-from.pipe';
 })
 export class DriverFormComponent extends AsyncHandler implements OnChanges {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
 
-    @Output() public waiting = new EventEmitter<boolean>();
+    public readonly waiting = output<boolean>();
     /** List of driver roles */
     public role_types: Identity[] = [];
 
@@ -98,7 +97,8 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
     public failed = false;
 
     public get editing(): boolean {
-        return this.form.controls.id && this.form.controls.id.value;
+        const form = this.form();
+        return form.controls.id && form.controls.id.value;
     }
 
     public ngOnInit(): void {
@@ -151,10 +151,10 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
             }),
             map((list: any[]) => {
                 this.loading_commits = false;
-                if (this.form.controls.commit) {
+                if (this.form().controls.commit) {
                     this.base_commit = this.commit_list.find(
                         (commit) =>
-                            commit.id === this.form.controls.commit.value,
+                            commit.id === this.form().controls.commit.value,
                     ) as any;
                 }
                 return (list || []).map((commit: PlaceRepositoryCommit) => {
@@ -193,7 +193,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
      * @param repo Repository to grab the drivers for
      */
     public updateDriverList(repo: PlaceRepository) {
-        this.form.controls.repository_id.setValue(repo.id);
+        this.form().controls.repository_id.setValue(repo.id);
         this.base_repo = repo;
         const promise = this.driver_list$.toPromise();
         this.repo$.next(repo.id);
@@ -205,11 +205,12 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
      * @param driver Driver to grab commits for
      */
     public updateCommitList(driver: Identity) {
-        this.form.controls.file_name.setValue(driver.id);
+        this.form().controls.file_name.setValue(driver.id);
         this.base_driver = driver;
-        if (!this.form.controls.id.value) {
+        const form = this.form();
+        if (!form.controls.id.value) {
             this.base_commit = null;
-            this.form.controls.commit.setValue('');
+            form.controls.commit.setValue('');
         }
         const promise = this.commit_list$.toPromise();
         this.driver$.next(`${driver.id}`);
@@ -221,7 +222,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
      * @param event Details of the driver selected
      */
     public async setDriverBase(event: Identity) {
-        this.form.controls.commit.setValue(event.id);
+        this.form().controls.commit.setValue(event.id);
         this.failed = false;
         this.base_commit = event as any;
         this.loading = true;
@@ -237,14 +238,15 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                 this.waiting.emit(false);
                 throw _;
             });
-        if (!this.form.controls.id.value) {
-            this.form.controls.name.setValue(driver.descriptive_name || '');
-            this.form.controls.module_name.setValue(driver.generic_name || '');
-            this.form.controls.class_name.setValue(this.base_driver.id || '');
+        const form = this.form();
+        if (!form.controls.id.value) {
+            form.controls.name.setValue(driver.descriptive_name || '');
+            form.controls.module_name.setValue(driver.generic_name || '');
+            form.controls.class_name.setValue(this.base_driver.id || '');
             const port_number = driver.tcp_port || driver.udp_port || null;
-            this.form.controls.default_port.setValue(port_number);
-            this.form.controls.default_uri.setValue(driver.uri_base || '');
-            this.form.controls.role.setValue(
+            form.controls.default_port.setValue(port_number);
+            form.controls.default_uri.setValue(driver.uri_base || '');
+            form.controls.role.setValue(
                 port_number
                     ? port_number === 22
                         ? PlaceDriverRole.SSH
@@ -261,8 +263,8 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                 const doc = yaml.load(driver.default_settings);
                 settings = yaml.dump(doc);
             } catch {}
-            this.form.controls.settings.setValue(settings || '');
-            this.form.controls.description.setValue(driver.description || '');
+            form.controls.settings.setValue(settings || '');
+            form.controls.description.setValue(driver.description || '');
         }
         this.loading = false;
         this.waiting.emit(false);
@@ -272,15 +274,16 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
      * Initialise the driver details if set
      */
     private async initDriver() {
+        const form = this.form();
         if (
-            this.form.controls.repository_id &&
-            this.form.controls.repository_id.value
+            form.controls.repository_id &&
+            form.controls.repository_id.value
         ) {
-            const value = this.form.controls.repository_id.value;
+            const value = form.controls.repository_id.value;
             const repo = await showRepository(value).toPromise();
             this.base_repo = repo;
             this.updateDriverList(this.base_repo);
-            const driver = this.form.controls.file_name.value;
+            const driver = form.controls.file_name.value;
             this.base_driver =
                 typeof driver === 'string'
                     ? { id: driver, name: driver.split('/').join(' > ') }

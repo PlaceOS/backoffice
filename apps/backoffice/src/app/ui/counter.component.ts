@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, forwardRef, input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -20,7 +20,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
                 matRipple
                 type="button"
                 class="z-10 h-12 w-12 rounded-l rounded-r-none border border-secondary text-secondary"
-                [disabled]="!value || value === min"
+                [disabled]="!value || value === min()"
                 (click)="remove()"
             >
                 <app-icon>remove</app-icon>
@@ -31,7 +31,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
             >
                 @if (!focused) {
                     <span>
-                        {{ (render_fn ? render_fn(value) : value) || '0' }}
+                        {{ (render_fn() ? render_fn()(value) : value) || '0' }}
                     </span>
                 }
                 <input
@@ -49,7 +49,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
                 matRipple
                 type="button"
                 class="z-10 h-12 w-12 rounded-l-none rounded-r border border-secondary text-secondary"
-                [disabled]="value === max"
+                [disabled]="value === max()"
                 (click)="add()"
             >
                 <app-icon>add</app-icon>
@@ -69,13 +69,13 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 })
 export class CounterComponent implements ControlValueAccessor {
     /** Size of a single step */
-    @Input() public step = 1;
+    public readonly step = input(1);
     /** Maximum amount for the counter */
-    @Input() public max = 999;
+    public readonly max = input(999);
     /** Minimum amount for the counter */
-    @Input() public min = 0;
+    public readonly min = input(0);
     /** Custom function for rendering the counter value */
-    @Input() public render_fn: (v: number) => string;
+    public readonly render_fn = input<(v: number) => string>(undefined);
     /** Current value of the counter */
     public value: number;
     /** Whether shift key is being held by the user */
@@ -94,16 +94,16 @@ export class CounterComponent implements ControlValueAccessor {
      */
     public add() {
         if (!this.value) {
-            this.value = this.min || 0;
+            this.value = this.min() || 0;
         }
         const step = this.ctrl_key
-            ? 100 * this.step
+            ? 100 * this.step()
             : this.shift_key
-              ? 10 * this.step
-              : this.step || 1;
+              ? 10 * this.step()
+              : this.step() || 1;
         this.value += step;
-        if (this.value > this.max) {
-            this.value = this.max || 10;
+        if (this.value > this.max()) {
+            this.value = this.max() || 10;
         }
         this.setValue(this.value);
     }
@@ -111,16 +111,16 @@ export class CounterComponent implements ControlValueAccessor {
     /** Remove the `step` from the current value */
     public remove() {
         if (!this.value) {
-            this.value = this.min || 0;
+            this.value = this.min() || 0;
         }
         const step = this.ctrl_key
-            ? 100 * this.step
+            ? 100 * this.step()
             : this.shift_key
-              ? 10 * this.step
-              : this.step || 1;
+              ? 10 * this.step()
+              : this.step() || 1;
         this.value -= step;
-        if (this.value < this.min) {
-            this.value = this.min || 0;
+        if (this.value < this.min()) {
+            this.value = this.min() || 0;
         }
         this.setValue(this.value);
     }
@@ -130,11 +130,11 @@ export class CounterComponent implements ControlValueAccessor {
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: number): void {
-        if (new_value < this.min) new_value = this.min;
-        if (new_value > this.max) new_value = this.max;
-        if ((new_value / this.step) % 1 !== 0) {
+        if (new_value < this.min()) new_value = this.min();
+        if (new_value > this.max()) new_value = this.max();
+        if ((new_value / this.step()) % 1 !== 0) {
             new_value =
-                Math.round(new_value * (1 / this.step)) / (1 / this.step);
+                Math.round(new_value * (1 / this.step())) / (1 / this.step());
         }
         this.value = new_value;
         /* istanbul ignore else */

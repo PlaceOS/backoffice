@@ -1,6 +1,6 @@
 /// <reference path="../../../../../../node_modules/monaco-editor/monaco.d.ts" />
 
-import { Component, ElementRef, forwardRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, forwardRef, OnChanges, OnDestroy, OnInit, SimpleChanges, inject, input, viewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { AsyncHandler } from '../../common/async-handler.class';
@@ -43,15 +43,15 @@ export class SettingsFieldComponent
     private _settings = inject(SettingsService);
 
     /** Whether form field is readonly */
-    @Input() public readonly = true;
+    public readonly readonly = input(true);
     /** Resize */
-    @Input() public resize: boolean;
+    public readonly resize = input<boolean>(undefined);
     /** List of decorations to apply to the editor */
-    @Input() public decorations: HashMap[];
+    public readonly decorations = input<HashMap[]>(undefined);
     /** Input language for syntax highlighting and error checking */
-    @Input() public lang = 'yaml';
+    public readonly lang = input('yaml');
     /** Schema for input validation and key auto-completion */
-    @Input() public schema: string | HashMap;
+    public readonly schema = input<string | HashMap>(undefined);
     /** Current value for the */
     public settings_string = ' ';
     /** Form control on change handler */
@@ -63,7 +63,7 @@ export class SettingsFieldComponent
     private _theme = 'light';
 
     /** Reference to the element container the monaco editor */
-    @ViewChild('editor', { static: true }) private element: ElementRef;
+    private readonly element = viewChild<ElementRef>('editor');
     /** API object for the monaco editor */
     private editor: any;
 
@@ -104,21 +104,22 @@ export class SettingsFieldComponent
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.readonly && this.editor) {
-            this.editor.updateOptions({ readOnly: !!this.readonly });
+            this.editor.updateOptions({ readOnly: !!this.readonly() });
         }
         if (changes.lang && this.editor) {
-            this.editor.updateOptions({ language: this.lang || 'yaml' });
+            this.editor.updateOptions({ language: this.lang() || 'yaml' });
         }
         if (changes.resize) {
             this.resizeEditor();
         }
-        if (changes.schema && this.schema) {
-            this.setSchema(this.schema);
+        const schema = this.schema();
+        if (changes.schema && schema) {
+            this.setSchema(schema);
         }
         if (changes.decorations && this.editor) {
             this._active_decorators = this.editor.deltaDecorations(
                 this._active_decorators,
-                (this.decorations || []).map((i) => ({ ...i })),
+                (this.decorations() || []).map((i) => ({ ...i })),
             );
         }
     }
@@ -151,7 +152,7 @@ export class SettingsFieldComponent
         this.settings_string = `${value}`;
         if (this.editor) {
             this.editor.getModel().detectIndentation(true, 4);
-            if (this.readonly) {
+            if (this.readonly()) {
                 this.editor.updateOptions({ readOnly: false });
                 this.editor.setValue(this.settings_string);
                 this.editor.updateOptions({ readOnly: true });
@@ -186,21 +187,22 @@ export class SettingsFieldComponent
      * Create and render the monaco editor to the component
      */
     private createEditor() {
-        if (this.element && this.element.nativeElement) {
+        const element = this.element();
+        if (element && element.nativeElement) {
             if (this.editor) {
                 this.editor.dispose();
                 this.editor = null;
             }
             // monaco.languages.register(monaco_yaml);
-            this.editor = monaco.editor.create(this.element.nativeElement, {
+            this.editor = monaco.editor.create(element.nativeElement, {
                 value: this.settings_string || '',
-                language: this.lang || 'yaml',
-                model: MODEL[this.lang || 'yaml'],
+                language: this.lang() || 'yaml',
+                model: MODEL[this.lang() || 'yaml'],
                 fontFamily: `"Fira Code", monospace`,
                 lineNumbers: 'on',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
-                readOnly: this.readonly,
+                readOnly: this.readonly(),
                 theme:
                     this._settings.get('theme') !== 'dark' ? 'vs' : 'vs-dark',
             });
@@ -220,7 +222,7 @@ export class SettingsFieldComponent
                     this._active_decorators =
                         this.editor?.deltaDecorations(
                             this._active_decorators,
-                            (this.decorations || []).map((i) => ({ ...i })),
+                            (this.decorations() || []).map((i) => ({ ...i })),
                         ) || [];
                 },
                 50,

@@ -1,11 +1,11 @@
 import {
     Component,
-    EventEmitter,
-    Input,
     OnChanges,
     OnInit,
-    Output,
     SimpleChanges,
+    input,
+    model,
+    output,
 } from '@angular/core';
 
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
@@ -16,7 +16,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
         <div
             class="-mt-2 flex max-h-[65vh] max-w-[80vw] flex-wrap overflow-auto px-2"
         >
-            @for (field of field_list; track field.id) {
+            @for (field of field_list(); track field.id) {
                 <div class="m-2 flex min-w-[40%] flex-1 flex-col">
                     <label class="uppercase" [for]="field.id">{{
                         field.id
@@ -56,66 +56,69 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 })
 export class MatchFieldsComponent implements OnChanges, OnInit {
     /** List of bulk items to add */
-    @Input() public list: HashMap<any>[];
+    public readonly list = input<HashMap<any>[]>(undefined);
     /** List of fields available for building new item */
-    @Input() public field_list: Identity[] = [];
+    public readonly field_list = input<Identity[]>([]);
     /** User selected mappings for field mappings */
-    @Input() public mappings: Record<string, string> = {};
+    public readonly mappings = model<Record<string, string>>({});
     /** Emitter for mapped changes to list */
-    @Output() public mapping_done = new EventEmitter<HashMap<any>[]>();
+    public readonly mapping_done = output<HashMap<any>[]>();
     /** Emitter user want to return to previous step in flow */
-    @Output() public previous = new EventEmitter<void>();
+    public readonly previous = output<void>();
     /** Emitter for changes to user selected field mappings */
-    @Output() public new_mappings = new EventEmitter<Record<string, string>>();
+    public readonly new_mappings = output<Record<string, string>>();
     /** List of fields available to be selected */
     public source_fields: Identity[] = [];
     /** Mapping of raw data fields ids to item fields ids */
     public field_mapping: HashMap<string> = {};
 
     public ngOnInit() {
-        if (this.mappings) {
+        const mappings = this.mappings();
+        if (mappings) {
             this.field_mapping = {
                 ...this.field_mapping,
-                ...this.mappings,
+                ...mappings,
             };
         }
     }
 
     public ngOnChanges(changes: SimpleChanges) {
-        if (changes.list && this.list && this.list.length) {
-            this.source_fields = Object.keys(this.list[0]).map((i) => ({
+        const mappings = this.mappings();
+        const list = this.list();
+        if (changes.list && list && list.length) {
+            this.source_fields = Object.keys(list[0]).map((i) => ({
                 id: i.toLowerCase().split(' ').join('_'),
                 name: i.split('_').join(' '),
             }));
             this.source_fields.forEach((field) => {
-                if (this.field_list.find((i) => i.id === field.id)) {
+                if (this.field_list().find((i) => i.id === field.id)) {
                     this.field_mapping[`${field.id}`] = `${field.id}`;
                 }
             });
-            if (this.mappings) {
+            if (mappings) {
                 this.field_mapping = {
                     ...this.field_mapping,
-                    ...this.mappings,
+                    ...mappings,
                 };
             }
         }
-        if (changes.mappings && this.mappings) {
-            this.field_mapping = { ...this.field_mapping, ...this.mappings };
+        if (changes.mappings && mappings) {
+            this.field_mapping = { ...this.field_mapping, ...mappings };
         }
     }
 
     /** Generated the mapped list of items and emit them */
     public saveMapping(): void {
-        const mapped_list = this.list.map((item) => {
+        const mapped_list = this.list().map((item) => {
             const mapped_item: any = {};
-            for (const field of this.field_list) {
+            for (const field of this.field_list()) {
                 const id = `${field.id}`;
                 mapped_item[id] = item[this.field_mapping[id]];
             }
             return mapped_item;
         });
-        this.mappings = { ...this.field_mapping };
-        this.new_mappings.emit(this.mappings);
+        this.mappings.set({ ...this.field_mapping });
+        this.new_mappings.emit(this.mappings());
         this.mapping_done.emit(mapped_list);
     }
 }

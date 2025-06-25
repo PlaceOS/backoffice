@@ -1,10 +1,10 @@
 import {
-    Component,
-    forwardRef,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
+  Component,
+  forwardRef,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  input
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { PlaceSystem, queryModules } from '@placeos/ts-client';
@@ -66,7 +66,7 @@ export class SelectModuleComponent
     implements OnInit, OnChanges, ControlValueAccessor
 {
     /** ID of the system to select the module from */
-    @Input() public system: PlaceSystem;
+    public readonly system = input<PlaceSystem>(undefined);
 
     private _system = new BehaviorSubject('');
     private _change = new BehaviorSubject(0);
@@ -93,8 +93,8 @@ export class SelectModuleComponent
         map((mod_list) => {
             mod_list.sort(
                 (a, b) =>
-                    this.system.modules.indexOf(a.id) -
-                    this.system.modules.indexOf(b.id),
+                    this.system().modules.indexOf(a.id) -
+                    this.system().modules.indexOf(b.id),
             );
             return mod_list.map((mod) => ({
                 id: mod.id,
@@ -129,8 +129,9 @@ export class SelectModuleComponent
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.system) {
-            this._system.next(this.system.id);
-            this._change.next(this.system.updated_at);
+            const system = this.system();
+            this._system.next(system.id);
+            this._change.next(system.updated_at);
         }
     }
 

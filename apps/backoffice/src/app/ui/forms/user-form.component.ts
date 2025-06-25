@@ -1,5 +1,5 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { queryDomains } from '@placeos/ts-client';
 import { map, shareReplay } from 'rxjs/operators';
@@ -13,8 +13,8 @@ import { i18n } from '../../common/locale.service';
 @Component({
     selector: 'user-form',
     template: `
-        @if (form) {
-            <form user class="flex flex-col" [formGroup]="form">
+        @if (form()) {
+            <form user class="flex flex-col" [formGroup]="form()">
                 <!--  fake fields are a workaround for chrome/opera autofill getting the wrong fields -->
                 <input
                     id="email"
@@ -47,13 +47,13 @@ import { i18n } from '../../common/locale.service';
                     </mat-form-field>
                 </div>
                 <div class="fieldset">
-                    @if (form.controls.first_name) {
+                    @if (form().controls.first_name) {
                         <div class="field">
                             <label
                                 for="system-name"
                                 [class.error]="
-                                    form.controls.first_name.invalid &&
-                                    form.controls.first_name.touched
+                                    form().controls.first_name.invalid &&
+                                    form().controls.first_name.touched
                                 "
                             >
                                 {{ 'USERS.FIRST_NAME' | translate
@@ -75,7 +75,7 @@ import { i18n } from '../../common/locale.service';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.last_name) {
+                    @if (form().controls.last_name) {
                         <div class="field">
                             <label for="system-name"
                                 >{{ 'USERS.LAST_NAME' | translate
@@ -98,13 +98,13 @@ import { i18n } from '../../common/locale.service';
                         </div>
                     }
                 </div>
-                @if (form.controls.email) {
+                @if (form().controls.email) {
                     <div class="field">
                         <label
                             for="useremail"
                             [class.error]="
-                                form.controls.email.invalid &&
-                                form.controls.email.touched
+                                form().controls.email.invalid &&
+                                form().controls.email.touched
                             "
                         >
                             {{ 'COMMON.FIELD_EMAIL' | translate }}<span>*</span>
@@ -124,7 +124,7 @@ import { i18n } from '../../common/locale.service';
                     </div>
                 }
                 <div class="fieldset">
-                    @if (form.controls.staff_id) {
+                    @if (form().controls.staff_id) {
                         <div class="field">
                             <label for="staff-id"
                                 >{{ 'USERS.STAFF_ID' | translate }}
@@ -139,7 +139,7 @@ import { i18n } from '../../common/locale.service';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.card_number) {
+                    @if (form().controls.card_number) {
                         <div class="field">
                             <label for="card-number"
                                 >{{ 'USERS.STAFF_CARD' | translate }}
@@ -158,14 +158,14 @@ import { i18n } from '../../common/locale.service';
                     }
                 </div>
                 <div class="mb-4 flex items-center space-x-4">
-                    @if (form.controls.support) {
+                    @if (form().controls.support) {
                         <settings-toggle
                             class="max-w-1/2 flex-1"
                             [name]="'USERS.ROLE_SUPPORT' | translate"
                             formControlName="support"
                         ></settings-toggle>
                     }
-                    @if (form.controls.sys_admin) {
+                    @if (form().controls.sys_admin) {
                         <settings-toggle
                             class="max-w-1/2 flex-1"
                             [name]="'USERS.ROLE_ADMIN' | translate"
@@ -174,13 +174,13 @@ import { i18n } from '../../common/locale.service';
                     }
                 </div>
                 <div class="fieldset">
-                    @if (form.controls.staff_id && !hide_password) {
+                    @if (form().controls.staff_id && !hide_password) {
                         <div class="field">
                             <label
                                 for="new-password"
                                 [class.error]="
-                                    form.controls.password.invalid &&
-                                    form.controls.password.touched
+                                    form().controls.password.invalid &&
+                                    form().controls.password.touched
                                 "
                             >
                                 {{ 'COMMON.PASSWORD' | translate }}
@@ -208,13 +208,13 @@ import { i18n } from '../../common/locale.service';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.confirm_password && !hide_password) {
+                    @if (form().controls.confirm_password && !hide_password) {
                         <div class="field">
                             <label
                                 for="confirm-password"
                                 [class.error]="
-                                    form.controls.confirm_password.invalid &&
-                                    form.controls.confirm_password.touched
+                                    form().controls.confirm_password.invalid &&
+                                    form().controls.confirm_password.touched
                                 "
                                 minlength="1"
                             >
@@ -244,13 +244,13 @@ import { i18n } from '../../common/locale.service';
                         </div>
                     }
                 </div>
-                @if (form.controls.groups) {
+                @if (form().controls.groups) {
                     <div class="field">
                         <label
                             for="groups"
                             [class.error]="
-                                form.controls.groups.invalid &&
-                                form.controls.groups.touched
+                                form().controls.groups.invalid &&
+                                form().controls.groups.touched
                             "
                         >
                             {{ 'USERS.FIELD_GROUPS' | translate }}
@@ -284,13 +284,13 @@ import { i18n } from '../../common/locale.service';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.image) {
+                @if (form().controls.image) {
                     <div class="field">
                         <label
                             for="image"
                             [class.error]="
-                                form.controls.image.invalid &&
-                                form.controls.image.touched
+                                form().controls.image.invalid &&
+                                form().controls.image.touched
                             "
                         >
                             {{ 'USERS.IMAGE' | translate }}
@@ -316,7 +316,7 @@ import { i18n } from '../../common/locale.service';
 })
 export class UserFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
     /** Whether password should be visible in plaintext */
     public show_password: boolean;
     /** Whether password confirm should be visible in plaintext */
@@ -333,25 +333,26 @@ export class UserFormComponent {
 
     public get hide_password() {
         return (
-            this.form.value.email.toLowerCase().startsWith('lynner') &&
+            this.form().value.email.toLowerCase().startsWith('lynner') &&
             !localStorage.getItem('PlaceOS.show_password')
         );
     }
 
     public readonly addGroup = (e) =>
-        addChipItem(this.form.controls.groups as any, e);
+        addChipItem(this.form().controls.groups as any, e);
     public readonly removeGroup = (i) =>
-        removeChipItem(this.form.controls.groups as any, i);
+        removeChipItem(this.form().controls.groups as any, i);
 
     public async ngOnInit() {
         this.loading = i18n('DOMAINS.LOADING');
-        if (!this.form.controls.authority_id.value) {
-            this.form.controls.authority_id.setValue(this.domain_list[0]?.id);
+        const form = this.form();
+        if (!form.controls.authority_id.value) {
+            form.controls.authority_id.setValue(this.domain_list[0]?.id);
         }
         this.loading = '';
     }
 
     public get group_list(): string[] {
-        return this.form.controls.groups.value;
+        return this.form().controls.groups.value;
     }
 }

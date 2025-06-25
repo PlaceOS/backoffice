@@ -24,13 +24,11 @@ import { ZonesStateService } from './zones-state.service';
                 />
             </mat-form-field>
         </div>
-        <mat-progress-bar
-            mode="indeterminate"
+        <mat-progress-bar mode="indeterminate"
             class="w-full"
             [class.opacity-0]="!(loading | async)"
-        ></mat-progress-bar>
-        <simple-table
-            class="block min-w-[32rem] text-sm"
+         />
+        <simple-table class="block min-w-[32rem] text-sm"
             [data]="children"
             [columns]="[
                 {
@@ -46,7 +44,7 @@ import { ZonesStateService } from './zones-state.service';
             ]"
             [sortable]="true"
             [empty_message]="'ZONES.CHILDREN_EMPTY' | translate"
-        ></simple-table>
+         />
         <ng-template #name_template let-row="row">
             <div class="flex flex-col items-start px-4 py-2 leading-snug">
                 <a class="truncate underline" [routerLink]="['/zones', row.id]">

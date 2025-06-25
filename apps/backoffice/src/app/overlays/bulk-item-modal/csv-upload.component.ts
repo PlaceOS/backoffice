@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 import {
     csvToJson,
@@ -38,7 +38,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                 </div>
             </div>
         }
-        @if (template) {
+        @if (template()) {
             <div class="p-4">
                 <button
                     btn
@@ -56,9 +56,9 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 })
 export class CsvUploadComponent {
     /** Data for the template CSV */
-    @Input() template: HashMap[] = [];
+    readonly template = input<HashMap[]>([]);
     /** Emitter for changes to the data displayed */
-    @Output() public list = new EventEmitter<HashMap[]>();
+    public readonly list = output<HashMap[]>();
     /** Whether user has dragged item */
     public dragging: boolean;
     /** Whether CSV data is being processed */
@@ -94,8 +94,8 @@ export class CsvUploadComponent {
     public downloadTemplateCSV() {
         const ignore_keys = ['module_list', 'settings', '_type', 'version'];
         const csv_data = jsonToCsv(
-            this.template,
-            Object.keys(this.template[0]).filter(
+            this.template(),
+            Object.keys(this.template()[0]).filter(
                 (key) => ignore_keys.indexOf(key) < 0,
             ),
             '\t',

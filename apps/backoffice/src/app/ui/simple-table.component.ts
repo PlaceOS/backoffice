@@ -1,10 +1,10 @@
 import {
-    Component,
-    EventEmitter,
-    Input,
-    Output,
-    SimpleChanges,
-    TemplateRef,
+  Component,
+  SimpleChanges,
+  TemplateRef,
+  input,
+  model,
+  output
 } from '@angular/core';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -36,22 +36,26 @@ export interface TableColumn {
                 ondrop.emit([$event.previousIndex, $event.currentIndex])
             "
         >
-            @if (can_reorder) {
+            @if (can_reorder()) {
                 <div
                     class="sticky top-0 z-10 flex min-h-full items-center justify-between border-r border-base-200 bg-base-300 px-2"
                     [style.gridArea]="gridSquare(1, 1)"
                 ></div>
             }
-            @if (selectable) {
+            @if (selectable()) {
                 <div
                     class="sticky top-0 z-10 flex min-h-full items-center justify-between border-r border-base-200 bg-base-300 px-2"
-                    [style.gridArea]="gridSquare(1, 1 + (can_reorder ? 1 : 0))"
+                    [style.gridArea]="
+                        gridSquare(1, 1 + (can_reorder() ? 1 : 0))
+                    "
                 >
                     <mat-checkbox
-                        [checked]="selected.length === (data$ | async)?.length"
+                        [checked]="
+                            selected().length === (data$ | async)?.length
+                        "
                         [indeterminate]="
-                            selected.length > 0 &&
-                            selected.length < (data$ | async)?.length
+                            selected().length > 0 &&
+                            selected().length < (data$ | async)?.length
                         "
                         (change)="selectAll($event.checked)"
                     ></mat-checkbox>
@@ -66,7 +70,10 @@ export interface TableColumn {
                     [style.gridArea]="
                         gridSquare(
                             1,
-                            1 + i + (selectable ? 1 : 0) + (can_reorder ? 1 : 0)
+                            1 +
+                                i +
+                                (selectable() ? 1 : 0) +
+                                (can_reorder() ? 1 : 0)
                         )
                     "
                     [class.pointer-events-none]="
@@ -96,7 +103,7 @@ export interface TableColumn {
                 track row.id || $index;
                 let i = $index
             ) {
-                @if (can_reorder) {
+                @if (can_reorder()) {
                     <div
                         class="grid"
                         cdkDrag
@@ -114,7 +121,7 @@ export interface TableColumn {
                             class="z-0 flex min-h-full items-center justify-center border-r border-base-200 px-2"
                             [style.gridArea]="gridSquare(2 + i, 1)"
                             [class.border-b]="i !== (data$ | async)?.length - 1"
-                            [style.background]="color[i]"
+                            [style.background]="color()[i]"
                         >
                             <button
                                 icon
@@ -148,25 +155,25 @@ export interface TableColumn {
                     [style.gridArea]="2 + '/1/' + 2 + '/' + -1"
                     class="flex items-center justify-center p-4 opacity-30"
                 >
-                    {{ empty_message }}
+                    {{ empty_message() }}
                 </div>
             }
             <!-- TODO: Add pagination -->
         </div>
         <ng-template #row_template let-row="row" let-i="index">
-            @if (selectable) {
+            @if (selectable()) {
                 <div
                     class="z-0 flex min-h-full items-center justify-between border-r border-base-200 px-2"
                     [style.gridArea]="
-                        gridSquare(2 + i, 1 + (can_reorder ? 1 : 0))
+                        gridSquare(2 + i, 1 + (can_reorder() ? 1 : 0))
                     "
                     [class.border-b]="i !== (data$ | async)?.length - 1"
-                    [style.background]="color[i]"
+                    [style.background]="color()[i]"
                     (mouseenter)="active_row = i"
                     (touchstart)="active_row = i"
                 >
                     <mat-checkbox
-                        [checked]="selected.includes(i)"
+                        [checked]="selected().includes(i)"
                         (change)="select(i, $event.checked)"
                     ></mat-checkbox>
                 </div>
@@ -177,7 +184,10 @@ export interface TableColumn {
                     [style.gridArea]="
                         gridSquare(
                             2 + i,
-                            1 + j + (selectable ? 1 : 0) + (can_reorder ? 1 : 0)
+                            1 +
+                                j +
+                                (selectable() ? 1 : 0) +
+                                (can_reorder() ? 1 : 0)
                         )
                     "
                     [class.border-b]="i !== (data$ | async)?.length - 1"
@@ -185,7 +195,7 @@ export interface TableColumn {
                     [class.width]="column.size"
                     (mouseenter)="active_row = i"
                     (touchstart)="active_row = i"
-                    [style.background]="color[i]"
+                    [style.background]="color()[i]"
                 >
                     @switch (columnType(column)) {
                         @default {
@@ -244,20 +254,23 @@ export interface TableColumn {
     standalone: false,
 })
 export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
-    @Input() public data: T[] | Observable<T[]>;
-    @Input() public columns: TableColumn[] = [];
-    @Input() public selectable = false;
-    @Input() public filter: string = '';
-    @Input() public sortable = false;
-    @Input() public can_reorder = false;
-    @Input() public selected: number[] = [];
-    @Input() public page_size = -1;
-    @Input() public color: Record<number, string> = {};
-    @Input() public empty_message = 'No data to list';
-    @Output() public selectedChange = new EventEmitter<number[]>();
-    @Output() public onclick = new EventEmitter<number>();
-    @Output() public oncontext = new EventEmitter<number>();
-    @Output() public ondrop = new EventEmitter<[number, number]>();
+    public readonly data = input<T[] | Observable<T[]>>(undefined);
+    public readonly columns = input<TableColumn[]>([]);
+    public readonly selectable = input(false);
+    public readonly filter = input<string>('');
+    public readonly sortable = input(false);
+    public readonly can_reorder = input(false);
+    public readonly selected = model<number[]>([]);
+    public readonly page_size = input(-1);
+    public readonly color = input<Record<number, string>>({});
+    public readonly empty_message = input('No data to list');
+    public readonly selectedChange = output<number[]>();
+    public readonly onclick = output<number>();
+    public readonly oncontext = output<number>();
+    public readonly ondrop = output<[
+    number,
+    number
+]>();
 
     public page = 0;
     public active_row = -1;
@@ -301,14 +314,14 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
                     });
                 }
             }
-            this.selected = [];
+            this.selected.set([]);
             this.page = 0;
             return data;
         }),
     );
 
     public get can_sort() {
-        return !this.can_reorder && this.sortable;
+        return !this.can_reorder() && this.sortable();
     }
 
     public get sort() {
@@ -318,8 +331,8 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     public get column_count() {
         return (
             this.active_columns.length +
-            (this.selectable ? 1 : 0) +
-            (this.can_reorder ? 1 : 0)
+            (this.selectable() ? 1 : 0) +
+            (this.can_reorder() ? 1 : 0)
         );
     }
 
@@ -327,25 +340,28 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
         let template = this.active_columns
             .map((_) => _.size || 'auto')
             .join(' ');
-        template = this.selectable ? `3.5rem ${template}` : template;
-        template = this.can_reorder ? `3.5rem ${template}` : template;
+        template = this.selectable() ? `3.5rem ${template}` : template;
+        template = this.can_reorder() ? `3.5rem ${template}` : template;
         return template;
     }
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.filter) {
-            this._filter$.next(this.filter);
+            this._filter$.next(this.filter());
         }
         if (changes.columns) {
-            this.active_columns = this.columns.filter((_) => _.show !== false);
+            this.active_columns = this.columns().filter(
+                (_) => _.show !== false,
+            );
         }
         if (changes.data) {
-            if (this.data instanceof Array) {
-                this._data$.next(this.data);
+            const data = this.data();
+            if (data instanceof Array) {
+                this._data$.next(data);
             } else {
                 this.subscription(
                     'data',
-                    this.data.subscribe((_) => this._data$.next(_)),
+                    data.subscribe((_) => this._data$.next(_)),
                 );
             }
         }
@@ -360,14 +376,14 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     }
 
     public select(index: number, state: boolean) {
-        if (state) this.selected.push(index);
-        else this.selected = this.selected.filter((i) => i !== index);
+        if (state) this.selected().push(index);
+        else this.selected.set(this.selected().filter((i) => i !== index));
     }
 
     public async selectAll(state: boolean) {
         const list = await nextValueFrom(this.data$);
-        if (state) this.selected = list.map((_, i) => i);
-        else this.selected = [];
+        if (state) this.selected.set(list.map((_, i) => i));
+        else this.selected.set([]);
     }
 
     public setSort(key: string) {

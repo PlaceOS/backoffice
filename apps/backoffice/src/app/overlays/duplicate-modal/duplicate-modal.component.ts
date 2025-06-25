@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 
@@ -21,7 +21,7 @@ export class DuplicateModalComponent {
     private _dialog_ref = inject<MatDialogRef<DuplicateModalComponent>>(MatDialogRef);
 
     /** Emitter for user action on the modal */
-    @Output() public event = new EventEmitter<DialogEvent>();
+    public readonly event = output<DialogEvent>();
     /** Number of times to duplicate the given item */
     public times: number = 1;
     /** Number of times to duplicate the given item */

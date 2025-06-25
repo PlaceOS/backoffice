@@ -8,13 +8,11 @@ import { TriggerStateService } from './trigger-state.service';
 @Component({
     selector: 'trigger-systems',
     template: `
-        <mat-progress-bar
-            mode="indeterminate"
+        <mat-progress-bar mode="indeterminate"
             class="w-full"
             [class.opacity-0]="(loading | async) !== true"
-        ></mat-progress-bar>
-        <simple-table
-            class="block min-w-[32rem] text-sm"
+         />
+        <simple-table class="block min-w-[32rem] text-sm"
             [data]="instances"
             [columns]="[
                 {
@@ -39,7 +37,7 @@ import { TriggerStateService } from './trigger-state.service';
             ]"
             [sortable]="true"
             [empty_message]="'TRIGGERS.INSTANCES_EMPTY' | translate"
-        ></simple-table>
+         />
         <ng-template #state_template let-row="row">
             <div
                 class="mx-auto h-2 w-2 rounded-full"

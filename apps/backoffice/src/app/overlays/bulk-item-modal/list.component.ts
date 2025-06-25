@@ -1,12 +1,11 @@
 import {
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    Output,
-    SimpleChanges,
-    TemplateRef,
-    ViewChild,
+  Component,
+  OnChanges,
+  SimpleChanges,
+  TemplateRef,
+  input,
+  output,
+  viewChild
 } from '@angular/core';
 
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
@@ -19,8 +18,8 @@ import { TableColumn } from '../../ui/simple-table.component';
             class="flex max-h-[65vh] max-w-[80vw] flex-wrap overflow-auto px-4 text-sm"
         >
             <simple-table
-                [style.min-width]="12 * fields.length + 'rem'"
-                [data]="list"
+                [style.min-width]="12 * fields().length + 'rem'"
+                [data]="list()"
                 [columns]="columns"
             ></simple-table>
         </div>
@@ -46,26 +45,27 @@ import { TableColumn } from '../../ui/simple-table.component';
 })
 export class ListComponent implements OnChanges {
     /** List of bulk items to add */
-    @Input() public list: HashMap<any>;
+    public readonly list = input<HashMap<any>>(undefined);
     /** List of fields available for building new item */
-    @Input() public fields: Identity[] = [];
+    public readonly fields = input<Identity[]>([]);
     /** Emitter user want to return to next step in flow */
-    @Output() public next = new EventEmitter<void>();
+    public readonly next = output<void>();
     /** Emitter user want to return to previous step in flow */
-    @Output() public previous = new EventEmitter<void>();
+    public readonly previous = output<void>();
     /** List of column ids to show on table */
     public columns: TableColumn[] = [];
 
-    @ViewChild('input', { static: true }) private _input_tmpl: TemplateRef<any>;
+    private readonly _input_tmpl = viewChild<TemplateRef<any>>('input');
 
     public ngOnChanges(changes: SimpleChanges) {
-        if (changes.fields && this.fields) {
-            this.columns = this.fields.map(
+        const fields = this.fields();
+        if (changes.fields && fields) {
+            this.columns = fields.map(
                 (i) =>
                     ({
                         key: i.id,
                         name: i.name.toUpperCase(),
-                        content: this._input_tmpl,
+                        content: this._input_tmpl(),
                         sortable: true,
                     }) as TableColumn,
             );

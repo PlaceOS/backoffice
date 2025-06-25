@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input, inject } from '@angular/core';
+import { Component, forwardRef, inject, input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -18,13 +18,13 @@ import { ModuleLike } from './select-module.component';
         <div class="relative">
             <div [class.pointer-events-none]="loading">
                 <select-system-module
-                    [system]="system"
+                    [system]="system()"
                     [(ngModel)]="module"
                     (ngModelChange)="fn = null"
                 ></select-system-module>
                 @if (module) {
                     <select-module-method
-                        [system]="system"
+                        [system]="system()"
                         [module]="module"
                         [(ngModel)]="fn"
                         (ngModelChange)="
@@ -40,7 +40,7 @@ import { ModuleLike } from './select-module.component';
                         (ngModelChange)="postArguments($event)"
                     ></function-arguments>
                 }
-                @if (can_execute) {
+                @if (can_execute()) {
                     <div class="flex w-full items-center space-x-2">
                         <button class="inverse flex-1" btn (click)="clear()">
                             {{ 'COMMON.EXECUTE_CLEAR' | translate }}
@@ -80,11 +80,11 @@ import { ModuleLike } from './select-module.component';
 export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     private _dialog = inject(MatDialog);
 
-    @Input() public zone?: string;
+    public readonly zone = input<string>(undefined);
     /** ID of the system to select the module from */
-    @Input() public system: PlaceSystem;
+    public readonly system = input<PlaceSystem>(undefined);
     /** Whether component is allowed to execute methods on the system */
-    @Input() public can_execute = true;
+    public readonly can_execute = input(true);
 
     public valid = true;
     public module: ModuleLike;
@@ -167,9 +167,9 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     public async execute() {
         this.loading = true;
         this.arguments = this.arguments || {};
-        const method = this.zone ? executeOnZone : executeOnSystem;
+        const method = this.zone() ? executeOnZone : executeOnSystem;
         const result = await method(
-            this.zone || this.system.id,
+            this.zone() || this.system().id,
             (this.fn as any).name,
             this.module.module,
             this.module.index,

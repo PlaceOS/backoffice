@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import {
     PlaceDriverRole,
@@ -13,15 +13,15 @@ import { map } from 'rxjs/operators';
 @Component({
     selector: 'module-form',
     template: `
-        @if (form) {
-            <form module class="flex flex-col" [formGroup]="form">
-                @if (form.controls.driver && !form.controls.id.value) {
+        @if (form()) {
+            <form module class="flex flex-col" [formGroup]="form()">
+                @if (form().controls.driver && !form().controls.id.value) {
                     <div class="field">
                         <label
                             for="driver"
                             [class.error]="
-                                form.controls.driver.invalid &&
-                                form.controls.driver.touched
+                                form().controls.driver.invalid &&
+                                form().controls.driver.touched
                             "
                         >
                             {{ 'DRIVERS.SINGULAR' | translate }}<span>*</span>
@@ -32,8 +32,8 @@ import { map } from 'rxjs/operators';
                             formControlName="driver"
                         ></item-search-field>
                         @if (
-                            form.controls.driver.invalid &&
-                            form.controls.driver.touched
+                            form().controls.driver.invalid &&
+                            form().controls.driver.touched
                         ) {
                             <div class="error">
                                 {{ 'MODULES.DRIVER_REQUIRED' | translate }}
@@ -41,14 +41,14 @@ import { map } from 'rxjs/operators';
                         }
                     </div>
                 }
-                @if (!form.controls.driver || form.controls.driver.value) {
-                    @if (form.controls.system && role === 'logic') {
+                @if (!form().controls.driver || form().controls.driver.value) {
+                    @if (form().controls.system && role === 'logic') {
                         <div class="field">
                             <label
                                 for="system"
                                 [class.error]="
-                                    form.controls.system.invalid &&
-                                    form.controls.system.touched
+                                    form().controls.system.invalid &&
+                                    form().controls.system.touched
                                 "
                             >
                                 {{ 'MODULES.CONTROL_SYSTEM' | translate }}
@@ -56,15 +56,15 @@ import { map } from 'rxjs/operators';
                                     <span>*</span>
                                 }
                             </label>
-                            @if (!readonly) {
+                            @if (!readonly()) {
                                 <item-search-field
                                     name="system"
                                     [query_fn]="system_query_fn"
                                     formControlName="system"
                                 ></item-search-field>
                                 @if (
-                                    form.controls.system.invalid &&
-                                    form.controls.system.touched
+                                    form().controls.system.invalid &&
+                                    form().controls.system.touched
                                 ) {
                                     <div class="error">
                                         {{
@@ -75,24 +75,24 @@ import { map } from 'rxjs/operators';
                                 }
                             } @else {
                                 <div class="value">
-                                    {{ form.controls.system.value?.name }}
+                                    {{ form().controls.system.value?.name }}
                                     <span>{{
-                                        form.controls.system.value?.id
+                                        form().controls.system.value?.id
                                     }}</span>
                                 </div>
                             }
                         </div>
                     }
                     @if (
-                        form.controls.uri &&
+                        form().controls.uri &&
                         (role === 'service' || role === 'websocket')
                     ) {
                         <div class="field">
                             <label
                                 for="uri"
                                 [class.error]="
-                                    form.controls.uri.invalid &&
-                                    form.controls.uri.touched
+                                    form().controls.uri.invalid &&
+                                    form().controls.uri.touched
                                 "
                             >
                                 {{ 'MODULES.URI' | translate }}<span>*</span>
@@ -112,15 +112,15 @@ import { map } from 'rxjs/operators';
                     }
                     <div class="fieldset">
                         @if (
-                            form.controls.ip &&
+                            form().controls.ip &&
                             !(role === 'service' || role === 'websocket')
                         ) {
                             <div class="field">
                                 <label
                                     for="ip"
                                     [class.error]="
-                                        form.controls.ip.invalid &&
-                                        form.controls.ip.touched
+                                        form().controls.ip.invalid &&
+                                        form().controls.ip.touched
                                     "
                                 >
                                     {{ 'MODULES.FIELD_IP' | translate }}
@@ -135,7 +135,7 @@ import { map } from 'rxjs/operators';
                                         placeholder="IP Address"
                                         formControlName="ip"
                                     />
-                                    @if (form.controls.ip.invalid) {
+                                    @if (form().controls.ip.invalid) {
                                         <mat-error>
                                             {{
                                                 'MODULES.IP_REQUIRED'
@@ -147,15 +147,15 @@ import { map } from 'rxjs/operators';
                             </div>
                         }
                         @if (
-                            form.controls.port &&
+                            form().controls.port &&
                             !(role === 'service' || role === 'websocket')
                         ) {
                             <div class="field">
                                 <label
                                     for="port-number"
                                     [class.error]="
-                                        form.controls.port.invalid &&
-                                        form.controls.port.touched
+                                        form().controls.port.invalid &&
+                                        form().controls.port.touched
                                     "
                                 >
                                     {{ 'MODULES.PORT_NUMBER' | translate }}
@@ -173,7 +173,7 @@ import { map } from 'rxjs/operators';
                                         "
                                         formControlName="port"
                                     />
-                                    @if (form.controls.port.invalid) {
+                                    @if (form().controls.port.invalid) {
                                         <mat-error>
                                             {{
                                                 'MODULES.PORT_REQUIRED'
@@ -187,7 +187,7 @@ import { map } from 'rxjs/operators';
                     </div>
                     <div class="-mx-2 mb-4 flex flex-wrap items-center">
                         @if (
-                            form.controls.tls &&
+                            form().controls.tls &&
                             !(role === 'service' || role === 'websocket')
                         ) {
                             <settings-toggle
@@ -197,7 +197,7 @@ import { map } from 'rxjs/operators';
                             ></settings-toggle>
                         }
                         @if (
-                            form.controls.udp &&
+                            form().controls.udp &&
                             !(role === 'service' || role === 'websocket')
                         ) {
                             <settings-toggle
@@ -206,7 +206,7 @@ import { map } from 'rxjs/operators';
                                 formControlName="udp"
                             ></settings-toggle>
                         }
-                        @if (form.controls.makebreak && role !== 'logic') {
+                        @if (form().controls.makebreak && role !== 'logic') {
                             <settings-toggle
                                 class="max-w-1/2 m-2 min-w-[40%] flex-1"
                                 [name]="'MODULES.MAKEBREAK' | translate"
@@ -214,7 +214,7 @@ import { map } from 'rxjs/operators';
                             ></settings-toggle>
                         }
                         @if (
-                            form.controls.ignore_connected && role !== 'logic'
+                            form().controls.ignore_connected && role !== 'logic'
                         ) {
                             <settings-toggle
                                 class="max-w-1/2 m-2 min-w-[40%] flex-1"
@@ -223,7 +223,7 @@ import { map } from 'rxjs/operators';
                             ></settings-toggle>
                         }
                     </div>
-                    @if (form.controls.notes) {
+                    @if (form().controls.notes) {
                         <div class="field">
                             <label for="notes">{{
                                 'COMMON.NOTES' | translate
@@ -238,7 +238,7 @@ import { map } from 'rxjs/operators';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.custom_name) {
+                    @if (form().controls.custom_name) {
                         <div class="field">
                             <label for="custom-name">
                                 {{ 'MODULES.CUSTOM_NAME' | translate }}
@@ -255,7 +255,7 @@ import { map } from 'rxjs/operators';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.edge && !form.controls.id.value) {
+                    @if (form().controls.edge && !form().controls.id.value) {
                         <div class="field">
                             <label for="driver">
                                 {{ 'COMMON.EDGE' | translate }}
@@ -276,9 +276,9 @@ import { map } from 'rxjs/operators';
 })
 export class ModuleFormComponent extends AsyncHandler implements OnDestroy {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
     /** Whether system is readonly */
-    @Input() public readonly: boolean;
+    public readonly readonly = input<boolean>(undefined);
 
     public readonly driver_query_fn = (_: string) =>
         queryDrivers({ q: _ } as any).pipe(map((resp) => resp.data));
@@ -291,9 +291,10 @@ export class ModuleFormComponent extends AsyncHandler implements OnDestroy {
 
     /** Role of the selected driver */
     public get role(): string {
+        const form = this.form();
         const role =
-            this.form.controls.driver?.value.role ||
-            this.form.controls.role.value;
+            form.controls.driver?.value.role ||
+            form.controls.role.value;
         switch (role) {
             case PlaceDriverRole.SSH:
                 return 'ssh';

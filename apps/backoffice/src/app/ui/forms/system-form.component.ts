@@ -1,5 +1,5 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, SimpleChanges, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { queryZones } from '@placeos/ts-client';
@@ -11,15 +11,15 @@ import { TIMEZONES_IANA } from '../../common/timezones';
 @Component({
     selector: 'system-form',
     template: `
-        @if (form) {
-            <form system class="flex w-full flex-col" [formGroup]="form">
-                @if (form.controls.zone) {
+        @if (form()) {
+            <form system class="flex w-full flex-col" [formGroup]="form()">
+                @if (form().controls.zone) {
                     <div class="field">
                         <label
                             for="zone"
                             [class.error]="
-                                form.controls.zone.invalid &&
-                                form.controls.zone.touched
+                                form().controls.zone.invalid &&
+                                form().controls.zone.touched
                             "
                         >
                             {{ 'ZONES.SINGULAR' | translate }}<span>*</span>
@@ -30,8 +30,8 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             formControlName="zone"
                         ></item-search-field>
                         @if (
-                            form.controls.zone.invalid &&
-                            form.controls.zone.touched
+                            form().controls.zone.invalid &&
+                            form().controls.zone.touched
                         ) {
                             <div class="error">
                                 {{ 'SYSTEMS.ZONE_REQUIRED' | translate }}
@@ -40,13 +40,13 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     </div>
                 }
                 <div class="fieldset">
-                    @if (form.controls.name) {
+                    @if (form().controls.name) {
                         <div class="field">
                             <label
                                 for="system-name"
                                 [class.error]="
-                                    form.controls.name.invalid &&
-                                    form.controls.name.touched
+                                    form().controls.name.invalid &&
+                                    form().controls.name.touched
                                 "
                             >
                                 {{ 'COMMON.FIELD_NAME' | translate
@@ -60,7 +60,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                                     formControlName="name"
                                     required
                                 />
-                                @if (form.controls.name.invalid) {
+                                @if (form().controls.name.invalid) {
                                     <mat-error>{{
                                         'SYSTEMS.NAME_REQUIRED' | translate
                                     }}</mat-error>
@@ -68,13 +68,13 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.email) {
+                    @if (form().controls.email) {
                         <div class="field">
                             <label
                                 for="system-email"
                                 [class.error]="
-                                    form.controls.email.invalid &&
-                                    form.controls.email.touched
+                                    form().controls.email.invalid &&
+                                    form().controls.email.touched
                                 "
                             >
                                 {{ 'COMMON.FIELD_EMAIL' | translate }}
@@ -88,7 +88,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                                     "
                                     formControlName="email"
                                 />
-                                @if (form.controls.email.invalid) {
+                                @if (form().controls.email.invalid) {
                                     <mat-error>{{
                                         'SYSTEMS.EMAIL_REQUIRED' | translate
                                     }}</mat-error>
@@ -98,7 +98,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     }
                 </div>
                 <div class="fieldset">
-                    @if (form.controls.display_name) {
+                    @if (form().controls.display_name) {
                         <div class="field">
                             <label for="display-name">
                                 {{ 'SYSTEMS.DISPLAY_NAME' | translate }}
@@ -115,7 +115,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.display_name) {
+                    @if (form().controls.display_name) {
                         <div class="field">
                             <label for="code-name"
                                 >{{ 'SYSTEMS.CODE' | translate }}
@@ -131,13 +131,13 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         </div>
                     }
                 </div>
-                @if (form.controls.support_url) {
+                @if (form().controls.support_url) {
                     <div class="field">
                         <label
                             for="support-url"
                             [class.error]="
-                                form.controls.support_url.invalid &&
-                                form.controls.support_url.touched
+                                form().controls.support_url.invalid &&
+                                form().controls.support_url.touched
                             "
                         >
                             {{ 'SYSTEMS.SUPPORT_URL' | translate }}
@@ -151,7 +151,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                                 "
                                 formControlName="support_url"
                             />
-                            @if (form.controls.support_url.invalid) {
+                            @if (form().controls.support_url.invalid) {
                                 <mat-error>
                                     {{ 'SYSTEMS.URL_VALID' | translate }}
                                 </mat-error>
@@ -160,14 +160,14 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     </div>
                 }
                 <div class="fieldset mb-4">
-                    @if (form.controls.installed_ui_devices) {
+                    @if (form().controls.installed_ui_devices) {
                         <div class="field">
                             <label
                                 for="ui-devices"
                                 [class.error]="
-                                    form.controls.installed_ui_devices
+                                    form().controls.installed_ui_devices
                                         .invalid &&
-                                    form.controls.installed_ui_devices.touched
+                                    form().controls.installed_ui_devices.touched
                                 "
                             >
                                 {{ 'SYSTEMS.PANEL_COUNT' | translate }}
@@ -179,13 +179,13 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             ></a-counter>
                         </div>
                     }
-                    @if (form.controls.capacity) {
+                    @if (form().controls.capacity) {
                         <div class="field">
                             <label
                                 for="capacity"
                                 [class.error]="
-                                    form.controls.capacity.invalid &&
-                                    form.controls.capacity.touched
+                                    form().controls.capacity.invalid &&
+                                    form().controls.capacity.touched
                                 "
                             >
                                 {{ 'SYSTEMS.CAPACITY' | translate }}
@@ -215,7 +215,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         formControlName="public"
                     ></settings-toggle>
                 </div>
-                @if (form.controls.description) {
+                @if (form().controls.description) {
                     <div class="field">
                         <label for="description">
                             {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
@@ -232,12 +232,12 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.features) {
+                @if (form().controls.features) {
                     <div class="field">
                         <label
                             [class.error]="
-                                form.controls.features.invalid &&
-                                form.controls.features.touched
+                                form().controls.features.invalid &&
+                                form().controls.features.touched
                             "
                         >
                             {{ 'SYSTEMS.FEATURES' | translate }}
@@ -273,7 +273,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.map_id) {
+                @if (form().controls.map_id) {
                     <div class="field">
                         <label for="map_id">{{
                             'SYSTEMS.MAP_ID' | translate
@@ -318,7 +318,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         }
                     </mat-autocomplete>
                 </div>
-                @if (form.controls.images) {
+                @if (form().controls.images) {
                     <div class="field">
                         <label for="images">{{
                             'COMMON.IMAGES' | translate
@@ -352,7 +352,7 @@ export class SystemFormComponent extends AsyncHandler {
     public timezones: string[] = [];
     public filtered_timezones: string[] = [];
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
     /** Function for querying zones */
     public readonly query_fn = (_: string) =>
         queryZones({ q: _ }).pipe(map((resp) => resp.data));
@@ -360,7 +360,7 @@ export class SystemFormComponent extends AsyncHandler {
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
     public get feature_list(): string[] {
-        return this.form.controls.features.value;
+        return this.form().controls.features.value;
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -368,7 +368,7 @@ export class SystemFormComponent extends AsyncHandler {
             this.updateTimezoneList();
             this.subscription(
                 'tz-change',
-                this.form.valueChanges.subscribe(
+                this.form().valueChanges.subscribe(
                     ({ timezone }) =>
                         (this.filtered_timezones = this.timezones.filter((_) =>
                             _.toLowerCase().includes(timezone.toLowerCase()),
@@ -383,13 +383,14 @@ export class SystemFormComponent extends AsyncHandler {
      * @param event Input event
      */
     public addFeature(event: MatChipInputEvent): void {
-        if (!this.form || !this.form.controls.features) return;
+        const form = this.form();
+        if (!form || !form.controls.features) return;
         const input = event.input;
         const value = event.value;
         const feature_list = this.feature_list;
         if ((value || '').trim()) {
             feature_list.push(value);
-            this.form.controls.features.setValue(feature_list);
+            form.controls.features.setValue(feature_list);
         }
 
         // Reset the input value
@@ -403,18 +404,19 @@ export class SystemFormComponent extends AsyncHandler {
      * @param existing_feature Feature to remove
      */
     public removeFeature(existing_feature: string): void {
-        if (!this.form || !this.form.controls.features) return;
+        const form = this.form();
+        if (!form || !form.controls.features) return;
         const feature_list = this.feature_list;
         const index = feature_list.indexOf(existing_feature);
 
         if (index >= 0) {
             feature_list.splice(index, 1);
-            this.form.controls.features.setValue(feature_list);
+            form.controls.features.setValue(feature_list);
         }
     }
 
     public updateTimezoneList() {
-        const timezone = this.form?.value?.timezone || '';
+        const timezone = this.form()?.value?.timezone || '';
         this.timezones = TIMEZONES_IANA;
         this.filtered_timezones = this.timezones.filter((_) =>
             _.toLowerCase().includes(timezone.toLowerCase()),

@@ -1,7 +1,7 @@
-@if (form) {
+@if (form()) {
   <div class="driver form">
     <div class="fieldset">
-      @if (form.controls.repository_id && !editing) {
+      @if (form().controls.repository_id && !editing) {
         <div
           class="field discovery"
           >
@@ -15,7 +15,7 @@
           ></item-search-field>
         </div>
       }
-      @if (form.controls.file_name && base_repo && !editing) {
+      @if (form().controls.file_name && base_repo && !editing) {
         <div
           class="field discovery"
           >
@@ -36,7 +36,7 @@
           }
         </div>
       }
-      @if (form.controls.commit && base_driver) {
+      @if (form().controls.commit && base_driver) {
         <div
           class="field discovery"
           >
@@ -61,18 +61,18 @@
       </div>
       @if (!loading) {
         @if (!failed) {
-          <form [formGroup]="form" class="flex flex-col">
+          <form [formGroup]="form()" class="flex flex-col">
             @if (
-              (form.controls.commit && form.controls.commit.value) ||
+              (form().controls.commit && form().controls.commit.value) ||
               base_commit
               ) {
-              @if (form.controls.name) {
+              @if (form().controls.name) {
                 <div class="field">
                   <label
                     for="driver-name"
                             [class.error]="
-                                form.controls.name.invalid &&
-                                form.controls.name.touched
+                                form().controls.name.invalid &&
+                                form().controls.name.touched
                             "
                     >
                     {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
@@ -85,7 +85,7 @@
                       formControlName="name"
                       required
                       />
-                    @if (form.controls.name.invalid) {
+                    @if (form().controls.name.invalid) {
                       <mat-error>
                         {{ 'DRIVERS.NAME_REQUIRED' | translate }}
                       </mat-error>
@@ -93,7 +93,7 @@
                   </mat-form-field>
                 </div>
               }
-              @if (form.controls.role) {
+              @if (form().controls.role) {
                 <div class="field">
                   <label for="role">
                     {{ 'DRIVERS.ROLE' | translate }}
@@ -111,7 +111,7 @@
                   </mat-form-field>
                 </div>
               }
-              @if (form.controls.description) {
+              @if (form().controls.description) {
                 <div class="field">
                   <label for="description">
                     {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
@@ -128,13 +128,13 @@
                   </mat-form-field>
                 </div>
               }
-              @if (form.controls.module_name) {
+              @if (form().controls.module_name) {
                 <div class="field">
                   <label
                     for="module-name"
                             [class.error]="
-                                form.controls.module_name.invalid &&
-                                form.controls.module_name.touched
+                                form().controls.module_name.invalid &&
+                                form().controls.module_name.touched
                             "
                     >
                     {{ 'DRIVERS.MODULE_NAME' | translate }}
@@ -150,7 +150,7 @@
                       formControlName="module_name"
                       required
                       />
-                    @if (form.controls.module_name.invalid) {
+                    @if (form().controls.module_name.invalid) {
                       <mat-error
                         >
                         {{ 'DRIVERS.MODULE_NAME_REQUIRED' | translate }}
@@ -159,7 +159,7 @@
                   </mat-form-field>
                 </div>
               }
-              @if (form.controls.default_uri) {
+              @if (form().controls.default_uri) {
                 <div class="field">
                   <label for="default-uri">{{
                     'DRIVERS.DEFAULT_URI' | translate
@@ -177,13 +177,13 @@
                 </div>
               }
               <div class="fieldset">
-                @if (form.controls.default_port) {
+                @if (form().controls.default_port) {
                   <div class="field">
                     <label
                       for="default-port"
                                 [class.error]="
-                                    form.controls.default_port.invalid &&
-                                    form.controls.default_port.touched
+                                    form().controls.default_port.invalid &&
+                                    form().controls.default_port.touched
                                 "
                       >
                       {{ 'DRIVERS.DEFAULT_PORT' | translate }}
@@ -198,7 +198,7 @@
                                     "
                         formControlName="default_port"
                         />
-                      @if (form.controls.default_port.invalid) {
+                      @if (form().controls.default_port.invalid) {
                         <mat-error
                           >
                           {{ 'MODULES.PORT_REQUIRED' | translate }}
@@ -207,7 +207,7 @@
                     </mat-form-field>
                   </div>
                 }
-                @if (form.controls.ignore_connected) {
+                @if (form().controls.ignore_connected) {
                   <div
                     class="field"
                     >

@@ -1,9 +1,9 @@
 import {
-    Component,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
+  Component,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  input
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
@@ -17,8 +17,8 @@ import { Identity } from '../../../common/types';
 @Component({
     selector: 'trigger-condition-time-form',
     template: `
-        @if (form) {
-            <div class="trigger-condition form time" [formGroup]="form">
+        @if (form()) {
+            <div class="trigger-condition form time" [formGroup]="form()">
                 <div class="field mb-4">
                     <settings-toggle
                         [name]="'TRIGGERS.TIME_SCHEDULE' | translate"
@@ -57,7 +57,7 @@ import { Identity } from '../../../common/types';
                 }
                 @if (!is_cron) {
                     <div class="flex items-center space-x-4">
-                        @if (form.controls.time) {
+                        @if (form().controls.time) {
                             <div class="field">
                                 <label for="type"
                                     >{{
@@ -70,7 +70,7 @@ import { Identity } from '../../../common/types';
                                 ></a-date-field>
                             </div>
                         }
-                        @if (form.controls.time) {
+                        @if (form().controls.time) {
                             <div class="field">
                                 <label for="type"
                                     >{{
@@ -290,7 +290,7 @@ export class TriggerConditionTimeFormComponent
     implements OnChanges, OnInit
 {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
     /** List of available periods for scheduled repetition */
     public repeat_period: Identity[] = [];
     /** Whether condition is a cron(recurring) job */
@@ -368,20 +368,21 @@ export class TriggerConditionTimeFormComponent
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.form && this.form) {
-            this.is_cron = this.form.controls.time_type.value === 'cron';
+        const form = this.form();
+        if (changes.form && form) {
+            this.is_cron = form.controls.time_type.value === 'cron';
             if (this.is_cron) {
-                this.loadCronTab(this.form.controls.cron.value);
+                this.loadCronTab(form.controls.cron.value);
             }
             this.subscription(
                 'timezone',
-                this.form
+                form
                     .get('timezone')
                     .valueChanges.subscribe((tz) =>
                         this.updateTimezoneList(tz),
                     ),
             );
-            this.updateTimezoneList(this.form.get('timezone').value);
+            this.updateTimezoneList(form.get('timezone').value);
         }
     }
 
@@ -393,8 +394,8 @@ export class TriggerConditionTimeFormComponent
     }
 
     public toggleCRON(is_cron: boolean) {
-        this.form.controls.cron.setValue(null);
-        this.form.controls.time_type.setValue(
+        this.form().controls.cron.setValue(null);
+        this.form().controls.time_type.setValue(
             is_cron
                 ? TriggerTimeConditionType.CRON
                 : TriggerTimeConditionType.AT,
@@ -405,7 +406,7 @@ export class TriggerConditionTimeFormComponent
     public saveCRON(cron_str: string) {
         this.timeout(
             'save_cron',
-            () => this.form.controls.cron.setValue(cron_str),
+            () => this.form().controls.cron.setValue(cron_str),
             1000,
         );
     }
@@ -414,7 +415,8 @@ export class TriggerConditionTimeFormComponent
      * Update the output CRON string for the selected periods
      */
     public updateCronString() {
-        if (this.form && this.form.controls.cron) {
+        const form = this.form();
+        if (form && form.controls.cron) {
             const hour =
                 (this.cron_hour % 12) +
                 (this.cron_hour_period === 'AM' ? 0 : 12);
@@ -446,7 +448,7 @@ export class TriggerConditionTimeFormComponent
                     break;
             }
             // const cron_str = current_cron.build();
-            this.form.controls.cron.setValue(cron_str);
+            form.controls.cron.setValue(cron_str);
         }
     }
 

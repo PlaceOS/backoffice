@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import { Component, OnInit, inject, output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
@@ -414,7 +414,7 @@ export class StaffTenantModalComponent implements OnInit {
     private _data = inject<StaffTenantModalData>(MAT_DIALOG_DATA);
     private _dialog_ref = inject<MatDialogRef<StaffTenantModalComponent>>(MatDialogRef);
 
-    @Output() public readonly event = new EventEmitter<DialogEvent>();
+    public readonly event = output<DialogEvent>();
 
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;

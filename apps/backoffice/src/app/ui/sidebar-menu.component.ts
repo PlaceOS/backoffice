@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, inject, model } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AsyncHandler } from '../common/async-handler.class';
@@ -18,8 +18,8 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             class="pointer-events-none absolute inset-0 z-40 hidden h-full flex-col justify-between bg-base-200 sm:pointer-events-auto sm:relative sm:inset-auto sm:z-10 sm:flex"
             [class.compact]="compact"
             [class.sm:w-52]="!compact"
-            [class.!flex]="open"
-            [class.!pointer-events-auto]="open"
+            [class.!flex]="open()"
+            [class.!pointer-events-auto]="open()"
             (click)="close()"
         >
             <div class="flex h-1/2 flex-1 flex-col items-center space-y-2">
@@ -70,7 +70,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         class="absolute left-1 top-1 sm:hidden"
                         icon
                         matRipple
-                        (click)="open = false; openChange.emit(false)"
+                        (click)="open.set(false)"
                     >
                         <app-icon>close</app-icon>
                     </button>
@@ -218,8 +218,7 @@ export class SidebarMenuComponent extends AsyncHandler {
     private _hotkey = inject(HotkeysService);
     private _router = inject(Router);
 
-    @Input() public open = true;
-    @Output() public openChange = new EventEmitter();
+    public readonly open = model(true);
     public items: any[] = [];
     public compact = false;
     public readonly user_controls = UserMenuTooltipComponent;

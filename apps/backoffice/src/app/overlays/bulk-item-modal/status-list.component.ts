@@ -1,10 +1,9 @@
 import {
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    Output,
-    SimpleChanges,
+  Component,
+  OnChanges,
+  SimpleChanges,
+  input,
+  output
 } from '@angular/core';
 import { PlaceResource } from '@placeos/ts-client';
 import { Observable } from 'rxjs';
@@ -18,7 +17,7 @@ import { Observable } from 'rxjs';
                     {{ 'COMMON.BULK_UPLOADING' | translate }}
                 </div>
             }
-            @for (item of list; track item.id; let i = $index) {
+            @for (item of list(); track item.id; let i = $index) {
                 <div
                     class="flex w-[24rem] items-center rounded border border-base-200 p-2"
                 >
@@ -64,18 +63,16 @@ import { Observable } from 'rxjs';
 })
 export class StatusListComponent implements OnChanges {
     /** List of bulk items to add */
-    @Input() public list: Record<string, any>[] = [];
+    public readonly list = input<Record<string, any>[]>([]);
     /** Method to save changes to items in the list */
-    @Input() public save: (
-        item: Record<string, any>,
-    ) => Observable<PlaceResource>;
+    public readonly save = input<(item: Record<string, any>) => Observable<PlaceResource>>(undefined);
     /** Emitter for completion status of the item upload */
-    @Output() public done = new EventEmitter<Record<string, any>[]>();
+    public readonly done = output<Record<string, any>[]>();
     /** Status of each of the items to be created */
     public status: Record<string, string> = {};
 
     public ngOnChanges(changes: SimpleChanges) {
-        if (changes.list && this.list) {
+        if (changes.list && this.list()) {
             this.saveItems();
         }
     }
@@ -84,9 +81,9 @@ export class StatusListComponent implements OnChanges {
         try {
             const list = [];
             let index = 0;
-            for (const item of this.list) {
+            for (const item of this.list()) {
                 this.status[index] = 'loading';
-                const saved_item = await this.save({ ...item, id: '' })
+                const saved_item = await this.save()({ ...item, id: '' })
                     .toPromise()
                     .catch((err) => {
                         console.log('Error:', err);

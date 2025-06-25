@@ -1,4 +1,12 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  input,
+  model,
+  output,
+  viewChild
+} from '@angular/core';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
@@ -9,25 +17,29 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
         <div
             [class]="
                 'absolute right-16 top-2 flex w-12 items-center space-x-2 overflow-hidden rounded px-2 sm:relative sm:right-auto sm:top-auto sm:!w-full sm:bg-base-100 ' +
-                (model.focus || filter || model.dictate
+                (model.focus || filter() || model.dictate
                     ? 'w-4/5 bg-base-100 bg-opacity-100 text-base-content'
                     : 'bg-opacity-20 text-base-100 sm:bg-opacity-20')
             "
             widget
             tabindex="0"
-            (focus)="model.focus || filter || model.dictate ? '' : focusInput()"
+            (focus)="
+                model.focus || filter() || model.dictate ? '' : focusInput()
+            "
         >
             <app-icon class="text-xl">search</app-icon>
             <input
                 #input
                 class="w-24 flex-1 border-none bg-base-100 bg-opacity-0 outline-none"
-                [(ngModel)]="filter"
-                (ngModelChange)="post()"
+                [ngModel]="filter()"
+                (ngModelChange)="filter.set($event); post()"
                 (focus)="model.focus = true; focus.emit($event)"
                 (blur)="model.focus = false; blur.emit($event)"
-                [placeholder]="placeholder"
+                [placeholder]="placeholder()"
             />
-            @if (model.speech && dictation && (model.focus || model.dictate)) {
+            @if (
+                model.speech && dictation() && (model.focus || model.dictate)
+            ) {
                 <button
                     icon
                     matRipple
@@ -37,7 +49,7 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
                     <app-icon>mic</app-icon>
                 </button>
             }
-            @if (filter && clearable) {
+            @if (filter() && clearable()) {
                 <button icon matRipple class="close" (click)="clear()">
                     <app-icon>close</app-icon>
                 </button>
@@ -72,18 +84,17 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
 export class SearchbarComponent extends AsyncHandler {
     private _users = inject(BackofficeUsersService);
 
-    @Input() public filter: string;
-    @Input() public limit: string;
-    @Input() public dictation = true;
-    @Input() public clearable = true;
-    @Input() public placeholder = 'Search...';
-    @Output() public filterChange = new EventEmitter();
-    @Output() public focus = new EventEmitter();
-    @Output() public blur = new EventEmitter();
+    public readonly filter = model<string>(undefined);
+    public readonly limit = input<string>(undefined);
+    public readonly dictation = input(true);
+    public readonly clearable = input(true);
+    public readonly placeholder = input('Search...');
+    public readonly focus = output();
+    public readonly blur = output();
 
     public model: any = {};
 
-    @ViewChild('input', { static: true }) private input: ElementRef;
+    private readonly input = viewChild<ElementRef>('input');
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
@@ -102,7 +113,7 @@ export class SearchbarComponent extends AsyncHandler {
      * Activate dictation search
      */
     public startDictation() {
-        if (!this.input) {
+        if (!this.input()) {
             return;
         }
         if (this.model.recognition) {
@@ -126,8 +137,8 @@ export class SearchbarComponent extends AsyncHandler {
 
             this.model.recognition.onresult = (e: any) => {
                 // Update search field with dictation result
-                this.input.nativeElement.value = e.results[0][0].transcript;
-                this.filter = e.results[0][0].transcript;
+                this.input().nativeElement.value = e.results[0][0].transcript;
+                this.filter.set(e.results[0][0].transcript);
                 this.model.recognition.stop();
                 this.post();
                 this.model.dictate = false;
@@ -145,8 +156,9 @@ export class SearchbarComponent extends AsyncHandler {
         this.timeout(
             'focus',
             () => {
-                if (this.input && this.input.nativeElement) {
-                    this.input.nativeElement.focus();
+                const inputValue = this.input();
+                if (inputValue && inputValue.nativeElement) {
+                    inputValue.nativeElement.focus();
                     this.focus.emit();
                 }
             },
@@ -155,25 +167,27 @@ export class SearchbarComponent extends AsyncHandler {
     }
 
     public clear() {
-        this.filter = '';
+        this.filter.set('');
         this.post();
     }
 
     public post() {
         this.checkLimitations();
         this.timeout('post', () => {
-            this.filterChange.emit(this.filter);
+            this.filter.set(this.filter());
         });
     }
 
     public checkLimitations() {
-        if (!this.limit) {
+        const limit = this.limit();
+        if (!limit) {
             return;
         }
-        for (let i = 0; i < (this.filter || '').length; i++) {
-            if (this.limit.indexOf(this.filter[i]) >= 0) {
-                this.filter =
-                    this.filter.substr(0, i) + this.filter.substr(i + 1);
+        for (let i = 0; i < (this.filter() || '').length; i++) {
+            if (limit.indexOf(this.filter()[i]) >= 0) {
+                this.filter.update(
+                    (str) => str.substr(0, i) + str.substr(i + 1),
+                );
                 i--;
             }
         }

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +18,6 @@ const ROUTES: Route[] = [
 @NgModule({
     declarations: [MqttDashboardComponent, DashboardClockComponent],
     imports: [
-        CommonModule,
         RouterModule.forChild(ROUTES),
         MatButtonModule,
         MatFormFieldModule,

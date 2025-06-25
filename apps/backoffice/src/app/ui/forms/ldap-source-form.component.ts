@@ -1,19 +1,19 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 
 @Component({
     selector: 'ldap-source-form',
     template: `
-        @if (form) {
-            <form ldap-source class="flex flex-col" [formGroup]="form">
-                @if (form.controls.name) {
+        @if (form()) {
+            <form ldap-source class="flex flex-col" [formGroup]="form()">
+                @if (form().controls.name) {
                     <div class="field">
                         <label
                             for="auth-source-name"
                             [class.error]="
-                                form.controls.name.invalid &&
-                                form.controls.name.touched
+                                form().controls.name.invalid &&
+                                form().controls.name.touched
                             "
                         >
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
@@ -26,7 +26,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                                 formControlName="name"
                                 required
                             />
-                            @if (form.controls.name.invalid) {
+                            @if (form().controls.name.invalid) {
                                 <mat-error>
                                     {{
                                         'DOMAINS.AUTHENTICATION_NAME_REQUIRE'
@@ -38,13 +38,13 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                     </div>
                 }
                 <div class="fieldset">
-                    @if (form.controls.host) {
+                    @if (form().controls.host) {
                         <div class="field">
                             <label
                                 for="host"
                                 [class.error]="
-                                    form.controls.host.invalid &&
-                                    form.controls.host.touched
+                                    form().controls.host.invalid &&
+                                    form().controls.host.touched
                                 "
                             >
                                 {{ 'DOMAINS.LDAP_HOST' | translate
@@ -59,7 +59,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                                     "
                                     formControlName="host"
                                 />
-                                @if (form.controls.host.invalid) {
+                                @if (form().controls.host.invalid) {
                                     <mat-error>
                                         {{
                                             'DOMAINS.LDAP_HOST_REQUIRED'
@@ -70,7 +70,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.port) {
+                    @if (form().controls.port) {
                         <div class="field">
                             <label for="port"
                                 >{{ 'DOMAINS.LDAP_PORT' | translate }}:</label
@@ -90,7 +90,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                     }
                 </div>
                 <div class="fieldset">
-                    @if (form.controls.uid) {
+                    @if (form().controls.uid) {
                         <div class="field">
                             <label for="uid"
                                 >{{
@@ -109,7 +109,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.auth_method) {
+                    @if (form().controls.auth_method) {
                         <div class="field type">
                             <label for="auth-method">
                                 {{ 'DOMAINS.LDAP_AUTH_METHOD' | translate }}:
@@ -135,13 +135,13 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                     }
                 </div>
                 <div class="fieldset">
-                    @if (form.controls.base) {
+                    @if (form().controls.base) {
                         <div class="field">
                             <label
                                 for="base"
                                 [class.error]="
-                                    form.controls.base.invalid &&
-                                    form.controls.base.touched
+                                    form().controls.base.invalid &&
+                                    form().controls.base.touched
                                 "
                             >
                                 {{ 'DOMAINS.LDAP_BASE' | translate
@@ -156,7 +156,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                                     "
                                     formControlName="base"
                                 />
-                                @if (form.controls.base.invalid) {
+                                @if (form().controls.base.invalid) {
                                     <mat-error>
                                         {{
                                             'DOMAINS.LDAP_BASE_REQUIRED'
@@ -167,7 +167,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.bind_dn) {
+                    @if (form().controls.bind_dn) {
                         <div class="field">
                             <label for="bind-dn"
                                 >{{
@@ -188,7 +188,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                     }
                 </div>
                 <div class="fieldset">
-                    @if (form.controls.password) {
+                    @if (form().controls.password) {
                         <div class="field">
                             <label for="password"
                                 >{{ 'COMMON.PASSWORD' | translate }}:</label
@@ -205,7 +205,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.filter) {
+                    @if (form().controls.filter) {
                         <div class="field">
                             <label for="filter"
                                 >{{ 'DOMAINS.LDAP_FILTER' | translate }}:</label
@@ -237,7 +237,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
 })
 export class LdapSourceFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
     /** List of available authentication schemes */
     public auth_methods: Identity[] = [
         { id: 'plain', name: 'Plain' },

@@ -1,6 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, ElementRef, forwardRef, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, forwardRef, inject, viewChild } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Upload } from '@placeos/cloud-uploads';
@@ -228,7 +228,7 @@ export class ImageListFieldComponent extends AsyncHandler {
         return this.list.length + this._upload_list.getValue().length + 1;
     }
 
-    @ViewChild('image_list') private _list_el: ElementRef<HTMLDivElement>;
+    private readonly _list_el = viewChild<ElementRef<HTMLDivElement>>('image_list');
 
     /** Form control on change handler */
     private _onChange: (_: string[]) => void;
@@ -236,7 +236,7 @@ export class ImageListFieldComponent extends AsyncHandler {
     private _onTouch: (_: string[]) => void;
 
     public ngAfterViewInit() {
-        const box = this._list_el.nativeElement.getBoundingClientRect();
+        const box = this._list_el().nativeElement.getBoundingClientRect();
         this.view_space = Math.floor(box.width / 152);
         this.subscription(
             'upload_changes',

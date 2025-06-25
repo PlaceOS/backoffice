@@ -1,15 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { PlaceUser } from '@placeos/ts-client';
 
 @Component({
     selector: 'a-user-avatar',
     template: `
-        @if (user) {
+        @if (user()) {
             <div
                 class="flex items-center justify-center overflow-hidden rounded-full"
-                [attr.user-id]="user.id"
+                [attr.user-id]="user().id"
             >
-                @if (!user.photo && !user.image) {
+                @if (!user().photo && !user().image) {
                     <div
                         initials
                         class="uppercase text-base-content text-opacity-80"
@@ -20,7 +20,7 @@ import { PlaceUser } from '@placeos/ts-client';
                     <img
                         auth
                         class="h-full w-full object-cover"
-                        [source]="user.photo || user.image"
+                        [source]="user().photo || user().image"
                     />
                 }
             </div>
@@ -45,11 +45,12 @@ import { PlaceUser } from '@placeos/ts-client';
 })
 export class UserAvatarComponent {
     /** User to display avatar for */
-    @Input() public user: PlaceUser;
+    public readonly user = input<PlaceUser>(undefined);
 
     public get initials(): string {
-        if (!this.user) return 'NA';
-        const name = this.user.name || '';
+        const user = this.user();
+        if (!user) return 'NA';
+        const name = user.name || '';
         const parts = name.replace(/[()[\]\-+=\\/]+/gi, '').split(' ');
         return parts.length > 1
             ? `${parts[0][0]}${parts[parts.length - 1][0]}`

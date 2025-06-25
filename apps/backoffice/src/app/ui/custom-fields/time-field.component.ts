@@ -1,11 +1,12 @@
 import {
     Component,
     forwardRef,
-    Input,
+    input,
+    model,
     OnChanges,
     OnInit,
     SimpleChanges,
-    ViewChild,
+    viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
@@ -34,7 +35,7 @@ import { Identity } from '../../common/types';
             <input
                 matInput
                 type="time"
-                [disabled]="disabled"
+                [disabled]="disabled()"
                 [ngModel]="time"
                 (ngModelChange)="setValue($event)"
             />
@@ -49,14 +50,14 @@ import { Identity } from '../../common/types';
                     arrow_drop_down
                 </app-icon>
             </button>
-            <mat-error><ng-content></ng-content></mat-error>
+            <mat-error><ng-content /></mat-error>
         </mat-form-field>
         @if (show_select) {
             <mat-form-field appearance="outline">
                 <mat-select
                     #select
                     [value]="time"
-                    [disabled]="disabled"
+                    [disabled]="disabled()"
                     (valueChange)="setValue($event)"
                 >
                     @for (option of time_options; track option) {
@@ -89,11 +90,11 @@ export class TimeFieldComponent
     implements OnInit, OnChanges, ControlValueAccessor
 {
     /** Time step between each allowed time option */
-    @Input() public step = 15;
+    public readonly step = input(15);
     /** Whether form field is disabled */
-    @Input() public disabled: boolean;
+    public readonly disabled = model<boolean>(false);
     /** Whether past times are allowed */
-    @Input() public no_past_times = true;
+    public readonly no_past_times = input(true);
     /** String representing the currently set time */
     public date: number = new Date().valueOf();
     /** String representing the currently set time */
@@ -108,14 +109,14 @@ export class TimeFieldComponent
     private _onTouch: (_: number) => void;
 
     /** Select field for selecting the time */
-    @ViewChild('select') private select_field: MatSelect;
+    private readonly select_field = viewChild<MatSelect>('select');
 
     public ngOnInit(): void {
         this.show_select = true;
         this._time_options = this.generateAvailableTimes(
             this.date,
-            !this.no_past_times,
-            this.step,
+            !this.no_past_times(),
+            this.step(),
         );
         this.timeout('hide', () => (this.show_select = false));
     }
@@ -124,8 +125,8 @@ export class TimeFieldComponent
         if (changes.no_past_times || changes.step) {
             this._time_options = this.generateAvailableTimes(
                 this.date,
-                !this.no_past_times,
-                this.step,
+                !this.no_past_times(),
+                this.step(),
             );
         }
     }
@@ -177,13 +178,13 @@ export class TimeFieldComponent
         this.time = format(date, 'HH:mm');
         this._time_options = this.generateAvailableTimes(
             this.date,
-            !this.no_past_times,
-            this.step,
+            !this.no_past_times(),
+            this.step(),
         );
     }
 
     public setDisabledState(disabled: boolean) {
-        this.disabled = disabled;
+        this.disabled.set(disabled);
     }
 
     /**
@@ -208,12 +209,13 @@ export class TimeFieldComponent
     public showSelect() {
         this.show_select = true;
         this.timeout('on_shown', () => {
-            if (this.select_field) {
-                this.select_field.focus();
-                this.select_field.open();
+            const select_field = this.select_field();
+            if (select_field) {
+                select_field.focus();
+                select_field.open();
                 this.subscription(
                     'listen_close',
-                    this.select_field.openedChange.subscribe((state) => {
+                    select_field.openedChange.subscribe((state) => {
                         if (!state) {
                             this.show_select = false;
                         }
@@ -231,7 +233,7 @@ export class TimeFieldComponent
     private generateAvailableTimes(
         datestamp: number,
         show_past: boolean,
-        step: number = 15,
+        step = 15,
     ): Identity[] {
         const now = new Date();
         let date = new Date(datestamp);

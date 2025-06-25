@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input, model } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
@@ -17,15 +17,15 @@ export interface ItemTab {
             <div class="h-14 w-full overflow-hidden">
                 <nav
                     mat-tab-nav-bar
-                    [class.shadow]="scrolled"
+                    [class.shadow]="scrolled()"
                     [tabPanel]="tabPanel"
                 >
-                    @for (link of tabs; track link.id) {
+                    @for (link of tabs(); track link.id) {
                         <a
                             class="tab"
                             mat-tab-link
                             [routerLink]="
-                                '/' + base + '/' + item_id + '/' + link.id
+                                '/' + base() + '/' + item_id() + '/' + link.id
                             "
                             [queryParams]="link.query || {}"
                             routerLinkActive
@@ -50,7 +50,7 @@ export interface ItemTab {
                 </nav>
             </div>
         </div>
-        <mat-tab-nav-panel #tabPanel class="hidden"></mat-tab-nav-panel>
+        <mat-tab-nav-panel #tabPanel class="hidden" />
     `,
     styles: [``],
     standalone: false,
@@ -59,10 +59,10 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
     private _router = inject(Router);
     private _hotkey = inject(HotkeysService);
 
-    @Input() public base: string = 'systems';
-    @Input() public item_id: string = '-';
-    @Input() public tabs: ItemTab[] = [];
-    @Input() public scrolled = false;
+    public readonly base = input<string>('systems');
+    public readonly item_id = model<string>('-');
+    public readonly tabs = input<ItemTab[]>([]);
+    public readonly scrolled = input(false);
 
     public ngOnInit() {
         this.subscription(
@@ -88,14 +88,14 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
         this.timeout(
             'change_tab',
             () => {
-                const index = this.tabs.findIndex(
+                const index = this.tabs().findIndex(
                     (tab) => this._router.url?.indexOf(tab.id) >= 0,
                 );
-                if (index < 0 || !this.tabs[index + direction]) return;
+                if (index < 0 || !this.tabs()[index + direction]) return;
                 this._router.navigate([
-                    `/${this.base}`,
-                    this.item_id,
-                    this.tabs[index + direction].id,
+                    `/${this.base()}`,
+                    this.item_id(),
+                    this.tabs()[index + direction].id,
                 ]);
             },
             100,
@@ -107,6 +107,6 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
             '1',
             '',
         ];
-        this.item_id = parts[1];
+        this.item_id.set(parts[1]);
     }
 }

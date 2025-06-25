@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -7,16 +7,16 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'saml-source-form',
     template: `
-        @if (form) {
-            <form saml-source class="flex flex-col" [formGroup]="form">
+        @if (form()) {
+            <form saml-source class="flex flex-col" [formGroup]="form()">
                 <div class="fieldset">
-                    @if (form.controls.name) {
+                    @if (form().controls.name) {
                         <div class="field">
                             <label
                                 for="auth-source-name"
                                 [class.error]="
-                                    form.controls.name.invalid &&
-                                    form.controls.name.touched
+                                    form().controls.name.invalid &&
+                                    form().controls.name.touched
                                 "
                             >
                                 {{ 'COMMON.FIELD_NAME' | translate
@@ -32,7 +32,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                     formControlName="name"
                                     required
                                 />
-                                @if (form.controls.name.invalid) {
+                                @if (form().controls.name.invalid) {
                                     <mat-error>
                                         {{
                                             'DOMAINS.AUTHENTICATION_NAME_REQUIRE'
@@ -43,13 +43,13 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.issuer) {
+                    @if (form().controls.issuer) {
                         <div class="field">
                             <label
                                 for="issuer"
                                 [class.error]="
-                                    form.controls.issuer.invalid &&
-                                    form.controls.issuer.touched
+                                    form().controls.issuer.invalid &&
+                                    form().controls.issuer.touched
                                 "
                             >
                                 {{ 'DOMAINS.SAML_ISSUER' | translate
@@ -65,7 +65,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                     formControlName="issuer"
                                     required
                                 />
-                                @if (form.controls.issuer.invalid) {
+                                @if (form().controls.issuer.invalid) {
                                     <mat-error>
                                         {{
                                             'DOMAINS.SAML_ISSUER_REQUIRED'
@@ -78,13 +78,13 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                     }
                 </div>
                 <div class="fieldset">
-                    @if (form.controls.idp_sso_target_url) {
+                    @if (form().controls.idp_sso_target_url) {
                         <div class="field">
                             <label
                                 for="idp-target"
                                 [class.error]="
-                                    form.controls.idp_sso_target_url.invalid &&
-                                    form.controls.idp_sso_target_url.touched
+                                    form().controls.idp_sso_target_url.invalid &&
+                                    form().controls.idp_sso_target_url.touched
                                 "
                             >
                                 {{ 'DOMAINS.SAML_IDP_TARGET_URL' | translate
@@ -101,7 +101,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                     formControlName="idp_sso_target_url"
                                     required
                                 />
-                                @if (form.controls.idp_sso_target_url.invalid) {
+                                @if (form().controls.idp_sso_target_url.invalid) {
                                     <mat-error>
                                         {{
                                             'DOMAINS.SAML_IDP_TARGET_URL_REQUIRED'
@@ -112,14 +112,14 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.name_identifier_format) {
+                    @if (form().controls.name_identifier_format) {
                         <div class="field">
                             <label
                                 for="name-identifier-format"
                                 [class.error]="
-                                    form.controls.name_identifier_format
+                                    form().controls.name_identifier_format
                                         .invalid &&
-                                    form.controls.name_identifier_format.touched
+                                    form().controls.name_identifier_format.touched
                                 "
                             >
                                 {{ 'DOMAINS.SAML_NAME_ID_FORMAT' | translate }}:
@@ -136,7 +136,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                     required
                                 />
                                 @if (
-                                    form.controls.name_identifier_format.invalid
+                                    form().controls.name_identifier_format.invalid
                                 ) {
                                     <mat-error>
                                         {{
@@ -149,13 +149,13 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         </div>
                     }
                 </div>
-                @if (form.controls.request_attributes) {
+                @if (form().controls.request_attributes) {
                     <div class="field mb-4">
                         <label
                             for="request-attributes"
                             [class.error]="
-                                form.controls.request_attributes.invalid &&
-                                form.controls.request_attributes.touched
+                                form().controls.request_attributes.invalid &&
+                                form().controls.request_attributes.touched
                             "
                         >
                             {{ 'DOMAINS.SAML_REQUEST_ATTRIBUTES' | translate }}:
@@ -165,8 +165,8 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             [fields]="['name', 'name_format', 'friendly_name']"
                         ></object-list-field>
                         @if (
-                            form.controls.request_attributes.invalid &&
-                            form.controls.request_attributes.touched
+                            form().controls.request_attributes.invalid &&
+                            form().controls.request_attributes.touched
                         ) {
                             <div class="error-message">
                                 {{
@@ -178,14 +178,14 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                     </div>
                 }
                 <div class="fieldset">
-                    @if (form.controls.assertion_consumer_service_url) {
+                    @if (form().controls.assertion_consumer_service_url) {
                         <div class="field">
                             <label
                                 for="assertion-url"
                                 [class.error]="
-                                    form.controls.assertion_consumer_service_url
+                                    form().controls.assertion_consumer_service_url
                                         .invalid &&
-                                    form.controls.assertion_consumer_service_url
+                                    form().controls.assertion_consumer_service_url
                                         .touched
                                 "
                             >
@@ -203,7 +203,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                     required
                                 />
                                 @if (
-                                    form.controls.assertion_consumer_service_url
+                                    form().controls.assertion_consumer_service_url
                                         .invalid
                                 ) {
                                     <mat-error>
@@ -216,7 +216,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.idp_cert_fingerprint) {
+                    @if (form().controls.idp_cert_fingerprint) {
                         <div class="field">
                             <label for="cert-fingerprint"
                                 >{{
@@ -237,7 +237,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         </div>
                     }
                 </div>
-                @if (form.controls.idp_cert) {
+                @if (form().controls.idp_cert) {
                     <div class="field">
                         <label for="cert"
                             >{{ 'DOMAINS.SAML_CERT_FULL' | translate }}:</label
@@ -255,7 +255,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                     </div>
                 }
                 <div class="fieldset">
-                    @if (form.controls.uid_attribute) {
+                    @if (form().controls.uid_attribute) {
                         <div class="field">
                             <label for="uid-attribute"
                                 >{{
@@ -274,7 +274,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.attribute_service_name) {
+                    @if (form().controls.attribute_service_name) {
                         <div class="field">
                             <label for="attribute-service-name"
                                 >{{
@@ -296,7 +296,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         </div>
                     }
                 </div>
-                @if (form.controls.attribute_statements) {
+                @if (form().controls.attribute_statements) {
                     <div class="field mb-4">
                         <label for="client-secret"
                             >{{
@@ -311,7 +311,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         ></object-list-field>
                     </div>
                 }
-                @if (form.controls.idp_sso_target_url_runtime_params) {
+                @if (form().controls.idp_sso_target_url_runtime_params) {
                     <div class="field mb-4">
                         <label for="client-secret"
                             >{{
@@ -328,7 +328,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                     </div>
                 }
                 <div class="fieldset">
-                    @if (form.controls.idp_slo_target_url) {
+                    @if (form().controls.idp_slo_target_url) {
                         <div class="field">
                             <label for="slo-target"
                                 >{{
@@ -349,7 +349,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.slo_default_relay_state) {
+                    @if (form().controls.slo_default_relay_state) {
                         <div class="field">
                             <label for="slo-relay"
                                 >{{
@@ -392,7 +392,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 })
 export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
 
     /** List of attribute statement pairs */
     public attribute_statement_mappings: any[] = [];
@@ -400,18 +400,19 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
     public runtime_param_list: any[] = [];
 
     public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.form && this.form) {
-            if (this.form.controls.attribute_statements) {
-                const map = this.form.controls.attribute_statements.value || {};
+        const form = this.form();
+        if (changes.form && form) {
+            if (form.controls.attribute_statements) {
+                const map = form.controls.attribute_statements.value || {};
                 this.attribute_statement_mappings = Object.keys(map).map(
                     (key) => {
                         return { name: key, mappings: map[key].join(',') };
                     },
                 );
             }
-            if (this.form.controls.idp_sso_target_url_runtime_params) {
+            if (form.controls.idp_sso_target_url_runtime_params) {
                 const map =
-                    this.form.controls.idp_sso_target_url_runtime_params
+                    form.controls.idp_sso_target_url_runtime_params
                         .value || {};
                 this.runtime_param_list = Object.keys(map).map((key) => {
                     return { name: key, mappings: map[key] };
@@ -436,7 +437,7 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
                         map[pair.name] = (pair.mappings || '').split(',');
                     }
                 }
-                this.form.controls.attribute_statements.setValue(map);
+                this.form().controls.attribute_statements.setValue(map);
             },
             200,
         );
@@ -456,7 +457,7 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
                         map[pair.name] = pair.mapping;
                     }
                 }
-                this.form.controls.idp_sso_target_url_runtime_params.setValue(
+                this.form().controls.idp_sso_target_url_runtime_params.setValue(
                     map,
                 );
             },

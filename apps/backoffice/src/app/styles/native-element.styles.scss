@@ -26,8 +26,8 @@ div > label,
 section > label {
     font-size: 0.8rem;
     font-weight: 500;
-    span {
-        color: var(--pending);
+    span[required] {
+        color: var(--wa);
     }
 }
 

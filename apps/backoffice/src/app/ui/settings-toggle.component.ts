@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, forwardRef, input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -15,9 +15,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
                 <div class="absolute inset-0 bg-info opacity-10"></div>
             }
             <div class="ml-2 flex flex-1 items-center space-x-2 text-left">
-                <div>{{ name }}<ng-content></ng-content></div>
-                @if (info) {
-                    <app-icon [matTooltip]="info">info</app-icon>
+                <div>{{ name() }}<ng-content></ng-content></div>
+                @if (info()) {
+                    <app-icon [matTooltip]="info()">info</app-icon>
                 }
             </div>
             <mat-checkbox
@@ -43,8 +43,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     standalone: false,
 })
 export class SettingsToggleComponent implements ControlValueAccessor {
-    @Input() public name: string;
-    @Input() public info: string;
+    public readonly name = input<string>(undefined);
+    public readonly info = input<string>(undefined);
 
     public value: boolean;
 

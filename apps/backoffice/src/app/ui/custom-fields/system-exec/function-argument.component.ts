@@ -1,11 +1,10 @@
 import {
-    Component,
-    EventEmitter,
-    forwardRef,
-    Input,
-    OnChanges,
-    Output,
-    SimpleChanges,
+  Component,
+  forwardRef,
+  OnChanges,
+  SimpleChanges,
+  input,
+  output
 } from '@angular/core';
 import {
     AbstractControl,
@@ -47,7 +46,7 @@ const validateType = (type) => (control: AbstractControl) => {
     template: `
         @if (form) {
             <form class="pl-8" [formGroup]="form">
-                @for (key of method.order; track key; let i = $index) {
+                @for (key of method().order; track key; let i = $index) {
                     <div field class="relative flex items-center space-x-2">
                         <div
                             class="absolute left-0 w-4 -translate-x-full -translate-y-1/2 transform border-b-2 border-l-2 border-base-200"
@@ -114,8 +113,8 @@ export class FunctionArgumentComponent
     extends AsyncHandler
     implements OnChanges, ControlValueAccessor
 {
-    @Input() public method: PlaceModuleFunction;
-    @Output() public valid = new EventEmitter<boolean>();
+    public readonly method = input<PlaceModuleFunction>(undefined);
+    public readonly valid = output<boolean>();
 
     public form: UntypedFormGroup;
 
@@ -136,10 +135,11 @@ export class FunctionArgumentComponent
     }
 
     public loadForm() {
-        if (!this.method && !this.method.order.length) return;
+        const method = this.method();
+        if (!method && !method.order.length) return;
         const form_controls = {};
-        for (const prop in this.method.params) {
-            const prop_details = this.method.params[prop] as any;
+        for (const prop in method.params) {
+            const prop_details = method.params[prop] as any;
             const optional = 'default' in prop_details;
             this.required[prop] = !optional;
             form_controls[prop] = new UntypedFormControl(

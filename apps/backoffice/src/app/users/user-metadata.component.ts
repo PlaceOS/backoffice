@@ -6,7 +6,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
     selector: 'user-metadata',
     template: `
         @if (item) {
-            <metadata-display [item]="item"></metadata-display>
+            <metadata-display [item]="item" />
         }
     `,
     styles: [``],

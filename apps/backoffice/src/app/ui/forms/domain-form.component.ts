@@ -1,5 +1,5 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { notifyWarn } from '../../common/notifications';
@@ -8,16 +8,16 @@ import { isValidDomain } from '../../common/validation';
 @Component({
     selector: 'domain-form',
     template: `
-        @if (form) {
-            <form domain class="flex flex-col" [formGroup]="form">
+        @if (form()) {
+            <form domain class="flex flex-col" [formGroup]="form()">
                 <div class="fieldset">
-                    @if (form.controls.name) {
+                    @if (form().controls.name) {
                         <div class="field">
                             <label
                                 for="domain-name"
                                 [class.error]="
-                                    form.controls.name.invalid &&
-                                    form.controls.name.touched
+                                    form().controls.name.invalid &&
+                                    form().controls.name.touched
                                 "
                             >
                                 {{ 'COMMON.FIELD_NAME' | translate
@@ -33,7 +33,7 @@ import { isValidDomain } from '../../common/validation';
                                     formControlName="name"
                                     required
                                 />
-                                @if (form.controls.name.invalid) {
+                                @if (form().controls.name.invalid) {
                                     <mat-error>
                                         {{
                                             'DOMAINS.NAME_REQUIRED' | translate
@@ -43,13 +43,13 @@ import { isValidDomain } from '../../common/validation';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.domain) {
+                    @if (form().controls.domain) {
                         <div class="field">
                             <label
                                 for="domain"
                                 [class.error]="
-                                    form.controls.domain.invalid &&
-                                    form.controls.domain.touched
+                                    form().controls.domain.invalid &&
+                                    form().controls.domain.touched
                                 "
                             >
                                 {{ 'DOMAINS.NAME' | translate }}
@@ -70,13 +70,13 @@ import { isValidDomain } from '../../common/validation';
                         </div>
                     }
                 </div>
-                @if (form.controls.login_url) {
+                @if (form().controls.login_url) {
                     <div class="field">
                         <label
                             for="login-url"
                             [class.error]="
-                                form.controls.login_url.invalid &&
-                                form.controls.login_url.touched
+                                form().controls.login_url.invalid &&
+                                form().controls.login_url.touched
                             "
                         >
                             {{ 'DOMAINS.LOGIN_URL' | translate }}
@@ -88,7 +88,7 @@ import { isValidDomain } from '../../common/validation';
                                 [placeholder]="'DOMAINS.LOGIN_URL' | translate"
                                 formControlName="login_url"
                             />
-                            @if (form.controls.login_url.invalid) {
+                            @if (form().controls.login_url.invalid) {
                                 <mat-error>
                                     {{
                                         'DOMAINS.LOGIN_URL_REQUIRED' | translate
@@ -98,13 +98,13 @@ import { isValidDomain } from '../../common/validation';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.logout_url) {
+                @if (form().controls.logout_url) {
                     <div class="field">
                         <label
                             for="logout-url"
                             [class.error]="
-                                form.controls.logout_url.invalid &&
-                                form.controls.logout_url.touched
+                                form().controls.logout_url.invalid &&
+                                form().controls.logout_url.touched
                             "
                         >
                             {{ 'DOMAINS.LOGOUT_URL' | translate }}
@@ -116,7 +116,7 @@ import { isValidDomain } from '../../common/validation';
                                 [placeholder]="'DOMAINS.LOGOUT_URL' | translate"
                                 formControlName="logout_url"
                             />
-                            @if (form.controls.logout_url.invalid) {
+                            @if (form().controls.logout_url.invalid) {
                                 <mat-error>
                                     {{
                                         'DOMAINS.LOGOUT_URL_REQUIRED'
@@ -127,7 +127,7 @@ import { isValidDomain } from '../../common/validation';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.description) {
+                @if (form().controls.description) {
                     <div class="field">
                         <label for="description">{{
                             'COMMON.FIELD_DESCRIPTION' | translate
@@ -144,12 +144,12 @@ import { isValidDomain } from '../../common/validation';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.email_domains) {
+                @if (form().controls.email_domains) {
                     <div class="field">
                         <label
                             [class.error]="
-                                form.controls.email_domains.invalid &&
-                                form.controls.email_domains.touched
+                                form().controls.email_domains.invalid &&
+                                form().controls.email_domains.touched
                             "
                         >
                             {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
@@ -208,19 +208,19 @@ import { isValidDomain } from '../../common/validation';
 })
 export class DomainFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
     public readonly addEmailDomain = (e) => {
         if (!e?.value) return;
         if (!isValidDomain(e.value)) return notifyWarn('Invalid email');
-        addChipItem(this.form.controls.email_domains as any, e);
+        addChipItem(this.form().controls.email_domains as any, e);
     };
     public readonly removeEmailDomain = (i) =>
-        removeChipItem(this.form.controls.email_domains as any, i);
+        removeChipItem(this.form().controls.email_domains as any, i);
 
     public get email_domain_list(): string[] {
-        return this.form.controls.email_domains.value;
+        return this.form().controls.email_domains.value;
     }
 }

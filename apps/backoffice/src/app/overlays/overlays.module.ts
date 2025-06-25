@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { NgModule, Type } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -44,12 +43,7 @@ const OVERLAYS: Type<any>[] = [
         StatusListComponent,
         DuplicateModalComponent,
     ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        SharedContentModule,
-    ],
+    imports: [FormsModule, ReactiveFormsModule, SharedContentModule],
     exports: [...OVERLAYS],
 })
 export class SharedOverlaysModule {}

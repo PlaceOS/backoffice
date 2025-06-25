@@ -13,10 +13,9 @@ export interface ViewResponseModalData {
             [heading]="title || ('COMMON.VIEW_RESPONSE' | translate)"
             [hide_confirm]="true"
         >
-            <settings-form-field
-                [ngModel]="content_string"
+            <settings-form-field [ngModel]="content_string"
                 [readonly]="true"
-            ></settings-form-field>
+             />
         </fullscreen-modal-shell>
     `,
     styles: [``],

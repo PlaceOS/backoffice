@@ -1,10 +1,10 @@
 import {
-    Component,
-    forwardRef,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
+  Component,
+  forwardRef,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  input
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
@@ -73,9 +73,9 @@ export class SelectMethodComponent
     implements OnInit, OnChanges, ControlValueAccessor
 {
     /** ID of the system to select the module from */
-    @Input() public system: PlaceSystem;
+    public readonly system = input<PlaceSystem>(undefined);
     /** ID of the system to select the module from */
-    @Input() public module: ModuleLike;
+    public readonly module = input<ModuleLike>(undefined);
 
     private _system = new BehaviorSubject('');
     private _module = new BehaviorSubject<ModuleLike>({} as any);
@@ -120,10 +120,10 @@ export class SelectMethodComponent
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.system) {
-            this._system.next(this.system.id);
+            this._system.next(this.system().id);
         }
         if (changes.module) {
-            this._module.next(this.module);
+            this._module.next(this.module());
         }
     }
 

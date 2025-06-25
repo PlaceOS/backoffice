@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
     selector: 'an-action-field',
@@ -6,7 +6,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         <div
             class="border-gray-200 flex items-center rounded border px-4 py-2.5 hover:border-base-content"
             role="button"
-            [attr.disabled]="disabled"
+            [attr.disabled]="disabled()"
             form-field
             tabindex="0"
             (keydown.enter)="performAction()"
@@ -34,11 +34,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class ActionFieldComponent {
     /** Name of the field */
-    @Input() public name: string;
+    public readonly name = input<string>(undefined);
     /** Whether form field is disabled */
-    @Input() public disabled: boolean;
+    public readonly disabled = input<boolean>(undefined);
     /** Emitter for user interaction events */
-    @Output('onAction') public on_action = new EventEmitter();
+    public readonly on_action = output({ alias: 'onAction' });
     /** Whether to show tooltip */
     public show_tooltip = false;
 

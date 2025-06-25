@@ -9,12 +9,13 @@ import { notifyError, notifySuccess } from '../common/notifications';
 @Component({
     selector: 'driver-update-list-modal',
     template: `
-        <header class="border-b border-base-200">
-            <h2>
-                {{ 'DRIVERS.UPDATE' | translate }}
+        <header
+            class="z-10 mx-auto my-2 w-[calc(100%-1rem)] rounded border border-base-100 bg-base-200 px-4 py-2"
+        >
+            <h2 class="flex items-center space-x-4 text-xl font-medium">
+                <div>{{ 'DRIVERS.UPDATE' | translate }}</div>
                 @if (!loading) {
-                    <span>
-                        -
+                    <code class="mono rounded bg-base-300 px-2 py-1 text-xs">
                         {{
                             'DRIVERS.UPDATE_COUNT'
                                 | translate
@@ -24,7 +25,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
                                                   ?.total || 0,
                                       }
                         }}
-                    </span>
+                    </code>
                 }
             </h2>
             @if (!loading) {
@@ -34,10 +35,10 @@ import { notifyError, notifySuccess } from '../common/notifications';
             }
         </header>
         @if ((drivers_with_updates | async) && !loading) {
-            <main class="max-h-[65vh] w-[80vw] max-w-[48rem] overflow-auto">
-                <table>
-                    <thead class="text-left">
-                        <tr>
+            <main class="max-h-[65vh] w-[80vw] max-w-[48rem] overflow-y-auto">
+                <table class="mx-2 w-[calc(100%-1rem)] rounded">
+                    <thead class="sticky top-0 z-10 text-left">
+                        <tr class="!bg-base-300">
                             <th>
                                 <mat-checkbox
                                     [checked]="all_selected"
@@ -111,7 +112,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
         }
         @if (!loading) {
             <footer
-                class="flex justify-end space-x-2 border-t border-base-200 p-2"
+                class="z-10 mx-auto my-2 flex w-[calc(100%-1rem)] justify-end space-x-2 rounded border border-base-100 bg-base-200 p-2"
             >
                 <button
                     btn
@@ -136,7 +137,8 @@ import { notifyError, notifySuccess } from '../common/notifications';
     standalone: false,
 })
 export class DriverUpdateListModalComponent {
-    private _dialog_ref = inject<MatDialogRef<DriverUpdateListModalComponent>>(MatDialogRef);
+    private _dialog_ref =
+        inject<MatDialogRef<DriverUpdateListModalComponent>>(MatDialogRef);
 
     public loading = 'Loading drivers...';
     public driver_count = 0;

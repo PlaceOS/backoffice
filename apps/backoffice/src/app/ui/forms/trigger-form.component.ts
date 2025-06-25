@@ -1,22 +1,22 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 
 @Component({
     selector: 'trigger-form',
     template: `
-        @if (form) {
+        @if (form()) {
             <form
                 trigger
                 class="flex w-[36rem] max-w-[calc(100vw-4rem)] flex-col"
-                [formGroup]="form"
+                [formGroup]="form()"
             >
-                @if (form.controls.name) {
+                @if (form().controls.name) {
                     <div class="field">
                         <label
                             for="trigger-name"
                             [class.error]="
-                                form.controls.name.invalid &&
-                                form.controls.name.touched
+                                form().controls.name.invalid &&
+                                form().controls.name.touched
                             "
                         >
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
@@ -33,7 +33,7 @@ import { UntypedFormGroup } from '@angular/forms';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.description) {
+                @if (form().controls.description) {
                     <div class="field">
                         <label for="description">{{
                             'COMMON.FIELD_DESCRIPTION' | translate
@@ -50,7 +50,7 @@ import { UntypedFormGroup } from '@angular/forms';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.enable_webhook) {
+                @if (form().controls.enable_webhook) {
                     <div class="field mb-4 w-[calc(50%-0.75rem)]">
                         <settings-toggle
                             [name]="'TRIGGERS.ENABLE_WEBHOOK' | translate"
@@ -60,15 +60,15 @@ import { UntypedFormGroup } from '@angular/forms';
                 }
                 <div class="flex items-center space-x-4">
                     @if (
-                        form.controls.enable_webhook.value &&
-                        form.controls.debounce_period
+                        form().controls.enable_webhook.value &&
+                        form().controls.debounce_period
                     ) {
                         <div class="field">
                             <label
                                 for="debounce-period"
                                 [class.error]="
-                                    form.controls.name.invalid &&
-                                    form.controls.name.touched
+                                    form().controls.name.invalid &&
+                                    form().controls.name.touched
                                 "
                             >
                                 {{ 'TRIGGERS.DEBOUNCE_PERIOD' | translate }}
@@ -83,8 +83,8 @@ import { UntypedFormGroup } from '@angular/forms';
                         </div>
                     }
                     @if (
-                        form.controls.enable_webhook.value &&
-                        form.controls.supported_methods
+                        form().controls.enable_webhook.value &&
+                        form().controls.supported_methods
                     ) {
                         <div class="field">
                             <label for="methods">
@@ -119,7 +119,7 @@ import { UntypedFormGroup } from '@angular/forms';
 })
 export class TriggerFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
 
     public readonly render_debounce = (v) => `${v} ms`;
 }

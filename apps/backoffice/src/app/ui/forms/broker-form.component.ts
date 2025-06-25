@@ -1,5 +1,5 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 
@@ -10,15 +10,15 @@ import { i18n } from '../../common/locale.service';
 @Component({
     selector: 'broker-form',
     template: `
-        @if (form) {
-            <form broker class="flex flex-col" [formGroup]="form">
-                @if (form.controls.name) {
+        @if (form()) {
+            <form broker class="flex flex-col" [formGroup]="form()">
+                @if (form().controls.name) {
                     <div class="field">
                         <label
                             for="broker-name"
                             [class.error]="
-                                form.controls.name.invalid &&
-                                form.controls.name.touched
+                                form().controls.name.invalid &&
+                                form().controls.name.touched
                             "
                         >
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
@@ -37,7 +37,7 @@ import { i18n } from '../../common/locale.service';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.description) {
+                @if (form().controls.description) {
                     <div class="field">
                         <label for="description">
                             {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
@@ -54,13 +54,13 @@ import { i18n } from '../../common/locale.service';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.name) {
+                @if (form().controls.name) {
                     <div class="field">
                         <label
                             for="host"
                             [class.error]="
-                                form.controls.name.invalid &&
-                                form.controls.name.touched
+                                form().controls.name.invalid &&
+                                form().controls.name.touched
                             "
                         >
                             {{ 'ADMIN.BROKERS_FIELD_HOST' | translate
@@ -83,13 +83,13 @@ import { i18n } from '../../common/locale.service';
                     </div>
                 }
                 <div class="fieldset">
-                    @if (form.controls.port) {
+                    @if (form().controls.port) {
                         <div class="field">
                             <label
                                 for="port-number"
                                 [class.error]="
-                                    form.controls.port.invalid &&
-                                    form.controls.port.touched
+                                    form().controls.port.invalid &&
+                                    form().controls.port.touched
                                 "
                             >
                                 {{ 'ADMIN.BROKERS_FIELD_PORT' | translate }}
@@ -114,7 +114,7 @@ import { i18n } from '../../common/locale.service';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.tls) {
+                    @if (form().controls.tls) {
                         <div class="field">
                             <settings-toggle
                                 class="mt-8 w-full"
@@ -124,7 +124,7 @@ import { i18n } from '../../common/locale.service';
                         </div>
                     }
                 </div>
-                @if (form.controls.auth_type) {
+                @if (form().controls.auth_type) {
                     <div class="field">
                         <label for="type"
                             >{{ 'ADMIN.BROKERS_FIELD_AUTH_TYPE' | translate }}
@@ -140,15 +140,15 @@ import { i18n } from '../../common/locale.service';
                         </mat-form-field>
                     </div>
                 }
-                @if (form.controls.auth_type.value === 2) {
+                @if (form().controls.auth_type.value === 2) {
                     <div class="fieldset">
-                        @if (form.controls.name) {
+                        @if (form().controls.name) {
                             <div class="field">
                                 <label
                                     for="host"
                                     [class.error]="
-                                        form.controls.name.invalid &&
-                                        form.controls.name.touched
+                                        form().controls.name.invalid &&
+                                        form().controls.name.touched
                                     "
                                 >
                                     {{ 'ADMIN.BROKERS_USERNAME' | translate }}
@@ -171,13 +171,13 @@ import { i18n } from '../../common/locale.service';
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.password) {
+                        @if (form().controls.password) {
                             <div class="field">
                                 <label
                                     for="new-password"
                                     [class.error]="
-                                        form.controls.password.invalid &&
-                                        form.controls.password.touched
+                                        form().controls.password.invalid &&
+                                        form().controls.password.touched
                                     "
                                 >
                                     {{ 'ADMIN.BROKERS_PASSWORD' | translate }}
@@ -215,8 +215,8 @@ import { i18n } from '../../common/locale.service';
                         }
                     </div>
                 }
-                @if (form.controls.auth_type.value === 0) {
-                    @if (form.controls.certificate) {
+                @if (form().controls.auth_type.value === 0) {
+                    @if (form().controls.certificate) {
                         <div class="field">
                             <label for="cert">
                                 {{ 'ADMIN.BROKERS_CERT' | translate }}
@@ -237,7 +237,7 @@ import { i18n } from '../../common/locale.service';
                         </div>
                     }
                 }
-                @if (form.controls.filters) {
+                @if (form().controls.filters) {
                     <div class="field">
                         <label for="filters">
                             {{ 'ADMIN.BROKERS_FIELD_FILTERS' | translate }}
@@ -292,7 +292,7 @@ import { i18n } from '../../common/locale.service';
 })
 export class BrokerFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: UntypedFormGroup;
+    public readonly form = input<UntypedFormGroup>(undefined);
     /** List of available authentication types */
     public auth_types = [];
     /** List of separator characters for filters */
@@ -301,7 +301,7 @@ export class BrokerFormComponent {
     public show_password: boolean;
 
     public get filters(): string[] {
-        return this.form.controls.filters.value;
+        return this.form().controls.filters.value;
     }
 
     public ngOnInit() {
@@ -326,7 +326,7 @@ export class BrokerFormComponent {
         const value = (event.value || '').trim();
         if (value) {
             const filter_list = this.filters;
-            this.form.patchValue({ filters: unique([...filter_list, value]) });
+            this.form().patchValue({ filters: unique([...filter_list, value]) });
         }
         event.chipInput!.clear();
     }
@@ -342,7 +342,7 @@ export class BrokerFormComponent {
 
         if (index >= 0) {
             filter_list.splice(index, 1);
-            this.form.controls.filters.setValue(filter_list);
+            this.form().controls.filters.setValue(filter_list);
         }
     }
 }

@@ -1,5 +1,5 @@
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { Component, ElementRef, Input, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, inject, input, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import {
     PlaceDriverRole,
@@ -36,7 +36,7 @@ import { ActiveItemService } from '../common/item.service';
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
                         [placeholder]="
-                            'COMMON.SEARCH_FOR' | translate: { name: title }
+                            'COMMON.SEARCH_FOR' | translate: { name: title() }
                         "
                     />
                     @if (loading | async) {
@@ -46,7 +46,7 @@ import { ActiveItemService } from '../common/item.service';
                         ></mat-spinner>
                     }
                 </div>
-                @if (filter_options?.length) {
+                @if (filter_options()?.length) {
                     <button
                         icon
                         matRipple
@@ -65,7 +65,7 @@ import { ActiveItemService } from '../common/item.service';
                                 [(ngModel)]="selected_filters"
                                 (ngModelChange)="updateSearch(search)"
                             >
-                                @for (option of filter_options; track option) {
+                                @for (option of filter_options(); track option) {
                                     <mat-option
                                         [value]="option"
                                         class="capitalize"
@@ -97,8 +97,8 @@ import { ActiveItemService } from '../common/item.service';
                             "
                             [routerLink]="
                                 subroute
-                                    ? ['/', route, item.id, subroute]
-                                    : ['/', route, item.id]
+                                    ? ['/', route(), item.id, subroute]
+                                    : ['/', route(), item.id]
                             "
                             routerLinkActive="active"
                             [routerLinkActiveOptions]="{
@@ -174,7 +174,7 @@ import { ActiveItemService } from '../common/item.service';
                                 (search
                                     ? 'COMMON.SEARCH_EMPTY'
                                     : 'COMMON.LIST_EMPTY'
-                                ) | translate: { name: title }
+                                ) | translate: { name: title() }
                             }}
                         </p>
                     </div>
@@ -217,9 +217,9 @@ export class ItemSidebarComponent extends AsyncHandler {
     private _router = inject(Router);
     private _service = inject(ActiveItemService);
 
-    @Input() public title = 'Systems';
-    @Input() public route = 'systems';
-    @Input() public filter_options: string[] = [];
+    public readonly title = input('Systems');
+    public readonly route = input('systems');
+    public readonly filter_options = input<string[]>([]);
 
     public last_total = 0;
     public last_check = 0;
@@ -235,10 +235,9 @@ export class ItemSidebarComponent extends AsyncHandler {
     public total = this._service.count;
 
     /** Virtual scrolling viewport */
-    @ViewChild(CdkVirtualScrollViewport)
-    private viewport: CdkVirtualScrollViewport;
+    private readonly viewport = viewChild(CdkVirtualScrollViewport);
 
-    @ViewChild('search_input') private _input: ElementRef<HTMLInputElement>;
+    private readonly _input = viewChild<ElementRef<HTMLInputElement>>('search_input');
 
     public get subroute() {
         return this._router.url.split('/')[3] || '';
@@ -250,7 +249,7 @@ export class ItemSidebarComponent extends AsyncHandler {
     }
 
     public focusInput() {
-        this._input?.nativeElement.focus();
+        this._input()?.nativeElement.focus();
     }
 
     public updateSearch(str: string) {
@@ -289,11 +288,12 @@ export class ItemSidebarComponent extends AsyncHandler {
     public async atBottom() {
         const loading = await nextValueFrom(this.loading);
         if (loading || !this.is_stale) return;
-        if (!this.viewport) {
+        const viewport = this.viewport();
+        if (!viewport) {
             return this.timeout('atBottom', () => this.atBottom());
         }
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
+        const end = viewport.getRenderedRange().end;
+        const total = viewport.getDataLength();
         if (end >= total - 1) {
             this.last_total = total;
             this.last_check = Date.now();

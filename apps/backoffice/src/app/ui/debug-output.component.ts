@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, inject, viewChild } from '@angular/core';
 import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from 'apps/backoffice/src/app/common/angular-animations';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { PlaceDebugService } from 'apps/backoffice/src/app/common/debug.service';
@@ -200,8 +200,7 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
     /** Start point for resizing the console box */
     private _resize_start: Point;
 
-    @ViewChild('content', { static: false })
-    private _content_el: ElementRef<HTMLDivElement>;
+    private readonly _content_el = viewChild<ElementRef<HTMLDivElement>>('content');
 
     /** Whether user is listening for debug information */
     public get is_enabled(): boolean {
@@ -286,7 +285,7 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
                     this.unsub('resize_move');
                     this.unsub('resize_end');
                     const box =
-                        this._content_el.nativeElement.getBoundingClientRect();
+                        this._content_el().nativeElement.getBoundingClientRect();
                     this.height = box.height;
                     this.width = box.width;
                 }),
@@ -304,7 +303,7 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
                     this.unsub('resize_move');
                     this.unsub('resize_end');
                     const box =
-                        this._content_el.nativeElement.getBoundingClientRect();
+                        this._content_el().nativeElement.getBoundingClientRect();
                     this.height = box.height;
                     this.width = box.width;
                 }),

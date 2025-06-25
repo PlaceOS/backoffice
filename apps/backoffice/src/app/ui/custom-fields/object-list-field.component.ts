@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, forwardRef, input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -7,11 +7,11 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'object-list-field',
     template: `
-        @if (fields && fields.length) {
+        @if (fields() && fields().length) {
             <div class="object-list">
                 @if (active_list && active_list.length) {
                     <div class="header row h-6 text-sm">
-                        @for (field of fields; track field) {
+                        @for (field of fields(); track field) {
                             <div class="field capitalize" [attr.name]="field">
                                 {{ field }}
                             </div>
@@ -21,7 +21,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                 }
                 @for (item of active_list; track item) {
                     <div class="row">
-                        @for (field of fields; track field) {
+                        @for (field of fields(); track field) {
                             <div class="field" [attr.name]="field">
                                 <mat-form-field appearance="outline">
                                     <input
@@ -111,7 +111,7 @@ export class ObjectListFieldComponent
     implements ControlValueAccessor
 {
     /** List of fields that can be populated for each object */
-    @Input() public fields: string[];
+    public readonly fields = input<string[]>(undefined);
     /** List of objects */
     public active_list: HashMap[] = [];
 

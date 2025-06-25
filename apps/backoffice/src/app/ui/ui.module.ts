@@ -1,7 +1,6 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CdkTableModule } from '@angular/cdk/table';
-import { CommonModule } from '@angular/common';
 import { NgModule, Type } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -66,6 +65,7 @@ import { TerminalComponent } from './terminal.component';
 import { UnauthorisedComponent } from './unauthorised.component';
 import { UploadListComponent } from './upload-list.component';
 
+import { CommonModule } from '@angular/common';
 import { AuthenticatedImageDirective } from './authenticated-image.directive';
 import { CounterComponent } from './counter.component';
 import { ActionFieldComponent } from './custom-fields/action-field.component';
@@ -229,6 +229,7 @@ const STANDALONE_COMPONENTS: any[] = [
         ...STANDALONE_COMPONENTS,
     ],
     exports: [
+        CommonModule,
         ...COMPONENTS,
         ...PIPES,
         ...ENTRY_COMPONENT,

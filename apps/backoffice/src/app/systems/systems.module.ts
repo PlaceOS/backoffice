@@ -1,5 +1,4 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -25,7 +24,6 @@ import { SystemsComponent } from './systems.component';
         SystemsComponent,
     ],
     imports: [
-        CommonModule,
         FormsModule,
         ReactiveFormsModule,
         RouterModule.forChild(ROUTES),

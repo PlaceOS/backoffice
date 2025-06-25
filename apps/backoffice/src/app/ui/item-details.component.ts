@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { PlaceDriverRole } from '@placeos/ts-client';
 import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
@@ -26,15 +26,15 @@ export interface DisplayItem {
             <div class="flex flex-col space-y-2">
                 <div name class="text-2xl">
                     {{
-                        item?.display_name ||
-                            item?.custom_name ||
-                            item?.name ||
+                        item()?.display_name ||
+                            item()?.custom_name ||
+                            item()?.name ||
                             '&lt;Unnamed&gt;'
                     }}
                 </div>
                 <div class="flex items-center space-x-2">
                     <a class="mono text-xs opacity-60" (click)="copyID()">
-                        {{ item?.id }}
+                        {{ item()?.id }}
                     </a>
                     @if (driver_type) {
                         <div
@@ -58,30 +58,30 @@ export interface DisplayItem {
                         </div>
                     }
                     @if (
-                        item?.running !== null && item?.running !== undefined
+                        item()?.running !== null && item()?.running !== undefined
                     ) {
                         <div
                             class="rounded-xl bg-error px-2 py-1 text-xs text-error-content"
-                            [class.!bg-success]="item?.running"
-                            [class.!text-success-content]="item?.running"
+                            [class.!bg-success]="item()?.running"
+                            [class.!text-success-content]="item()?.running"
                         >
                             {{
-                                (item?.running
+                                (item()?.running
                                     ? 'COMMON.ONLINE'
                                     : 'COMMON.OFFLINE'
                                 ) | translate
                             }}
                         </div>
                     }
-                    @if (item?.edge_id) {
+                    @if (item()?.edge_id) {
                         <div
                             class="rounded-xl bg-info px-2 py-1 text-xs text-info-content"
-                            [matTooltip]="item?.edge_id"
+                            [matTooltip]="item()?.edge_id"
                         >
                             {{ 'COMMON.EDGE' | translate }}
                         </div>
                     }
-                    @if (item?.tls) {
+                    @if (item()?.tls) {
                         <div
                             class="flex items-center space-x-2 rounded-xl bg-success px-2 py-1 text-xs text-success-content"
                         >
@@ -98,7 +98,7 @@ export interface DisplayItem {
             </button>
         </div>
         <mat-menu #action_menu="matMenu" class="min-w-[22rem]">
-            @if (can_edit) {
+            @if (can_edit()) {
                 <button
                     mat-menu-item
                     class="flex items-center space-x-2"
@@ -106,7 +106,7 @@ export interface DisplayItem {
                 >
                     <app-icon class="text-2xl">edit</app-icon>
                     <div class="flex-1">
-                        {{ 'COMMON.EDIT_TYPE' | translate: { name: type } }}
+                        {{ 'COMMON.EDIT_TYPE' | translate: { name: type() } }}
                     </div>
                     <span class="keycap">E</span>
                 </button>
@@ -119,7 +119,7 @@ export interface DisplayItem {
             >
                 <app-icon class="text-2xl">add</app-icon>
                 <div>
-                    {{ 'COMMON.CREATE_FROM_TYPE' | translate: { name: type } }}
+                    {{ 'COMMON.CREATE_FROM_TYPE' | translate: { name: type() } }}
                 </div>
             </button>
             <button
@@ -130,7 +130,7 @@ export interface DisplayItem {
             >
                 <app-icon class="text-2xl">call_split</app-icon>
                 <div>
-                    {{ 'COMMON.DUPLICATE_TYPE' | translate: { name: type } }}
+                    {{ 'COMMON.DUPLICATE_TYPE' | translate: { name: type() } }}
                 </div>
             </button>
             <button
@@ -141,11 +141,11 @@ export interface DisplayItem {
                 <app-icon class="text-2xl">download</app-icon>
                 <div>
                     {{
-                        'COMMON.EXPORT_TYPE_AS_TSV' | translate: { name: type }
+                        'COMMON.EXPORT_TYPE_AS_TSV' | translate: { name: type() }
                     }}
                 </div>
             </button>
-            @for (item of extra_actions; track item.label) {
+            @for (item of extra_actions(); track item.label) {
                 <button
                     mat-menu-item
                     class="flex items-center space-x-2"
@@ -160,7 +160,7 @@ export interface DisplayItem {
                     }
                 </button>
             }
-            @if (can_edit) {
+            @if (can_edit()) {
                 <button
                     mat-menu-item
                     class="flex items-center space-x-2"
@@ -168,7 +168,7 @@ export interface DisplayItem {
                 >
                     <app-icon class="text-2xl text-error">delete</app-icon>
                     <div class="flex-1">
-                        {{ 'COMMON.DELETE_TYPE' | translate: { name: type } }}
+                        {{ 'COMMON.DELETE_TYPE' | translate: { name: type() } }}
                     </div>
                     <span class="keycap">⌦</span>
                 </button>
@@ -183,21 +183,21 @@ export class ItemDetailsComponent {
     private _users = inject(BackofficeUsersService);
     private _clipboard = inject(Clipboard);
 
-    @Input() public type = 'system';
-    @Input() public item: DisplayItem;
-    @Input() public can_edit = false;
-    @Input() public extra_actions: {
-        label: string;
-        action: () => void;
-        icon: string;
-        keycap?: string;
-    }[] = [];
-    @Output() public create = new EventEmitter<boolean>();
-    @Output() public edit = new EventEmitter();
-    @Output() public delete = new EventEmitter();
+    public readonly type = input('system');
+    public readonly item = input<DisplayItem>(undefined);
+    public readonly can_edit = input(false);
+    public readonly extra_actions = input<{
+    label: string;
+    action: () => void;
+    icon: string;
+    keycap?: string;
+}[]>([]);
+    public readonly create = output<boolean>();
+    public readonly edit = output();
+    public readonly delete = output();
 
     public readonly copyID = () => {
-        this._clipboard.copy(this.item?.id || '');
+        this._clipboard.copy(this.item()?.id || '');
         notifyInfo(i18n('COMMON.COPIED_ID'));
     };
 
@@ -215,16 +215,17 @@ export class ItemDetailsComponent {
     }
 
     public get domain() {
-        return (this.item as any)?.domain || '';
+        return (this.item() as any)?.domain || '';
     }
 
     public get tags() {
-        return (this.item as any)?.tags || [];
+        return (this.item() as any)?.tags || [];
     }
 
     public get driver_type(): string {
-        if (typeof this.item?.role !== 'number') return '';
-        switch (this.item?.role) {
+        const item = this.item();
+        if (typeof item?.role !== 'number') return '';
+        switch (item?.role) {
             case PlaceDriverRole.Device:
                 return i18n('DRIVERS.DEVICE');
             case PlaceDriverRole.SSH:
@@ -241,9 +242,9 @@ export class ItemDetailsComponent {
      * Export the active item as a CSV
      */
     public exportAsTSV() {
-        const item = this.item?.toJSON();
+        const item = this.item()?.toJSON();
         const filename = `${item?.name.toLowerCase().split(' ').join('_')}.${
-            this.type
+            this.type()
         }.tsv`;
         const ignore_keys = ['module_list', 'settings', '_type', 'version'];
         const csv_data = jsonToCsv(
