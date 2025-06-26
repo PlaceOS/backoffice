@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { listTriggerInstances, PlaceTrigger } from '@placeos/ts-client';
+import { lastValueFrom } from 'rxjs';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
@@ -36,10 +37,10 @@ import { i18n } from '../common/locale.service';
                             </button>
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
-                            @if (item?.id) {
+                            @if (item()?.id) {
                                 <item-details
                                     [can_edit]="true"
-                                    [item]="item"
+                                    [item]="item()"
                                     [type]="'TRIGGERS.SINGULAR' | translate"
                                 ></item-details>
                                 <item-tablist
@@ -83,7 +84,7 @@ import { i18n } from '../common/locale.service';
     styles: [``],
     standalone: false,
 })
-export class TriggersComponent extends AsyncHandler {
+export class TriggersComponent extends AsyncHandler implements OnInit {
     protected _service = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
 
@@ -95,9 +96,7 @@ export class TriggersComponent extends AsyncHandler {
 
     public readonly newItem = () => this._service.create();
 
-    public get item() {
-        return this._service.active_item;
-    }
+    public readonly item = signal<PlaceTrigger>(null);
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
@@ -127,6 +126,7 @@ export class TriggersComponent extends AsyncHandler {
         this.subscription(
             'item',
             this._service.item.subscribe((item) => {
+                this.item.set(item as PlaceTrigger);
                 this.loadValues(item as any);
             }),
         );
@@ -137,7 +137,7 @@ export class TriggersComponent extends AsyncHandler {
         if (!item) return;
         // Get trigger count
         this.instance_count = (
-            await listTriggerInstances(item.id).toPromise()
+            await lastValueFrom(listTriggerInstances(item.id))
         ).length;
         this.updateTabList();
     }

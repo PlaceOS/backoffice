@@ -115,13 +115,11 @@ import { UploadsService } from '../common/uploads.service';
                 </div>
             </div>
         }
-        @if (enabled) {
-            <div
-                class="absolute inset-0"
-                (document:dragenter)="onEnter($event)"
-                (drop)="hideOverlay()"
-            ></div>
-        }
+        <div
+            class="absolute inset-0"
+            (document:dragenter)="onEnter($event)"
+            (drop)="hideOverlay()"
+        ></div>
         @if (show_overlay) {
             <div
                 class="fixed inset-0"
@@ -187,10 +185,6 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     public show_overlay = false;
     /** List of uploads */
     public readonly uploads = this._uploads.upload_list;
-
-    public get enabled() {
-        return !this._settings.value('disable_uploads');
-    }
 
     public ngOnInit() {
         this.subscription(

@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { PlaceDomain } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
@@ -33,10 +34,10 @@ import { DomainStateService } from './domain-state.service';
                     </button>
                 </item-selection>
                 <div class="flex h-1/2 flex-1 flex-col">
-                    @if (item?.id) {
+                    @if (item()?.id) {
                         <item-details
                             [can_edit]="true"
-                            [item]="item"
+                            [item]="item()"
                             [extra_actions]="extra_actions"
                             [type]="'DOMAINS.SINGULAR' | translate"
                         ></item-details>
@@ -82,9 +83,7 @@ export class DomainsComponent extends AsyncHandler implements OnInit {
 
     public readonly newItem = () => this._item.create();
 
-    public get item() {
-        return this._service.active_item;
-    }
+    public readonly item = signal<PlaceDomain>(null);
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
@@ -100,8 +99,14 @@ export class DomainsComponent extends AsyncHandler implements OnInit {
         ];
         this.updateTabList({});
         this.subscription(
-            'item',
-            this._service.counts.subscribe((c) => this.updateTabList(c as any)),
+            'counts',
+            this._service.counts.subscribe((c) => {
+                this.updateTabList(c as any);
+            }),
+        );
+        this.subscription(
+            'items',
+            this._service.item.subscribe((item) => this.item.set(item)),
         );
     }
 

@@ -52,7 +52,8 @@ export class ExtensionOutletComponent extends AsyncHandler {
         this.handleMessage(JSON.parse(m.data));
     };
 
-    private readonly _frame_el = viewChild<ElementRef<HTMLIFrameElement>>('frame');
+    private readonly _frame_el =
+        viewChild<ElementRef<HTMLIFrameElement>>('frame');
 
     public ngOnInit(): void {
         onlineState()

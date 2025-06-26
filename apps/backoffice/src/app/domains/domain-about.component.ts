@@ -64,7 +64,10 @@ import { DomainStateService } from './domain-state.service';
         </header>
         @if (form) {
             <section [formGroup]="form">
-                <mat-tab-group [(selectedIndex)]="index">
+                <mat-tab-group
+                    [(selectedIndex)]="index"
+                    class="border-x border-t border-base-300"
+                >
                     <mat-tab [label]="'DOMAINS.SETTINGS_CONFIG' | translate">
                     </mat-tab>
                     <mat-tab [label]="'DOMAINS.SETTINGS_INTERNALS' | translate">

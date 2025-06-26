@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -29,7 +29,7 @@ import { DriverStateService } from './driver-state.service';
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
-                [class.opacity-0]="(loading | async) !== true"
+                [class.opacity-0]="!loading()"
             ></mat-progress-bar>
             <simple-table
                 class="block min-w-[32rem] text-sm"
@@ -168,14 +168,14 @@ import { DriverStateService } from './driver-state.service';
     ],
     standalone: false,
 })
-export class DriverModulesComponent extends AsyncHandler {
+export class DriverModulesComponent extends AsyncHandler implements OnInit {
     private _service = inject(DriverStateService);
 
     public loading_systems = false;
     /** Subject holding the value of the search */
     public readonly filter$ = new BehaviorSubject<string>('');
     /** Whether systems are being loaded */
-    public readonly loading = this._service.loading;
+    public readonly loading = signal(false);
     /** Currently active driver */
     public readonly item = this._service.item;
     /** List of systems associated with modules */
@@ -200,6 +200,13 @@ export class DriverModulesComponent extends AsyncHandler {
     );
 
     public readonly removeModule = (d) => this._service.removeModule(d);
+
+    public ngOnInit() {
+        this.subscription(
+            'loading',
+            this._service.loading.subscribe((l) => this.loading.set(l)),
+        );
+    }
 
     public async loadSystems(mod: PlaceModule) {
         this.loading_systems = true;

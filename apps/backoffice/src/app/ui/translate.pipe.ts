@@ -8,7 +8,6 @@ import { LocaleService } from '../common/locale.service';
 export class TranslatePipe implements PipeTransform {
     private _locale = inject(LocaleService);
 
-
     public transform(
         value: string,
         args: Record<string, any> = {},

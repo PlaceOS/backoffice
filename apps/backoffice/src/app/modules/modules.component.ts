@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { PlaceModule, querySystems } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -36,10 +36,10 @@ import { i18n } from '../common/locale.service';
                             </button>
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
-                            @if (item?.id) {
+                            @if (item()?.id) {
                                 <item-details
                                     [can_edit]="true"
-                                    [item]="item"
+                                    [item]="item()"
                                     [type]="'MODULES.SINGULAR' | translate"
                                 ></item-details>
                                 <item-tablist
@@ -96,9 +96,7 @@ export class ModulesComponent extends AsyncHandler {
 
     public readonly newItem = () => this._service.create();
 
-    public get item() {
-        return this._service.active_item;
-    }
+    public readonly item = signal<PlaceModule>(null);
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
@@ -133,6 +131,7 @@ export class ModulesComponent extends AsyncHandler {
         this.subscription(
             'item',
             this._service.item.subscribe((item) => {
+                this.item.set(item as any);
                 this.loadValues(item as any);
                 this.updateTabList();
             }),

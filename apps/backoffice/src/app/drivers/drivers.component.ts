@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { PlaceDriver, queryModules } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
@@ -38,10 +38,10 @@ import { DriverStateService } from './driver-state.service';
                             </button>
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
-                            @if (item?.id) {
+                            @if (item()?.id) {
                                 <item-details
                                     [can_edit]="true"
-                                    [item]="item"
+                                    [item]="item()"
                                     [type]="'DRIVERS.SINGULAR' | translate"
                                 ></item-details>
                                 <item-tablist
@@ -103,6 +103,8 @@ export class DriversComponent extends AsyncHandler {
 
     public readonly name = 'drivers';
 
+    public readonly item = signal<PlaceDriver>(null);
+
     public open_menu = false;
     public device_count: number;
     public tab_list = [];
@@ -111,10 +113,6 @@ export class DriversComponent extends AsyncHandler {
     public readonly showUpdateList = () => this._drivers.showUpdateList();
 
     public readonly newItem = () => this._service.create();
-
-    public get item() {
-        return this._service.active_item;
-    }
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
@@ -150,6 +148,7 @@ export class DriversComponent extends AsyncHandler {
             'item',
             this._service.item.subscribe((item) => {
                 this.device_count = null;
+                this.item.set(item as any);
                 this.updateTabList();
                 this.loadValues(item as any);
             }),

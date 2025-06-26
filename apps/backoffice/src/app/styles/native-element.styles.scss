@@ -38,11 +38,11 @@ section > label {
     font-weight: bold;
 
     > span:first-child {
-        color: hsl(var(--wa));
+        color: var(--wa);
     }
 
     &.error {
-        color: hsl(var(--er));
+        color: var(--er);
     }
 }
 

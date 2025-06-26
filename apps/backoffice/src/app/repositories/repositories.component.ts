@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { PlaceRepository } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
@@ -33,15 +34,15 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </button>
                 </item-selection>
                 <div class="flex h-1/2 flex-1 flex-col">
-                    @if (item?.id) {
+                    @if (item()?.id) {
                         <item-details
                             [can_edit]="true"
-                            [item]="item"
+                            [item]="item()"
                             [type]="'REPOS.SINGULAR' | translate"
                         ></item-details>
                         <item-tablist
                             [base]="name"
-                            [tabs]="tab_list"
+                            [tabs]="tab_list()"
                             [scrolled]="scroll > 0"
                             class="z-10"
                         ></item-tablist>
@@ -69,7 +70,7 @@ import { RepositoriesStateService } from './repositories-state.service';
     styles: [``],
     standalone: false,
 })
-export class RepositoriesComponent extends AsyncHandler {
+export class RepositoriesComponent extends AsyncHandler implements OnInit {
     protected _service = inject(RepositoriesStateService);
     protected _item = inject(ActiveItemService);
 
@@ -77,21 +78,19 @@ export class RepositoriesComponent extends AsyncHandler {
 
     public open_menu = false;
     public driver_count = 0;
-    public tab_list = [];
 
     public readonly newItem = () => this._item.create();
 
-    public get item() {
-        return this._service.active_item;
-    }
+    public readonly item = signal<PlaceRepository>(null);
+    public readonly tab_list = signal([]);
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
     }
 
     public updateTabList() {
-        this.tab_list = (
-            this.driver_count < 0 || !this.driver_count
+        this.tab_list.set(
+            (this.driver_count < 0 || !this.driver_count
                 ? [
                       {
                           id: 'about',
@@ -112,16 +111,21 @@ export class RepositoriesComponent extends AsyncHandler {
                           icon: { content: 'meeting_room' },
                       },
                   ]
-        ).concat(this.extensions);
+            ).concat(this.extensions),
+        );
     }
 
     public async ngOnInit() {
         this.subscription(
-            'item',
+            'list',
             this._service.driver_list.subscribe((list) => {
                 this.driver_count = list ? list.length : -1;
                 this.updateTabList();
             }),
+        );
+        this.subscription(
+            'item',
+            this._service.item.subscribe((item) => this.item.set(item as any)),
         );
         this.updateTabList();
     }

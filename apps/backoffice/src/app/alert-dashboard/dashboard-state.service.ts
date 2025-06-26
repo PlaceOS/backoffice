@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { onlineState, token } from '@placeos/ts-client';
 
-import * as mqtt from 'mqtt/dist/mqtt';
+import mqtt from 'mqtt';
 import { BehaviorSubject } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 

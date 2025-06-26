@@ -6,7 +6,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     template: `
         <button
             matRipple
-            class="relative flex flex-1 items-center space-x-2 overflow-hidden rounded border px-2"
+            class="relative flex min-h-12 flex-1 items-center space-x-2 overflow-hidden rounded border px-2"
             [class.border-base-300]="!value"
             [class.border-info]="value"
             (click)="setValue(!value)"

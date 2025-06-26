@@ -6,11 +6,12 @@ import {
     model,
     OnChanges,
     OnInit,
+    signal,
     SimpleChanges,
     viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import {
     catchError,
     debounceTime,
@@ -49,7 +50,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     "
                     [matAutocomplete]="auto"
                     [matAutocompleteDisabled]="display_list()"
-                    (focus)="search_str = ''; search$.next(' ')"
+                    (focus)="search_str.set(''); search$.next(' ')"
                     (blur)="resetSearchString()"
                 />
                 <div class="prefix" matPrefix>
@@ -64,9 +65,9 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                 }
             </mat-form-field>
             @if (display_list()) {
-                @if (item_list?.length) {
+                @if (item_list()?.length) {
                     <div class="h-[50vh] flex-1 space-y-2 overflow-auto">
-                        @for (option of item_list; track option) {
+                        @for (option of item_list(); track option) {
                             <button
                                 matRipple
                                 (click)="search$.next(option); setValue(option)"
@@ -102,7 +103,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                 }
             }
             <mat-autocomplete #auto="matAutocomplete">
-                @for (option of item_list; track option.id) {
+                @for (option of item_list(); track option.id) {
                     <mat-option
                         [value]="option.name || option.id"
                         (click)="search$.next(option); setValue(option)"
@@ -174,6 +175,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     extends AsyncHandler
     implements OnInit, OnChanges, ControlValueAccessor
 {
+    private _changed = new BehaviorSubject(0);
     /** Name of the items being query'd */
     public readonly name = input<string>(undefined);
     /** Placeholder to display on the form input */
@@ -202,11 +204,11 @@ export class ItemSearchFieldComponent<T extends Identity = any>
         of([]),
     );
     /** Currently selected item */
-    public active_item: T;
+    public active_item = signal(null);
     /** Item list to display */
-    public item_list: T[];
+    public item_list = signal<T[]>([]);
     /** Current display value of the search input field  */
-    public search_str: string;
+    public search_str = signal('');
     /** List of items from an API search */
     public search_results$: Observable<T[]>;
     /** Subject holding the value of the search */
@@ -221,7 +223,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
 
     public get items() {
         const options = this.options();
-        return options?.length ? options : this.item_list;
+        return options?.length ? options : this.item_list();
     }
 
     /** Map of item names to their IDs */
@@ -229,10 +231,12 @@ export class ItemSearchFieldComponent<T extends Identity = any>
 
     public ngOnInit(): void {
         // Listen for input changes
-        this.search_results$ = this.search$.pipe(
+        this.search_results$ = combineLatest([
+            this.search$.pipe(distinctUntilChanged()),
+            this._changed,
+        ]).pipe(
             debounceTime(400),
-            distinctUntilChanged(),
-            switchMap((query) => {
+            switchMap(([query]) => {
                 this.loading.set(true);
                 const options = this.options();
                 const min_length = this.min_length();
@@ -247,10 +251,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                 this.loading.set(false);
                 return list.filter((item: any) =>
                     this.exclude()
-                        ? !this.exclude()(
-                              item,
-                              (this.search_str || '').toLowerCase(),
-                          )
+                        ? !this.exclude()(item, this.search_str().toLowerCase())
                         : true,
                 );
             }),
@@ -259,7 +260,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
         this.subscription(
             'search_results',
             this.search_results$.subscribe((list) => {
-                this.item_list = list;
+                this.item_list.set(list);
                 this._updateNameMap();
             }),
         );
@@ -270,7 +271,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.service) this.search$.next('');
-        if (changes.options) this._updateNameMap();
+        if (changes.options) this._changed.next(Date.now());
     }
 
     /**
@@ -281,14 +282,16 @@ export class ItemSearchFieldComponent<T extends Identity = any>
             'value',
             () => {
                 if (this.clear_on_select()) {
-                    this.active_item = null;
-                    this.search_str = '';
-                } else if (this.active_item) {
-                    this.search_str = this.active_item.name || this.search_str;
+                    this.active_item.set(null);
+                    this.search_str.set('');
+                } else if (this.active_item()) {
+                    this.search_str.set(
+                        this.active_item().name || this.search_str(),
+                    );
                 }
                 if (this._input_el()?.nativeElement)
                     this._input_el().nativeElement.value =
-                        this.search_str || '';
+                        this.search_str() || '';
             },
             50,
         );
@@ -299,7 +302,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: T): void {
-        this.active_item = new_value;
+        this.active_item.set(new_value);
         if (this._onChange) {
             this._onChange(new_value);
         }
@@ -311,7 +314,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
      * @param value The new value for the component
      */
     public writeValue(value: T) {
-        this.active_item = value;
+        this.active_item.set(value);
         this.resetSearchString();
     }
 

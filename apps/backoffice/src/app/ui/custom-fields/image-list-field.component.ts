@@ -1,6 +1,14 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, ElementRef, forwardRef, inject, viewChild } from '@angular/core';
+import {
+    Component,
+    computed,
+    ElementRef,
+    forwardRef,
+    inject,
+    signal,
+    viewChild,
+} from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Upload } from '@placeos/cloud-uploads';
@@ -56,7 +64,7 @@ export interface UploadDetails {
                     (change)="uploadImages($event)"
                 />
             </div>
-            @for (url of list; track url; let i = $index) {
+            @for (url of list(); track url; let i = $index) {
                 <div
                     image
                     class="relative h-32 w-36 flex-shrink-0 overflow-hidden rounded bg-base-200 bg-cover bg-center"
@@ -119,24 +127,22 @@ export interface UploadDetails {
                     }
                 </div>
             }
-            @if (length > view_space) {
+            @if (length() > view_space()) {
                 <button
                     icon
                     matRipple
-                    [disabled]="offset === 0"
+                    [disabled]="offset() === 0"
                     class="absolute left-0 top-1/2 -translate-y-1/2 transform bg-base-100"
-                    (click)="offset = offset - 1"
+                    (click)="decrement()"
                 >
                     <app-icon>chevron_left</app-icon>
                 </button>
-            }
-            @if (length > view_space) {
                 <button
                     icon
                     matRipple
-                    [disabled]="offset >= length - view_space"
+                    [disabled]="offset() >= length - view_space()"
                     class="absolute right-0 top-1/2 -translate-y-1/2 transform bg-base-100"
-                    (click)="offset = offset + 1"
+                    (click)="increment()"
                 >
                     <app-icon>chevron_right</app-icon>
                 </button>
@@ -144,7 +150,7 @@ export interface UploadDetails {
         </div>
         <mat-form-field appearance="outline" class="w-full">
             <mat-chip-grid #chipList aria-label="Image List">
-                @for (item of list; track item) {
+                @for (item of list(); track item) {
                     <mat-chip-row (removed)="removeImage(item)">
                         <div class="max-w-md truncate">{{ item }}</div>
                         <button
@@ -208,27 +214,25 @@ export class ImageListFieldComponent extends AsyncHandler {
     private _uploads = inject(UploadsService);
 
     /** List of images */
-    public list: string[] = [];
+    public list = signal<string[]>([]);
     /** List of images */
     public upload_ids = new BehaviorSubject<number[]>([]);
     private _upload_list = new BehaviorSubject<UploadDetails[]>([]);
     public readonly upload_list = this._upload_list.asObservable();
-    public offset: number = 0;
-
-    public view_space: number = 0;
-
+    public readonly offset = signal(0);
+    public readonly view_space = signal(0);
     public readonly separators = [COMMA, ENTER];
+    public readonly length = computed(
+        () => this.list().length + this._upload_list.getValue().length + 1,
+    );
 
     public readonly uploads = combineLatest([
         this.upload_list,
         this.upload_ids,
     ]).pipe(map(([list, ids]) => list.filter((i) => ids.includes(i.id))));
 
-    public get length() {
-        return this.list.length + this._upload_list.getValue().length + 1;
-    }
-
-    private readonly _list_el = viewChild<ElementRef<HTMLDivElement>>('image_list');
+    private readonly _list_el =
+        viewChild<ElementRef<HTMLDivElement>>('image_list');
 
     /** Form control on change handler */
     private _onChange: (_: string[]) => void;
@@ -237,7 +241,7 @@ export class ImageListFieldComponent extends AsyncHandler {
 
     public ngAfterViewInit() {
         const box = this._list_el().nativeElement.getBoundingClientRect();
-        this.view_space = Math.floor(box.width / 152);
+        this.view_space.set(Math.floor(box.width / 152));
         this.subscription(
             'upload_changes',
             this.upload_list.subscribe((list) => {
@@ -255,6 +259,14 @@ export class ImageListFieldComponent extends AsyncHandler {
         );
     }
 
+    public increment() {
+        this.offset.update((o) => o + 1);
+    }
+
+    public decrement() {
+        this.offset.update((o) => o - 1);
+    }
+
     public copyLink(url: string) {
         this._clipboard.copy(url);
         notifyInfo('Copied image URL to clipboard');
@@ -263,17 +275,17 @@ export class ImageListFieldComponent extends AsyncHandler {
     public viewImage(url: string) {}
 
     public removeImage(url: string) {
-        this.setValue(this.list.filter((_) => _ !== url));
+        this.setValue(this.list().filter((_) => _ !== url));
     }
 
     public addImage(event: MatChipInputEvent) {
         if (!event.value) return;
-        this.setValue(unique([...this.list, event.value]));
+        this.setValue(unique([...this.list(), event.value]));
         event.chipInput.inputElement.value = '';
     }
 
     public addImageUrl(url: string) {
-        this.setValue(unique([...this.list, url]));
+        this.setValue(unique([...this.list(), url]));
     }
 
     public retryUpload(item: UploadDetails) {
@@ -304,7 +316,7 @@ export class ImageListFieldComponent extends AsyncHandler {
     }
 
     public setValue(value: string[]) {
-        this.list = value;
+        this.list.set(value);
         if (this._onChange) this._onChange(value);
     }
 
@@ -313,7 +325,7 @@ export class ImageListFieldComponent extends AsyncHandler {
      * @param value The new value for the component
      */
     public writeValue(value: string[]) {
-        this.list = value;
+        this.list.set(value);
     }
 
     public readonly registerOnChange = (fn: (_: string[]) => void) =>

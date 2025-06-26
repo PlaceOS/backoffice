@@ -1,18 +1,21 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { PlaceTrigger } from '@placeos/ts-client';
 
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
+import { AsyncHandler } from '../common/async-handler.class';
 import { TriggerStateService } from './trigger-state.service';
 
 @Component({
     selector: 'trigger-systems',
     template: `
-        <mat-progress-bar mode="indeterminate"
+        <mat-progress-bar
+            mode="indeterminate"
             class="w-full"
-            [class.opacity-0]="(loading | async) !== true"
-         />
-        <simple-table class="block min-w-[32rem] text-sm"
+            [class.opacity-0]="!loading()"
+        />
+        <simple-table
+            class="block min-w-[32rem] text-sm"
             [data]="instances"
             [columns]="[
                 {
@@ -37,7 +40,7 @@ import { TriggerStateService } from './trigger-state.service';
             ]"
             [sortable]="true"
             [empty_message]="'TRIGGERS.INSTANCES_EMPTY' | translate"
-         />
+        />
         <ng-template #state_template let-row="row">
             <div
                 class="mx-auto h-2 w-2 rounded-full"
@@ -86,17 +89,24 @@ import { TriggerStateService } from './trigger-state.service';
     ],
     standalone: false,
 })
-export class TriggerInstancesComponent {
+export class TriggerInstancesComponent extends AsyncHandler implements OnInit {
     private _service = inject(TriggerStateService);
 
     /** List of systems associated with the trigger */
     public readonly instances = this._service.instances;
-    public readonly loading = this._service.loading;
+    public readonly loading = signal(false);
     /** Map of systems ids to connected status */
     public connected: HashMap<boolean> = {};
 
     public readonly deleteTrigger = (s) =>
         this._service.removeTriggerFromParent(s);
+
+    public ngOnInit() {
+        this.subscription(
+            'loading',
+            this._service.loading.subscribe((l) => this.loading.set(l)),
+        );
+    }
 
     public get item(): PlaceTrigger {
         return this._service.active_item as any;

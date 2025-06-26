@@ -1,4 +1,4 @@
-import { Component, forwardRef, inject, input } from '@angular/core';
+import { Component, forwardRef, inject, input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -8,6 +8,7 @@ import {
     PlaceSystem,
     TriggerFunction,
 } from '@placeos/ts-client';
+import { lastValueFrom } from 'rxjs';
 import { notifyError, notifySuccess } from '../../../common/notifications';
 import { ViewResponseModalComponent } from '../../../overlays/view-response-modal.component';
 import { ModuleLike } from './select-module.component';
@@ -16,7 +17,7 @@ import { ModuleLike } from './select-module.component';
     selector: 'execute-method-field',
     template: `
         <div class="relative">
-            <div [class.pointer-events-none]="loading">
+            <div [class.pointer-events-none]="loading()">
                 <select-system-module
                     [system]="system()"
                     [(ngModel)]="module"
@@ -56,7 +57,7 @@ import { ModuleLike } from './select-module.component';
                     </div>
                 }
             </div>
-            @if (loading) {
+            @if (loading()) {
                 <div
                     class="absolute -inset-2 flex flex-col items-center justify-center rounded"
                 >
@@ -91,7 +92,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     public fn: PlaceModuleFunction;
     public arguments: Record<string, any>;
 
-    public loading = false;
+    public loading = signal(false);
 
     /** Form control on change handler */
     private _onChange: (_: TriggerFunction) => void;
@@ -165,51 +166,49 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     }
 
     public async execute() {
-        this.loading = true;
+        this.loading.set(true);
         this.arguments = this.arguments || {};
         const method = this.zone() ? executeOnZone : executeOnSystem;
-        const result = await method(
-            this.zone() || this.system().id,
-            (this.fn as any).name,
-            this.module.module,
-            this.module.index,
-            this.fn.order.map((key) => {
-                const fn_details: any = this.fn.params[key];
-                try {
-                    return JSON.parse(this.arguments[key]);
-                } catch {
-                    return (
-                        (this.arguments[key] !== ''
-                            ? this.arguments[key]
-                            : null) ??
-                        fn_details?.default ??
-                        null
-                    );
-                }
-            }),
-        )
-            .toPromise()
-            .catch((err) => {
-                if (typeof err === 'string' && err.length < 128) {
-                    notifyError(err);
-                } else {
-                    notifyError(
-                        `Executing '${
-                            (this.fn as any).name
-                        }' failed.\nView Error?`,
-                        'View',
-                        () => this.viewDetails(err),
-                    );
-                }
-                this.loading = false;
-                throw err;
-            });
+        const result = await lastValueFrom(
+            method(
+                this.zone() || this.system().id,
+                (this.fn as any).name,
+                this.module.module,
+                this.module.index,
+                this.fn.order.map((key) => {
+                    const fn_details: any = this.fn.params[key];
+                    try {
+                        return JSON.parse(this.arguments[key]);
+                    } catch {
+                        return (
+                            (this.arguments[key] !== ''
+                                ? this.arguments[key]
+                                : null) ??
+                            fn_details?.default ??
+                            null
+                        );
+                    }
+                }),
+            ),
+        ).catch((err) => {
+            if (typeof err === 'string' && err.length < 128) {
+                notifyError(err);
+            } else {
+                notifyError(
+                    `Executing '${(this.fn as any).name}' failed.\nView Error?`,
+                    'View',
+                    () => this.viewDetails(err),
+                );
+            }
+            this.loading.set(false);
+            throw err;
+        });
         notifySuccess(
             'Command successful executed.\nView Response?',
             'View',
             () => this.viewDetails(result),
         );
-        this.loading = false;
+        this.loading.set(false);
     }
 
     /** View Results of the execute */

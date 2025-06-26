@@ -1,4 +1,9 @@
-import { ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
+import {
+    ErrorHandler,
+    LOCALE_ID,
+    NgModule,
+    provideZonelessChangeDetection,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -48,6 +53,7 @@ import localeZh from '@angular/common/locales/zh';
         CommonModule,
     ],
     providers: [
+        provideZonelessChangeDetection(),
         { provide: ErrorHandler, useClass: SentryService },
         AuthorisedUserGuard,
         AuthorisedAdminGuard,

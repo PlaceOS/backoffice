@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { listZoneTags } from '@placeos/ts-client';
+import { listZoneTags, PlaceZone } from '@placeos/ts-client';
 import { shareReplay } from 'rxjs';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -40,10 +40,10 @@ import { ZonesStateService } from './zones-state.service';
                             </button>
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
-                            @if (item?.id) {
+                            @if (item()?.id) {
                                 <item-details
                                     [can_edit]="true"
-                                    [item]="item"
+                                    [item]="item()"
                                     [type]="'ZONES.SINGULAR' | translate"
                                 ></item-details>
                                 <item-tablist
@@ -112,9 +112,7 @@ export class ZonesComponent extends AsyncHandler {
     public readonly bulkAdd = () => this._item.bulkAdd();
     public readonly zone_tags = listZoneTags().pipe(shareReplay(1));
 
-    public get item() {
-        return this._service.active_item;
-    }
+    public readonly item = signal<PlaceZone>(null);
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
@@ -166,7 +164,10 @@ export class ZonesComponent extends AsyncHandler {
     public ngOnInit(): void {
         this.subscription(
             'item-change',
-            this._item.active_item$.subscribe(() => this.updateTabList({})),
+            this._item.active_item$.subscribe((i) => {
+                this.item.set(i as any);
+                this.updateTabList({});
+            }),
         );
         this.subscription(
             'item',

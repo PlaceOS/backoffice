@@ -1,294 +1,374 @@
+import { DatePipe } from '@angular/common';
 import {
-  Component,
-  OnChanges,
-  SimpleChanges,
-  input,
-  output
+    Component,
+    computed,
+    input,
+    OnChanges,
+    output,
+    signal,
+    SimpleChanges,
 } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { FormGroup, UntypedFormGroup } from '@angular/forms';
 import {
+    GitCommitDetails,
     listRepositoryCommits,
     listRepositoryDriverDetails,
     listRepositoryDrivers,
     PlaceDriverRole,
-    PlaceRepository,
-    PlaceRepositoryCommit,
     PlaceRepositoryType,
     queryRepositories,
     showRepository,
 } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import { notifyError } from 'apps/backoffice/src/app/common/notifications';
-import { Identity } from 'apps/backoffice/src/app/common/types';
-import { Observable, of, Subject } from 'rxjs';
+import { format, isAfter, subMinutes } from 'date-fns';
+import { BehaviorSubject, combineLatest, lastValueFrom, of } from 'rxjs';
 import {
     catchError,
-    debounceTime,
     distinctUntilChanged,
+    distinctUntilKeyChanged,
+    filter,
     map,
+    shareReplay,
     switchMap,
+    tap,
 } from 'rxjs/operators';
 
-import { format, isAfter, subMinutes } from 'date-fns';
 import * as yaml from 'js-yaml';
-import { i18n } from '../../../common/locale.service';
-import { DateFromPipe } from '../../pipes/date-from.pipe';
+import { nextValueFrom } from '../../../common/general';
 
 @Component({
     selector: 'driver-form',
-    templateUrl: './driver-form.component.html',
-    styles: [
-        `
-            mat-checkbox {
-                margin-top: 2.5em;
-                margin-bottom: 1.5em;
-
-                @media screen and (max-width: 640px) {
-                    margin-top: 0;
-                }
+    template: `
+        @if (!is_editing()) {
+            <label for="repos">{{ 'REPOS.SINGULAR' | translate }}</label>
+            <item-search-field
+                [placeholder]="'REPOS.SEARCH' | translate"
+                [options]="repo_list | async"
+                [loading]="loading_type().includes('repository')"
+                [ngModel]="repo.getValue()"
+                (ngModelChange)="
+                    repo.next($event); driver.next(null); commit.next(null)
+                "
+            />
+            @if (repo | async) {
+                <label for="driver">{{ 'DRIVERS.BASE' | translate }}</label>
+                <item-search-field
+                    [placeholder]="'DRIVERS.SEARCH' | translate"
+                    [options]="driver_list | async"
+                    [loading]="loading_type().includes('drivers')"
+                    [ngModel]="driver.getValue()"
+                    (ngModelChange)="driver.next($event); commit.next(null)"
+                />
             }
-        `,
-    ],
+        }
+        @if (driver | async) {
+            <label for="commit">{{ 'DRIVERS.COMMIT' | translate }}</label>
+            <item-search-field
+                [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
+                [options]="commit_list | async"
+                [loading]="loading_type().includes('commits')"
+                [ngModel]="commit.getValue()"
+                (ngModelChange)="commit.next($event); applyDriverCommit($event)"
+            />
+        }
+        @if ((commit | async) && !loading() && form().controls.id) {
+            <div class="flex flex-col" [formGroup]="form()">
+                <label for="driver-name" [class.error]="fieldInvalid('name')">
+                    {{ 'COMMON.FIELD_NAME' | translate }}
+                    <span required>*</span>
+                </label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="driver-name"
+                        [placeholder]="'COMMON.FIELD_NAME' | translate"
+                        formControlName="name"
+                        required
+                    />
+                    <mat-error>
+                        {{ 'DRIVERS.NAME_REQUIRED' | translate }}
+                    </mat-error>
+                </mat-form-field>
+                <div class="flex space-x-4">
+                    @if (!is_editing) {
+                        <div class="flex flex-1 flex-col">
+                            <label for="role">
+                                {{ 'DRIVERS.ROLE' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <mat-select name="role" formControlName="role">
+                                    @for (type of role_types; track type) {
+                                        <mat-option [value]="type.id">
+                                            {{ type.name | translate }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    }
+                    <div class="flex flex-1 flex-col">
+                        <label
+                            for="module-name"
+                            [class.error]="fieldInvalid('module_name')"
+                        >
+                            {{ 'DRIVERS.MODULE_NAME' | translate }}
+                            <span required>*</span>
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="module-name"
+                                [placeholder]="
+                                    'DRIVERS.MODULE_NAME' | translate
+                                "
+                                formControlName="module_name"
+                                required
+                            />
+                            <mat-error>
+                                {{ 'DRIVERS.MODULE_NAME_REQUIRED' | translate }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <label for="description">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                </label>
+                <mat-form-field appearance="outline">
+                    <textarea
+                        matInput
+                        name="description"
+                        [placeholder]="'COMMON.FIELD_DESCRIPTION' | translate"
+                        formControlName="description"
+                    ></textarea>
+                </mat-form-field>
+                <label for="default-uri">{{
+                    'DRIVERS.DEFAULT_URI' | translate
+                }}</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="default-uri"
+                        [placeholder]="'DRIVERS.DEFAULT_URI' | translate"
+                        formControlName="default_uri"
+                    />
+                </mat-form-field>
+                <div class="flex items-center space-x-4">
+                    <div class="flex flex-1 flex-col">
+                        <label
+                            for="default-port"
+                            [class.error]="fieldInvalid('default_port')"
+                        >
+                            {{ 'DRIVERS.DEFAULT_PORT' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="default-port"
+                                type="number"
+                                [placeholder]="
+                                    'DRIVERS.DEFAULT_PORT' | translate
+                                "
+                                formControlName="default_port"
+                            />
+                            <mat-error>
+                                {{ 'MODULES.PORT_REQUIRED' | translate }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-1 flex-col">
+                        <div class="h-1 w-full"></div>
+                        <settings-toggle
+                            class="w-full"
+                            [name]="'MODULES.IGNORE_CONNECTED' | translate"
+                            formControlName="ignore_connected"
+                        ></settings-toggle>
+                    </div>
+                </div>
+            </div>
+        }
+        <!-- Form fields go here -->
+        @if (loading()) {
+            <div
+                class="flex w-full flex-col items-center justify-center space-y-4 rounded-xl bg-base-200 px-8 py-16"
+            >
+                <mat-spinner [diameter]="32" />
+                <p>{{ loading() | translate }}</p>
+            </div>
+        }
+    `,
+    styles: [``],
     standalone: false,
 })
 export class DriverFormComponent extends AsyncHandler implements OnChanges {
+    private _date_pipe = new DatePipe('en');
     /** Group of form fields used for creating the system */
-    public readonly form = input<UntypedFormGroup>(undefined);
-
+    public readonly form = input<UntypedFormGroup>(new FormGroup({}));
+    public readonly is_editing = computed(() => !!this.form().value.id);
     public readonly waiting = output<boolean>();
-    /** List of driver roles */
-    public role_types: Identity[] = [];
+    public readonly loading = signal('');
+    public readonly loading_type = signal([]);
+    public readonly role_types = [
+        { id: PlaceDriverRole.SSH, name: 'DRIVERS.SSH' },
+        { id: PlaceDriverRole.Device, name: 'DRIVERS.DEVICE' },
+        { id: PlaceDriverRole.Service, name: 'DRIVERS.SERVICE' },
+        { id: PlaceDriverRole.Websocket, name: 'DRIVERS.WEBSOCKET' },
+        { id: PlaceDriverRole.Logic, name: 'DRIVERS.LOGIC' },
+    ];
 
-    /** Driver used as a template for the new driver being created */
-    public base_repo: PlaceRepository;
-    /** Driver used as a template for the new driver being created */
-    public base_commit: PlaceRepositoryCommit;
-    /** Driver used as a template for the new driver being created */
-    public base_driver: Identity;
-    /** List of available drivers for the active repository */
-    public driver_list: Identity[] = [];
-    /** List of available commits for the active driver */
-    public commit_list: Identity[] = [];
-    /** List of items from an API search */
-    public driver_list$: Observable<Identity[]>;
-    /** List of items from an API search */
-    public commit_list$: Observable<Identity[]>;
-    /** Subject holding the value of the search */
-    public readonly repo$ = new Subject<string>();
-    /** Subject holding the value of the search */
-    public readonly driver$ = new Subject<string>();
-    /** Whether driver details are being loaded */
-    public loading: boolean;
-    /** Whether driver listings are being loaded */
-    public loading_drivers: boolean;
-    /** Whether driver commits are being loaded */
-    public loading_commits: boolean;
-    /** Function to query repositories */
-    public readonly query_fn = (_: string) =>
-        queryRepositories({ q: _ }).pipe(
-            map((resp) => resp.data),
-            catchError(() => of([])),
-        );
-    /** Function to check repo that are excluded from being listed */
-    public readonly exclude_fn = (repo: PlaceRepository) =>
-        repo.type === PlaceRepositoryType.Interface;
-    public date_pipe = new DateFromPipe();
-    public failed = false;
+    public readonly repo = new BehaviorSubject(null);
+    public readonly driver = new BehaviorSubject(null);
+    public readonly commit = new BehaviorSubject(null);
 
-    public get editing(): boolean {
-        const form = this.form();
-        return form.controls.id && form.controls.id.value;
-    }
+    public readonly repo_list = queryRepositories({ limit: 1000 }).pipe(
+        map(({ data }) =>
+            data.filter((repo) => repo.type === PlaceRepositoryType.Driver),
+        ),
+        shareReplay(1),
+    );
 
-    public ngOnInit(): void {
-        this.driver_list$ = this.repo$.pipe(
-            debounceTime(100),
-            distinctUntilChanged(),
-            switchMap((repo_id) => {
-                this.loading_drivers = true;
-                this.driver_list = [];
-                this.commit_list = [];
-                return listRepositoryDrivers(repo_id).pipe(
-                    catchError(() => of([])),
-                );
-            }),
-            catchError((_) => {
-                notifyError(
-                    i18n('DRIVERS.LISTING_ERROR', { error: _.message || _ }),
-                );
-                return of([]);
-            }),
-            map((list: any[]) => {
-                this.loading_drivers = false;
-                return (list || []).map((driver) => ({
-                    id: driver,
-                    name: driver.replace(/\//g, ' > '),
-                }));
-            }),
-        );
-        this.subscription(
-            'driver_list',
-            this.driver_list$.subscribe((list) => (this.driver_list = list)),
-        );
-        this.commit_list$ = this.driver$.pipe(
-            debounceTime(120),
-            distinctUntilChanged(),
-            switchMap((driver_id) => {
-                this.loading_commits = true;
-                this.commit_list = [];
-                return listRepositoryCommits(this.base_repo.id, {
-                    driver: `${driver_id}`,
-                }).pipe(catchError(() => of([])));
-            }),
-            catchError((_) => {
-                notifyError(
-                    i18n('DRIVERS.COMMIT_LIST_ERROR', {
-                        error: _.message || _,
-                    }),
-                );
-                return of([]);
-            }),
-            map((list: any[]) => {
-                this.loading_commits = false;
-                if (this.form().controls.commit) {
-                    this.base_commit = this.commit_list.find(
-                        (commit) =>
-                            commit.id === this.form().controls.commit.value,
-                    ) as any;
-                }
-                return (list || []).map((commit: PlaceRepositoryCommit) => {
-                    const date = new Date(commit.date);
-                    return {
-                        id: commit.commit,
-                        name: `${commit.subject}`,
-                        extra: isAfter(date, subMinutes(date, 1))
-                            ? this.date_pipe.transform(date.valueOf())
-                            : format(date, 'dd MMM yyyy'),
-                    };
-                });
-            }),
-        );
-        this.subscription(
-            'commit_list',
-            this.commit_list$.subscribe((list) => (this.commit_list = list)),
-        );
-        this.role_types = [
-            { id: PlaceDriverRole.SSH, name: i18n('DRIVERS.SSH') },
-            { id: PlaceDriverRole.Device, name: i18n('DRIVERS.DEVICE') },
-            { id: PlaceDriverRole.Service, name: i18n('DRIVERS.SERVICE') },
-            { id: PlaceDriverRole.Websocket, name: i18n('DRIVERS.WEBSOCKET') },
-            { id: PlaceDriverRole.Logic, name: i18n('DRIVERS.LOGIC') },
-        ];
-    }
+    public readonly driver_list = this.repo.pipe(
+        filter((item) => !!item?.id),
+        distinctUntilKeyChanged('id'),
+        tap(() => this.loading_type.update((types) => [...types, 'drivers'])),
+        switchMap(({ id }) =>
+            listRepositoryDrivers(id, { limit: 1000 }).pipe(
+                catchError(() => of([] as string[])),
+            ),
+        ),
+        map((list) =>
+            list.map((_) => ({
+                id: _,
+                name: _.replace(/\//g, ' > '),
+            })),
+        ),
+        tap(() =>
+            this.loading_type.update((types) =>
+                types.filter((_) => _ !== 'drivers'),
+            ),
+        ),
+        shareReplay(1),
+    );
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.form) {
-            this.initDriver();
+    public readonly commit_list = combineLatest([this.repo, this.driver]).pipe(
+        filter(([repo, driver]) => !!repo?.id && !!driver?.id),
+        distinctUntilChanged(
+            ([prev_repo, prev_driver], [curr_repo, curr_driver]) =>
+                prev_repo?.id === curr_repo?.id &&
+                prev_driver?.id === curr_driver?.id,
+        ),
+        tap(() => this.loading_type.update((types) => [...types, 'commits'])),
+        switchMap(([{ id }, driver]) =>
+            listRepositoryCommits(id, { driver: driver.id, limit: 1000 }).pipe(
+                catchError(() => of([] as GitCommitDetails[])),
+            ),
+        ),
+        map((list) =>
+            list.map((item) => ({
+                id: item.commit,
+                name: `${item.subject}`,
+                extra: isAfter(item.date, subMinutes(item.date, 1))
+                    ? this._date_pipe.transform(item.date.valueOf())
+                    : format(item.date, 'dd MMM yyyy'),
+            })),
+        ),
+        tap(() =>
+            this.loading_type.update((types) =>
+                types.filter((_) => _ !== 'commits'),
+            ),
+        ),
+        shareReplay(1),
+    );
+
+    public ngOnChanges(changes: SimpleChanges) {
+        if (changes.form && this.form()) {
+            this._loadDetailsFromForm();
         }
     }
 
-    /**
-     * Update the list of available drivers
-     * @param repo Repository to grab the drivers for
-     */
-    public updateDriverList(repo: PlaceRepository) {
-        this.form().controls.repository_id.setValue(repo.id);
-        this.base_repo = repo;
-        const promise = this.driver_list$.toPromise();
-        this.repo$.next(repo.id);
-        return promise;
+    public fieldInvalid(field: string) {
+        return (
+            this.form().controls[field].invalid &&
+            this.form().controls[field].touched
+        );
     }
 
-    /**
-     * Update the list of available commits
-     * @param driver Driver to grab commits for
-     */
-    public updateCommitList(driver: Identity) {
-        this.form().controls.file_name.setValue(driver.id);
-        this.base_driver = driver;
-        const form = this.form();
-        if (!form.controls.id.value) {
-            this.base_commit = null;
-            form.controls.commit.setValue('');
-        }
-        const promise = this.commit_list$.toPromise();
-        this.driver$.next(`${driver.id}`);
-        return promise;
-    }
-
-    /**
-     *
-     * @param event Details of the driver selected
-     */
-    public async setDriverBase(event: Identity) {
-        this.form().controls.commit.setValue(event.id);
-        this.failed = false;
-        this.base_commit = event as any;
-        this.loading = true;
+    public async applyDriverCommit(commit: {
+        id: string;
+        name: string;
+        extra: string;
+    }) {
+        if (this.form().value.id) return;
+        this.loading.set('DRIVERS.DETAILS_LOADING');
         this.waiting.emit(true);
-        const driver = await listRepositoryDriverDetails(this.base_repo.id, {
-            driver: `${this.base_driver.id}`,
-            commit: `${event.id}`,
-        })
-            .toPromise()
-            .catch((_) => {
-                this.loading = false;
-                this.failed = true;
-                this.waiting.emit(false);
-                throw _;
-            });
-        const form = this.form();
-        if (!form.controls.id.value) {
-            form.controls.name.setValue(driver.descriptive_name || '');
-            form.controls.module_name.setValue(driver.generic_name || '');
-            form.controls.class_name.setValue(this.base_driver.id || '');
-            const port_number = driver.tcp_port || driver.udp_port || null;
-            form.controls.default_port.setValue(port_number);
-            form.controls.default_uri.setValue(driver.uri_base || '');
-            form.controls.role.setValue(
-                port_number
-                    ? port_number === 22
-                        ? PlaceDriverRole.SSH
-                        : PlaceDriverRole.Device
-                    : driver.uri_base
-                      ? driver.uri_base.startsWith('ws')
-                          ? PlaceDriverRole.Websocket
-                          : PlaceDriverRole.Service
-                      : PlaceDriverRole.Logic,
-            );
-            let settings = driver.default_settings || '';
-            try {
-                JSON.parse(driver.default_settings);
-                const doc = yaml.load(driver.default_settings);
-                settings = yaml.dump(doc);
-            } catch {}
-            form.controls.settings.setValue(settings || '');
-            form.controls.description.setValue(driver.description || '');
-        }
-        this.loading = false;
-        this.waiting.emit(false);
+        const repo = this.repo.getValue();
+        const driver = this.driver.getValue();
+        this.form().patchValue({
+            repository_id: repo.id,
+            file_name: driver.id,
+            commit: commit.id,
+        });
+        this.subscription(
+            'driver_details',
+            listRepositoryDriverDetails(repo.id, {
+                driver: `${driver.id}`,
+                commit: `${commit.id}`,
+            })
+                .pipe(catchError(() => of(null)))
+                .subscribe((details) => this._applyDriverDetails(details)),
+        );
     }
 
-    /**
-     * Initialise the driver details if set
-     */
-    private async initDriver() {
-        const form = this.form();
-        if (
-            form.controls.repository_id &&
-            form.controls.repository_id.value
-        ) {
-            const value = form.controls.repository_id.value;
-            const repo = await showRepository(value).toPromise();
-            this.base_repo = repo;
-            this.updateDriverList(this.base_repo);
-            const driver = form.controls.file_name.value;
-            this.base_driver =
-                typeof driver === 'string'
-                    ? { id: driver, name: driver.split('/').join(' > ') }
-                    : driver;
-            this.commit_list = await this.updateCommitList(this.base_driver);
+    private _applyDriverDetails(details: any) {
+        if (details == null) {
+            this.loading.set('');
+            this.waiting.emit(false);
+            return;
         }
+        const driver = this.driver.getValue();
+        let settings = driver.default_settings || '';
+        try {
+            JSON.parse(driver.default_settings);
+            const doc = yaml.load(driver.default_settings);
+            settings = yaml.dump(doc);
+        } catch {}
+        const port_number = details.tcp_port || details.udp_port || null;
+        this.form().patchValue({
+            name: details.descriptive_name || '',
+            module_name: details.generic_name || '',
+            class_name: driver.id || '',
+            settings,
+            default_port: port_number,
+            default_uri: details.uri_base || '',
+            role: port_number
+                ? port_number === 22
+                    ? PlaceDriverRole.SSH
+                    : PlaceDriverRole.Device
+                : details.uri_base
+                  ? details.uri_base.startsWith('ws')
+                      ? PlaceDriverRole.Websocket
+                      : PlaceDriverRole.Service
+                  : PlaceDriverRole.Logic,
+            description: details.description || '',
+        });
+        this.waiting.emit(false);
+        this.loading.set('');
+    }
+
+    private async _loadDetailsFromForm() {
+        const { id, commit, file_name, repository_id } = this.form().value;
+        if (!id) return;
+        this.loading.set('DRIVERS.DETAILS_LOADING');
+        const repo = await lastValueFrom(showRepository(repository_id));
+        const driver = {
+            id: file_name,
+            name: file_name.replace(/\//g, ' > '),
+        };
+        this.repo.next(repo);
+        this.driver.next(driver);
+        const commit_list = await nextValueFrom(this.commit_list);
+        const active_commit = commit_list.find((c) => c.id === commit);
+        if (active_commit) this.commit.next(active_commit);
+        this.loading.set('');
     }
 }
