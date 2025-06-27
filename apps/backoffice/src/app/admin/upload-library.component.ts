@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     apiKey,
@@ -84,7 +84,7 @@ export interface UploadInfo {
     selector: 'upload-library',
     template: `
         <div class="flex h-full w-full flex-col">
-            <div class="my-4 flex items-center justify-between space-x-2">
+            <div class="my-4 flex items-center justify-between space-x-2 px-4">
                 <div class="text-2xl">
                     {{ 'ADMIN.UPLOADS_LIB_HEADER' | translate }}
                 </div>
@@ -120,12 +120,12 @@ export interface UploadInfo {
                     </button>
                 </div>
             </div>
-            <div class="h-1/2 w-full flex-1 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
-                    [class.opacity-0]="!(loading | async)"
-                ></mat-progress-bar>
+                    [class.opacity-0]="!loading()"
+                />
                 <simple-table
                     class="mb-4 block min-w-[68rem] text-sm"
                     [data]="uploads_list"
@@ -238,7 +238,7 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     private _clipboard = inject(Clipboard);
     private _uploads = inject(UploadsService);
 
-    public readonly loading = new BehaviorSubject<boolean>(false);
+    public readonly loading = signal(false);
     public readonly domain = new BehaviorSubject<PlaceDomain>(null);
 
     public readonly domain_list = queryDomains({ limit: 100 }).pipe(

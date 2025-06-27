@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     authority,
@@ -34,7 +34,7 @@ export interface PlaceTenant {
     selector: 'staff-api',
     template: `
         <div class="flex h-full w-full flex-col">
-            <div class="my-4 flex items-center justify-between space-x-2">
+            <div class="my-4 flex items-center justify-between space-x-2 px-4">
                 <div class="text-2xl">
                     {{ 'ADMIN.TENANTS_HEADER' | translate }}
                 </div>
@@ -66,7 +66,7 @@ export interface PlaceTenant {
                     </button>
                 </div>
             </div>
-            <div class="h-1/2 w-full flex-1 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"

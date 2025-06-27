@@ -43,7 +43,7 @@ export interface BackofficeExtension {
     selector: '[app-extensions]',
     template: `
         <div class="flex h-full w-full flex-col">
-            <div class="my-4 flex items-center justify-between space-x-2">
+            <div class="my-4 flex items-center justify-between space-x-2 px-4">
                 <div class="text-2xl">
                     {{ 'ADMIN.EXTENSIONS_HEADER' | translate }}
                 </div>
@@ -68,11 +68,11 @@ export interface BackofficeExtension {
                 </div>
             </div>
             <div
-                class="mb-4 flex items-center space-x-4 rounded bg-info p-4 text-sm text-info-content shadow"
+                class="mx-4 mb-4 flex items-center space-x-4 rounded bg-info p-4 text-sm text-info-content shadow"
             >
                 <p>{{ 'ADMIN.EXTENSIONS_NOTICE' | translate }}</p>
             </div>
-            <div class="h-1/2 w-full flex-1 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"

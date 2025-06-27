@@ -10,7 +10,7 @@ import { APIKeyService } from './api-keys.service';
     selector: 'admin-api-keys',
     template: `
         <div class="flex h-full w-full flex-col">
-            <div class="my-4 flex items-center justify-between space-x-2">
+            <div class="my-4 flex items-center justify-between space-x-2 px-4">
                 <div class="text-2xl">
                     {{ 'ADMIN.APP_KEYS_HEADER' | translate }}
                 </div>
@@ -44,31 +44,37 @@ import { APIKeyService } from './api-keys.service';
                 </div>
             </div>
             @if (last_key | async) {
-                <div class="my-4 flex items-start space-x-2">
+                <div
+                    class="mx-4 mb-4 flex w-[calc(100%-2rem)] items-start space-x-2"
+                >
                     <div
-                        class="min-w-[24rem] rounded border border-base-200 shadow"
+                        class="flex w-full flex-col rounded border border-base-300 shadow"
                     >
-                        <div class="!w-full border-b bg-base-200 px-2 pb-1">
-                            <label class="m-0 p-0">
+                        <div
+                            class="flex w-full items-center space-x-2 rounded border-b border-base-300 bg-base-200"
+                        >
+                            <h3 class="px-4 py-2 text-lg font-medium">
                                 {{ 'ADMIN.APP_KEYS_LAST_DETAILS' | translate }}
-                                ({{
+                            </h3>
+                            <div
+                                class="mono rounded bg-base-100 px-2 py-1 text-xs opacity-60"
+                            >
+                                {{
                                     (last_key | async)?.name ||
                                         'Unanamed API Key'
-                                }})
-                            </label>
-                        </div>
-                        <div class="p-2">
-                            <div
-                                class="mono cursor-pointer select-all break-words text-xs opacity-60"
-                                (click)="copyKey()"
-                            >
-                                {{ (last_key | async)?.x_api_key }}
+                                }}
                             </div>
+                        </div>
+                        <div
+                            class="mono cursor-pointer select-all break-words px-4 py-3 opacity-60"
+                            (click)="copyKey()"
+                        >
+                            {{ (last_key | async)?.x_api_key }}
                         </div>
                     </div>
                 </div>
             }
-            <div class="h-1/2 w-full flex-1 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"

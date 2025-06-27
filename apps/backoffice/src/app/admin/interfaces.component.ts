@@ -7,40 +7,44 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 @Component({
     selector: 'app-interfaces',
     template: `
-        <div class="my-4 flex items-center justify-between space-x-2">
-            <div class="text-2xl">PlaceOS Interfaces</div>
-        </div>
-        <mat-progress-bar mode="indeterminate"
-            class="w-full"
-            [class.opacity-0]="!loading"
-         />
-        <simple-table class="block min-w-[36rem] text-sm"
-            [data]="interfaces"
-            [columns]="[
-                { key: 'id', name: 'REPOS.SINGULAR' | translate },
-                {
-                    key: 'name',
-                    name: 'COMMON.GIT_COMMIT' | translate,
-                    content: name_template,
-                    size: '24rem',
-                },
-            ]"
-            [sortable]="true"
-            empty_message="No interfaces"
-         />
-        <div class="h-12 w-full"></div>
-        <ng-template #name_template let-row="row">
-            <div class="p-4">
-                @if (row.name) {
-                    <div class="font-mono">{{ row.name }}</div>
-                }
-                @if (!row.name) {
-                    <span class="text-xs opacity-30">
-                        {{ 'ADMIN.INTERFACES_COMMIT_EMPTY' | translate }}
-                    </span>
-                }
+        <div class="px-4">
+            <div class="my-4 flex items-center justify-between space-x-2">
+                <div class="text-2xl">PlaceOS Interfaces</div>
             </div>
-        </ng-template>
+            <mat-progress-bar
+                mode="indeterminate"
+                class="w-full"
+                [class.opacity-0]="!loading"
+            />
+            <simple-table
+                class="block min-w-[36rem] text-sm"
+                [data]="interfaces"
+                [columns]="[
+                    { key: 'id', name: 'REPOS.SINGULAR' | translate },
+                    {
+                        key: 'name',
+                        name: 'COMMON.GIT_COMMIT' | translate,
+                        content: name_template,
+                        size: '24rem',
+                    },
+                ]"
+                [sortable]="true"
+                empty_message="No interfaces"
+            />
+            <div class="h-12 w-full"></div>
+            <ng-template #name_template let-row="row">
+                <div class="p-4">
+                    @if (row.name) {
+                        <div class="font-mono">{{ row.name }}</div>
+                    }
+                    @if (!row.name) {
+                        <span class="text-xs opacity-30">
+                            {{ 'ADMIN.INTERFACES_COMMIT_EMPTY' | translate }}
+                        </span>
+                    }
+                </div>
+            </ng-template>
+        </div>
     `,
     styles: [
         `

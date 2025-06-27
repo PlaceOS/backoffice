@@ -1,4 +1,11 @@
-import { Component, inject, input, output } from '@angular/core';
+import {
+    Component,
+    inject,
+    input,
+    OnInit,
+    output,
+    signal,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceCluster,
@@ -13,12 +20,19 @@ import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
 } from 'apps/backoffice/src/app/overlays/confirm-modal.component';
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import {
+    BehaviorSubject,
+    combineLatest,
+    lastValueFrom,
+    Observable,
+    of,
+} from 'rxjs';
 import {
     catchError,
     filter,
     map,
     shareReplay,
+    startWith,
     switchMap,
     tap,
 } from 'rxjs/operators';
@@ -29,15 +43,20 @@ const task_details = {};
 @Component({
     selector: 'engine-cluster-task-list',
     template: `
-        <div class="mb-4 flex items-center">
-            <button btn icon (click)="close.emit()">
+        <div
+            class="sticky left-0 top-0 z-20 mb-4 flex w-full items-center rounded bg-base-200 p-2"
+        >
+            <button btn icon (click)="closed.emit()">
                 <app-icon>arrow_back</app-icon>
             </button>
             <h3 class="text-lg font-medium">
                 {{ 'ADMIN.CLUSTER' | translate }} - {{ cluster()?.hostname }}
             </h3>
             <div class="flex-1"></div>
-            <mat-form-field appearance="outline" class="h-12">
+            <mat-form-field
+                appearance="outline"
+                class="no-subscript rounded bg-base-100"
+            >
                 <div class="prefix" matPrefix>
                     <app-icon class="relative -left-0.5 text-2xl">
                         search
@@ -53,12 +72,14 @@ const task_details = {};
                 />
             </mat-form-field>
         </div>
-        <mat-progress-bar mode="indeterminate"
+        <mat-progress-bar
+            mode="indeterminate"
             class="w-full"
-            [class.opacity-0]="!loading"
-         />
-        <simple-table class="block min-w-[40rem] text-sm"
-            [data]="filtered_list"
+            [class.opacity-0]="!loading()"
+        />
+        <simple-table
+            class="block min-w-[46rem] text-sm"
+            [data]="filtered_list | async"
             [columns]="[
                 {
                     key: 'id',
@@ -91,7 +112,7 @@ const task_details = {};
             ]"
             [sortable]="true"
             [empty_message]="'ADMIN.CLUSTER_PROCESSES_EMPTY' | translate"
-         />
+        />
         <ng-template #name_template let-row="row">
             <div class="flex flex-col px-4 py-2 font-mono">
                 <div class="mb-1">{{ taskDetails(row.id).path }}</div>
@@ -140,18 +161,23 @@ const task_details = {};
     ],
     standalone: false,
 })
-export class PlaceClusterTaskListComponent extends AsyncHandler {
+export class PlaceClusterTaskListComponent
+    extends AsyncHandler
+    implements OnInit
+{
     private _dialog = inject(MatDialog);
+    private _poll = new BehaviorSubject(0);
 
     /** Cluster to display tasks details for */
     public readonly cluster = input<PlaceCluster>(undefined);
     /** Emitter for close events */
-    public readonly close = output<void>();
+    public readonly closed = output<void>();
     /** Whether the task list is updating */
-    public loading: boolean;
+    public loading = signal(false);
     /** ID of the process being killed */
     public killing: string;
 
+    public filter = new BehaviorSubject('');
     public column_list: string[] = [
         'id',
         'cpu_usage',
@@ -159,10 +185,6 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
         'module_instances',
         'running',
     ];
-
-    public filter = new BehaviorSubject('');
-
-    private _poll = new BehaviorSubject(0);
 
     public taskDetails(id: string) {
         if (task_details[id]) return task_details[id];
@@ -179,9 +201,9 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
     }
 
     public readonly process_list: Observable<PlaceProcess[]> = this._poll.pipe(
-        filter(() => !this.loading),
+        filter(() => !this.loading()),
         switchMap(() => {
-            this.loading = true;
+            this.loading.set(true);
             return queryProcesses(this.cluster().id, {
                 include_status: true,
             } as any).pipe(
@@ -194,7 +216,7 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
         map((l) =>
             (l || []).sort((a, b) => b.module_instances - a.module_instances),
         ),
-        tap(() => (this.loading = false)),
+        tap(() => this.loading.set(false)),
         shareReplay(1),
     );
 
@@ -202,17 +224,18 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
         this.filter,
         this.process_list,
     ]).pipe(
-        map(([filter, processes]) => {
-            return processes.filter((_) =>
+        map(([filter, processes]) =>
+            processes.filter((_) =>
                 _.id.toLowerCase().includes(filter.toLowerCase()),
-            );
-        }),
+            ),
+        ),
+        startWith([]),
         shareReplay(1),
     );
 
     public ngOnInit() {
         this._poll.next(Date.now());
-        this.interval('poll', () => this._poll.next(Date.now()), 5000);
+        this.interval('poll', () => this._poll.next(Date.now()), 15 * 1000);
     }
 
     public confirmKillProcess(process: PlaceProcess): void {
@@ -258,6 +281,6 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
     }
 
     public killProcess(process: PlaceProcess) {
-        return terminateProcess(this.cluster().id, process.id).toPromise();
+        return lastValueFrom(terminateProcess(this.cluster().id, process.id));
     }
 }

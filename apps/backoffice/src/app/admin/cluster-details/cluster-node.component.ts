@@ -1,11 +1,12 @@
 import {
-  Component,
-  ElementRef,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  input,
-  viewChild
+    Component,
+    ElementRef,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+    computed,
+    input,
+    viewChild,
 } from '@angular/core';
 import { humanReadableByteCount } from '@placeos/ts-client';
 
@@ -63,10 +64,10 @@ export interface PlaceClusterUsageStamp {
                 >
                     <div>{{ 'ADMIN.CLUSTERS_MEMORY_USAGE' | translate }}</div>
                     <div class="mono text-4xl font-medium">
-                        {{ memory_percentage.toFixed(0) }}%
+                        {{ memory_percentage().toFixed(0) }}%
                     </div>
                     <div class="mono w-36 text-center text-xs">
-                        {{ used_memory }}/{{ total_memory }}
+                        {{ used_memory() }}/{{ total_memory() }}
                     </div>
                 </div>
             </div>
@@ -86,25 +87,27 @@ export class AdminClusterNodeComponent implements OnChanges, OnInit {
     /**  */
     public lines: Point[][] = [];
 
-    public get used_memory() {
+    public readonly used_memory = computed(() => {
         return humanReadableByteCount((this.node()?.memory_usage || 0) * 1024)
             .replace('GB', '')
             .replace('MB', '')
             .trim();
-    }
+    });
 
-    public get total_memory() {
+    public readonly total_memory = computed(() => {
         return humanReadableByteCount((this.node()?.memory_total || 0) * 1024);
-    }
+    });
 
-    public get memory_percentage() {
+    public readonly memory_percentage = computed(() => {
         return (
-            ((this.node()?.memory_usage || 0) / (this.node()?.memory_total || 1)) *
+            ((this.node()?.memory_usage || 0) /
+                (this.node()?.memory_total || 1)) *
             100
         );
-    }
+    });
 
-    public readonly _chart_el = viewChild<ElementRef<HTMLCanvasElement>>('chart');
+    public readonly _chart_el =
+        viewChild<ElementRef<HTMLCanvasElement>>('chart');
 
     public ngOnInit() {
         this.generateCharts();

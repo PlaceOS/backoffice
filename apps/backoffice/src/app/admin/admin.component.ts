@@ -40,9 +40,7 @@ import { BackofficeUsersService } from '../users/users.service';
                             </a>
                         }
                     </div>
-                    <div
-                        class="relative z-0 h-full w-1/2 flex-1 overflow-auto px-4"
-                    >
+                    <div class="relative z-0 h-full w-1/2 flex-1 overflow-auto">
                         <router-outlet></router-outlet>
                     </div>
                     <button

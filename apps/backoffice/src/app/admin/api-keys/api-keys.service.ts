@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     create,
@@ -10,7 +10,13 @@ import {
     queryUsers,
     remove,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import {
+    BehaviorSubject,
+    combineLatest,
+    lastValueFrom,
+    Observable,
+    of,
+} from 'rxjs';
 import {
     debounceTime,
     first,
@@ -95,29 +101,31 @@ export class APIKeyService {
     public async newKey() {
         const ref = this._dialog.open(APIKeyModalComponent);
         const details = await Promise.race([
-            ref.componentInstance.event
-                .pipe(first((_) => _.reason === 'done'))
-                .toPromise(),
-            ref.afterClosed().toPromise(),
+            lastValueFrom(
+                ref.componentInstance.event.pipe(
+                    first((_) => _.reason === 'done'),
+                ),
+            ),
+            lastValueFrom(ref.afterClosed()),
         ]);
         if (details?.reason !== 'done') return;
         ref.componentInstance.loading = 'Creating new API key...';
         const domain = this._domain.getValue();
-        const key = await create({
-            query_params: {},
-            fn: (d) => new PlaceAPIKeyDetails(d),
-            path: 'api_keys',
-            form_data: {
-                ...details.metadata,
-                authority_id: domain.id,
-            },
-        })
-            .toPromise()
-            .catch((_) => {
-                ref.close();
-                notifyError(_);
-                throw _;
-            });
+        const key = await lastValueFrom(
+            create({
+                query_params: {},
+                fn: (d) => new PlaceAPIKeyDetails(d),
+                path: 'api_keys',
+                form_data: {
+                    ...details.metadata,
+                    authority_id: domain.id,
+                },
+            }),
+        ).catch((_) => {
+            ref.close();
+            notifyError(_);
+            throw _;
+        });
         this._last_key.next(key as any);
         this._change.next(Date.now());
         notifySuccess('Successfully created new API key.');
@@ -136,12 +144,15 @@ export class APIKeyService {
         );
         if (details?.reason !== 'done') return;
         details.loading('Removing API key...');
-        await remove({
-            id: key.id,
-            query_params: {},
-            path: 'api_keys',
-        }).toPromise();
+        await lastValueFrom(
+            remove({
+                id: key.id,
+                query_params: {},
+                path: 'api_keys',
+            }),
+        );
         details.close();
         notifySuccess('Successfully removed API key.');
+        this._change.next(Date.now());
     }
 }

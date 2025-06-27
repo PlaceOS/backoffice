@@ -45,7 +45,7 @@ import { EdgeModalComponent } from './edge-modal.component';
             </div>
         }
         <div class="flex h-full w-full flex-col">
-            <div class="my-4 flex items-center justify-between space-x-2">
+            <div class="my-4 flex items-center justify-between space-x-2 px-4">
                 <div class="text-2xl">
                     {{ 'ADMIN.EDGE_HEADER' | translate }}
                 </div>
@@ -55,7 +55,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                     </button>
                 </div>
             </div>
-            <div class="h-1/2 w-full flex-1 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"

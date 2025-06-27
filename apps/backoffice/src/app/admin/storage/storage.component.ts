@@ -19,7 +19,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
     selector: 'app-storage',
     template: `
         <div class="flex h-full w-full flex-col">
-            <div class="my-4 flex items-center justify-between space-x-2">
+            <div class="my-4 flex items-center justify-between space-x-2 px-4">
                 <div class="text-2xl">
                     {{ 'ADMIN.STORAGE_HEADER' | translate }}
                 </div>
@@ -49,7 +49,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                     </button>
                 </div>
             </div>
-            <div class="h-1/2 w-full flex-1 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"

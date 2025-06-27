@@ -1,6 +1,17 @@
 /// <reference path="../../../../../../node_modules/monaco-editor/monaco.d.ts" />
 
-import { Component, ElementRef, forwardRef, OnChanges, OnDestroy, OnInit, SimpleChanges, inject, input, viewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    forwardRef,
+    inject,
+    input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    SimpleChanges,
+    viewChild,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { AsyncHandler } from '../../common/async-handler.class';
@@ -126,7 +137,9 @@ export class SettingsFieldComponent
 
     public ngOnDestroy() {
         if (this.editor) {
-            this.editor.dispose();
+            try {
+                this.editor.dispose();
+            } catch {}
             this.editor = null;
         }
     }
