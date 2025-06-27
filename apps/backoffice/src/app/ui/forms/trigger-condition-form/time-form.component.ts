@@ -1,9 +1,9 @@
 import {
-  Component,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  input
+    Component,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+    input,
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
@@ -56,7 +56,7 @@ import { Identity } from '../../../common/types';
                     </div>
                 }
                 @if (!is_cron) {
-                    <div class="flex items-center space-x-4">
+                    <div class="flex space-x-4">
                         @if (form().controls.time) {
                             <div class="field">
                                 <label for="type"
@@ -105,7 +105,7 @@ import { Identity } from '../../../common/types';
                         </mat-form-field>
                     </div>
                     @if (cron_period !== 'custom') {
-                        <div class="flex items-center space-x-4">
+                        <div class="flex space-x-4">
                             @if (cron_period === 'year') {
                                 <div class="field w-2/5 flex-1">
                                     <label for="month"
@@ -417,9 +417,7 @@ export class TriggerConditionTimeFormComponent
     public updateCronString() {
         const form = this.form();
         if (form && form.controls.cron) {
-            const hour =
-                (this.cron_hour % 12) +
-                (this.cron_hour_period === 'AM' ? 0 : 12);
+            const hour = this.cron_hour;
             const minute = this.cron_minute % 60;
             const day_of_week = this.days_of_week.indexOf(this.cron_day);
             const day_of_month = this.cron_date;
@@ -447,7 +445,6 @@ export class TriggerConditionTimeFormComponent
                     cron_str = `${minute} ${hour} ${day_of_month} ${month} *`;
                     break;
             }
-            // const cron_str = current_cron.build();
             form.controls.cron.setValue(cron_str);
         }
     }

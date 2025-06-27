@@ -1,9 +1,9 @@
 import {
-  Component,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  input
+    Component,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+    input,
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import {
@@ -31,7 +31,9 @@ import { i18n } from '../../../common/locale.service';
                         context: { side: 'left' }
                     "
                 ></ng-container>
-                @if (form().controls.left.touched && form().controls.left.errors) {
+                @if (
+                    form().controls.left.touched && form().controls.left.errors
+                ) {
                     <div class="error">
                         {{ 'TRIGGERS.COMPARE_VARIABLE_ERROR' | translate }}
                     </div>
