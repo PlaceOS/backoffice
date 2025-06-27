@@ -31,17 +31,22 @@ import { Component, input, output } from '@angular/core';
                 <footer
                     class="fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-[39rem] max-w-full -translate-x-1/2 items-center justify-end rounded border border-base-100 bg-base-200 px-4 py-2"
                 >
-                    <button btn matRipple class="w-32" (click)="save.emit()">
+                    <button
+                        btn
+                        matRipple
+                        class="w-32 pr-0"
+                        (click)="save.emit()"
+                    >
                         <div class="flex items-center space-x-2">
                             <div>
                                 {{
-                                    confirm_text() || ('COMMON.SAVE' | translate)
+                                    confirm_text() ||
+                                        ('COMMON.SAVE' | translate)
                                 }}
                             </div>
+                            <div class="flex-1"></div>
                             @if (!confirm_text()) {
-                                <div class="mono relative top-0.5 text-sm">
-                                    [S]
-                                </div>
+                                <div class="keycap">S</div>
                             }
                         </div>
                     </button>

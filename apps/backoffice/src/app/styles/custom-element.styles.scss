@@ -679,11 +679,18 @@ a[icon] {
 
     .mat-mdc-menu-panel {
         background-color: var(--b1);
+        border: 1px solid var(--b3);
         color: var(--bc);
         max-width: none;
     }
 
-    .mat-mdc-menu-item {
+    .mat-mdc-select-panel {
+        border: 1px solid var(--b3);
+        border-radius: 4px;
+    }
+
+    .mat-mdc-menu-item,
+    .mat-mdc-option.mdc-list-item {
         color: var(--bc);
 
         &:hover {

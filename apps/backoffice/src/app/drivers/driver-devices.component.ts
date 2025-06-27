@@ -109,12 +109,13 @@ import { DriverStateService } from './driver-state.service';
                     </button>
                     <mat-menu #menu="matMenu">
                         <div
-                            class="flex items-center justify-center border-b border-base-200 px-2 pb-2 text-sm opacity-70"
+                            class="mx-1 -mt-1 mb-1 min-w-64 rounded bg-base-200 px-4 py-2 text-sm opacity-70"
                         >
                             {{
                                 'DRIVERS.SYSTEM_COUNT'
                                     | translate
                                         : { count: systems[row.id]?.length }
+                                        : systems[row.id]?.length
                             }}
                         </div>
                         @if (loading_systems) {
@@ -137,12 +138,12 @@ import { DriverStateService } from './driver-state.service';
                                 [routerLink]="['/systems', system.id]"
                             >
                                 <div
-                                    class="flex h-full flex-col justify-center px-2"
+                                    class="flex h-full flex-col justify-center px-2 leading-tight"
                                 >
                                     <div class="text-base">
                                         {{ system.display_name || system.name }}
                                     </div>
-                                    <div class="text-xs opacity-60">
+                                    <div class="text-xs opacity-30">
                                         {{ system.id }}
                                     </div>
                                 </div>

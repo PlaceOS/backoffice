@@ -1,6 +1,15 @@
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { Component, ElementRef, inject, input, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    inject,
+    input,
+    OnInit,
+    signal,
+    viewChild,
+} from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import {
     PlaceDriverRole,
     PlaceModule,
@@ -47,25 +56,29 @@ import { ActiveItemService } from '../common/item.service';
                     }
                 </div>
                 @if (filter_options()?.length) {
-                    <button
-                        icon
-                        matRipple
-                        class="relative overflow-hidden"
-                        [class.border]="selected_filters.length"
-                        [class.border-info]="selected_filters.length"
-                        [class.text-info]="selected_filters.length"
-                    >
-                        <icon class="text-2xl">filter_list</icon>
+                    <div class="relative flex overflow-hidden">
+                        <button
+                            icon
+                            matRipple
+                            [class.border]="selected_filters.length"
+                            [class.border-info]="selected_filters.length"
+                            [class.text-info]="selected_filters.length"
+                        >
+                            <icon class="text-2xl">filter_list</icon>
+                        </button>
                         <mat-form-field
                             appearance="outline"
-                            class="-translate-1/2 absolute -right-2 top-1/2 h-12 opacity-0"
+                            class="no-subscript absolute -right-2 top-1/2 -translate-y-1/2 opacity-0"
                         >
                             <mat-select
                                 multiple
                                 [(ngModel)]="selected_filters"
                                 (ngModelChange)="updateSearch(search)"
                             >
-                                @for (option of filter_options(); track option) {
+                                @for (
+                                    option of filter_options();
+                                    track option
+                                ) {
                                     <mat-option
                                         [value]="option"
                                         class="capitalize"
@@ -74,7 +87,7 @@ import { ActiveItemService } from '../common/item.service';
                                 }
                             </mat-select>
                         </mat-form-field>
-                    </button>
+                    </div>
                 }
             </div>
             <p class="w-full px-2 text-sm opacity-60">
@@ -85,8 +98,8 @@ import { ActiveItemService } from '../common/item.service';
                 @if ((items | async)?.length) {
                     <cdk-virtual-scroll-viewport
                         no-x-scroll
-                        itemSize="64"
-                        (scroll)="(is_scrolled)"
+                        itemSize="72"
+                        orientation="vertical"
                         (scrolledIndexChange)="atBottom()"
                         class="relative h-1/2 w-full flex-1"
                     >
@@ -96,22 +109,18 @@ import { ActiveItemService } from '../common/item.service';
                                 trackBy: trackByFn
                             "
                             [routerLink]="
-                                subroute
-                                    ? ['/', route(), item.id, subroute]
+                                subroute()
+                                    ? ['/', route(), item.id, subroute()]
                                     : ['/', route(), item.id]
                             "
                             routerLinkActive="active"
-                            [routerLinkActiveOptions]="{
-                                exact: false,
-                                __change_detection_hack__: item.id + subroute,
-                            }"
                             [matTooltip]="
                                 item.update_available &&
                                 item.commit !== item.update_info.commit
                                     ? ('COMMON.UPDATE_AVAILABLE' | translate)
                                     : ''
                             "
-                            class="relative m-2 flex w-[23rem] max-w-[calc(100%-1rem)] flex-col rounded px-2 py-2"
+                            class="relative m-1 flex h-16 w-[23rem] max-w-[calc(100%-0.5rem)] flex-col rounded border border-base-100 px-2 py-2 hover:border-info"
                             (click)="show = false"
                         >
                             <p class="w-full truncate">
@@ -213,7 +222,10 @@ import { ActiveItemService } from '../common/item.service';
     ],
     standalone: false,
 })
-export class ItemSidebarComponent extends AsyncHandler {
+export class ItemSidebarComponent
+    extends AsyncHandler
+    implements OnInit, AfterViewInit
+{
     private _router = inject(Router);
     private _service = inject(ActiveItemService);
 
@@ -237,10 +249,20 @@ export class ItemSidebarComponent extends AsyncHandler {
     /** Virtual scrolling viewport */
     private readonly viewport = viewChild(CdkVirtualScrollViewport);
 
-    private readonly _input = viewChild<ElementRef<HTMLInputElement>>('search_input');
+    private readonly _input =
+        viewChild<ElementRef<HTMLInputElement>>('search_input');
 
-    public get subroute() {
-        return this._router.url.split('/')[3] || '';
+    public readonly subroute = signal('');
+
+    public ngOnInit(): void {
+        this.subscription(
+            'route_change',
+            this._router.events.subscribe((e) => {
+                if (e instanceof NavigationEnd) {
+                    this.subroute.set(this._router.url.split('/')[3] || '');
+                }
+            }),
+        );
     }
 
     public ngAfterViewInit() {
