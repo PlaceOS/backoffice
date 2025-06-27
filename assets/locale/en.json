@@ -925,7 +925,7 @@
         "APP_KEYS_ADD": "Add App Key",
         "APP_KEYS_NEW": "New Application Key",
         "APP_KEYS_REMOVE": "Remove Application Key",
-        "APP_KEYS_LAST_DETAILS": "Last App Key Details",
+        "APP_KEYS_LAST_DETAILS": "Last API Key",
         "APP_KEYS_FIELD_SCOPES": "Scopes",
         "APP_KEYS_FIELD_PERMISSIONS": "Access",
         "APP_KEYS_SCOPES_REQUIRE": "At least one scope is required",
