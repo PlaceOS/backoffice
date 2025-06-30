@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addApplication,
@@ -102,7 +102,7 @@ export class DomainStateService {
             switchMap(([_, item]) =>
                 queryApplications({ authority_id: item.id } as any),
             ),
-            map((_) => _.data),
+            map((_) => _.data.sort((a, b) => a.name.localeCompare(b.name))),
             catchError((_) => []),
             shareReplay(1),
         );

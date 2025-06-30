@@ -94,7 +94,7 @@ import { ActiveItemService } from '../common/item.service';
                 @let t = total | async;
                 {{ 'COMMON.TOTAL_ITEMS' | translate: { count: t } : t }}
             </p>
-            <div class="flex h-1/2 flex-1 flex-col">
+            <div class="flex h-1/2 flex-1 flex-col border-t border-base-200">
                 @if ((items | async)?.length) {
                     <cdk-virtual-scroll-viewport
                         no-x-scroll

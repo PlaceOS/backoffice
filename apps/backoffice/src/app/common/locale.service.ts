@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import * as DEFAULT_LOCALE from '../../assets/locale/en.json';
+import * as DEFAULT_LOCALE from '../../assets/locale/en-AU.json';
 
 import { showMetadata } from '@placeos/ts-client';
 import { log } from './general';

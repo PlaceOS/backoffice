@@ -63,12 +63,12 @@ function replaceDescTag(inputString, newContent) {
                             header
                             class="flex items-center space-x-2 bg-base-200 px-2 py-1"
                         >
-                            <h3 class="px-2 font-mono text-xs font-medium">
+                            <h3 class="truncate px-2 font-mono text-sm">
                                 {{ form_map[item.name].controls.name.value }}
                             </h3>
                             <div class="flex-1"></div>
                             <div
-                                class="rounded border border-base-300 px-2 py-1 font-mono text-xs"
+                                class="whitespace-nowrap rounded border border-base-300 px-2 py-1 font-mono text-[0.625rem]"
                             >
                                 {{ item.updated_at | dateFrom }}
                             </div>

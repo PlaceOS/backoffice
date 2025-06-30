@@ -31,26 +31,26 @@ export class DateFromPipe implements PipeTransform {
             // Hours
             const hours = Math.floor(diff / 60);
             return direction
-                ? i18n('COMMON.DATE_FROM_IN_HOURS', { hours })
-                : i18n('COMMON.DATE_FROM_HOURS_AGO', { hours });
+                ? i18n('COMMON.DATE_FROM_IN_HOURS', { hours }, hours)
+                : i18n('COMMON.DATE_FROM_HOURS_AGO', { hours }, hours);
         } else if (diff < 30 * 24 * 60) {
             // Days
             const days = Math.floor(diff / (24 * 60));
             return direction
-                ? i18n('COMMON.DATE_FROM_IN_DAYS', { days })
-                : i18n('COMMON.DATE_FROM_DAYS_AGO', { days });
+                ? i18n('COMMON.DATE_FROM_IN_DAYS', { days }, days)
+                : i18n('COMMON.DATE_FROM_DAYS_AGO', { days }, days);
         } else if (diff < 365 * 24 * 60) {
             // Months
             const months = Math.floor(diff / (30 * 24 * 60));
             return direction
-                ? i18n('COMMON.DATE_FROM_IN_MONTHS', { months })
-                : i18n('COMMON.DATE_FROM_MONTHS_AGO', { months });
+                ? i18n('COMMON.DATE_FROM_IN_MONTHS', { months }, months)
+                : i18n('COMMON.DATE_FROM_MONTHS_AGO', { months }, months);
         } else if (diff >= 365 * 24 * 60) {
             // Years
             const years = Math.floor(diff / (365 * 24 * 60));
             return direction
-                ? i18n('COMMON.DATE_FROM_IN_YEARS', { years })
-                : i18n('COMMON.DATE_FROM_YEARS_AGO', { years });
+                ? i18n('COMMON.DATE_FROM_IN_YEARS', { years }, years)
+                : i18n('COMMON.DATE_FROM_YEARS_AGO', { years }, years);
         }
         return i18n('COMMON.DATE_JUST_NOW');
     }
