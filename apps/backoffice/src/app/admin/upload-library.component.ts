@@ -84,7 +84,9 @@ export interface UploadInfo {
     selector: 'upload-library',
     template: `
         <div class="flex h-full w-full flex-col">
-            <div class="my-4 flex items-center justify-between space-x-2 px-4">
+            <div
+                class="mb-2 mt-4 flex items-center justify-between space-x-2 px-4"
+            >
                 <div class="text-2xl">
                     {{ 'ADMIN.UPLOADS_LIB_HEADER' | translate }}
                 </div>
@@ -120,6 +122,22 @@ export interface UploadInfo {
                     </button>
                 </div>
             </div>
+            <div class="mb-4 flex items-center justify-end space-x-2 px-4">
+                <mat-form-field
+                    appearance="outline"
+                    class="no-subscript w-[20rem] max-w-full"
+                >
+                    <icon matPrefix class="relative -left-1 text-2xl"
+                        >search</icon
+                    >
+                    <input
+                        matInput
+                        placeholder="Search for file..."
+                        [ngModel]="search_term()"
+                        (ngModelChange)="search_term.set($event)"
+                    />
+                </mat-form-field>
+            </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
@@ -129,6 +147,7 @@ export interface UploadInfo {
                 <simple-table
                     class="mb-4 block min-w-[68rem] text-sm"
                     [data]="uploads_list"
+                    [filter]="search_term()"
                     [columns]="[
                         {
                             key: 'file_name',
@@ -238,6 +257,7 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     private _clipboard = inject(Clipboard);
     private _uploads = inject(UploadsService);
 
+    public readonly search_term = signal('');
     public readonly loading = signal(false);
     public readonly domain = new BehaviorSubject<PlaceDomain>(null);
 
