@@ -52,12 +52,12 @@ export class UploadsService {
 
     public uploadFile(
         file: File,
-        pub: boolean = true,
+        is_public = true,
         permissions: UploadPermissions = 'none',
     ) {
         return new Promise<number>((resolve) => {
             let resolved = false;
-            const update_fn = (details) => {
+            const update_fn = (details: UploadDetails) => {
                 if (!resolved) {
                     resolve(details.id);
                     resolved = true;
@@ -69,7 +69,7 @@ export class UploadsService {
                     details,
                 ]);
             };
-            uploadFile(file, pub, permissions).subscribe(
+            uploadFile(file, is_public, permissions).subscribe(
                 update_fn,
                 update_fn,
                 () => this._updateUploadHistory(),

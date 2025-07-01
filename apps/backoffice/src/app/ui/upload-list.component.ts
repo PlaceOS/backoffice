@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
@@ -10,7 +10,7 @@ import { UploadsService } from '../common/uploads.service';
 @Component({
     selector: 'app-upload-list',
     template: `
-        @if (show) {
+        @if (show()) {
             <div
                 upload-list
                 class="pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded border border-base-300 bg-base-100 text-sm text-base-content shadow"
@@ -18,11 +18,15 @@ import { UploadsService } from '../common/uploads.service';
                 <div
                     class="flex items-center bg-base-200 p-2 text-base-content"
                 >
-                    <div class="flex-1 text-lg font-medium">
-                        {{ 'COMMON.UPLOADS' | translate }} ({{
-                            (uploads | async)?.length || '0'
-                        }})
+                    <div class="px-2 text-lg font-medium">
+                        {{ 'COMMON.UPLOADS' | translate }}
                     </div>
+                    <div
+                        class="mono rounded-full border border-base-100 bg-base-300 px-2 py-1 text-xs"
+                    >
+                        {{ (uploads | async)?.length || '0' }}
+                    </div>
+                    <div class="flex-1"></div>
                     <button
                         icon
                         matRipple
@@ -31,7 +35,7 @@ import { UploadsService } from '../common/uploads.service';
                     >
                         <app-icon>clear_all</app-icon>
                     </button>
-                    <button icon matRipple (click)="show = false">
+                    <button icon matRipple (click)="show.set(false)">
                         <app-icon>close</app-icon>
                     </button>
                 </div>
@@ -41,11 +45,11 @@ import { UploadsService } from '../common/uploads.service';
                             @for (item of uploads | async; track item) {
                                 <li
                                     upload-file
-                                    class="relative my-1 flex h-12 items-center space-x-2 hover:bg-base-200"
+                                    class="relative my-1 flex h-12 items-center space-x-2 px-2 hover:bg-base-200"
                                     [class.error]="item.error"
                                     [title]="item.name"
                                 >
-                                    <div class="w-1/2 flex-1 pl-2">
+                                    <div class="w-1/2 flex-1 truncate pl-2">
                                         {{ item.name }}
                                     </div>
                                     @if (item.error) {
@@ -65,14 +69,14 @@ import { UploadsService } from '../common/uploads.service';
                                     }
                                     @if (item.progress >= 100 && !item.error) {
                                         <app-icon
-                                            class="rounded-full bg-success text-base-100"
+                                            class="rounded-full bg-success text-xl text-base-100"
                                         >
                                             done
                                         </app-icon>
                                     }
                                     @if (item.error) {
                                         <app-icon
-                                            class="rounded-full bg-error text-base-100"
+                                            class="rounded-full bg-error text-xl text-base-100"
                                             [matTooltip]="item.error"
                                         >
                                             close
@@ -82,7 +86,7 @@ import { UploadsService } from '../common/uploads.service';
                                         <button
                                             icon
                                             matRipple
-                                            class="clear !mr-2"
+                                            class="clear"
                                             [matTooltip]="
                                                 'COMMON.COPY_LINK' | translate
                                             "
@@ -120,12 +124,12 @@ import { UploadsService } from '../common/uploads.service';
             (document:dragenter)="onEnter($event)"
             (drop)="hideOverlay()"
         ></div>
-        @if (show_overlay) {
+        @if (show_overlay()) {
             <div
                 class="fixed inset-0"
                 dropzone
-                (dragend)="show_overlay = false"
-                (dragleave)="show_overlay = false"
+                (dragend)="show_overlay.set(false)"
+                (dragleave)="show_overlay.set(false)"
                 (drop)="handleFileEvent($event)"
             >
                 <div
@@ -180,9 +184,9 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     private _dialog = inject(MatDialog);
 
     /** Whether upload list should be displayed */
-    public show = false;
+    public readonly show = signal(false);
     /** Whether drop details overlay should be shown */
-    public show_overlay = false;
+    public readonly show_overlay = signal(false);
     /** List of uploads */
     public readonly uploads = this._uploads.upload_list;
 
@@ -191,7 +195,7 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
             'show',
             this._settings
                 .listen('show_upload_manager')
-                .subscribe((show) => (this.show = show)),
+                .subscribe((show) => this.show.set(show)),
         );
         this.subscription(
             'on_dialog_open',
@@ -208,11 +212,11 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     }
 
     public onEnter(e) {
-        this.show_overlay = e?.dataTransfer?.types.includes('Files');
+        this.show_overlay.set(e?.dataTransfer?.types.includes('Files'));
     }
 
     public hideOverlay() {
-        this.timeout('hide_overlay', () => (this.show_overlay = false));
+        this.timeout('hide_overlay', () => this.show_overlay.set(false));
     }
 
     public clearList() {
@@ -223,14 +227,14 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     public handleFileEvent(event: DragEvent) {
         this.clearTimeout('hide_overlay');
         this.timeout('file_event', () => {
-            this.show_overlay = false;
+            this.show_overlay.set(false);
             const element: HTMLInputElement = event.target as any;
             /* istanbul ignore else */
             if (element?.files) {
                 const files: FileList = element.files;
                 /* istanbul ignore else */
                 if (files.length) {
-                    this.show = true;
+                    this.show.set(true);
                     for (let i = 0; i < files.length; i++) {
                         this._uploads.uploadFileWithPermissions(files[i]);
                     }

@@ -10,6 +10,12 @@ import { randomInt } from './general';
 
 import * as blobUtil from 'blob-util';
 
+function uploadURL(id: string) {
+    return `${location.origin}/api/engine/v2/uploads/${encodeURIComponent(
+        id,
+    )}/url}`;
+}
+
 export interface UploadDetails {
     /** Unique ID for the upload */
     id: number;
@@ -37,7 +43,7 @@ export type UploadPermissions = 'none' | 'support' | 'admin';
  */
 export function uploadFile(
     file: File,
-    pub: boolean = true,
+    is_public = true,
     permissions: UploadPermissions = 'none',
 ): Observable<UploadDetails> {
     return new Observable((observer) => {
@@ -48,14 +54,14 @@ export function uploadFile(
             const upload_list = uploadFiles([blob], {
                 file_name: file.name,
                 permissions,
-                public: pub,
+                public: is_public,
             } as any);
             const upload = upload_list[0];
             const upload_details: UploadDetails = {
                 id: randomInt(9999_9999_9999),
                 name: file.name,
                 progress: 0,
-                link: '',
+                link: uploadURL(upload.id),
                 formatted_size: humanReadableByteCount(file.size),
                 size: file.size,
                 upload,
@@ -64,12 +70,8 @@ export function uploadFile(
                 .pipe(takeWhile((_) => _.status !== 'complete', true))
                 .subscribe((state) => {
                     if (upload.access_url) {
-                        upload_details.link = !pub
-                            ? `${
-                                  location.origin
-                              }/api/engine/v2/uploads/${encodeURIComponent(
-                                  upload.id,
-                              )}/url`
+                        upload_details.link = !is_public
+                            ? uploadURL(upload.id)
                             : upload.access_url;
                     }
                     upload_details.progress = state.progress;
