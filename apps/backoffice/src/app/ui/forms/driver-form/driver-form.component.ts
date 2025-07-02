@@ -298,6 +298,8 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
         name: string;
         extra: string;
     }) {
+        this.form().patchValue({ commit: commit.id });
+        this.commit.next(commit);
         if (this.form().value.id) return;
         this.loading.set('DRIVERS.DETAILS_LOADING');
         this.waiting.emit(true);
@@ -306,7 +308,6 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
         this.form().patchValue({
             repository_id: repo.id,
             file_name: driver.id,
-            commit: commit.id,
         });
         this.subscription(
             'driver_details',
