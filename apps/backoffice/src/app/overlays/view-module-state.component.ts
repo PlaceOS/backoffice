@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceModule,
@@ -32,7 +32,7 @@ export interface ModuleStateModalData {
                 <app-icon>close</app-icon>
             </button>
         </div>
-        @if (!loading) {
+        @if (!loading()) {
             <main
                 class="flex h-[40rem] max-h-[70vh] w-[80vw] flex-col space-y-2 overflow-auto p-4"
             >
@@ -102,15 +102,16 @@ export class ViewModuleStateModalComponent
     extends AsyncHandler
     implements OnInit
 {
-    private _dialog = inject<MatDialogRef<ViewModuleStateModalComponent>>(MatDialogRef);
+    private _dialog =
+        inject<MatDialogRef<ViewModuleStateModalComponent>>(MatDialogRef);
     private _data = inject<ModuleStateModalData>(MAT_DIALOG_DATA);
 
     /** Current state of the selected module */
     public state: string;
     /** Whether the module state is being loaded */
-    public loading: boolean;
+    public loading = signal(false);
     /** Whether the modal is closing */
-    public closing: boolean;
+    public closing = signal(false);
     /** Mapping of devices to the module bindings */
     public device_classes: HashMap<string> = {};
 
@@ -157,7 +158,7 @@ export class ViewModuleStateModalComponent
         if (!class_name) {
             return;
         }
-        this.loading = true;
+        this.loading.set(true);
         const class_parts = class_name.split('_');
         const num = !isNaN(+class_parts[class_parts.length - 1])
             ? +class_parts[class_parts.length - 1]
@@ -175,11 +176,11 @@ export class ViewModuleStateModalComponent
                     pre_state[key] = JSON.parse(pre_state[key]);
                 });
                 this.state = JSON.stringify(pre_state, undefined, 4);
-                this.loading = false;
+                this.loading.set(false);
             },
             (err) => {
                 notifyError(JSON.stringify(err.response || err.message || err));
-                this.loading = false;
+                this.loading.set(false);
             },
         );
     }
