@@ -9,7 +9,7 @@ import {
 } from '@placeos/ts-client';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
-import { Md5 } from 'ts-md5/dist/md5';
+import { Md5 } from 'ts-md5';
 
 import { AsyncHandler } from '../common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
