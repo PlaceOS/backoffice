@@ -329,7 +329,11 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                         );
                         return;
                     }
-                    if (this.form().value.id) return;
+                    if (this.form().value.id) {
+                        this.loading.set('');
+                        this.waiting.emit(false);
+                        return;
+                    }
                     this._applyDriverDetails(details);
                 }),
         );
