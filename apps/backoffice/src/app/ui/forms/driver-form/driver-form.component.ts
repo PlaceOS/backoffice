@@ -298,6 +298,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
         name: string;
         extra: string;
     }) {
+        const old_commit = this.commit.getValue();
         this.form().patchValue({ commit: commit.id });
         this.commit.next(commit);
         const repo = this.repo.getValue();
@@ -317,6 +318,13 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
             })
                 .pipe(catchError(() => of(null)))
                 .subscribe((details) => {
+                    if (!details) {
+                        this.form().patchValue({ commit: old_commit.id });
+                        this.commit.next(old_commit);
+                        this.loading.set('');
+                        this.waiting.emit(false);
+                        return;
+                    }
                     if (this.form().value.id) return;
                     this._applyDriverDetails(details);
                 }),
