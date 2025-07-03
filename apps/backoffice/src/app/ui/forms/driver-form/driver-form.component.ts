@@ -36,6 +36,7 @@ import {
 
 import * as yaml from 'js-yaml';
 import { nextValueFrom } from '../../../common/general';
+import { notifyError } from '../../../common/notifications';
 
 @Component({
     selector: 'driver-form',
@@ -323,6 +324,9 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                         this.commit.next(old_commit);
                         this.loading.set('');
                         this.waiting.emit(false);
+                        notifyError(
+                            `Failed to get driver details for commit "${commit.id}"`,
+                        );
                         return;
                     }
                     if (this.form().value.id) return;
