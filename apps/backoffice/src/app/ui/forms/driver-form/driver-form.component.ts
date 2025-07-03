@@ -327,12 +327,18 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
             return;
         }
         const driver = this.driver.getValue();
-        let settings = driver.default_settings || '';
+        let settings = details.default_settings || '';
         try {
-            JSON.parse(driver.default_settings);
-            const doc = yaml.load(driver.default_settings);
+            JSON.parse(details.default_settings);
+            const doc = yaml.load(details.default_settings);
             settings = yaml.dump(doc);
-        } catch {}
+        } catch (error) {
+            console.error(
+                'Error parsing settings:',
+                error,
+                driver.default_settings,
+            );
+        }
         const port_number = details.tcp_port || details.udp_port || null;
         this.form().patchValue({
             name: details.descriptive_name || '',
