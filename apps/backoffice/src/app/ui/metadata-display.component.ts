@@ -59,9 +59,10 @@ function replaceDescTag(inputString, newContent) {
                         [class.opacity-30]="item.match === false"
                         [formGroup]="form_map[item.name]"
                     >
-                        <div
+                        <button
                             header
-                            class="flex items-center space-x-2 bg-base-200 px-2 py-1"
+                            class="flex w-full items-center space-x-2 bg-base-200 px-2 py-1"
+                            (click)="toggleView(item)"
                         >
                             <h3 class="truncate px-2 font-mono text-sm">
                                 {{ form_map[item.name].controls.name.value }}
@@ -72,8 +73,9 @@ function replaceDescTag(inputString, newContent) {
                             >
                                 {{ item.updated_at | dateFrom }}
                             </div>
-                            <div
+                            <button
                                 class="flex items-center rounded-full border border-base-300 bg-base-100"
+                                (click)="$event.stopPropagation()"
                             >
                                 <button
                                     icon
@@ -115,15 +117,15 @@ function replaceDescTag(inputString, newContent) {
                                 >
                                     <icon class="text-xl">delete</icon>
                                 </button>
-                            </div>
-                            <button icon matRipple (click)="toggleView(item)">
+                            </button>
+                            <button icon matRipple>
                                 <icon class="text-2xl">{{
                                     show_view === item.name
                                         ? 'keyboard_arrow_down'
                                         : 'chevron_right'
                                 }}</icon>
                             </button>
-                        </div>
+                        </button>
                         <div
                             body
                             class="overflow-hidden"
