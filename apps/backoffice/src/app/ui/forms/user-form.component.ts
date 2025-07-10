@@ -308,6 +308,13 @@ import { i18n } from '../../common/locale.service';
                         </mat-form-field>
                     </div>
                 }
+                @if (form().controls.locatable) {
+                    <settings-toggle
+                        formControlName="locatable"
+                        [name]="'USERS.LOCATABLE' | translate"
+                        class="mb-4"
+                    ></settings-toggle>
+                }
             </form>
         }
     `,

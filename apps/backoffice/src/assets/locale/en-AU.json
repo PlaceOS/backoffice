@@ -648,7 +648,8 @@
         "PASSWORD_CONFIRM": "Confirm Password",
         "PASSOWRD_MATCH": "Passwords do not match",
         "IMAGE": "Profile Image",
-        "IMAGE_INVALID": "A valid URL is required for profile image"
+        "IMAGE_INVALID": "A valid URL is required for profile image",
+        "LOCATABLE": "Enable Location Tracking"
     },
     "DOMAINS": {
         "SINGULAR": "Domain",

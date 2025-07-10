@@ -38,6 +38,7 @@ export function generateUserFormFields(user: PlaceUser) {
         staff_id: new FormControl(user?.staff_id || ''),
         support: new FormControl(user?.support || false),
         sys_admin: new FormControl(user?.sys_admin || false),
+        locatable: new FormControl(user?.locatable || false),
         groups: new FormControl(user?.groups || []),
         password: new FormControl(
             '',
