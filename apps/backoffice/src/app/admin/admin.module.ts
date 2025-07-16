@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 
 import { ROUTES } from './admin.routes';
 
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SharedContentModule } from '../ui/ui.module';
 import { PlaceComponent } from './admin.component';
 import { APIKeyModalComponent } from './api-keys/api-key-modal.component';
@@ -65,6 +66,7 @@ import { ViewUploadModalComponent } from './view-upload-modal.component';
     imports: [
         FormsModule,
         ReactiveFormsModule,
+        ScrollingModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
     ],
