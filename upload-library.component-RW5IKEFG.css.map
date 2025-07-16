@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;1cf1f5a49063478207bea7778b57d6eab143dc5d3d94810e1192efbbb0f612be;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/admin/upload-library.component.ts"],
+  "sourcesContent": ["\n            [header] icon {\n                opacity: 0;\n            }\n            [header] button.active icon {\n                opacity: 1;\n            }\n            [header] button:hover icon {\n                opacity: 0.3;\n            }\n        "],
+  "mappings": "AACY,CAAC,QAAQ,KACL,QAAS,CACb,CACA,CAAC,QAAQ,MAAM,CAAC,OAAO,KACnB,QAAS,CACb,CACA,CAAC,QAAQ,MAAM,OAAO,KAClB,QAAS,EACb",
+  "names": []
+}
