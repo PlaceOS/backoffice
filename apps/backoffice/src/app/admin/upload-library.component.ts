@@ -220,7 +220,7 @@ export interface UploadInfo {
                         </div>
                         <cdk-virtual-scroll-viewport
                             itemSize="64"
-                            class="min-h-[calc(100vh-6rem)]"
+                            class="min-h-[calc(100vh-13.25rem)]"
                         >
                             <div
                                 *cdkVirtualFor="let upload of sorted_uploads()"
