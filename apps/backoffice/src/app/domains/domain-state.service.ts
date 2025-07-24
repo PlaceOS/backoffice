@@ -251,17 +251,15 @@ export class DomainStateService {
             },
             this._dialog,
         );
-        if (!details) return;
-        details.loading('Deleting domain auth source...');
+        if (details.reason !== 'done') return;
+        details?.loading('Deleting domain auth source...');
         const method =
             item instanceof PlaceSAMLSource
                 ? removeSAMLSource
                 : item instanceof PlaceOAuthSource
                   ? removeOAuthSource
                   : removeLDAPSource;
-        const err = await method(item.id)
-            .toPromise()
-            .catch((_) => _);
+        const err = await lastValueFrom(method(item.id)).catch((_) => _);
         details.close();
         if (err)
             return notifyError(

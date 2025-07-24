@@ -135,7 +135,6 @@ export class CronInputFieldComponent implements ControlValueAccessor, OnInit {
 
     public ngOnInit(): void {
         this.form.valueChanges.subscribe((value) => {
-            console.log('Form:', this.form);
             if (!this.form.valid) return;
             this.setValue(
                 `${value.minute || '*'} ${value.hour || '*'} ${
@@ -146,7 +145,6 @@ export class CronInputFieldComponent implements ControlValueAccessor, OnInit {
     }
 
     public setValue(value: string): void {
-        console.log('CRON Value:', value);
         this.cron_string = value;
         if (this._onChange) this._onChange(value);
     }

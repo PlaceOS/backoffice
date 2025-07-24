@@ -104,7 +104,7 @@ export class DomainAuthenticationComponent {
     public readonly newAuthSource = () => this._service.editAuthSource();
     public readonly editAuthSource = (source) =>
         this._service.editAuthSource(source);
-    public readonly deleteAuthSource = (source) =>
+    public readonly removeAuthSource = (source) =>
         this._service.deleteAuthSource(source);
 
     public get item(): PlaceDomain {
