@@ -959,8 +959,12 @@ a[icon] {
 
     mat-dialog-container,
     .mdc-dialog__surface {
-        background-color: var(--b1);
         color: var(--bc);
+    }
+
+    .mdc-dialog__surface {
+        background-color: var(--b1);
+        border: 1px solid var(--b3);
     }
 
     .mdc-label {

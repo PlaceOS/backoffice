@@ -101,7 +101,7 @@ export class PlaceClusterDetailsComponent
         filter(() => !this.active_cluster && !this.loading),
         switchMap(() => {
             this.loading = true;
-            return queryClusters({ include_status: true } as any).pipe(
+            return queryClusters({ include_status: false } as any).pipe(
                 catchError((_) => ({ data: [] }) as any),
             );
         }),
