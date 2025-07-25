@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
+import { addChipItem, removeChipItem } from '../../common/forms';
 
 @Component({
     selector: 'system-trigger-form',
@@ -52,6 +53,35 @@ import { UntypedFormGroup } from '@angular/forms';
                     </div>
                 }
             </div>
+            @if (form().controls.playlists) {
+                <div class="flex flex-col">
+                    <label for="playlists">{{
+                        'SYSTEMS.PLAYLISTS' | translate
+                    }}</label>
+                    <mat-form-field appearance="outline">
+                        <mat-chip-grid #chipList aria-label="Playlists">
+                            @for (item of form().value.playlists; track scope) {
+                                <mat-chip
+                                    [selectable]="true"
+                                    [removable]="true"
+                                    (removed)="removePlaylist(item)"
+                                >
+                                    {{ item }}
+                                    <app-icon matChipRemove>close</app-icon>
+                                </mat-chip>
+                            }
+                            <input
+                                matInput
+                                placeholder="Playlist IDs"
+                                [matChipInputFor]="chipList"
+                                [matChipInputSeparatorKeyCodes]="separators"
+                                [matChipInputAddOnBlur]="true"
+                                (matChipInputTokenEnd)="addPlaylist($event)"
+                            />
+                        </mat-chip-grid>
+                    </mat-form-field>
+                </div>
+            }
             <div class="-mx-2 flex flex-wrap items-center">
                 <settings-toggle
                     class="m-2 min-w-[40%] max-w-[calc(50%-1rem)] flex-1"
@@ -77,4 +107,9 @@ import { UntypedFormGroup } from '@angular/forms';
 export class SystemTriggerFormComponent {
     /** Group of form fields used for creating the system */
     public readonly form = input<UntypedFormGroup>(undefined);
+
+    public readonly addPlaylist = (e) =>
+        addChipItem(this.form().controls.playlists as any, e);
+    public readonly removePlaylist = (i) =>
+        removeChipItem(this.form().controls.playlists as any, i);
 }

@@ -288,7 +288,8 @@
         "TRIGGER_ENABLED": "Enabled",
         "TRIGGER_EXECUTE_ENABLED": "Execute Enabled",
         "TRIGGER_IMPORTANT": "Important",
-        "MISCONFIGURED": "Room system does not contain all required zones"
+        "MISCONFIGURED": "Room system does not contain all required zones",
+        "PLAYLISTS": "Playlists"
     },
     "MODULES": {
         "SINGULAR": "Module",
