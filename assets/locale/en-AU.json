@@ -968,6 +968,7 @@
         "STORAGE_LOADING": "Loading storage providers...",
         "STORAGE_FIELD_TYPE": "Type",
         "STORAGE_FIELD_REGION": "Region",
+        "STORAGE_FIELD_DEFAULT": "Default",
         "STORAGE_LIST_EMPTY": "No storage providers for {{ item }} domain",
         "STORAGE_SAVE_SUCCESS": "Successfully saved storage provider.",
         "STORAGE_SAVE_ERROR": "Failed to save storage provider.",
