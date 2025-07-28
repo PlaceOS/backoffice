@@ -82,6 +82,12 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                             size: '10rem',
                         },
                         {
+                            key: 'is_default',
+                            name: 'ADMIN.STORAGE_FIELD_DEFAULT' | translate,
+                            content: bool_template,
+                            size: '5.5rem',
+                        },
+                        {
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
@@ -105,8 +111,11 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
         <ng-template #name_template let-row="row">
             <div class="flex flex-col px-4 py-2">
                 <div>
-                    {{ row.domain?.name || row.authority_id || '[DEFAULT]' }}
+                    {{ row.domain?.name || row.authority_id }}
                 </div>
+                @if (!row.domain?.name && !row.authority_id) {
+                    <span class="opacity-30">Any Domain</span>
+                }
                 <div class="text-xs opacity-30">{{ row.authority_id }}</div>
             </div>
         </ng-template>
@@ -118,6 +127,19 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
         <ng-template #date_from_template let-data="data">
             <div class="p-4">
                 {{ +data * 1000 | dateFrom }}
+            </div>
+        </ng-template>
+        <ng-template #bool_template let-data="data">
+            <div class="flex h-full w-full items-center justify-center">
+                <div
+                    class="flex h-8 w-8 items-center justify-center rounded"
+                    [class.bg-success]="data"
+                    [class.text-success-content]="data"
+                    [class.bg-error]="!data"
+                    [class.text-error-content]="!data"
+                >
+                    <icon class="text-2xl">{{ data ? 'check' : 'close' }}</icon>
+                </div>
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
