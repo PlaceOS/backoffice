@@ -1,5 +1,13 @@
-import { AfterViewInit, Component, ElementRef, inject, input, viewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    inject,
+    input,
+    viewChild,
+} from '@angular/core';
 import { AsyncHandler } from '../common/async-handler.class';
+import { SettingsService } from '../common/settings.service';
 import { Point } from '../common/types';
 
 function scale(domain, range) {
@@ -14,7 +22,9 @@ const COLORS: [string, string][] = [
 
 @Component({
     selector: '[basic-line-graph]',
-    template: ` <canvas #canvas class="h-full w-full"></canvas> `,
+    template: `
+        <canvas #canvas class="h-full w-full text-base-content"></canvas>
+    `,
     styles: [
         `
             :host {
@@ -28,11 +38,18 @@ export class BasicLineGraphComponent
     extends AsyncHandler
     implements AfterViewInit
 {
+    private _settings = inject(SettingsService);
     private _element = inject<ElementRef<HTMLElement>>(ElementRef);
 
     public readonly lines = input<Point[][]>([]);
 
-    private readonly _canvas_el = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
+    private readonly _canvas_el =
+        viewChild<ElementRef<HTMLCanvasElement>>('canvas');
+
+    public get is_dark_mode() {
+        console.log('Theme:', this._settings.get('theme'));
+        return this._settings.get('theme') === 'dark';
+    }
 
     public ngAfterViewInit() {
         this._setupCanvas();
@@ -40,11 +57,10 @@ export class BasicLineGraphComponent
     }
 
     private _setupCanvas() {
-        const _canvas_el = this._canvas_el();
-        if (!_canvas_el?.nativeElement) {
+        const canvas_el = this._canvas_el()?.nativeElement;
+        if (!canvas_el) {
             return this.timeout('setup', () => this._setupCanvas());
         }
-        const canvas_el = _canvas_el?.nativeElement!;
         const container_box =
             this._element.nativeElement.getBoundingClientRect();
         canvas_el.width = container_box.width * 2;
@@ -57,6 +73,7 @@ export class BasicLineGraphComponent
         const ctx = _canvas_el.nativeElement.getContext('2d');
         if (!ctx) return;
         let { width, height } = _canvas_el.nativeElement;
+        const color = this.is_dark_mode ? '#FFFA' : '#000';
         ctx.clearRect(0, 0, width, height);
         ctx.save();
         const padding = 12;
@@ -65,7 +82,7 @@ export class BasicLineGraphComponent
         height -= padding * 2;
         const axis_start = { x: 40, y: 16 };
         const subdivisions = 4;
-        ctx.strokeStyle = 'currentColor';
+        ctx.strokeStyle = color;
         ctx.lineWidth = 1;
         // Y-Axis Lines
         ctx.setLineDash([6, 4]);
@@ -81,7 +98,7 @@ export class BasicLineGraphComponent
         ctx.setLineDash([]);
         // Draw Y-Axis Labels
         ctx.font = '20px Fira Code';
-        ctx.fillStyle = 'currentColor';
+        ctx.fillStyle = color;
         ctx.fillText('50%', -4, (height - axis_start.y) / 2 + 8);
         ctx.fillText('100%', -12, 8);
         // Draw X-Axis Labels
@@ -98,7 +115,7 @@ export class BasicLineGraphComponent
             );
         }
 
-        ctx.strokeStyle = 'currentColor';
+        ctx.strokeStyle = color;
         ctx.lineWidth = 2;
 
         // X-Axis
