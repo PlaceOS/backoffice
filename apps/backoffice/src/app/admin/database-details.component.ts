@@ -1,12 +1,23 @@
-import { Component, inject } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { apiEndpoint, post } from '@placeos/ts-client';
+import { lastValueFrom } from 'rxjs';
 
-import { PlaceDatabase } from 'apps/backoffice/src/app/common/database.service';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
+
+function reindex(backfill = true) {
+    const url = `${apiEndpoint()}/reindex${backfill ? '?backfill=true' : ''}`;
+    return lastValueFrom(post(url, null));
+}
+
+function backfill() {
+    const url = `${apiEndpoint()}/backfill`;
+    return lastValueFrom(post(url, null));
+}
 
 @Component({
     selector: 'app-database-details',
     template: `
-        <div class="my-4 flex items-center justify-between space-x-2 px-2">
+        <div class="mb-4 flex items-center justify-between space-x-2 px-4">
             <div class="text-2xl">PlaceOS Database</div>
         </div>
         <div class="flex w-full space-x-4 p-4">
@@ -19,10 +30,10 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                 <button
                     btn
                     class="w-[calc(100%-0.5rem)]"
-                    [disabled]="reindexing"
+                    [disabled]="reindexing()"
                     (click)="reindex()"
                 >
-                    @if (!reindexing) {
+                    @if (!reindexing()) {
                         {{ 'ADMIN.DATABASE_REINDEX' | translate }}
                     } @else {
                         <div class="my-1 flex w-full justify-center">
@@ -40,10 +51,10 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                 <button
                     btn
                     class="w-[calc(100%-0.5rem)]"
-                    [disabled]="backfilling"
+                    [disabled]="backfilling()"
                     (click)="backfill()"
                 >
-                    @if (!backfilling) {
+                    @if (!backfilling()) {
                         {{ 'ADMIN.DATABASE_BACKFILL' | translate }}
                     } @else {
                         <div class="my-1 flex w-full justify-center">
@@ -76,40 +87,32 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
     standalone: false,
 })
 export class PlaceDatabaseDetailsComponent {
-    private _engine_service = inject(PlaceDatabase);
-
     /** Whether backend is reindexing the database */
-    public reindexing: boolean;
+    public readonly reindexing = signal(false);
     /** Whether backend is reindexing the database */
-    public backfilling: boolean;
+    public readonly backfilling = signal(false);
 
-    public reindex() {
-        this.reindexing = true;
-        this._engine_service.reindex().then(
-            () => (this.reindexing = false),
-            (err) => {
-                this.reindexing = false;
-                notifyError(
-                    `Error reindexing database. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
-            },
-        );
+    public async reindex() {
+        this.reindexing.set(true);
+        await reindex().catch((err) => {
+            notifyError(
+                `Error reindexing database. Error: ${JSON.stringify(
+                    err.response || err.message || err,
+                )}`,
+            );
+        });
+        this.reindexing.set(false);
     }
 
-    public backfill() {
-        this.backfilling = true;
-        this._engine_service.backfill().then(
-            () => (this.backfilling = false),
-            (err) => {
-                this.backfilling = false;
-                notifyError(
-                    `Error reindexing database. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
-            },
-        );
+    public async backfill() {
+        this.backfilling.set(true);
+        await backfill().catch((err) => {
+            notifyError(
+                `Error backfilling database. Error: ${JSON.stringify(
+                    err.response || err.message || err,
+                )}`,
+            );
+        });
+        this.backfilling.set(false);
     }
 }

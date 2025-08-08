@@ -47,7 +47,6 @@ export class BasicLineGraphComponent
         viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
     public get is_dark_mode() {
-        console.log('Theme:', this._settings.get('theme'));
         return this._settings.get('theme') === 'dark';
     }
 
