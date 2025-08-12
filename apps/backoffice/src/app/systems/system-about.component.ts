@@ -39,6 +39,14 @@ import { SystemStateService } from './system-state.service';
                             }}
                         </div>
                     }
+                    @if (item?.signage) {
+                        <div class="flex items-center text-sm font-medium">
+                            {{ 'SYSTEMS.SIGNAGE' | translate }}
+                        </div>
+                        <div>
+                            {{ 'COMMON.TRUE' | translate }}
+                        </div>
+                    }
                     @if (item?.email) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.PUBLIC' | translate }}
