@@ -42,7 +42,7 @@ import { UploadsService } from '../common/uploads.service';
                 <div list class="max-h-[65vh] overflow-auto">
                     @if ((uploads | async)?.length) {
                         <ul>
-                            @for (item of uploads | async; track item) {
+                            @for (item of uploads | async; track item.id) {
                                 <li
                                     upload-file
                                     class="relative my-1 flex h-12 items-center space-x-2 px-2 hover:bg-base-200"
@@ -52,11 +52,6 @@ import { UploadsService } from '../common/uploads.service';
                                     <div class="w-1/2 flex-1 truncate pl-2">
                                         {{ item.name }}
                                     </div>
-                                    @if (item.error) {
-                                        <button btn (click)="retry(item)">
-                                            {{ 'COMMON.RETRY' | translate }}
-                                        </button>
-                                    }
                                     <div
                                         class="size mr-2 w-20 text-right font-mono text-sm"
                                     >
@@ -64,7 +59,9 @@ import { UploadsService } from '../common/uploads.service';
                                     </div>
                                     @if (item.progress < 100 && !item.error) {
                                         <div class="progress font-mono">
-                                            {{ item.progress }}%
+                                            {{
+                                                item.progress | number: '1.1-1'
+                                            }}%
                                         </div>
                                     }
                                     @if (item.progress >= 100 && !item.error) {
@@ -95,6 +92,22 @@ import { UploadsService } from '../common/uploads.service';
                                         >
                                             <icon class="text-2xl"
                                                 >content_copy</icon
+                                            >
+                                        </button>
+                                    }
+                                    @if (item.error) {
+                                        <button
+                                            icon
+                                            matRipple
+                                            class="clear"
+                                            matTooltipPosition="right"
+                                            [matTooltip]="
+                                                'COMMON.RETRY' | translate
+                                            "
+                                            (click)="retry(item)"
+                                        >
+                                            <icon class="text-2xl"
+                                                >refresh</icon
                                             >
                                         </button>
                                     }
