@@ -13,7 +13,7 @@ import * as blobUtil from 'blob-util';
 function uploadURL(id: string) {
     return `${location.origin}/api/engine/v2/uploads/${encodeURIComponent(
         id,
-    )}/url}`;
+    )}/url`;
 }
 
 export interface UploadDetails {
