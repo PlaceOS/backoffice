@@ -92,7 +92,7 @@ import { notifyError } from '../../../common/notifications';
                     </mat-error>
                 </mat-form-field>
                 <div class="flex space-x-4">
-                    @if (!is_editing) {
+                    @if (!is_editing()) {
                         <div class="flex flex-1 flex-col">
                             <label for="role">
                                 {{ 'DRIVERS.ROLE' | translate }}
