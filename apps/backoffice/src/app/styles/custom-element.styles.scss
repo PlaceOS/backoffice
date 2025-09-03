@@ -1124,32 +1124,6 @@ a[icon] {
     }
 }
 
-#placeos {
-    .markdown {
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            margin-top: 0.5rem;
-            font-weight: 500;
-        }
-        h2,
-        h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-        }
-        ul {
-            list-style: initial;
-            padding-left: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        a {
-            color: var(--in);
-            text-decoration: underline;
-        }
-    }
-}
-
 mat-list-option.mdc-list-item--selected {
     border-right: 3px solid rgba(#212121, 0.85);
 }

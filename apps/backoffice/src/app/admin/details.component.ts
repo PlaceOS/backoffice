@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Component,
+    OnInit,
+    inject,
+    signal,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { apiEndpoint, get } from '@placeos/ts-client';
 
@@ -15,6 +21,7 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
 import { VERSION } from '../../environments/version';
 
 import { format } from 'date-fns';
+import { lastValueFrom } from 'rxjs';
 import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/locale.service';
 
@@ -45,10 +52,10 @@ export interface PlaceServiceDetails {
                 <span class="mono ml-2 opacity-60">Backoffice</span>
             </h3>
             <div class="flex-1"></div>
-            @if (backoffice_logs) {
+            @if (backoffice_logs()) {
                 <button
                     class="p-2 text-xs underline"
-                    (click)="changelog(backoffice_logs)"
+                    (click)="changelog(backoffice_logs())"
                 >
                     {{ 'ADMIN.VIEW_CHANGELOG' | translate }}
                 </button>
@@ -100,24 +107,24 @@ export interface PlaceServiceDetails {
                 {{ 'ADMIN.BACKEND_SERVICES' | translate }}
                 <span class="mono ml-2 opacity-60">API</span>
             </div>
-            @if (backend_version) {
+            @if (backend_version()) {
                 <code class="bg-base-300">
-                    {{ backend_version }}
+                    {{ backend_version() }}
                 </code>
             }
             <div class="flex-1"></div>
-            @if (changelog_data) {
+            @if (changelog_data()) {
                 <button
                     class="p-2 text-xs underline"
-                    (click)="changelog(changelog_data)"
+                    (click)="changelog(changelog_data())"
                 >
                     {{ 'ADMIN.VIEW_CHANGELOG' | translate }}
                 </button>
             }
         </div>
         <section class="-mx-2 flex flex-wrap py-2">
-            @if (api_details.length > 0) {
-                @for (api of api_details; track $index) {
+            @if (api_details().length > 0) {
+                @for (api of api_details(); track $index) {
                     <div
                         class="m-2 min-w-[40%] flex-1 overflow-hidden rounded border border-base-200 bg-base-100"
                     >
@@ -191,10 +198,10 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     private _cdr = inject(ChangeDetectorRef);
 
     /** Current details about the API */
-    public api_details: PlaceServiceDetails[] = [];
-    public changelog_data: string = '';
-    public backend_version = '';
-    public backoffice_logs = '';
+    public readonly api_details = signal([] as PlaceServiceDetails[]);
+    public readonly changelog_data = signal('');
+    public readonly backend_version = signal('');
+    public readonly backoffice_logs = signal('');
 
     public get user() {
         return this._users.user;
@@ -239,40 +246,38 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     }
 
     public async loadApiDetails() {
-        const details = await get(`${apiEndpoint()}/cluster/versions`)
-            .toPromise()
-            .catch((err) =>
-                notifyError(
-                    i18n('ADMIN.BACKEND_SERVICES_ERROR', {
-                        error: JSON.stringify(
-                            err.response || err.message || err,
-                        ),
-                    }),
-                ),
-            );
-        this.api_details = (details as any) || [];
+        const details = await lastValueFrom(
+            get(`${apiEndpoint()}/cluster/versions`),
+        ).catch((err) =>
+            notifyError(
+                i18n('ADMIN.BACKEND_SERVICES_ERROR', {
+                    error: JSON.stringify(err.response || err.message || err),
+                }),
+            ),
+        );
+        this.api_details.set((details as any) || []);
         this._cdr.detectChanges();
     }
 
     public async loadPlatformDetails() {
-        const { changelog, version } = await get(`${apiEndpoint()}/platform`)
-            .toPromise()
-            .catch((err) => {
-                notifyError(
-                    i18n('ADMIN.BACKEND_SERVICES_ERROR', {
-                        error: JSON.stringify(
-                            err.response || err.message || err,
-                        ),
-                    }),
-                );
-                throw err;
-            });
-        this.changelog_data = changelog.replace('# Changelog\n\n', '');
-        this.backend_version = version;
-        this.backoffice_logs = await (
-            await fetch(
-                'https://raw.githubusercontent.com/PlaceOS/backoffice/develop/CHANGELOG.md',
-            )
-        ).text();
+        const { changelog, version } = await lastValueFrom(
+            get(`${apiEndpoint()}/platform`),
+        ).catch((err) => {
+            notifyError(
+                i18n('ADMIN.BACKEND_SERVICES_ERROR', {
+                    error: JSON.stringify(err.response || err.message || err),
+                }),
+            );
+            throw err;
+        });
+        this.changelog_data.set(changelog.replace('# Changelog\n\n', ''));
+        this.backend_version.set(version);
+        this.backoffice_logs.set(
+            await (
+                await fetch(
+                    'https://raw.githubusercontent.com/PlaceOS/backoffice/develop/CHANGELOG.md',
+                )
+            ).text(),
+        );
     }
 }

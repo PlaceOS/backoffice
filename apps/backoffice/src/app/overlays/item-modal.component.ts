@@ -70,7 +70,9 @@ export interface CreateEditModalData<T extends Identity = any> {
                     ((name.includes('ADMIN') || name.startsWith('DOMAINS.')
                         ? '_'
                         : '.') +
-                        (item && edit ? 'EDIT' : 'NEW')) | translate
+                        (item && edit ? 'EDIT' : 'NEW'))
+                    | uppercase
+                    | translate
             "
             [loading]="loading"
             (save)="submit()"
@@ -95,17 +97,16 @@ export interface CreateEditModalData<T extends Identity = any> {
                     <user-form [form]="form" />
                 }
                 @case ('driver') {
-                    <driver-form [form]="form"
+                    <driver-form
+                        [form]="form"
                         (waiting)="can_submit = !$event"
-                     />
+                    />
                 }
                 @case ('zone') {
                     <zone-form [form]="form" />
                 }
                 @case ('module') {
-                    <module-form [form]="form"
-                        [readonly]="readonly"
-                     />
+                    <module-form [form]="form" [readonly]="readonly" />
                 }
                 @case ('broker') {
                     <broker-form [form]="form" />
@@ -123,7 +124,8 @@ export class ItemCreateUpdateModalComponent
     extends AsyncHandler
     implements OnInit
 {
-    private _dialog_ref = inject<MatDialogRef<ItemCreateUpdateModalComponent>>(MatDialogRef);
+    private _dialog_ref =
+        inject<MatDialogRef<ItemCreateUpdateModalComponent>>(MatDialogRef);
     private _data = inject<CreateEditModalData>(MAT_DIALOG_DATA);
     private _hotkey = inject(HotkeysService);
 

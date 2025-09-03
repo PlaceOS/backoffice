@@ -497,6 +497,9 @@
         "BRANCH_REQUIRED": "A working branch is required",
         "COMMIT_REQUIRED": "A commit is required"
     },
+    "TRIGGER": {
+        "EDIT": "Edit trigger"
+    },
     "TRIGGERS": {
         "SINGULAR": "Trigger",
         "PLURAL": "Triggers",
