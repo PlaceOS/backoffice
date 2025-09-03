@@ -495,7 +495,8 @@
         "COMMIT": "Repository Commit",
         "NAME_REQUIRED": "A repository name is required",
         "BRANCH_REQUIRED": "A working branch is required",
-        "COMMIT_REQUIRED": "A commit is required"
+        "COMMIT_REQUIRED": "A commit is required",
+        "ROOT_PATH": "Root Path"
     },
     "TRIGGER": {
         "EDIT": "Edit trigger"
