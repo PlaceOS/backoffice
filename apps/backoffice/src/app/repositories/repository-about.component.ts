@@ -47,6 +47,15 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </a>
                 </div>
                 <div class="flex items-center text-sm font-medium">
+                    {{ 'REPOS.ROOT_PATH' | translate }}
+                </div>
+                <div class="flex items-center font-mono text-sm">
+                    {{ item.root_path }}
+                    @if (item.root_path === '') {
+                        <span class="opacity-30">Not set</span>
+                    }
+                </div>
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
                 <div class="flex items-center">

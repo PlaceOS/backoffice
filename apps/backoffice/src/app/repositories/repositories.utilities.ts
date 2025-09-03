@@ -22,6 +22,7 @@ export function generateRepositoryFormFields(repository?: PlaceRepository) {
         repo_type: new FormControl(
             repository?.repo_type || PlaceRepositoryType.Driver,
         ),
+        root_path: new FormControl(repository?.root_path),
         username: new FormControl(repository?.username),
         password: new FormControl(repository?.password),
     };

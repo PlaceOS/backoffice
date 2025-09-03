@@ -1,9 +1,9 @@
 import {
-  Component,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  input
+    Component,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+    input,
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 
@@ -347,6 +347,21 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         </mat-form-field>
                     </div>
                 }
+                @if (form().controls.root_path) {
+                    <div class="field">
+                        <label for="root-path">
+                            {{ 'REPOS.ROOT_PATH' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="root-path"
+                                [placeholder]="'REPOS.ROOT_PATH' | translate"
+                                formControlName="root_path"
+                            />
+                        </mat-form-field>
+                    </div>
+                }
             </form>
         }
     `,
@@ -455,12 +470,12 @@ export class RepositoryFormComponent
                 'default_branch',
                 combineLatest([this.branch_list, default_branch]).subscribe(
                     ([list, branch]) => {
-              const formValue = this.form();
-              return !formValue.value.branch ||
-                        !list.includes(formValue.value.branch)
+                        const formValue = this.form();
+                        return !formValue.value.branch ||
+                            !list.includes(formValue.value.branch)
                             ? formValue.patchValue({ branch })
                             : '';
-            },
+                    },
                 ),
             );
             this.commit_list = merge(
@@ -495,8 +510,9 @@ export class RepositoryFormComponent
                 ]),
                 tap((l) => {
                     const commit =
-                        l.find((c) => c.hash === this.form().value.commit_hash) ||
-                        l[0];
+                        l.find(
+                            (c) => c.hash === this.form().value.commit_hash,
+                        ) || l[0];
                     this.base_commit = commit;
                 }),
                 shareReplay(1),
