@@ -1,6 +1,9 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, inject } from '@angular/core';
 import { PlaceDriver } from '@placeos/ts-client';
 import { marked } from 'marked';
+import { i18n } from '../common/locale.service';
+import { notifyInfo } from '../common/notifications';
 import { DriverStateService } from './driver-state.service';
 
 @Component({
@@ -90,12 +93,14 @@ import { DriverStateService } from './driver-state.service';
                     {{ 'COMMON.GIT_COMMIT' | translate }}
                 </div>
                 <div class="flex items-center overflow-hidden">
-                    <code
-                        class="inline-block max-w-full truncate text-xs"
-                        [matTooltip]="item.commit"
-                    >
-                        {{ item.commit }}
-                    </code>
+                    <button matRipple (click)="copyCommit()">
+                        <code
+                            class="inline-block max-w-full select-all truncate text-xs"
+                            [matTooltip]="item.commit"
+                        >
+                            {{ item.commit }}
+                        </code>
+                    </button>
                 </div>
                 <div class="flex items-center text-sm font-medium">
                     {{ 'DRIVERS.FILENAME' | translate }}
@@ -185,6 +190,7 @@ import { DriverStateService } from './driver-state.service';
 })
 export class DriverAboutComponent {
     private _service = inject(DriverStateService);
+    private _clipboard = inject(Clipboard);
 
     public readonly updateDriver = () => this._service.updateDriver();
     public readonly recompile = () => this._service.recompileDriver();
@@ -198,5 +204,10 @@ export class DriverAboutComponent {
     /** HTML string for rendering the description */
     public get description(): string {
         return marked(this.item.description || '', { async: false }) as string;
+    }
+
+    public copyCommit(): void {
+        this._clipboard.copy(this.item.commit);
+        notifyInfo(i18n('COMMON.COMMIT_HASH_COPIED'));
     }
 }

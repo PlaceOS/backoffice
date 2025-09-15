@@ -147,6 +147,7 @@
         "GIT_BRANCH": "Branch",
         "GIT_COMMIT": "Commit hash",
         "GIT_PULL_LATEST": "Pull latest commit",
+        "COMMIT_HASH_COPIED": "Commit hash copied to clipboard",
         "DESCRIPTION_EMPTY": "No description",
         "INVALID_FIELDS": "Some fields are invalid. [{{ field_list }}]",
         "BULK_ADD": "Bulk add {{ type }}",
