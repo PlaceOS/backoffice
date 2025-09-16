@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { listZoneTags, PlaceZone } from '@placeos/ts-client';
 import { shareReplay } from 'rxjs';
@@ -34,7 +34,7 @@ import { ZonesStateService } from './zones-state.service';
                                 btn
                                 icon
                                 class="mr-2 sm:hidden"
-                                (click)="open_menu = true"
+                                (click)="open_menu.set(true)"
                             >
                                 <app-icon>menu</app-icon>
                             </button>
@@ -48,14 +48,14 @@ import { ZonesStateService } from './zones-state.service';
                                 ></item-details>
                                 <item-tablist
                                     [base]="name"
-                                    [tabs]="tab_list"
+                                    [tabs]="tab_list()"
                                     [scrolled]="scroll > 0"
                                     class="z-10"
                                 ></item-tablist>
                                 <div
                                     #el
                                     class="relative z-0 h-1/2 w-full flex-1 overflow-auto p-4"
-                                    (scroll)="scroll = el.scrollTop"
+                                    (scroll)="scroll.set(el.scrollTop)"
                                 >
                                     <router-outlet></router-outlet>
                                 </div>
@@ -96,23 +96,23 @@ import { ZonesStateService } from './zones-state.service';
     styles: [``],
     standalone: false,
 })
-export class ZonesComponent extends AsyncHandler {
+export class ZonesComponent extends AsyncHandler implements OnInit {
     protected _service = inject(ZonesStateService);
     protected _item = inject(ActiveItemService);
     protected _route = inject(ActivatedRoute);
     protected _router = inject(Router);
     private _debug = inject(PlaceDebugService);
 
+    public readonly item = signal<PlaceZone>(null);
     public readonly name = 'zones';
-    public open_menu = false;
+    public readonly open_menu = signal(false);
+    public readonly scroll = signal(0);
 
-    public tab_list = [];
+    public readonly tab_list = signal([]);
 
     public readonly newItem = () => this._item.create();
     public readonly bulkAdd = () => this._item.bulkAdd();
     public readonly zone_tags = listZoneTags().pipe(shareReplay(1));
-
-    public readonly item = signal<PlaceZone>(null);
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
@@ -123,42 +123,44 @@ export class ZonesComponent extends AsyncHandler {
     }
 
     public updateTabList(details: Record<string, number>) {
-        this.tab_list = [
-            {
-                id: 'about',
-                name: i18n('ZONES.TAB_ABOUT'),
-                icon: { content: 'info' },
-            },
-            {
-                id: 'systems',
-                name: i18n('ZONES.TAB_SYSTEMS'),
-                count: details.systems ?? '?',
-                icon: { content: 'meeting_room' },
-            },
-            {
-                id: 'triggers',
-                name: i18n('ZONES.TAB_TRIGGERS'),
-                count: details.triggers ?? '?',
-                icon: { content: 'timer' },
-            },
-            {
-                id: 'metadata',
-                name: i18n('ZONES.TAB_METADATA'),
-                count: details.metadata ?? '?',
-                icon: { content: 'code_blocks' },
-            },
-            {
-                id: 'children',
-                name: i18n('ZONES.TAB_CHILDREN'),
-                count: details.children ?? '?',
-                icon: { content: 'account_tree' },
-            },
-            {
-                id: 'history',
-                name: i18n('ZONES.TAB_SETTINGS_HISTORY'),
-                icon: { content: 'schedule' },
-            },
-        ].concat(this.extensions);
+        this.tab_list.set(
+            [
+                {
+                    id: 'about',
+                    name: i18n('ZONES.TAB_ABOUT'),
+                    icon: { content: 'info' },
+                },
+                {
+                    id: 'systems',
+                    name: i18n('ZONES.TAB_SYSTEMS'),
+                    count: details.systems ?? '?',
+                    icon: { content: 'meeting_room' },
+                },
+                {
+                    id: 'triggers',
+                    name: i18n('ZONES.TAB_TRIGGERS'),
+                    count: details.triggers ?? '?',
+                    icon: { content: 'timer' },
+                },
+                {
+                    id: 'metadata',
+                    name: i18n('ZONES.TAB_METADATA'),
+                    count: details.metadata ?? '?',
+                    icon: { content: 'code_blocks' },
+                },
+                {
+                    id: 'children',
+                    name: i18n('ZONES.TAB_CHILDREN'),
+                    count: details.children ?? '?',
+                    icon: { content: 'account_tree' },
+                },
+                {
+                    id: 'history',
+                    name: i18n('ZONES.TAB_SETTINGS_HISTORY'),
+                    icon: { content: 'schedule' },
+                },
+            ].concat(this.extensions),
+        );
     }
 
     public ngOnInit(): void {

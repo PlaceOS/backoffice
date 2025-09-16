@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { PlaceModule, querySystems } from '@placeos/ts-client';
+import { lastValueFrom } from 'rxjs';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
@@ -30,7 +31,7 @@ import { i18n } from '../common/locale.service';
                                 icon
                                 matRipple
                                 class="mr-2 sm:hidden"
-                                (click)="open_menu = true"
+                                (click)="open_menu.set(true)"
                             >
                                 <app-icon>menu</app-icon>
                             </button>
@@ -44,14 +45,14 @@ import { i18n } from '../common/locale.service';
                                 ></item-details>
                                 <item-tablist
                                     [base]="name"
-                                    [tabs]="tab_list"
-                                    [scrolled]="scroll > 0"
+                                    [tabs]="tab_list()"
+                                    [scrolled]="scroll() > 0"
                                     class="z-10"
                                 ></item-tablist>
                                 <div
                                     #el
                                     class="relative z-0 h-1/2 w-full flex-1 overflow-auto p-4"
-                                    (scroll)="scroll = el.scrollTop"
+                                    (scroll)="scroll.set(el.scrollTop)"
                                 >
                                     <router-outlet></router-outlet>
                                 </div>
@@ -87,16 +88,15 @@ export class ModulesComponent extends AsyncHandler {
     private _service = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
 
-    /** Number of systems for the active device */
-    public system_count: number;
-    public open_menu = false;
     public readonly name = 'modules';
-
-    public tab_list = [];
+    public readonly item = signal<PlaceModule>(null);
+    /** Number of systems for the active device */
+    public readonly system_count = signal(undefined);
+    public readonly open_menu = signal(false);
+    public readonly tab_list = signal([]);
+    public readonly scroll = signal(0);
 
     public readonly newItem = () => this._service.create();
-
-    public readonly item = signal<PlaceModule>(null);
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
@@ -107,24 +107,26 @@ export class ModulesComponent extends AsyncHandler {
     }
 
     public updateTabList() {
-        this.tab_list = [
-            {
-                id: 'about',
-                name: i18n('MODULES.TAB_ABOUT'),
-                icon: { content: 'info' },
-            },
-            {
-                id: 'systems',
-                name: i18n('MODULES.TAB_SYSTEMS'),
-                count: this.system_count,
-                icon: { content: 'meeting_room' },
-            },
-            {
-                id: 'history',
-                name: i18n('MODULES.TAB_SETTINGS_HISTORY'),
-                icon: { content: 'schedule' },
-            },
-        ].concat(this.extensions);
+        this.tab_list.set(
+            [
+                {
+                    id: 'about',
+                    name: i18n('MODULES.TAB_ABOUT'),
+                    icon: { content: 'info' },
+                },
+                {
+                    id: 'systems',
+                    name: i18n('MODULES.TAB_SYSTEMS'),
+                    count: this.system_count(),
+                    icon: { content: 'meeting_room' },
+                },
+                {
+                    id: 'history',
+                    name: i18n('MODULES.TAB_SETTINGS_HISTORY'),
+                    icon: { content: 'schedule' },
+                },
+            ].concat(this.extensions),
+        );
     }
 
     public ngOnInit(): void {
@@ -143,6 +145,6 @@ export class ModulesComponent extends AsyncHandler {
         if (!item) return;
         const query: any = { offset: 0, limit: 1, module_id: item.id };
         // Get system count
-        this.system_count = (await querySystems(query).toPromise()).total;
+        this.system_count.set((await lastValueFrom(querySystems(query))).total);
     }
 }

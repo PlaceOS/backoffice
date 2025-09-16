@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { PlaceSystem } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -29,7 +29,7 @@ import { SystemStateService } from './system-state.service';
                                 btn
                                 icon
                                 class="mr-2 sm:hidden"
-                                (click)="open_menu = true"
+                                (click)="open_menu.set(true)"
                             >
                                 <app-icon>menu</app-icon>
                             </button>
@@ -43,14 +43,14 @@ import { SystemStateService } from './system-state.service';
                                 ></item-details>
                                 <item-tablist
                                     [base]="name"
-                                    [tabs]="tab_list"
-                                    [scrolled]="scroll > 0"
+                                    [tabs]="tab_list()"
+                                    [scrolled]="scroll() > 0"
                                     class="z-10"
                                 ></item-tablist>
                                 <div
                                     #el
                                     class="relative z-0 h-1/2 w-full flex-1 overflow-auto p-4"
-                                    (scroll)="scroll = el.scrollTop"
+                                    (scroll)="scroll.set(el.scrollTop)"
                                 >
                                     <router-outlet></router-outlet>
                                 </div>
@@ -91,67 +91,66 @@ import { SystemStateService } from './system-state.service';
     styles: [``],
     standalone: false,
 })
-export class SystemsComponent extends AsyncHandler {
+export class SystemsComponent extends AsyncHandler implements OnInit {
     protected _service = inject(SystemStateService);
     private _item = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
 
+    public readonly item = signal<PlaceSystem>(null);
+    public readonly open_menu = signal(false);
     public readonly name = 'systems';
-    public open_menu = false;
-    public scroll = 0;
+    public readonly scroll = signal(0);
 
-    public tab_list = [];
+    public readonly tab_list = signal([]);
 
     public readonly newItem = () => this._item.create();
     public readonly bulkAdd = () => this._item.bulkAdd();
 
-    public readonly item = signal<PlaceSystem>(null);
-
-    public get extensions() {
-        return extensionsForItem(this._service.active_item, this.name);
-    }
+    public readonly extensions = signal([]);
 
     public get debug_position() {
         return this._debug.position;
     }
 
     public updateTabList(counts?: Record<string, number>) {
-        this.tab_list = [
-            {
-                id: 'about',
-                name: i18n('SYSTEMS.TAB_ABOUT'),
-                icon: { content: 'info' },
-            },
-            {
-                id: 'modules',
-                name: i18n('SYSTEMS.TAB_MODULES'),
-                count: counts?.devices ?? '?',
-                icon: { content: 'tablet' },
-            },
-            {
-                id: 'zones',
-                name: i18n('SYSTEMS.TAB_ZONES'),
-                count: counts?.zones ?? '?',
-                icon: { content: 'layers' },
-            },
-            {
-                id: 'triggers',
-                name: i18n('SYSTEMS.TAB_TRIGGERS'),
-                count: counts?.triggers ?? '?',
-                icon: { content: 'timer' },
-            },
-            {
-                id: 'metadata',
-                name: i18n('SYSTEMS.TAB_METADATA'),
-                count: counts?.metadata ?? '?',
-                icon: { content: 'code_blocks' },
-            },
-            {
-                id: 'history',
-                name: i18n('SYSTEMS.TAB_SETTINGS_HISTORY'),
-                icon: { content: 'schedule' },
-            },
-        ].concat(this.extensions);
+        this.tab_list.set(
+            [
+                {
+                    id: 'about',
+                    name: i18n('SYSTEMS.TAB_ABOUT'),
+                    icon: { content: 'info' },
+                },
+                {
+                    id: 'modules',
+                    name: i18n('SYSTEMS.TAB_MODULES'),
+                    count: counts?.devices ?? '?',
+                    icon: { content: 'tablet' },
+                },
+                {
+                    id: 'zones',
+                    name: i18n('SYSTEMS.TAB_ZONES'),
+                    count: counts?.zones ?? '?',
+                    icon: { content: 'layers' },
+                },
+                {
+                    id: 'triggers',
+                    name: i18n('SYSTEMS.TAB_TRIGGERS'),
+                    count: counts?.triggers ?? '?',
+                    icon: { content: 'timer' },
+                },
+                {
+                    id: 'metadata',
+                    name: i18n('SYSTEMS.TAB_METADATA'),
+                    count: counts?.metadata ?? '?',
+                    icon: { content: 'code_blocks' },
+                },
+                {
+                    id: 'history',
+                    name: i18n('SYSTEMS.TAB_SETTINGS_HISTORY'),
+                    icon: { content: 'schedule' },
+                },
+            ].concat(this.extensions()),
+        );
     }
 
     public ngOnInit(): void {
@@ -159,6 +158,7 @@ export class SystemsComponent extends AsyncHandler {
             'item-change',
             this._item.active_item$.subscribe((i) => {
                 this.item.set(i as any);
+                this.extensions.set(extensionsForItem(i, this.name));
                 this.updateTabList({});
             }),
         );

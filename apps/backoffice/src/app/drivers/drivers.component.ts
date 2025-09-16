@@ -1,5 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { PlaceDriver, queryModules } from '@placeos/ts-client';
+import { lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -32,7 +33,7 @@ import { DriverStateService } from './driver-state.service';
                                 btn
                                 icon
                                 class="mr-2 sm:hidden"
-                                (click)="open_menu = true"
+                                (click)="open_menu.set(true)"
                             >
                                 <app-icon>menu</app-icon>
                             </button>
@@ -46,14 +47,14 @@ import { DriverStateService } from './driver-state.service';
                                 ></item-details>
                                 <item-tablist
                                     [base]="name"
-                                    [tabs]="tab_list"
-                                    [scrolled]="scroll > 0"
+                                    [tabs]="tab_list()"
+                                    [scrolled]="scroll() > 0"
                                     class="z-10"
                                 ></item-tablist>
                                 <div
                                     #el
                                     class="relative z-0 h-1/2 w-full flex-1 overflow-auto p-4"
-                                    (scroll)="scroll = el.scrollTop"
+                                    (scroll)="scroll.set(el.scrollTop)"
                                 >
                                     <router-outlet></router-outlet>
                                 </div>
@@ -96,19 +97,19 @@ import { DriverStateService } from './driver-state.service';
     styles: [``],
     standalone: false,
 })
-export class DriversComponent extends AsyncHandler {
+export class DriversComponent extends AsyncHandler implements OnInit {
     protected _service = inject(ActiveItemService);
     private _drivers = inject(DriverStateService);
     private _debug = inject(PlaceDebugService);
 
     public readonly name = 'drivers';
-
     public readonly item = signal<PlaceDriver>(null);
+    public readonly scroll = signal(0);
 
-    public open_menu = false;
-    public device_count: number;
-    public tab_list = [];
-    public updates_available = this._drivers.updates_available;
+    public readonly open_menu = signal(false);
+    public readonly device_count = signal(0);
+    public readonly tab_list = signal([]);
+    public readonly updates_available = this._drivers.updates_available;
 
     public readonly showUpdateList = () => this._drivers.showUpdateList();
 
@@ -123,31 +124,33 @@ export class DriversComponent extends AsyncHandler {
     }
 
     public updateTabList() {
-        this.tab_list = [
-            {
-                id: 'about',
-                name: i18n('DRIVERS.TAB_ABOUT'),
-                icon: { content: 'info' },
-            },
-            {
-                id: 'modules',
-                name: i18n('DRIVERS.TAB_MODULES'),
-                count: this.device_count ?? '?',
-                icon: { content: 'tablet' },
-            },
-            {
-                id: 'history',
-                name: i18n('DRIVERS.TAB_SETTINGS_HISTORY'),
-                icon: { content: 'schedule' },
-            },
-        ].concat(this.extensions);
+        this.tab_list.set(
+            [
+                {
+                    id: 'about',
+                    name: i18n('DRIVERS.TAB_ABOUT'),
+                    icon: { content: 'info' },
+                },
+                {
+                    id: 'modules',
+                    name: i18n('DRIVERS.TAB_MODULES'),
+                    count: this.device_count() ?? '?',
+                    icon: { content: 'tablet' },
+                },
+                {
+                    id: 'history',
+                    name: i18n('DRIVERS.TAB_SETTINGS_HISTORY'),
+                    icon: { content: 'schedule' },
+                },
+            ].concat(this.extensions),
+        );
     }
 
     public ngOnInit(): void {
         this.subscription(
             'item',
             this._service.item.subscribe((item) => {
-                this.device_count = null;
+                this.device_count.set(undefined);
                 this.item.set(item as any);
                 this.updateTabList();
                 this.loadValues(item as any);
@@ -158,10 +161,11 @@ export class DriversComponent extends AsyncHandler {
     protected async loadValues(item: PlaceDriver) {
         if (!item) return;
         const query: any = { offset: 0, limit: 1, driver_id: item.id };
-        this.device_count = await queryModules(query)
-            .pipe(map(({ total }) => total))
-            .toPromise()
-            .catch((_) => 0);
+        this.device_count.set(
+            await lastValueFrom(
+                queryModules(query).pipe(map(({ total }) => total)),
+            ).catch((_) => 0),
+        );
         this.updateTabList();
     }
 }
