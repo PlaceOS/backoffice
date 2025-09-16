@@ -56,7 +56,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                     [class.opacity-0]="!loading"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[40rem] text-sm"
+                    class="block min-w-[44rem] text-sm"
                     [data]="storage_list"
                     [columns]="[
                         {
