@@ -1,10 +1,11 @@
 import {
-  Component,
-  forwardRef,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  input
+    Component,
+    forwardRef,
+    input,
+    OnChanges,
+    OnInit,
+    signal,
+    SimpleChanges,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { PlaceSystem, queryModules } from '@placeos/ts-client';
@@ -30,7 +31,7 @@ export interface ModuleLike {
 @Component({
     selector: `select-system-module`,
     template: `
-        @if (!loading) {
+        @if (!loading()) {
             <mat-form-field class="h-14 w-full" appearance="outline">
                 <mat-select
                     [placeholder]="'COMMON.EXECUTE_MODULE_SELECT' | translate"
@@ -71,15 +72,15 @@ export class SelectModuleComponent
     private _system = new BehaviorSubject('');
     private _change = new BehaviorSubject(0);
 
-    public module: ModuleLike;
+    public readonly module = signal<ModuleLike | undefined>(undefined);
 
-    public loading: boolean;
+    public readonly loading = signal(false);
 
     public modules = combineLatest([this._system, this._change]).pipe(
         distinctUntilChanged(
             ([id1, time1], [id2, time2]) => id1 === id2 && time1 === time2,
         ),
-        tap(() => (this.loading = true)),
+        tap(() => this.loading.set(true)),
         switchMap(([id]) =>
             id
                 ? queryModules({
@@ -104,7 +105,7 @@ export class SelectModuleComponent
                 index: calculateModuleIndex(mod_list, mod),
             }));
         }),
-        tap(() => (this.loading = false)),
+        tap(() => this.loading.set(false)),
         shareReplay(1),
     );
 
@@ -119,8 +120,8 @@ export class SelectModuleComponent
             this.modules.subscribe((list) => {
                 const active = list.find(
                     (_) =>
-                        _.module === this.module?.module &&
-                        _.index === this.module?.index,
+                        _.module === this.module()?.module &&
+                        _.index === this.module()?.index,
                 );
                 if (active) this.setValue(active);
             }),
@@ -140,8 +141,9 @@ export class SelectModuleComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: ModuleLike): void {
-        this.module = new_value;
-        if (this._onChange && !this.loading) {
+        console.log('setValue', new_value);
+        this.module.set(new_value);
+        if (this._onChange && !this.loading()) {
             this._onChange(new_value);
         }
     }
@@ -152,7 +154,7 @@ export class SelectModuleComponent
      */
     public writeValue(value: ModuleLike) {
         if (!value) return;
-        this.module = value;
+        this.module.set(value);
     }
 
     /**

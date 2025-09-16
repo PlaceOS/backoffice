@@ -21,23 +21,23 @@ import { ModuleLike } from './select-module.component';
                 <select-system-module
                     [system]="system()"
                     [(ngModel)]="module"
-                    (ngModelChange)="fn = null"
+                    (ngModelChange)="fn.set(null)"
                 ></select-system-module>
-                @if (module) {
+                @if (module()) {
                     <select-module-method
                         [system]="system()"
-                        [module]="module"
+                        [module]="module()"
                         [(ngModel)]="fn"
                         (ngModelChange)="
-                            fn?.order?.length === 0 ? postArguments({}) : ''
+                            fn()?.order?.length === 0 ? postArguments({}) : ''
                         "
                     ></select-module-method>
                 }
-                @if (fn) {
+                @if (fn()) {
                     <function-arguments
-                        [method]="fn"
-                        [ngModel]="arguments"
-                        (valid)="valid = $event"
+                        [method]="fn()"
+                        [ngModel]="arguments()"
+                        (valid)="valid.set($event)"
                         (ngModelChange)="postArguments($event)"
                     ></function-arguments>
                 }
@@ -48,7 +48,7 @@ import { ModuleLike } from './select-module.component';
                         </button>
                         <button
                             class="flex-1"
-                            [disabled]="!fn || !valid"
+                            [disabled]="!fn() || !valid()"
                             btn
                             (click)="execute()"
                         >
@@ -87,10 +87,10 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     /** Whether component is allowed to execute methods on the system */
     public readonly can_execute = input(true);
 
-    public valid = true;
-    public module: ModuleLike;
-    public fn: PlaceModuleFunction;
-    public arguments: Record<string, any>;
+    public readonly valid = signal(true);
+    public readonly module = signal<ModuleLike>(undefined);
+    public readonly fn = signal<PlaceModuleFunction>(undefined);
+    public readonly arguments = signal<Record<string, any>>({});
 
     public loading = signal(false);
 
@@ -117,21 +117,21 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         if (!value) return;
         const parts = value.mod.split('_');
         const index = parts.pop();
-        this.module = { module: parts.join('_'), index: +index } as any;
-        this.fn = { name: value.method } as any;
+        this.module.set({ module: parts.join('_'), index: +index } as any);
+        this.fn.set({ name: value.method } as any);
         const args = {};
         for (const key in value.args || {}) {
             let v = value.args[key];
             try {
                 v = JSON.parse(value.args[key]);
-            } catch (e) {}
+            } catch {}
             args[key] = JSON.stringify(v);
         }
-        this.arguments = args;
+        this.arguments.set(args);
     }
 
     public postArguments(arg_map: Record<string, any>) {
-        if (!this.fn?.params) return;
+        if (!this.fn()?.params) return;
         const args = {};
         for (const key in arg_map) {
             args[key] = arg_map[key];
@@ -140,11 +140,11 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
             } catch (e) {}
         }
         this.setValue({
-            mod: `${this.module.module}_${this.module.index}`,
-            method: (this.fn as any).name,
+            mod: `${this.module().module}_${this.module().index}`,
+            method: (this.fn() as any).name,
             args,
         });
-        this.arguments = arg_map;
+        this.arguments.set(arg_map);
     }
 
     /**
@@ -160,25 +160,25 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     public registerOnTouched = (fn) => (this._onTouch = fn);
 
     public clear() {
-        this.module = null;
-        this.fn = null;
-        this.arguments = {};
+        this.module.set(null);
+        this.fn.set(null);
+        this.arguments.set({});
     }
 
     public async execute() {
         this.loading.set(true);
-        this.arguments = this.arguments || {};
+        this.arguments.set(this.arguments() || {});
         const method = this.zone() ? executeOnZone : executeOnSystem;
         const result = await lastValueFrom(
             method(
                 this.zone() || this.system().id,
-                (this.fn as any).name,
-                this.module.module,
-                this.module.index,
-                this.fn.order.map((key) => {
-                    const fn_details: any = this.fn.params[key];
+                (this.fn() as any).name,
+                this.module().module,
+                this.module().index,
+                this.fn().order.map((key) => {
+                    const fn_details: any = this.fn().params[key];
                     try {
-                        return JSON.parse(this.arguments[key]);
+                        return JSON.parse(this.arguments()[key]);
                     } catch {
                         return (
                             (this.arguments[key] !== ''

@@ -1,10 +1,11 @@
 import {
-  Component,
-  forwardRef,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  input
+    Component,
+    forwardRef,
+    input,
+    OnChanges,
+    OnInit,
+    signal,
+    SimpleChanges,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
@@ -27,7 +28,7 @@ import { ModuleLike } from './select-module.component';
 @Component({
     selector: 'select-module-method',
     template: `
-        @if (!loading) {
+        @if (!loading()) {
             @if ((method_list | async)?.length) {
                 <mat-form-field class="h-14 w-full" appearance="outline">
                     <mat-select
@@ -80,13 +81,13 @@ export class SelectMethodComponent
     private _system = new BehaviorSubject('');
     private _module = new BehaviorSubject<ModuleLike>({} as any);
 
-    public method: PlaceModuleFunction;
+    public readonly method = signal<PlaceModuleFunction>(undefined);
 
-    public loading: boolean;
+    public readonly loading = signal(false);
 
     public method_list = combineLatest([this._system, this._module]).pipe(
         distinctUntilChanged(),
-        tap(() => (this.loading = true)),
+        tap(() => this.loading.set(true)),
         switchMap(([id, { module, index }]) =>
             !!id && !!module ? functionList(id, module, index) : of({}),
         ),
@@ -97,7 +98,7 @@ export class SelectMethodComponent
                 ...fn_mapping[i],
             })),
         ),
-        tap(() => (this.loading = false)),
+        tap(() => this.loading.set(false)),
         shareReplay(1),
     );
 
@@ -132,8 +133,8 @@ export class SelectMethodComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: PlaceModuleFunction): void {
-        this.method = new_value;
-        if (this._onChange && !this.loading) {
+        this.method.set(new_value);
+        if (this._onChange && !this.loading()) {
             this._onChange(new_value);
         }
     }
@@ -144,7 +145,7 @@ export class SelectMethodComponent
      */
     public writeValue(value: PlaceModuleFunction) {
         if (!value) return;
-        this.method = value;
+        this.method.set(value);
     }
 
     /**

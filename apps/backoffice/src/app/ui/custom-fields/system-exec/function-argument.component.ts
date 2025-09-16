@@ -1,10 +1,11 @@
 import {
-  Component,
-  forwardRef,
-  OnChanges,
-  SimpleChanges,
-  input,
-  output
+    Component,
+    forwardRef,
+    input,
+    OnChanges,
+    output,
+    signal,
+    SimpleChanges,
 } from '@angular/core';
 import {
     AbstractControl,
@@ -44,8 +45,8 @@ const validateType = (type) => (control: AbstractControl) => {
 @Component({
     selector: 'function-arguments',
     template: `
-        @if (form) {
-            <form class="pl-8" [formGroup]="form">
+        @if (form()) {
+            <form class="pl-8" [formGroup]="form()">
                 @for (key of method().order; track key; let i = $index) {
                     <div field class="relative flex items-center space-x-2">
                         <div
@@ -116,7 +117,7 @@ export class FunctionArgumentComponent
     public readonly method = input<PlaceModuleFunction>(undefined);
     public readonly valid = output<boolean>();
 
-    public form: UntypedFormGroup;
+    public readonly form = signal<UntypedFormGroup>(new UntypedFormGroup({}));
 
     public value: HashMap;
 
@@ -129,9 +130,7 @@ export class FunctionArgumentComponent
     private _onTouch: (_: HashMap) => void;
 
     public ngOnChanges(changes: SimpleChanges) {
-        if (changes.method) {
-            this.loadForm();
-        }
+        if (changes.method) this.loadForm();
     }
 
     public loadForm() {
@@ -159,11 +158,11 @@ export class FunctionArgumentComponent
                 }
             }
         }
-        this.form = new UntypedFormGroup(form_controls);
-        this.valid.emit(this.form?.valid);
+        this.form.set(new UntypedFormGroup(form_controls));
+        this.valid.emit(this.form()?.valid);
         this.subscription(
             'form',
-            this.form.valueChanges.subscribe((v) => this.setValue(v)),
+            this.form().valueChanges.subscribe((v) => this.setValue(v)),
         );
     }
 
@@ -173,7 +172,7 @@ export class FunctionArgumentComponent
      */
     public setValue(new_value: HashMap): void {
         this.value = new_value || {};
-        this.valid.emit(this.form?.valid);
+        this.valid.emit(this.form()?.valid);
         if (this._onChange) {
             this._onChange(new_value);
         }
@@ -186,18 +185,18 @@ export class FunctionArgumentComponent
     public writeValue(value: HashMap) {
         this.value = value || {};
         if (!value || !this.form) return;
-        this.form.patchValue(value);
+        this.form().patchValue(value);
     }
 
     /**
      * Registers a callback function that is called when the control's value changes in the UI.
      * @param fn The callback function to register
      */
-    public registerOnChange = (fn) => (this._onChange = fn);
+    public readonly registerOnChange = (fn) => (this._onChange = fn);
 
     /**
      * Registers a callback function is called by the forms API on initialization to update the form model on blur.
      * @param fn The callback function to register
      */
-    public registerOnTouched = (fn) => (this._onTouch = fn);
+    public readonly registerOnTouched = (fn) => (this._onTouch = fn);
 }
