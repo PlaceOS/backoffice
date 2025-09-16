@@ -1,10 +1,12 @@
 import {
     Component,
+    computed,
     inject,
     input,
     model,
     OnChanges,
     OnInit,
+    signal,
     SimpleChanges,
 } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
@@ -12,7 +14,6 @@ import {
     addSettings,
     EncryptionLevel,
     PlaceSettings,
-    PlaceUser,
     updateSettings,
 } from '@placeos/ts-client';
 
@@ -44,13 +45,13 @@ type SettingsArray = [
             class="mb-2 flex h-16 w-full items-center justify-between rounded bg-base-200 px-2 text-lg font-medium"
         >
             <h3 class="px-2">{{ 'COMMON.SETTINGS' | translate }}</h3>
-            @if (active_edited) {
+            @if (active_edited()) {
                 <div class="flex items-center space-x-2">
                     <button
                         icon
                         matRipple
                         class="rounded border border-secondary bg-base-100 text-secondary"
-                        [disabled]="edited_count <= 0"
+                        [disabled]="edited_count() <= 0"
                         [matTooltip]="'COMMON.CLEAR' | translate"
                         (click)="clearChanges()"
                     >
@@ -65,8 +66,8 @@ type SettingsArray = [
                         matRipple
                         class="rounded bg-secondary text-secondary-content"
                         [disabled]="
-                            !active_edited ||
-                            (has_errors && !saving[shown_option.id])
+                            !active_edited() ||
+                            (has_errors() && !saving[shown_option.id])
                         "
                         [matTooltip]="'COMMON.SAVE' | translate"
                         (click)="save(shown_option.id)"
@@ -80,21 +81,21 @@ type SettingsArray = [
                 </div>
             }
         </header>
-        @if (form && used_settings && used_settings.length) {
-            <form [formGroup]="form">
+        @if (form() && used_settings() && used_settings().length) {
+            <form [formGroup]="form()">
                 <mat-tab-group
                     [selectedIndex]="level_index"
                     (selectedIndexChange)="
-                        encryption_level = available_levels[$event].id
+                        encryption_level.set(levels()[$event].id)
                     "
                     class="border-x border-t border-base-300"
                 >
-                    @for (option of available_levels; track $index) {
+                    @for (option of levels(); track $index) {
                         <mat-tab
                             [label]="
                                 option.name +
                                 (option.id !== 4 &&
-                                form.controls['settings' + option.id].dirty
+                                form().controls['settings' + option.id]?.dirty
                                     ? ' *'
                                     : '')
                             "
@@ -102,19 +103,15 @@ type SettingsArray = [
                         </mat-tab>
                     }
                 </mat-tab-group>
-                @for (
-                    option of available_levels;
-                    track $index;
-                    let i = $index
-                ) {
+                @for (option of levels(); track $index; let i = $index) {
                     @if (
-                        form &&
-                        encryption_level === option.id &&
-                        form.controls['settings' + option.id]
+                        form() &&
+                        encryption_level() === option.id &&
+                        form().controls['settings' + option.id]
                     ) {
                         <div
                             [class.error-border]="
-                                form.controls['settings' + option.id]?.errors
+                                form().controls['settings' + option.id]?.errors
                             "
                         >
                             <settings-form-field
@@ -127,11 +124,11 @@ type SettingsArray = [
                                 "
                             ></settings-form-field>
                         </div>
-                        @if (form.controls['settings' + option.id]?.errors) {
+                        @if (form().controls['settings' + option.id]?.errors) {
                             <div class="error-display">
                                 {{
-                                    form.controls['settings' + option.id].errors
-                                        .yaml
+                                    form().controls['settings' + option.id]
+                                        .errors.yaml
                                 }}
                             </div>
                         }
@@ -234,93 +231,83 @@ export class SettingsFormComponent
     private _hotkey = inject(HotkeysService);
     private _users = inject(BackofficeUsersService);
 
+    public readonly changed = signal(0);
+
     /** ID of the parent object */
-    readonly id = input<string>(undefined);
+    public readonly id = input<string>(undefined);
     /** List of settings for the  */
-    readonly settings = model<SettingsArray>(undefined);
+    public readonly settings = model<SettingsArray>(undefined);
     /** Whether to display merged settings */
-    readonly merge = input<boolean>(undefined);
+    public readonly merge = input<boolean>(undefined);
     /** List of settings to merge into the main settings */
-    readonly merge_settings = input<PlaceSettings[]>(undefined);
+    public readonly merge_settings = input<PlaceSettings[]>(undefined);
     /** Form fields for settings */
-    public form: UntypedFormGroup;
+    public readonly form = signal<UntypedFormGroup>(new UntypedFormGroup({}));
     /** Whether a setting is being saved */
-    public saving: [boolean, boolean, boolean, boolean] = [
+    public readonly saving = signal<[boolean, boolean, boolean, boolean]>([
         false,
         false,
         false,
         false,
-    ];
+    ]);
     /** Currently displayed encryption level */
-    public encryption_level: EncryptionLevel;
+    public readonly encryption_level = signal<EncryptionLevel>(undefined);
     /** Settings available to display on the UI */
-    public used_settings: PlaceSettings[] = [];
-    /** List of available settings to view */
-    public available_levels = this.levels;
+    public readonly used_settings = signal<PlaceSettings[]>([]);
     /** Index of the active settings tab */
-    public level_index: number;
+    public level_index = signal<number>(0);
     /** List of decorations to apply to the merge settings */
     public merge_decorations: HashMap[] = [];
 
-    /** Current user */
-    public get user(): PlaceUser {
-        return this._users.current();
-    }
-
+    public readonly user = this._users.currentSignal();
     /** Whether user is admin */
-    public get is_admin(): boolean {
-        return !!this.user.sys_admin;
-    }
-
+    public readonly is_admin = computed(() => this.user().sys_admin);
     /** Whether user is support */
-    public get is_support(): boolean {
-        return !!this.user.sys_admin || !!this.user.support;
-    }
+    public readonly is_support = computed(
+        () => this.user().sys_admin || this.user().support,
+    );
 
     /** Currently shown settings */
-    public get shown_option(): {
-        id: EncryptionLevel;
-        name: string;
-        active?: boolean;
-    } {
-        return this.available_levels.find(
-            (i) => i.id === this.encryption_level,
-        );
-    }
+    public readonly shown_option = computed(() => {
+        return this.levels().find(
+            (i) => i.id === this.encryption_level(),
+        ) as any;
+    });
 
     /** Whether the currently active settings have been edited */
-    public get active_edited(): boolean {
+    public readonly active_edited = computed(() => {
         return (
-            this.used_settings &&
-            this.used_settings[this.encryption_level] &&
-            this.form.controls[`settings${this.encryption_level}`].dirty
+            this.used_settings() &&
+            this.used_settings()[this.encryption_level()] &&
+            this.form().controls[`settings${this.encryption_level()}`]?.dirty
         );
-    }
+    });
 
     /** Number of settings blocks edited */
-    public get edited_count(): number {
+    public readonly edited_count = computed(() => {
+        this.changed();
         let count = 0;
-        for (const field in this.form.controls) {
-            if (this.form.controls[field].dirty) {
+        for (const field in this.form().controls) {
+            if (this.form().controls[field].dirty) {
                 count++;
             }
         }
 
         return count;
-    }
+    });
 
     /** Whether a settings group has errors */
-    public get has_errors(): boolean {
-        for (const key in this.form.controls) {
-            if (this.form.controls[key] && this.form.controls[key].errors) {
+    public readonly has_errors = computed(() => {
+        this.changed();
+        for (const key in this.form().controls) {
+            if (this.form().controls[key] && this.form().controls[key].errors) {
                 return true;
             }
         }
         return false;
-    }
+    });
 
-    /** Displayable encryption levels for settings */
-    public get levels(): any[] {
+    public readonly levels = computed(() => {
         const levels: Identity[] = [
             {
                 id: EncryptionLevel.None,
@@ -335,7 +322,7 @@ export class SettingsFormComponent
             {
                 id: EncryptionLevel.Admin,
                 name: i18n('COMMON.SETTINGS_ADMIN'),
-                active: this.is_admin,
+                active: this.is_admin(),
             },
             {
                 id: EncryptionLevel.NeverDisplay,
@@ -350,7 +337,7 @@ export class SettingsFormComponent
             });
         }
         return levels;
-    }
+    });
 
     public type(level: EncryptionLevel) {
         switch (level) {
@@ -377,37 +364,40 @@ export class SettingsFormComponent
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.merge) {
-            this.encryption_level = this.merge()
-                ? EncryptionLevel.NeverDisplay + 1
-                : EncryptionLevel.None;
-            this.available_levels = this.levels;
+            this.encryption_level.set(
+                this.merge()
+                    ? EncryptionLevel.NeverDisplay + 1
+                    : EncryptionLevel.None,
+            );
         }
         if (changes.merge_settings) {
             this.timeout(
                 'upete_merge',
                 () => {
-                    this.used_settings = this.processSettings(
-                        this.settings() || [],
+                    this.used_settings.set(
+                        this._processSettings(this.settings() || []),
                     );
-                    this.initForm();
+                    this._initForm();
                 },
                 50,
             );
         }
         if (changes.settings) {
-            this.used_settings = this.processSettings(this.settings() || []);
-            this.initForm();
+            this.used_settings.set(
+                this._processSettings(this.settings() || []),
+            );
+            this._initForm();
         }
     }
 
     /** Save changes to the given setting level */
     public save(level: EncryptionLevel) {
-        const item = this.used_settings[level];
+        const item = this.used_settings()[level];
         if (item && !this.saving[level]) {
             this.saving[level] = true;
             const details = {
                 ...item,
-                settings_string: this.form.controls[`settings${level}`].value,
+                settings_string: this.form().controls[`settings${level}`].value,
             };
             const settings = this.settings();
             lastValueFrom(
@@ -426,10 +416,10 @@ export class SettingsFormComponent
                             type: this.type(level),
                         }),
                     );
-                    this.used_settings = this.processSettings(
-                        this.settings() || [],
+                    this.used_settings.set(
+                        this._processSettings(this.settings() || []),
                     );
-                    this.initForm();
+                    this._initForm();
                 },
                 (err) => {
                     this.saving[level] = false;
@@ -447,9 +437,7 @@ export class SettingsFormComponent
 
     /** Save all changes to settings */
     public saveAll() {
-        if (this.has_errors) {
-            return;
-        }
+        if (this.has_errors()) return;
         const promises = [];
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
             const settings = this.settings();
@@ -457,7 +445,7 @@ export class SettingsFormComponent
                 this.saving[i] = true;
                 const details = {
                     ...settings[i],
-                    settings_string: this.form.controls[`settings${i}`].value,
+                    settings_string: this.form().controls[`settings${i}`].value,
                 };
                 promises.push(
                     settings[i].id
@@ -474,10 +462,10 @@ export class SettingsFormComponent
                         this.settings()[result.encryption_level] = result;
                     }
                     notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
-                    this.used_settings = this.processSettings(
-                        this.settings() || [],
+                    this.used_settings.set(
+                        this._processSettings(this.settings() || []),
                     );
-                    this.initForm();
+                    this._initForm();
                 },
                 (err) => {
                     for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
@@ -496,52 +484,54 @@ export class SettingsFormComponent
     }
 
     public clearChanges() {
-        if (this.edited_count < 1) {
-            return;
-        }
-        this.used_settings = this.processSettings(this.settings() || []);
-        this.initForm();
+        if (this.edited_count() < 1) return;
+        this.used_settings.set(this._processSettings(this.settings() || []));
+        this._initForm();
     }
 
-    private initForm() {
-        this.form = new UntypedFormGroup({
-            settings0: new UntypedFormControl(
-                this.used_settings[0].settings_string,
-                [validateYAML],
+    private _initForm() {
+        const used = this.used_settings();
+        this.form.set(
+            new UntypedFormGroup({
+                settings0: new UntypedFormControl(used[0].settings_string, [
+                    validateYAML,
+                ]),
+                settings1: new UntypedFormControl(used[1].settings_string, [
+                    validateYAML,
+                ]),
+                settings2: new UntypedFormControl(used[2].settings_string, [
+                    validateYAML,
+                ]),
+                settings3: new UntypedFormControl(used[3].settings_string, [
+                    validateYAML,
+                ]),
+                settings4: new UntypedFormControl(used[4].settings_string, [
+                    validateYAML,
+                ]),
+            }),
+        );
+        this.subscription(
+            'changes',
+            this.form().valueChanges.subscribe(() =>
+                this.changed.set(Date.now()),
             ),
-            settings1: new UntypedFormControl(
-                this.used_settings[1].settings_string,
-                [validateYAML],
-            ),
-            settings2: new UntypedFormControl(
-                this.used_settings[2].settings_string,
-                [validateYAML],
-            ),
-            settings3: new UntypedFormControl(
-                this.used_settings[3].settings_string,
-                [validateYAML],
-            ),
-            settings4: new UntypedFormControl(
-                this.used_settings[4].settings_string,
-                [validateYAML],
-            ),
-        });
+        );
     }
 
-    private processSettings(settings: PlaceSettings[]): PlaceSettings[] {
+    private _processSettings(settings: PlaceSettings[]): PlaceSettings[] {
         const processed_settings = [];
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
-            processed_settings.push(this.processSetting(settings[i]));
+            processed_settings.push(this._processSetting(settings[i]));
         }
         processed_settings.push(
             this.merge()
-                ? this.generateMergedSettings(processed_settings)
+                ? this._generateMergedSettings(processed_settings)
                 : settings[3],
         );
         return processed_settings;
     }
 
-    private processSetting(setting: PlaceSettings): PlaceSettings {
+    private _processSetting(setting: PlaceSettings): PlaceSettings {
         if (
             (setting.encryption_level === EncryptionLevel.Admin &&
                 !this.is_admin) ||
@@ -566,7 +556,7 @@ export class SettingsFormComponent
     }
 
     /** Genereate merged settings from all available settings */
-    private generateMergedSettings(
+    private _generateMergedSettings(
         settings: PlaceSettings[] = [],
     ): PlaceSettings {
         const merge_settings =
@@ -601,7 +591,7 @@ export class SettingsFormComponent
         const settings_string = Object.keys(merged_settings).length
             ? yaml.dump(merged_settings, { strict: true })
             : '';
-        this.merge_decorations = this.decorationForSettings(
+        this.merge_decorations = this._decorationForSettings(
             settings_string,
             merge_settings.concat(settings),
             remote_settings.concat(local_settings),
@@ -614,7 +604,7 @@ export class SettingsFormComponent
         });
     }
 
-    private decorationForSettings(
+    private _decorationForSettings(
         display: string,
         settings: PlaceSettings[],
         setting_maps: HashMap[],
@@ -622,7 +612,7 @@ export class SettingsFormComponent
         const decorations: HashMap = {};
         for (let i = 0; i < settings.length; i++) {
             const type = Math.max(-1, i - (settings.length - 4));
-            this.decorationsForObject(
+            this._decorationsForObject(
                 decorations,
                 setting_maps[i],
                 display,
@@ -633,7 +623,7 @@ export class SettingsFormComponent
         return Object.keys(decorations).map((i) => decorations[i]);
     }
 
-    private decorationsForObject(
+    private _decorationsForObject(
         decorations: HashMap,
         obj: HashMap,
         display: string,
@@ -643,7 +633,7 @@ export class SettingsFormComponent
         level = 0,
     ) {
         for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
+            if (key in obj) {
                 const field = `${prefix}${key}`;
                 decorations[field] = {
                     options: {
@@ -652,7 +642,7 @@ export class SettingsFormComponent
                         }-margin`,
                         inlineClassName: MAPPING_CLASS[type + 1],
                         hoverMessage: {
-                            value: this.generateHoverMessage(type, settings),
+                            value: this._generateHoverMessage(type, settings),
                             isTrusted: true,
                         },
                     },
@@ -663,7 +653,7 @@ export class SettingsFormComponent
                     ),
                 };
                 if (obj[key] instanceof Object) {
-                    this.decorationsForObject(
+                    this._decorationsForObject(
                         decorations,
                         obj[key],
                         display,
@@ -677,7 +667,7 @@ export class SettingsFormComponent
         }
     }
 
-    private generateHoverMessage(type: number, settings: PlaceSettings) {
+    private _generateHoverMessage(type: number, settings: PlaceSettings) {
         if (type === -1) {
             return i18n('COMMON.SETTINGS_INHERITED', {
                 parent: settings.parent_id,

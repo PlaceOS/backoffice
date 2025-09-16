@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlaceResource } from '@placeos/ts-client';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, of } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 
 import {
@@ -421,44 +421,19 @@ export class ActiveItemService extends AsyncHandler {
     private async updateSettings() {
         const item = this.active_item;
         if (item && (item as any).settings) {
-            const settings = await querySettings({ parent_id: item.id })
-                .pipe(map((resp) => resp.data))
-                .toPromise();
-            while (settings.length < 4) {
+            const settings = await lastValueFrom(
+                querySettings({ parent_id: item.id }).pipe(
+                    map((resp) => resp.data),
+                ),
+            );
+            for (const level in EncryptionLevel) {
+                if (isNaN(Number(level))) continue;
                 if (
-                    !settings.find(
-                        (s) => s.encryption_level === EncryptionLevel.None,
-                    )
+                    !settings.find((s) => s.encryption_level === Number(level))
                 ) {
                     settings.push(
                         new PlaceSettings({
-                            encryption_level: EncryptionLevel.None,
-                        }),
-                    );
-                } else if (
-                    !settings.find(
-                        (s) => s.encryption_level === EncryptionLevel.Support,
-                    )
-                ) {
-                    settings.push(
-                        new PlaceSettings({
-                            encryption_level: EncryptionLevel.Support,
-                        }),
-                    );
-                } else if (
-                    !settings.find(
-                        (s) => s.encryption_level === EncryptionLevel.Admin,
-                    )
-                ) {
-                    settings.push(
-                        new PlaceSettings({
-                            encryption_level: EncryptionLevel.Admin,
-                        }),
-                    );
-                } else {
-                    settings.push(
-                        new PlaceSettings({
-                            encryption_level: EncryptionLevel.NeverDisplay,
+                            encryption_level: Number(level),
                         }),
                     );
                 }
@@ -467,6 +442,7 @@ export class ActiveItemService extends AsyncHandler {
             this._active_item.next(
                 new this.actions.itemConstructor({ ...item, settings }),
             );
+            console.log('Active Item:', this._active_item.getValue());
         }
     }
 }

@@ -30,7 +30,7 @@ export class DriverStateService {
     private _last_error = new BehaviorSubject<HashMap>(null);
     private _poll = new BehaviorSubject(0);
 
-    public readonly item = this._state.item;
+    public readonly item = this._state.active_item$;
 
     public readonly loading = this._loading.asObservable();
 

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import {
     PlaceUser,
     PlaceUserQueryOptions,
@@ -26,6 +26,8 @@ type ServiceItem = PlaceUser;
 export class BackofficeUsersService extends AsyncHandler {
     private _settings = inject(SettingsService);
 
+    private _user_signal = signal<PlaceUser>(null);
+
     /** Name for a single user */
     public readonly singular: string = 'user';
     /** Behavior subject with the currently available list of users */
@@ -36,6 +38,9 @@ export class BackofficeUsersService extends AsyncHandler {
     public readonly user = this._user.asObservable();
     /** Active User */
     public readonly current = () => this._user.getValue();
+
+    /** Active User */
+    public readonly currentSignal = () => this._user_signal;
     /** State of loading the user */
     public readonly state = new BehaviorSubject<string>('');
 
@@ -89,10 +94,11 @@ export class BackofficeUsersService extends AsyncHandler {
     public load(): Promise<void> {
         return new Promise((resolve) => {
             this.state.next('loading');
-            currentUser().subscribe(
-                (user) => {
+            currentUser().subscribe({
+                next: (user) => {
                     if (user) {
                         this._user.next(user);
+                        this._user_signal.set(user);
                         Sentry.withScope((scope) =>
                             scope.setUser({ email: user.email }),
                         );
@@ -108,13 +114,13 @@ export class BackofficeUsersService extends AsyncHandler {
                         );
                     }
                 },
-                () =>
+                error: () =>
                     this.timeout(
                         'load',
                         () => this.load().then((_) => resolve()),
                         600,
                     ),
-            );
+            });
         });
     }
 

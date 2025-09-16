@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     listMetadata,
@@ -12,7 +12,13 @@ import {
     queryZones,
     updateZone,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import {
+    BehaviorSubject,
+    combineLatest,
+    lastValueFrom,
+    Observable,
+    of,
+} from 'rxjs';
 import {
     catchError,
     debounceTime,
@@ -42,7 +48,7 @@ export class ZonesStateService {
 
     public readonly loading = this._loading.asObservable();
 
-    public readonly item = this._service.item;
+    public readonly item = this._service.active_item$;
 
     public readonly counts = combineLatest([
         this._service.active_item$,
@@ -54,22 +60,22 @@ export class ZonesStateService {
             if (!(item instanceof PlaceZone)) return {};
             this._loading.next(true);
             const details = await Promise.all([
-                querySystems({ zone_id: item.id, limit: 1 })
-                    .pipe(map((d) => d.total))
-                    .toPromise()
-                    .catch((_) => 0),
-                listZoneTriggers(item.id)
-                    .pipe(map((d) => d.total))
-                    .toPromise()
-                    .catch((_) => 0),
-                listMetadata(item.id)
-                    .pipe(map((d) => d.length))
-                    .toPromise()
-                    .catch((_) => 0),
-                queryZones({ parent_id: item.id, limit: 1 })
-                    .pipe(map((d) => d.total))
-                    .toPromise()
-                    .catch((_) => 0),
+                lastValueFrom(
+                    querySystems({ zone_id: item.id, limit: 1 }).pipe(
+                        map((d) => d.total),
+                    ),
+                ).catch((_) => 0),
+                lastValueFrom(
+                    listZoneTriggers(item.id).pipe(map((d) => d.total)),
+                ).catch((_) => 0),
+                lastValueFrom(
+                    listMetadata(item.id).pipe(map((d) => d.length)),
+                ).catch((_) => 0),
+                lastValueFrom(
+                    queryZones({ parent_id: item.id, limit: 1 }).pipe(
+                        map((d) => d.total),
+                    ),
+                ).catch((_) => 0),
             ]);
             const [systems, triggers, metadata, children] = details;
             this._loading.next(false);
@@ -149,10 +155,12 @@ export class ZonesStateService {
             },
         });
         const details = await Promise.race([
-            ref.componentInstance.event
-                .pipe(first((_) => _.reason === 'action'))
-                .toPromise(),
-            ref.afterClosed().toPromise(),
+            lastValueFrom(
+                ref.componentInstance.event.pipe(
+                    first((_) => _.reason === 'action'),
+                ),
+            ),
+            lastValueFrom(ref.afterClosed()),
         ]);
         if (!details || !details.reason) return ref.close();
         const zone = await this.addTrigger(ref.componentInstance.item);
@@ -177,20 +185,22 @@ export class ZonesStateService {
             this._dialog,
         );
         if (!details || !details.reason) return;
-        const zone = await updateZone(this.active_item.id, {
-            ...this.active_item,
-            triggers: this.active_item.triggers.filter((t) => t !== trigger.id),
-        })
-            .toPromise()
-            .catch((err) => {
-                details.close();
-                notifyError(
-                    `Error removing trigger ${trigger.id} from zone. Error: ${
-                        err.statusText || err.message || err
-                    }`,
-                );
-                throw err;
-            });
+        const zone = await lastValueFrom(
+            updateZone(this.active_item.id, {
+                ...this.active_item,
+                triggers: this.active_item.triggers.filter(
+                    (t) => t !== trigger.id,
+                ),
+            }),
+        ).catch((err) => {
+            details.close();
+            notifyError(
+                `Error removing trigger ${trigger.id} from zone. Error: ${
+                    err.statusText || err.message || err
+                }`,
+            );
+            throw err;
+        });
         details.close();
         notifySuccess(`Successfully removed trigger from zone.`);
         if (zone) this._service.replaceItem(zone);

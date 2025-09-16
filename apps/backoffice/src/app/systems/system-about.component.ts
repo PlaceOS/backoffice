@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { PlaceSystem } from '@placeos/ts-client';
 import { marked } from 'marked';
+import { AsyncHandler } from '../common/async-handler.class';
 import { SystemStateService } from './system-state.service';
 
 @Component({
@@ -14,32 +15,32 @@ import { SystemStateService } from './system-state.service';
                     class="inline-grid w-full gap-2 rounded border border-base-200 p-4"
                     [style.gridTemplateColumns]="'7.5rem auto'"
                 >
-                    @if (item?.support_url) {
+                    @if (item()?.support_url) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.SUPPORT_URL' | translate }}
                         </div>
                         <a
                             class="select-all truncate underline"
-                            [href]="item?.support_url"
+                            [href]="item()?.support_url"
                             target="_blank"
                         >
-                            {{ item?.support_url }}
+                            {{ item()?.support_url }}
                         </a>
                     }
-                    @if (item?.email) {
+                    @if (item()?.email) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.BOOKABLE' | translate }}
                         </div>
                         <div>
                             {{
-                                (item?.bookable
+                                (item()?.bookable
                                     ? 'COMMON.TRUE'
                                     : 'COMMON.FALSE'
                                 ) | translate
                             }}
                         </div>
                     }
-                    @if (item?.signage) {
+                    @if (item()?.signage) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.SIGNAGE' | translate }}
                         </div>
@@ -47,7 +48,7 @@ import { SystemStateService } from './system-state.service';
                             {{ 'COMMON.TRUE' | translate }}
                         </div>
                     }
-                    @if (item?.email) {
+                    @if (item()?.email) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.PUBLIC' | translate }}
                         </div>
@@ -58,46 +59,46 @@ import { SystemStateService } from './system-state.service';
                             }}
                         </div>
                     }
-                    @if (item?.code) {
+                    @if (item()?.code) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.CODE' | translate }}
                         </div>
-                        <div>{{ item?.code }}</div>
+                        <div>{{ item()?.code }}</div>
                     }
-                    @if (item?.email) {
+                    @if (item()?.email) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.EMAIL' | translate }}
                         </div>
                         <a
                             class="select-all truncate underline"
-                            [href]="'mailto:' + item?.email"
+                            [href]="'mailto:' + item()?.email"
                             target="_blank"
-                            >{{ item?.email }}</a
+                            >{{ item()?.email }}</a
                         >
                     }
-                    @if (item?.capacity) {
+                    @if (item()?.capacity) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.CAPACITY' | translate }}
                         </div>
-                        <div>{{ item?.capacity }}</div>
+                        <div>{{ item()?.capacity }}</div>
                     }
-                    @if (item?.map_id) {
+                    @if (item()?.map_id) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.MAP_ID' | translate }}
                         </div>
-                        <div class="value mono">{{ item?.map_id }}</div>
+                        <div class="value mono">{{ item()?.map_id }}</div>
                     }
-                    @if (item?.installed_ui_devices) {
+                    @if (item()?.installed_ui_devices) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.PANEL_COUNT' | translate }}
                         </div>
-                        <div>{{ item?.installed_ui_devices }}</div>
+                        <div>{{ item()?.installed_ui_devices }}</div>
                     }
-                    @if (item?.timezone) {
+                    @if (item()?.timezone) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'COMMON.TIMEZONE' | translate }}
                         </div>
-                        <div>{{ item?.timezone }}</div>
+                        <div>{{ item()?.timezone }}</div>
                     }
                     <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.CREATED_AT' | translate }}
@@ -105,13 +106,14 @@ import { SystemStateService } from './system-state.service';
                     <div class="flex items-center">
                         <span
                             [matTooltip]="
-                                (item.created_at * 1000 | date: 'mediumDate') +
+                                (item().created_at * 1000
+                                    | date: 'mediumDate') +
                                 ', ' +
-                                (item.created_at * 1000 | date: 'shortTime')
+                                (item().created_at * 1000 | date: 'shortTime')
                             "
                             matTooltipPosition="right"
                         >
-                            {{ item.created_at * 1000 | dateFrom }}
+                            {{ item().created_at * 1000 | dateFrom }}
                         </span>
                     </div>
                     <div class="flex items-center text-sm font-medium">
@@ -120,13 +122,14 @@ import { SystemStateService } from './system-state.service';
                     <div class="flex items-center">
                         <span
                             [matTooltip]="
-                                (item.updated_at * 1000 | date: 'mediumDate') +
+                                (item().updated_at * 1000
+                                    | date: 'mediumDate') +
                                 ', ' +
-                                (item.updated_at * 1000 | date: 'shortTime')
+                                (item().updated_at * 1000 | date: 'shortTime')
                             "
                             matTooltipPosition="right"
                         >
-                            {{ item.updated_at * 1000 | dateFrom }}
+                            {{ item().updated_at * 1000 | dateFrom }}
                         </span>
                     </div>
                 </div>
@@ -161,7 +164,7 @@ import { SystemStateService } from './system-state.service';
                 </div>
             </div>
         </section>
-        @if (item?.description) {
+        @if (item()?.description) {
             <hr class="my-4 text-base-300" />
             <div class="w-full rounded border border-base-200">
                 <h3 class="w-full rounded bg-base-200 p-4 text-lg font-medium">
@@ -169,17 +172,17 @@ import { SystemStateService } from './system-state.service';
                 </h3>
                 <div
                     class="markdown w-full overflow-auto p-4 text-sm"
-                    [innerHTML]="description | sanitize"
+                    [innerHTML]="description() | sanitize"
                 ></div>
             </div>
         }
         <hr class="my-4 text-base-300" />
-        @if (item?.settings && other_settings) {
+        @if (item()?.settings && other_settings) {
             <section>
                 <a-settings-form
-                    [id]="item?.id"
+                    [id]="item()?.id"
                     [merge]="true"
-                    [settings]="item?.settings"
+                    [settings]="item()?.settings"
                     [merge_settings]="(other_settings | async) || []"
                 ></a-settings-form>
             </section>
@@ -204,7 +207,7 @@ import { SystemStateService } from './system-state.service';
     ],
     standalone: false,
 })
-export class SystemAboutComponent {
+export class SystemAboutComponent extends AsyncHandler implements OnInit {
     private _service = inject(SystemStateService);
 
     /** List of settings for associated modules, drivers and zones */
@@ -213,12 +216,16 @@ export class SystemAboutComponent {
     public readonly start = () => this._service.startSystem();
     public readonly stop = () => this._service.stopSystem();
 
-    public get item(): PlaceSystem {
-        return this._service.active_item as any;
-    }
-
+    public readonly item = signal<PlaceSystem | undefined>(undefined);
     /** HTML string for rendering the description */
-    public get description(): string {
-        return marked(this.item.description || '', { async: false }) as string;
+    public readonly description = computed(() =>
+        marked(this.item().description || '', { async: false }),
+    );
+
+    public ngOnInit() {
+        this.subscription(
+            'item',
+            this._service.item.subscribe((item) => this.item.set(item as any)),
+        );
     }
 }
