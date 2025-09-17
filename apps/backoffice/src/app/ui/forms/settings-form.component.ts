@@ -55,7 +55,7 @@ type SettingsArray = [
                         [matTooltip]="'COMMON.CLEAR' | translate"
                         (click)="clearChanges()"
                     >
-                        @if (!saving[shown_option.id]) {
+                        @if (!saving()[shown_option.id]) {
                             <icon class="text-2xl">delete_sweep</icon>
                         } @else {
                             <mat-spinner diameter="32"></mat-spinner>
@@ -67,12 +67,12 @@ type SettingsArray = [
                         class="rounded bg-secondary text-secondary-content"
                         [disabled]="
                             !active_edited() ||
-                            (has_errors() && !saving[shown_option.id])
+                            (has_errors() && !saving()[shown_option.id])
                         "
                         [matTooltip]="'COMMON.SAVE' | translate"
                         (click)="save(shown_option.id)"
                     >
-                        @if (!saving[shown_option.id]) {
+                        @if (!saving()[shown_option.id]) {
                             <icon class="text-2xl">save</icon>
                         } @else {
                             <mat-spinner diameter="32"></mat-spinner>
@@ -120,7 +120,7 @@ type SettingsArray = [
                                 "
                                 [formControlName]="'settings' + option.id"
                                 [readonly]="
-                                    !option.active || this.saving[option.id]
+                                    !option.active || this.saving()[option.id]
                                 "
                             ></settings-form-field>
                         </div>
@@ -276,6 +276,7 @@ export class SettingsFormComponent
 
     /** Whether the currently active settings have been edited */
     public readonly active_edited = computed(() => {
+        this.changed();
         return (
             this.used_settings() &&
             this.used_settings()[this.encryption_level()] &&
@@ -393,8 +394,11 @@ export class SettingsFormComponent
     /** Save changes to the given setting level */
     public save(level: EncryptionLevel) {
         const item = this.used_settings()[level];
-        if (item && !this.saving[level]) {
-            this.saving[level] = true;
+        if (item && !this.saving()[level]) {
+            this.saving.update((s) => {
+                s[level] = true;
+                return s;
+            });
             const details = {
                 ...item,
                 settings_string: this.form().controls[`settings${level}`].value,
@@ -406,7 +410,10 @@ export class SettingsFormComponent
                     : addSettings(details),
             ).then(
                 (new_settings: PlaceSettings) => {
-                    this.saving[level] = false;
+                    this.saving.update((s) => {
+                        s[level] = false;
+                        return s;
+                    });
                     this.settings.update((s) => ({
                         ...s,
                         [level]: new_settings,
@@ -422,7 +429,10 @@ export class SettingsFormComponent
                     this._initForm();
                 },
                 (err) => {
-                    this.saving[level] = false;
+                    this.saving.update((s) => {
+                        s[level] = false;
+                        return s;
+                    });
                     notifyError(
                         i18n('COMMON.SETTINGS_SAVE_ERROR', {
                             error: JSON.stringify(
@@ -441,8 +451,11 @@ export class SettingsFormComponent
         const promises = [];
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
             const settings = this.settings();
-            if (settings[i] && !this.saving[i]) {
-                this.saving[i] = true;
+            if (settings[i] && !this.saving()[i]) {
+                this.saving.update((s) => {
+                    s[i] = true;
+                    return s;
+                });
                 const details = {
                     ...settings[i],
                     settings_string: this.form().controls[`settings${i}`].value,
@@ -458,7 +471,10 @@ export class SettingsFormComponent
             Promise.all(promises).then(
                 (results: PlaceSettings[]) => {
                     for (const result of results) {
-                        this.saving[result.encryption_level] = false;
+                        this.saving.update((s) => {
+                            s[result.encryption_level] = false;
+                            return s;
+                        });
                         this.settings()[result.encryption_level] = result;
                     }
                     notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
@@ -469,7 +485,10 @@ export class SettingsFormComponent
                 },
                 (err) => {
                     for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
-                        this.saving[i] = false;
+                        this.saving.update((s) => {
+                            s[i] = false;
+                            return s;
+                        });
                     }
                     notifyError(
                         i18n('COMMON.SETTINGS_SAVE_ERROR', {
