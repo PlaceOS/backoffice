@@ -55,7 +55,7 @@ type SettingsArray = [
                         [matTooltip]="'COMMON.CLEAR' | translate"
                         (click)="clearChanges()"
                     >
-                        @if (!saving()[shown_option.id]) {
+                        @if (!saving()[shown_option().id]) {
                             <icon class="text-2xl">delete_sweep</icon>
                         } @else {
                             <mat-spinner diameter="32"></mat-spinner>
@@ -67,12 +67,12 @@ type SettingsArray = [
                         class="rounded bg-secondary text-secondary-content"
                         [disabled]="
                             !active_edited() ||
-                            (has_errors() && !saving()[shown_option.id])
+                            (has_errors() && !saving()[shown_option().id])
                         "
                         [matTooltip]="'COMMON.SAVE' | translate"
-                        (click)="save(shown_option.id)"
+                        (click)="save(shown_option().id)"
                     >
-                        @if (!saving()[shown_option.id]) {
+                        @if (!saving()[shown_option().id]) {
                             <icon class="text-2xl">save</icon>
                         } @else {
                             <mat-spinner diameter="32"></mat-spinner>
@@ -394,60 +394,61 @@ export class SettingsFormComponent
     /** Save changes to the given setting level */
     public save(level: EncryptionLevel) {
         const item = this.used_settings()[level];
-        if (item && !this.saving()[level]) {
-            this.saving.update((s) => {
-                s[level] = true;
-                return s;
-            });
-            const details = {
-                ...item,
-                settings_string: this.form().controls[`settings${level}`].value,
-            };
-            const settings = this.settings();
-            lastValueFrom(
-                settings[level].id
-                    ? updateSettings(settings[level].id, details)
-                    : addSettings(details),
-            ).then(
-                (new_settings: PlaceSettings) => {
-                    this.saving.update((s) => {
-                        s[level] = false;
-                        return s;
-                    });
-                    this.settings.update((s) => ({
-                        ...s,
-                        [level]: new_settings,
-                    }));
-                    notifySuccess(
-                        i18n('COMMON.SETTINGS_SAVE_SUCCESS', {
-                            type: this.type(level),
-                        }),
-                    );
-                    this.used_settings.set(
-                        this._processSettings(this.settings() || []),
-                    );
-                    this._initForm();
-                },
-                (err) => {
-                    this.saving.update((s) => {
-                        s[level] = false;
-                        return s;
-                    });
-                    notifyError(
-                        i18n('COMMON.SETTINGS_SAVE_ERROR', {
-                            error: JSON.stringify(
-                                err.response || err.message || err,
-                            ),
-                        }),
-                    );
-                },
-            );
-        }
+        console.log('Save:', item, level, this.form().controls);
+        if (!item && this.saving()[level]) return;
+        this.saving.update((s) => {
+            s[level] = true;
+            return s;
+        });
+        const details = {
+            ...item,
+            settings_string: this.form().controls[`settings${level}`].value,
+        };
+        const settings = this.settings();
+        lastValueFrom(
+            settings[level].id
+                ? updateSettings(settings[level].id, details)
+                : addSettings(details),
+        ).then(
+            (new_settings: PlaceSettings) => {
+                this.saving.update((s) => {
+                    s[level] = false;
+                    return s;
+                });
+                this.settings.update((s) => ({
+                    ...s,
+                    [level]: new_settings,
+                }));
+                notifySuccess(
+                    i18n('COMMON.SETTINGS_SAVE_SUCCESS', {
+                        type: this.type(level),
+                    }),
+                );
+                this.used_settings.set(
+                    this._processSettings(this.settings() || []),
+                );
+                this._initForm();
+            },
+            (err) => {
+                this.saving.update((s) => {
+                    s[level] = false;
+                    return s;
+                });
+                notifyError(
+                    i18n('COMMON.SETTINGS_SAVE_ERROR', {
+                        error: JSON.stringify(
+                            err.response || err.message || err,
+                        ),
+                    }),
+                );
+            },
+        );
     }
 
     /** Save all changes to settings */
     public saveAll() {
-        if (this.has_errors()) return;
+        if (this.has_errors())
+            return notifyError('Some of the settings are invalid');
         const promises = [];
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
             const settings = this.settings();
