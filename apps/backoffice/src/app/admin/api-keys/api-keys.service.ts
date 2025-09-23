@@ -30,7 +30,9 @@ import { notifyError, notifySuccess } from '../../common/notifications';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyModalComponent } from './api-key-modal.component';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class APIKeyService {
     private _dialog = inject(MatDialog);
 

@@ -27,7 +27,7 @@ import {
 } from '@placeos/ts-client';
 import { lastValueFrom } from 'rxjs';
 import { VERSION } from '../../environments/version';
-import { SchemaStateService } from '../admin/schema-state.service';
+// import { SchemaStateService } from '../admin/schema-state.service';
 import { ANIMATION_SHOW_CONTRACT_EXPAND } from '../common/angular-animations';
 import { AsyncHandler } from '../common/async-handler.class';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -205,7 +205,7 @@ export class MetadataDisplayComponent
     implements OnChanges
 {
     private _dialog = inject(MatDialog);
-    private _schemas = inject(SchemaStateService);
+    // private _schemas = inject(SchemaStateService);
 
     public readonly item = input<any>(undefined);
     /** List of metadata associated with the zone */
@@ -437,22 +437,22 @@ export class MetadataDisplayComponent
                     () => (this.edited[group.name] = true),
                 ),
             );
-            this.subscription(
-                `${group.name}_schema`,
-                this.form_map()[
-                    group.name
-                ].controls.schema.valueChanges.subscribe((_) => {
-                    let schema = this._schemas.getSchema(_);
-                    if (!schema) {
-                        try {
-                            schema = JSON.parse(_);
-                        } catch (e) {
-                            schema = {};
-                        }
-                    }
-                    this.schema_map[group.name] = schema;
-                }),
-            );
+            // this.subscription(
+            //     `${group.name}_schema`,
+            //     this.form_map()[
+            //         group.name
+            //     ].controls.schema.valueChanges.subscribe((_) => {
+            //         let schema = this._schemas.getSchema(_);
+            //         if (!schema) {
+            //             try {
+            //                 schema = JSON.parse(_);
+            //             } catch (e) {
+            //                 schema = {};
+            //             }
+            //         }
+            //         this.schema_map[group.name] = schema;
+            //     }),
+            // );
         });
     }
 

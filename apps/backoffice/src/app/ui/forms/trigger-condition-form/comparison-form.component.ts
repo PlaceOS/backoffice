@@ -5,7 +5,11 @@ import {
     SimpleChanges,
     input,
 } from '@angular/core';
-import { FormsModule, UntypedFormGroup } from '@angular/forms';
+import {
+    FormsModule,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
 import {
     PlaceModule,
     PlaceSystem,
@@ -15,6 +19,7 @@ import {
     systemModuleState,
 } from '@placeos/ts-client';
 
+import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -202,12 +207,14 @@ import { TranslatePipe } from '../../translate.pipe';
         </ng-template>`,
     styles: [``],
     imports: [
+        CommonModule,
         MatFormFieldModule,
         MatInputModule,
         TranslatePipe,
         FormsModule,
         MatSelectModule,
         MatInputModule,
+        ReactiveFormsModule,
     ],
 })
 export class TriggerConditionComparisonFormComponent

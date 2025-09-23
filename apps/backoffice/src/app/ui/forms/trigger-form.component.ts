@@ -5,6 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { CounterComponent } from '../counter.component';
 import { SettingsToggleComponent } from '../settings-toggle.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'trigger-form',
@@ -127,6 +128,7 @@ import { SettingsToggleComponent } from '../settings-toggle.component';
         CounterComponent,
         SettingsToggleComponent,
         MatInputModule,
+        TranslatePipe,
     ],
 })
 export class TriggerFormComponent {

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, output } from '@angular/core';
 import {
     FormControl,
@@ -422,6 +423,7 @@ export interface StaffTenantModalData {
         `,
     ],
     imports: [
+        CommonModule,
         FullscreenModalShellComponent,
         ObjectListFieldComponent,
         ReactiveFormsModule,

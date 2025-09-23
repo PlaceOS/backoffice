@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
     Component,
     OnChanges,
@@ -5,9 +6,14 @@ import {
     SimpleChanges,
     input,
 } from '@angular/core';
-import { FormsModule, UntypedFormGroup } from '@angular/forms';
+import {
+    FormsModule,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
 import { format, setDay, setMonth } from 'date-fns';
@@ -291,6 +297,7 @@ import { SettingsToggleComponent } from '../../settings-toggle.component';
     `,
     styles: [],
     imports: [
+        CommonModule,
         FormsModule,
         CronInputFieldComponent,
         MatFormFieldModule,
@@ -299,6 +306,8 @@ import { SettingsToggleComponent } from '../../settings-toggle.component';
         TimeFieldComponent,
         MatAutocompleteModule,
         SettingsToggleComponent,
+        MatInputModule,
+        ReactiveFormsModule,
     ],
 })
 export class TriggerConditionTimeFormComponent

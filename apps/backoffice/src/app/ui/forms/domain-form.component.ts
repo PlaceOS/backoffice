@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { notifyWarn } from '../../common/notifications';
 import { isValidDomain } from '../../common/validation';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'domain-form',
@@ -207,7 +208,12 @@ import { isValidDomain } from '../../common/validation';
             }
         `,
     ],
-    imports: [MatFormFieldModule, MatChipsModule, MatInputModule],
+    imports: [
+        MatFormFieldModule,
+        MatChipsModule,
+        MatInputModule,
+        TranslatePipe,
+    ],
 })
 export class DomainFormComponent {
     /** Group of form fields used for creating the system */

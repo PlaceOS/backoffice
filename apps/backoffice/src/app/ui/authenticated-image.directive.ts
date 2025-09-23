@@ -1,6 +1,7 @@
 import {
     Directive,
     ElementRef,
+    OnChanges,
     SimpleChanges,
     inject,
     input,
@@ -13,18 +14,21 @@ const IMAGE_STORE = new Map<string, string>();
 @Directive({
     selector: 'img [auth],video [auth]',
 })
-export class AuthenticatedImageDirective extends AsyncHandler {
+export class AuthenticatedImageDirective
+    extends AsyncHandler
+    implements OnChanges
+{
     private _image_el = inject<ElementRef<HTMLImageElement>>(ElementRef);
 
     public readonly source = input<string>(undefined);
 
     public ngOnChanges(changes: SimpleChanges) {
-        if (changes.source && this.source()) this._loadImage();
+        if (changes.source && this.source()) this._loadImage().catch();
     }
 
     private async _loadImage() {
         if (!this._image_el || !authority()) {
-            return this.timeout('load', () => this._loadImage(), 300);
+            return this.timeout('load', () => this._loadImage().catch(), 300);
         }
         // If not an API call, just load the image
         const source = this.source();

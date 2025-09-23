@@ -5,6 +5,7 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { queryZones } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -365,6 +366,7 @@ import { TranslatePipe } from '../translate.pipe';
         SettingsToggleComponent,
         CounterComponent,
         ItemSearchFieldComponent,
+        MatAutocompleteModule,
     ],
 })
 export class SystemFormComponent extends AsyncHandler {

@@ -4,6 +4,7 @@ import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { queryDomains } from '@placeos/ts-client';
 import { map, shareReplay } from 'rxjs/operators';
 
+import { CommonModule } from '@angular/common';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -327,6 +328,7 @@ import { TranslatePipe } from '../translate.pipe';
     `,
     styles: [``],
     imports: [
+        CommonModule,
         SettingsToggleComponent,
         ReactiveFormsModule,
         TranslatePipe,

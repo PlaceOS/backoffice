@@ -2,6 +2,7 @@ import { Component, input } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import { TranslatePipe } from '../translate.pipe';
 
@@ -124,12 +125,7 @@ import { TranslatePipe } from '../translate.pipe';
                                 >
                                     @for (type of auth_methods; track type) {
                                         <mat-option [value]="type.id">
-                                            {type.name, select,
-                                                Plain {Plain}
-                                                SSL {SSL}
-                                                TLS {TLS}
-                                                other {Other}
-                                            }
+                                            {{ type.name }}
                                         </mat-option>
                                     }
                                 </mat-select>
@@ -239,6 +235,7 @@ import { TranslatePipe } from '../translate.pipe';
     imports: [
         MatFormFieldModule,
         MatInputModule,
+        MatSelectModule,
         ReactiveFormsModule,
         TranslatePipe,
     ],
