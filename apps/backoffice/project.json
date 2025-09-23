@@ -24,6 +24,26 @@
                         "output": "/"
                     },
                     {
+                        "glob": "*.woff2",
+                        "input": "node_modules/material-symbols",
+                        "output": "/assets/"
+                    },
+                    {
+                        "glob": "**/*.woff2",
+                        "input": "node_modules/firacode/distr",
+                        "output": "/assets/firacode"
+                    },
+                    {
+                        "glob": "**/*.woff",
+                        "input": "node_modules/firacode/distr",
+                        "output": "/assets/firacode"
+                    },
+                    {
+                        "glob": "**/*.css",
+                        "input": "node_modules/firacode/distr",
+                        "output": "/assets/firacode"
+                    },
+                    {
                         "glob": "**/*",
                         "input": "node_modules/monaco-editor/min/",
                         "output": "./assets/monaco/min/"
