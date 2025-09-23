@@ -27,7 +27,7 @@ import { PlaceClusterTaskListComponent } from './cluster-task-list.component';
         </div>
         <div class="flex max-h-full flex-wrap overflow-auto">
             @if (cluster_list().length) {
-                @if (!active_cluster) {
+                @if (!active_cluster()) {
                     <div class="px-2">
                         @for (cluster of cluster_list(); track cluster.id) {
                             <div
@@ -56,7 +56,7 @@ import { PlaceClusterTaskListComponent } from './cluster-task-list.component';
                                     btn
                                     matRipple
                                     class="w-full"
-                                    (click)="active_cluster = cluster"
+                                    (click)="active_cluster.set(cluster)"
                                 >
                                     {{
                                         'ADMIN.CLUSTERS_VIEW_PROCESSES'
@@ -68,8 +68,8 @@ import { PlaceClusterTaskListComponent } from './cluster-task-list.component';
                     </div>
                 } @else {
                     <engine-cluster-task-list
-                        [cluster]="active_cluster"
-                        (closed)="active_cluster = null"
+                        [cluster]="active_cluster()"
+                        (closed)="active_cluster.set(null)"
                     ></engine-cluster-task-list>
                 }
             } @else {
@@ -103,15 +103,15 @@ export class PlaceClusterDetailsComponent
     /** Map of clusters to CPU usage history */
     public usage_history: HashMap<HashMap<any[]>> = {};
     /** Active cluster to show details for */
-    public active_cluster: PlaceCluster;
+    public readonly active_cluster = signal<PlaceCluster>(null);
     /** Whether cluster details are being loaded */
-    public loading: boolean;
+    public readonly loading = signal(false);
 
-    public readonly clusters$ = interval(5 * 1000).pipe(
+    public readonly clusters$ = interval(2 * 1000).pipe(
         startWith(0),
-        filter(() => !this.active_cluster && !this.loading),
+        filter(() => !this.active_cluster() && !this.loading()),
         switchMap(() => {
-            this.loading = true;
+            this.loading.set(true);
             return queryClusters({ include_status: false } as any).pipe(
                 catchError((_) => ({ data: [] }) as any),
             );
@@ -142,7 +142,7 @@ export class PlaceClusterDetailsComponent
             });
             this.cluster_nodes.set(node_map);
         }),
-        tap(() => (this.loading = false)),
+        tap(() => this.loading.set(false)),
     );
 
     public ngOnInit(): void {

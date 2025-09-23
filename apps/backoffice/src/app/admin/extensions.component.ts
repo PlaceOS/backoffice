@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,10 +18,10 @@ import {
     ConfirmModalComponent,
     ConfirmModalData,
 } from 'apps/backoffice/src/app/overlays/confirm-modal.component';
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { debounceTime, first, map, shareReplay } from 'rxjs/operators';
-import { nextValueFrom } from '../common/general';
+import { lastValueFrom } from 'rxjs';
+import { first, map } from 'rxjs/operators';
 import { IconComponent } from '../ui/icon.component';
+import { SafePipe } from '../ui/pipes/safe.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
@@ -60,11 +60,10 @@ export interface BackofficeExtension {
                     <mat-form-field appearance="outline" class="h-12">
                         <mat-select
                             name="type"
-                            [ngModel]="domain.getValue()"
-                            (ngModelChange)="setDomain($event)"
+                            [(ngModel)]="domain"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            @for (domain of domain_list; track domain.id) {
+                            @for (domain of domain_list(); track domain.id) {
                                 <mat-option [value]="domain">
                                     {{ domain.name }}
                                 </mat-option>
@@ -85,11 +84,11 @@ export interface BackofficeExtension {
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading"
+                    [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-[56rem] text-sm"
-                    [data]="extensions"
+                    [data]="extensions()"
                     [columns]="[
                         {
                             key: 'type',
@@ -183,65 +182,54 @@ export interface BackofficeExtension {
         MatFormFieldModule,
         MatSelectModule,
         FormsModule,
+        SafePipe,
     ],
 })
 export class PlaceExtensionsComponent implements OnInit {
     private _dialog = inject(MatDialog);
 
+    public readonly changed = signal(0);
     /** Loading state */
-    public loading: string = '';
+    public readonly loading = signal('');
     /** List of available domains */
-    public domain_list: PlaceDomain[];
+    public readonly domain_list = signal<PlaceDomain[]>([]);
+    public readonly domain = signal<PlaceDomain>(null);
 
-    public readonly domain = new BehaviorSubject<PlaceDomain>(null);
-
-    private _change = new BehaviorSubject<number>(0);
-
-    public extensions = combineLatest([this.domain, this._change]).pipe(
-        debounceTime(300),
-        map(([domain]) => {
-            if (!domain) return [];
-            const config = domain.config?.backoffice?.extend || {};
-            const extensions: BackofficeExtension[] = [];
-            for (const type in config) {
-                if (!config[type]) {
-                    continue;
-                }
-                for (const name in config[type]) {
-                    if (!config[type][name]) {
-                        continue;
-                    }
-                    extensions.push({
-                        ...config[type][name],
-                        name,
-                        type,
-                    });
-                }
+    public readonly extensions = computed(() => {
+        if (!this.domain()) return [];
+        const config = this.domain().config?.backoffice?.extend || {};
+        const extensions: BackofficeExtension[] = [];
+        for (const type in config) {
+            if (!config[type]) {
+                continue;
             }
-            extensions.sort(
-                (a, b) =>
-                    a.type.localeCompare(b.type) ||
-                    a.name.localeCompare(b.name),
-            );
-            return extensions;
-        }),
-        shareReplay(1),
-    );
+            for (const name in config[type]) {
+                if (!config[type][name]) continue;
+                extensions.push({
+                    ...config[type][name],
+                    name,
+                    type,
+                });
+            }
+        }
+        extensions.sort(
+            (a, b) =>
+                a.type.localeCompare(b.type) || a.name.localeCompare(b.name),
+        );
+        return extensions;
+    });
 
     public async ngOnInit() {
-        this.loading = 'Loading domains...';
-        this.domain_list = await queryDomains()
-            .pipe(map((r) => r.data))
-            .toPromise();
+        this.loading.set('Loading domains...');
+        const domain_list = await lastValueFrom(
+            queryDomains().pipe(map((r) => r.data)),
+        );
+        this.domain_list.set(domain_list);
         const domain = authority();
-        if (!this.domain_list?.length) return;
-        const match = this.domain_list.find((d) => d.id === domain.id);
-        if (match) this.setDomain(match);
-        this.loading = '';
-    }
-
-    public setDomain(domain: PlaceDomain) {
-        this.domain.next(domain);
+        if (!this.domain_list()?.length) return;
+        const match = this.domain_list().find((d) => d.id === domain.id);
+        if (match) this.domain.set(match);
+        this.loading.set('');
     }
 
     public editExtension(item?: BackofficeExtension) {
@@ -252,7 +240,7 @@ export class PlaceExtensionsComponent implements OnInit {
             .pipe(first((_) => _.reason === 'done'))
             .subscribe(async (event) => {
                 ref.componentInstance.loading = true;
-                let ext_list = (await nextValueFrom(this.extensions)) || [];
+                let ext_list = this.extensions() || [];
                 ext_list = ext_list.filter((i) => i.name !== item?.name);
                 ext_list.push(event.metadata);
                 await this.updateDomain(ext_list);
@@ -276,7 +264,7 @@ export class PlaceExtensionsComponent implements OnInit {
             .pipe(first((_) => _.reason === 'done'))
             .subscribe(async (_) => {
                 ref.componentInstance.loading = 'Removing extension...';
-                let ext_list = await nextValueFrom(this.extensions);
+                let ext_list = this.extensions();
                 ext_list = ext_list.filter((i) => i.name !== item.name);
                 await this.updateDomain(ext_list).catch((e) =>
                     notifyError(`Error removing extension: ${e}`),
@@ -287,7 +275,7 @@ export class PlaceExtensionsComponent implements OnInit {
     }
 
     public async updateDomain(extension_list: BackofficeExtension[]) {
-        const domain = await nextValueFrom(this.domain);
+        const domain = this.domain();
         if (!domain) return;
         const extensions = {};
         for (const ext of extension_list) {
@@ -310,6 +298,6 @@ export class PlaceExtensionsComponent implements OnInit {
             },
         });
         const new_domain = await updateDomain(domain.id, updated).toPromise();
-        this.setDomain(new_domain);
+        this.domain.set(new_domain);
     }
 }

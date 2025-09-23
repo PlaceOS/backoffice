@@ -39,6 +39,7 @@ import {
 } from '../common/notifications';
 import { UploadsService } from '../common/uploads.service';
 import { IconComponent } from '../ui/icon.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 
@@ -356,6 +357,7 @@ export interface UploadInfo {
         MatInputModule,
         MatSelectModule,
         FormsModule,
+        DateFromPipe,
     ],
 })
 export class UploadLibraryComponent extends AsyncHandler implements OnInit {

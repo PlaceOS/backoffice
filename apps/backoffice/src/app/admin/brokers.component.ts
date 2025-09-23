@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import {
@@ -8,8 +8,9 @@ import {
     removeBroker,
     updateBroker,
 } from '@placeos/ts-client';
-import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
+import { CommonModule } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -20,7 +21,7 @@ import {
     notifySuccess,
 } from 'apps/backoffice/src/app/common/notifications';
 import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal.component';
-import { BehaviorSubject } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -48,11 +49,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading"
+                    [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-[64rem] text-sm"
-                    [data]="brokers"
+                    [data]="brokers()"
                     [columns]="[
                         { key: 'name', name: 'COMMON.FIELD_NAME' | translate },
                         {
@@ -191,27 +192,18 @@ import { TranslatePipe } from '../ui/translate.pipe';
         TranslatePipe,
         SimpleTableComponent,
         MatProgressBarModule,
+        CommonModule,
     ],
 })
 export class AdminBrokersComponent extends AsyncHandler implements OnInit {
     private _dialog = inject(MatDialog);
 
-    private _change = new BehaviorSubject<number>(0);
-    public loading = false;
+    public readonly loading = signal(false);
 
-    public readonly brokers = this._change.pipe(
-        debounceTime(300),
-        switchMap(() => {
-            this.loading = true;
-            return queryBrokers();
-        }),
-        map(({ data }) => data),
-        tap(() => (this.loading = false)),
-        shareReplay(1),
-    );
+    public readonly brokers = signal<PlaceMQTTBroker[]>([]);
 
     public ngOnInit() {
-        this._change.next(Date.now());
+        this.loadBrokers();
     }
 
     public newBroker(): void {
@@ -226,7 +218,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
             'modal_events',
             ref.componentInstance.event.subscribe((event) => {
                 if (event.reason !== 'done') return;
-                this._change.next(Date.now());
+                this.loadBrokers();
             }),
         );
     }
@@ -243,7 +235,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
             'modal_events',
             ref.componentInstance.event.subscribe((event) => {
                 if (event.reason !== 'done') return;
-                this._change.next(Date.now());
+                this.loadBrokers();
             }),
         );
     }
@@ -271,7 +263,16 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
                     )}`,
                 );
             notifySuccess(`Successfully deleted broker "${item.name}".`);
-            this._change.next(Date.now());
+            this.loadBrokers();
         }
+    }
+
+    public async loadBrokers() {
+        this.loading.set(true);
+        const brokers = await lastValueFrom(
+            queryBrokers().pipe(map((r) => r.data)),
+        );
+        this.brokers.set(brokers);
+        this.loading.set(false);
     }
 }

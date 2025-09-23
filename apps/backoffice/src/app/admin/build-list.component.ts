@@ -1,18 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { del, get, PlaceEdge } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    map,
-    shareReplay,
-    startWith,
-    switchMap,
-} from 'rxjs/operators';
+import { del, get } from '@placeos/ts-client';
+import { lastValueFrom, Observable } from 'rxjs';
 import { toQueryString } from '../common/api';
 import { openConfirmModal } from '../common/general';
 import { i18n } from '../common/locale.service';
@@ -55,11 +47,11 @@ function cancelBuildJob(id, q = {}) {
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading"
+                    [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-[64rem] text-sm"
-                    [data]="jobs"
+                    [data]="jobs()"
                     [columns]="[
                         {
                             key: 'repo',
@@ -144,46 +136,22 @@ function cancelBuildJob(id, q = {}) {
         MatProgressBarModule,
     ],
 })
-export class PlaceBuildListComponent {
+export class PlaceBuildListComponent implements OnInit {
     private _dialog = inject(MatDialog);
 
-    public loading = '';
+    public readonly loading = signal('');
+    public readonly hide_job = signal('');
+    public readonly last_change = signal<BuildJob>(null);
+    public readonly job_list = signal<BuildJob[]>([]);
+    public readonly jobs = computed(() => {
+        return this.job_list().filter(({ id }) => id !== this.hide_job());
+    });
 
-    private _change = new BehaviorSubject<number>(0);
-    private _hide = new BehaviorSubject<string>('');
-    public last_change = new BehaviorSubject<PlaceEdge>(null);
-
-    public get item() {
-        return this.last_change.getValue();
+    public ngOnInit() {
+        this.loadJobList();
     }
 
-    private _job_list: Observable<PlaceEdge[]> = this._change.pipe(
-        debounceTime(300),
-        switchMap((_) => {
-            this.loading = 'Loading Edges...';
-            return queryBuildJobs();
-        }),
-        catchError((_) => of({})),
-        map((details?: { data: PlaceEdge[] }) => {
-            this.loading = '';
-            return (details?.data || []).sort((a, b) =>
-                a.id?.localeCompare(b.id),
-            );
-        }),
-        startWith([]),
-        shareReplay(1),
-    );
-
-    public readonly jobs = combineLatest([this._job_list, this._hide]).pipe(
-        debounceTime(500),
-        map(([list, hide]) => {
-            if (!hide) return list;
-            const edges = list.filter((_) => _.id !== hide);
-            return edges.sort((a, b) => a.id?.localeCompare(b.id));
-        }),
-    );
-
-    public readonly remove = async (i: BuildJob) => {
+    public async remove(i: BuildJob) {
         const details = await openConfirmModal(
             {
                 title: i18n('ADMIN.BUILD_LIST_REMOVE'),
@@ -197,9 +165,7 @@ export class PlaceBuildListComponent {
         );
         if (!details) return;
         details.loading(i18n('ADMIN.BUILD_LIST_REMOVE_LOADING'));
-        const err = await cancelBuildJob(i.id)
-            .toPromise()
-            .catch((_) => _);
+        const err = await lastValueFrom(cancelBuildJob(i.id)).catch((_) => _);
         details.close();
         if (err)
             return notifyError(
@@ -207,8 +173,19 @@ export class PlaceBuildListComponent {
                     error: err.statusText || err.message || err,
                 }),
             );
-        this.last_change.next(null);
+        this.last_change.set(null);
         notifySuccess(i18n('ADMIN.BUILD_LIST_REMOVE_SUCCESS'));
-        this._hide.next(i.id);
-    };
+        this.hide_job.set(i.id);
+    }
+
+    public async loadJobList() {
+        this.loading.set('Loading build jobs...');
+        const { data }: any = await lastValueFrom(queryBuildJobs()).catch(
+            (_) => ({ data: [] }),
+        );
+        this.job_list.set(
+            (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
+        );
+        this.loading.set('');
+    }
 }

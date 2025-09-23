@@ -1,5 +1,6 @@
 import {
     Component,
+    computed,
     inject,
     input,
     OnInit,
@@ -18,8 +19,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
@@ -27,22 +28,7 @@ import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
 } from 'apps/backoffice/src/app/overlays/confirm-modal.component';
-import {
-    BehaviorSubject,
-    combineLatest,
-    lastValueFrom,
-    Observable,
-    of,
-} from 'rxjs';
-import {
-    catchError,
-    filter,
-    map,
-    shareReplay,
-    startWith,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
 import { i18n } from '../../common/locale.service';
 import { IconComponent } from '../../ui/icon.component';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
@@ -74,8 +60,7 @@ const task_details = {};
                 </div>
                 <input
                     matInput
-                    [ngModel]="filter.getValue()"
-                    (ngModelChange)="filter.next($event)"
+                    [(ngModel)]="filter"
                     [placeholder]="
                         'ADMIN.CLUSTERS_SEARCH_PROCESSES' | translate
                     "
@@ -89,7 +74,7 @@ const task_details = {};
         />
         <simple-table
             class="block min-w-[46rem] text-sm"
-            [data]="filtered_list | async"
+            [data]="filtered_list()"
             [columns]="[
                 {
                     key: 'id',
@@ -178,7 +163,7 @@ const task_details = {};
         TranslatePipe,
         MatProgressBarModule,
         MatFormFieldModule,
-        MatSelectModule,
+        MatInputModule,
         FormsModule,
     ],
 })
@@ -187,18 +172,23 @@ export class PlaceClusterTaskListComponent
     implements OnInit
 {
     private _dialog = inject(MatDialog);
-    private _poll = new BehaviorSubject(0);
-
     /** Cluster to display tasks details for */
     public readonly cluster = input<PlaceCluster>(undefined);
     /** Emitter for close events */
     public readonly closed = output<void>();
     /** Whether the task list is updating */
-    public loading = signal(false);
+    public readonly loading = signal(false);
     /** ID of the process being killed */
-    public killing: string;
+    public readonly killing = signal('');
 
-    public filter = new BehaviorSubject('');
+    public readonly process_list = signal([]);
+    public readonly filter = signal('');
+
+    public readonly filtered_list = computed(() =>
+        this.process_list().filter((item) =>
+            item.id.toLowerCase().includes(this.filter().toLowerCase()),
+        ),
+    );
     public column_list: string[] = [
         'id',
         'cpu_usage',
@@ -221,42 +211,9 @@ export class PlaceClusterTaskListComponent
         return task_details[id];
     }
 
-    public readonly process_list: Observable<PlaceProcess[]> = this._poll.pipe(
-        filter(() => !this.loading()),
-        switchMap(() => {
-            this.loading.set(true);
-            return queryProcesses(this.cluster().id, {
-                include_status: true,
-            } as any).pipe(
-                catchError((_) => {
-                    console.error(_);
-                    return of([]);
-                }),
-            );
-        }),
-        map((l) =>
-            (l || []).sort((a, b) => b.module_instances - a.module_instances),
-        ),
-        tap(() => this.loading.set(false)),
-        shareReplay(1),
-    );
-
-    public readonly filtered_list = combineLatest([
-        this.filter,
-        this.process_list,
-    ]).pipe(
-        map(([filter, processes]) =>
-            processes.filter((_) =>
-                _.id.toLowerCase().includes(filter.toLowerCase()),
-            ),
-        ),
-        startWith([]),
-        shareReplay(1),
-    );
-
     public ngOnInit() {
-        this._poll.next(Date.now());
-        this.interval('poll', () => this._poll.next(Date.now()), 15 * 1000);
+        this.interval('poll', () => this.updateProcessList(), 15 * 1000);
+        this.updateProcessList();
     }
 
     public confirmKillProcess(process: PlaceProcess): void {
@@ -274,18 +231,18 @@ export class PlaceClusterTaskListComponent
             'confirm_kill',
             ref.componentInstance.event.subscribe((event) => {
                 if (event.reason === 'done') {
-                    this.killing = process.id;
+                    this.killing.set(process.id);
                     ref.componentInstance.loading = i18n(
                         'ADMIN.CLUSTER_PROCESS_KILL_LOADING',
                     );
                     this.killProcess(process).then(
                         () => {
-                            this.killing = null;
+                            this.killing.set(null);
                             ref.close();
                         },
                         (err) => {
                             ref.componentInstance.loading = null;
-                            this.killing = null;
+                            this.killing.set(null);
                             notifyError(
                                 i18n('ADMIN.CLUSTER_PROCESS_KILL_ERROR', {
                                     error: JSON.stringify(
@@ -303,5 +260,18 @@ export class PlaceClusterTaskListComponent
 
     public killProcess(process: PlaceProcess) {
         return lastValueFrom(terminateProcess(this.cluster().id, process.id));
+    }
+
+    public async updateProcessList() {
+        this.loading.set(true);
+        const list = await lastValueFrom(
+            queryProcesses(this.cluster().id, {
+                include_status: true,
+            } as any),
+        ).catch((_) => []);
+        this.process_list.set(
+            list.sort((a, b) => b.module_instances - a.module_instances),
+        );
+        this.loading.set(false);
     }
 }

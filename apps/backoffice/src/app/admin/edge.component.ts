@@ -1,6 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -11,15 +11,7 @@ import {
     removeEdge,
     retrieveEdgeToken,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    map,
-    shareReplay,
-    startWith,
-    switchMap,
-} from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
 import { copyToClipboard, openConfirmModal } from '../common/general';
 import {
     notifyError,
@@ -35,7 +27,8 @@ import { EdgeModalComponent } from './edge-modal.component';
 @Component({
     selector: '[admin-edge]',
     template: `
-        @if ((last_change | async)?.x_api_key) {
+        @if (last_change()?.x_api_key) {
+            @let item = last_change();
             <div
                 (click)="copyKey(item.x_api_key)"
                 matRipple
@@ -67,11 +60,11 @@ import { EdgeModalComponent } from './edge-modal.component';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading"
+                    [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-[64rem] text-sm"
-                    [data]="edges"
+                    [data]="edges()"
                     [columns]="[
                         {
                             key: 'online',
@@ -185,62 +178,42 @@ import { EdgeModalComponent } from './edge-modal.component';
         MatProgressBarModule,
     ],
 })
-export class PlaceEdgeComponent {
+export class PlaceEdgeComponent implements OnInit {
     private _dialog = inject(MatDialog);
     private _clipboard = inject(Clipboard);
 
-    public loading: string = '';
+    public readonly loading = signal('');
+    public readonly hide_edge = signal('');
+    public readonly edge_list = signal<PlaceEdge[]>([]);
+    public readonly edges = computed(() => {
+        return this.edge_list().filter(({ id }) => id !== this.hide_edge());
+    });
+    public readonly last_change = signal<PlaceEdge>(null);
 
-    private _change = new BehaviorSubject<number>(0);
-    private _hide = new BehaviorSubject<string>('');
-    public last_change = new BehaviorSubject<PlaceEdge>(null);
-
-    public get item() {
-        return this.last_change.getValue();
+    public ngOnInit() {
+        const edge_data = sessionStorage.getItem('BACKOFFICE.last_edge');
+        try {
+            this.last_change.set(JSON.parse(edge_data) || null);
+        } catch {}
+        this.loadEdges();
     }
 
-    private _edge_list: Observable<PlaceEdge[]> = this._change.pipe(
-        debounceTime(300),
-        switchMap((_) => {
-            this.loading = 'Loading Edges...';
-            return queryEdges();
-        }),
-        catchError((_) => of({})),
-        map((details?: { data: PlaceEdge[] }) => {
-            this.loading = '';
-            return (details?.data || []).sort((a, b) =>
-                a.id?.localeCompare(b.id),
-            );
-        }),
-        startWith([]),
-        shareReplay(1),
-    );
-
-    public readonly edges = combineLatest([this._edge_list, this._hide]).pipe(
-        debounceTime(500),
-        map(([list, hide]) => {
-            if (!hide) return list;
-            const edges = list.filter((_) => _.id !== hide);
-            return edges.sort((a, b) => a.id?.localeCompare(b.id));
-        }),
-    );
-
-    public readonly token = async (edge: PlaceEdge) => {
-        const details = await retrieveEdgeToken(edge.id).toPromise();
+    public async token(edge: PlaceEdge) {
+        const details = await lastValueFrom(retrieveEdgeToken(edge.id));
         copyToClipboard(details.token);
         notifyInfo(`Token copied to clickboard.`);
-    };
+    }
 
-    public readonly edit = async (edge?: PlaceEdge) => {
+    public async edit(edge?: PlaceEdge) {
         const ref = this._dialog.open(EdgeModalComponent, { data: { edge } });
         ref.afterClosed().subscribe((_) => {
             sessionStorage.setItem('BACKOFFICE.last_edge', JSON.stringify(_));
-            this.last_change.next(_);
-            this._change.next(Date.now());
+            this.last_change.set(_);
+            this.loadEdges();
         });
-    };
+    }
 
-    public readonly remove = async (i: PlaceEdge) => {
+    public async remove(i: PlaceEdge) {
         const details = await openConfirmModal(
             {
                 title: 'Remove edge?',
@@ -251,9 +224,7 @@ export class PlaceEdgeComponent {
         );
         if (!details) return;
         details.loading('Removing edge...');
-        const err = await removeEdge(i.id)
-            .toPromise()
-            .catch((_) => _);
+        const err = await lastValueFrom(removeEdge(i.id)).catch((_) => _);
         details.close();
         if (err)
             return notifyError(
@@ -262,21 +233,23 @@ export class PlaceEdgeComponent {
                 }`,
             );
         sessionStorage.removeItem('BACKOFFICE.last_edge');
-        this.last_change.next(null);
+        this.last_change.set(null);
         notifySuccess('Successfully removed Edge.');
-        this._hide.next(i.id);
-    };
-
-    public ngOnInit() {
-        const edge_data = sessionStorage.getItem('BACKOFFICE.last_edge');
-        try {
-            this.last_change.next(JSON.parse(edge_data) || null);
-        } catch {}
+        this.hide_edge.set(i.id);
     }
 
     public copyKey(key: string) {
         if (key && this._clipboard.copy(key)) {
             notifySuccess('Edge API Key copied to clipboard.');
         }
+    }
+
+    public async loadEdges() {
+        this.loading.set('Loading edge node list...');
+        const { data } = await lastValueFrom(queryEdges());
+        this.edge_list.set(
+            (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
+        );
+        this.loading.set('');
     }
 }

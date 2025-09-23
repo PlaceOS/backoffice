@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -8,18 +8,12 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, queryDomains } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    map,
-    shareReplay,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { openConfirmModal } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { IconComponent } from '../../ui/icon.component';
+import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { StorageProviderModalComponent } from './storage-provider-modal.component';
@@ -37,17 +31,14 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                     <mat-form-field class="h-12" appearance="outline">
                         <mat-select
                             name="type"
-                            [ngModel]="domain | async"
-                            (ngModelChange)="domain.next($event)"
+                            [(ngModel)]="domain"
+                            (ngModelChange)="loadStorage()"
                             [placeholder]="'ADMIN.ALL_DOMAINS' | translate"
                         >
                             <mat-option [value]="{}">{{
                                 'ADMIN.ALL_DOMAINS' | translate
                             }}</mat-option>
-                            @for (
-                                domain of domain_list | async;
-                                track domain.id
-                            ) {
+                            @for (domain of domain_list(); track domain.id) {
                                 <mat-option [value]="domain">
                                     {{ domain.name }}
                                 </mat-option>
@@ -63,11 +54,11 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading"
+                    [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-[44rem] text-sm"
-                    [data]="storage_list"
+                    [data]="storage_list()"
                     [columns]="[
                         {
                             key: 'name',
@@ -110,9 +101,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                         'ADMIN.STORAGE_LIST_EMPTY'
                             | translate
                                 : {
-                                      item: domain.getValue()
-                                          ? 'selected'
-                                          : 'any',
+                                      item: domain() ? 'selected' : 'any',
                                   }
                     "
                 ></simple-table>
@@ -175,6 +164,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
     `,
     styles: [``],
     imports: [
+        CommonModule,
         IconComponent,
         MatRippleModule,
         TranslatePipe,
@@ -183,56 +173,41 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
         MatProgressBarModule,
         MatFormFieldModule,
         MatSelectModule,
-        CommonModule,
         FormsModule,
+        DateFromPipe,
     ],
 })
-export class StorageComponent {
+export class StorageComponent implements OnInit {
     private _dialog = inject(MatDialog);
 
-    /** Loading state */
-    public loading: string = '';
-    /** List of available domains */
-    public domain_list = queryDomains().pipe(
-        map((_) => _.data),
-        catchError((_) => []),
-        shareReplay(1),
-    );
-    /** Currently active domain */
-    public readonly domain = new BehaviorSubject<PlaceDomain>(null);
+    public readonly loading = signal('');
+    public readonly store_list = signal<PlaceStorage[]>([]);
+    public readonly domain_list = signal<PlaceDomain[]>([]);
+    public readonly domain = signal<PlaceDomain>(null);
 
-    public readonly storage_data = this.domain.pipe(
-        debounceTime(300),
-        switchMap((_) => {
-            this.loading = i18n('ADMIN.STORAGE_LOADING');
-            return queryStorage({ auth_id: _?.id });
-        }),
-        map(({ data }) => data),
-        catchError((_) => []),
-        tap((_) => (this.loading = '')),
-        shareReplay(1),
-    );
+    public readonly storage_list = computed(() => {
+        const stores = this.store_list();
+        return stores.map((store) => ({
+            ...store,
+            domain: this.domain_list().find((d) => d.id === store.authority_id),
+        }));
+    });
 
-    public readonly storage_list = combineLatest([
-        this.domain_list,
-        this.storage_data,
-    ]).pipe(
-        map(([domains, storage]) => {
-            if (!domains || !storage) return [];
-            return storage.map((_) => ({
-                ..._,
-                domain: domains.find((d) => d.id === _.authority_id),
-            }));
-        }),
-    );
+    public async ngOnInit() {
+        this.loading.set('Loading domains...');
+        const domain_list = await lastValueFrom(
+            queryDomains().pipe(map((r) => r.data)),
+        );
+        this.domain_list.set(domain_list);
+        this.loadStorage();
+        this.loading.set('');
+    }
 
     public edit(item?: PlaceStorage) {
         const ref = this._dialog.open(StorageProviderModalComponent, {
-            data: { item, domain: this.domain.getValue()?.id },
+            data: { item, domain: this.domain()?.id },
         });
-        ref.afterClosed().subscribe(() =>
-            this.domain.next(this.domain.getValue()),
-        );
+        ref.afterClosed().subscribe(() => this.loadStorage());
     }
 
     public async remove(item: PlaceStorage) {
@@ -250,7 +225,16 @@ export class StorageComponent {
         if (resp.reason !== 'done') return;
         resp.loading(i18n('ADMIN.STORAGE_REMOVE_LOADING'));
         await removeStorage(item.id).toPromise();
-        this.domain.next(this.domain.getValue());
         resp.close();
+        this.loadStorage();
+    }
+
+    public async loadStorage() {
+        this.loading.set('Loading storage...');
+        const { data } = await lastValueFrom(
+            queryStorage({ auth_id: this.domain()?.id }),
+        ).catch(() => ({ data: [] }));
+        this.store_list.set(data);
+        this.loading.set('');
     }
 }

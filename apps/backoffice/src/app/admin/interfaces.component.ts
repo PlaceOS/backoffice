@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { listInterfaceRepositories } from '@placeos/ts-client';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { BehaviorSubject } from 'rxjs';
-import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -17,11 +16,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
-                [class.opacity-0]="!loading"
+                [class.opacity-0]="!loading()"
             />
             <simple-table
                 class="block min-w-[36rem] text-sm"
-                [data]="interfaces"
+                [data]="interfaces()"
                 [columns]="[
                     { key: 'id', name: 'REPOS.SINGULAR' | translate },
                     {
@@ -61,29 +60,22 @@ import { TranslatePipe } from '../ui/translate.pipe';
 })
 export class AdminInterfacesComponent implements OnInit {
     /** List of interfaces */
-
-    private _change = new BehaviorSubject<number>(0);
-    public loading = false;
-
-    public interfaces = this._change.pipe(
-        debounceTime(300),
-        switchMap(() => {
-            this.loading = true;
-            return listInterfaceRepositories();
-        }),
-        map((mapping) => {
-            const list = Object.keys(mapping).map((id) => ({
-                id,
-                name: mapping[id],
-            }));
-            list.sort((a, b) => `${a.id}`?.localeCompare(`${b.id}`));
-            return list;
-        }),
-        tap(() => (this.loading = false)),
-        shareReplay(1),
-    );
+    public readonly loading = signal(false);
+    public readonly interfaces = signal<{ id: string; name: string }[]>([]);
 
     public ngOnInit() {
-        this._change.next(Date.now());
+        this.loadInterfaces();
+    }
+
+    public async loadInterfaces() {
+        this.loading.set(true);
+        const mapping = await lastValueFrom(listInterfaceRepositories());
+        const list = Object.keys(mapping).map((id) => ({
+            id,
+            name: mapping[id],
+        }));
+        list.sort((a, b) => `${a.id}`?.localeCompare(`${b.id}`));
+        this.interfaces.set(list);
+        this.loading.set(false);
     }
 }

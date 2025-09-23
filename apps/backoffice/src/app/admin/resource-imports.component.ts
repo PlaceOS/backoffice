@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,16 +16,9 @@ import {
     queryDomains,
     querySystemsWithEmails,
 } from '@placeos/ts-client';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import {
-    catchError,
-    filter,
-    map,
-    shareReplay,
-    startWith,
-    switchMap,
-} from 'rxjs/operators';
-import { nextValueFrom, openConfirmModal } from '../common/general';
+import { lastValueFrom, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { openConfirmModal } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifySuccess, notifyWarn } from '../common/notifications';
 import { IconComponent } from '../ui/icon.component';
@@ -61,12 +54,12 @@ export interface ExternalResource {
                     >
                         <mat-select
                             name="type"
-                            [ngModel]="domain | async"
-                            (ngModelChange)="domain.next($event)"
+                            [(ngModel)]="domain"
+                            (ngModelChange)="loadResourceList()"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
                             <mat-option
-                                *ngFor="let domain of domain_list | async"
+                                *ngFor="let domain of domain_list()"
                                 [value]="domain"
                             >
                                 {{ domain.name }}
@@ -77,10 +70,7 @@ export interface ExternalResource {
                         btn
                         matRipple
                         class="w-40"
-                        [disabled]="
-                            !(domain | async) ||
-                            !(resource_list | async)?.length
-                        "
+                        [disabled]="!domain() || !resource_list()?.length"
                         (click)="importMissingResources()"
                     >
                         {{ 'ADMIN.RESOURCE_IMPORTS_ALL' | translate }}
@@ -91,11 +81,11 @@ export interface ExternalResource {
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
-                    [class.opacity-0]="!(loading | async)"
+                    [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
                     class="mb-4 block min-w-[48rem] text-sm"
-                    [data]="resource_list"
+                    [data]="resource_list()"
                     [columns]="[
                         {
                             key: 'display_name',
@@ -203,74 +193,27 @@ export interface ExternalResource {
 export class ResourceImportsComponent {
     private _dialog = inject(MatDialog);
 
-    public readonly loading = new BehaviorSubject<boolean>(false);
-    public readonly domain = new BehaviorSubject<PlaceDomain>(null);
-
-    public readonly domain_list = queryDomains({ limit: 100 }).pipe(
-        map((r) => r.data),
-        shareReplay(1),
-    );
-
-    public readonly resource_list: Observable<ExternalResource[]> =
-        this.domain.pipe(
-            filter((_) => !!_),
-            switchMap((domain) =>
-                query<any>({
-                    path: 'place',
-                    endpoint: '/api/staff/v1',
-                    query_params: {
-                        limit: 1000,
-                        authority_id: domain.id,
-                    },
-                }).pipe(catchError((_) => of({ data: [] }))),
-            ),
-            switchMap(async (r) => {
-                const list = r.data.map((_) => ({
-                    id: _.id || '',
-                    booking_type: _.bookingType,
-                    capacity: _.capacity,
-                    display_name: _.displayName || '',
-                    email: _.emailAddress || '',
-                    is_accessible: _.isWheelChairAccessible ?? false,
-                    nickname: _.nickname || '',
-                    phone: _.phone || '',
-                    tags: _.tags || [],
-                    imported: false,
-                    system_id: '',
-                }));
-                const { data } = await querySystemsWithEmails({
-                    in: list.map((_) => _.email).join(','),
-                }).toPromise();
-                for (const resource of list) {
-                    const system = data.find(
-                        (_) =>
-                            _.email.toLowerCase() ===
-                            resource.email.toLowerCase(),
-                    );
-                    if (system) {
-                        resource.imported = true;
-                        resource.system_id = system.id;
-                    }
-                }
-                return list;
-            }),
-            startWith([]),
-            shareReplay(1),
-        );
+    public readonly loading = signal(false);
+    public readonly domain = signal<PlaceDomain>(null);
+    public readonly domain_list = signal<PlaceDomain[]>([]);
+    public readonly resource_list = signal<ExternalResource[]>([]);
 
     public async ngOnInit() {
         const domain = authority();
-        const domain_list = await nextValueFrom(this.domain_list);
+        const domain_list = await lastValueFrom(
+            queryDomains({ limit: 100 }).pipe(map((_) => _.data)),
+        );
         if (!domain_list?.length) return;
+        this.domain_list.set(domain_list);
         const match = domain_list.find((d) => d.id === domain.id);
-        if (match) this.domain.next(match);
-        this.resource_list.subscribe((_) => console.log(_));
+        if (match) this.domain.set(match);
+        this.loadResourceList();
     }
 
     public async importMissingResources() {
-        const domain = this.domain.getValue();
+        const domain = this.domain();
         if (!domain) return;
-        const list = await nextValueFrom(this.resource_list);
+        const list = this.resource_list();
         const missing = list.filter((_) => !_.imported);
         if (!missing.length) {
             return notifyWarn(i18n('ADMIN.RESOURCE_IMPORTS_ALL_WARNING'));
@@ -303,18 +246,17 @@ export class ResourceImportsComponent {
         );
     }
 
-    public async importResource(
-        resource: ExternalResource,
-        notify: boolean = true,
-    ) {
-        const domain = this.domain.getValue();
+    public async importResource(resource: ExternalResource, notify = true) {
+        const domain = this.domain();
         if (!domain) return;
-        const system = await addSystem({
-            name: `[${domain.name}] ${resource.display_name}`,
-            email: resource.email,
-            display_name: resource.display_name,
-            capacity: resource.capacity,
-        }).toPromise();
+        const system = await lastValueFrom(
+            addSystem({
+                name: `[${domain.name}] ${resource.display_name}`,
+                email: resource.email,
+                display_name: resource.display_name,
+                capacity: resource.capacity,
+            }),
+        );
         if (!system) return;
         resource.system_id = system.id;
         resource.imported = true;
@@ -324,5 +266,50 @@ export class ResourceImportsComponent {
                 name: resource.display_name,
             }),
         );
+    }
+
+    public async loadResourceList() {
+        this.resource_list.set([]);
+        if (!this.domain()) return;
+        this.loading.set(true);
+        const result = await lastValueFrom(
+            query<any>({
+                path: 'place',
+                endpoint: '/api/staff/v1',
+                query_params: {
+                    limit: 1000,
+                    authority_id: this.domain().id,
+                },
+            }).pipe(catchError((_) => of({ data: [] }))),
+        );
+        const list = result.data.map((_) => ({
+            id: _.id || '',
+            booking_type: _.bookingType,
+            capacity: _.capacity,
+            display_name: _.displayName || '',
+            email: _.emailAddress || '',
+            is_accessible: _.isWheelChairAccessible ?? false,
+            nickname: _.nickname || '',
+            phone: _.phone || '',
+            tags: _.tags || [],
+            imported: false,
+            system_id: '',
+        }));
+        const { data } = await lastValueFrom(
+            querySystemsWithEmails({
+                in: list.map((_) => _.email).join(','),
+            }),
+        );
+        for (const resource of list) {
+            const system = data.find(
+                (_) => _.email.toLowerCase() === resource.email.toLowerCase(),
+            );
+            if (system) {
+                resource.imported = true;
+                resource.system_id = system.id;
+            }
+        }
+        this.resource_list.set(list);
+        this.loading.set(false);
     }
 }
