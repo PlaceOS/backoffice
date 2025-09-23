@@ -38,6 +38,7 @@ import {
 import { AsyncHandler } from '../../common/async-handler.class';
 import { i18n } from '../../common/locale.service';
 import { isValidUrl } from '../../common/validation';
+import { IconComponent } from '../icon.component';
 import { DateFromPipe } from '../pipes/date-from.pipe';
 import { TranslatePipe } from '../translate.pipe';
 
@@ -79,7 +80,7 @@ import { TranslatePipe } from '../translate.pipe';
                     ) {
                         <div class="field">
                             <label for="type">
-                                {{ 'REPOS.FOLDER_NAME' | translate }}
+                                {{ 'REPOS.TYPE' | translate }}
                             </label>
                             <mat-form-field appearance="outline">
                                 <mat-select
@@ -225,111 +226,81 @@ import { TranslatePipe } from '../translate.pipe';
                         </mat-form-field>
                     </div>
                 }
-                <div class="field commit">
-                    <label for="commit">
-                        {{ 'REPOS.COMMIT' | translate }}</label
-                    >
-                    <mat-form-field appearance="outline">
-                        <mat-select
-                            formControlName="commit_hash"
-                            placeholder="Select commit"
-                            [disabled]="!(commit_list | async)?.length"
+                @if (is_interface) {
+                    <div class="field commit">
+                        <label for="commit">
+                            {{ 'REPOS.COMMIT' | translate }}</label
                         >
-                            <mat-select-trigger>
-                                <div class="flex items-center space-x-4">
-                                    <div class="flex-1 truncate">
-                                        {{
-                                            base_commit?.subject ||
-                                                'Latest commit'
-                                        }}
-                                    </div>
-                                    <div
-                                        class="!mr-4 rounded bg-base-200 px-1.5 font-mono text-[0.625rem]"
-                                    >
-                                        {{
-                                            form().value.commit_hash || 'HEAD'
-                                                | slice: 0 : 8
-                                        }}
-                                    </div>
-                                </div>
-                            </mat-select-trigger>
-                            @for (commit of commit_list | async; track commit) {
-                                <mat-option [value]="commit.hash">
-                                    <div
-                                        class="flex w-[calc(100%-2.20rem)] flex-1 items-center space-x-2"
-                                        [class.!w-full]="
-                                            form().value.commit_hash ===
-                                            commit.hash
-                                        "
-                                        (click)="base_commit = commit"
-                                    >
-                                        <div
-                                            class="flex w-1/2 flex-1 flex-col truncate leading-tight"
-                                        >
-                                            <div class="truncate">
-                                                {{ commit.subject }}
-                                            </div>
-                                            <div
-                                                class="truncate font-mono text-[0.625rem] text-base-content opacity-30"
-                                            >
-                                                {{
-                                                    commit.date | date: 'medium'
-                                                }}
-                                            </div>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                formControlName="commit_hash"
+                                placeholder="Select commit"
+                                [disabled]="!(commit_list | async)?.length"
+                            >
+                                <mat-select-trigger>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 truncate">
+                                            {{
+                                                base_commit?.subject ||
+                                                    'Latest commit'
+                                            }}
                                         </div>
-                                        @if (commit.author) {
+                                        <div
+                                            class="!mr-4 rounded bg-base-200 px-1.5 font-mono text-[0.625rem]"
+                                        >
+                                            {{
+                                                form().value.commit_hash ||
+                                                    'HEAD' | slice: 0 : 8
+                                            }}
+                                        </div>
+                                    </div>
+                                </mat-select-trigger>
+                                @for (
+                                    commit of commit_list | async;
+                                    track commit
+                                ) {
+                                    <mat-option [value]="commit.hash">
+                                        <div
+                                            class="flex w-[calc(100%-2.20rem)] flex-1 items-center space-x-2"
+                                            [class.!w-full]="
+                                                form().value.commit_hash ===
+                                                commit.hash
+                                            "
+                                            (click)="base_commit = commit"
+                                        >
+                                            <div
+                                                class="flex w-1/2 flex-1 flex-col truncate leading-tight"
+                                            >
+                                                <div class="truncate">
+                                                    {{ commit.subject }}
+                                                </div>
+                                                <div
+                                                    class="truncate font-mono text-[0.625rem] text-base-content opacity-30"
+                                                >
+                                                    {{
+                                                        commit.date
+                                                            | date: 'medium'
+                                                    }}
+                                                </div>
+                                            </div>
+                                            @if (commit.author) {
+                                                <code
+                                                    class="rounded bg-base-200 p-1 text-xs"
+                                                    >{{ commit.author }}</code
+                                                >
+                                            }
                                             <code
                                                 class="rounded bg-base-200 p-1 text-xs"
-                                                >{{ commit.author }}</code
+                                                >{{
+                                                    commit.hash | slice: 0 : 8
+                                                }}</code
                                             >
-                                        }
-                                        <code
-                                            class="rounded bg-base-200 p-1 text-xs"
-                                            >{{
-                                                commit.hash | slice: 0 : 8
-                                            }}</code
-                                        >
-                                    </div>
-                                </mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
-                    <!-- <mat-form-field appearance="outline">
-                <mat-select
-                  name="type"
-                  formControlName="commit_hash"
-                  placeholder="Select commit"
-                  [disabled]="!(commit_list | async)?.length"
-                  >
-                  <mat-option
-                    *ngFor="let commit of commit_list | async"
-                    [value]="commit.hash"
-                    >
-                    <div class="flex items-center space-x-2">
-                      <div
-                        class="flex w-1/2 flex-1 flex-col truncate leading-tight"
-                        >
-                        <div>{{ commit.subject }}</div>
-                        <div class="text-xs opacity-30">
-                          {{ commit.date | date: 'medium' }}
-                        </div>
-                      </div>
-                      <div class="hidden">&nbsp;|&nbsp;</div>
-                      <code class="text-xs">{{
-                        commit.hash | slice: 0 : 8
-                      }}</code>
-                      <code class="text-xs" *ngIf="commit.author">{{
-                        commit.author
-                      }}</code>
+                                        </div>
+                                    </mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
                     </div>
-                  </mat-option>
-                </mat-select>
-                <mat-error>{{
-                  'REPOS.COMMIT_REQUIRED' | translate
-                }}</mat-error>
-              </mat-form-field> -->
-                </div>
-                @if (can_change_commit && is_interface) {
                     <div class="field">
                         <settings-form-field
                             name="Follow latest commit"
@@ -383,6 +354,7 @@ import { TranslatePipe } from '../translate.pipe';
         FormsModule,
         MatSelectModule,
         CommonModule,
+        IconComponent,
     ],
 })
 export class RepositoryFormComponent
@@ -412,15 +384,6 @@ export class RepositoryFormComponent
 
     public get is_interface() {
         return this.form()?.value?.repo_type === PlaceRepositoryType.Interface;
-    }
-
-    /** Whether commit of the repo is allowed to be changed */
-    public get can_change_commit(): boolean {
-        const value = this.form().value;
-        return !!(
-            'repo_type' in value &&
-            value.repo_type !== PlaceRepositoryType.Interface
-        );
     }
 
     public ngOnInit() {

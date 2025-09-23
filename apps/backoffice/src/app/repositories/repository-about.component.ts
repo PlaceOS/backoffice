@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { PlaceRepositoryType } from '@placeos/ts-client';
+import { Component, inject, OnInit } from '@angular/core';
+import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
 import { marked } from 'marked';
 import { AsyncHandler } from '../common/async-handler.class';
 import { RepositoriesStateService } from './repositories-state.service';
@@ -8,142 +8,148 @@ import { RepositoriesStateService } from './repositories-state.service';
     selector: 'repository-about',
     template: `
         <section class="mb-4 flex space-x-2">
-            <div
-                class="grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
-                [style.gridTemplateColumns]="'5.5rem auto'"
-            >
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
-                </div>
-                <div class="select-all">
-                    {{ item.description || 'No description' }}
-                </div>
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'REPOS.FIELD_TYPE' | translate }}
-                </div>
-                <div>
-                    {{
-                        (item.type === 'interface'
-                            ? 'REPOS.INTERFACE_REPO'
-                            : 'REPOS.DRIVER_REPO'
-                        ) | translate
-                    }}
-                </div>
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'REPOS.FOLDER_NAME' | translate }}
-                </div>
+            <div class="w-1/3 flex-1">
                 <div
-                    class="select-all"
-                    [class.underline]="item.type === 'interface'"
-                    [class.pointer-events-none]="item.type !== 'interface'"
+                    class="grid gap-4 rounded border border-base-200 p-4"
+                    [style.gridTemplateColumns]="'5.5rem auto'"
                 >
-                    <a [href]="local_url" target="_blank">
-                        {{ item.folder_name }}
-                        @if (!item.folder_name) {
-                            <span class="opacity-30">
-                                {{ 'REPOS.FOLDER_NAME_EMPTY' | translate }}
-                            </span>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                    </div>
+                    <div class="select-all">
+                        {{ item.description || 'No description' }}
+                    </div>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'REPOS.FIELD_TYPE' | translate }}
+                    </div>
+                    <div>
+                        {{
+                            (item.type === 'interface'
+                                ? 'REPOS.INTERFACE_REPO'
+                                : 'REPOS.DRIVER_REPO'
+                            ) | translate
+                        }}
+                    </div>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'REPOS.FOLDER_NAME' | translate }}
+                    </div>
+                    <div
+                        class="select-all"
+                        [class.underline]="item.type === 'interface'"
+                        [class.pointer-events-none]="item.type !== 'interface'"
+                    >
+                        <a [href]="local_url" target="_blank">
+                            {{ item.folder_name }}
+                            @if (!item.folder_name) {
+                                <span class="opacity-30">
+                                    {{ 'REPOS.FOLDER_NAME_EMPTY' | translate }}
+                                </span>
+                            }
+                        </a>
+                    </div>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'REPOS.ROOT_PATH' | translate }}
+                    </div>
+                    <div class="flex items-center font-mono text-sm">
+                        {{ item.root_path }}
+                        @if (item.root_path === '') {
+                            <span class="opacity-30">Not set</span>
                         }
-                    </a>
-                </div>
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'REPOS.ROOT_PATH' | translate }}
-                </div>
-                <div class="flex items-center font-mono text-sm">
-                    {{ item.root_path }}
-                    @if (item.root_path === '') {
-                        <span class="opacity-30">Not set</span>
-                    }
-                </div>
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.CREATED_AT' | translate }}
-                </div>
-                <div class="flex items-center">
-                    <span
-                        [matTooltip]="
-                            (item.created_at * 1000 | date: 'mediumDate') +
-                            ', ' +
-                            (item.created_at * 1000 | date: 'shortTime')
-                        "
-                        matTooltipPosition="right"
-                    >
-                        {{ item.created_at * 1000 | dateFrom }}
-                    </span>
-                </div>
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.UPDATED_AT' | translate }}
-                </div>
-                <div class="flex items-center">
-                    <span
-                        [matTooltip]="
-                            (item.updated_at * 1000 | date: 'mediumDate') +
-                            ', ' +
-                            (item.updated_at * 1000 | date: 'shortTime')
-                        "
-                        matTooltipPosition="right"
-                    >
-                        {{ item.updated_at * 1000 | dateFrom }}
-                    </span>
+                    </div>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'COMMON.CREATED_AT' | translate }}
+                    </div>
+                    <div class="flex items-center">
+                        <span
+                            [matTooltip]="
+                                (item.created_at * 1000 | date: 'mediumDate') +
+                                ', ' +
+                                (item.created_at * 1000 | date: 'shortTime')
+                            "
+                            matTooltipPosition="right"
+                        >
+                            {{ item.created_at * 1000 | dateFrom }}
+                        </span>
+                    </div>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'COMMON.UPDATED_AT' | translate }}
+                    </div>
+                    <div class="flex items-center">
+                        <span
+                            [matTooltip]="
+                                (item.updated_at * 1000 | date: 'mediumDate') +
+                                ', ' +
+                                (item.updated_at * 1000 | date: 'shortTime')
+                            "
+                            matTooltipPosition="right"
+                        >
+                            {{ item.updated_at * 1000 | dateFrom }}
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div
-                class="grid w-1/3 flex-1 gap-2 overflow-hidden rounded border border-base-200 p-4"
-                [style.gridTemplateColumns]="'6.5rem auto'"
-            >
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'REPOS.URI' | translate }}
-                </div>
-                <div class="select-all overflow-hidden underline">
-                    <a
-                        class="block w-full truncate"
-                        [href]="item.uri | safe: 'url'"
-                        target="_blank"
-                        >{{ repo_uri || 'No URI set' }}</a
-                    >
-                </div>
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.GIT_BRANCH' | translate }}
-                </div>
-                <div class="flex items-center overflow-hidden">
-                    <code
-                        class="inline-block max-w-full truncate text-xs"
-                        [matTooltip]="item.branch"
-                    >
-                        {{ item.branch }}
-                    </code>
-                </div>
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.GIT_COMMIT' | translate }}
-                </div>
-                <div class="flex items-center overflow-hidden">
-                    <code
-                        class="inline-block max-w-full truncate text-xs"
-                        [matTooltip]="
-                            commit && commit !== item.commit_hash
-                                ? commit
-                                : item.commit_hash
-                        "
-                    >
-                        {{ item.commit_hash || 'HEAD' }}
-                        @if (commit && commit !== item.commit_hash) {
-                            <span class="mono select-text break-words">
-                                ({{ commit }})
-                            </span>
-                        }
-                    </code>
-                </div>
-                <button
-                    btn
-                    class="col-span-2 w-full"
-                    [disabled]="pulling"
-                    (click)="pullLatestCommit()"
+            <div class="w-1/3 flex-1">
+                <div
+                    class="grid gap-4 overflow-hidden rounded border border-base-200 p-4"
+                    [style.gridTemplateColumns]="'6.5rem auto'"
                 >
-                    @if (!pulling) {
-                        {{ 'COMMON.GIT_PULL_LATEST' | translate }}
-                    } @else {
-                        <mat-spinner diameter="32"></mat-spinner>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'REPOS.URI' | translate }}
+                    </div>
+                    <div class="select-all overflow-hidden underline">
+                        <a
+                            class="block w-full truncate"
+                            [href]="item.uri | safe: 'url'"
+                            target="_blank"
+                            >{{ repo_uri || 'No URI set' }}</a
+                        >
+                    </div>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'COMMON.GIT_BRANCH' | translate }}
+                    </div>
+                    <div class="flex items-center overflow-hidden">
+                        <code
+                            class="inline-block max-w-full truncate text-xs"
+                            [matTooltip]="item.branch"
+                        >
+                            {{ item.branch }}
+                        </code>
+                    </div>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'COMMON.GIT_COMMIT' | translate }}
+                    </div>
+                    <div class="flex items-center overflow-hidden">
+                        <code
+                            class="inline-block max-w-full truncate text-xs"
+                            [matTooltip]="
+                                commit && commit !== item.commit_hash
+                                    ? commit
+                                    : item.commit_hash
+                            "
+                        >
+                            {{ item.commit_hash || 'HEAD' }}
+                            @if (commit && commit !== item.commit_hash) {
+                                <span class="mono select-text break-words">
+                                    ({{ commit }})
+                                </span>
+                            }
+                        </code>
+                    </div>
+                    @if (is_interface) {
+                        <button
+                            btn
+                            class="col-span-2 w-full"
+                            [disabled]="pulling"
+                            (click)="pullLatestCommit()"
+                        >
+                            @if (!pulling) {
+                                {{ 'COMMON.GIT_PULL_LATEST' | translate }}
+                            } @else {
+                                <mat-spinner diameter="32"></mat-spinner>
+                            }
+                        </button>
                     }
-                </button>
+                </div>
             </div>
         </section>
         @if (item?.description) {
@@ -178,7 +184,7 @@ import { RepositoriesStateService } from './repositories-state.service';
     ],
     standalone: false,
 })
-export class RepositoryAboutComponent extends AsyncHandler {
+export class RepositoryAboutComponent extends AsyncHandler implements OnInit {
     private _service = inject(RepositoriesStateService);
 
     /** Whether the latest commit is being pulled on the server */
@@ -198,6 +204,13 @@ export class RepositoryAboutComponent extends AsyncHandler {
 
     public get repo_uri() {
         return this.item?.uri.replace(/\/[a-zA-Z0-9\-\.:]*@/, '/...@');
+    }
+
+    public get is_interface() {
+        return (
+            (this.item as PlaceRepository).type ===
+            PlaceRepositoryType.Interface
+        );
     }
 
     /** HTML string for rendering the description */
