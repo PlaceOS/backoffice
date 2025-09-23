@@ -2,6 +2,9 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, inject } from '@angular/core';
 import { PlaceUser, showDomain } from '@placeos/ts-client';
 
+import { CommonModule } from '@angular/common';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 import {
     debounceTime,
@@ -12,6 +15,8 @@ import {
 } from 'rxjs';
 import { i18n } from '../common/locale.service';
 import { notifySuccess } from '../common/notifications';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 let domain_obs;
 
@@ -158,7 +163,13 @@ let domain_obs;
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        TranslatePipe,
+        DateFromPipe,
+        MatTooltipModule,
+        MatRippleModule,
+    ],
 })
 export class UserAboutComponent {
     private _service = inject(ActiveItemService);

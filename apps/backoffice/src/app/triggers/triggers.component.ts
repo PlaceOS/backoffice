@@ -1,4 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { listTriggerInstances, PlaceTrigger } from '@placeos/ts-client';
 import { lastValueFrom } from 'rxjs';
 import { extensionsForItem } from '../common/api';
@@ -6,6 +9,14 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import { DebugOutputComponent } from '../ui/debug-output.component';
+import { IconComponent } from '../ui/icon.component';
+import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemSelectionComponent } from '../ui/item-selection.component';
+import { ItemSidebarComponent } from '../ui/item-sidebar.component';
+import { ItemTablistComponent } from '../ui/item-tablist.component';
+import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
     selector: 'new-triggers-view',
@@ -82,7 +93,19 @@ import { i18n } from '../common/locale.service';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        DebugOutputComponent,
+        IconComponent,
+        TranslatePipe,
+        RouterModule,
+        MatRippleModule,
+        MatTooltipModule,
+        ItemTablistComponent,
+        ItemDetailsComponent,
+        ItemSelectionComponent,
+        ItemSidebarComponent,
+        SidebarMenuComponent,
+    ],
 })
 export class TriggersComponent extends AsyncHandler implements OnInit {
     protected _service = inject(ActiveItemService);

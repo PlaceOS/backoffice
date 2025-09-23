@@ -3,6 +3,17 @@ import { PlaceZone } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RouterModule } from '@angular/router';
+import { IconComponent } from '../ui/icon.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { ZonesStateService } from './zones-state.service';
 
 @Component({
@@ -97,7 +108,19 @@ import { ZonesStateService } from './zones-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        IconComponent,
+        MatRippleModule,
+        DateFromPipe,
+        RouterModule,
+        TranslatePipe,
+        CommonModule,
+        MatProgressBarModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        SimpleTableComponent,
+    ],
 })
 export class ZoneTriggersComponent {
     private _state = inject(ZonesStateService);

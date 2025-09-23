@@ -10,8 +10,18 @@ import {
 } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { marked } from 'marked';
+import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
+import { IconComponent } from '../ui/icon.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { FormatListPipe } from '../ui/pipes/format-list.pipe';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { TriggerStateService } from './trigger-state.service';
 
 @Component({
@@ -271,7 +281,18 @@ import { TriggerStateService } from './trigger-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        TranslatePipe,
+        IconComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        FormatListPipe,
+        SimpleTableComponent,
+        ItemSearchFieldComponent,
+        FormsModule,
+        DateFromPipe,
+    ],
 })
 export class TriggerAboutComponent extends AsyncHandler implements OnInit {
     private _service = inject(TriggerStateService);

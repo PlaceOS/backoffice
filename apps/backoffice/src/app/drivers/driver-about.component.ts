@@ -1,10 +1,19 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { PlaceDriver } from '@placeos/ts-client';
 import { marked } from 'marked';
 import { AsyncHandler } from '../common/async-handler.class';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
+import { SettingsFormComponent } from '../ui/forms/settings-form.component';
+import { IconComponent } from '../ui/icon.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
 
 @Component({
@@ -197,7 +206,17 @@ import { DriverStateService } from './driver-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        IconComponent,
+        TranslatePipe,
+        MatRippleModule,
+        SettingsFormComponent,
+        SanitizePipe,
+        MatTooltipModule,
+        CommonModule,
+        DateFromPipe,
+        RouterModule,
+    ],
 })
 export class DriverAboutComponent extends AsyncHandler implements OnInit {
     private _service = inject(DriverStateService);

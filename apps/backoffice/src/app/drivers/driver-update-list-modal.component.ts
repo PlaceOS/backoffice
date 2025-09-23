@@ -1,10 +1,16 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { queryDrivers, updateDriver } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { nextValueFrom } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { IconComponent } from '../ui/icon.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
     selector: 'driver-update-list-modal',
@@ -29,7 +35,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
                 }
             </h2>
             @if (!loading) {
-                <button btn icon matRipple mat-dialog-close>
+                <button icon matRipple mat-dialog-close>
                     <app-icon>close</app-icon>
                 </button>
             }
@@ -134,7 +140,15 @@ import { notifyError, notifySuccess } from '../common/notifications';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        TranslatePipe,
+        IconComponent,
+        MatRippleModule,
+        MatProgressSpinnerModule,
+        MatCheckboxModule,
+    ],
 })
 export class DriverUpdateListModalComponent {
     private _dialog_ref =

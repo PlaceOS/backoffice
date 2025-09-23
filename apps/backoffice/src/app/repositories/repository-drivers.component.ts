@@ -1,8 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { PlaceRepository } from '@placeos/ts-client';
 
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { AsyncHandler } from '../common/async-handler.class';
+import { IconComponent } from '../ui/icon.component';
+import { DriverFormatPipe } from '../ui/pipes/driver-format.pipe';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { RepositoriesStateService } from './repositories-state.service';
 
 @Component({
@@ -11,11 +18,13 @@ import { RepositoriesStateService } from './repositories-state.service';
         <h3 class="mb-2 text-lg font-medium">
             {{ 'REPOS.AVAILABLE_DRIVERS' | translate }}
         </h3>
-        <mat-progress-bar mode="indeterminate"
+        <mat-progress-bar
+            mode="indeterminate"
             class="w-full"
             [class.opacity-0]="!loading"
-         />
-        <simple-table class="block min-w-[32rem] text-sm"
+        />
+        <simple-table
+            class="block min-w-[32rem] text-sm"
             [data]="driver_list"
             [columns]="[
                 {
@@ -33,7 +42,7 @@ import { RepositoriesStateService } from './repositories-state.service';
             ]"
             [sortable]="true"
             [empty_message]="'REPOS.DRIVER_LIST_EMPTY' | translate"
-         />
+        />
         <div class="h-8 w-full"></div>
         <ng-template #name_template let-row="row">
             <div
@@ -63,7 +72,15 @@ import { RepositoriesStateService } from './repositories-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        IconComponent,
+        TranslatePipe,
+        MatTooltipModule,
+        DriverFormatPipe,
+        SimpleTableComponent,
+        MatProgressBarModule,
+        MatRippleModule,
+    ],
 })
 export class RepositoryDriversComponent extends AsyncHandler {
     private _service = inject(RepositoriesStateService);

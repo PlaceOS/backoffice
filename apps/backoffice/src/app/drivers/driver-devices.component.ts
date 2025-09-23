@@ -1,9 +1,21 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
+import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
 
 @Component({
@@ -167,7 +179,20 @@ import { DriverStateService } from './driver-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        MatMenuModule,
+        RouterModule,
+        MatRippleModule,
+        TranslatePipe,
+        MatProgressSpinnerModule,
+        MatTooltipModule,
+        SimpleTableComponent,
+        MatProgressBarModule,
+        MatFormFieldModule,
+        MatInputModule,
+        FormsModule,
+        IconComponent,
+    ],
 })
 export class DriverModulesComponent extends AsyncHandler implements OnInit {
     private _service = inject(DriverStateService);

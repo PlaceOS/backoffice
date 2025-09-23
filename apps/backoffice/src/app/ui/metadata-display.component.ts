@@ -42,6 +42,7 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
 import { MetadataHistoryModalComponent } from '../overlays/metadata-history-modal.component';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { IconComponent } from './icon.component';
+import { DateFromPipe } from './pipes/date-from.pipe';
 import { TranslatePipe } from './translate.pipe';
 
 function replaceDescTag(inputString, newContent) {
@@ -196,6 +197,7 @@ function replaceDescTag(inputString, newContent) {
         FormsModule,
         MatFormFieldModule,
         MatInputModule,
+        DateFromPipe,
     ],
 })
 export class MetadataDisplayComponent
@@ -292,7 +294,7 @@ export class MetadataDisplayComponent
                             );
                             this.metadata.set(
                                 this.metadata().filter(
-                                    (prop) => prop.name !== field,
+                                    (prop) => prop && prop.name !== field,
                                 ),
                             );
                             this.generateForms();
@@ -459,7 +461,8 @@ export class MetadataDisplayComponent
             this.metadata.set(
                 Object.keys(map)
                     .map((key) => map[key])
-                    .sort((a, b) => a.name.localeCompare(b.name)),
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .filter((m) => !!m),
             );
             this.generateForms();
         });

@@ -1,5 +1,8 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { listZoneTags, PlaceZone } from '@placeos/ts-client';
 import { shareReplay } from 'rxjs';
 import { extensionsForItem } from '../common/api';
@@ -7,6 +10,14 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import { DebugOutputComponent } from '../ui/debug-output.component';
+import { IconComponent } from '../ui/icon.component';
+import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemSelectionComponent } from '../ui/item-selection.component';
+import { ItemSidebarComponent } from '../ui/item-sidebar.component';
+import { ItemTablistComponent } from '../ui/item-tablist.component';
+import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { ZonesStateService } from './zones-state.service';
 
 @Component({
@@ -31,8 +42,8 @@ import { ZonesStateService } from './zones-state.service';
                             [title]="'ZONES.PLURAL' | translate"
                         >
                             <button
-                                btn
                                 icon
+                                matRipple
                                 class="mr-2 sm:hidden"
                                 (click)="open_menu.set(true)"
                             >
@@ -94,7 +105,20 @@ import { ZonesStateService } from './zones-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        CommonModule,
+        DebugOutputComponent,
+        IconComponent,
+        TranslatePipe,
+        MatTooltipModule,
+        RouterModule,
+        MatRippleModule,
+        ItemTablistComponent,
+        ItemDetailsComponent,
+        ItemSidebarComponent,
+        SidebarMenuComponent,
+        ItemSelectionComponent,
+    ],
 })
 export class ZonesComponent extends AsyncHandler implements OnInit {
     protected _service = inject(ZonesStateService);

@@ -1,7 +1,15 @@
+import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceSystem } from '@placeos/ts-client';
 import { marked } from 'marked';
 import { AsyncHandler } from '../common/async-handler.class';
+import { SettingsFormComponent } from '../ui/forms/settings-form.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { SystemStateService } from './system-state.service';
 
 @Component({
@@ -205,7 +213,16 @@ import { SystemStateService } from './system-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        TranslatePipe,
+        DateFromPipe,
+        MatProgressSpinnerModule,
+        SettingsFormComponent,
+        SanitizePipe,
+        MatRippleModule,
+        MatTooltipModule,
+    ],
 })
 export class SystemAboutComponent extends AsyncHandler implements OnInit {
     private _service = inject(SystemStateService);

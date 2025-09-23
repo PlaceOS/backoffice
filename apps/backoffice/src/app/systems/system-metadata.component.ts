@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { PlaceSystem } from '@placeos/ts-client';
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
+import { MetadataDisplayComponent } from '../ui/metadata-display.component';
 
 @Component({
     selector: 'system-metadata',
@@ -10,7 +11,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [MetadataDisplayComponent],
 })
 export class SystemMetadataComponent {
     private _service = inject(ActiveItemService);

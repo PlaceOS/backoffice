@@ -1,10 +1,20 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceSystem } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import { DebugOutputComponent } from '../ui/debug-output.component';
+import { IconComponent } from '../ui/icon.component';
+import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemSelectionComponent } from '../ui/item-selection.component';
+import { ItemSidebarComponent } from '../ui/item-sidebar.component';
+import { ItemTablistComponent } from '../ui/item-tablist.component';
+import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { SystemStateService } from './system-state.service';
 
 @Component({
@@ -89,7 +99,18 @@ import { SystemStateService } from './system-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        DebugOutputComponent,
+        IconComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        TranslatePipe,
+        ItemTablistComponent,
+        ItemDetailsComponent,
+        ItemSelectionComponent,
+        ItemSidebarComponent,
+        SidebarMenuComponent,
+    ],
 })
 export class SystemsComponent extends AsyncHandler implements OnInit {
     protected _service = inject(SystemStateService);

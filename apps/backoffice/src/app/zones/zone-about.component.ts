@@ -3,8 +3,19 @@ import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
 
 import { ZonesStateService } from './zones-state.service';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { marked } from 'marked';
 import { AsyncHandler } from '../common/async-handler.class';
+import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
+import { SettingsFormComponent } from '../ui/forms/settings-form.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
     selector: 'zone-about',
@@ -214,7 +225,19 @@ import { AsyncHandler } from '../common/async-handler.class';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        MatProgressSpinnerModule,
+        SettingsFormComponent,
+        SanitizePipe,
+        TranslatePipe,
+        MatTooltipModule,
+        DateFromPipe,
+        ExecuteMethodFieldComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+    ],
 })
 export class ZoneAboutComponent extends AsyncHandler implements OnInit {
     private _service = inject(ZonesStateService);

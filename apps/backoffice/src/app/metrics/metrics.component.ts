@@ -1,10 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { authority } from '@placeos/ts-client';
 
+import { CommonModule } from '@angular/common';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { timer } from 'rxjs';
 import { i18n } from '../common/locale.service';
 import { SettingsService } from '../common/settings.service';
+import { SafePipe } from '../ui/pipes/safe.pipe';
+import { TranslatePipe } from '../ui/translate.pipe';
+import { ClockComponent } from './clock.component';
 
 @Component({
     selector: 'app-metrics',
@@ -51,7 +55,7 @@ import { SettingsService } from '../common/settings.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [SafePipe, CommonModule, TranslatePipe, ClockComponent],
 })
 export class MetricsComponent extends AsyncHandler implements OnInit {
     private _settings = inject(SettingsService);

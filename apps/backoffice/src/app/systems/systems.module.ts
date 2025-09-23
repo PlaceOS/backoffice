@@ -1,6 +1,4 @@
-import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ROUTES } from './systems.routes';
@@ -10,25 +8,18 @@ import { SystemMetadataComponent } from './system-metadata.component';
 import { SystemModulesComponent } from './system-modules.component';
 import { SystemTriggersComponent } from './system-triggers.component';
 import { SystemZonesComponent } from './system-zones.component';
-
-import { SharedContentModule } from '../ui/ui.module';
 import { SystemsComponent } from './systems.component';
 
 @NgModule({
-    declarations: [
+    declarations: [],
+    imports: [
         SystemAboutComponent,
         SystemModulesComponent,
         SystemTriggersComponent,
         SystemZonesComponent,
         SystemMetadataComponent,
         SystemsComponent,
-    ],
-    imports: [
-        FormsModule,
-        ReactiveFormsModule,
         RouterModule.forChild(ROUTES),
-        SharedContentModule,
-        DragDropModule,
     ],
 })
 export class AppSystemsModule {}

@@ -1,5 +1,9 @@
 import { Component, inject } from '@angular/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     loadModule,
     PlaceDriverRole,
@@ -20,7 +24,9 @@ import {
 } from 'apps/backoffice/src/app/overlays/view-module-state.component';
 import { map } from 'rxjs/operators';
 import { i18n } from '../common/locale.service';
+import { IconComponent } from '../ui/icon.component';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { SystemStateService } from './system-state.service';
 
 @Component({
@@ -360,7 +366,14 @@ import { SystemStateService } from './system-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        MatMenuModule,
+        IconComponent,
+        MatRippleModule,
+        TranslatePipe,
+        MatCheckboxModule,
+        MatTooltipModule,
+    ],
 })
 export class SystemModulesComponent extends AsyncHandler {
     private _service = inject(SystemStateService);

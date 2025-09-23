@@ -2,6 +2,16 @@ import { Component, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RouterModule } from '@angular/router';
+import { IconComponent } from '../ui/icon.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { ModuleStateService } from './module-state.service';
 
 @Component({
@@ -81,7 +91,18 @@ import { ModuleStateService } from './module-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        DateFromPipe,
+        SimpleTableComponent,
+        RouterModule,
+        TranslatePipe,
+        CommonModule,
+        MatProgressBarModule,
+        MatFormFieldModule,
+        MatInputModule,
+        FormsModule,
+        IconComponent,
+    ],
 })
 export class ModuleSystemsComponent {
     private _service = inject(ModuleStateService);

@@ -4,7 +4,16 @@ import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
 import { moveItemInArray } from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { nextValueFrom } from '../common/general';
+import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { SystemStateService } from './system-state.service';
 
 @Component({
@@ -152,7 +161,17 @@ import { SystemStateService } from './system-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        IconComponent,
+        TranslatePipe,
+        MatRippleModule,
+        MatTooltipModule,
+        SimpleTableComponent,
+        MatProgressBarModule,
+        ItemSearchFieldComponent,
+        FormsModule,
+    ],
 })
 export class SystemZonesComponent {
     private _service = inject(SystemStateService);

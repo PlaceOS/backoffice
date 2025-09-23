@@ -1,4 +1,7 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDriver, queryModules } from '@placeos/ts-client';
 import { lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -7,6 +10,13 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import { DebugOutputComponent } from '../ui/debug-output.component';
+import { IconComponent } from '../ui/icon.component';
+import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemSelectionComponent } from '../ui/item-selection.component';
+import { ItemSidebarComponent } from '../ui/item-sidebar.component';
+import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
 
 @Component({
@@ -95,7 +105,18 @@ import { DriverStateService } from './driver-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        CommonModule,
+        DebugOutputComponent,
+        IconComponent,
+        TranslatePipe,
+        MatRippleModule,
+        MatTooltipModule,
+        ItemDetailsComponent,
+        ItemSelectionComponent,
+        ItemSidebarComponent,
+        SidebarMenuComponent,
+    ],
 })
 export class DriversComponent extends AsyncHandler implements OnInit {
     protected _service = inject(ActiveItemService);

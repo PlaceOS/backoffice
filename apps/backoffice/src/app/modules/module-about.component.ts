@@ -1,8 +1,18 @@
 import { Component, inject } from '@angular/core';
 import { PlaceModule } from '@placeos/ts-client';
 
+import { CommonModule } from '@angular/common';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
+import { CustomTooltipComponent } from '../ui/custom-tooltip.component';
+import { SettingsFormComponent } from '../ui/forms/settings-form.component';
+import { IconComponent } from '../ui/icon.component';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { ModuleStateService } from './module-state.service';
 
 @Component({
@@ -231,7 +241,18 @@ import { ModuleStateService } from './module-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        TranslatePipe,
+        MatProgressSpinnerModule,
+        SettingsFormComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        CustomTooltipComponent,
+        IconComponent,
+        RouterModule,
+        DateFromPipe,
+    ],
 })
 export class ModuleAboutComponent {
     private _service = inject(ModuleStateService);

@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { PlaceUser } from '@placeos/ts-client';
 
+import { CommonModule } from '@angular/common';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
     selector: 'user-history',
@@ -51,7 +53,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [TranslatePipe, CommonModule],
 })
 export class UserHistoryComponent extends AsyncHandler {
     private _service = inject(ActiveItemService);

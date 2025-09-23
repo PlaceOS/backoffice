@@ -5,8 +5,19 @@ import { map } from 'rxjs/operators';
 import { copyToClipboard, unique } from '../common/general';
 import { notifyInfo } from '../common/notifications';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { i18n } from '../common/locale.service';
 import { HashMap } from '../common/types';
+import { IconComponent } from '../ui/icon.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { SystemStateService } from './system-state.service';
 
 export interface TriggerInstanceState {
@@ -179,7 +190,19 @@ export interface TriggerInstanceState {
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        IconComponent,
+        TranslatePipe,
+        MatRippleModule,
+        MatTooltipModule,
+        DateFromPipe,
+        CommonModule,
+        MatFormFieldModule,
+        MatInputModule,
+        FormsModule,
+        SimpleTableComponent,
+        MatProgressBarModule,
+    ],
 })
 export class SystemTriggersComponent {
     private _service = inject(SystemStateService);

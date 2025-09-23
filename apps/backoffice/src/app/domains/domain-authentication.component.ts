@@ -1,7 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { PlaceDomain } from '@placeos/ts-client';
 
+import { CommonModule } from '@angular/common';
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { DomainStateService } from './domain-state.service';
 
 @Component({
@@ -90,7 +96,14 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        SimpleTableComponent,
+        IconComponent,
+        TranslatePipe,
+        MatRippleModule,
+        CommonModule,
+        MatProgressBarModule,
+    ],
 })
 export class DomainAuthenticationComponent {
     private _service = inject(DomainStateService);

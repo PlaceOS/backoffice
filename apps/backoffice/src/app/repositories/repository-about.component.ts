@@ -1,7 +1,15 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
 import { marked } from 'marked';
 import { AsyncHandler } from '../common/async-handler.class';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { SafePipe } from '../ui/pipes/safe.pipe';
+import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { RepositoriesStateService } from './repositories-state.service';
 
 @Component({
@@ -138,6 +146,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     @if (is_interface) {
                         <button
                             btn
+                            matRipple
                             class="col-span-2 w-full"
                             [disabled]="pulling"
                             (click)="pullLatestCommit()"
@@ -182,7 +191,16 @@ import { RepositoriesStateService } from './repositories-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        SanitizePipe,
+        TranslatePipe,
+        MatProgressSpinnerModule,
+        MatRippleModule,
+        MatTooltipModule,
+        SafePipe,
+        DateFromPipe,
+    ],
 })
 export class RepositoryAboutComponent extends AsyncHandler implements OnInit {
     private _service = inject(RepositoriesStateService);

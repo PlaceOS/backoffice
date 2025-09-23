@@ -3,6 +3,14 @@ import { PlaceZone } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { ZonesStateService } from './zones-state.service';
 
 @Component({
@@ -24,11 +32,13 @@ import { ZonesStateService } from './zones-state.service';
                 />
             </mat-form-field>
         </div>
-        <mat-progress-bar mode="indeterminate"
+        <mat-progress-bar
+            mode="indeterminate"
             class="w-full"
             [class.opacity-0]="!(loading | async)"
-         />
-        <simple-table class="block min-w-[32rem] text-sm"
+        />
+        <simple-table
+            class="block min-w-[32rem] text-sm"
             [data]="children"
             [columns]="[
                 {
@@ -44,7 +54,7 @@ import { ZonesStateService } from './zones-state.service';
             ]"
             [sortable]="true"
             [empty_message]="'ZONES.CHILDREN_EMPTY' | translate"
-         />
+        />
         <ng-template #name_template let-row="row">
             <div class="flex flex-col items-start px-4 py-2 leading-snug">
                 <a class="truncate underline" [routerLink]="['/zones', row.id]">
@@ -74,7 +84,16 @@ import { ZonesStateService } from './zones-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        TranslatePipe,
+        SimpleTableComponent,
+        CommonModule,
+        IconComponent,
+        MatFormFieldModule,
+        MatInputModule,
+        MatProgressBarModule,
+        FormsModule,
+    ],
 })
 export class ZoneChildrenComponent {
     private _state = inject(ZonesStateService);

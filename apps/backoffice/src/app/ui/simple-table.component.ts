@@ -13,6 +13,7 @@ import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { nextValueFrom } from '../common/general';
+import { IconComponent } from './icon.component';
 
 export interface TableColumn {
     key: string;
@@ -254,7 +255,7 @@ export interface TableColumn {
             }
         `,
     ],
-    imports: [CommonModule, MatCheckboxModule, DragDropModule],
+    imports: [CommonModule, MatCheckboxModule, DragDropModule, IconComponent],
 })
 export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     public readonly data = input<T[] | Observable<T[]>>(undefined);

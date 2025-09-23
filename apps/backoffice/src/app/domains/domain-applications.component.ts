@@ -1,10 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { PlaceApplication, PlaceDomain } from '@placeos/ts-client';
 
+import { CommonModule } from '@angular/common';
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
 import { notifyInfo } from 'apps/backoffice/src/app/common/notifications';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { i18n } from '../common/locale.service';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { DomainStateService } from './domain-state.service';
 
 @Component({
@@ -146,7 +153,15 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        SimpleTableComponent,
+        IconComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        CommonModule,
+        TranslatePipe,
+        MatProgressBarModule,
+    ],
 })
 export class DomainApplicationsComponent {
     private _service = inject(DomainStateService);

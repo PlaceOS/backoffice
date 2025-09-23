@@ -1,9 +1,19 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { MatRipple } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { PlaceDomain } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import { IconComponent } from '../ui/icon.component';
+import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemSelectionComponent } from '../ui/item-selection.component';
+import { ItemSidebarComponent } from '../ui/item-sidebar.component';
+import { ItemTablistComponent } from '../ui/item-tablist.component';
+import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { DomainStateService } from './domain-state.service';
 
 @Component({
@@ -69,7 +79,18 @@ import { DomainStateService } from './domain-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        IconComponent,
+        MatTooltipModule,
+        MatRipple,
+        TranslatePipe,
+        RouterModule,
+        ItemTablistComponent,
+        ItemDetailsComponent,
+        ItemSelectionComponent,
+        ItemSidebarComponent,
+        SidebarMenuComponent,
+    ],
 })
 export class DomainsComponent extends AsyncHandler implements OnInit {
     private _service = inject(DomainStateService);

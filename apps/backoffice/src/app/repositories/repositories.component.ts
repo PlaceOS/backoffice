@@ -1,9 +1,19 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { PlaceRepository } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import { IconComponent } from '../ui/icon.component';
+import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemSelectionComponent } from '../ui/item-selection.component';
+import { ItemSidebarComponent } from '../ui/item-sidebar.component';
+import { ItemTablistComponent } from '../ui/item-tablist.component';
+import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { RepositoriesStateService } from './repositories-state.service';
 
 @Component({
@@ -25,8 +35,8 @@ import { RepositoriesStateService } from './repositories-state.service';
                     [title]="'REPOS.PLURAL' | translate"
                 >
                     <button
-                        btn
                         icon
+                        matRipple
                         class="mr-2 sm:hidden"
                         (click)="open_menu = true"
                     >
@@ -68,7 +78,18 @@ import { RepositoriesStateService } from './repositories-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        IconComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        TranslatePipe,
+        RouterModule,
+        ItemTablistComponent,
+        ItemDetailsComponent,
+        ItemSelectionComponent,
+        SidebarMenuComponent,
+        ItemSidebarComponent,
+    ],
 })
 export class RepositoriesComponent extends AsyncHandler implements OnInit {
     protected _service = inject(RepositoriesStateService);

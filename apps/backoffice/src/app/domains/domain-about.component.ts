@@ -1,14 +1,21 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { PlaceDomain } from '@placeos/ts-client';
 
 import { Clipboard } from '@angular/cdk/clipboard';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
 import { marked } from 'marked';
 import { i18n } from '../common/locale.service';
 import { notifySuccess } from '../common/notifications';
+import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
+import { IconComponent } from '../ui/icon.component';
+import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { DomainStateService } from './domain-state.service';
 
 @Component({
@@ -98,7 +105,16 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        SettingsFieldComponent,
+        MatTabsModule,
+        ReactiveFormsModule,
+        MatRippleModule,
+        IconComponent,
+        MatTooltipModule,
+        TranslatePipe,
+        SanitizePipe,
+    ],
 })
 export class DomainAboutComponent extends AsyncHandler implements OnInit {
     private _service = inject(DomainStateService);

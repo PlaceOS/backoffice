@@ -3,7 +3,12 @@ import { PlaceTrigger } from '@placeos/ts-client';
 
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AsyncHandler } from '../common/async-handler.class';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { TriggerStateService } from './trigger-state.service';
 
 @Component({
@@ -87,7 +92,13 @@ import { TriggerStateService } from './trigger-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        IconComponent,
+        TranslatePipe,
+        MatRippleModule,
+        SimpleTableComponent,
+        MatProgressBarModule,
+    ],
 })
 export class TriggerInstancesComponent extends AsyncHandler implements OnInit {
     private _service = inject(TriggerStateService);

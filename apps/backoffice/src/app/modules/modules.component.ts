@@ -1,4 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { PlaceModule, querySystems } from '@placeos/ts-client';
 import { lastValueFrom } from 'rxjs';
 import { extensionsForItem } from '../common/api';
@@ -6,6 +8,14 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import { DebugOutputComponent } from '../ui/debug-output.component';
+import { IconComponent } from '../ui/icon.component';
+import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemSelectionComponent } from '../ui/item-selection.component';
+import { ItemSidebarComponent } from '../ui/item-sidebar.component';
+import { ItemTablistComponent } from '../ui/item-tablist.component';
+import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
     selector: 'new-modules-view',
@@ -82,7 +92,19 @@ import { i18n } from '../common/locale.service';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        DebugOutputComponent,
+        IconComponent,
+        IconComponent,
+        TranslatePipe,
+        MatTooltipModule,
+        RouterModule,
+        ItemTablistComponent,
+        ItemDetailsComponent,
+        ItemSelectionComponent,
+        ItemSidebarComponent,
+        SidebarMenuComponent,
+    ],
 })
 export class ModulesComponent extends AsyncHandler {
     private _service = inject(ActiveItemService);
