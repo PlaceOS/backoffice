@@ -1,10 +1,23 @@
 import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+    FormControl,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    Validators,
+} from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
 import { DialogEvent } from 'apps/backoffice/src/app/common/types';
 
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
+import { IconComponent } from '../../ui/icon.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
 import { BackofficeExtension } from '../extensions.component';
 
 @Component({
@@ -154,7 +167,12 @@ import { BackofficeExtension } from '../extensions.component';
                             </button>
                         </div>
                     }
-                    <button btn class="w-full" (click)="addCondition()">
+                    <button
+                        btn
+                        matRipple
+                        class="w-full"
+                        (click)="addCondition()"
+                    >
                         {{ 'ADMIN.EXTENSIONS_CONDITION_ADD' | translate }}
                     </button>
                 </div>
@@ -162,12 +180,22 @@ import { BackofficeExtension } from '../extensions.component';
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        FullscreenModalShellComponent,
+        TranslatePipe,
+        MatRippleModule,
+        IconComponent,
+        FormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        ReactiveFormsModule,
+    ],
 })
 export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     private _data = inject<{
-    item: BackofficeExtension;
-}>(MAT_DIALOG_DATA);
+        item: BackofficeExtension;
+    }>(MAT_DIALOG_DATA);
     private _hotkey = inject(HotkeysService);
 
     /** Emitter for user action on the modal */

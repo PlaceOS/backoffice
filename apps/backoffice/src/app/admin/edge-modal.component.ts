@@ -1,10 +1,19 @@
 import { Component, inject, output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+    FormControl,
+    FormGroup,
+    ReactiveFormsModule,
+    Validators,
+} from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { addEdge, PlaceEdge, updateEdge } from '@placeos/ts-client';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent } from '../common/types';
+import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface EdgeModalData {
     edge: PlaceEdge;
@@ -62,11 +71,18 @@ export interface EdgeModalData {
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        FullscreenModalShellComponent,
+        MatFormFieldModule,
+        MatInputModule,
+        TranslatePipe,
+        ReactiveFormsModule,
+    ],
 })
 export class EdgeModalComponent {
     private _data = inject<EdgeModalData>(MAT_DIALOG_DATA);
-    private _dialog_ref = inject<MatDialogRef<EdgeModalComponent>>(MatDialogRef);
+    private _dialog_ref =
+        inject<MatDialogRef<EdgeModalComponent>>(MatDialogRef);
 
     public readonly event = output<DialogEvent>();
 

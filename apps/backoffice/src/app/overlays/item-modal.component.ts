@@ -18,6 +18,7 @@ import {
     cleanObject,
 } from '@placeos/ts-client';
 
+import { CommonModule } from '@angular/common';
 import { generateBrokerFormFields } from 'apps/backoffice/src/app/admin/brokers.utilities';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
@@ -45,6 +46,19 @@ import { generateZoneFormFields } from 'apps/backoffice/src/app/zones/zones.util
 import { Observable } from 'rxjs';
 import { getInvalidFields } from '../common/general';
 import { i18n } from '../common/locale.service';
+import { ApplicationFormComponent } from '../ui/forms/application-form.component';
+import { BrokerFormComponent } from '../ui/forms/broker-form.component';
+import { DomainFormComponent } from '../ui/forms/domain-form.component';
+import { DriverFormComponent } from '../ui/forms/driver-form.component';
+import { ModuleFormComponent } from '../ui/forms/module-form.component';
+import { RepositoryFormComponent } from '../ui/forms/repository-form.component';
+import { SystemFormComponent } from '../ui/forms/system-form.component';
+import { SystemTriggerFormComponent } from '../ui/forms/system-trigger-form.component';
+import { TriggerFormComponent } from '../ui/forms/trigger-form.component';
+import { UserFormComponent } from '../ui/forms/user-form.component';
+import { ZoneFormComponent } from '../ui/forms/zone-form.component';
+import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface CreateEditModalData<T extends Identity = any> {
     /** Service associated with the item being created/edited */
@@ -118,7 +132,22 @@ export interface CreateEditModalData<T extends Identity = any> {
         </fullscreen-modal-shell>
     `,
     styles: [''],
-    standalone: false,
+    imports: [
+        FullscreenModalShellComponent,
+        CommonModule,
+        TranslatePipe,
+        RepositoryFormComponent,
+        TriggerFormComponent,
+        SystemTriggerFormComponent,
+        ApplicationFormComponent,
+        DomainFormComponent,
+        UserFormComponent,
+        DriverFormComponent,
+        ZoneFormComponent,
+        ModuleFormComponent,
+        BrokerFormComponent,
+        SystemFormComponent,
+    ],
 })
 export class ItemCreateUpdateModalComponent
     extends AsyncHandler

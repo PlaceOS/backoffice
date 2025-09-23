@@ -10,6 +10,9 @@ import {
 } from '@placeos/ts-client';
 import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
 import {
@@ -18,6 +21,9 @@ import {
 } from 'apps/backoffice/src/app/common/notifications';
 import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal.component';
 import { BehaviorSubject } from 'rxjs';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
     selector: 'app-brokers',
@@ -178,7 +184,14 @@ import { BehaviorSubject } from 'rxjs';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        IconComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        TranslatePipe,
+        SimpleTableComponent,
+        MatProgressBarModule,
+    ],
 })
 export class AdminBrokersComponent extends AsyncHandler implements OnInit {
     private _dialog = inject(MatDialog);

@@ -1,7 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
+import { DiffViewerComponent } from '../ui/diff-viewer.component';
+import { IconComponent } from '../ui/icon.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
     selector: 'metadata-history-modal',
@@ -143,14 +150,23 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatDialogModule,
+        DiffViewerComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        CommonModule,
+        FormsModule,
+        TranslatePipe,
+        IconComponent,
+    ],
 })
 export class MetadataHistoryModalComponent implements OnInit {
     private _data = inject<{
-    id: string;
-    parent_name: string;
-    name: string;
-}>(MAT_DIALOG_DATA);
+        id: string;
+        parent_name: string;
+        name: string;
+    }>(MAT_DIALOG_DATA);
 
     public readonly id = this._data.id;
     public readonly parent_name = this._data.parent_name;

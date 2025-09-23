@@ -1,5 +1,9 @@
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
+import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ViewResponseModalData {
     title?: string;
@@ -13,13 +17,16 @@ export interface ViewResponseModalData {
             [heading]="title || ('COMMON.VIEW_RESPONSE' | translate)"
             [hide_confirm]="true"
         >
-            <settings-form-field [ngModel]="content_string"
-                [readonly]="true"
-             />
+            <settings-form-field [ngModel]="content_string" [readonly]="true" />
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        FullscreenModalShellComponent,
+        SettingsFieldComponent,
+        FormsModule,
+        TranslatePipe,
+    ],
 })
 export class ViewResponseModalComponent {
     private _data = inject<ViewResponseModalData>(MAT_DIALOG_DATA);

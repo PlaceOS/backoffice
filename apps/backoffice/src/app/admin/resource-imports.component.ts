@@ -1,5 +1,13 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import {
     addSystem,
     authority,
@@ -20,6 +28,9 @@ import {
 import { nextValueFrom, openConfirmModal } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifySuccess, notifyWarn } from '../common/notifications';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ExternalResource {
     id: string;
@@ -175,7 +186,19 @@ export interface ExternalResource {
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        IconComponent,
+        RouterModule,
+        MatRippleModule,
+        TranslatePipe,
+        MatTooltipModule,
+        SimpleTableComponent,
+        CommonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+        MatProgressBarModule,
+    ],
 })
 export class ResourceImportsComponent {
     private _dialog = inject(MatDialog);

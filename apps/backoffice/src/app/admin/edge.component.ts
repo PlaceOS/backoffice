@@ -1,6 +1,10 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     PlaceEdge,
     queryEdges,
@@ -22,6 +26,10 @@ import {
     notifyInfo,
     notifySuccess,
 } from '../common/notifications';
+import { IconComponent } from '../ui/icon.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { EdgeModalComponent } from './edge-modal.component';
 
 @Component({
@@ -166,7 +174,16 @@ import { EdgeModalComponent } from './edge-modal.component';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        IconComponent,
+        TranslatePipe,
+        MatRippleModule,
+        MatTooltipModule,
+        DateFromPipe,
+        SimpleTableComponent,
+        MatProgressBarModule,
+    ],
 })
 export class PlaceEdgeComponent {
     private _dialog = inject(MatDialog);

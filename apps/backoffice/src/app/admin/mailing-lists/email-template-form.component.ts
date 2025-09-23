@@ -1,10 +1,24 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+    FormControl,
+    FormGroup,
+    ReactiveFormsModule,
+    Validators,
+} from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { nextValueFrom } from '../../common/general';
 import { notifySuccess } from '../../common/notifications';
+import { RichTextInputComponent } from '../../ui/custom-fields/rich-text-input.component';
 import { EmailStateService, EmailTemplate } from './email-state.service';
 
 export function extractTextFromHTML(html_string: string) {
@@ -164,7 +178,19 @@ export function extractTextFromHTML(html_string: string) {
         </ng-template>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        CommonModule,
+        MatProgressSpinnerModule,
+        MatRippleModule,
+        RichTextInputComponent,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatMenuModule,
+        MatTooltipModule,
+        RouterModule,
+        MatSelectModule,
+    ],
 })
 export class EmailTemplateFormComponent extends AsyncHandler {
     private _state = inject(EmailStateService);

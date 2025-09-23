@@ -1,5 +1,8 @@
 import { Component, inject } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get, PlaceEdge } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import {
@@ -14,6 +17,9 @@ import { toQueryString } from '../common/api';
 import { openConfirmModal } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 interface BuildJob {
     state: 'pending' | 'running' | 'cancelled' | 'error' | 'done';
@@ -129,7 +135,14 @@ function cancelBuildJob(id, q = {}) {
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        IconComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        TranslatePipe,
+        SimpleTableComponent,
+        MatProgressBarModule,
+    ],
 })
 export class PlaceBuildListComponent {
     private _dialog = inject(MatDialog);

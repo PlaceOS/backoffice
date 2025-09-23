@@ -1,5 +1,7 @@
 import { Component, input, output } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
     csvToJson,
     downloadFile,
@@ -7,6 +9,7 @@ import {
 } from 'apps/backoffice/src/app/common/general';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { TranslatePipe } from '../../ui/translate.pipe';
 
 @Component({
     selector: 'bulk-item-csv-upload',
@@ -52,7 +55,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [MatRippleModule, TranslatePipe, MatProgressSpinnerModule],
 })
 export class CsvUploadComponent {
     /** Data for the template CSV */

@@ -1,14 +1,24 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+    MAT_DIALOG_DATA,
+    MatDialogModule,
+    MatDialogRef,
+} from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
     PlaceModule,
     PlaceSystem,
     systemModuleState,
 } from '@placeos/ts-client';
 
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
+import { IconComponent } from '../ui/icon.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ModuleStateModalData {
     /** System Data to show the details for */
@@ -96,7 +106,15 @@ export interface ModuleStateModalData {
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatDialogModule,
+        MatProgressSpinnerModule,
+        TranslatePipe,
+        SettingsFieldComponent,
+        FormsModule,
+        MatRippleModule,
+        IconComponent,
+    ],
 })
 export class ViewModuleStateModalComponent
     extends AsyncHandler

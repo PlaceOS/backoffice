@@ -1,5 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { shareReplay } from 'rxjs/operators';
+import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { JsonSchema, SchemaStateService } from './schema-state.service';
 
 @Component({
@@ -61,7 +68,12 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                             <input matInput [(ngModel)]="schema_copy.name" />
                         </mat-form-field>
                     </div>
-                    <button btn class="mt-6 h-12 w-40" (click)="saveSchema()">
+                    <button
+                        btn
+                        matRipple
+                        class="mt-6 h-12 w-40"
+                        (click)="saveSchema()"
+                    >
                         {{ 'COMMON.SAVE' | translate }}
                     </button>
                 </div>
@@ -98,7 +110,15 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        TranslatePipe,
+        SettingsFieldComponent,
+        MatFormFieldModule,
+        MatInputModule,
+        FormsModule,
+        CommonModule,
+        MatSelectModule,
+    ],
 })
 export class AdminSchemasComponent {
     private _state = inject(SchemaStateService);

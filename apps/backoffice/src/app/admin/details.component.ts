@@ -20,10 +20,12 @@ import {
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
 import { VERSION } from '../../environments/version';
 
+import { CommonModule } from '@angular/common';
 import { format } from 'date-fns';
 import { lastValueFrom } from 'rxjs';
 import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/locale.service';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface PlaceServiceDetails {
     /** Name of the service */
@@ -190,7 +192,7 @@ export interface PlaceServiceDetails {
             }
         `,
     ],
-    standalone: false,
+    imports: [TranslatePipe, CommonModule],
 })
 export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     private _users = inject(BackofficeUsersService);

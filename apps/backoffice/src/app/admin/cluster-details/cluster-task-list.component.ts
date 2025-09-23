@@ -14,6 +14,13 @@ import {
     terminateProcess,
 } from '@placeos/ts-client';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import {
@@ -37,6 +44,9 @@ import {
     tap,
 } from 'rxjs/operators';
 import { i18n } from '../../common/locale.service';
+import { IconComponent } from '../../ui/icon.component';
+import { SimpleTableComponent } from '../../ui/simple-table.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
 
 const task_details = {};
 
@@ -159,7 +169,18 @@ const task_details = {};
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        SimpleTableComponent,
+        IconComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        TranslatePipe,
+        MatProgressBarModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+    ],
 })
 export class PlaceClusterTaskListComponent
     extends AsyncHandler

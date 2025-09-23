@@ -1,5 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     authority,
     del,
@@ -13,6 +20,9 @@ import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 import { StaffTenantModalComponent } from './staff-tenant-modal.component';
 
@@ -166,7 +176,18 @@ export interface PlaceTenant {
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        IconComponent,
+        MatRippleModule,
+        TranslatePipe,
+        MatTooltipModule,
+        SimpleTableComponent,
+        MatProgressBarModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+    ],
 })
 export class PlaceStaffAPIComponent implements OnInit {
     private _dialog = inject(MatDialog);

@@ -1,12 +1,16 @@
 import {
-  Component,
-  OnChanges,
-  SimpleChanges,
-  input,
-  output
+    Component,
+    OnChanges,
+    SimpleChanges,
+    input,
+    output,
 } from '@angular/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceResource } from '@placeos/ts-client';
 import { Observable } from 'rxjs';
+import { IconComponent } from '../../ui/icon.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
 
 @Component({
     selector: 'bulk-item-status-list',
@@ -59,13 +63,21 @@ import { Observable } from 'rxjs';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatProgressSpinnerModule,
+        IconComponent,
+        MatTooltipModule,
+        TranslatePipe,
+    ],
 })
 export class StatusListComponent implements OnChanges {
     /** List of bulk items to add */
     public readonly list = input<Record<string, any>[]>([]);
     /** Method to save changes to items in the list */
-    public readonly save = input<(item: Record<string, any>) => Observable<PlaceResource>>(undefined);
+    public readonly save =
+        input<(item: Record<string, any>) => Observable<PlaceResource>>(
+            undefined,
+        );
     /** Emitter for completion status of the item upload */
     public readonly done = output<Record<string, any>[]>();
     /** Status of each of the items to be created */

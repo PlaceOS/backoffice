@@ -1,9 +1,20 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+    FormControl,
+    FormGroup,
+    ReactiveFormsModule,
+    Validators,
+} from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { lastValueFrom } from 'rxjs';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
+import { SettingsToggleComponent } from '../../ui/settings-toggle.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
 import { PlaceStorage, saveStorage } from './storage.fn';
 
 @Component({
@@ -174,7 +185,15 @@ import { PlaceStorage, saveStorage } from './storage.fn';
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        FullscreenModalShellComponent,
+        SettingsToggleComponent,
+        TranslatePipe,
+        MatFormFieldModule,
+        MatSelectModule,
+        ReactiveFormsModule,
+        MatInputModule,
+    ],
 })
 export class StorageProviderModalComponent implements OnInit {
     private _data = inject<{ item?: PlaceStorage; domain?: string }>(

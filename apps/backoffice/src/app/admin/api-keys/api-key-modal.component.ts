@@ -1,6 +1,26 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, ElementRef, EventEmitter, Output, inject, viewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    Output,
+    inject,
+    viewChild,
+} from '@angular/core';
+import {
+    FormControl,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    Validators,
+} from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { addChipItem, removeChipItem } from '../../common/forms';
@@ -8,6 +28,8 @@ import { getInvalidFields } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { DialogEvent } from '../../common/types';
+import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
 import { APIKeyService } from './api-keys.service';
 
 @Component({
@@ -201,7 +223,19 @@ import { APIKeyService } from './api-keys.service';
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        CommonModule,
+        FullscreenModalShellComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        TranslatePipe,
+        ReactiveFormsModule,
+        MatMenuModule,
+        FormsModule,
+        MatAutocompleteModule,
+        MatInputModule,
+        MatChipsModule,
+    ],
 })
 export class APIKeyModalComponent {
     private _service = inject(APIKeyService);
@@ -222,7 +256,8 @@ export class APIKeyModalComponent {
     public readonly search_str = new BehaviorSubject('');
     public readonly scopes = this._service.available_scopes;
 
-    public readonly _input_el = viewChild<ElementRef<HTMLInputElement>>('input');
+    public readonly _input_el =
+        viewChild<ElementRef<HTMLInputElement>>('input');
 
     public readonly users = combineLatest([
         this._service.users,

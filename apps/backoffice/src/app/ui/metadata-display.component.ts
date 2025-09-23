@@ -38,7 +38,7 @@ import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
 } from '../overlays/confirm-modal.component';
-import { MetadataDetailsModalComponent } from '../overlays/metadata-details-modal/metadata-details-modal.component';
+import { MetadataDetailsModalComponent } from '../overlays/metadata-details-modal.component';
 import { MetadataHistoryModalComponent } from '../overlays/metadata-history-modal.component';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { IconComponent } from './icon.component';

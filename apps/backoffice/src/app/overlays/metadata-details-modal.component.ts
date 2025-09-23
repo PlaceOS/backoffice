@@ -1,11 +1,17 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, OnInit, inject } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatRippleModule } from '@angular/material/core';
 import {
-    addChipItem,
-    removeChipItem,
-} from 'apps/backoffice/src/app/common/forms';
+    MAT_DIALOG_DATA,
+    MatDialogModule,
+    MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { addChipItem, removeChipItem } from '../common/forms';
+import { IconComponent } from '../ui/icon.component';
 
 export interface MetadataDetailsModalData {
     form: FormGroup;
@@ -103,7 +109,16 @@ export interface MetadataDetailsModalData {
         </footer>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatDialogModule,
+        MatRippleModule,
+        MatFormFieldModule,
+        ReactiveFormsModule,
+        MatChipsModule,
+        IconComponent,
+        MatInputModule,
+        ReactiveFormsModule,
+    ],
 })
 export class MetadataDetailsModalComponent implements OnInit {
     private _dialog_ref =

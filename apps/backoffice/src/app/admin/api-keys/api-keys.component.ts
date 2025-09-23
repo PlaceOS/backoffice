@@ -1,9 +1,20 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { authority } from '@placeos/ts-client';
 import { nextValueFrom } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { notifyInfo } from '../../common/notifications';
+import { IconComponent } from '../../ui/icon.component';
+import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
+import { SimpleTableComponent } from '../../ui/simple-table.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
 import { APIKeyService } from './api-keys.service';
 
 @Component({
@@ -170,7 +181,19 @@ import { APIKeyService } from './api-keys.service';
         </ng-template>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        TranslatePipe,
+        IconComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        DateFromPipe,
+        SimpleTableComponent,
+        MatProgressBarModule,
+        CommonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+    ],
 })
 export class AdminAPIKeysComponent implements OnInit {
     private _service = inject(APIKeyService);

@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { listInterfaceRepositories } from '@placeos/ts-client';
 
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
     selector: 'app-interfaces',
@@ -54,7 +57,7 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
             }
         `,
     ],
-    standalone: false,
+    imports: [SimpleTableComponent, TranslatePipe, MatProgressBarModule],
 })
 export class AdminInterfacesComponent implements OnInit {
     /** List of interfaces */

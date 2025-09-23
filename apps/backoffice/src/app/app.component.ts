@@ -1,4 +1,10 @@
-import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    inject,
+    OnInit,
+    signal,
+    ViewEncapsulation,
+} from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SwUpdate } from '@angular/service-worker';
 import {
@@ -16,7 +22,6 @@ import {
     setAPI_Key,
     token,
 } from '@placeos/ts-client';
-import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
@@ -36,7 +41,7 @@ import { LocaleService, setTranslationService } from './common/locale.service';
     selector: 'placeos-root',
     template: `
         <div class="flex h-full w-full flex-col overflow-hidden">
-            @if (!(loading | async)) {
+            @if (!loading()) {
                 <global-banner></global-banner>
                 <div class="relative h-1/2 w-full flex-1">
                     <router-outlet></router-outlet>
@@ -55,7 +60,7 @@ import { LocaleService, setTranslationService } from './common/locale.service';
                 </div>
             }
         </div>
-        @if (!online && !(loading | async)) {
+        @if (!online && !loading()) {
             <div
                 class="fixed bottom-2 left-1/2 z-[9999] -translate-x-1/2 rounded-3xl bg-error px-4 py-2 text-xs text-base-100 shadow"
             >
@@ -82,9 +87,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
     private _locale = inject(LocaleService, { optional: true });
 
     /** Whether the application is loading */
-    private _loading = new BehaviorSubject<boolean>(false);
-    /** Observable for whether the application is initialising */
-    public readonly loading = this._loading.asObservable();
+    public readonly loading = signal(false);
     /**  */
     public filter: string;
     /**  */
@@ -121,7 +124,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
         });
         setNotifyOutlet(this._snackbar);
         setTranslationService(this._locale);
-        this._loading.next(true);
+        this.loading.set(true);
         /** Wait for settings to initialise */
         await this._settings.initialised.pipe(first((_) => _)).toPromise();
         const settings = this._settings.get('composer') || {};
@@ -133,7 +136,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
         this.timeout('wait_for_user', () => this.onInitError(), 30 * 1000);
         await this._users.initialised.pipe(first((_) => _)).toPromise();
         this.clearTimeout('wait_for_user');
-        this._loading.next(false);
+        this.loading.set(false);
         this.timeout('init_uploads', () => {
             initialiseUploadService({
                 auto_start: true,

@@ -1,15 +1,21 @@
 import {
-  Component,
-  OnChanges,
-  SimpleChanges,
-  TemplateRef,
-  input,
-  output,
-  viewChild
+    Component,
+    OnChanges,
+    SimpleChanges,
+    TemplateRef,
+    input,
+    output,
+    viewChild,
 } from '@angular/core';
 
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
-import { TableColumn } from '../../ui/simple-table.component';
+import {
+    SimpleTableComponent,
+    TableColumn,
+} from '../../ui/simple-table.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
 
 @Component({
     selector: 'bulk-item-list',
@@ -41,7 +47,12 @@ import { TableColumn } from '../../ui/simple-table.component';
         </ng-template>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        FormsModule,
+        MatRippleModule,
+        SimpleTableComponent,
+        TranslatePipe,
+    ],
 })
 export class ListComponent implements OnChanges {
     /** List of bulk items to add */

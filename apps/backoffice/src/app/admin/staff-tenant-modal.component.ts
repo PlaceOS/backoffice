@@ -1,11 +1,24 @@
-import { Component, OnInit, inject, output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, inject, OnInit, output } from '@angular/core';
+import {
+    FormControl,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    Validators,
+} from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
 import { getInvalidFields } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
+import { ObjectListFieldComponent } from '../ui/custom-fields/object-list-field.component';
+import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
+import { SettingsToggleComponent } from '../ui/settings-toggle.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { PlaceTenant } from './staff-api.component';
 
 const FIELD_NAME_MAPPING: HashMap<string> = {
@@ -408,11 +421,22 @@ export interface StaffTenantModalData {
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        FullscreenModalShellComponent,
+        ObjectListFieldComponent,
+        ReactiveFormsModule,
+        TranslatePipe,
+        MatFormFieldModule,
+        MatInputModule,
+        FormsModule,
+        SettingsToggleComponent,
+        MatSelectModule,
+    ],
 })
 export class StaffTenantModalComponent implements OnInit {
     private _data = inject<StaffTenantModalData>(MAT_DIALOG_DATA);
-    private _dialog_ref = inject<MatDialogRef<StaffTenantModalComponent>>(MatDialogRef);
+    private _dialog_ref =
+        inject<MatDialogRef<StaffTenantModalComponent>>(MatDialogRef);
 
     public readonly event = output<DialogEvent>();
 

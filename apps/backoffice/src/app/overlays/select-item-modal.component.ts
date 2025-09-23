@@ -1,9 +1,15 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatRippleModule } from '@angular/material/core';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 
+import { FormsModule } from '@angular/forms';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { DialogEvent } from 'apps/backoffice/src/app/common/types';
 import { Observable } from 'rxjs';
+import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
+import { IconComponent } from '../ui/icon.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface SelectItemModalData<T = any> {
     service_name: string;
@@ -20,7 +26,7 @@ export interface SelectItemModalData<T = any> {
                 {{ 'COMMON.ITEM_ADD' | translate: { item: name } }}
             </h3>
             @if (!loading) {
-                <button btn icon mat-dialog-close>
+                <button icon matRipple mat-dialog-close>
                     <app-icon>close</app-icon>
                 </button>
             }
@@ -60,7 +66,15 @@ export interface SelectItemModalData<T = any> {
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatDialogModule,
+        MatRippleModule,
+        TranslatePipe,
+        MatProgressSpinnerModule,
+        ItemSearchFieldComponent,
+        FormsModule,
+        IconComponent,
+    ],
 })
 export class SelectItemModalComponent extends AsyncHandler {
     private _data = inject<SelectItemModalData>(MAT_DIALOG_DATA);

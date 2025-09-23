@@ -1,5 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, queryDomains } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
@@ -12,6 +19,9 @@ import {
 } from 'rxjs/operators';
 import { openConfirmModal } from '../../common/general';
 import { i18n } from '../../common/locale.service';
+import { IconComponent } from '../../ui/icon.component';
+import { SimpleTableComponent } from '../../ui/simple-table.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
 import { StorageProviderModalComponent } from './storage-provider-modal.component';
 import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
 
@@ -164,7 +174,18 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
         </ng-template>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        IconComponent,
+        MatRippleModule,
+        TranslatePipe,
+        MatTooltipModule,
+        SimpleTableComponent,
+        MatProgressBarModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        CommonModule,
+        FormsModule,
+    ],
 })
 export class StorageComponent {
     private _dialog = inject(MatDialog);

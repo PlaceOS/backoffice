@@ -1,26 +1,17 @@
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
-import { ROUTES } from './admin.routes';
-
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { SharedContentModule } from '../ui/ui.module';
+import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
+import { AuthorisedAdminGuard } from '../ui/guards/authorised-admin.guard';
 import { PlaceComponent } from './admin.component';
-import { APIKeyModalComponent } from './api-keys/api-key-modal.component';
 import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
 import { APIKeyService } from './api-keys/api-keys.service';
-import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 import { AdminBrokersComponent } from './brokers.component';
 import { PlaceBuildListComponent } from './build-list.component';
 import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
-import { AdminClusterNodeComponent } from './cluster-details/cluster-node.component';
-import { PlaceClusterTaskListComponent } from './cluster-details/cluster-task-list.component';
 import { PlaceDatabaseDetailsComponent } from './database-details.component';
 import { PlaceDetailsComponent } from './details.component';
-import { EdgeModalComponent } from './edge-modal.component';
 import { PlaceEdgeComponent } from './edge.component';
-import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
 import { PlaceExtensionsComponent } from './extensions.component';
 import { AdminInterfacesComponent } from './interfaces.component';
 import { EmailTemplateFormComponent } from './mailing-lists/email-template-form.component';
@@ -28,48 +19,49 @@ import { EmailTemplatesComponent } from './mailing-lists/email-templates.compone
 import { ResourceImportsComponent } from './resource-imports.component';
 import { AdminSchemasComponent } from './schemas.component';
 import { PlaceStaffAPIComponent } from './staff-api.component';
-import { StaffTenantModalComponent } from './staff-tenant-modal.component';
-import { StorageProviderModalComponent } from './storage/storage-provider-modal.component';
 import { StorageComponent } from './storage/storage.component';
 import { UploadLibraryComponent } from './upload-library.component';
-import { ViewUploadModalComponent } from './view-upload-modal.component';
+
+export const ROUTES: Routes = [
+    {
+        path: '',
+        component: PlaceComponent,
+        canActivate: [AuthorisedAdminGuard],
+        children: [
+            { path: 'about', component: PlaceDetailsComponent },
+            { path: 'database', component: PlaceDatabaseDetailsComponent },
+            { path: 'clusters', component: PlaceClusterDetailsComponent },
+            { path: 'interfaces', component: AdminInterfacesComponent },
+            { path: 'brokers', component: AdminBrokersComponent },
+            { path: 'edge', component: PlaceEdgeComponent },
+            { path: 'edge/:id', component: PlaceEdgeComponent },
+            { path: 'extensions', component: PlaceExtensionsComponent },
+            { path: 'staff-api', component: PlaceStaffAPIComponent },
+            { path: 'resource-imports', component: ResourceImportsComponent },
+            { path: 'schemas', component: AdminSchemasComponent },
+            { path: 'api-keys', component: AdminAPIKeysComponent },
+            { path: 'upload-storage', component: StorageComponent },
+            { path: 'upload-library', component: UploadLibraryComponent },
+            {
+                path: 'mailing-list',
+                children: [
+                    { path: '', component: EmailTemplatesComponent },
+                    { path: 'edit', component: EmailTemplateFormComponent },
+                    { path: 'edit/:id', component: EmailTemplateFormComponent },
+                    { path: '**', redirectTo: '' },
+                ],
+            },
+            { path: 'build-jobs', component: PlaceBuildListComponent },
+            { path: 'extend/:id', component: ExtensionOutletComponent },
+            { path: '**', redirectTo: 'about' },
+        ],
+    },
+    { path: '**', redirectTo: '' },
+];
 
 @NgModule({
-    declarations: [
-        PlaceComponent,
-        PlaceDatabaseDetailsComponent,
-        PlaceDetailsComponent,
-        PlaceClusterDetailsComponent,
-        PlaceClusterTaskListComponent,
-        PlaceExtensionsComponent,
-        AdminInterfacesComponent,
-        AdminBrokersComponent,
-        ExtensionModalComponent,
-        PlaceStaffAPIComponent,
-        StaffTenantModalComponent,
-        PlaceEdgeComponent,
-        EdgeModalComponent,
-        AdminClusterNodeComponent,
-        AdminSchemasComponent,
-        AdminAPIKeysComponent,
-        APIKeyModalComponent,
-        BookingLimitsModalComponent,
-        StorageComponent,
-        StorageProviderModalComponent,
-        UploadLibraryComponent,
-        ViewUploadModalComponent,
-        ResourceImportsComponent,
-        EmailTemplatesComponent,
-        EmailTemplateFormComponent,
-        PlaceBuildListComponent,
-    ],
-    imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        ScrollingModule,
-        RouterModule.forChild(ROUTES),
-        SharedContentModule,
-    ],
+    declarations: [],
+    imports: [RouterModule.forChild(ROUTES)],
     providers: [APIKeyService],
 })
 export class AppPlaceModule {}

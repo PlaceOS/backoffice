@@ -1,5 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatRippleModule } from '@angular/material/core';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { AuthenticatedImageDirective } from '../ui/authenticated-image.directive';
+import { IconComponent } from '../ui/icon.component';
 import { UploadInfo } from './upload-library.component';
 
 @Component({
@@ -42,12 +45,17 @@ import { UploadInfo } from './upload-library.component';
         </main>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatDialogModule,
+        AuthenticatedImageDirective,
+        IconComponent,
+        MatRippleModule,
+    ],
 })
 export class ViewUploadModalComponent {
     private _data = inject<{
-    upload: UploadInfo;
-}>(MAT_DIALOG_DATA);
+        upload: UploadInfo;
+    }>(MAT_DIALOG_DATA);
 
     public readonly resource = `/api/engine/v2/uploads/${this._data.upload.id}/url`;
     public readonly type = this._data.upload.mime_type.split('/')[0];

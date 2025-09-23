@@ -1,6 +1,11 @@
 import { Component, Type, inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+    MAT_DIALOG_DATA,
+    MatDialogModule,
+    MatDialogRef,
+} from '@angular/material/dialog';
 
+import { MatRippleModule } from '@angular/material/core';
 import {
     PlaceDriver,
     PlaceModule,
@@ -12,6 +17,12 @@ import {
 import { unique } from 'apps/backoffice/src/app/common/general';
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 import { Observable } from 'rxjs';
+import { IconComponent } from '../../ui/icon.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
+import { CsvUploadComponent } from './csv-upload.component';
+import { ListComponent } from './list.component';
+import { MatchFieldsComponent } from './match-fields.component';
+import { StatusListComponent } from './status-list.component';
 import {
     DRIVER_TEMPLATE,
     MODULE_TEMPLATE,
@@ -44,7 +55,7 @@ export interface BulkItemModalData<T = HashMap<any>> {
                 {{ 'COMMON.BULK_ADD' | translate: { type: type } }}
             </h3>
             @if (!loading) {
-                <button btn icon mat-dialog-close>
+                <button icon matRipple mat-dialog-close>
                     <app-icon>close</app-icon>
                 </button>
             }
@@ -118,10 +129,20 @@ export interface BulkItemModalData<T = HashMap<any>> {
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        MatDialogModule,
+        TranslatePipe,
+        IconComponent,
+        MatRippleModule,
+        StatusListComponent,
+        ListComponent,
+        MatchFieldsComponent,
+        CsvUploadComponent,
+    ],
 })
 export class BulkItemModalComponent<T = HashMap<any>> {
-    private _dialog_ref = inject<MatDialogRef<BulkItemModalComponent>>(MatDialogRef);
+    private _dialog_ref =
+        inject<MatDialogRef<BulkItemModalComponent>>(MatDialogRef);
     private _data = inject<BulkItemModalData<T>>(MAT_DIALOG_DATA);
 
     /** Current step in the bulk add flow */

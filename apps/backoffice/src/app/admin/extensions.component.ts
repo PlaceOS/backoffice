@@ -1,5 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     PlaceDomain,
     authority,
@@ -15,6 +21,9 @@ import {
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { debounceTime, first, map, shareReplay } from 'rxjs/operators';
 import { nextValueFrom } from '../common/general';
+import { IconComponent } from '../ui/icon.component';
+import { SimpleTableComponent } from '../ui/simple-table.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
 
 export interface BackofficeExtension {
@@ -164,7 +173,17 @@ export interface BackofficeExtension {
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        IconComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        TranslatePipe,
+        SimpleTableComponent,
+        MatProgressBarModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+    ],
 })
 export class PlaceExtensionsComponent implements OnInit {
     private _dialog = inject(MatDialog);

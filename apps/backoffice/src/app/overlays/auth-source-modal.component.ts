@@ -1,5 +1,5 @@
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { FormsModule, UntypedFormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     addLDAPSource,
@@ -14,6 +14,8 @@ import {
     updateSAMLSource,
 } from '@placeos/ts-client';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     notifyError,
@@ -27,6 +29,11 @@ import {
 } from 'apps/backoffice/src/app/domains/auth-sources.utilities';
 import { Observable } from 'rxjs';
 import { i18n } from '../common/locale.service';
+import { LdapSourceFormComponent } from '../ui/forms/ldap-source-form.component';
+import { OauthSourceFormComponent } from '../ui/forms/oauth-source-form.component';
+import { SamlSourceFormComponent } from '../ui/forms/saml-source-form.component';
+import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface AuthSourceModalData {
     /** Domain the auth source is associated with */
@@ -90,10 +97,20 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        FullscreenModalShellComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        TranslatePipe,
+        FormsModule,
+        SamlSourceFormComponent,
+        LdapSourceFormComponent,
+        OauthSourceFormComponent,
+    ],
 })
 export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
-    private _dialog = inject<MatDialogRef<AuthSourceModalComponent>>(MatDialogRef);
+    private _dialog =
+        inject<MatDialogRef<AuthSourceModalComponent>>(MatDialogRef);
     private _data = inject<AuthSourceModalData>(MAT_DIALOG_DATA);
 
     /** Emitter for events on the modal */

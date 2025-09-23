@@ -1,5 +1,7 @@
 import { Component, inject } from '@angular/core';
 
+import { MatRippleModule } from '@angular/material/core';
+import { RouterModule } from '@angular/router';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { timer } from 'rxjs';
 import { extensionsForItem } from '../common/api';
@@ -7,6 +9,9 @@ import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { SettingsService } from '../common/settings.service';
+import { DebugOutputComponent } from '../ui/debug-output.component';
+import { IconComponent } from '../ui/icon.component';
+import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
 import { BackofficeUsersService } from '../users/users.service';
 
 @Component({
@@ -44,8 +49,8 @@ import { BackofficeUsersService } from '../users/users.service';
                         <router-outlet></router-outlet>
                     </div>
                     <button
-                        btn
                         icon
+                        matRipple
                         class="absolute left-4 top-2 z-40 mr-2 sm:hidden"
                         (click)="open_menu = true"
                     >
@@ -80,7 +85,13 @@ import { BackofficeUsersService } from '../users/users.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        DebugOutputComponent,
+        IconComponent,
+        MatRippleModule,
+        SidebarMenuComponent,
+        RouterModule,
+    ],
 })
 export class PlaceComponent extends AsyncHandler {
     private _settings = inject(SettingsService);

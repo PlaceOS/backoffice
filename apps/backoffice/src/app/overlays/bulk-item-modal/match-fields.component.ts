@@ -8,7 +8,12 @@ import {
     output,
 } from '@angular/core';
 
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
+import { TranslatePipe } from '../../ui/translate.pipe';
 
 @Component({
     selector: 'bulk-item-match-fields',
@@ -52,7 +57,13 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        TranslatePipe,
+        MatRippleModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+    ],
 })
 export class MatchFieldsComponent implements OnChanges, OnInit {
     /** List of bulk items to add */

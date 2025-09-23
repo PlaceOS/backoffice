@@ -4,6 +4,10 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 
 import { marked } from 'marked';
+import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
+import { IconComponent } from '../ui/icon.component';
+import { SafePipe } from '../ui/pipes/safe.pipe';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ChangelogModalData {
     changelog: string;
@@ -34,7 +38,12 @@ export interface ChangelogModalData {
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        FullscreenModalShellComponent,
+        SafePipe,
+        TranslatePipe,
+        IconComponent,
+    ],
 })
 export class ChangelogModalComponent extends AsyncHandler {
     private _data = inject<ChangelogModalData>(MAT_DIALOG_DATA);

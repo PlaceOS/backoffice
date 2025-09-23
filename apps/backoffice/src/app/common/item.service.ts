@@ -11,13 +11,9 @@ import {
     QueryResponse,
     querySettings,
 } from '@placeos/ts-client';
-import {
-    DialogEvent,
-    HashMap,
-    Identity,
-} from 'apps/backoffice/src/app/common/types';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
+import { DialogEvent, HashMap, Identity } from '../common/types';
 import { BulkItemModalComponent } from '../overlays/bulk-item-modal/bulk-item-modal.component';
 import {
     CONFIRM_METADATA,
@@ -27,7 +23,7 @@ import {
 import {
     DuplicateModalComponent,
     DuplicateModalData,
-} from '../overlays/duplicate-modal/duplicate-modal.component';
+} from '../overlays/duplicate-modal.component';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
 import { ACTIONS, ItemActions } from './actions';

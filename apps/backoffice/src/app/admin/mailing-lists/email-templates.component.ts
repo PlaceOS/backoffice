@@ -1,6 +1,13 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { RouterModule } from '@angular/router';
 import { authority } from '@placeos/ts-client';
 import { nextValueFrom } from '../../common/general';
+import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { EmailStateService } from './email-state.service';
 
 @Component({
@@ -55,7 +62,15 @@ import { EmailStateService } from './email-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        SimpleTableComponent,
+        MatProgressBarModule,
+        CommonModule,
+        RouterModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+    ],
 })
 export class EmailTemplatesComponent implements OnInit {
     private _service = inject(EmailStateService);

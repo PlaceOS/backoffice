@@ -12,7 +12,12 @@ import { PlaceCluster, queryClusters } from '@placeos/ts-client';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
+import { MatRippleModule } from '@angular/material/core';
 import { interval } from 'rxjs';
+import { IconComponent } from '../../ui/icon.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
+import { AdminClusterNodeComponent } from './cluster-node.component';
+import { PlaceClusterTaskListComponent } from './cluster-task-list.component';
 
 @Component({
     selector: 'engine-cluster-details',
@@ -80,7 +85,13 @@ import { interval } from 'rxjs';
         </div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        IconComponent,
+        TranslatePipe,
+        PlaceClusterTaskListComponent,
+        MatRippleModule,
+        AdminClusterNodeComponent,
+    ],
 })
 export class PlaceClusterDetailsComponent
     extends AsyncHandler

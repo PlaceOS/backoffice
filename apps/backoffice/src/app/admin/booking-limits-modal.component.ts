@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { post } from '@placeos/ts-client';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { ObjectListFieldComponent } from '../ui/custom-fields/object-list-field.component';
+import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { StaffTenantModalData } from './staff-tenant-modal.component';
 
 @Component({
@@ -25,7 +27,11 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        FullscreenModalShellComponent,
+        ObjectListFieldComponent,
+        ReactiveFormsModule,
+    ],
 })
 export class BookingLimitsModalComponent {
     private _data: StaffTenantModalData = inject(MAT_DIALOG_DATA);

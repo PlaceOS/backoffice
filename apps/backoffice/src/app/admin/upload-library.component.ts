@@ -1,6 +1,15 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     apiKey,
     authority,
@@ -29,6 +38,8 @@ import {
     notifySuccess,
 } from '../common/notifications';
 import { UploadsService } from '../common/uploads.service';
+import { IconComponent } from '../ui/icon.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 
 function getMimeType(filename: string): string {
@@ -333,7 +344,19 @@ export interface UploadInfo {
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        IconComponent,
+        ScrollingModule,
+        TranslatePipe,
+        MatRippleModule,
+        MatTooltipModule,
+        MatProgressBarModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        FormsModule,
+    ],
 })
 export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     private _dialog = inject(MatDialog);

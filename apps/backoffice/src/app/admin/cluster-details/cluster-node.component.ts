@@ -11,6 +11,8 @@ import {
 import { humanReadableByteCount } from '@placeos/ts-client';
 
 import { Point } from '../../common/types';
+import { BasicLineGraphComponent } from '../../ui/basic-line-graph.component';
+import { TranslatePipe } from '../../ui/translate.pipe';
 
 interface PlaceClusterRunCounts {
     modules: number;
@@ -74,7 +76,7 @@ export interface PlaceClusterUsageStamp {
         </div>
     `,
     styles: [],
-    standalone: false,
+    imports: [TranslatePipe, BasicLineGraphComponent],
 })
 export class AdminClusterNodeComponent implements OnChanges, OnInit {
     public readonly show_name = input(true);

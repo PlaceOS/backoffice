@@ -2,7 +2,10 @@ import { Component, signal } from '@angular/core';
 import { apiEndpoint, post } from '@placeos/ts-client';
 import { lastValueFrom } from 'rxjs';
 
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 function reindex(backfill = true) {
     const url = `${apiEndpoint()}/reindex${backfill ? '?backfill=true' : ''}`;
@@ -29,6 +32,7 @@ function backfill() {
                 </p>
                 <button
                     btn
+                    matRipple
                     class="w-[calc(100%-0.5rem)]"
                     [disabled]="reindexing()"
                     (click)="reindex()"
@@ -50,6 +54,7 @@ function backfill() {
                 </p>
                 <button
                     btn
+                    matRipple
                     class="w-[calc(100%-0.5rem)]"
                     [disabled]="backfilling()"
                     (click)="backfill()"
@@ -84,7 +89,7 @@ function backfill() {
             }
         `,
     ],
-    standalone: false,
+    imports: [MatProgressSpinnerModule, TranslatePipe, MatRippleModule],
 })
 export class PlaceDatabaseDetailsComponent {
     /** Whether backend is reindexing the database */
