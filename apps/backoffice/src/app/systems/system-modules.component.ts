@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -24,8 +25,10 @@ import {
 } from 'apps/backoffice/src/app/overlays/view-module-state.component';
 import { map } from 'rxjs/operators';
 import { i18n } from '../common/locale.service';
+import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
+import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { SystemStateService } from './system-state.service';
 
@@ -373,6 +376,9 @@ import { SystemStateService } from './system-state.service';
         TranslatePipe,
         MatCheckboxModule,
         MatTooltipModule,
+        CommonModule,
+        SimpleTableComponent,
+        ExecuteMethodFieldComponent,
     ],
 })
 export class SystemModulesComponent extends AsyncHandler {

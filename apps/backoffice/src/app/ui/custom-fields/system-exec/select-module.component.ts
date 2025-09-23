@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
     Component,
     forwardRef,
@@ -74,6 +75,7 @@ export interface ModuleLike {
         MatSelectModule,
         TranslatePipe,
         FormsModule,
+        CommonModule,
     ],
 })
 export class SelectModuleComponent

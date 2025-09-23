@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { PlaceDriver, queryModules } from '@placeos/ts-client';
 import { lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -15,6 +16,7 @@ import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsComponent } from '../ui/item-details.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
+import { ItemTablistComponent } from '../ui/item-tablist.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
@@ -113,9 +115,11 @@ import { DriverStateService } from './driver-state.service';
         MatRippleModule,
         MatTooltipModule,
         ItemDetailsComponent,
+        ItemTablistComponent,
         ItemSelectionComponent,
         ItemSidebarComponent,
         SidebarMenuComponent,
+        RouterModule,
     ],
 })
 export class DriversComponent extends AsyncHandler implements OnInit {

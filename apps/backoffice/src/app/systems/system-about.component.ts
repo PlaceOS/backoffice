@@ -20,7 +20,7 @@ import { SystemStateService } from './system-state.service';
         >
             <div class="flex-1">
                 <div
-                    class="inline-grid w-full gap-2 rounded border border-base-200 p-4"
+                    class="grid w-full gap-2 rounded border border-base-200 p-4"
                     [style.gridTemplateColumns]="'7.5rem auto'"
                 >
                     @if (item()?.support_url) {
@@ -142,33 +142,33 @@ import { SystemStateService } from './system-state.service';
                     </div>
                 </div>
             </div>
-            <div
-                class="inline-flex flex-1 flex-col rounded border border-base-200 sm:w-1/3"
-            >
-                <h3
-                    class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
-                >
-                    {{ 'SYSTEMS.CONTROLS' | translate }}
-                </h3>
-                <div class="flex flex-wrap items-center p-1">
-                    <button
-                        btn
-                        start
-                        matRipple
-                        class="m-1 min-w-36 flex-1"
-                        (click)="start()"
+            <div class="flex-1">
+                <div class="flex flex-col rounded border border-base-200">
+                    <h3
+                        class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
                     >
-                        {{ 'SYSTEMS.START' | translate }}
-                    </button>
-                    <button
-                        btn
-                        stop
-                        matRipple
-                        class="inverse error m-1 min-w-36 flex-1"
-                        (click)="stop()"
-                    >
-                        {{ 'SYSTEMS.STOP' | translate }}
-                    </button>
+                        {{ 'SYSTEMS.CONTROLS' | translate }}
+                    </h3>
+                    <div class="flex flex-wrap items-center p-1">
+                        <button
+                            btn
+                            start
+                            matRipple
+                            class="m-1 min-w-36 flex-1"
+                            (click)="start()"
+                        >
+                            {{ 'SYSTEMS.START' | translate }}
+                        </button>
+                        <button
+                            btn
+                            stop
+                            matRipple
+                            class="inverse error m-1 min-w-36 flex-1"
+                            (click)="stop()"
+                        >
+                            {{ 'SYSTEMS.STOP' | translate }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>

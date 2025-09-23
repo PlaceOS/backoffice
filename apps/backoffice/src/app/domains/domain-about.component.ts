@@ -42,7 +42,7 @@ import { DomainStateService } from './domain-state.service';
                 >
                     {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
                 </div>
-                @for (domain of item.email_domains; track domain.id) {
+                @for (domain of item.email_domains; track domain) {
                     <button
                         matRipple
                         class="mono rounded p-2 text-left text-sm hover:bg-base-200"

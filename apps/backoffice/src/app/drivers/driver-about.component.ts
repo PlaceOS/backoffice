@@ -12,6 +12,7 @@ import { notifyInfo } from '../common/notifications';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { SafePipe } from '../ui/pipes/safe.pipe';
 import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
@@ -24,7 +25,7 @@ import { DriverStateService } from './driver-state.service';
         >
             <div class="flex-1 sm:w-1/3">
                 <div
-                    class="inline-grid gap-2 rounded border border-base-200 p-4"
+                    class="grid gap-2 rounded border border-base-200 p-4"
                     [style.gridTemplateColumns]="'6rem auto'"
                 >
                     @if (item().default_uri) {
@@ -105,7 +106,7 @@ import { DriverStateService } from './driver-state.service';
             </div>
             <div class="flex-1 sm:w-1/3">
                 <div
-                    class="inline-grid gap-2 rounded border border-base-200 p-4"
+                    class="grid gap-4 rounded border border-base-200 p-4"
                     [style.gridTemplateColumns]="'5.5rem auto'"
                 >
                     <div class="flex items-center text-sm font-medium">
@@ -216,6 +217,7 @@ import { DriverStateService } from './driver-state.service';
         CommonModule,
         DateFromPipe,
         RouterModule,
+        SafePipe,
     ],
 })
 export class DriverAboutComponent extends AsyncHandler implements OnInit {

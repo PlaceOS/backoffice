@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { PlaceSystem } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -110,6 +111,7 @@ import { SystemStateService } from './system-state.service';
         ItemSelectionComponent,
         ItemSidebarComponent,
         SidebarMenuComponent,
+        RouterModule,
     ],
 })
 export class SystemsComponent extends AsyncHandler implements OnInit {
