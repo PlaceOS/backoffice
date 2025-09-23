@@ -1,20 +1,29 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
-import { ROUTES } from './modules.routes';
-
+import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
+import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
 import { ModuleAboutComponent } from './module-about.component';
 import { ModuleSystemsComponent } from './module-systems.component';
-
 import { ModulesComponent } from './modules.component';
+
+export const ROUTES: Routes = [
+    {
+        path: ':id',
+        component: ModulesComponent,
+        children: [
+            { path: 'about', component: ModuleAboutComponent },
+            { path: 'systems', component: ModuleSystemsComponent },
+            { path: 'extend/:id', component: ExtensionOutletComponent },
+            { path: 'history', component: SettingsHistoryViewComponent },
+            { path: '**', redirectTo: 'about' },
+        ],
+    },
+    { path: '**', redirectTo: '-' },
+];
 
 @NgModule({
     declarations: [],
-    imports: [
-        ModuleAboutComponent,
-        ModuleSystemsComponent,
-        ModulesComponent,
-        RouterModule.forChild(ROUTES),
-    ],
+    imports: [RouterModule.forChild(ROUTES)],
 })
 export class AppModulesModule {}

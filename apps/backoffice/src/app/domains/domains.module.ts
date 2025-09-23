@@ -1,23 +1,34 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
-import { ROUTES } from './domains.routes';
-
+import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { DomainAboutComponent } from './domain-about.component';
 import { DomainApplicationsComponent } from './domain-applications.component';
 import { DomainAuthenticationComponent } from './domain-authentication.component';
 import { DomainUsersComponent } from './domain-users.component';
 import { DomainsComponent } from './domains.component';
 
+export const ROUTES: Routes = [
+    {
+        path: ':id',
+        component: DomainsComponent,
+        children: [
+            { path: 'about', component: DomainAboutComponent },
+            { path: 'applications', component: DomainApplicationsComponent },
+            {
+                path: 'authentication',
+                component: DomainAuthenticationComponent,
+            },
+            { path: 'users', component: DomainUsersComponent },
+            { path: 'extend/:id', component: ExtensionOutletComponent },
+            { path: '**', redirectTo: 'about' },
+        ],
+    },
+    { path: '**', redirectTo: '-' },
+];
+
 @NgModule({
     declarations: [],
-    imports: [
-        DomainApplicationsComponent,
-        DomainAuthenticationComponent,
-        DomainUsersComponent,
-        DomainAboutComponent,
-        DomainsComponent,
-        RouterModule.forChild(ROUTES),
-    ],
+    imports: [RouterModule.forChild(ROUTES)],
 })
 export class AppDomainsModule {}

@@ -30,14 +30,6 @@ export const ROUTES: Routes = [
 
 @NgModule({
     declarations: [],
-    imports: [
-        SystemAboutComponent,
-        SystemModulesComponent,
-        SystemTriggersComponent,
-        SystemZonesComponent,
-        SystemMetadataComponent,
-        SystemsComponent,
-        RouterModule.forChild(ROUTES),
-    ],
+    imports: [RouterModule.forChild(ROUTES)],
 })
 export class AppSystemsModule {}

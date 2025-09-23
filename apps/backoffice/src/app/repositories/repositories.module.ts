@@ -1,20 +1,27 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
-import { ROUTES } from './repositories.routes';
-
+import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
+import { RepositoriesComponent } from './repositories.component';
 import { RepositoryAboutComponent } from './repository-about.component';
 import { RepositoryDriversComponent } from './repository-drivers.component';
 
-import { RepositoriesComponent } from './repositories.component';
+export const ROUTES: Routes = [
+    {
+        path: ':id',
+        component: RepositoriesComponent,
+        children: [
+            { path: 'about', component: RepositoryAboutComponent },
+            { path: 'drivers', component: RepositoryDriversComponent },
+            { path: 'extend/:id', component: ExtensionOutletComponent },
+            { path: '**', redirectTo: 'about' },
+        ],
+    },
+    { path: '**', redirectTo: '-' },
+];
 
 @NgModule({
     declarations: [],
-    imports: [
-        RepositoryAboutComponent,
-        RepositoryDriversComponent,
-        RepositoriesComponent,
-        RouterModule.forChild(ROUTES),
-    ],
+    imports: [RouterModule.forChild(ROUTES)],
 })
 export class AppRepositoriesModule {}
