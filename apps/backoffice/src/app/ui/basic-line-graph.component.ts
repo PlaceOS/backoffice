@@ -32,7 +32,6 @@ const COLORS: [string, string][] = [
             }
         `,
     ],
-    standalone: false,
 })
 export class BasicLineGraphComponent
     extends AsyncHandler

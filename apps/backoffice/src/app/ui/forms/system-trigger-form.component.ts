@@ -1,6 +1,11 @@
 import { Component, input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { addChipItem, removeChipItem } from '../../common/forms';
+import { SettingsToggleComponent } from '../settings-toggle.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'system-trigger-form',
@@ -102,7 +107,14 @@ import { addChipItem, removeChipItem } from '../../common/forms';
         </form>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        SettingsToggleComponent,
+        TranslatePipe,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatChipsModule,
+        MatInputModule,
+    ],
 })
 export class SystemTriggerFormComponent {
     /** Group of form fields used for creating the system */

@@ -1,14 +1,21 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { queryDomains } from '@placeos/ts-client';
 import { map, shareReplay } from 'rxjs/operators';
 
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import {
     addChipItem,
     removeChipItem,
 } from 'apps/backoffice/src/app/common/forms';
 import { i18n } from '../../common/locale.service';
+import { IconComponent } from '../icon.component';
+import { SettingsToggleComponent } from '../settings-toggle.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'user-form',
@@ -319,7 +326,16 @@ import { i18n } from '../../common/locale.service';
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        SettingsToggleComponent,
+        ReactiveFormsModule,
+        TranslatePipe,
+        MatFormFieldModule,
+        MatInputModule,
+        MatChipsModule,
+        IconComponent,
+        MatSelectModule,
+    ],
 })
 export class UserFormComponent {
     /** Group of form fields used for creating the system */

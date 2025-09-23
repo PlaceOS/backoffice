@@ -1,5 +1,5 @@
 import { Component, OnDestroy, input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import {
     PlaceDriverRole,
     queryDrivers,
@@ -7,8 +7,13 @@ import {
     querySystems,
 } from '@placeos/ts-client';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { map } from 'rxjs/operators';
+import { ItemSearchFieldComponent } from '../custom-fields/item-search-field.component';
+import { SettingsToggleComponent } from '../settings-toggle.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'module-form',
@@ -272,7 +277,14 @@ import { map } from 'rxjs/operators';
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        ItemSearchFieldComponent,
+        TranslatePipe,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        SettingsToggleComponent,
+    ],
 })
 export class ModuleFormComponent extends AsyncHandler implements OnDestroy {
     /** Group of form fields used for creating the system */
@@ -293,8 +305,7 @@ export class ModuleFormComponent extends AsyncHandler implements OnDestroy {
     public get role(): string {
         const form = this.form();
         const role =
-            form.controls.driver?.value.role ||
-            form.controls.role.value;
+            form.controls.driver?.value.role || form.controls.role.value;
         switch (role) {
             case PlaceDriverRole.SSH:
                 return 'ssh';

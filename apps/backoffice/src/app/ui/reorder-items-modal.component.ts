@@ -1,7 +1,14 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+    CdkDragDrop,
+    DragDropModule,
+    moveItemInArray,
+} from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatRippleModule } from '@angular/material/core';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
+import { IconComponent } from './icon.component';
 
 export interface ReorderItemsOptions {
     type: string;
@@ -15,7 +22,7 @@ export interface ReorderItemsOptions {
             class="flex w-full items-center justify-between border-b border-base-200 p-2"
         >
             <h2 class="p-2">Reorder {{ type }}</h2>
-            <button btn icon mat-dialog-close>
+            <button icon matRipple mat-dialog-close>
                 <app-icon>close</app-icon>
             </button>
         </header>
@@ -59,7 +66,13 @@ export interface ReorderItemsOptions {
         </footer>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatDialogModule,
+        MatRippleModule,
+        DragDropModule,
+        CommonModule,
+        IconComponent,
+    ],
 })
 export class ReorderItemsModalComponent {
     private _data = inject<ReorderItemsOptions>(MAT_DIALOG_DATA);

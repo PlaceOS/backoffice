@@ -1,5 +1,7 @@
 import { Component, inject } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
 import { SettingsService } from '../common/settings.service';
+import { IconComponent } from './icon.component';
 
 export interface BannerDetails {
     id: string;
@@ -23,8 +25,8 @@ export interface BannerDetails {
                 [class.text-error-content]="banner.type === 'error'"
             >
                 <div class="flex-1">{{ banner?.content }}</div>
-                <button icon (click)="close()">
-                    <app-icon>close</app-icon>
+                <button icon matRipple (click)="close()">
+                    <icon>close</icon>
                 </button>
             </div>
         }
@@ -37,7 +39,7 @@ export interface BannerDetails {
             }
         `,
     ],
-    standalone: false,
+    imports: [IconComponent, MatRippleModule],
 })
 export class GlobalBannerComponent {
     private _settings = inject(SettingsService);

@@ -1,4 +1,5 @@
 import { Component, input, output } from '@angular/core';
+import { IconComponent } from '../icon.component';
 
 @Component({
     selector: 'an-action-field',
@@ -30,7 +31,7 @@ import { Component, input, output } from '@angular/core';
             }
         `,
     ],
-    standalone: false,
+    imports: [IconComponent],
 })
 export class ActionFieldComponent {
     /** Name of the field */

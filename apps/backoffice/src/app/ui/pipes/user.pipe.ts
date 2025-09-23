@@ -1,11 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { PlaceUser, showUser } from '@placeos/ts-client';
+import { lastValueFrom } from 'rxjs';
 
 const USERS: PlaceUser[] = [];
 
 @Pipe({
     name: 'user',
-    standalone: false,
 })
 export class UserPipe implements PipeTransform {
     public async transform(id: string): Promise<PlaceUser> {
@@ -14,7 +14,7 @@ export class UserPipe implements PipeTransform {
             (_) => _.id === id || _.email === id || _.card_number === id,
         );
         if (!user) {
-            user = await showUser(id).toPromise();
+            user = await lastValueFrom(showUser(id));
             USERS.push(user);
         }
         return user;

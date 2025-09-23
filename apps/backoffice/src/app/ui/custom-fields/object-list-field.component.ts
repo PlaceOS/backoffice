@@ -1,8 +1,17 @@
 import { Component, forwardRef, input } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+    ControlValueAccessor,
+    FormsModule,
+    NG_VALUE_ACCESSOR,
+} from '@angular/forms';
 
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { IconComponent } from '../icon.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'object-list-field',
@@ -35,8 +44,8 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             </div>
                         }
                         <button
-                            btn
                             icon
+                            matRipple
                             class="h-12 w-12 rounded border border-error text-error"
                             (click)="removeRow(item)"
                         >
@@ -104,7 +113,14 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [
+        IconComponent,
+        TranslatePipe,
+        MatRippleModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+    ],
 })
 export class ObjectListFieldComponent
     extends AsyncHandler

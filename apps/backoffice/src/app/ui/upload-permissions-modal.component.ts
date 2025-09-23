@@ -1,6 +1,17 @@
 import { Component, inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import {
+    MAT_DIALOG_DATA,
+    MatDialogModule,
+    MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { UploadPermissions } from '../common/uploads';
+import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'upload-permissions-modal',
@@ -9,7 +20,7 @@ import { UploadPermissions } from '../common/uploads';
             <h2>
                 {{ 'COMMON.UPLOAD_FILE' | translate }}
             </h2>
-            <button btn icon mat-dialog-close>
+            <button icon matRipple mat-dialog-close>
                 <app-icon>close</app-icon>
             </button>
         </header>
@@ -56,11 +67,12 @@ import { UploadPermissions } from '../common/uploads';
         <footer
             class="flex items-center justify-end space-x-2 border-t border-base-200 px-4 py-2"
         >
-            <button btn class="inverse w-32" mat-dialog-close>
+            <button btn matRipple class="inverse w-32" mat-dialog-close>
                 {{ 'COMMON.CANCEL' | translate }}
             </button>
             <button
                 btn
+                matRipple
                 class="w-32"
                 [mat-dialog-close]="{ file, is_public, permissions }"
             >
@@ -69,13 +81,23 @@ import { UploadPermissions } from '../common/uploads';
         </footer>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatDialogModule,
+        TranslatePipe,
+        MatRippleModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+        MatCheckboxModule,
+        IconComponent,
+    ],
 })
 export class UploadPermissionsModalComponent {
-    private _dialog_ref = inject<MatDialogRef<UploadPermissionsModalComponent>>(MatDialogRef);
+    private _dialog_ref =
+        inject<MatDialogRef<UploadPermissionsModalComponent>>(MatDialogRef);
     private _data = inject<{
-    file: File;
-}>(MAT_DIALOG_DATA);
+        file: File;
+    }>(MAT_DIALOG_DATA);
 
     /** File to upload */
     public readonly file: File = this._data.file;

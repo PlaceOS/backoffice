@@ -5,7 +5,7 @@ import {
     SimpleChanges,
     input,
 } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { FormsModule, UntypedFormGroup } from '@angular/forms';
 import {
     PlaceModule,
     PlaceSystem,
@@ -15,11 +15,15 @@ import {
     systemModuleState,
 } from '@placeos/ts-client';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { calculateModuleIndex } from 'apps/backoffice/src/app/common/api';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import { map } from 'rxjs/operators';
 import { i18n } from '../../../common/locale.service';
+import { TranslatePipe } from '../../translate.pipe';
 
 @Component({
     selector: 'trigger-condition-comparison-form',
@@ -197,7 +201,14 @@ import { i18n } from '../../../common/locale.service';
             }
         </ng-template>`,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatFormFieldModule,
+        MatInputModule,
+        TranslatePipe,
+        FormsModule,
+        MatSelectModule,
+        MatInputModule,
+    ],
 })
 export class TriggerConditionComparisonFormComponent
     implements OnChanges, OnInit

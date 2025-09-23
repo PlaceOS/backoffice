@@ -1,6 +1,9 @@
 import { Component, input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Identity } from 'apps/backoffice/src/app/common/types';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'ldap-source-form',
@@ -233,7 +236,12 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        TranslatePipe,
+    ],
 })
 export class LdapSourceFormComponent {
     /** Group of form fields used for creating the system */

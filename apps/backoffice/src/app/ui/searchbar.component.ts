@@ -1,15 +1,20 @@
 import {
-  Component,
-  ElementRef,
-  inject,
-  input,
-  model,
-  output,
-  viewChild
+    Component,
+    ElementRef,
+    inject,
+    input,
+    model,
+    OnInit,
+    output,
+    signal,
+    viewChild,
 } from '@angular/core';
 
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
+import { IconComponent } from './icon.component';
 
 @Component({
     selector: 'searchbar',
@@ -17,15 +22,13 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
         <div
             [class]="
                 'absolute right-16 top-2 flex w-12 items-center space-x-2 overflow-hidden rounded px-2 sm:relative sm:right-auto sm:top-auto sm:!w-full sm:bg-base-100 ' +
-                (model.focus || filter() || model.dictate
+                (focused() || filter() || dictate()
                     ? 'w-4/5 bg-base-100 bg-opacity-100 text-base-content'
                     : 'bg-opacity-20 text-base-100 sm:bg-opacity-20')
             "
             widget
             tabindex="0"
-            (focus)="
-                model.focus || filter() || model.dictate ? '' : focusInput()
-            "
+            (focus)="focused() || filter() || dictate() ? '' : focusInput()"
         >
             <app-icon class="text-xl">search</app-icon>
             <input
@@ -33,17 +36,15 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
                 class="w-24 flex-1 border-none bg-base-100 bg-opacity-0 outline-none"
                 [ngModel]="filter()"
                 (ngModelChange)="filter.set($event); post()"
-                (focus)="model.focus = true; focus.emit($event)"
-                (blur)="model.focus = false; blur.emit($event)"
+                (focus)="focused.set(true); focus.emit($event)"
+                (blur)="focused.set(false); blur.emit($event)"
                 [placeholder]="placeholder()"
             />
-            @if (
-                model.speech && dictation() && (model.focus || model.dictate)
-            ) {
+            @if (has_speech() && dictation() && (focused() || dictate())) {
                 <button
                     icon
                     matRipple
-                    [class.active]="model.dictate"
+                    [class.active]="dictate()"
                     (click)="startDictation()"
                 >
                     <app-icon>mic</app-icon>
@@ -79,9 +80,9 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
             }
         `,
     ],
-    standalone: false,
+    imports: [IconComponent, MatRippleModule, FormsModule],
 })
-export class SearchbarComponent extends AsyncHandler {
+export class SearchbarComponent extends AsyncHandler implements OnInit {
     private _users = inject(BackofficeUsersService);
 
     public readonly filter = model<string>(undefined);
@@ -91,72 +92,71 @@ export class SearchbarComponent extends AsyncHandler {
     public readonly placeholder = input('Search...');
     public readonly focus = output();
     public readonly blur = output();
+    public readonly focused = signal(false);
+    public readonly has_speech = signal(false);
+    public readonly dictate = signal(false);
+    public readonly recognition = signal<any>(null);
 
-    public model: any = {};
-
-    private readonly input = viewChild<ElementRef>('input');
+    private readonly _input_el = viewChild<ElementRef>('input');
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
         return this._users.dark_mode;
     }
 
-    constructor() {
-        super();
+    public ngOnInit() {
         const win = window as any;
-        this.model.speech = !!(
-            win.SpeechRecognition || win.webkitSpeechRecognition
+        this.has_speech.set(
+            !!(win.SpeechRecognition || win.webkitSpeechRecognition),
         );
     }
-
     /**
      * Activate dictation search
      */
     public startDictation() {
-        if (!this.input()) {
-            return;
-        }
-        if (this.model.recognition) {
-            this.model.recognition.stop();
-            this.model.dictate = false;
-            this.model.recognition = null;
+        if (!this._input_el()?.nativeElement) return;
+        if (this.recognition()) {
+            this.recognition().stop();
+            this.dictate.set(false);
+            this.recognition.set(null);
             return;
         }
         const win = self as any;
-        const speech: any =
+        const Speech: any =
             win.SpeechRecognition || win.webkitSpeechRecognition;
-        if (speech) {
-            this.model.recognition = new speech();
+        if (Speech) {
+            const sr = new Speech();
+            sr.continuous = false;
+            sr.interimResults = false;
 
-            this.model.recognition.continuous = false;
-            this.model.recognition.interimResults = false;
+            sr.lang = 'en-US';
+            sr.start();
+            this.recognition.set(sr);
+            this.dictate.set(true);
 
-            this.model.recognition.lang = 'en-US';
-            this.model.recognition.start();
-            this.model.dictate = true;
-
-            this.model.recognition.onresult = (e: any) => {
+            sr.onresult = (e: any) => {
                 // Update search field with dictation result
-                this.input().nativeElement.value = e.results[0][0].transcript;
+                this._input_el().nativeElement.value =
+                    e.results[0][0].transcript;
                 this.filter.set(e.results[0][0].transcript);
-                this.model.recognition.stop();
+                sr.stop();
                 this.post();
-                this.model.dictate = false;
+                this.dictate.set(false);
             };
 
-            this.model.recognition.onerror = (e: any) => {
-                this.model.recognition.stop();
-                this.model.dictate = false;
+            sr.onerror = (e: any) => {
+                sr.stop();
+                this.dictate.set(false);
             };
         }
     }
 
     public focusInput() {
-        this.model.focus = true;
+        this.focused.set(true);
         this.timeout(
             'focus',
             () => {
-                const inputValue = this.input();
+                const inputValue = this._input_el();
                 if (inputValue && inputValue.nativeElement) {
                     inputValue.nativeElement.focus();
                     this.focus.emit();

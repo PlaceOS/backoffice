@@ -8,8 +8,15 @@ import {
     SimpleChanges,
     viewChild,
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatSelect } from '@angular/material/select';
+import {
+    ControlValueAccessor,
+    FormsModule,
+    NG_VALUE_ACCESSOR,
+} from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
 import {
     addMinutes,
     endOfDay,
@@ -23,6 +30,7 @@ import {
 } from 'date-fns';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { Identity } from '../../common/types';
+import { IconComponent } from '../icon.component';
 
 @Component({
     selector: 'a-time-field',
@@ -83,7 +91,14 @@ import { Identity } from '../../common/types';
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [
+        MatFormFieldModule,
+        MatSelectModule,
+        IconComponent,
+        MatRippleModule,
+        FormsModule,
+        MatInputModule,
+    ],
 })
 export class TimeFieldComponent
     extends AsyncHandler

@@ -1,4 +1,9 @@
 import { Component, input, output } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'fullscreen-modal-shell,[fs-modal-shell]',
@@ -62,7 +67,13 @@ import { Component, input, output } from '@angular/core';
             </div>
         </ng-template>
     `,
-    standalone: false,
+    imports: [
+        MatDialogModule,
+        MatProgressSpinnerModule,
+        TranslatePipe,
+        IconComponent,
+        MatRippleModule,
+    ],
 })
 export class FullscreenModalShellComponent {
     public readonly loading = input('');

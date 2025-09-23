@@ -1,6 +1,12 @@
 import { Component, forwardRef, inject, input, signal } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+    ControlValueAccessor,
+    FormsModule,
+    NG_VALUE_ACCESSOR,
+} from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
     executeOnSystem,
     executeOnZone,
@@ -11,7 +17,10 @@ import {
 import { lastValueFrom } from 'rxjs';
 import { notifyError, notifySuccess } from '../../../common/notifications';
 import { ViewResponseModalComponent } from '../../../overlays/view-response-modal.component';
-import { ModuleLike } from './select-module.component';
+import { TranslatePipe } from '../../translate.pipe';
+import { FunctionArgumentComponent } from './function-argument.component';
+import { SelectMethodComponent } from './select-method.component';
+import { ModuleLike, SelectModuleComponent } from './select-module.component';
 
 @Component({
     selector: 'execute-method-field',
@@ -50,6 +59,7 @@ import { ModuleLike } from './select-module.component';
                             class="flex-1"
                             [disabled]="!fn() || !valid()"
                             btn
+                            matRipple
                             (click)="execute()"
                         >
                             {{ 'COMMON.EXECUTE_PERFORM' | translate }}
@@ -76,7 +86,15 @@ import { ModuleLike } from './select-module.component';
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [
+        TranslatePipe,
+        MatProgressSpinnerModule,
+        MatRippleModule,
+        FormsModule,
+        SelectModuleComponent,
+        SelectMethodComponent,
+        FunctionArgumentComponent,
+    ],
 })
 export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     private _dialog = inject(MatDialog);

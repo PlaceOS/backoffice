@@ -1,9 +1,14 @@
-import { Component, inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { moduleRuntimeError, showModule } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
 import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
+import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'module-runtime-errors-modal',
@@ -50,9 +55,19 @@ import { AsyncHandler } from '../common/async-handler.class';
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        CommonModule,
+        TranslatePipe,
+        MatProgressSpinnerModule,
+        IconComponent,
+        MatDialogModule,
+        MatRippleModule,
+    ],
 })
-export class ModuleRuntimeErrorsModalComponent extends AsyncHandler {
+export class ModuleRuntimeErrorsModalComponent
+    extends AsyncHandler
+    implements OnInit
+{
     private _module_id = inject(MAT_DIALOG_DATA);
 
     public loading = false;

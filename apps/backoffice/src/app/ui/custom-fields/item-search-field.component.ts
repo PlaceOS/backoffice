@@ -10,7 +10,11 @@ import {
     SimpleChanges,
     viewChild,
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+    ControlValueAccessor,
+    FormsModule,
+    NG_VALUE_ACCESSOR,
+} from '@angular/forms';
 import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import {
     catchError,
@@ -22,8 +26,14 @@ import {
 
 import { PlaceDriverRole, PlaceModule } from '@placeos/ts-client';
 
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
+import { IconComponent } from '../icon.component';
+import { SanitizePipe } from '../pipes/sanitise.pipe';
 
 @Component({
     selector: 'item-search-field',
@@ -169,7 +179,15 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [
+        MatAutocompleteModule,
+        SanitizePipe,
+        MatFormFieldModule,
+        MatInputModule,
+        FormsModule,
+        MatProgressSpinnerModule,
+        IconComponent,
+    ],
 })
 export class ItemSearchFieldComponent<T extends Identity = any>
     extends AsyncHandler

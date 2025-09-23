@@ -5,8 +5,16 @@ import {
     SimpleChanges,
     input,
 } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import {
+    FormsModule,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
 
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import {
     GitCommitDetails,
     PlaceRepositoryType,
@@ -31,6 +39,7 @@ import { AsyncHandler } from '../../common/async-handler.class';
 import { i18n } from '../../common/locale.service';
 import { isValidUrl } from '../../common/validation';
 import { DateFromPipe } from '../pipes/date-from.pipe';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'repository-form',
@@ -366,7 +375,15 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        TranslatePipe,
+        FormsModule,
+        MatSelectModule,
+        CommonModule,
+    ],
 })
 export class RepositoryFormComponent
     extends AsyncHandler

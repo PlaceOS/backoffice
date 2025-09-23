@@ -1,6 +1,15 @@
 /// <reference path="../../../../../node_modules/monaco-editor/monaco.d.ts" />
 
-import { Component, ElementRef, OnChanges, OnInit, SimpleChanges, inject, input, viewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+    inject,
+    input,
+    viewChild,
+} from '@angular/core';
 import { AsyncHandler } from '../common/async-handler.class';
 import { BackofficeUsersService } from '../users/users.service';
 
@@ -15,7 +24,7 @@ import { BackofficeUsersService } from '../users/users.service';
         ></div>
     `,
     styles: [``],
-    standalone: false,
+    imports: [],
 })
 export class DiffViewerComponent
     extends AsyncHandler
@@ -32,7 +41,8 @@ export class DiffViewerComponent
 
     private _editor: any;
 
-    private readonly _editor_el = viewChild<ElementRef<HTMLDivElement>>('editor');
+    private readonly _editor_el =
+        viewChild<ElementRef<HTMLDivElement>>('editor');
 
     public ngOnInit() {
         this._createEditor();
@@ -66,8 +76,14 @@ export class DiffViewerComponent
 
     private _updateModel() {
         if (!this._editor) return;
-        const m_model = monaco.editor.createModel(this.modified(), 'text/plain');
-        const o_model = monaco.editor.createModel(this.original(), 'text/plain');
+        const m_model = monaco.editor.createModel(
+            this.modified(),
+            'text/plain',
+        );
+        const o_model = monaco.editor.createModel(
+            this.original(),
+            'text/plain',
+        );
         this._editor.setModel({
             original: o_model,
             modified: m_model,

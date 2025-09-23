@@ -14,6 +14,7 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
+import { SafePipe } from './pipes/safe.pipe';
 
 const RESOURCE_STORE = new Map<string, string>();
 
@@ -37,7 +38,7 @@ export interface FrameMessage {
             ></iframe>
         }
     `,
-    standalone: false,
+    imports: [SafePipe],
 })
 export class ExtensionOutletComponent extends AsyncHandler {
     private _route = inject(ActivatedRoute);

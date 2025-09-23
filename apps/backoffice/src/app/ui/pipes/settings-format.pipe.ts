@@ -6,7 +6,6 @@ const TYPES = ['UNENCRYPTED', 'SUPPORT', 'ADMIN', 'ENCRYPTED'];
 
 @Pipe({
     name: 'formatSettings',
-    standalone: false,
 })
 export class SettingsFormatPipe implements PipeTransform {
     public transform(value: PlaceSettings): string {

@@ -1,5 +1,8 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import {
     PlaceSystem,
     PlaceTrigger,
@@ -16,6 +19,10 @@ import {
 import { DialogEvent, Identity } from 'apps/backoffice/src/app/common/types';
 import { generateTriggerConditionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
 import { i18n } from '../../common/locale.service';
+import { FullscreenModalShellComponent } from '../fullscreen-modal-shell.component';
+import { TranslatePipe } from '../translate.pipe';
+import { TriggerConditionComparisonFormComponent } from './trigger-condition-form/comparison-form.component';
+import { TriggerConditionTimeFormComponent } from './trigger-condition-form/time-form.component';
 
 export interface TriggerConditionData {
     /** Item to add/update the trigger on */
@@ -84,10 +91,19 @@ export interface TriggerConditionData {
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        FullscreenModalShellComponent,
+        TriggerConditionComparisonFormComponent,
+        TriggerConditionTimeFormComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        ReactiveFormsModule,
+        TranslatePipe,
+    ],
 })
 export class TriggerConditionModalComponent extends AsyncHandler {
-    private _dialog = inject<MatDialogRef<TriggerConditionModalComponent>>(MatDialogRef);
+    private _dialog =
+        inject<MatDialogRef<TriggerConditionModalComponent>>(MatDialogRef);
     private _data = inject<TriggerConditionData>(MAT_DIALOG_DATA);
 
     /** Emitter for events on the modal */

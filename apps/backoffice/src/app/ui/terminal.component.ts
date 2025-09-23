@@ -1,12 +1,12 @@
 import {
-  Component,
-  ElementRef,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges,
-  input,
-  viewChild
+    Component,
+    ElementRef,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    SimpleChanges,
+    input,
+    viewChild,
 } from '@angular/core';
 import { Terminal } from '@xterm/xterm';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -29,7 +29,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             }
         `,
     ],
-    standalone: false,
+    imports: [],
 })
 export class TerminalComponent
     extends AsyncHandler
@@ -42,8 +42,10 @@ export class TerminalComponent
     /** Local instance of an xterm terminal */
     public terminal: Terminal;
 
-    public readonly terminal_element = viewChild<ElementRef<HTMLDivElement>>('terminal');
-    public readonly container_el = viewChild<ElementRef<HTMLDivElement>>('container');
+    public readonly terminal_element =
+        viewChild<ElementRef<HTMLDivElement>>('terminal');
+    public readonly container_el =
+        viewChild<ElementRef<HTMLDivElement>>('container');
 
     public ngOnInit(): void {
         if (this.terminal) this.ngOnDestroy();

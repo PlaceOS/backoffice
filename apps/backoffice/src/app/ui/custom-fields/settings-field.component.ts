@@ -45,7 +45,7 @@ let MODEL: HashMap<monaco.editor.ITextModel> = {};
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [],
 })
 export class SettingsFieldComponent
     extends AsyncHandler

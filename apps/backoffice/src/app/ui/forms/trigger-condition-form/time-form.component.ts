@@ -5,7 +5,10 @@ import {
     SimpleChanges,
     input,
 } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { FormsModule, UntypedFormGroup } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
 import { format, setDay, setMonth } from 'date-fns';
 import { AsyncHandler } from '../../../common/async-handler.class';
@@ -13,6 +16,10 @@ import { numberToPosition } from '../../../common/general';
 import { i18n } from '../../../common/locale.service';
 import { TIMEZONES_IANA } from '../../../common/timezones';
 import { Identity } from '../../../common/types';
+import { CronInputFieldComponent } from '../../custom-fields/cron-input-field.component';
+import { DateFieldComponent } from '../../custom-fields/date-field.component';
+import { TimeFieldComponent } from '../../custom-fields/time-field.component';
+import { SettingsToggleComponent } from '../../settings-toggle.component';
 
 @Component({
     selector: 'trigger-condition-time-form',
@@ -283,7 +290,16 @@ import { Identity } from '../../../common/types';
         }
     `,
     styles: [],
-    standalone: false,
+    imports: [
+        FormsModule,
+        CronInputFieldComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        DateFieldComponent,
+        TimeFieldComponent,
+        MatAutocompleteModule,
+        SettingsToggleComponent,
+    ],
 })
 export class TriggerConditionTimeFormComponent
     extends AsyncHandler

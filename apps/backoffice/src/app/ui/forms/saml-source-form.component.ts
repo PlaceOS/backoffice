@@ -1,8 +1,16 @@
 import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import {
+    FormsModule,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
+import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { ObjectListFieldComponent } from '../custom-fields/object-list-field.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'saml-source-form',
@@ -83,7 +91,8 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             <label
                                 for="idp-target"
                                 [class.error]="
-                                    form().controls.idp_sso_target_url.invalid &&
+                                    form().controls.idp_sso_target_url
+                                        .invalid &&
                                     form().controls.idp_sso_target_url.touched
                                 "
                             >
@@ -101,7 +110,9 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                     formControlName="idp_sso_target_url"
                                     required
                                 />
-                                @if (form().controls.idp_sso_target_url.invalid) {
+                                @if (
+                                    form().controls.idp_sso_target_url.invalid
+                                ) {
                                     <mat-error>
                                         {{
                                             'DOMAINS.SAML_IDP_TARGET_URL_REQUIRED'
@@ -119,7 +130,8 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                 [class.error]="
                                     form().controls.name_identifier_format
                                         .invalid &&
-                                    form().controls.name_identifier_format.touched
+                                    form().controls.name_identifier_format
+                                        .touched
                                 "
                             >
                                 {{ 'DOMAINS.SAML_NAME_ID_FORMAT' | translate }}:
@@ -136,7 +148,8 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                     required
                                 />
                                 @if (
-                                    form().controls.name_identifier_format.invalid
+                                    form().controls.name_identifier_format
+                                        .invalid
                                 ) {
                                     <mat-error>
                                         {{
@@ -183,10 +196,11 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             <label
                                 for="assertion-url"
                                 [class.error]="
-                                    form().controls.assertion_consumer_service_url
+                                    form().controls
+                                        .assertion_consumer_service_url
                                         .invalid &&
-                                    form().controls.assertion_consumer_service_url
-                                        .touched
+                                    form().controls
+                                        .assertion_consumer_service_url.touched
                                 "
                             >
                                 {{ 'DOMAINS.SAML_ASSERTION_URL' | translate
@@ -203,8 +217,8 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                     required
                                 />
                                 @if (
-                                    form().controls.assertion_consumer_service_url
-                                        .invalid
+                                    form().controls
+                                        .assertion_consumer_service_url.invalid
                                 ) {
                                     <mat-error>
                                         {{
@@ -388,7 +402,14 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        MatFormFieldModule,
+        ReactiveFormsModule,
+        TranslatePipe,
+        FormsModule,
+        ObjectListFieldComponent,
+        MatInputModule,
+    ],
 })
 export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
     /** Group of form fields used for creating the system */
@@ -412,8 +433,7 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
             }
             if (form.controls.idp_sso_target_url_runtime_params) {
                 const map =
-                    form.controls.idp_sso_target_url_runtime_params
-                        .value || {};
+                    form.controls.idp_sso_target_url_runtime_params.value || {};
                 this.runtime_param_list = Object.keys(map).map((key) => {
                     return { name: key, mappings: map[key] };
                 });

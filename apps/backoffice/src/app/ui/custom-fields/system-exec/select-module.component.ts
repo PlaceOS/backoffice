@@ -7,7 +7,14 @@ import {
     signal,
     SimpleChanges,
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+    ControlValueAccessor,
+    FormsModule,
+    NG_VALUE_ACCESSOR,
+} from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { PlaceSystem, queryModules } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import {
@@ -20,6 +27,7 @@ import {
 } from 'rxjs/operators';
 import { calculateModuleIndex } from '../../../common/api';
 import { AsyncHandler } from '../../../common/async-handler.class';
+import { TranslatePipe } from '../../translate.pipe';
 
 export interface ModuleLike {
     id: string;
@@ -60,7 +68,13 @@ export interface ModuleLike {
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [
+        MatProgressSpinnerModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        TranslatePipe,
+        FormsModule,
+    ],
 })
 export class SelectModuleComponent
     extends AsyncHandler

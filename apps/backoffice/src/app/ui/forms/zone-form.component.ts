@@ -1,8 +1,12 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, SimpleChanges, input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { PlaceZone, queryZones, showZone } from '@placeos/ts-client';
 
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     addChipItem,
@@ -10,6 +14,10 @@ import {
 } from 'apps/backoffice/src/app/common/forms';
 import { map } from 'rxjs/operators';
 import { TIMEZONES_IANA } from '../../common/timezones';
+import { CounterComponent } from '../counter.component';
+import { ImageListFieldComponent } from '../custom-fields/image-list-field.component';
+import { ItemSearchFieldComponent } from '../custom-fields/item-search-field.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'zone-form',
@@ -277,7 +285,17 @@ import { TIMEZONES_IANA } from '../../common/timezones';
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        ImageListFieldComponent,
+        ReactiveFormsModule,
+        TranslatePipe,
+        MatFormFieldModule,
+        MatInputModule,
+        CounterComponent,
+        MatAutocompleteModule,
+        MatChipsModule,
+        ItemSearchFieldComponent,
+    ],
 })
 export class ZoneFormComponent extends AsyncHandler {
     public timezones: string[] = [];

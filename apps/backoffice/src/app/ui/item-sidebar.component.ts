@@ -1,4 +1,8 @@
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import {
+    CdkVirtualScrollViewport,
+    ScrollingModule,
+} from '@angular/cdk/scrolling';
+import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
     Component,
@@ -9,7 +13,12 @@ import {
     signal,
     viewChild,
 } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import {
     PlaceDriverRole,
     PlaceModule,
@@ -22,6 +31,8 @@ import { map } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { nextValueFrom } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
+import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'item-sidebar',
@@ -220,7 +231,18 @@ import { ActiveItemService } from '../common/item.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        ScrollingModule,
+        TranslatePipe,
+        MatTooltipModule,
+        IconComponent,
+        RouterModule,
+        FormsModule,
+        MatProgressSpinnerModule,
+        MatFormFieldModule,
+        MatSelectModule,
+    ],
 })
 export class ItemSidebarComponent
     extends AsyncHandler

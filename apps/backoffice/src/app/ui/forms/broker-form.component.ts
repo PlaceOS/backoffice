@@ -1,11 +1,17 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { AuthType } from '@placeos/ts-client';
 import { unique } from '../../common/general';
 import { i18n } from '../../common/locale.service';
+import { IconComponent } from '../icon.component';
+import { SettingsToggleComponent } from '../settings-toggle.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'broker-form',
@@ -288,7 +294,16 @@ import { i18n } from '../../common/locale.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        MatFormFieldModule,
+        MatChipsModule,
+        IconComponent,
+        TranslatePipe,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatSelectModule,
+        SettingsToggleComponent,
+    ],
 })
 export class BrokerFormComponent {
     /** Group of form fields used for creating the system */
@@ -326,7 +341,9 @@ export class BrokerFormComponent {
         const value = (event.value || '').trim();
         if (value) {
             const filter_list = this.filters;
-            this.form().patchValue({ filters: unique([...filter_list, value]) });
+            this.form().patchValue({
+                filters: unique([...filter_list, value]),
+            });
         }
         event.chipInput!.clear();
     }

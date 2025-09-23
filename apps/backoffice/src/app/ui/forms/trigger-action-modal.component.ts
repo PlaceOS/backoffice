@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Output, inject, viewChild } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Output,
+    inject,
+    viewChild,
+} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceSystem,
@@ -9,7 +15,10 @@ import {
 } from '@placeos/ts-client';
 
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { MatChipGrid } from '@angular/material/chips';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatChipGrid, MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     notifyError,
@@ -18,6 +27,10 @@ import {
 import { DialogEvent, Identity } from 'apps/backoffice/src/app/common/types';
 import { generateTriggerActionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
 import { i18n } from '../../common/locale.service';
+import { ExecuteMethodFieldComponent } from '../custom-fields/system-exec/execute-method-field.component';
+import { FullscreenModalShellComponent } from '../fullscreen-modal-shell.component';
+import { IconComponent } from '../icon.component';
+import { TranslatePipe } from '../translate.pipe';
 
 export interface TriggerActionModalData {
     /** Item to add/update the trigger on */
@@ -184,10 +197,21 @@ export interface TriggerActionModalData {
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        FormsModule,
+        MatFormFieldModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatChipsModule,
+        FullscreenModalShellComponent,
+        ExecuteMethodFieldComponent,
+        TranslatePipe,
+        IconComponent,
+    ],
 })
 export class TriggerActionModalComponent extends AsyncHandler {
-    private _dialog = inject<MatDialogRef<TriggerActionModalComponent>>(MatDialogRef);
+    private _dialog =
+        inject<MatDialogRef<TriggerActionModalComponent>>(MatDialogRef);
     private _data = inject<TriggerActionModalData>(MAT_DIALOG_DATA);
 
     /** Emitter for events on the modal */

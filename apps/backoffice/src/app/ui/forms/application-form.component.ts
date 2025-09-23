@@ -1,9 +1,18 @@
 import { Component, SimpleChanges, input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import {
+    FormsModule,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncHandler } from '../../common/async-handler.class';
 
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Md5 } from 'ts-md5';
+import { SettingsToggleComponent } from '../settings-toggle.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'application-form',
@@ -114,7 +123,15 @@ import { Md5 } from 'ts-md5';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        MatFormFieldModule,
+        FormsModule,
+        CommonModule,
+        TranslatePipe,
+        SettingsToggleComponent,
+        ReactiveFormsModule,
+        MatInputModule,
+    ],
 })
 export class ApplicationFormComponent extends AsyncHandler {
     /** Group of form fields used for creating the system */

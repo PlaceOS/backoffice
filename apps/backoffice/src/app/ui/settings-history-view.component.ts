@@ -7,7 +7,14 @@ import {
 import { BehaviorSubject, of } from 'rxjs';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { ActiveItemService } from '../common/item.service';
+import { DiffViewerComponent } from './diff-viewer.component';
+import { SettingsFormatPipe } from './pipes/settings-format.pipe';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'settings-history-view',
@@ -64,7 +71,15 @@ import { ActiveItemService } from '../common/item.service';
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        CommonModule,
+        TranslatePipe,
+        DiffViewerComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+        SettingsFormatPipe,
+    ],
 })
 export class SettingsHistoryViewComponent {
     private _service = inject(ActiveItemService);

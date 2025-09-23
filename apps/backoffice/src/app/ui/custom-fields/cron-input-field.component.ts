@@ -4,6 +4,7 @@ import {
     FormControl,
     FormGroup,
     NG_VALUE_ACCESSOR,
+    ReactiveFormsModule,
     Validators,
 } from '@angular/forms';
 
@@ -85,7 +86,7 @@ function listPattern(fieldPattern) {
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [ReactiveFormsModule],
 })
 export class CronInputFieldComponent implements ControlValueAccessor, OnInit {
     public cron_string: string;

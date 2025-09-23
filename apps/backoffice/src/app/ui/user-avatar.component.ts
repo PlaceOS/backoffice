@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { PlaceUser } from '@placeos/ts-client';
+import { AuthenticatedImageDirective } from './authenticated-image.directive';
 
 @Component({
     selector: 'a-user-avatar',
@@ -41,7 +42,7 @@ import { PlaceUser } from '@placeos/ts-client';
             }
         `,
     ],
-    standalone: false,
+    imports: [AuthenticatedImageDirective],
 })
 export class UserAvatarComponent {
     /** User to display avatar for */

@@ -1,11 +1,17 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
 import { notifyInfo } from 'apps/backoffice/src/app/common/notifications';
 import { SettingsService } from 'apps/backoffice/src/app/common/settings.service';
 import { UploadDetails } from '../common/uploads';
 import { UploadsService } from '../common/uploads.service';
+import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'app-upload-list',
@@ -189,7 +195,14 @@ import { UploadsService } from '../common/uploads.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        TranslatePipe,
+        IconComponent,
+        MatRippleModule,
+        MatProgressBarModule,
+        MatTooltipModule,
+        CommonModule,
+    ],
 })
 export class UploadListComponent extends AsyncHandler implements OnInit {
     private _settings = inject(SettingsService);

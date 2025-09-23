@@ -1,5 +1,11 @@
 import { Component, forwardRef, input } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+    ControlValueAccessor,
+    FormsModule,
+    NG_VALUE_ACCESSOR,
+} from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { IconComponent } from './icon.component';
 
 @Component({
     selector: 'a-counter',
@@ -65,7 +71,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [IconComponent, MatRippleModule, FormsModule],
 })
 export class CounterComponent implements ControlValueAccessor {
     /** Size of a single step */

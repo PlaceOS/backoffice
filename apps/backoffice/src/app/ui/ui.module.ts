@@ -1,29 +1,4 @@
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { CdkTableModule } from '@angular/cdk/table';
-import { NgModule, Type } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-
-import { PortalModule } from '@angular/cdk/portal';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgModule } from '@angular/core';
 
 import { BasicLineGraphComponent } from './basic-line-graph.component';
 import { BindingDirective } from './binding.directive';
@@ -40,7 +15,7 @@ import { ExtensionOutletComponent } from './extension-outlet.component';
 import { ApplicationFormComponent } from './forms/application-form.component';
 import { BrokerFormComponent } from './forms/broker-form.component';
 import { DomainFormComponent } from './forms/domain-form.component';
-import { DriverFormComponent } from './forms/driver-form/driver-form.component';
+import { DriverFormComponent } from './forms/driver-form.component';
 import { LdapSourceFormComponent } from './forms/ldap-source-form.component';
 import { ModuleFormComponent } from './forms/module-form.component';
 import { OauthSourceFormComponent } from './forms/oauth-source-form.component';
@@ -49,8 +24,6 @@ import { SamlSourceFormComponent } from './forms/saml-source-form.component';
 import { SettingsFormComponent } from './forms/settings-form.component';
 import { SystemFormComponent } from './forms/system-form.component';
 import { SystemTriggerFormComponent } from './forms/system-trigger-form.component';
-import { TriggerConditionComparisonFormComponent } from './forms/trigger-condition-form/comparison-form.component';
-import { TriggerConditionTimeFormComponent } from './forms/trigger-condition-form/time-form.component';
 import { TriggerFormComponent } from './forms/trigger-form.component';
 import { UserFormComponent } from './forms/user-form.component';
 import { ZoneFormComponent } from './forms/zone-form.component';
@@ -64,6 +37,23 @@ import { SearchbarComponent } from './searchbar.component';
 import { TerminalComponent } from './terminal.component';
 import { UnauthorisedComponent } from './unauthorised.component';
 import { UploadListComponent } from './upload-list.component';
+
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { CommonModule } from '@angular/common';
 import { AuthenticatedImageDirective } from './authenticated-image.directive';
@@ -99,7 +89,77 @@ import { UploadPermissionsModalComponent } from './upload-permissions-modal.comp
 import { UserAvatarComponent } from './user-avatar.component';
 import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 
-const FORM_COMPONENTS: Type<any>[] = [
+const MAT_MODULES: any[] = [
+    MatRippleModule,
+    MatButtonToggleModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatAutocompleteModule,
+    MatSelectModule,
+    MatTooltipModule,
+    MatMenuModule,
+    MatCheckboxModule,
+    MatSlideToggleModule,
+    MatChipsModule,
+    MatTabsModule,
+    MatChipsModule,
+    MatRippleModule,
+    DragDropModule,
+];
+
+const STANDALONE_COMPONENTS: any[] = [
+    IconComponent,
+    DateFieldComponent,
+    TranslatePipe,
+    CustomTooltipComponent,
+
+    ItemSearchFieldComponent,
+    SettingsFieldComponent,
+    TimeFieldComponent,
+    ContextMenuComponent,
+    ImageListFieldComponent,
+    ObjectListFieldComponent,
+
+    DriverFormatPipe,
+    DateFromPipe,
+    FormatListPipe,
+    SafePipe,
+    SanitizePipe,
+    SettingsFormatPipe,
+    UserPipe,
+
+    SearchbarComponent,
+    UserAvatarComponent,
+    TerminalComponent,
+    DebugOutputComponent,
+    UnauthorisedComponent,
+    UploadListComponent,
+    BindingDirective,
+    AuthenticatedImageDirective,
+    BasicLineGraphComponent,
+    DiffViewerComponent,
+    SettingsHistoryViewComponent,
+    MetadataDisplayComponent,
+    TriggerConditionModalComponent,
+    TriggerActionModalComponent,
+
+    SidebarMenuComponent,
+    ItemSelectionComponent,
+    UserMenuTooltipComponent,
+    ItemDetailsComponent,
+    ItemTablistComponent,
+    UploadPermissionsModalComponent,
+    GlobalBannerComponent,
+    ModuleRuntimeErrorsModalComponent,
+
+    SimpleTableComponent,
+    ReorderItemsModalComponent,
+    FullscreenModalShellComponent,
+    CounterComponent,
+
     SystemFormComponent,
     ModuleFormComponent,
     ZoneFormComponent,
@@ -129,112 +189,9 @@ const FORM_COMPONENTS: Type<any>[] = [
     CronInputFieldComponent,
 ];
 
-const COMPONENTS: Type<any>[] = [
-    SearchbarComponent,
-    UserAvatarComponent,
-    ...FORM_COMPONENTS,
-    TerminalComponent,
-    DebugOutputComponent,
-    UnauthorisedComponent,
-    UploadListComponent,
-    BindingDirective,
-    AuthenticatedImageDirective,
-    BasicLineGraphComponent,
-    DiffViewerComponent,
-    SettingsHistoryViewComponent,
-    MetadataDisplayComponent,
-    TriggerConditionModalComponent,
-    TriggerActionModalComponent,
-
-    SidebarMenuComponent,
-    ItemSelectionComponent,
-    UserMenuTooltipComponent,
-    ItemDetailsComponent,
-    ItemTablistComponent,
-    UploadPermissionsModalComponent,
-    GlobalBannerComponent,
-    ModuleRuntimeErrorsModalComponent,
-
-    SimpleTableComponent,
-    ReorderItemsModalComponent,
-    FullscreenModalShellComponent,
-    CounterComponent,
-];
-
-const PIPES: Type<any>[] = [
-    DriverFormatPipe,
-    DateFromPipe,
-    FormatListPipe,
-    SafePipe,
-    SanitizePipe,
-    SettingsFormatPipe,
-    UserPipe,
-];
-
-const ENTRY_COMPONENT: Type<any>[] = [
-    ItemSearchFieldComponent,
-    SettingsFieldComponent,
-    TimeFieldComponent,
-    ContextMenuComponent,
-    ImageListFieldComponent,
-    ObjectListFieldComponent,
-];
-const MATERIAL_MODULES: any[] = [
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatSnackBarModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    MatProgressBarModule,
-    MatAutocompleteModule,
-    MatSelectModule,
-    MatTooltipModule,
-    MatMenuModule,
-    MatCheckboxModule,
-    MatSlideToggleModule,
-    MatChipsModule,
-    MatTabsModule,
-    MatCardModule,
-    MatChipsModule,
-    MatRippleModule,
-    PortalModule,
-    DragDropModule,
-    CdkTableModule,
-];
-
-const STANDALONE_COMPONENTS: any[] = [
-    IconComponent,
-    DateFieldComponent,
-    TranslatePipe,
-    CustomTooltipComponent,
-];
-
 @NgModule({
-    declarations: [
-        ...COMPONENTS,
-        ...PIPES,
-        ...ENTRY_COMPONENT,
-        TriggerConditionComparisonFormComponent,
-        TriggerConditionTimeFormComponent,
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        ScrollingModule,
-        ...MATERIAL_MODULES,
-        RouterModule.forChild([]),
-        ...STANDALONE_COMPONENTS,
-    ],
-    exports: [
-        CommonModule,
-        ...COMPONENTS,
-        ...PIPES,
-        ...ENTRY_COMPONENT,
-        ...MATERIAL_MODULES,
-        ...STANDALONE_COMPONENTS,
-    ],
+    declarations: [],
+    imports: [...STANDALONE_COMPONENTS],
+    exports: [CommonModule, ...STANDALONE_COMPONENTS, ...MAT_MODULES],
 })
 export class SharedContentModule {}

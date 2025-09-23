@@ -1,9 +1,20 @@
-import { Component, ElementRef, OnInit, Renderer2, inject, viewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    OnInit,
+    Renderer2,
+    inject,
+    viewChild,
+} from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from 'apps/backoffice/src/app/common/angular-animations';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { PlaceDebugService } from 'apps/backoffice/src/app/common/debug.service';
 import { eventToPoint } from 'apps/backoffice/src/app/common/general';
 import { Point } from 'apps/backoffice/src/app/common/types';
+import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'app-debug-output',
@@ -64,8 +75,8 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                             class="absolute bottom-2 right-2 flex items-center space-x-2"
                         >
                             <button
-                                btn
                                 icon
+                                matRipple
                                 class="rounded-full bg-neutral-focus text-neutral-content shadow"
                                 (click)="downloadLogs()"
                             >
@@ -79,8 +90,8 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                                 </app-icon>
                             </button>
                             <button
-                                btn
                                 icon
+                                matRipple
                                 class="rounded-full bg-neutral-focus text-neutral-content shadow"
                                 (click)="toggleDebugPosition()"
                             >
@@ -97,8 +108,8 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                                 >
                             </button>
                             <button
-                                btn
                                 icon
+                                matRipple
                                 class="rounded-full bg-neutral-focus text-neutral-content shadow"
                                 (click)="clearDebugMessages()"
                             >
@@ -112,8 +123,8 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                                 </app-icon>
                             </button>
                             <button
-                                btn
                                 icon
+                                matRipple
                                 (click)="clearBindings()"
                                 class="rounded-full bg-neutral-focus text-neutral-content shadow"
                                 [matTooltip]="
@@ -123,8 +134,8 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                                 <app-icon>cancel_presentation</app-icon>
                             </button>
                             <button
-                                btn
                                 icon
+                                matRipple
                                 (click)="close()"
                                 class="rounded-full bg-neutral-focus text-neutral-content shadow"
                                 [matTooltip]="
@@ -181,7 +192,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
         `,
     ],
     animations: [ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR],
-    standalone: false,
+    imports: [IconComponent, TranslatePipe, MatTooltipModule, MatRippleModule],
 })
 export class DebugOutputComponent extends AsyncHandler implements OnInit {
     private _service = inject(PlaceDebugService);
@@ -200,7 +211,8 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
     /** Start point for resizing the console box */
     private _resize_start: Point;
 
-    private readonly _content_el = viewChild<ElementRef<HTMLDivElement>>('content');
+    private readonly _content_el =
+        viewChild<ElementRef<HTMLDivElement>>('content');
 
     /** Whether user is listening for debug information */
     public get is_enabled(): boolean {

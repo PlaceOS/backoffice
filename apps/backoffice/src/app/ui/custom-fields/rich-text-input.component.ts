@@ -1,12 +1,12 @@
 import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  forwardRef,
-  OnChanges,
-  SimpleChanges,
-  input,
-  viewChild
+    AfterViewInit,
+    Component,
+    ElementRef,
+    forwardRef,
+    input,
+    OnChanges,
+    SimpleChanges,
+    viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import Quill from 'quill';
@@ -38,7 +38,6 @@ import { uploadFile } from '../../common/uploads';
             multi: true,
         },
     ],
-    standalone: false,
 })
 export class RichTextInputComponent
     extends AsyncHandler
@@ -48,8 +47,10 @@ export class RichTextInputComponent
     public readonly readonly = input(false);
     public readonly images_allowed = input(false);
 
-    private readonly _container_el = viewChild<ElementRef<HTMLDivElement>>('container');
-    private readonly _editor_el = viewChild<ElementRef<HTMLDivElement>>('editor');
+    private readonly _container_el =
+        viewChild<ElementRef<HTMLDivElement>>('container');
+    private readonly _editor_el =
+        viewChild<ElementRef<HTMLDivElement>>('editor');
 
     private _editor: Quill;
     private _updateFn = () => this.setValue(this._editor.root.innerHTML);
@@ -105,10 +106,7 @@ export class RichTextInputComponent
     private _initialiseEditor() {
         const _editor_el = this._editor_el();
         const _container_el = this._container_el();
-        if (
-            !_editor_el?.nativeElement ||
-            !_container_el?.nativeElement
-        ) {
+        if (!_editor_el?.nativeElement || !_container_el?.nativeElement) {
             return this.timeout('init', () => this._initialiseEditor());
         }
         const toolbarOptions = [

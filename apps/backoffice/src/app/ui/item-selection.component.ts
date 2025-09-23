@@ -1,4 +1,8 @@
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import {
+    CdkVirtualScrollViewport,
+    ScrollingModule,
+} from '@angular/cdk/scrolling';
+import { CommonModule } from '@angular/common';
 import {
     Component,
     ElementRef,
@@ -8,7 +12,8 @@ import {
     model,
     viewChild,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Router, RouterModule } from '@angular/router';
 import {
     PlaceDriverRole,
     PlaceModule,
@@ -21,6 +26,8 @@ import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
 import { BackofficeUsersService } from '../users/users.service';
+import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'item-selection',
@@ -161,7 +168,14 @@ import { BackofficeUsersService } from '../users/users.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        TranslatePipe,
+        IconComponent,
+        ScrollingModule,
+        RouterModule,
+        MatProgressSpinnerModule,
+    ],
 })
 export class ItemSelectionComponent extends AsyncHandler {
     private _users = inject(BackofficeUsersService);

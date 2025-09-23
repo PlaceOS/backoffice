@@ -1,8 +1,10 @@
 import { Component, OnInit, inject, input, model } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { MatTabsModule } from '@angular/material/tabs';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ApplicationIcon } from '../common/types';
+import { IconComponent } from './icon.component';
 
 export interface ItemTab {
     id: string;
@@ -53,7 +55,7 @@ export interface ItemTab {
         <mat-tab-nav-panel #tabPanel class="hidden" />
     `,
     styles: [``],
-    standalone: false,
+    imports: [MatTabsModule, IconComponent, RouterModule],
 })
 export class ItemTablistComponent extends AsyncHandler implements OnInit {
     private _router = inject(Router);

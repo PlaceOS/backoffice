@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
     Component,
     forwardRef,
@@ -7,7 +8,14 @@ import {
     signal,
     SimpleChanges,
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+    ControlValueAccessor,
+    FormsModule,
+    NG_VALUE_ACCESSOR,
+} from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import {
     functionList,
     PlaceModuleFunction,
@@ -23,6 +31,7 @@ import {
     tap,
 } from 'rxjs/operators';
 import { AsyncHandler } from '../../../common/async-handler.class';
+import { TranslatePipe } from '../../translate.pipe';
 import { ModuleLike } from './select-module.component';
 
 @Component({
@@ -67,7 +76,14 @@ import { ModuleLike } from './select-module.component';
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [
+        MatProgressSpinnerModule,
+        TranslatePipe,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+        CommonModule,
+    ],
 })
 export class SelectMethodComponent
     extends AsyncHandler

@@ -9,7 +9,11 @@ import {
     signal,
     SimpleChanges,
 } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import {
+    ReactiveFormsModule,
+    UntypedFormControl,
+    UntypedFormGroup,
+} from '@angular/forms';
 import {
     addSettings,
     EncryptionLevel,
@@ -27,9 +31,17 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 import { validateYAML } from 'apps/backoffice/src/app/systems/systems.utilities';
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
 
+import { CommonModule } from '@angular/common';
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import * as yaml from 'js-yaml';
 import { lastValueFrom } from 'rxjs';
 import { i18n } from '../../common/locale.service';
+import { SettingsFieldComponent } from '../custom-fields/settings-field.component';
+import { DateFromPipe } from '../pipes/date-from.pipe';
+import { TranslatePipe } from '../translate.pipe';
 
 type SettingsArray = [
     PlaceSettings,
@@ -222,7 +234,17 @@ type SettingsArray = [
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        MatProgressSpinnerModule,
+        TranslatePipe,
+        DateFromPipe,
+        SettingsFieldComponent,
+        MatTabsModule,
+        MatTooltipModule,
+        MatRippleModule,
+        ReactiveFormsModule,
+    ],
 })
 export class SettingsFormComponent
     extends AsyncHandler

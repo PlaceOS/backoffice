@@ -1,13 +1,21 @@
 import { Component, inject, model } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
+import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
 import { ApplicationIcon } from '../common/types';
 import { BackofficeUsersService } from '../users/users.service';
-import { CustomTooltipData } from './custom-tooltip.component';
+import {
+    CustomTooltipComponent,
+    CustomTooltipData,
+} from './custom-tooltip.component';
+import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
+import { UserAvatarComponent } from './user-avatar.component';
 import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 
 @Component({
@@ -208,7 +216,15 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        IconComponent,
+        TranslatePipe,
+        UserAvatarComponent,
+        MatRippleModule,
+        MatTooltipModule,
+        CustomTooltipComponent,
+        RouterModule,
+    ],
 })
 export class SidebarMenuComponent extends AsyncHandler {
     private _tooltip = inject(CustomTooltipData, { optional: true });

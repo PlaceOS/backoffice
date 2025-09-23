@@ -1,5 +1,12 @@
 import { Component, forwardRef, input } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+    ControlValueAccessor,
+    FormsModule,
+    NG_VALUE_ACCESSOR,
+} from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { IconComponent } from './icon.component';
 
 @Component({
     selector: 'settings-toggle',
@@ -40,7 +47,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [MatCheckboxModule, IconComponent, FormsModule, MatRippleModule],
 })
 export class SettingsToggleComponent implements ControlValueAccessor {
     public readonly name = input<string>(undefined);

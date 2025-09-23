@@ -1,13 +1,17 @@
 import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  HostListener,
-  OnInit,
-  input,
-  viewChild
+    AfterViewInit,
+    Component,
+    ElementRef,
+    HostListener,
+    OnInit,
+    input,
+    viewChild,
 } from '@angular/core';
-import { MatMenuPanel, MatMenuTrigger } from '@angular/material/menu';
+import {
+    MatMenuModule,
+    MatMenuPanel,
+    MatMenuTrigger,
+} from '@angular/material/menu';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 
 @Component({
@@ -30,14 +34,16 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             }
         `,
     ],
-    standalone: false,
+    imports: [MatMenuModule],
 })
 export class ContextMenuComponent
     extends AsyncHandler
     implements OnInit, AfterViewInit
 {
     /** List of context menu items */
-    public readonly menu = input<MatMenuPanel>(undefined, { alias: "context-menu" });
+    public readonly menu = input<MatMenuPanel>(undefined, {
+        alias: 'context-menu',
+    });
     /** Offset of the context menu on the x axis */
     public readonly offset_x = input(0);
     /** Offset of the context menu on the y axis */
@@ -51,7 +57,8 @@ export class ContextMenuComponent
     /** Location of the menu */
     public position: { top: number; left: number };
 
-    private readonly container = viewChild<ElementRef<HTMLDivElement>>('container');
+    private readonly container =
+        viewChild<ElementRef<HTMLDivElement>>('container');
     private readonly trigger = viewChild(MatMenuTrigger);
 
     @HostListener('contextmenu', ['$event']) public onEvent(event) {

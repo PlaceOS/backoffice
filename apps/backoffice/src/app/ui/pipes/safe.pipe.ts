@@ -9,11 +9,9 @@ import {
 
 @Pipe({
     name: 'safe',
-    standalone: false,
 })
 export class SafePipe implements PipeTransform {
     private sanitizer = inject(DomSanitizer);
-
 
     /**
      * Sanitizes the string allowing it to be injected into a template

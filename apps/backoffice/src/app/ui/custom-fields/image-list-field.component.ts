@@ -10,16 +10,23 @@ import {
     viewChild,
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { Upload } from '@placeos/cloud-uploads';
 
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { CommonModule } from '@angular/common';
+import { MatRippleModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { nextValueFrom, unique } from '../../common/general';
 import { notifyInfo } from '../../common/notifications';
 import { UploadsService } from '../../common/uploads.service';
+import { AuthenticatedImageDirective } from '../authenticated-image.directive';
+import { IconComponent } from '../icon.component';
+import { TranslatePipe } from '../translate.pipe';
 
 export interface UploadDetails {
     /** Unique ID for the upload */
@@ -207,7 +214,16 @@ export interface UploadDetails {
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [
+        TranslatePipe,
+        IconComponent,
+        MatFormFieldModule,
+        MatChipsModule,
+        MatRippleModule,
+        MatProgressSpinnerModule,
+        CommonModule,
+        AuthenticatedImageDirective,
+    ],
 })
 export class ImageListFieldComponent extends AsyncHandler {
     private _clipboard = inject(Clipboard);

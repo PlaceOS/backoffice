@@ -11,13 +11,17 @@ import {
     AbstractControl,
     ControlValueAccessor,
     NG_VALUE_ACCESSOR,
+    ReactiveFormsModule,
     UntypedFormControl,
     UntypedFormGroup,
     Validators,
 } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { PlaceModuleFunction } from '@placeos/ts-client';
 import { AsyncHandler } from '../../../common/async-handler.class';
 import { HashMap } from '../../../common/types';
+import { TranslatePipe } from '../../translate.pipe';
 
 const validateType = (type) => (control: AbstractControl) => {
     let value: any = '';
@@ -108,7 +112,12 @@ const validateType = (type) => (control: AbstractControl) => {
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [
+        TranslatePipe,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+    ],
 })
 export class FunctionArgumentComponent
     extends AsyncHandler

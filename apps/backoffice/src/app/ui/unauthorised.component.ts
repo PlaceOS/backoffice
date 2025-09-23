@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'app-unauthorised',
@@ -36,6 +37,6 @@ import { Component } from '@angular/core';
             }
         `,
     ],
-    standalone: false,
+    imports: [TranslatePipe],
 })
 export class UnauthorisedComponent {}

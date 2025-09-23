@@ -1,11 +1,14 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
 import {
-  Component,
-  SimpleChanges,
-  TemplateRef,
-  input,
-  model,
-  output
+    Component,
+    SimpleChanges,
+    TemplateRef,
+    input,
+    model,
+    output,
 } from '@angular/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -251,7 +254,7 @@ export interface TableColumn {
             }
         `,
     ],
-    standalone: false,
+    imports: [CommonModule, MatCheckboxModule, DragDropModule],
 })
 export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     public readonly data = input<T[] | Observable<T[]>>(undefined);
@@ -267,10 +270,7 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     public readonly selectedChange = output<number[]>();
     public readonly onclick = output<number>();
     public readonly oncontext = output<number>();
-    public readonly ondrop = output<[
-    number,
-    number
-]>();
+    public readonly ondrop = output<[number, number]>();
 
     public page = 0;
     public active_row = -1;

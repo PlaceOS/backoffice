@@ -1,4 +1,8 @@
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import {
+    CdkVirtualScrollViewport,
+    ScrollingModule,
+} from '@angular/cdk/scrolling';
+import { CommonModule } from '@angular/common';
 import {
     Component,
     ElementRef,
@@ -8,9 +12,11 @@ import {
     model,
     viewChild,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
+import { SafePipe } from './pipes/safe.pipe';
 import { SanitizePipe } from './pipes/sanitise.pipe';
 
 @Component({
@@ -65,8 +71,7 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
             }
         `,
     ],
-    providers: [SanitizePipe],
-    standalone: false,
+    imports: [FormsModule, ScrollingModule, CommonModule, SafePipe],
 })
 export class NewTerminalComponent extends AsyncHandler {
     private _sanitize_pipe = inject(SanitizePipe);

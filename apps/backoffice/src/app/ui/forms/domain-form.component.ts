@@ -1,6 +1,9 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { notifyWarn } from '../../common/notifications';
 import { isValidDomain } from '../../common/validation';
@@ -204,7 +207,7 @@ import { isValidDomain } from '../../common/validation';
             }
         `,
     ],
-    standalone: false,
+    imports: [MatFormFieldModule, MatChipsModule, MatInputModule],
 })
 export class DomainFormComponent {
     /** Group of form fields used for creating the system */

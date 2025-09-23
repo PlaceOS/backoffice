@@ -1,11 +1,16 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, inject, input, output } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDriverRole } from '@placeos/ts-client';
 import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
 import { BackofficeUsersService } from '../users/users.service';
+import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 export interface DisplayItem {
     id: string;
@@ -58,7 +63,8 @@ export interface DisplayItem {
                         </div>
                     }
                     @if (
-                        item()?.running !== null && item()?.running !== undefined
+                        item()?.running !== null &&
+                        item()?.running !== undefined
                     ) {
                         <div
                             class="rounded-xl bg-error px-2 py-1 text-xs text-error-content"
@@ -119,7 +125,9 @@ export interface DisplayItem {
             >
                 <app-icon class="text-2xl">add</app-icon>
                 <div>
-                    {{ 'COMMON.CREATE_FROM_TYPE' | translate: { name: type() } }}
+                    {{
+                        'COMMON.CREATE_FROM_TYPE' | translate: { name: type() }
+                    }}
                 </div>
             </button>
             <button
@@ -141,7 +149,8 @@ export interface DisplayItem {
                 <app-icon class="text-2xl">download</app-icon>
                 <div>
                     {{
-                        'COMMON.EXPORT_TYPE_AS_TSV' | translate: { name: type() }
+                        'COMMON.EXPORT_TYPE_AS_TSV'
+                            | translate: { name: type() }
                     }}
                 </div>
             </button>
@@ -176,7 +185,13 @@ export interface DisplayItem {
         </mat-menu>
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        IconComponent,
+        TranslatePipe,
+        MatMenuModule,
+        MatRippleModule,
+        MatTooltipModule,
+    ],
 })
 export class ItemDetailsComponent {
     private _service = inject(ActiveItemService);
@@ -186,12 +201,14 @@ export class ItemDetailsComponent {
     public readonly type = input('system');
     public readonly item = input<DisplayItem>(undefined);
     public readonly can_edit = input(false);
-    public readonly extra_actions = input<{
-    label: string;
-    action: () => void;
-    icon: string;
-    keycap?: string;
-}[]>([]);
+    public readonly extra_actions = input<
+        {
+            label: string;
+            action: () => void;
+            icon: string;
+            keycap?: string;
+        }[]
+    >([]);
     public readonly create = output<boolean>();
     public readonly edit = output();
     public readonly delete = output();
@@ -243,9 +260,7 @@ export class ItemDetailsComponent {
      */
     public exportAsTSV() {
         const item = this.item()?.toJSON();
-        const filename = `${item?.name.toLowerCase().split(' ').join('_')}.${
-            this.type()
-        }.tsv`;
+        const filename = `${item?.name.toLowerCase().split(' ').join('_')}.${this.type()}.tsv`;
         const ignore_keys = ['module_list', 'settings', '_type', 'version'];
         const csv_data = jsonToCsv(
             [item],

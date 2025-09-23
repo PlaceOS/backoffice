@@ -1,8 +1,18 @@
 import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
-import { AbstractControl, UntypedFormGroup } from '@angular/forms';
+import {
+    AbstractControl,
+    FormsModule,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
+import { ObjectListFieldComponent } from '../custom-fields/object-list-field.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'oauth-source-form',
@@ -291,7 +301,15 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        ObjectListFieldComponent,
+        FormsModule,
+        TranslatePipe,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+    ],
 })
 export class OauthSourceFormComponent
     extends AsyncHandler

@@ -1,10 +1,18 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { RouterModule } from '@angular/router';
 import { logout } from '@placeos/ts-client';
 import { format } from 'date-fns';
 import { VERSION } from '../../environments/version';
 import { issueDescription } from '../common/general';
 import { i18n, LocaleService } from '../common/locale.service';
 import { SettingsService } from '../common/settings.service';
+import { IconComponent } from './icon.component';
+import { SafePipe } from './pipes/safe.pipe';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'user-menu-tooltip',
@@ -110,7 +118,16 @@ import { SettingsService } from '../common/settings.service';
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        TranslatePipe,
+        IconComponent,
+        MatMenuModule,
+        MatRippleModule,
+        MatSlideToggleModule,
+        RouterModule,
+        SafePipe,
+        FormsModule,
+    ],
 })
 export class UserMenuTooltipComponent implements OnInit {
     private _settings = inject(SettingsService);

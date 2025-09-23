@@ -10,9 +10,15 @@ import {
     AbstractControl,
     FormControl,
     FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
     Validators,
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     listMetadata,
     PlaceMetadata,
@@ -34,6 +40,9 @@ import {
 } from '../overlays/confirm-modal.component';
 import { MetadataDetailsModalComponent } from '../overlays/metadata-details-modal/metadata-details-modal.component';
 import { MetadataHistoryModalComponent } from '../overlays/metadata-history-modal.component';
+import { SettingsFieldComponent } from './custom-fields/settings-field.component';
+import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 function replaceDescTag(inputString, newContent) {
     return inputString.replace(/^\[.*?\]/, `[${newContent}]`);
@@ -177,7 +186,17 @@ function replaceDescTag(inputString, newContent) {
         `,
     ],
     animations: [ANIMATION_SHOW_CONTRACT_EXPAND],
-    standalone: false,
+    imports: [
+        MatProgressSpinnerModule,
+        TranslatePipe,
+        IconComponent,
+        SettingsFieldComponent,
+        MatTooltipModule,
+        ReactiveFormsModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+    ],
 })
 export class MetadataDisplayComponent
     extends AsyncHandler

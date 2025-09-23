@@ -1,5 +1,10 @@
 import { Component, input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { CounterComponent } from '../counter.component';
+import { SettingsToggleComponent } from '../settings-toggle.component';
 
 @Component({
     selector: 'trigger-form',
@@ -115,7 +120,14 @@ import { UntypedFormGroup } from '@angular/forms';
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        MatFormFieldModule,
+        MatSelectModule,
+        ReactiveFormsModule,
+        CounterComponent,
+        SettingsToggleComponent,
+        MatInputModule,
+    ],
 })
 export class TriggerFormComponent {
     /** Group of form fields used for creating the system */

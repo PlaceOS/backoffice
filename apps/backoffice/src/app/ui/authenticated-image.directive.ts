@@ -1,4 +1,10 @@
-import { Directive, ElementRef, SimpleChanges, inject, input } from '@angular/core';
+import {
+    Directive,
+    ElementRef,
+    SimpleChanges,
+    inject,
+    input,
+} from '@angular/core';
 import { apiKey, authority, token } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 
@@ -6,7 +12,6 @@ const IMAGE_STORE = new Map<string, string>();
 
 @Directive({
     selector: 'img [auth],video [auth]',
-    standalone: false,
 })
 export class AuthenticatedImageDirective extends AsyncHandler {
     private _image_el = inject<ElementRef<HTMLImageElement>>(ElementRef);

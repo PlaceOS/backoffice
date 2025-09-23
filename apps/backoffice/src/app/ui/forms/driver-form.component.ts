@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {
     Component,
     computed,
@@ -8,7 +8,12 @@ import {
     signal,
     SimpleChanges,
 } from '@angular/core';
-import { FormGroup, UntypedFormGroup } from '@angular/forms';
+import {
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
 import {
     GitCommitDetails,
     listRepositoryCommits,
@@ -34,9 +39,16 @@ import {
     tap,
 } from 'rxjs/operators';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import * as yaml from 'js-yaml';
-import { nextValueFrom } from '../../../common/general';
-import { notifyError } from '../../../common/notifications';
+import { nextValueFrom } from '../../common/general';
+import { notifyError } from '../../common/notifications';
+import { ItemSearchFieldComponent } from '../custom-fields/item-search-field.component';
+import { SettingsToggleComponent } from '../settings-toggle.component';
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'driver-form',
@@ -199,7 +211,18 @@ import { notifyError } from '../../../common/notifications';
         }
     `,
     styles: [``],
-    standalone: false,
+    imports: [
+        CommonModule,
+        TranslatePipe,
+        MatProgressSpinnerModule,
+        SettingsToggleComponent,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        MatSelectModule,
+        ItemSearchFieldComponent,
+        FormsModule,
+    ],
 })
 export class DriverFormComponent extends AsyncHandler implements OnChanges {
     private _date_pipe = new DatePipe('en');
