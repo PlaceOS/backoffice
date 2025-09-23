@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["apps/backoffice/src/app/overlays/duplicate-modal/duplicate-modal.component.scss"],
-  "sourcesContent": [".body {\n    display: flex;\n    align-items: center;\n    flex-direction: column;\n    padding: 1em 0.5em;\n}\n\n.icon {\n    height: 1.2em;\n    width: 1.2em;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    font-size: 2em;\n}\n\n.content {\n    min-width: 16rem;\n    text-align: center;\n    padding: 1em;\n}\n\n.info {\n    font-size: 0.8em;\n    opacity: 0.65;\n    margin-bottom: 1em;\n}\n\n.item {\n    display: flex;\n    align-items: center;\n    min-width: 20em;\n    max-width: 24em;\n    padding: 0.5em 1em;\n    border-radius: 4px;\n    &:nth-child(2) {\n        background-color: rgba(#000, 0.1);\n    }\n\n    .name {\n        flex: 1;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n    }\n}\n\n.status {\n    color: var(--error);\n}\n\n.done {\n    color: var(--success);\n}\n\nmat-dialog-actions {\n    button {\n        min-width: 8em;\n    }\n}\n"],
-  "mappings": "AAAA,CAAA,KACI,QAAA,KACA,YAAA,OACA,eAAA,OAHJ,QAII,IAAA,KAGJ,CAAA,KACI,OAAA,MACA,MAAA,MACA,QAAA,KACA,YAAA,OACA,gBAAA,OACA,UAAA,IAGJ,CAAA,QACI,UAAA,MACA,WAAA,OAlBJ,QAmBI,IAGJ,CAAA,KACI,UAAA,KACA,QAAA,IACA,cAAA,IAGJ,CAAA,KACI,QAAA,KACA,YAAA,OACA,UAAA,KACA,UAAA,KAhCJ,QAiCI,KAAA,IAjCJ,cAkCI,IACA,CAPJ,IAOI,cACI,iBAAA,UAGJ,CAXJ,KAWI,CAAA,KACI,KAAA,EACA,YAAA,OACA,SAAA,OACA,cAAA,SAIR,CAAA,OACI,MAAA,IAAA,SAGJ,CAAA,KACI,MAAA,IAAA,WAIA,mBAAA,OACI,UAAA",
-  "names": []
-}

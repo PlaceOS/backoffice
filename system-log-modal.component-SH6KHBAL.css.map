@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["apps/backoffice/src/app/overlays/system-log-modal/system-log-modal.component.scss"],
-  "sourcesContent": [".body {\n    display: flex;\n    align-items: center;\n    flex-direction: column;\n    padding: 2em;\n}\n\n.content {\n    width: 16rem;\n    text-align: center;\n    font-size: 0.8em;\n}\n"],
-  "mappings": "AAAA,CAAA,KACI,QAAA,KACA,YAAA,OACA,eAAA,OAHJ,QAII,IAGJ,CAAA,QACI,MAAA,MACA,WAAA,OACA,UAAA",
-  "names": []
-}
