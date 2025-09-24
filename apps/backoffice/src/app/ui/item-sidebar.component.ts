@@ -1,7 +1,3 @@
-import {
-    CdkVirtualScrollViewport,
-    ScrollingModule,
-} from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
@@ -33,6 +29,7 @@ import { nextValueFrom } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
+import { VirtualScrollComponent } from './virtual-scroll.component';
 
 @Component({
     selector: 'item-sidebar',
@@ -107,18 +104,20 @@ import { TranslatePipe } from './translate.pipe';
             </p>
             <div class="flex h-1/2 flex-1 flex-col border-t border-base-200">
                 @if ((items | async)?.length) {
-                    <cdk-virtual-scroll-viewport
-                        no-x-scroll
-                        itemSize="72"
-                        orientation="vertical"
-                        (scrolledIndexChange)="atBottom()"
-                        class="relative h-1/2 w-full flex-1"
+                    <virtual-scroll
+                        [item_size]="72"
+                        [items]="items | async"
+                        [item_template]="item_display"
+                        (scrolled)="atBottom($event)"
                     >
+                        <div
+                            class="bg-base-200 p-2 text-center text-sm opacity-30"
+                        >
+                            {{ 'COMMON.END_OF_LIST' | translate }}
+                        </div>
+                    </virtual-scroll>
+                    <ng-template #item_display let-item="item" let-idx="index">
                         <a
-                            *cdkVirtualFor="
-                                let item of items | async;
-                                trackBy: trackByFn
-                            "
                             [routerLink]="
                                 subroute()
                                     ? ['/', route(), item.id, subroute()]
@@ -131,6 +130,7 @@ import { TranslatePipe } from './translate.pipe';
                                     ? ('COMMON.UPDATE_AVAILABLE' | translate)
                                     : ''
                             "
+                            [class.bg-base-200]="idx % 2 === 1"
                             class="relative m-1 flex h-16 w-[23rem] max-w-[calc(100%-0.5rem)] flex-col rounded border border-base-100 px-2 py-2 hover:border-info"
                             (click)="show = false"
                         >
@@ -141,7 +141,7 @@ import { TranslatePipe } from './translate.pipe';
                                 @if (item.extra) {
                                     <span
                                         extra
-                                        class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded px-2 py-1 text-xs opacity-60"
+                                        class="mono mt-1 max-w-full truncate rounded bg-base-200 px-2 py-1 text-xs opacity-60"
                                     >
                                         {{ item.extra }}
                                     </span>
@@ -179,12 +179,7 @@ import { TranslatePipe } from './translate.pipe';
                                 </div>
                             }
                         </a>
-                        <div
-                            class="bg-base-200 p-2 text-center text-sm opacity-30"
-                        >
-                            {{ 'COMMON.END_OF_LIST' | translate }}
-                        </div>
-                    </cdk-virtual-scroll-viewport>
+                    </ng-template>
                 } @else {
                     <div
                         class="flex flex-col items-center justify-center p-8 opacity-30"
@@ -207,33 +202,20 @@ import { TranslatePipe } from './translate.pipe';
             :host {
                 height: 100%;
             }
-            a:nth-child(2n) {
+            scroll-item:nth-child(2n) > a {
                 background-color: var(--b2);
             }
             a:hover {
                 background-color: var(--b3);
             }
             a.active {
-                background-color: var(--s);
+                background-color: var(--s) !important;
                 color: var(--sc);
-            }
-
-            a:hover [extra] {
-                background-color: var(--b2);
-            }
-
-            a [extra] {
-                background-color: var(--b3);
-            }
-
-            a.active [extra] {
-                background-color: var(--sf);
             }
         `,
     ],
     imports: [
         CommonModule,
-        ScrollingModule,
         TranslatePipe,
         MatTooltipModule,
         IconComponent,
@@ -242,6 +224,7 @@ import { TranslatePipe } from './translate.pipe';
         MatProgressSpinnerModule,
         MatFormFieldModule,
         MatSelectModule,
+        VirtualScrollComponent,
     ],
 })
 export class ItemSidebarComponent
@@ -268,9 +251,6 @@ export class ItemSidebarComponent
     /** Total number of items in the last request */
     public total = this._service.count;
 
-    /** Virtual scrolling viewport */
-    private readonly viewport = viewChild(CdkVirtualScrollViewport);
-
     private readonly _input =
         viewChild<ElementRef<HTMLInputElement>>('search_input');
 
@@ -289,7 +269,7 @@ export class ItemSidebarComponent
 
     public ngAfterViewInit() {
         this.focusInput();
-        this.atBottom();
+        this.atBottom([0, 0]);
     }
 
     public focusInput() {
@@ -325,30 +305,29 @@ export class ItemSidebarComponent
             isBefore(now, last_check + 60 * 1000)
         );
     }
-
-    /**
-     * Check if user has scrolled to the bottom of the sidebar and emit an event to get next page of items
-     */
-    public async atBottom() {
-        const loading = await nextValueFrom(this.loading);
-        if (loading || !this.is_stale) return;
-        const viewport = this.viewport();
-        if (!viewport) {
-            return this.timeout('atBottom', () => this.atBottom());
-        }
-        const end = viewport.getRenderedRange().end;
-        const total = viewport.getDataLength();
-        if (end >= total - 1) {
-            this.last_total = total;
-            this.last_check = Date.now();
-            if (this.last_total !== this._service.total) {
-                this._service.moreItems();
-            }
-        }
+    public async atBottom([_, end]: [number, number]) {
+        this.timeout(
+            'load_more',
+            async () => {
+                const loading = await nextValueFrom(this.loading);
+                const items = await nextValueFrom(this.items);
+                if (loading || !this.is_stale) return;
+                if (end >= items.length) {
+                    // Buffer 2 items early to avoid edge jumps
+                    this.last_total = items.length;
+                    this.last_check = Date.now();
+                    const serviceTotal = await nextValueFrom(this.total); // Await for accuracy
+                    if (this.last_total < serviceTotal) {
+                        this._service.moreItems();
+                    }
+                }
+            },
+            150,
+        ); // 150ms debounce for smooth feel
     }
 
     private _processItems(list: any[]) {
-        for (let item of list) {
+        for (const item of list) {
             if (item instanceof PlaceModule) {
                 const name = item.system?.display_name || item.system?.name;
                 const detail =
