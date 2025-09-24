@@ -328,7 +328,7 @@ export class MetadataDisplayComponent
     }
 
     public saveMetadata(field: PlaceMetadata) {
-        const form = this.form_map[field.name];
+        const form = this.form_map()[field.name];
         form.markAllAsTouched();
         if (!form.valid)
             return notifyError(
