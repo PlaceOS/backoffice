@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { nextValueFrom } from '../common/general';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
@@ -171,6 +172,7 @@ import { SystemStateService } from './system-state.service';
         MatProgressBarModule,
         ItemSearchFieldComponent,
         FormsModule,
+        RouterModule,
     ],
 })
 export class SystemZonesComponent {

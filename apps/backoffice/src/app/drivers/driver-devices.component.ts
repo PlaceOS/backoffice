@@ -192,6 +192,7 @@ import { DriverStateService } from './driver-state.service';
         MatInputModule,
         FormsModule,
         IconComponent,
+        RouterModule,
     ],
 })
 export class DriverModulesComponent extends AsyncHandler implements OnInit {

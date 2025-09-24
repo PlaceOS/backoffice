@@ -102,6 +102,7 @@ import { ModuleStateService } from './module-state.service';
         MatInputModule,
         FormsModule,
         IconComponent,
+        RouterModule,
     ],
 })
 export class ModuleSystemsComponent {

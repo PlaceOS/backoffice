@@ -5,6 +5,8 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { AsyncHandler } from '../common/async-handler.class';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -98,6 +100,8 @@ import { TriggerStateService } from './trigger-state.service';
         MatRippleModule,
         SimpleTableComponent,
         MatProgressBarModule,
+        RouterModule,
+        MatTooltipModule,
     ],
 })
 export class TriggerInstancesComponent extends AsyncHandler implements OnInit {

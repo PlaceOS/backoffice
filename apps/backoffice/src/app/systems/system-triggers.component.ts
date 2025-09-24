@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { i18n } from '../common/locale.service';
 import { HashMap } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
@@ -202,6 +203,7 @@ export interface TriggerInstanceState {
         FormsModule,
         SimpleTableComponent,
         MatProgressBarModule,
+        RouterModule,
     ],
 })
 export class SystemTriggersComponent {
