@@ -61,7 +61,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 ></item-tablist>
                                 <div
                                     #el
-                                    class="relative z-0 h-1/2 w-full flex-1 overflow-auto p-4"
+                                    class="relative z-0 h-1/2 w-full flex-1 overflow-auto"
                                     (scroll)="scroll.set(el.scrollTop)"
                                 >
                                     <router-outlet></router-outlet>

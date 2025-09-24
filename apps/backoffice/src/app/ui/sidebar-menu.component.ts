@@ -1,4 +1,4 @@
-import { Component, inject, model } from '@angular/core';
+import { Component, inject, model, OnInit, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
 import { MatRippleModule } from '@angular/material/core';
@@ -24,8 +24,8 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
         <div
             sidebar-menu
             class="pointer-events-none absolute inset-0 z-40 hidden h-full flex-col justify-between bg-base-200 sm:pointer-events-auto sm:relative sm:inset-auto sm:z-10 sm:flex"
-            [class.compact]="compact"
-            [class.sm:w-52]="!compact"
+            [class.compact]="compact()"
+            [class.sm:w-52]="!compact()"
             [class.!flex]="open()"
             [class.!pointer-events-auto]="open()"
             (click)="close()"
@@ -34,15 +34,15 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 <a
                     [routerLink]="['/']"
                     class="font-heading ml-16 mt-4 text-4xl sm:mb-2 sm:ml-0"
-                    [style.width]="compact ? 'auto' : 'calc(100%-2rem)'"
+                    [style.width]="compact() ? 'auto' : 'calc(100%-2rem)'"
                 >
-                    <div [class.sm:hidden]="compact">
+                    <div [class.sm:hidden]="compact()">
                         Place<span class="font-heading text-primary">OS</span>
                     </div>
                     <img
                         src="assets/icon/mstile-310x310.png"
                         class="hidden h-12 w-12"
-                        [class.sm:block]="compact"
+                        [class.sm:block]="compact()"
                     />
                 </a>
                 <div class="w-full flex-1 space-y-2 overflow-auto pb-2">
@@ -56,18 +56,18 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                 [routerLink]="[link.route]"
                                 routerLinkActive="!bg-secondary text-secondary-content"
                                 [matTooltip]="
-                                    compact ? (link.name | translate) : ''
+                                    compact() ? (link.name | translate) : ''
                                 "
                                 matTooltipPosition="right"
                             >
                                 <div
                                     class="flex w-full items-center space-x-2"
-                                    [class.sm:justify-center]="compact"
+                                    [class.sm:justify-center]="compact()"
                                 >
                                     <app-icon class="text-xl">{{
                                         link.icon
                                     }}</app-icon>
-                                    <p [class.sm:hidden]="compact">
+                                    <p [class.sm:hidden]="compact()">
                                         {{ link.name | translate }}
                                     </p>
                                 </div>
@@ -165,13 +165,13 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             >
                 <a-user-avatar
                     [user]="user"
-                    [class.sm:pl-2]="compact"
-                    [matTooltip]="compact ? user?.name : ''"
+                    [class.sm:pl-2]="compact()"
+                    [matTooltip]="compact() ? user?.name : ''"
                     matTooltipPosition="right"
                 ></a-user-avatar>
                 <div
                     class="flex w-1/2 flex-1 flex-col leading-tight"
-                    [class.sm:hidden]="compact"
+                    [class.sm:hidden]="compact()"
                 >
                     <div class="w-full truncate">{{ user?.name }}</div>
                     <div class="w-full truncate text-xs opacity-30">
@@ -193,7 +193,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 (click)="toggleCompactMode()"
             >
                 <app-icon>
-                    {{ compact ? 'chevron_right' : 'chevron_left' }}
+                    {{ compact() ? 'chevron_right' : 'chevron_left' }}
                 </app-icon>
             </button>
         </div>
@@ -226,7 +226,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
         RouterModule,
     ],
 })
-export class SidebarMenuComponent extends AsyncHandler {
+export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     private _tooltip = inject(CustomTooltipData, { optional: true });
     private _debug = inject(PlaceDebugService);
     private _settings = inject(SettingsService);
@@ -235,8 +235,7 @@ export class SidebarMenuComponent extends AsyncHandler {
     private _router = inject(Router);
 
     public readonly open = model(true);
-    public items: any[] = [];
-    public compact = false;
+    public readonly compact = signal(false);
     public readonly user_controls = UserMenuTooltipComponent;
     public readonly links = [
         { name: 'COMMON.SYSTEMS', route: '/systems', icon: 'meeting_room' },
@@ -301,8 +300,8 @@ export class SidebarMenuComponent extends AsyncHandler {
     public readonly close = () => this._tooltip?.close();
 
     public toggleCompactMode() {
-        this.compact = !this.compact;
-        localStorage.setItem('BACKOFFICE.SIDEBAR_COMPACT', `${this.compact}`);
+        this.compact.update((s) => !s);
+        localStorage.setItem('BACKOFFICE.SIDEBAR_COMPACT', `${this.compact()}`);
     }
 
     public ngOnInit() {
@@ -318,8 +317,9 @@ export class SidebarMenuComponent extends AsyncHandler {
                 this.changeSelected(1),
             ),
         );
-        this.compact =
-            localStorage.getItem('BACKOFFICE.SIDEBAR_COMPACT') === 'true';
+        this.compact.set(
+            localStorage.getItem('BACKOFFICE.SIDEBAR_COMPACT') === 'true',
+        );
     }
 
     public toggleDebugPosition() {
@@ -341,7 +341,7 @@ export class SidebarMenuComponent extends AsyncHandler {
         this._debug.unbindAll();
     }
 
-    private changeSelected(offset: number = 1) {
+    private changeSelected(offset = 1) {
         // const index = this.menu_items.findIndex(
         //     (item) => this._router.url.indexOf(item.route) >= 0
         // );

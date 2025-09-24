@@ -21,150 +21,157 @@ import { DriverStateService } from './driver-state.service';
 @Component({
     selector: 'driver-devices',
     template: `
-        <section class="mb-4 flex items-center">
-            <mat-form-field appearance="outline" class="h-12 flex-1">
-                <div class="prefix" matPrefix>
-                    <app-icon class="relative -left-0.5 text-2xl">
-                        search
-                    </app-icon>
-                </div>
-                <input
-                    [ngModel]="''"
-                    (ngModelChange)="filter$.next($event)"
-                    matInput
-                    [placeholder]="'MODULES.SEARCH' | translate"
-                    class="rounded-none"
-                />
-            </mat-form-field>
-        </section>
-        <section>
-            <mat-progress-bar
-                mode="indeterminate"
-                class="w-full"
-                [class.opacity-0]="!loading()"
-            ></mat-progress-bar>
-            <simple-table
-                class="block min-w-[32rem] text-sm"
-                [data]="modules"
-                [columns]="[
-                    {
-                        key: 'state',
-                        name: 'MODULES.FIELD_STATE' | translate,
-                        content: state_template,
-                        size: '4rem',
-                        sortable: false,
-                    },
-                    {
-                        key: 'name',
-                        name: 'DRIVERS.MODULE_NAME' | translate,
-                        content: name_template,
-                    },
-                    {
-                        key: 'actions',
-                        name: ' ',
-                        content: actions_template,
-                        size: '6rem',
-                        sortable: false,
-                    },
-                ]"
-                [sortable]="true"
-                [empty_message]="'DRIVERS.MODULES_EMPTY' | translate"
-            ></simple-table>
-            <ng-template #state_template let-row="row">
-                @if (row.system) {
-                    <i
-                        binding
-                        [(model)]="row.connected"
-                        [sys]="row.system.id"
-                        [mod]="row"
-                        bind="connected"
-                    ></i>
-                }
-                <div
-                    class="mx-auto h-2 w-2 rounded-full"
-                    [class.bg-base-content]="!row.running"
-                    [class.bg-error]="row.running && !row.connected"
-                    [class.bg-success]="row.running && row.connected"
-                ></div>
-            </ng-template>
-            <ng-template #name_template let-row="row">
-                <div class="flex flex-col items-start px-4 py-2 leading-snug">
-                    <a
-                        class="truncate underline"
-                        [routerLink]="['/modules', row.id]"
-                    >
-                        {{ row.name }}
-                    </a>
-                    <div class="font-mono text-[0.625rem] opacity-30">
-                        {{ row.id }}
+        <div class="p-4">
+            <section class="mb-4 flex items-center">
+                <mat-form-field appearance="outline" class="h-12 flex-1">
+                    <div class="prefix" matPrefix>
+                        <app-icon class="relative -left-0.5 text-2xl">
+                            search
+                        </app-icon>
                     </div>
-                </div>
-            </ng-template>
-            <ng-template #actions_template let-row="row">
-                <div class="mx-auto flex items-center space-x-2 p-2">
-                    <button
-                        icon
-                        matRipple
-                        [matTooltip]="'DRIVERS.VIEW_SYSTEMS' | translate"
-                        [matMenuTriggerFor]="menu"
-                        (click)="loadSystems(row)"
+                    <input
+                        [ngModel]="''"
+                        (ngModelChange)="filter$.next($event)"
+                        matInput
+                        [placeholder]="'MODULES.SEARCH' | translate"
+                        class="rounded-none"
+                    />
+                </mat-form-field>
+            </section>
+            <section>
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.opacity-0]="!loading()"
+                ></mat-progress-bar>
+                <simple-table
+                    class="block min-w-[32rem] text-sm"
+                    [data]="modules"
+                    [columns]="[
+                        {
+                            key: 'state',
+                            name: 'MODULES.FIELD_STATE' | translate,
+                            content: state_template,
+                            size: '4rem',
+                            sortable: false,
+                        },
+                        {
+                            key: 'name',
+                            name: 'DRIVERS.MODULE_NAME' | translate,
+                            content: name_template,
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            content: actions_template,
+                            size: '6rem',
+                            sortable: false,
+                        },
+                    ]"
+                    [sortable]="true"
+                    [empty_message]="'DRIVERS.MODULES_EMPTY' | translate"
+                ></simple-table>
+                <ng-template #state_template let-row="row">
+                    @if (row.system) {
+                        <i
+                            binding
+                            [(model)]="row.connected"
+                            [sys]="row.system.id"
+                            [mod]="row"
+                            bind="connected"
+                        ></i>
+                    }
+                    <div
+                        class="mx-auto h-2 w-2 rounded-full"
+                        [class.bg-base-content]="!row.running"
+                        [class.bg-error]="row.running && !row.connected"
+                        [class.bg-success]="row.running && row.connected"
+                    ></div>
+                </ng-template>
+                <ng-template #name_template let-row="row">
+                    <div
+                        class="flex flex-col items-start px-4 py-2 leading-snug"
                     >
-                        <app-icon>visibility</app-icon>
-                    </button>
-                    <button
-                        icon
-                        matRipple
-                        [matTooltip]="'MODULES.DELETE' | translate"
-                        (click)="removeModule(row)"
-                    >
-                        <app-icon class="text-error">delete</app-icon>
-                    </button>
-                    <mat-menu #menu="matMenu">
-                        <div
-                            class="mx-1 -mt-1 mb-1 min-w-64 rounded bg-base-200 px-4 py-2 text-sm opacity-70"
+                        <a
+                            class="truncate underline"
+                            [routerLink]="['/modules', row.id]"
                         >
-                            {{
-                                'DRIVERS.SYSTEM_COUNT'
-                                    | translate
-                                        : { count: systems[row.id]?.length }
-                                        : systems[row.id]?.length
-                            }}
+                            {{ row.name }}
+                        </a>
+                        <div class="font-mono text-[0.625rem] opacity-30">
+                            {{ row.id }}
                         </div>
-                        @if (loading_systems) {
+                    </div>
+                </ng-template>
+                <ng-template #actions_template let-row="row">
+                    <div class="mx-auto flex items-center space-x-2 p-2">
+                        <button
+                            icon
+                            matRipple
+                            [matTooltip]="'DRIVERS.VIEW_SYSTEMS' | translate"
+                            [matMenuTriggerFor]="menu"
+                            (click)="loadSystems(row)"
+                        >
+                            <app-icon>visibility</app-icon>
+                        </button>
+                        <button
+                            icon
+                            matRipple
+                            [matTooltip]="'MODULES.DELETE' | translate"
+                            (click)="removeModule(row)"
+                        >
+                            <app-icon class="text-error">delete</app-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
                             <div
-                                class="flex items-center space-x-2 p-2 text-sm"
+                                class="mx-1 -mt-1 mb-1 min-w-64 rounded bg-base-200 px-4 py-2 text-sm opacity-70"
                             >
-                                <mat-spinner [diameter]="32"></mat-spinner>
-                                <span>{{
-                                    'DRIVERS.LOADING_SYSTEMS' | translate
-                                }}</span>
+                                {{
+                                    'DRIVERS.SYSTEM_COUNT'
+                                        | translate
+                                            : { count: systems[row.id]?.length }
+                                            : systems[row.id]?.length
+                                }}
                             </div>
-                        }
-                        @for (
-                            system of systems[row.id] || [];
-                            track system.id
-                        ) {
-                            <a
-                                mat-menu-item
-                                class="leading-tight"
-                                [routerLink]="['/systems', system.id]"
-                            >
+                            @if (loading_systems) {
                                 <div
-                                    class="flex h-full flex-col justify-center px-2 leading-tight"
+                                    class="flex items-center space-x-2 p-2 text-sm"
                                 >
-                                    <div class="text-base">
-                                        {{ system.display_name || system.name }}
-                                    </div>
-                                    <div class="text-xs opacity-30">
-                                        {{ system.id }}
-                                    </div>
+                                    <mat-spinner [diameter]="32"></mat-spinner>
+                                    <span>{{
+                                        'DRIVERS.LOADING_SYSTEMS' | translate
+                                    }}</span>
                                 </div>
-                            </a>
-                        }
-                    </mat-menu>
-                </div>
-            </ng-template>
-        </section>
+                            }
+                            @for (
+                                system of systems[row.id] || [];
+                                track system.id
+                            ) {
+                                <a
+                                    mat-menu-item
+                                    class="leading-tight"
+                                    [routerLink]="['/systems', system.id]"
+                                >
+                                    <div
+                                        class="flex h-full flex-col justify-center px-2 leading-tight"
+                                    >
+                                        <div class="text-base">
+                                            {{
+                                                system.display_name ||
+                                                    system.name
+                                            }}
+                                        </div>
+                                        <div class="text-xs opacity-30">
+                                            {{ system.id }}
+                                        </div>
+                                    </div>
+                                </a>
+                            }
+                        </mat-menu>
+                    </div>
+                </ng-template>
+            </section>
+        </div>
     `,
     styles: [
         `

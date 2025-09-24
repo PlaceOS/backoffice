@@ -18,228 +18,234 @@ import { ModuleStateService } from './module-state.service';
 @Component({
     selector: 'module-about',
     template: `
-        <section
-            class="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0"
-        >
-            <div class="flex-1 sm:w-1/3">
-                <div
-                    class="grid flex-1 gap-2 rounded border border-base-200 p-4"
-                    [style.gridTemplateColumns]="'4.5rem auto'"
-                >
-                    @if (item.notes) {
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'MODULES.NOTES' | translate }}
-                        </div>
-                        <div>{{ item.notes }}</div>
-                    }
-                    @if (item.ip) {
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'MODULES.IP_ADDRESS' | translate }}
-                        </div>
-                        <div class="mono">{{ item.ip }}</div>
-                    }
-                    @if (item.port > 1) {
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'MODULES.PORT_NUMBER' | translate }}
-                        </div>
-                        <div class="mono">{{ item.port }}</div>
-                    }
-                    @if (item.tls || item.udp) {
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'MODULES.PROTOCOL' | translate }}
-                        </div>
-                        <div class="flex items-center">
-                            @if (item.tls) {
-                                <code class="bg-success text-base-100">
-                                    TLS
-                                </code>
-                            }
-                            @if (item.udp) {
-                                <code class="bg-success text-base-100">
-                                    UDP
-                                </code>
-                            }
-                        </div>
-                    }
-                    @if (driver | async) {
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'DRIVERS.SINGULAR' | translate }}
-                        </div>
-                        <a
-                            class="truncate underline"
-                            [routerLink]="['/drivers', item.driver_id]"
-                        >
-                            {{
-                                (driver | async).name ||
-                                    '&lt;' +
-                                        ('COMMON.BLANK_NAME' | translate) +
-                                        '&gt;'
-                            }}
-                        </a>
-                    }
-                    @if (system | async) {
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'SYSTEMS.SINGULAR' | translate }}
-                        </div>
-                        <a
-                            class="truncate underline"
-                            [routerLink]="[
-                                '/systems',
-                                (system | async).id,
-                                'modules',
-                            ]"
-                        >
-                            {{ (system | async).name }}
-                        </a>
-                    }
-                    @if (edge | async) {
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'COMMON.EDGE' | translate }}
-                        </div>
-                        <div class="flex items-center">
+        <div class="p-4">
+            <section
+                class="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0"
+            >
+                <div class="flex-1 sm:w-1/3">
+                    <div
+                        class="grid flex-1 gap-2 rounded border border-base-200 p-4"
+                        [style.gridTemplateColumns]="'4.5rem auto'"
+                    >
+                        @if (item.notes) {
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'MODULES.NOTES' | translate }}
+                            </div>
+                            <div>{{ item.notes }}</div>
+                        }
+                        @if (item.ip) {
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'MODULES.IP_ADDRESS' | translate }}
+                            </div>
+                            <div class="mono">{{ item.ip }}</div>
+                        }
+                        @if (item.port > 1) {
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'MODULES.PORT_NUMBER' | translate }}
+                            </div>
+                            <div class="mono">{{ item.port }}</div>
+                        }
+                        @if (item.tls || item.udp) {
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'MODULES.PROTOCOL' | translate }}
+                            </div>
+                            <div class="flex items-center">
+                                @if (item.tls) {
+                                    <code class="bg-success text-base-100">
+                                        TLS
+                                    </code>
+                                }
+                                @if (item.udp) {
+                                    <code class="bg-success text-base-100">
+                                        UDP
+                                    </code>
+                                }
+                            </div>
+                        }
+                        @if (driver | async) {
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'DRIVERS.SINGULAR' | translate }}
+                            </div>
+                            <a
+                                class="truncate underline"
+                                [routerLink]="['/drivers', item.driver_id]"
+                            >
+                                {{
+                                    (driver | async).name ||
+                                        '&lt;' +
+                                            ('COMMON.BLANK_NAME' | translate) +
+                                            '&gt;'
+                                }}
+                            </a>
+                        }
+                        @if (system | async) {
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'SYSTEMS.SINGULAR' | translate }}
+                            </div>
                             <a
                                 class="truncate underline"
                                 [routerLink]="[
-                                    '/admin',
-                                    'edge',
-                                    (edge | async).id,
+                                    '/systems',
+                                    (system | async).id,
+                                    'modules',
                                 ]"
                             >
-                                {{ (edge | async).name }}
+                                {{ (system | async).name }}
                             </a>
-                            <div class="w-px flex-1"></div>
-                            <button
-                                icon
-                                customTooltip
-                                [hover]="true"
-                                [backdrop]="false"
-                                [content]="edge_desc_template"
-                                yPosition="top"
-                                xPosition="center"
-                            >
-                                @if ((edge | async).description) {
-                                    <app-icon
-                                        class="rounded-full border border-base-200"
-                                        >info</app-icon
+                        }
+                        @if (edge | async) {
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'COMMON.EDGE' | translate }}
+                            </div>
+                            <div class="flex items-center">
+                                <a
+                                    class="truncate underline"
+                                    [routerLink]="[
+                                        '/admin',
+                                        'edge',
+                                        (edge | async).id,
+                                    ]"
+                                >
+                                    {{ (edge | async).name }}
+                                </a>
+                                <div class="w-px flex-1"></div>
+                                <button
+                                    icon
+                                    customTooltip
+                                    [hover]="true"
+                                    [backdrop]="false"
+                                    [content]="edge_desc_template"
+                                    yPosition="top"
+                                    xPosition="center"
+                                >
+                                    @if ((edge | async).description) {
+                                        <app-icon
+                                            class="rounded-full border border-base-200"
+                                            >info</app-icon
+                                        >
+                                    }
+                                </button>
+                            </div>
+                            <ng-template #edge_desc_template>
+                                <div
+                                    class="pointer-events-none max-w-[24rem] rounded border border-base-200 bg-base-100 p-2 shadow"
+                                >
+                                    <pre
+                                        class="overflow-hidden rounded-xl bg-base-200 p-2 text-sm"
+                                        >{{ (edge | async).description }}</pre
                                     >
+                                </div>
+                            </ng-template>
+                        }
+                        <div class="flex items-center text-sm font-medium">
+                            {{ 'COMMON.CREATED_AT' | translate }}
+                        </div>
+                        <div class="flex items-center">
+                            <span
+                                [matTooltip]="
+                                    (item.created_at * 1000
+                                        | date: 'mediumDate') +
+                                    ', ' +
+                                    (item.created_at * 1000 | date: 'shortTime')
+                                "
+                                matTooltipPosition="right"
+                            >
+                                {{ item.created_at * 1000 | dateFrom }}
+                            </span>
+                        </div>
+                        <div class="flex items-center text-sm font-medium">
+                            {{ 'COMMON.UPDATED_AT' | translate }}
+                        </div>
+                        <div class="flex items-center">
+                            <span
+                                [matTooltip]="
+                                    (item.updated_at * 1000
+                                        | date: 'mediumDate') +
+                                    ', ' +
+                                    (item.updated_at * 1000 | date: 'shortTime')
+                                "
+                                matTooltipPosition="right"
+                            >
+                                {{ item.updated_at * 1000 | dateFrom }}
+                            </span>
+                        </div>
+                        @if (item.has_runtime_error) {
+                            <button
+                                btn
+                                matRipple
+                                class="col-span-2 flex w-full items-center"
+                                (click)="viewErrors()"
+                            >
+                                {{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }}
+                            </button>
+                        }
+                    </div>
+                </div>
+                <div class="flex-1 sm:w-1/3">
+                    <div
+                        class="flex flex-1 flex-col rounded border border-base-200"
+                    >
+                        <h3
+                            class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
+                        >
+                            {{ 'MODULES.CONTROLS' | translate }}
+                        </h3>
+                        <div class="flex flex-wrap items-center p-1">
+                            <button
+                                btn
+                                matRipple
+                                class="m-1 min-w-36 flex-1"
+                                [disabled]="item.running || stopping"
+                                (click)="toggleModuleState()"
+                            >
+                                @if (!stopping) {
+                                    <div class="text">
+                                        {{ 'MODULES.START' | translate }}
+                                    </div>
+                                }
+                                @if (stopping) {
+                                    <mat-spinner diameter="32"></mat-spinner>
+                                }
+                            </button>
+                            <button
+                                btn
+                                matRipple
+                                class="inverse error m-1 min-w-36 flex-1"
+                                [disabled]="!item.running || stopping"
+                                (click)="toggleModuleState()"
+                            >
+                                @if (!stopping) {
+                                    <div class="text">
+                                        {{ 'MODULES.STOP' | translate }}
+                                    </div>
+                                }
+                                @if (stopping) {
+                                    <mat-spinner diameter="32"></mat-spinner>
                                 }
                             </button>
                         </div>
-                        <ng-template #edge_desc_template>
-                            <div
-                                class="pointer-events-none max-w-[24rem] rounded border border-base-200 bg-base-100 p-2 shadow"
-                            >
-                                <pre
-                                    class="overflow-hidden rounded-xl bg-base-200 p-2 text-sm"
-                                    >{{ (edge | async).description }}</pre
-                                >
-                            </div>
-                        </ng-template>
-                    }
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'COMMON.CREATED_AT' | translate }}
-                    </div>
-                    <div class="flex items-center">
-                        <span
-                            [matTooltip]="
-                                (item.created_at * 1000 | date: 'mediumDate') +
-                                ', ' +
-                                (item.created_at * 1000 | date: 'shortTime')
-                            "
-                            matTooltipPosition="right"
-                        >
-                            {{ item.created_at * 1000 | dateFrom }}
-                        </span>
-                    </div>
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'COMMON.UPDATED_AT' | translate }}
-                    </div>
-                    <div class="flex items-center">
-                        <span
-                            [matTooltip]="
-                                (item.updated_at * 1000 | date: 'mediumDate') +
-                                ', ' +
-                                (item.updated_at * 1000 | date: 'shortTime')
-                            "
-                            matTooltipPosition="right"
-                        >
-                            {{ item.updated_at * 1000 | dateFrom }}
-                        </span>
-                    </div>
-                    @if (item.has_runtime_error) {
-                        <button
-                            btn
-                            matRipple
-                            class="col-span-2 flex w-full items-center"
-                            (click)="viewErrors()"
-                        >
-                            {{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }}
-                        </button>
-                    }
-                </div>
-            </div>
-            <div class="flex-1 sm:w-1/3">
-                <div
-                    class="flex flex-1 flex-col rounded border border-base-200"
-                >
-                    <h3
-                        class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
-                    >
-                        {{ 'MODULES.CONTROLS' | translate }}
-                    </h3>
-                    <div class="flex flex-wrap items-center p-1">
-                        <button
-                            btn
-                            matRipple
-                            class="m-1 min-w-36 flex-1"
-                            [disabled]="item.running || stopping"
-                            (click)="toggleModuleState()"
-                        >
-                            @if (!stopping) {
-                                <div class="text">
-                                    {{ 'MODULES.START' | translate }}
-                                </div>
-                            }
-                            @if (stopping) {
-                                <mat-spinner diameter="32"></mat-spinner>
-                            }
-                        </button>
-                        <button
-                            btn
-                            matRipple
-                            class="inverse error m-1 min-w-36 flex-1"
-                            [disabled]="!item.running || stopping"
-                            (click)="toggleModuleState()"
-                        >
-                            @if (!stopping) {
-                                <div class="text">
-                                    {{ 'MODULES.STOP' | translate }}
-                                </div>
-                            }
-                            @if (stopping) {
-                                <mat-spinner diameter="32"></mat-spinner>
-                            }
-                        </button>
                     </div>
                 </div>
-            </div>
-        </section>
-        <hr class="my-4" />
-        @if (item.settings && (other_settings | async)) {
-            <section>
-                <a-settings-form
-                    [id]="item.id"
-                    [merge]="true"
-                    [settings]="item.settings"
-                    [merge_settings]="(other_settings | async) || []"
-                ></a-settings-form>
             </section>
-        } @else {
-            <div class="m-auto flex flex-col items-center justify-center p-8">
-                <mat-spinner class="mb-4" diameter="48"></mat-spinner>
-                <p>{{ 'MODULES.LOADING_SETTINGS' | translate }}</p>
-            </div>
-        }
+            <hr class="my-4" />
+            @if (item.settings && (other_settings | async)) {
+                <section>
+                    <a-settings-form
+                        [id]="item.id"
+                        [merge]="true"
+                        [settings]="item.settings"
+                        [merge_settings]="(other_settings | async) || []"
+                    ></a-settings-form>
+                </section>
+            } @else {
+                <div
+                    class="m-auto flex flex-col items-center justify-center p-8"
+                >
+                    <mat-spinner class="mb-4" diameter="48"></mat-spinner>
+                    <p>{{ 'MODULES.LOADING_SETTINGS' | translate }}</p>
+                </div>
+            }
+        </div>
     `,
     styles: [
         `
