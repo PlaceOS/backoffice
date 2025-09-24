@@ -6,9 +6,11 @@ import { MetadataDisplayComponent } from '../ui/metadata-display.component';
 @Component({
     selector: 'system-metadata',
     template: `
-        @if (item) {
-            <metadata-display [item]="item" />
-        }
+        <div class="p-4">
+            @if (item) {
+                <metadata-display [item]="item" />
+            }
+        </div>
     `,
     styles: [``],
     imports: [MetadataDisplayComponent],

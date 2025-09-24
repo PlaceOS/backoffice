@@ -32,147 +32,153 @@ export interface TriggerInstanceState {
 @Component({
     selector: 'system-triggers',
     template: `
-        <section class="mb-4 flex items-center space-x-2">
-            <mat-form-field appearance="outline" class="h-12 flex-1">
-                <div class="prefix" matPrefix>
-                    <app-icon class="relative -left-0.5 text-2xl">
-                        search
-                    </app-icon>
-                </div>
-                <input
-                    [ngModel]="''"
-                    (ngModelChange)="filter$.next($event)"
-                    matInput
-                    [placeholder]="'SYSTEMS.TRIGGER_SEARCH' | translate"
-                    class="rounded-none"
-                />
-            </mat-form-field>
-            <button btn matRipple class="w-32" (click)="selectTrigger()">
-                {{ 'SYSTEMS.TRIGGER_ADD' | translate }}
-            </button>
-        </section>
-        <section class="max-w-full overflow-auto">
-            <mat-progress-bar
-                mode="indeterminate"
-                class="w-full"
-                [class.opacity-0]="!(loading | async).triggers"
-            ></mat-progress-bar>
-            <simple-table
-                class="block min-w-[42rem] text-sm"
-                [data]="triggers"
-                [columns]="[
-                    {
-                        key: 'status',
-                        name: ' ',
-                        size: '3rem',
-                        content: status_template,
-                    },
-                    {
-                        key: 'name',
-                        name: 'SYSTEMS.TRIGGER_FIELD_NAME' | translate,
-                        content: name_template,
-                    },
-                    {
-                        key: 'count',
-                        name: 'SYSTEMS.TRIGGER_FIELD_COUNT' | translate,
-                        content: count_template,
-                    },
-                    {
-                        key: 'errors',
-                        name: 'SYSTEMS.TRIGGER_FIELD_ERRORS' | translate,
-                        content: errors_template,
-                    },
-                    {
-                        key: 'added',
-                        name: 'SYSTEMS.TRIGGER_FIELD_ADDED' | translate,
-                        content: added_template,
-                    },
-                    {
-                        key: 'actions',
-                        name: ' ',
-                        content: actions_template,
-                        size: '8.75rem',
-                        sortable: false,
-                    },
-                ]"
-                [empty_message]="'SYSTEMS.TRIGGERS_EMPTY' | translate"
-            ></simple-table>
-            <ng-template #status_template let-row="row">
-                <i
-                    hidden
-                    binding
-                    [sys]="item.id"
-                    mod="_TRIGGER__1"
-                    [bind]="row.id"
-                    [(model)]="trigger_state[row.id]"
-                    (modelChange)="updateComparisons(row.id)"
-                ></i>
-                <div
-                    class="mx-auto h-2 w-2 rounded-full"
-                    [class.bg-base-content]="!trigger_state[row.id]?.triggered"
-                    [class.bg-success]="trigger_state[row.id]?.triggered"
-                ></div>
-            </ng-template>
-            <ng-template #name_template let-row="row">
-                <div class="flex flex-col items-start px-4 py-2 leading-snug">
-                    <a
-                        class="truncate underline"
-                        [routerLink]="['/triggers', row.trigger_id]"
-                    >
-                        {{ row.name }}
-                    </a>
-                    <div class="font-mono text-[0.625rem] opacity-30">
-                        {{ row.trigger_id }}
+        <div class="p-4">
+            <section class="mb-4 flex items-center space-x-2">
+                <mat-form-field appearance="outline" class="h-12 flex-1">
+                    <div class="prefix" matPrefix>
+                        <app-icon class="relative -left-0.5 text-2xl">
+                            search
+                        </app-icon>
                     </div>
-                </div>
-            </ng-template>
-            <ng-template #count_template let-row="row">
-                <div class="p-4">
-                    {{ trigger_state[row.id]?.trigger_count }}
-                </div>
-            </ng-template>
-            <ng-template #errors_template let-row="row">
-                <div class="p-4">
-                    {{
-                        trigger_state[row.id]?.action_errors +
-                            trigger_state[row.id]?.comparison_errors || '0'
-                    }}
-                </div>
-            </ng-template>
-            <ng-template #added_template let-row="row">
-                <div class="p-4">
-                    {{ +row.created_at * 1000 | dateFrom }}
-                </div>
-            </ng-template>
-            <ng-template #actions_template let-row="row">
-                <div class="flex items-center space-x-2 p-2">
-                    <button
-                        icon
-                        matRipple
-                        [matTooltip]="'SYSTEMS.COPY_WEBHOOK' | translate"
-                        (click)="copyWebhookURL(row)"
+                    <input
+                        [ngModel]="''"
+                        (ngModelChange)="filter$.next($event)"
+                        matInput
+                        [placeholder]="'SYSTEMS.TRIGGER_SEARCH' | translate"
+                        class="rounded-none"
+                    />
+                </mat-form-field>
+                <button btn matRipple class="w-32" (click)="selectTrigger()">
+                    {{ 'SYSTEMS.TRIGGER_ADD' | translate }}
+                </button>
+            </section>
+            <section class="max-w-full overflow-auto">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.opacity-0]="!(loading | async).triggers"
+                ></mat-progress-bar>
+                <simple-table
+                    class="block min-w-[42rem] text-sm"
+                    [data]="triggers"
+                    [columns]="[
+                        {
+                            key: 'status',
+                            name: ' ',
+                            size: '3rem',
+                            content: status_template,
+                        },
+                        {
+                            key: 'name',
+                            name: 'SYSTEMS.TRIGGER_FIELD_NAME' | translate,
+                            content: name_template,
+                        },
+                        {
+                            key: 'count',
+                            name: 'SYSTEMS.TRIGGER_FIELD_COUNT' | translate,
+                            content: count_template,
+                        },
+                        {
+                            key: 'errors',
+                            name: 'SYSTEMS.TRIGGER_FIELD_ERRORS' | translate,
+                            content: errors_template,
+                        },
+                        {
+                            key: 'added',
+                            name: 'SYSTEMS.TRIGGER_FIELD_ADDED' | translate,
+                            content: added_template,
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            content: actions_template,
+                            size: '8.75rem',
+                            sortable: false,
+                        },
+                    ]"
+                    [empty_message]="'SYSTEMS.TRIGGERS_EMPTY' | translate"
+                ></simple-table>
+                <ng-template #status_template let-row="row">
+                    <i
+                        hidden
+                        binding
+                        [sys]="item.id"
+                        mod="_TRIGGER__1"
+                        [bind]="row.id"
+                        [(model)]="trigger_state[row.id]"
+                        (modelChange)="updateComparisons(row.id)"
+                    ></i>
+                    <div
+                        class="mx-auto h-2 w-2 rounded-full"
+                        [class.bg-base-content]="
+                            !trigger_state[row.id]?.triggered
+                        "
+                        [class.bg-success]="trigger_state[row.id]?.triggered"
+                    ></div>
+                </ng-template>
+                <ng-template #name_template let-row="row">
+                    <div
+                        class="flex flex-col items-start px-4 py-2 leading-snug"
                     >
-                        <app-icon>link</app-icon>
-                    </button>
-                    <button
-                        icon
-                        matRipple
-                        [matTooltip]="'SYSTEMS.TRIGGER_EDIT' | translate"
-                        (click)="editTrigger(row)"
-                    >
-                        <app-icon>edit</app-icon>
-                    </button>
-                    <button
-                        icon
-                        matRipple
-                        [matTooltip]="'SYSTEMS.TRIGGER_REMOVE' | translate"
-                        (click)="deleteTrigger(row)"
-                    >
-                        <app-icon class="text-error">delete</app-icon>
-                    </button>
-                </div>
-            </ng-template>
-        </section>
+                        <a
+                            class="truncate underline"
+                            [routerLink]="['/triggers', row.trigger_id]"
+                        >
+                            {{ row.name }}
+                        </a>
+                        <div class="font-mono text-[0.625rem] opacity-30">
+                            {{ row.trigger_id }}
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template #count_template let-row="row">
+                    <div class="p-4">
+                        {{ trigger_state[row.id]?.trigger_count }}
+                    </div>
+                </ng-template>
+                <ng-template #errors_template let-row="row">
+                    <div class="p-4">
+                        {{
+                            trigger_state[row.id]?.action_errors +
+                                trigger_state[row.id]?.comparison_errors || '0'
+                        }}
+                    </div>
+                </ng-template>
+                <ng-template #added_template let-row="row">
+                    <div class="p-4">
+                        {{ +row.created_at * 1000 | dateFrom }}
+                    </div>
+                </ng-template>
+                <ng-template #actions_template let-row="row">
+                    <div class="flex items-center space-x-2 p-2">
+                        <button
+                            icon
+                            matRipple
+                            [matTooltip]="'SYSTEMS.COPY_WEBHOOK' | translate"
+                            (click)="copyWebhookURL(row)"
+                        >
+                            <app-icon>link</app-icon>
+                        </button>
+                        <button
+                            icon
+                            matRipple
+                            [matTooltip]="'SYSTEMS.TRIGGER_EDIT' | translate"
+                            (click)="editTrigger(row)"
+                        >
+                            <app-icon>edit</app-icon>
+                        </button>
+                        <button
+                            icon
+                            matRipple
+                            [matTooltip]="'SYSTEMS.TRIGGER_REMOVE' | translate"
+                            (click)="deleteTrigger(row)"
+                        >
+                            <app-icon class="text-error">delete</app-icon>
+                        </button>
+                    </div>
+                </ng-template>
+            </section>
+        </div>
     `,
     styles: [
         `

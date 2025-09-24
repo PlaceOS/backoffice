@@ -30,6 +30,7 @@ import { nextValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { BindingDirective } from '../ui/binding.directive';
 import { ContextMenuComponent } from '../ui/context-menu.component';
+import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
@@ -41,296 +42,265 @@ import { SystemStateService } from './system-state.service';
     selector: 'system-modules',
     template: `
         @if (item) {
-            <div class="flex h-full w-full flex-col">
-                @if (item.id && item.modules && !hide_exec) {
-                    <section exec class="mb-6">
-                        <h3
-                            class="mb-2 w-full rounded bg-base-200 p-4 text-lg font-medium"
-                        >
-                            {{ 'COMMON.EXECUTE_COMMAND' | translate }}
-                        </h3>
-                        <execute-method-field
-                            [system]="item$ | async"
-                        ></execute-method-field>
-                    </section>
-                }
-                <h3
-                    class="mb-2 w-full rounded bg-base-200 p-4 text-lg font-medium"
-                >
-                    {{ 'SYSTEMS.MODULE_LIST' | translate }}
-                </h3>
-                <section add-module class="mb-2 flex flex-wrap space-x-2">
-                    <item-search-field
-                        class="flex-grow-1 h-12 w-full sm:w-auto sm:flex-1"
-                        name="module"
-                        [placeholder]="'SYSTEMS.FIND_MODULE' | translate"
-                        [query_fn]="query_fn"
-                        [exclude]="exclude_fn"
-                        [ngModel]="null"
-                        (ngModelChange)="new_module = $event.id"
-                    ></item-search-field>
-                    <button
-                        btn
-                        matRipple
-                        class="h-11 w-40 flex-1 sm:w-32 sm:flex-none"
-                        [disabled]="!new_module"
-                        (click)="addModule()"
+            @if (item.id && item.modules && !hide_exec) {
+                <section exec class="p-4">
+                    <h3
+                        class="mb-2 w-full rounded bg-base-200 p-4 text-lg font-medium"
                     >
-                        {{ 'COMMON.ADD_EXISTING' | translate }}
-                    </button>
-                    <button
-                        btn
-                        matRipple
-                        class="h-11 w-40 flex-1 sm:w-32 sm:flex-none"
-                        (click)="newModule()"
-                    >
-                        {{ 'COMMON.ADD_NEW' | translate }}
-                    </button>
+                        {{ 'COMMON.EXECUTE_COMMAND' | translate }}
+                    </h3>
+                    <execute-method-field
+                        [system]="item$ | async"
+                    ></execute-method-field>
                 </section>
-                <section device-list class="min-h-[50vh] flex-1 overflow-auto">
-                    <mat-progress-bar
-                        mode="indeterminate"
-                        class="w-full"
-                        [class.opacity-0]="!(loading | async).modules"
-                    ></mat-progress-bar>
-                    <mat-menu #context_menu="matMenu">
-                        @if (active_item()) {
-                            @for (
-                                m_item of active_item().running
-                                    ? menu_options
-                                    : offline_options;
-                                track m_item
-                            ) {
-                                <button
-                                    mat-menu-item
-                                    [disabled]="
-                                        m_item.enable_on &&
-                                        !active_item()[m_item.enable_on]
-                                    "
-                                    (click)="
-                                        handleContextEvent(
-                                            m_item,
-                                            active_item()
-                                        )
-                                    "
-                                >
-                                    <div class="flex items-center space-x-2">
-                                        <app-icon
-                                            class="text-xl"
-                                            [icon]="m_item.icon"
-                                        ></app-icon>
-                                        <div class="text">
-                                            {{ m_item.name | translate }}
-                                        </div>
-                                    </div>
-                                </button>
-                            }
-                        }
-                    </mat-menu>
-                    <div [context-menu]="context_menu">
-                        <simple-table
-                            class="block min-w-[80rem] overflow-visible text-sm"
-                            [data]="modules"
-                            (enter_row)="setActive($event)"
-                            [columns]="[
-                                {
-                                    key: 'state',
-                                    name:
-                                        'SYSTEMS.MODULE_FIELD_STATE'
-                                        | translate,
-                                    content: state_template,
-                                    size: '4rem',
-                                },
-                                {
-                                    key: 'name',
-                                    name:
-                                        'SYSTEMS.MODULE_FIELD_NAME' | translate,
-                                    content: name_template,
-                                    size: '16rem',
-                                },
-                                {
-                                    key: 'type',
-                                    name:
-                                        'SYSTEMS.MODULE_FIELD_TYPE' | translate,
-                                    content: type_template,
-                                    size: '7rem',
-                                },
-                                {
-                                    key: 'class',
-                                    name:
-                                        'SYSTEMS.MODULE_FIELD_CLASS'
-                                        | translate,
-                                    content: class_template,
-                                    size: '16rem',
-                                },
-                                {
-                                    key: 'url',
-                                    name:
-                                        'SYSTEMS.MODULE_FIELD_ADDRESS'
-                                        | translate,
-                                    content: url_template,
-                                },
-                                {
-                                    key: 'debug',
-                                    name:
-                                        'SYSTEMS.MODULE_FIELD_DEBUG'
-                                        | translate,
-                                    content: debug_template,
-                                    size: '4.5rem',
-                                },
-                                {
-                                    key: 'actions',
-                                    name: ' ',
-                                    size: '6.5rem',
-                                    content: actions_template,
-                                },
-                            ]"
-                            [can_reorder]="true"
-                            [color]="colors | async"
-                            (ondrop)="drop($event)"
-                            [empty_message]="
-                                'SYSTEMS.MODULE_LIST_EMPTY' | translate
-                            "
-                        />
-                    </div>
-                    <div class="h-12 w-full"></div>
-                    <ng-template
-                        #state_template
-                        let-row="row"
-                        let-index="index"
-                    >
-                        <button
-                            dot
-                            binding
-                            [sys]="item.id"
-                            [mod]="(bindings | async)[index]"
-                            bind="connected"
-                            [(model)]="row.connected"
-                            class="mx-auto h-4 w-4 rounded-full"
-                            [class.bg-base-content]="!row.running"
-                            [class.bg-error]="
-                                row.running && row.connected === false
-                            "
-                            [class.bg-success]="row.running && !!row.connected"
-                            [class.bg-pending]="
-                                row.running && row.connected === undefined
-                            "
-                            (click)="setActive(index)"
-                            [matMenuTriggerFor]="context_menu"
-                        ></button>
-                        @if (row.running && row.connected === undefined) {
-                            <mat-spinner
-                                class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                                diameter="32"
-                            />
-                        }
-                    </ng-template>
-                    <ng-template #name_template let-row="row">
-                        <div
-                            class="flex w-full max-w-full items-center justify-between space-x-2 px-4 py-2"
-                        >
-                            <div
-                                class="flex max-w-full flex-1 flex-col items-start overflow-hidden leading-snug"
-                            >
-                                <a
-                                    class="max-w-full truncate underline"
-                                    [routerLink]="['/modules', row.id]"
-                                >
-                                    {{ row.driver?.name || row.name }}
-                                </a>
-                                <div
-                                    class="font-mono text-[0.625rem] opacity-30"
-                                >
-                                    {{ row.notes || row.id }}
-                                </div>
-                            </div>
-                            @if (row.edge_id) {
-                                <a
-                                    icon
-                                    matRipple
-                                    class="h-6 w-6 min-w-6 max-w-6 rounded-full border border-base-200 bg-info text-xs text-info-content"
-                                    [matTooltip]="row.edge_id"
-                                    [routerLink]="[
-                                        '/admin',
-                                        'edge',
-                                        row.edge_id,
-                                    ]"
-                                >
-                                    E
-                                </a>
-                            }
-                        </div>
-                    </ng-template>
-                    <ng-template #type_template let-row="row">
-                        <div class="p-4">
-                            {{ driver_type(row.role || row.driver?.role) }}
-                        </div>
-                    </ng-template>
-                    <ng-template
-                        #class_template
-                        let-row="row"
-                        let-index="index"
-                    >
-                        <div class="p-4 font-mono text-xs">
-                            {{ (bindings | async)[index] }}
-                        </div>
-                    </ng-template>
-                    <ng-template #url_template let-row="row">
-                        <div class="flex max-w-[22rem] items-center p-4">
-                            <app-icon
-                                [class.opacity-0]="!row.tls"
-                                class="text-xl"
-                            >
-                                lock
-                            </app-icon>
-                            <a
-                                [href]="
-                                    row.ip
-                                        ? (row.tls ? 'https://' : 'http://') +
-                                          row.ip
-                                        : row.uri
-                                "
-                                target="_blank"
-                                class="max-w-[20rem] truncate underline"
-                            >
-                                {{ row.ip || row.uri }}
-                            </a>
-                        </div>
-                    </ng-template>
-                    <ng-template #debug_template let-row="row">
-                        <div class="mx-auto">
-                            <mat-checkbox
-                                [disabled]="!row.running"
-                                [checked]="(debugging | async)[row.id]"
-                                [matTooltip]="
-                                    ((debugging | async)[row.id]
-                                        ? 'SYSTEMS.DEBUG_DISABLE'
-                                        : 'SYSTEMS.DEBUG_ENABLE'
-                                    ) | translate
-                                "
-                                matTooltipPosition="left"
-                                (change)="toggleDebug(row)"
-                            >
-                            </mat-checkbox>
-                        </div>
-                    </ng-template>
-                    <ng-template #actions_template let-i="index" let-row="row">
-                        <div class="mx-auto flex items-center space-x-2 p-2">
-                            <button icon matRipple (click)="editModule(row)">
-                                <app-icon>edit</app-icon>
-                            </button>
+            }
+            <h3
+                class="mx-auto mb-2 w-[calc(100%-2rem)] rounded bg-base-200 p-4 text-lg font-medium"
+            >
+                {{ 'SYSTEMS.MODULE_LIST' | translate }}
+            </h3>
+            <section add-module class="flex w-full flex-wrap space-x-2 px-4">
+                <item-search-field
+                    class="flex-grow-1 h-12 w-full sm:w-auto sm:flex-1"
+                    name="module"
+                    [placeholder]="'SYSTEMS.FIND_MODULE' | translate"
+                    [query_fn]="query_fn"
+                    [exclude]="exclude_fn"
+                    [ngModel]="null"
+                    (ngModelChange)="new_module = $event.id"
+                ></item-search-field>
+                <button
+                    btn
+                    matRipple
+                    class="h-11 w-40 flex-1 sm:w-32 sm:flex-none"
+                    [disabled]="!new_module"
+                    (click)="addModule()"
+                >
+                    {{ 'COMMON.ADD_EXISTING' | translate }}
+                </button>
+                <button
+                    btn
+                    matRipple
+                    class="h-11 w-40 flex-1 sm:w-32 sm:flex-none"
+                    (click)="newModule()"
+                >
+                    {{ 'COMMON.ADD_NEW' | translate }}
+                </button>
+            </section>
+            <section device-list class="overflow-y-auto p-4">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="sticky left-0 w-full"
+                    [class.opacity-0]="!(loading | async).modules"
+                ></mat-progress-bar>
+                <mat-menu #context_menu="matMenu">
+                    @if (active_item()) {
+                        @for (
+                            m_item of active_item().running
+                                ? menu_options
+                                : offline_options;
+                            track m_item
+                        ) {
                             <button
+                                mat-menu-item
+                                [disabled]="
+                                    m_item.enable_on &&
+                                    !active_item()[m_item.enable_on]
+                                "
+                                (click)="
+                                    handleContextEvent(m_item, active_item())
+                                "
+                            >
+                                <div class="flex items-center space-x-2">
+                                    <app-icon
+                                        class="text-xl"
+                                        [icon]="m_item.icon"
+                                    ></app-icon>
+                                    <div class="text">
+                                        {{ m_item.name | translate }}
+                                    </div>
+                                </div>
+                            </button>
+                        }
+                    }
+                </mat-menu>
+                <div [context-menu]="context_menu" class="flex">
+                    <simple-table
+                        class="block min-w-[78rem] text-sm"
+                        [data]="modules"
+                        (enter_row)="setActive($event)"
+                        [columns]="[
+                            {
+                                key: 'state',
+                                name: 'SYSTEMS.MODULE_FIELD_STATE' | translate,
+                                content: state_template,
+                                size: '4rem',
+                            },
+                            {
+                                key: 'name',
+                                name: 'SYSTEMS.MODULE_FIELD_NAME' | translate,
+                                content: name_template,
+                                size: '15rem',
+                            },
+                            {
+                                key: 'type',
+                                name: 'SYSTEMS.MODULE_FIELD_TYPE' | translate,
+                                content: type_template,
+                                size: '6.5rem',
+                            },
+                            {
+                                key: 'class',
+                                name: 'SYSTEMS.MODULE_FIELD_CLASS' | translate,
+                                content: class_template,
+                                size: '15rem',
+                            },
+                            {
+                                key: 'url',
+                                name:
+                                    'SYSTEMS.MODULE_FIELD_ADDRESS' | translate,
+                                content: url_template,
+                            },
+                            {
+                                key: 'debug',
+                                name: 'SYSTEMS.MODULE_FIELD_DEBUG' | translate,
+                                content: debug_template,
+                                size: '4.5rem',
+                            },
+                            {
+                                key: 'actions',
+                                name: ' ',
+                                size: '6.5rem',
+                                content: actions_template,
+                            },
+                        ]"
+                        [can_reorder]="true"
+                        [color]="colors | async"
+                        (ondrop)="drop($event)"
+                        [empty_message]="
+                            'SYSTEMS.MODULE_LIST_EMPTY' | translate
+                        "
+                    />
+                    <div class="h-32 w-4 min-w-4"></div>
+                </div>
+                <ng-template #state_template let-row="row" let-index="index">
+                    <button
+                        dot
+                        binding
+                        [sys]="item.id"
+                        [mod]="(bindings | async)[index]"
+                        bind="connected"
+                        [(model)]="row.connected"
+                        class="mx-auto h-4 w-4 rounded-full"
+                        [class.bg-base-content]="!row.running"
+                        [class.bg-error]="
+                            row.running && row.connected === false
+                        "
+                        [class.bg-success]="row.running && !!row.connected"
+                        [class.bg-pending]="
+                            row.running && row.connected === undefined
+                        "
+                        (click)="setActive(index)"
+                        [matMenuTriggerFor]="context_menu"
+                    ></button>
+                    @if (row.running && row.connected === undefined) {
+                        <mat-spinner
+                            class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                            diameter="32"
+                        />
+                    }
+                </ng-template>
+                <ng-template #name_template let-row="row">
+                    <div
+                        class="flex w-full max-w-full items-center justify-between space-x-2 px-4 py-2"
+                    >
+                        <div
+                            class="flex max-w-full flex-1 flex-col items-start overflow-hidden leading-snug"
+                        >
+                            <a
+                                class="max-w-full truncate underline"
+                                [routerLink]="['/modules', row.id]"
+                            >
+                                {{ row.driver?.name || row.name }}
+                            </a>
+                            <div class="font-mono text-[0.625rem] opacity-30">
+                                {{ row.notes || row.id }}
+                            </div>
+                        </div>
+                        @if (row.edge_id) {
+                            <a
                                 icon
                                 matRipple
-                                (click)="setActive(i)"
-                                [matMenuTriggerFor]="context_menu"
+                                class="h-6 w-6 min-w-6 max-w-6 rounded-full border border-base-200 bg-info text-xs text-info-content"
+                                [matTooltip]="row.edge_id"
+                                [routerLink]="['/admin', 'edge', row.edge_id]"
                             >
-                                <app-icon>more_vert</app-icon>
-                            </button>
-                        </div>
-                    </ng-template>
-                </section>
-            </div>
+                                E
+                            </a>
+                        }
+                    </div>
+                </ng-template>
+                <ng-template #type_template let-row="row">
+                    <div class="p-4">
+                        {{ driver_type(row.role || row.driver?.role) }}
+                    </div>
+                </ng-template>
+                <ng-template #class_template let-row="row" let-index="index">
+                    <div class="p-4 font-mono text-xs">
+                        {{ (bindings | async)[index] }}
+                    </div>
+                </ng-template>
+                <ng-template #url_template let-row="row">
+                    <div class="flex max-w-[22rem] items-center p-4">
+                        <app-icon [class.opacity-0]="!row.tls" class="text-xl">
+                            lock
+                        </app-icon>
+                        <a
+                            [href]="
+                                row.ip
+                                    ? (row.tls ? 'https://' : 'http://') +
+                                      row.ip
+                                    : row.uri
+                            "
+                            target="_blank"
+                            class="max-w-[20rem] truncate underline"
+                        >
+                            {{ row.ip || row.uri }}
+                        </a>
+                    </div>
+                </ng-template>
+                <ng-template #debug_template let-row="row">
+                    <div class="mx-auto">
+                        <mat-checkbox
+                            [disabled]="!row.running"
+                            [checked]="(debugging | async)[row.id]"
+                            [matTooltip]="
+                                ((debugging | async)[row.id]
+                                    ? 'SYSTEMS.DEBUG_DISABLE'
+                                    : 'SYSTEMS.DEBUG_ENABLE'
+                                ) | translate
+                            "
+                            matTooltipPosition="left"
+                            (change)="toggleDebug(row)"
+                        >
+                        </mat-checkbox>
+                    </div>
+                </ng-template>
+                <ng-template #actions_template let-i="index" let-row="row">
+                    <div class="mx-auto flex items-center space-x-2 p-2">
+                        <button icon matRipple (click)="editModule(row)">
+                            <app-icon>edit</app-icon>
+                        </button>
+                        <button
+                            icon
+                            matRipple
+                            (click)="setActive(i)"
+                            [matMenuTriggerFor]="context_menu"
+                        >
+                            <app-icon>more_vert</app-icon>
+                        </button>
+                    </div>
+                </ng-template>
+            </section>
         }
     `,
     styles: [
@@ -378,6 +348,7 @@ import { SystemStateService } from './system-state.service';
         MatProgressSpinnerModule,
         ContextMenuComponent,
         RouterModule,
+        ItemSearchFieldComponent,
     ],
 })
 export class SystemModulesComponent extends AsyncHandler {

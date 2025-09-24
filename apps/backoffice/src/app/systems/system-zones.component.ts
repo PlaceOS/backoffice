@@ -20,7 +20,7 @@ import { SystemStateService } from './system-state.service';
 @Component({
     selector: 'system-zones',
     template: `
-        <div class="flex h-full w-full flex-col">
+        <div class="flex h-full w-full flex-col p-4">
             <section class="mb-2 flex items-center space-x-2">
                 <item-search-field
                     [placeholder]="'SYSTEMS.ZONE_SEARCH' | translate"
