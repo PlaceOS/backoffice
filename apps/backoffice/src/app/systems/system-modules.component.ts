@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import {
     loadModule,
     PlaceDriverRole,
@@ -376,6 +377,7 @@ import { SystemStateService } from './system-state.service';
         BindingDirective,
         MatProgressSpinnerModule,
         ContextMenuComponent,
+        RouterModule,
     ],
 })
 export class SystemModulesComponent extends AsyncHandler {
