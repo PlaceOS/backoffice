@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { PlaceUser } from '@placeos/ts-client';
 import { AuthenticatedImageDirective } from './authenticated-image.directive';
 
@@ -15,7 +15,7 @@ import { AuthenticatedImageDirective } from './authenticated-image.directive';
                         initials
                         class="uppercase text-base-content text-opacity-80"
                     >
-                        {{ initials }}
+                        {{ initials() }}
                     </div>
                 } @else {
                     <img
@@ -45,10 +45,8 @@ import { AuthenticatedImageDirective } from './authenticated-image.directive';
     imports: [AuthenticatedImageDirective],
 })
 export class UserAvatarComponent {
-    /** User to display avatar for */
     public readonly user = input<PlaceUser>(undefined);
-
-    public get initials(): string {
+    public readonly initials = computed(() => {
         const user = this.user();
         if (!user) return 'NA';
         const name = user.name || '';
@@ -56,5 +54,5 @@ export class UserAvatarComponent {
         return parts.length > 1
             ? `${parts[0][0]}${parts[parts.length - 1][0]}`
             : name.slice(0, 2);
-    }
+    });
 }

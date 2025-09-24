@@ -2,11 +2,13 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import {
     Component,
+    OnChanges,
     SimpleChanges,
     TemplateRef,
     input,
     model,
     output,
+    signal,
 } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
@@ -32,9 +34,7 @@ export interface TableColumn {
             role="table"
             class="grid overflow-visible border border-base-200"
             [style.gridTemplateColumns]="column_template"
-            (click)="active_row >= 0 ? onclick.emit(active_row) : null"
-            (touchend)="active_row = -1"
-            (mouseleave)="active_row = -1"
+            (click)="onclick.emit(0)"
             cdkDropList
             (cdkDropListDropped)="
                 ondrop.emit([$event.previousIndex, $event.currentIndex])
@@ -65,7 +65,11 @@ export interface TableColumn {
                     ></mat-checkbox>
                 </div>
             }
-            @for (column of active_columns; track column.key; let i = $index) {
+            @for (
+                column of active_columns();
+                track column.key;
+                let i = $index
+            ) {
                 <button
                     header
                     matRipple
@@ -173,8 +177,8 @@ export interface TableColumn {
                     "
                     [class.border-b]="i !== (data$ | async)?.length - 1"
                     [style.background]="color()[i]"
-                    (mouseenter)="active_row = i"
-                    (touchstart)="active_row = i"
+                    (mouseenter)="enter_row.emit(i)"
+                    (touchstart)="enter_row.emit(i)"
                 >
                     <mat-checkbox
                         [checked]="selected().includes(i)"
@@ -182,7 +186,7 @@ export interface TableColumn {
                     ></mat-checkbox>
                 </div>
             }
-            @for (column of active_columns; track column; let j = $index) {
+            @for (column of active_columns(); track column; let j = $index) {
                 <div
                     class="relative z-0 flex min-h-full items-center justify-between border-base-200"
                     [style.gridArea]="
@@ -197,8 +201,8 @@ export interface TableColumn {
                     [class.border-b]="i !== (data$ | async)?.length - 1"
                     [class.border-r]="j !== active_columns.length - 1"
                     [class.width]="column.size"
-                    (mouseenter)="active_row = i"
-                    (touchstart)="active_row = i"
+                    (mouseenter)="enter_row.emit(i)"
+                    (touchstart)="enter_row.emit(i)"
                     [style.background]="color()[i]"
                 >
                     @switch (columnType(column)) {
@@ -257,7 +261,10 @@ export interface TableColumn {
     ],
     imports: [CommonModule, MatCheckboxModule, DragDropModule, IconComponent],
 })
-export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
+export class SimpleTableComponent<T extends {} = any>
+    extends AsyncHandler
+    implements OnChanges
+{
     public readonly data = input<T[] | Observable<T[]>>(undefined);
     public readonly columns = input<TableColumn[]>([]);
     public readonly selectable = input(false);
@@ -269,13 +276,13 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     public readonly color = input<Record<number, string>>({});
     public readonly empty_message = input('No data to list');
     public readonly selectedChange = output<number[]>();
+    public readonly enter_row = output<number>();
     public readonly onclick = output<number>();
     public readonly oncontext = output<number>();
     public readonly ondrop = output<[number, number]>();
 
-    public page = 0;
-    public active_row = -1;
-    public active_columns = [];
+    public readonly page = signal(0);
+    public readonly active_columns = signal<TableColumn[]>([]);
 
     private _data$ = new BehaviorSubject<T[]>([]);
     private _filter$ = new BehaviorSubject<string>('');
@@ -316,7 +323,7 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
                 }
             }
             this.selected.set([]);
-            this.page = 0;
+            this.page.set(0);
             return data;
         }),
     );
@@ -338,7 +345,7 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     }
 
     public get column_template() {
-        let template = this.active_columns
+        let template = this.active_columns()
             .map((_) => _.size || 'auto')
             .join(' ');
         template = this.selectable() ? `3.5rem ${template}` : template;
@@ -351,8 +358,8 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
             this._filter$.next(this.filter());
         }
         if (changes.columns) {
-            this.active_columns = this.columns().filter(
-                (_) => _.show !== false,
+            this.active_columns.set(
+                this.columns().filter((_) => _.show !== false),
             );
         }
         if (changes.data) {

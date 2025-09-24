@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -25,8 +25,10 @@ import {
     ViewModuleStateModalComponent,
 } from 'apps/backoffice/src/app/overlays/view-module-state.component';
 import { map } from 'rxjs/operators';
+import { nextValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { BindingDirective } from '../ui/binding.directive';
+import { ContextMenuComponent } from '../ui/context-menu.component';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
@@ -90,60 +92,106 @@ import { SystemStateService } from './system-state.service';
                         class="w-full"
                         [class.opacity-0]="!(loading | async).modules"
                     ></mat-progress-bar>
-                    <simple-table
-                        class="block min-w-[80rem] overflow-visible text-sm"
-                        [data]="modules"
-                        [columns]="[
-                            {
-                                key: 'state',
-                                name: 'SYSTEMS.MODULE_FIELD_STATE' | translate,
-                                content: state_template,
-                                size: '4rem',
-                            },
-                            {
-                                key: 'name',
-                                name: 'SYSTEMS.MODULE_FIELD_NAME' | translate,
-                                content: name_template,
-                                size: '16rem',
-                            },
-                            {
-                                key: 'type',
-                                name: 'SYSTEMS.MODULE_FIELD_TYPE' | translate,
-                                content: type_template,
-                                size: '7rem',
-                            },
-                            {
-                                key: 'class',
-                                name: 'SYSTEMS.MODULE_FIELD_CLASS' | translate,
-                                content: class_template,
-                                size: '16rem',
-                            },
-                            {
-                                key: 'url',
-                                name:
-                                    'SYSTEMS.MODULE_FIELD_ADDRESS' | translate,
-                                content: url_template,
-                            },
-                            {
-                                key: 'debug',
-                                name: 'SYSTEMS.MODULE_FIELD_DEBUG' | translate,
-                                content: debug_template,
-                                size: '4.5rem',
-                            },
-                            {
-                                key: 'actions',
-                                name: ' ',
-                                size: '6.5rem',
-                                content: actions_template,
-                            },
-                        ]"
-                        [can_reorder]="true"
-                        [color]="colors | async"
-                        (ondrop)="drop($event)"
-                        [empty_message]="
-                            'SYSTEMS.MODULE_LIST_EMPTY' | translate
-                        "
-                    ></simple-table>
+                    <mat-menu #context_menu="matMenu">
+                        @if (active_item()) {
+                            @for (
+                                m_item of active_item().running
+                                    ? menu_options
+                                    : offline_options;
+                                track m_item
+                            ) {
+                                <button
+                                    mat-menu-item
+                                    [disabled]="
+                                        m_item.enable_on &&
+                                        !active_item()[m_item.enable_on]
+                                    "
+                                    (click)="
+                                        handleContextEvent(
+                                            m_item,
+                                            active_item()
+                                        )
+                                    "
+                                >
+                                    <div class="flex items-center space-x-2">
+                                        <app-icon
+                                            class="text-xl"
+                                            [icon]="m_item.icon"
+                                        ></app-icon>
+                                        <div class="text">
+                                            {{ m_item.name | translate }}
+                                        </div>
+                                    </div>
+                                </button>
+                            }
+                        }
+                    </mat-menu>
+                    <div [context-menu]="context_menu">
+                        <simple-table
+                            class="block min-w-[80rem] overflow-visible text-sm"
+                            [data]="modules"
+                            (enter_row)="setActive($event)"
+                            [columns]="[
+                                {
+                                    key: 'state',
+                                    name:
+                                        'SYSTEMS.MODULE_FIELD_STATE'
+                                        | translate,
+                                    content: state_template,
+                                    size: '4rem',
+                                },
+                                {
+                                    key: 'name',
+                                    name:
+                                        'SYSTEMS.MODULE_FIELD_NAME' | translate,
+                                    content: name_template,
+                                    size: '16rem',
+                                },
+                                {
+                                    key: 'type',
+                                    name:
+                                        'SYSTEMS.MODULE_FIELD_TYPE' | translate,
+                                    content: type_template,
+                                    size: '7rem',
+                                },
+                                {
+                                    key: 'class',
+                                    name:
+                                        'SYSTEMS.MODULE_FIELD_CLASS'
+                                        | translate,
+                                    content: class_template,
+                                    size: '16rem',
+                                },
+                                {
+                                    key: 'url',
+                                    name:
+                                        'SYSTEMS.MODULE_FIELD_ADDRESS'
+                                        | translate,
+                                    content: url_template,
+                                },
+                                {
+                                    key: 'debug',
+                                    name:
+                                        'SYSTEMS.MODULE_FIELD_DEBUG'
+                                        | translate,
+                                    content: debug_template,
+                                    size: '4.5rem',
+                                },
+                                {
+                                    key: 'actions',
+                                    name: ' ',
+                                    size: '6.5rem',
+                                    content: actions_template,
+                                },
+                            ]"
+                            [can_reorder]="true"
+                            [color]="colors | async"
+                            (ondrop)="drop($event)"
+                            [empty_message]="
+                                'SYSTEMS.MODULE_LIST_EMPTY' | translate
+                            "
+                        />
+                    </div>
                     <div class="h-12 w-full"></div>
                     <ng-template
                         #state_template
@@ -166,40 +214,14 @@ import { SystemStateService } from './system-state.service';
                             [class.bg-pending]="
                                 row.running && row.connected === undefined
                             "
-                            [matMenuTriggerFor]="status_menu"
+                            (click)="setActive(index)"
+                            [matMenuTriggerFor]="context_menu"
                         ></button>
-                        <mat-menu #status_menu="matMenu">
-                            @for (
-                                m_item of row.running
-                                    ? menu_options
-                                    : offline_options;
-                                track m_item
-                            ) {
-                                <button
-                                    mat-menu-item
-                                    [disabled]="
-                                        m_item.enable_on &&
-                                        !row[m_item.enable_on]
-                                    "
-                                    (click)="handleContextEvent(m_item, row)"
-                                >
-                                    <div class="flex items-center space-x-2">
-                                        <app-icon
-                                            class="text-xl"
-                                            [icon]="m_item.icon"
-                                        ></app-icon>
-                                        <div class="text">
-                                            {{ m_item.name | translate }}
-                                        </div>
-                                    </div>
-                                </button>
-                            }
-                        </mat-menu>
                         @if (row.running && row.connected === undefined) {
                             <mat-spinner
                                 class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                                 diameter="32"
-                            ></mat-spinner>
+                            />
                         }
                     </ng-template>
                     <ng-template #name_template let-row="row">
@@ -291,7 +313,7 @@ import { SystemStateService } from './system-state.service';
                             </mat-checkbox>
                         </div>
                     </ng-template>
-                    <ng-template #actions_template let-row="row">
+                    <ng-template #actions_template let-i="index" let-row="row">
                         <div class="mx-auto flex items-center space-x-2 p-2">
                             <button icon matRipple (click)="editModule(row)">
                                 <app-icon>edit</app-icon>
@@ -299,41 +321,11 @@ import { SystemStateService } from './system-state.service';
                             <button
                                 icon
                                 matRipple
-                                [matMenuTriggerFor]="end_menu"
+                                (click)="setActive(i)"
+                                [matMenuTriggerFor]="context_menu"
                             >
                                 <app-icon>more_vert</app-icon>
                             </button>
-                            <mat-menu #end_menu="matMenu">
-                                @for (
-                                    m_item of row.running
-                                        ? menu_options
-                                        : offline_options;
-                                    track m_item
-                                ) {
-                                    <button
-                                        mat-menu-item
-                                        [disabled]="
-                                            m_item.enable_on &&
-                                            !row[m_item.enable_on]
-                                        "
-                                        (click)="
-                                            handleContextEvent(m_item, row)
-                                        "
-                                    >
-                                        <div
-                                            class="flex items-center space-x-2"
-                                        >
-                                            <app-icon
-                                                class="text-xl"
-                                                [icon]="m_item.icon"
-                                            ></app-icon>
-                                            <div class="text">
-                                                {{ m_item.name | translate }}
-                                            </div>
-                                        </div>
-                                    </button>
-                                }
-                            </mat-menu>
                         </div>
                     </ng-template>
                 </section>
@@ -383,6 +375,7 @@ import { SystemStateService } from './system-state.service';
         ExecuteMethodFieldComponent,
         BindingDirective,
         MatProgressSpinnerModule,
+        ContextMenuComponent,
     ],
 })
 export class SystemModulesComponent extends AsyncHandler {
@@ -395,6 +388,8 @@ export class SystemModulesComponent extends AsyncHandler {
     public new_module: string;
     /** Whether to show exec block */
     public hide_exec: boolean;
+
+    public readonly active_item = signal<PlaceModule>(null);
 
     public readonly item$ = this._service.item;
     public readonly loading = this._service.loading;
@@ -579,6 +574,12 @@ export class SystemModulesComponent extends AsyncHandler {
             ViewModuleStateModalComponent,
             { data: { system: this.item, module: device, devices: modules } },
         );
+    }
+
+    public async setActive(idx: number) {
+        const modules = await nextValueFrom(this.modules);
+        if (modules.length <= idx) this.active_item.set(null);
+        else this.active_item.set(modules[idx]);
     }
 
     public loadModule(device: PlaceModule) {

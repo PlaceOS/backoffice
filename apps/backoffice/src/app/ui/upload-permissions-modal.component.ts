@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -74,7 +74,11 @@ import { TranslatePipe } from './translate.pipe';
                 btn
                 matRipple
                 class="w-32"
-                [mat-dialog-close]="{ file, is_public, permissions }"
+                [mat-dialog-close]="{
+                    file,
+                    is_public: is_public(),
+                    permissions: permissions(),
+                }"
             >
                 {{ 'COMMON.UPLOAD' | translate }}
             </button>
@@ -102,15 +106,8 @@ export class UploadPermissionsModalComponent {
     /** File to upload */
     public readonly file: File = this._data.file;
     /** Whether file should be public */
-    public is_public: boolean = true;
+    public readonly is_public = signal(true);
     /** Permissions for file */
-    public permissions: UploadPermissions = 'none';
-
-    constructor() {
-        this.file = this._data.file;
-    }
-
-    public close() {
-        this._dialog_ref.close();
-    }
+    public readonly permissions = signal<UploadPermissions>('none');
+    public readonly close = () => this._dialog_ref.close();
 }
