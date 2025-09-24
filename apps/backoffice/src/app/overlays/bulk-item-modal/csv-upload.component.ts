@@ -9,6 +9,7 @@ import {
 } from 'apps/backoffice/src/app/common/general';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 
 @Component({
@@ -55,7 +56,12 @@ import { TranslatePipe } from '../../ui/translate.pipe';
         }
     `,
     styles: [``],
-    imports: [MatRippleModule, TranslatePipe, MatProgressSpinnerModule],
+    imports: [
+        MatRippleModule,
+        TranslatePipe,
+        MatProgressSpinnerModule,
+        IconComponent,
+    ],
 })
 export class CsvUploadComponent {
     /** Data for the template CSV */

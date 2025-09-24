@@ -319,7 +319,7 @@ export class MetadataDisplayComponent
             for (const block of list) {
                 (block as any).match =
                     block.name.toLowerCase().includes(search) ||
-                    `${this.form_map[block.name].controls.name.value}`
+                    `${this.form_map()[block.name].controls.name.value}`
                         .toLowerCase()
                         .includes(search);
             }

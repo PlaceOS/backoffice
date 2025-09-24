@@ -4,6 +4,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     loadModule,
@@ -25,6 +26,7 @@ import {
 } from 'apps/backoffice/src/app/overlays/view-module-state.component';
 import { map } from 'rxjs/operators';
 import { i18n } from '../common/locale.service';
+import { BindingDirective } from '../ui/binding.directive';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
@@ -379,6 +381,8 @@ import { SystemStateService } from './system-state.service';
         CommonModule,
         SimpleTableComponent,
         ExecuteMethodFieldComponent,
+        BindingDirective,
+        MatProgressSpinnerModule,
     ],
 })
 export class SystemModulesComponent extends AsyncHandler {
