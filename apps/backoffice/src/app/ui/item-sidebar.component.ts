@@ -131,20 +131,20 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                     : ''
                             "
                             [class.bg-base-200]="idx % 2 === 1"
-                            class="relative m-1 flex h-16 w-[23rem] max-w-[calc(100%-0.5rem)] flex-col rounded border border-base-100 px-2 py-2 hover:border-info"
+                            class="relative m-1 flex h-16 w-[23rem] max-w-[calc(100%-0.5rem)] flex-col justify-center rounded border border-base-100 px-2 py-1 hover:border-info"
                             (click)="show = false"
                         >
                             <p class="w-full truncate">
                                 {{ item.name }}
                             </p>
-                            <div class="inline-block w-full overflow-hidden">
+                            <div class="flex w-full">
                                 @if (item.extra) {
-                                    <span
+                                    <div
                                         extra
-                                        class="mono mt-1 max-w-full truncate rounded bg-base-200 px-2 py-1 text-xs opacity-60"
+                                        class="mono mt-1 max-w-full truncate rounded border border-base-300 p-1 text-[0.625rem] opacity-60"
                                     >
                                         {{ item.extra }}
-                                    </span>
+                                    </div>
                                 }
                             </div>
                             @if (
@@ -204,9 +204,6 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
             }
             scroll-item:nth-child(2n) > a {
                 background-color: var(--b2);
-            }
-            a:hover {
-                background-color: var(--b3);
             }
             a.active {
                 background-color: var(--s) !important;
