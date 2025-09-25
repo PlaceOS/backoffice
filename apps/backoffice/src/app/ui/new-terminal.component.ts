@@ -18,6 +18,7 @@ import { catchError, map, shareReplay } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { SafePipe } from './pipes/safe.pipe';
 import { SanitizePipe } from './pipes/sanitise.pipe';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'new-terminal',
@@ -71,7 +72,14 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
             }
         `,
     ],
-    imports: [FormsModule, ScrollingModule, CommonModule, SafePipe],
+    providers: [SanitizePipe],
+    imports: [
+        FormsModule,
+        ScrollingModule,
+        CommonModule,
+        SafePipe,
+        TranslatePipe,
+    ],
 })
 export class NewTerminalComponent extends AsyncHandler {
     private _sanitize_pipe = inject(SanitizePipe);

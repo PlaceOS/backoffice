@@ -14,6 +14,7 @@ import { PlaceDebugService } from 'apps/backoffice/src/app/common/debug.service'
 import { eventToPoint } from 'apps/backoffice/src/app/common/general';
 import { Point } from 'apps/backoffice/src/app/common/types';
 import { IconComponent } from './icon.component';
+import { NewTerminalComponent } from './new-terminal.component';
 import { TranslatePipe } from './translate.pipe';
 
 @Component({
@@ -192,7 +193,13 @@ import { TranslatePipe } from './translate.pipe';
         `,
     ],
     animations: [ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR],
-    imports: [IconComponent, TranslatePipe, MatTooltipModule, MatRippleModule],
+    imports: [
+        IconComponent,
+        TranslatePipe,
+        MatTooltipModule,
+        MatRippleModule,
+        NewTerminalComponent,
+    ],
 })
 export class DebugOutputComponent extends AsyncHandler implements OnInit {
     private _service = inject(PlaceDebugService);
