@@ -29,50 +29,9 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 </div>
             }
             <section class="mb-4 flex space-x-2">
-                @if ((systems | async)?.length) {
-                    <div class="w-1/3 flex-1">
-                        <div
-                            class="flex flex-col rounded border border-base-200"
-                        >
-                            <header
-                                class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
-                            >
-                                {{ 'COMMON.EXECUTE_COMMAND' | translate }}
-                            </header>
-                            <div class="w-full p-2">
-                                <mat-form-field
-                                    appearance="outline"
-                                    class="no-subscript mb-2 w-full"
-                                >
-                                    <mat-select
-                                        [(ngModel)]="active_system"
-                                        [placeholder]="
-                                            'ZONES.SELECT_SYSTEM' | translate
-                                        "
-                                    >
-                                        @for (
-                                            system of systems | async;
-                                            track system.id
-                                        ) {
-                                            <mat-option [value]="system">
-                                                {{ system.name }}
-                                            </mat-option>
-                                        }
-                                    </mat-select>
-                                </mat-form-field>
-                                @if (active_system()?.id) {
-                                    <execute-method-field
-                                        [zone]="item()?.id"
-                                        [system]="active_system()"
-                                    ></execute-method-field>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
                 <div class="w-1/3 flex-1">
                     <div
-                        class="inline-grid gap-2 rounded border border-base-200 p-4"
+                        class="grid gap-2 rounded border border-base-200 p-4"
                         [style.gridTemplateColumns]="'5.5rem auto'"
                     >
                         @if (item()?.parent_id) {
@@ -197,6 +156,47 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         </div>
                     </div>
                 </div>
+                @if ((systems | async)?.length) {
+                    <div class="w-1/3 flex-1">
+                        <div
+                            class="flex flex-col rounded border border-base-200"
+                        >
+                            <header
+                                class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
+                            >
+                                {{ 'COMMON.EXECUTE_COMMAND' | translate }}
+                            </header>
+                            <div class="w-full p-2">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="no-subscript mb-2 w-full"
+                                >
+                                    <mat-select
+                                        [(ngModel)]="active_system"
+                                        [placeholder]="
+                                            'ZONES.SELECT_SYSTEM' | translate
+                                        "
+                                    >
+                                        @for (
+                                            system of systems | async;
+                                            track system.id
+                                        ) {
+                                            <mat-option [value]="system">
+                                                {{ system.name }}
+                                            </mat-option>
+                                        }
+                                    </mat-select>
+                                </mat-form-field>
+                                @if (active_system()?.id) {
+                                    <execute-method-field
+                                        [zone]="item()?.id"
+                                        [system]="active_system()"
+                                    ></execute-method-field>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
             </section>
             @if (item()?.description) {
                 <hr class="my-4 text-base-300" />

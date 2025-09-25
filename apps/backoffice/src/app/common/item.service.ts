@@ -438,7 +438,6 @@ export class ActiveItemService extends AsyncHandler {
             this._active_item.next(
                 new this.actions.itemConstructor({ ...item, settings }),
             );
-            console.log('Active Item:', this._active_item.getValue());
         }
     }
 }
