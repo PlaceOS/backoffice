@@ -20,6 +20,7 @@ import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { FormatListPipe } from '../ui/pipes/format-list.pipe';
+import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { TriggerStateService } from './trigger-state.service';
@@ -292,6 +293,7 @@ import { TriggerStateService } from './trigger-state.service';
         ItemSearchFieldComponent,
         FormsModule,
         DateFromPipe,
+        SanitizePipe,
     ],
 })
 export class TriggerAboutComponent extends AsyncHandler implements OnInit {
