@@ -1,0 +1,2 @@
+import{La as s}from"./chunk-5CWHFZXM.js";var p=(()=>{let t=class t{transform(e){if(typeof e!="string")return"";if((e||"").indexOf("/")>=0){let i=e.split("/");return i.splice(0,1),`<div class="flex items-center space-x-2">${i.map(n=>`<div class="name-part">${n}</div>`).join('<i class="material-symbols-outlined text-xl">keyboard_arrow_right</i>')}</div>`}return e||""}};t.\u0275fac=function(i){return new(i||t)},t.\u0275pipe=s({name:"driverFormat",type:t,pure:!0});let r=t;return r})();export{p as a};
+//# sourceMappingURL=chunk-F5N4ZKNM.js.map
