@@ -8,7 +8,7 @@ import {
     input,
     viewChild,
 } from '@angular/core';
-import { Terminal } from '@xterm/xterm';
+// import { Terminal } from '@xterm/xterm';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 
 @Component({
@@ -40,7 +40,7 @@ export class TerminalComponent
     /** Resizes terminal display on change */
     public readonly resize = input<boolean>(undefined);
     /** Local instance of an xterm terminal */
-    public terminal: Terminal;
+    public terminal: any;
 
     public readonly terminal_element =
         viewChild<ElementRef<HTMLDivElement>>('terminal');
@@ -49,17 +49,17 @@ export class TerminalComponent
 
     public ngOnInit(): void {
         if (this.terminal) this.ngOnDestroy();
-        this.terminal = new Terminal({
-            theme: {
-                background: `#263238`,
-                red: '#e53935',
-                blue: '#1e88e5',
-                yellow: '#fdd835',
-                green: '#43a047',
-            },
-            fontSize: 12,
-        });
-        this.terminal.open(this.terminal_element().nativeElement);
+        // this.terminal = new Terminal({
+        //     theme: {
+        //         background: `#263238`,
+        //         red: '#e53935',
+        //         blue: '#1e88e5',
+        //         yellow: '#fdd835',
+        //         green: '#43a047',
+        //     },
+        //     fontSize: 12,
+        // });
+        // this.terminal.open(this.terminal_element().nativeElement);
         this.timeout('init', () => {
             this.resizeTerminal();
             this.updateTerminalContents(this.content() || '');

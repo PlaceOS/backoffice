@@ -1,9 +1,11 @@
 import {
     Component,
     ElementRef,
-    OnInit,
     Renderer2,
+    computed,
     inject,
+    input,
+    signal,
     viewChild,
 } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
@@ -20,11 +22,11 @@ import { TranslatePipe } from './translate.pipe';
 @Component({
     selector: 'app-debug-output',
     template: `
-        @if (is_enabled) {
-            @if (is_shown) {
+        @if (is_enabled()) {
+            @if (is_shown()) {
                 <div
                     [class]="
-                        debug_position === 'floating'
+                        debug_position() === 'floating'
                             ? 'absolute bottom-2 right-2'
                             : 'h-full w-full'
                     "
@@ -34,23 +36,29 @@ import { TranslatePipe } from './translate.pipe';
                         class="relative z-10 flex flex-col overflow-hidden border border-base-200 bg-[#212121] text-white shadow"
                         content
                         #content
-                        [@show]="is_shown ? 'show' : 'hide'"
+                        [@show]="is_shown() ? 'show' : 'hide'"
                         [style.height]="
-                            debug_position === 'side' ? '100%' : height + 'px'
+                            debug_position() === 'side'
+                                ? '100%'
+                                : height() + 'px'
                         "
                         [style.width]="
-                            debug_position === 'below' ? '100%' : width + 'px'
+                            debug_position() === 'below'
+                                ? '100%'
+                                : width() + 'px'
                         "
                     >
                         <div class="p-3 text-sm">
                             {{
                                 'COMMON.MESSAGE_COUNT'
-                                    | translate: { count: event_count }
+                                    | translate
+                                        : { count: event_count() }
+                                        : event_count()
                             }}
                         </div>
                         <new-terminal
-                            [lines]="logs"
-                            [resize]="resize"
+                            [lines]="logs()"
+                            [resize]="resize()"
                         ></new-terminal>
                         <!-- <a-terminal [content]="logs" [resize]="resize"></a-terminal> -->
                         <div
@@ -156,7 +164,7 @@ import { TranslatePipe } from './translate.pipe';
             :host > div {
                 max-height: 100%;
                 max-width: 100%;
-                z-index: 999;
+                z-index: 20;
             }
 
             [content] {
@@ -201,36 +209,30 @@ import { TranslatePipe } from './translate.pipe';
         NewTerminalComponent,
     ],
 })
-export class DebugOutputComponent extends AsyncHandler implements OnInit {
+export class DebugOutputComponent extends AsyncHandler {
     private _service = inject(PlaceDebugService);
     private _renderer = inject(Renderer2);
 
-    /** Whether display output is shown */
-    public show_content: boolean = true;
+    public readonly compact = input(false);
     /** Display string for debug logs */
-    public logs: string[] = [];
+    public readonly logs = computed(() =>
+        this._service.terminal_string().split('\n'),
+    );
     /** Height of the debug console */
-    public height: number = 240;
+    public readonly height = signal(240);
     /** Width of the debug console */
-    public width: number = 768;
+    public readonly width = signal(768);
     /** Toggle to resize the terminal display */
-    public resize: boolean;
+    public readonly resize = signal(false);
+    public readonly event_count = this._service.event_count;
+    /** Whether user is listening for debug information */
+    public readonly is_enabled = this._service.enabled;
+    public readonly is_shown = this._service.is_shown;
     /** Start point for resizing the console box */
     private _resize_start: Point;
 
     private readonly _content_el =
         viewChild<ElementRef<HTMLDivElement>>('content');
-
-    /** Whether user is listening for debug information */
-    public get is_enabled(): boolean {
-        return this._service.is_enabled;
-    }
-    public get is_shown(): boolean {
-        return this._service.is_shown;
-    }
-    public get event_count(): number {
-        return this._service.event_list.length;
-    }
 
     public get modules() {
         return this._service.modules;
@@ -247,33 +249,14 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
         return this._service.position;
     }
 
-    public ngOnInit() {
-        this.subscription(
-            'changes',
-            this._service.events.subscribe((_) => {
-                this.logs = this._service.terminal_string.split('\n');
-            }),
-        );
-        this.subscription(
-            'binding_change',
-            this._service.changed.subscribe(() => {
-                if (!this._service.is_listening) {
-                    this.show_content = false;
-                }
-            }),
-        );
-    }
-
     public close() {
-        this._service.is_shown = false;
+        this._service.is_shown.set(false);
     }
 
     public toggleDebugPosition() {
-        const position = this.debug_position;
-        const new_pos = position === 'side' ? 'below' : 'side';
-        this.height = new_pos === 'side' ? 768 : 240;
-        this.width = new_pos === 'side' ? 240 : 768;
-        this._service.position = new_pos;
+        this._service.position.update((p) => (p === 'side' ? 'below' : 'side'));
+        this.height.set(this._service.position() === 'side' ? 768 : 240);
+        this.width.set(this._service.position() === 'side' ? 240 : 768);
     }
 
     /** Clear all the debug logs */
@@ -286,7 +269,7 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
     }
 
     public onWindowResize() {
-        this.timeout('resize', () => (this.resize = !this.resize), 50);
+        this.timeout('resize', () => this.resize.update((r) => !r), 50);
     }
 
     public startResize(event: MouseEvent | TouchEvent, dir: 'x' | 'y' | 'xy') {
@@ -305,8 +288,8 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
                     this.unsub('resize_end');
                     const box =
                         this._content_el().nativeElement.getBoundingClientRect();
-                    this.height = box.height;
-                    this.width = box.width;
+                    this.height.set(box.height);
+                    this.width.set(box.width);
                 }),
             );
         } else {
@@ -323,8 +306,8 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
                     this.unsub('resize_end');
                     const box =
                         this._content_el().nativeElement.getBoundingClientRect();
-                    this.height = box.height;
-                    this.width = box.width;
+                    this.height.set(box.height);
+                    this.width.set(box.width);
                 }),
             );
         }
@@ -337,17 +320,17 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
             y: point.y - this._resize_start.y,
         };
         if (dir.indexOf('x') >= 0) {
-            this.width = this.width - diff.x;
+            this.width.set(this.width() - diff.x);
         }
         if (dir.indexOf('y') >= 0) {
-            this.height = this.height - diff.y;
+            this.height.set(this.height() - diff.y);
         }
         this._resize_start = point;
-        this.timeout('resize', () => (this.resize = !this.resize), 50);
+        this.timeout('resize', () => this.resize.update((r) => !r), 50);
     }
 
     public downloadLogs() {
-        const blob = new Blob([this.logs.join('\n')], {
+        const blob = new Blob([this.logs().join('\n')], {
             type: 'text/plain;charset=utf-8',
         });
         const url = window.URL.createObjectURL(blob);

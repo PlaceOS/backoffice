@@ -94,11 +94,11 @@ import { DriverStateService } from './driver-state.service';
                         </button>
                     </div>
                 </div>
-                @if (debug_position === 'below') {
+                @if (debug_position() === 'below') {
                     <app-debug-output below></app-debug-output>
                 }
             </div>
-            @if (debug_position === 'side') {
+            @if (debug_position() === 'side') {
                 <app-debug-output
                     side
                     class="h-full max-w-[30rem]"
@@ -130,22 +130,17 @@ export class DriversComponent extends AsyncHandler implements OnInit {
     public readonly name = 'drivers';
     public readonly item = signal<PlaceDriver>(null);
     public readonly scroll = signal(0);
-
     public readonly open_menu = signal(false);
     public readonly device_count = signal(0);
     public readonly tab_list = signal([]);
     public readonly updates_available = this._drivers.updates_available;
+    public readonly debug_position = this._debug.position;
 
     public readonly showUpdateList = () => this._drivers.showUpdateList();
-
     public readonly newItem = () => this._service.create();
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
-    }
-
-    public get debug_position() {
-        return this._debug.position;
     }
 
     public updateTabList() {

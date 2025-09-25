@@ -80,11 +80,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         </button>
                     </div>
                 </div>
-                @if (debug_position === 'below') {
+                @if (debug_position() === 'below') {
                     <app-debug-output below></app-debug-output>
                 }
             </div>
-            @if (debug_position === 'side') {
+            @if (debug_position() === 'side') {
                 <app-debug-output
                     side
                     class="h-full max-w-[30rem]"
@@ -116,17 +116,12 @@ export class TriggersComponent extends AsyncHandler implements OnInit {
     public open_menu = false;
     public instance_count = 0;
     public tab_list = [];
-
-    public readonly newItem = () => this._service.create();
-
+    public readonly debug_position = this._debug.position;
     public readonly item = signal<PlaceTrigger>(null);
+    public readonly newItem = () => this._service.create();
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
-    }
-
-    public get debug_position() {
-        return this._debug.position;
     }
 
     public updateTabList() {

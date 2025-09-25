@@ -79,11 +79,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         </button>
                     </div>
                 </div>
-                @if (debug_position === 'below') {
+                @if (debug_position() === 'below') {
                     <app-debug-output below></app-debug-output>
                 }
             </div>
-            @if (debug_position === 'side') {
+            @if (debug_position() === 'side') {
                 <app-debug-output
                     side
                     class="h-full max-w-[30rem]"
@@ -117,15 +117,11 @@ export class ModulesComponent extends AsyncHandler {
     public readonly open_menu = signal(false);
     public readonly tab_list = signal([]);
     public readonly scroll = signal(0);
-
+    public readonly debug_position = this._debug.position;
     public readonly newItem = () => this._service.create();
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
-    }
-
-    public get debug_position() {
-        return this._debug.position;
     }
 
     public updateTabList() {

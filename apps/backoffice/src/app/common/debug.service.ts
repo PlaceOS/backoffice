@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import {
     debug,
     debug_events,
@@ -8,7 +8,7 @@ import {
 } from '@placeos/ts-client';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { format } from 'date-fns';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { AsyncHandler } from './async-handler.class';
 
 export type DebugConsolePosition = 'below' | 'side' | 'floating';
@@ -28,43 +28,25 @@ const TERMINAL_COLOURS = {
 export class PlaceDebugService extends AsyncHandler {
     private _changed = new BehaviorSubject(0);
     /** List of the current state of events */
-    private _events = new BehaviorSubject<PlaceDebugEvent[]>([]);
-    /** Observable for changes to the event listing */
-    private _event_obs = this._events.asObservable();
-    /** List of modules listening to debug events */
-    private _bound_modules: PlaceModule[] = [];
     /** Mapping of module IDs to display names */
     private _module_names: HashMap<string> = {};
+    /** List of modules listening to debug events */
+    public readonly bound_modules = signal<PlaceModule[]>([]);
+    public readonly module_count = computed(() => this.bound_modules().length);
+    public readonly events = signal<PlaceDebugEvent[]>([]);
+    public readonly event_count = computed(() => this.events().length);
     /** Whether debug console is enabled */
-    private _enabled: boolean;
+    public readonly enabled = signal(false);
     /** Whether debug console is showing */
-    public is_shown: boolean = true;
-
-    public position: DebugConsolePosition = 'below';
-
-    public readonly changed = this._changed.asObservable();
-
-    /** Current list of debug events */
-    public get event_list(): PlaceDebugEvent[] {
-        return this._events.getValue();
-    }
-
-    /** Observable for changes to the event listing */
-    public get events(): Observable<PlaceDebugEvent[]> {
-        return this._event_obs;
-    }
-
-    public get modules() {
-        return this._bound_modules;
-    }
-
-    public get module_names() {
-        return this._module_names;
-    }
-
+    public readonly is_shown = signal(true);
+    public readonly position = signal<DebugConsolePosition>('below');
+    /** Whether there are modules listening for debug messages */
+    public readonly is_listening = computed(
+        () => this.enabled() && this.bound_modules().length > 0,
+    );
     /** Get terminal display string for all the events */
-    public get terminal_string(): string {
-        const list = this.event_list.map(
+    public readonly terminal_string = computed(() => {
+        const list = this.events().map(
             (event) =>
                 `${
                     TERMINAL_COLOURS[event.level] || TERMINAL_COLOURS.debug
@@ -78,42 +60,42 @@ export class PlaceDebugService extends AsyncHandler {
                     .join('\n')}`,
         );
         return list.join('\n');
+    });
+
+    public readonly changed = this._changed.asObservable();
+
+    public get modules() {
+        return this.bound_modules();
     }
 
-    /** Whether there are modules listening for debug messages */
-    public get is_enabled(): boolean {
-        return this._enabled;
-    }
-
-    /** Whether there are modules listening for debug messages */
-    public get is_listening(): boolean {
-        return this._enabled && this._bound_modules.length > 0;
+    public get module_names() {
+        return this._module_names;
     }
 
     constructor() {
         super();
         debug_events.subscribe((event) => {
-            if (this._bound_modules.find((mod) => mod.id === event.mod_id)) {
-                let event_list = [...this.event_list, event];
+            if (this.bound_modules().find((mod) => mod.id === event.mod_id)) {
+                let event_list = [...this.events(), event];
                 if (event_list.length > 2000) {
                     const [_, ...events] = event_list;
                     event_list = events;
                 }
-                this._events.next(event_list);
+                this.events.set(event_list);
             }
         });
     }
 
     /** Clear existing events */
     public clearEvents() {
-        this._events.next([]);
+        this.events.set([]);
     }
 
     /**
      * Whether module is listening for debug events
      */
     public isListening(module: PlaceModule): boolean {
-        return !!this._bound_modules.find((mod) => mod.id === module.id);
+        return !!this.bound_modules().find((mod) => mod.id === module.id);
     }
 
     /**
@@ -131,10 +113,10 @@ export class PlaceDebugService extends AsyncHandler {
                 index,
                 name: 'debug',
             };
-            this._enabled = true;
+            this.enabled.set(true);
             debug(options).then(() => {
                 this.subscription(`debug_${module.id}`, () => ignore(options));
-                this._bound_modules.push(module);
+                this.bound_modules.update((l) => [...l, module]);
                 this._module_names[module.id] = module_name;
                 this._changed.next(Date.now());
             });
@@ -148,16 +130,17 @@ export class PlaceDebugService extends AsyncHandler {
     public unbind(module: PlaceModule) {
         if (module) {
             this.unsub(`debug_${module.id}`);
-            this._bound_modules = this._bound_modules.filter(
-                (mod) => mod.id !== module.id,
+            this.bound_modules.update((l) =>
+                l.filter((mod) => mod.id !== module.id),
             );
             this._changed.next(Date.now());
         }
     }
 
     public unbindAll() {
-        for (const mod of this._bound_modules) {
+        for (const mod of this.bound_modules()) {
             this.unbind(mod);
         }
+        this.bound_modules.set([]);
     }
 }

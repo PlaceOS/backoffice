@@ -281,6 +281,7 @@ import { SystemStateService } from './system-state.service';
                             "
                             matTooltipPosition="left"
                             (change)="toggleDebug(row)"
+                            [class.opacity-30]="!row.running"
                         >
                         </mat-checkbox>
                     </div>

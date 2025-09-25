@@ -4,7 +4,6 @@ import { Router, RouterModule } from '@angular/router';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from '../common/async-handler.class';
-import { PlaceDebugService } from '../common/debug.service';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
 import { ApplicationIcon } from '../common/types';
@@ -13,6 +12,7 @@ import {
     CustomTooltipComponent,
     CustomTooltipData,
 } from './custom-tooltip.component';
+import { DebugInfoComponent } from './debug-info.component';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 import { UserAvatarComponent } from './user-avatar.component';
@@ -84,76 +84,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     </button>
                 </div>
             </div>
-            @if (debug_enabled) {
-                <div
-                    class="m-2 flex flex-col space-y-2 rounded-xl border border-base-300 p-2"
-                >
-                    <div
-                        class="mono rounded-xl bg-info p-1 text-center text-xs text-info-content"
-                    >
-                        {{ 'COMMON.DEBUG_ENABLED' | translate }}
-                    </div>
-                    <p class="p-1 text-center text-xs">
-                        {{
-                            'COMMON.DEBUG_LISTENING_MSG'
-                                | translate: { modules: debug_module_count }
-                        }}<br />
-                        {{
-                            'COMMON.DEBUG_MSG_COUNT_MSG'
-                                | translate: { count: debug_message_count }
-                        }}
-                    </p>
-                    <div
-                        actions
-                        class="flex items-center justify-center space-x-2"
-                    >
-                        <button
-                            icon
-                            matRipple
-                            (click)="toggleDebugPosition()"
-                            class="bg-base-200"
-                        >
-                            <app-icon matTooltip="Toggle Position">{{
-                                debug_position === 'side'
-                                    ? 'border_bottom'
-                                    : 'border_right'
-                            }}</app-icon>
-                        </button>
-                        <button
-                            icon
-                            matRipple
-                            (click)="clearDebugMessages()"
-                            class="bg-base-200"
-                        >
-                            <app-icon matTooltip="Clear Messages"
-                                >clear_all</app-icon
-                            >
-                        </button>
-                        <button
-                            icon
-                            matRipple
-                            (click)="clearBindings()"
-                            class="bg-base-200"
-                        >
-                            <app-icon
-                                className="backoffice-uninstall"
-                                matTooltip="Unbind Modules"
-                            ></app-icon>
-                        </button>
-                        <button
-                            icon
-                            matRipple
-                            (click)="openDebug()"
-                            class="bg-base-200"
-                        >
-                            <app-icon
-                                className="backoffice-notification"
-                                matTooltip="Open Console"
-                            ></app-icon>
-                        </button>
-                    </div>
-                </div>
-            }
+            <debug-info [compact]="compact()" />
             <button
                 matRipple
                 class="flex min-h-16 items-center space-x-2 border-t border-base-300 p-2 text-left"
@@ -189,7 +120,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             <button
                 icon
                 matRipple
-                class="absolute bottom-12 right-0 hidden h-6 w-6 min-w-6 translate-x-1/2 rounded-full border border-base-200 bg-base-100 shadow hover:bg-base-200 sm:flex"
+                class="absolute bottom-12 right-0 z-[999] hidden h-6 w-6 min-w-6 translate-x-1/2 rounded-full border border-base-200 bg-base-100 shadow hover:bg-base-200 sm:flex"
                 (click)="toggleCompactMode()"
             >
                 <app-icon>
@@ -224,11 +155,11 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
         MatTooltipModule,
         CustomTooltipComponent,
         RouterModule,
+        DebugInfoComponent,
     ],
 })
 export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     private _tooltip = inject(CustomTooltipData, { optional: true });
-    private _debug = inject(PlaceDebugService);
     private _settings = inject(SettingsService);
     private _users = inject(BackofficeUsersService);
     private _hotkey = inject(HotkeysService);
@@ -273,22 +204,6 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         return this._users.current();
     }
 
-    public get debug_position() {
-        return this._debug.position;
-    }
-
-    public get debug_enabled() {
-        return this._debug.is_enabled;
-    }
-
-    public get debug_module_count() {
-        return this._debug.modules.length;
-    }
-
-    public get debug_message_count() {
-        return this._debug.event_list.length;
-    }
-
     public get is_admin() {
         return this._users.current().sys_admin;
     }
@@ -320,25 +235,6 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         this.compact.set(
             localStorage.getItem('BACKOFFICE.SIDEBAR_COMPACT') === 'true',
         );
-    }
-
-    public toggleDebugPosition() {
-        const position = this.debug_position;
-        const new_pos = position === 'side' ? 'below' : 'side';
-        this._debug.position = new_pos;
-    }
-
-    public openDebug() {
-        this._debug.is_shown = true;
-    }
-
-    /** Clear all the debug logs */
-    public clearDebugMessages() {
-        this._debug.clearEvents();
-    }
-
-    public clearBindings() {
-        this._debug.unbindAll();
     }
 
     private changeSelected(offset = 1) {
