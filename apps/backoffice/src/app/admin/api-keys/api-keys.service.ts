@@ -25,8 +25,8 @@ import {
     switchMap,
     tap,
 } from 'rxjs/operators';
-import { openConfirmModal } from '../../common/general';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { openConfirmModal } from '../../overlays/confirm-modal.component';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyModalComponent } from './api-key-modal.component';
 

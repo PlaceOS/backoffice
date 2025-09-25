@@ -1,6 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
+import { CommonModule } from '@angular/common';
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     addBroker,
     PlaceMQTTBroker,
@@ -8,20 +12,13 @@ import {
     removeBroker,
     updateBroker,
 } from '@placeos/ts-client';
+import { lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { CommonModule } from '@angular/common';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
-import {
-    notifyError,
-    notifySuccess,
-} from 'apps/backoffice/src/app/common/notifications';
-import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal.component';
-import { lastValueFrom } from 'rxjs';
+import { AsyncHandler } from '../common/async-handler.class';
+import { notifyError, notifySuccess } from '../common/notifications';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';

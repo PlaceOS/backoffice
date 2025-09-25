@@ -52,7 +52,6 @@ import {
 } from '@placeos/ts-client';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ConfirmExtraType } from '../overlays/confirm-modal.component';
 import { HashMap } from './types';
 
 export interface ItemActions<T> {
@@ -62,7 +61,7 @@ export interface ItemActions<T> {
     remove: (_: T) => Observable<any>;
     itemConstructor: Type<T>;
     delete_message: string;
-    delete_extra?: (_: T) => Promise<[ConfirmExtraType, string]>;
+    delete_extra?: (_: T) => Promise<[string, string]>;
     name: string;
 }
 

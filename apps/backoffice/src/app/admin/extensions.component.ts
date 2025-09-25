@@ -263,13 +263,13 @@ export class PlaceExtensionsComponent implements OnInit {
         ref.componentInstance.event
             .pipe(first((_) => _.reason === 'done'))
             .subscribe(async (_) => {
-                ref.componentInstance.loading = 'Removing extension...';
+                ref.componentInstance.loading.set('Removing extension...');
                 let ext_list = this.extensions();
                 ext_list = ext_list.filter((i) => i.name !== item.name);
                 await this.updateDomain(ext_list).catch((e) =>
                     notifyError(`Error removing extension: ${e}`),
                 );
-                ref.componentInstance.loading = '';
+                ref.componentInstance.loading.set('');
                 ref.close();
             });
     }

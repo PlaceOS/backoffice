@@ -17,9 +17,9 @@ import {
 import { addDays, getUnixTime, startOfDay } from 'date-fns';
 import { BehaviorSubject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
-import { openConfirmModal } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -269,7 +269,7 @@ export class PlaceStaffAPIComponent implements OnInit {
                 <li>survey data</li>
                 </ul>`,
                 icon: { type: 'icon', content: 'delete' },
-                action: 'Delete',
+                confirm_text: 'Delete',
             },
             this._dialog,
         );

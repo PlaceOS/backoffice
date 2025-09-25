@@ -16,6 +16,7 @@
         "USER_ADMIN": "Admin",
         "USER_SUPPORT": "Support",
         "USER_BASIC": "Basic",
+        "ACCEPT": "Accept",
         "DEBUG_ENABLED": "Debugging Enabled",
         "DEBUG_LISTENING_MSG": "Listening to {{ modules }} module(s)",
         "DEBUG_MSG_COUNT_MSG": "{{ count }} module messages",

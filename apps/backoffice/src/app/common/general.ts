@@ -1,12 +1,6 @@
 import { UntypedFormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom, Observable } from 'rxjs';
-import { first, take } from 'rxjs/operators';
-import {
-    CONFIRM_METADATA,
-    ConfirmModalComponent,
-    ConfirmModalData,
-} from '../overlays/confirm-modal.component';
+import { take } from 'rxjs/operators';
 import { HashMap, Point } from './types';
 
 /** Available console output streams. */
@@ -46,51 +40,28 @@ export function log(
     }
 }
 
-export async function openConfirmModal(
-    data: ConfirmModalData,
-    dialog: MatDialog,
-) {
-    const ref = dialog.open<ConfirmModalComponent, ConfirmModalData>(
-        ConfirmModalComponent,
-        {
-            ...CONFIRM_METADATA,
-            data,
-        },
-    );
-    return {
-        ...(await Promise.race([
-            ref.componentInstance.event
-                .pipe(first((_) => _.reason === 'done'))
-                .toPromise(),
-            ref.afterClosed().toPromise(),
-        ])),
-        loading: (s) => (ref.componentInstance.loading = s),
-        close: () => ref.close(),
-    };
-}
-
 /* istanbul ignore next */
 /**
  * detect IE
  * returns version of IE or false, if browser is not Internet Explorer
  */
 export function detectIE(): number {
-    var ua = window.navigator.userAgent;
+    const ua = window.navigator.userAgent;
 
-    var msie = ua.indexOf('MSIE ');
+    const msie = ua.indexOf('MSIE ');
     if (msie > 0) {
         // IE 10 or older => return version number
         return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
     }
 
-    var trident = ua.indexOf('Trident/');
+    const trident = ua.indexOf('Trident/');
     if (trident > 0) {
         // IE 11 => return version number
-        var rv = ua.indexOf('rv:');
+        const rv = ua.indexOf('rv:');
         return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
     }
 
-    var edge = ua.indexOf('Edge/');
+    const edge = ua.indexOf('Edge/');
     if (edge > 0) {
         // Edge (IE 12+) => return version number
         return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);

@@ -232,8 +232,8 @@ export class PlaceClusterTaskListComponent
             ref.componentInstance.event.subscribe((event) => {
                 if (event.reason === 'done') {
                     this.killing.set(process.id);
-                    ref.componentInstance.loading = i18n(
-                        'ADMIN.CLUSTER_PROCESS_KILL_LOADING',
+                    ref.componentInstance.loading.set(
+                        i18n('ADMIN.CLUSTER_PROCESS_KILL_LOADING'),
                     );
                     this.killProcess(process).then(
                         () => {
@@ -241,7 +241,7 @@ export class PlaceClusterTaskListComponent
                             ref.close();
                         },
                         (err) => {
-                            ref.componentInstance.loading = null;
+                            ref.componentInstance.loading.set(null);
                             this.killing.set(null);
                             notifyError(
                                 i18n('ADMIN.CLUSTER_PROCESS_KILL_ERROR', {

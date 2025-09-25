@@ -34,10 +34,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { currentUser } from '../common/user-state';
 import { validateJSONString } from '../common/validation';
-import {
-    CONFIRM_METADATA,
-    ConfirmModalComponent,
-} from '../overlays/confirm-modal.component';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { MetadataDetailsModalComponent } from '../overlays/metadata-details-modal.component';
 import { MetadataHistoryModalComponent } from '../overlays/metadata-history-modal.component';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
@@ -272,44 +269,33 @@ export class MetadataDisplayComponent
      * Delete the given metadata field
      * @param field Name of the field to remove
      */
-    public deleteMetadata(field: string) {
-        const ref = this._dialog.open(ConfirmModalComponent, {
-            ...CONFIRM_METADATA,
-            data: {
+    public async deleteMetadata(field: string) {
+        const result = await openConfirmModal(
+            {
                 title: `Remove Metadata block`,
                 content: `
-                    <p>Are you sure you want delete the metadata property "${field}"?</p>
-                `,
+                <p>Are you sure you want delete the metadata property "${field}"?</p>
+            `,
                 icon: { type: 'icon', content: 'delete' },
             },
-        });
-        this.subscription(
-            'confirm',
-            ref.componentInstance.event.subscribe((event) => {
-                if (event.reason === 'done') {
-                    removeMetadata(this.item().id, { name: field }).subscribe({
-                        next: () => {
-                            notifySuccess(
-                                `Successfully removed "${field}" metadata.`,
-                            );
-                            this.metadata.set(
-                                this.metadata().filter(
-                                    (prop) => prop && prop.name !== field,
-                                ),
-                            );
-                            this.generateForms();
-                        },
-                        error: (err) =>
-                            notifyError(
-                                `Error removing old "${field}" metadata. Error: ${
-                                    err.response || err.message || err
-                                }`,
-                            ),
-                    });
-                }
-                ref.close();
-            }),
+            this._dialog,
         );
+        if (result.reason !== 'done') return;
+        await lastValueFrom(
+            removeMetadata(this.item().id, { name: field }),
+        ).catch((err) => {
+            notifyError(
+                `Error removing old "${field}" metadata. Error: ${
+                    err.response || err.message || err
+                }`,
+            );
+            throw err;
+        });
+        notifySuccess(`Successfully removed "${field}" metadata.`);
+        this.metadata.set(
+            this.metadata().filter((prop) => prop && prop.name !== field),
+        );
+        this.generateForms();
     }
 
     public filterMetadata() {

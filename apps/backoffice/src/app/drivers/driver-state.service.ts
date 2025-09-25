@@ -12,10 +12,10 @@ import {
 } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
-import { openConfirmModal } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 import { DriverUpdateListModalComponent } from './driver-update-list-modal.component';
 
@@ -94,7 +94,7 @@ export class DriverStateService {
         );
         if (!details || !details.reason) return details.close();
         details.loading('Updating driver...');
-        let success = await updateDriver(item.id, {
+        const success = await updateDriver(item.id, {
             ...item,
             commit: item.update_info.commit,
         })

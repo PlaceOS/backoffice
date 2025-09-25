@@ -28,9 +28,10 @@ import {
     startWith,
     switchMap,
 } from 'rxjs/operators';
-import { openConfirmModal, unique } from '../common/general';
+import { unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {
     SelectItemModalComponent,
     SelectItemModalData,

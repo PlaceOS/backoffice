@@ -1,128 +1,182 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-
-import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
-    ApplicationIcon,
-    DialogEvent,
-} from 'apps/backoffice/src/app/common/types';
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    inject,
+    signal,
+} from '@angular/core';
+import {
+    MAT_DIALOG_DATA,
+    MatDialog,
+    MatDialogModule,
+    MatDialogRef,
+} from '@angular/material/dialog';
+import { first } from 'rxjs/operators';
 
-export type ConfirmExtraType = 'info' | 'warning' | 'error';
+import { MatRippleModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AsyncHandler } from '../common/async-handler.class';
+import { ApplicationIcon, DialogEvent } from '../common/types';
+import { IconComponent } from '../ui/icon.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ConfirmModalData {
     /** Title of the modal */
     title: string;
     /** Contents of the modal */
     content: string;
-    extra?: [ConfirmExtraType, string];
+    /** Contents of the modal */
+    extra?: [string, string];
     /** Text displaed on the confirmation button */
-    action?: string;
+    confirm_text?: string;
+    /** Text displaed on the confirmation button */
+    cancel_text?: string;
     /** Icon to display on the modal */
     icon: ApplicationIcon;
+    /** Delay before closing the modal */
+    close_delay?: number;
 }
 
-export const CONFIRM_METADATA = {};
+export const CONFIRM_METADATA = {
+    height: 'auto',
+};
+
+export interface ConfirmRepsonse {
+    reason: 'done' | '' | null;
+    loading: (_: string) => void;
+    close: () => void;
+}
+
+export async function openConfirmModal(
+    data: ConfirmModalData,
+    dialog: MatDialog,
+): Promise<ConfirmRepsonse> {
+    const ref = dialog.open<ConfirmModalComponent, ConfirmModalData>(
+        ConfirmModalComponent,
+        {
+            ...CONFIRM_METADATA,
+            data,
+        },
+    );
+    return {
+        ...(await Promise.race([
+            ref.componentInstance.event
+                .pipe(first((_) => _.reason === 'done'))
+                .toPromise(),
+            ref.afterClosed().toPromise(),
+        ])),
+        loading: (s) => ref.componentInstance.loading.set(s),
+        close: () => ref.close(),
+    };
+}
 
 @Component({
     selector: 'confirm-modal',
     template: `
         <header
-            class="sticky top-0 z-10 m-2 w-[calc(100%-1rem)] rounded border-none bg-base-200 p-2"
+            class="sticky top-0 z-10 m-2 h-14 w-[calc(100%-1rem)] min-w-[20rem] rounded border-none bg-base-200 p-2"
         >
-            <h2 class="px-2 text-xl font-medium">
-                {{ title || 'Confirm' }}
-            </h2>
-            @if (!loading) {
-                <button icon matRipple mat-dialog-close>
-                    <app-icon>close</app-icon>
-                </button>
-            }
+            <h2 class="px-2 text-xl font-medium">{{ title }}</h2>
         </header>
-        <main confirm-modal>
-            @if (!loading) {
+        @if (!loading()) {
+            <main
+                class="flex w-[28rem] max-w-[85vw] flex-col items-center space-y-4 p-4 sm:h-auto"
+            >
+                <icon [icon]="icon" class="text-5xl"></icon>
+                <p content class="text-center" [innerHTML]="content"></p>
+                <p
+                    extra
+                    [class]="'text-' + extra[0] + ' text-center text-sm'"
+                    [innerHTML]="extra[1]"
+                ></p>
+            </main>
+        } @else {
+            <main loading>
                 <div
-                    class="flex min-w-[24rem] max-w-[28rem] flex-col items-center space-x-4 p-4"
-                >
-                    <div class="mb-4 flex h-full items-center">
-                        <app-icon class="text-5xl" [icon]="icon"></app-icon>
-                    </div>
-                    <div class="flex flex-col space-y-4 text-center">
-                        <p
-                            [innerHTML]="
-                                content || 'Are you sure?' | safe: 'html'
-                            "
-                        ></p>
-                        @if (extra) {
-                            <div
-                                [class.bg-info]="extra[0] === 'info'"
-                                [class.bg-warning]="extra[0] === 'warning'"
-                                [class.bg-error]="extra[0] === 'error'"
-                                [class.text-info-content]="extra[0] === 'info'"
-                                [class.text-warning-content]="
-                                    extra[0] === 'warning'
-                                "
-                                [class.text-error-content]="
-                                    extra[0] === 'error'
-                                "
-                                class="rounded p-2 text-xs shadow"
-                                [innerHTML]="extra[1]"
-                            ></div>
-                        }
-                    </div>
-                </div>
-            } @else {
-                <div
-                    class="flex h-56 min-w-[24rem] max-w-[28rem] flex-col items-center justify-center space-y-4 p-4"
+                    class="flex h-48 w-full flex-col items-center justify-center space-y-4"
                 >
                     <mat-spinner diameter="32"></mat-spinner>
-                    <p>{{ loading }}</p>
+                    <p>{{ loading() }}</p>
                 </div>
-            }
-        </main>
-        @if (!loading) {
+            </main>
+        }
+        @if (!loading()) {
             <footer
-                class="flex items-center justify-end space-x-2 border-t border-base-200 p-2"
+                class="sticky bottom-0 m-2 flex items-center justify-center space-x-2 rounded border-none bg-base-200 p-2"
             >
                 <button
                     btn
-                    name="accept"
-                    class="w-1/2"
-                    (click)="event.emit({ reason: 'done' })"
+                    matRipple
+                    class="inverse flex-1 bg-base-100"
+                    mat-dialog-close
                 >
-                    {{ action || 'COMMON.CONFIRM' | translate }}
+                    {{ cancel_text | translate }}
+                </button>
+                <button
+                    btn
+                    matRipple
+                    name="accept"
+                    class="flex-1"
+                    (click)="onConfirm()"
+                >
+                    {{ confirm_text | translate }}
                 </button>
             </footer>
         }
     `,
-    styles: [
-        `
-            .icon {
-                height: 1.2em;
-                width: 1.2em;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 2em;
-            }
-        `,
+    styles: [``],
+    imports: [
+        MatProgressSpinnerModule,
+        TranslatePipe,
+        IconComponent,
+        MatRippleModule,
+        MatDialogModule,
     ],
-    standalone: false,
 })
-export class ConfirmModalComponent extends AsyncHandler {
+export class ConfirmModalComponent extends AsyncHandler implements OnInit {
+    private _dialog_ref =
+        inject<MatDialogRef<ConfirmModalComponent>>(MatDialogRef);
     private _data = inject<ConfirmModalData>(MAT_DIALOG_DATA);
 
+    /** Loading state */
+    public readonly loading = signal('');
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Title of the confirm modal */
-    public readonly title = this._data.title || 'Confirm';
+    public readonly title: string = this._data.title || 'COMMON.CONFIRM';
     /** Body of the confirm modal */
-    public readonly content = this._data.content || 'Confirm';
+    public readonly content: string = this._data.content || 'Are you sure?';
+    /** Body of the confirm modal */
+    public readonly extra: [string, string] = this._data.extra || ['', ''];
     /** Display text on the confirm button */
-    public readonly action = this._data.action;
-    /** Extra information to display on the confirm modal */
-    public readonly extra = this._data.extra;
+    public readonly confirm_text: string =
+        this._data.confirm_text || 'COMMON.ACCEPT';
+    /** Display text on the cancel button */
+    public readonly cancel_text: string =
+        this._data.cancel_text || 'COMMON.CANCEL';
     /** Display icon properties */
-    public readonly icon = this._data.icon;
-    /** Loading state */
-    public loading: string;
+    public readonly icon: ApplicationIcon = this._data.icon || {
+        class: 'material-symbols-rounded',
+        content: 'done',
+    };
+    /** Prevent user from closing the modal */
+    public readonly disableClose = () => (this._dialog_ref.disableClose = true);
+    /** Allow the user to close the modal */
+    public readonly enableClose = () => (this._dialog_ref.disableClose = false);
+
+    public ngOnInit() {
+        if (this._data.close_delay) {
+            this.timeout(
+                'close',
+                () => this._dialog_ref.close(),
+                this._data.close_delay,
+            );
+        }
+    }
+
+    /** User confirmation of the content of the modal */
+    public onConfirm() {
+        this.event.emit({ reason: 'done' });
+    }
 }

@@ -30,7 +30,7 @@ import {
     switchMap,
 } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
-import { nextValueFrom, openConfirmModal } from '../common/general';
+import { nextValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import {
     notifyError,
@@ -38,6 +38,7 @@ import {
     notifySuccess,
 } from '../common/notifications';
 import { UploadsService } from '../common/uploads.service';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';

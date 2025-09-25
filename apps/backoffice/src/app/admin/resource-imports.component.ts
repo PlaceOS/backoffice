@@ -18,9 +18,9 @@ import {
 } from '@placeos/ts-client';
 import { lastValueFrom, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { openConfirmModal } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifySuccess, notifyWarn } from '../common/notifications';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -230,7 +230,7 @@ export class ResourceImportsComponent {
                     .join('')}</ul>
                 `,
                 icon: { type: 'icon', content: 'publish' },
-                action: 'Import',
+                confirm_text: 'Import',
             },
             this._dialog,
         );

@@ -275,8 +275,8 @@ export class ActiveItemService extends AsyncHandler {
             ref.componentInstance.event
                 .pipe(filter((e) => e.reason === 'done'))
                 .subscribe((event: DialogEvent) => {
-                    ref.componentInstance.loading = i18n(
-                        `${this.actions.name}.DELETE_LOADING`,
+                    ref.componentInstance.loading.set(
+                        i18n(`${this.actions.name}.DELETE_LOADING`),
                     );
                     this.actions.remove(item).subscribe(
                         () => {
@@ -295,7 +295,7 @@ export class ActiveItemService extends AsyncHandler {
                             ref.close();
                         },
                         (err) => {
-                            ref.componentInstance.loading = null;
+                            ref.componentInstance.loading.set('');
                             notifyError(
                                 i18n(`${this.actions.name}.DELETE_ERROR`, {
                                     error: JSON.stringify(

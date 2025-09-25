@@ -14,12 +14,12 @@ import {
 } from '@placeos/ts-client';
 import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
 import { first, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { openConfirmModal } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent } from '../common/types';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {
     TriggerActionModalComponent,
     TriggerActionModalData,

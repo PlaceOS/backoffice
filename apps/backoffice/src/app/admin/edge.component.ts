@@ -12,12 +12,13 @@ import {
     retrieveEdgeToken,
 } from '@placeos/ts-client';
 import { lastValueFrom } from 'rxjs';
-import { copyToClipboard, openConfirmModal } from '../common/general';
+import { copyToClipboard } from '../common/general';
 import {
     notifyError,
     notifyInfo,
     notifySuccess,
 } from '../common/notifications';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
