@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["apps/backoffice/src/app/ui/pipes/driver-format.pipe.ts"],
-  "sourcesContent": ["import { Pipe, PipeTransform } from '@angular/core';\n\n@Pipe({\n    name: 'driverFormat',\n})\nexport class DriverFormatPipe implements PipeTransform {\n    public transform(format: string): string {\n        if (typeof format !== 'string') return '';\n        if ((format || '').indexOf('/') >= 0) {\n            const parts = format.split('/');\n            parts.splice(0, 1);\n            return `<div class=\"flex items-center space-x-2\">${parts\n                .map((i) => `<div class=\"name-part\">${i}</div>`)\n                .join(\n                    '<i class=\"material-symbols-outlined text-xl\">keyboard_arrow_right</i>',\n                )}</div>`;\n        }\n        return format || '';\n    }\n}\n"],
-  "mappings": "yCAKA,IAAaA,GAAgB,IAAA,CAAvB,IAAOA,EAAP,MAAOA,CAAgB,CAClBC,UAAUC,EAAc,CAC3B,GAAI,OAAOA,GAAW,SAAU,MAAO,GACvC,IAAKA,GAAU,IAAIC,QAAQ,GAAG,GAAK,EAAG,CAClC,IAAMC,EAAQF,EAAOG,MAAM,GAAG,EAC9BD,OAAAA,EAAME,OAAO,EAAG,CAAC,EACV,4CAA4CF,EAC9CG,IAAKC,GAAM,0BAA0BA,CAAC,QAAQ,EAC9CC,KACG,uEAAuE,CAC1E,QACT,CACA,OAAOP,GAAU,EACrB,yCAbSF,EAAgB,2CAAhBA,EAAgBU,KAAA,EAAA,CAAA,EAAvB,IAAOV,EAAPW,SAAOX,CAAgB,GAAA",
-  "names": ["DriverFormatPipe", "transform", "format", "indexOf", "parts", "split", "splice", "map", "i", "join", "pure", "_DriverFormatPipe"]
-}
