@@ -38,7 +38,7 @@ import {
                     <ng-conatiner
                         *ngTemplateOutlet="
                             item_template();
-                            context: { item, index: i }
+                            context: { item, index: offset_start() + i }
                         "
                     />
                 </div>

@@ -35,7 +35,7 @@ const task_details = {};
     template: `
         <div class="h-full w-full overflow-auto">
             <div
-                class="sticky left-0 top-0 z-20 m-4 mb-4 flex w-[calc(100%-2rem)] items-center rounded bg-base-200 p-2"
+                class="sticky left-0 top-0 z-20 m-4 mb-4 flex w-[calc(100%-2rem)] items-center rounded border border-base-300 bg-base-200 p-2"
             >
                 <a icon matRipple [routerLink]="['/admin', 'clusters']">
                     <app-icon>arrow_back</app-icon>
