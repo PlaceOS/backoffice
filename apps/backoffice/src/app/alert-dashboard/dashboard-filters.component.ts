@@ -1,10 +1,12 @@
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
     queryDrivers,
     queryModules,
     querySystems,
     queryZones,
 } from '@placeos/ts-client';
+import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { MqttDashboardStateService } from './dashboard-state.service';
 
 @Component({
@@ -57,7 +59,7 @@ import { MqttDashboardStateService } from './dashboard-state.service';
             <item-search-field status></item-search-field>
         </div>
     `,
-    styles: [``],
+    imports: [ItemSearchFieldComponent, FormsModule],
 })
 export class AlertDashboardFiltersComponent {
     private _state = inject(MqttDashboardStateService);

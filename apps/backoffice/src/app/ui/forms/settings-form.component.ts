@@ -40,6 +40,7 @@ import * as yaml from 'js-yaml';
 import { lastValueFrom } from 'rxjs';
 import { i18n } from '../../common/locale.service';
 import { SettingsFieldComponent } from '../custom-fields/settings-field.component';
+import { IconComponent } from '../icon.component';
 import { DateFromPipe } from '../pipes/date-from.pipe';
 import { TranslatePipe } from '../translate.pipe';
 
@@ -244,6 +245,7 @@ type SettingsArray = [
         MatTooltipModule,
         MatRippleModule,
         ReactiveFormsModule,
+        IconComponent,
     ],
 })
 export class SettingsFormComponent

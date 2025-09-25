@@ -1,9 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
 import { showSystem } from '@placeos/ts-client';
 import { startOfMinute } from 'date-fns';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { randomInt, unique } from '../common/general';
+import { IconComponent } from '../ui/icon.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { DashboardClockComponent } from './clock.component';
 import { MqttDashboardStateService } from './dashboard-state.service';
 
 type MqttQueryResponse = [string[], Record<string, any>][];
@@ -57,7 +62,7 @@ const SYSTEMS = {};
                                 <div class="w-1/6">
                                     {{ ev.timestamp * 1000 | dateFrom }}
                                 </div>
-                                <button btn icon>
+                                <button icon matRipple>
                                     <app-icon class="text-xl">done</app-icon>
                                 </button>
                             </div>
@@ -74,7 +79,13 @@ const SYSTEMS = {};
             }
         `,
     ],
-    standalone: false,
+    imports: [
+        CommonModule,
+        IconComponent,
+        MatRippleModule,
+        DateFromPipe,
+        DashboardClockComponent,
+    ],
 })
 export class MqttDashboardComponent {
     private _state = inject(MqttDashboardStateService);
