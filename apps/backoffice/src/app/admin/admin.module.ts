@@ -9,6 +9,7 @@ import { APIKeyService } from './api-keys/api-keys.service';
 import { AdminBrokersComponent } from './brokers.component';
 import { PlaceBuildListComponent } from './build-list.component';
 import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
+import { PlaceClusterTaskListComponent } from './cluster-details/cluster-task-list.component';
 import { PlaceDatabaseDetailsComponent } from './database-details.component';
 import { PlaceDetailsComponent } from './details.component';
 import { PlaceEdgeComponent } from './edge.component';
@@ -31,6 +32,7 @@ export const ROUTES: Routes = [
             { path: 'about', component: PlaceDetailsComponent },
             { path: 'database', component: PlaceDatabaseDetailsComponent },
             { path: 'clusters', component: PlaceClusterDetailsComponent },
+            { path: 'clusters/:id', component: PlaceClusterTaskListComponent },
             { path: 'interfaces', component: AdminInterfacesComponent },
             { path: 'brokers', component: AdminBrokersComponent },
             { path: 'edge', component: PlaceEdgeComponent },

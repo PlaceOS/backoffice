@@ -13,11 +13,11 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 import { MatRippleModule } from '@angular/material/core';
+import { RouterModule } from '@angular/router';
 import { interval } from 'rxjs';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { AdminClusterNodeComponent } from './cluster-node.component';
-import { PlaceClusterTaskListComponent } from './cluster-task-list.component';
 
 @Component({
     selector: 'engine-cluster-details',
@@ -27,51 +27,47 @@ import { PlaceClusterTaskListComponent } from './cluster-task-list.component';
         </div>
         <div class="flex max-h-full flex-wrap overflow-auto">
             @if (cluster_list().length) {
-                @if (!active_cluster()) {
-                    <div class="px-2">
-                        @for (cluster of cluster_list(); track cluster.id) {
-                            <div
-                                class="m-2 space-y-2 rounded-lg border border-base-200 bg-base-100 p-2 shadow"
+                <div class="px-2">
+                    @for (cluster of cluster_list(); track cluster.id) {
+                        <div
+                            class="m-2 space-y-2 rounded-lg border border-base-200 bg-base-100 p-2 shadow"
+                        >
+                            <h3
+                                class="mono mb-2 rounded bg-base-200 p-2 text-lg font-medium uppercase"
                             >
-                                <h3
-                                    class="mono mb-2 rounded bg-base-200 p-2 text-lg font-medium uppercase"
-                                >
-                                    {{ cluster.hostname || '&lt;BLANK&gt;' }}
-                                </h3>
-                                @for (
-                                    node of cluster_nodes()[cluster.id];
-                                    track node.hostname
-                                ) {
-                                    <admin-cluster-node
-                                        [show_name]="cluster_nodes.length > 1"
-                                        [node]="node"
-                                        [history]="
-                                            (usage_history[cluster.id] || {})[
-                                                node.hostname
-                                            ] || []
-                                        "
-                                    ></admin-cluster-node>
-                                }
-                                <button
-                                    btn
-                                    matRipple
-                                    class="w-full"
-                                    (click)="active_cluster.set(cluster)"
-                                >
-                                    {{
-                                        'ADMIN.CLUSTERS_VIEW_PROCESSES'
-                                            | translate
-                                    }}
-                                </button>
-                            </div>
-                        }
-                    </div>
-                } @else {
-                    <engine-cluster-task-list
-                        [cluster]="active_cluster()"
-                        (closed)="active_cluster.set(null)"
-                    ></engine-cluster-task-list>
-                }
+                                {{ cluster.hostname || '&lt;BLANK&gt;' }}
+                            </h3>
+                            @for (
+                                node of cluster_nodes()[cluster.id];
+                                track node.hostname
+                            ) {
+                                <admin-cluster-node
+                                    [show_name]="cluster_nodes.length > 1"
+                                    [node]="node"
+                                    [history]="
+                                        (usage_history[cluster.id] || {})[
+                                            node.hostname
+                                        ] || []
+                                    "
+                                ></admin-cluster-node>
+                            }
+                            <a
+                                btn
+                                matRipple
+                                class="w-full"
+                                [routerLink]="[
+                                    '/admin',
+                                    'clusters',
+                                    cluster.id,
+                                ]"
+                            >
+                                {{
+                                    'ADMIN.CLUSTERS_VIEW_PROCESSES' | translate
+                                }}
+                            </a>
+                        </div>
+                    }
+                </div>
             } @else {
                 <div
                     class="absolute inset-0 flex flex-col items-center justify-center space-y-8 opacity-30"
@@ -88,9 +84,9 @@ import { PlaceClusterTaskListComponent } from './cluster-task-list.component';
     imports: [
         IconComponent,
         TranslatePipe,
-        PlaceClusterTaskListComponent,
         MatRippleModule,
         AdminClusterNodeComponent,
+        RouterModule,
     ],
 })
 export class PlaceClusterDetailsComponent
@@ -102,14 +98,12 @@ export class PlaceClusterDetailsComponent
     public cluster_nodes = signal({});
     /** Map of clusters to CPU usage history */
     public usage_history: HashMap<HashMap<any[]>> = {};
-    /** Active cluster to show details for */
-    public readonly active_cluster = signal<PlaceCluster>(null);
     /** Whether cluster details are being loaded */
     public readonly loading = signal(false);
 
     public readonly clusters$ = interval(2 * 1000).pipe(
         startWith(0),
-        filter(() => !this.active_cluster() && !this.loading()),
+        filter(() => !this.loading()),
         switchMap(() => {
             this.loading.set(true);
             return queryClusters({ include_status: false } as any).pipe(

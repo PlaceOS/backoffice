@@ -1,16 +1,9 @@
-import {
-    Component,
-    computed,
-    inject,
-    input,
-    OnInit,
-    output,
-    signal,
-} from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceCluster,
     PlaceProcess,
+    queryClusters,
     queryProcesses,
     terminateProcess,
 } from '@placeos/ts-client';
@@ -22,13 +15,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
 } from 'apps/backoffice/src/app/overlays/confirm-modal.component';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, map } from 'rxjs';
 import { i18n } from '../../common/locale.service';
 import { IconComponent } from '../../ui/icon.component';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
@@ -39,75 +33,85 @@ const task_details = {};
 @Component({
     selector: 'engine-cluster-task-list',
     template: `
-        <div
-            class="sticky left-0 top-0 z-20 mb-4 flex w-full items-center rounded bg-base-200 p-2"
-        >
-            <button btn icon (click)="closed.emit()">
-                <app-icon>arrow_back</app-icon>
-            </button>
-            <h3 class="text-lg font-medium">
-                {{ 'ADMIN.CLUSTER' | translate }} - {{ cluster()?.hostname }}
-            </h3>
-            <div class="flex-1"></div>
-            <mat-form-field
-                appearance="outline"
-                class="no-subscript rounded bg-base-100"
+        <div class="h-full w-full overflow-auto">
+            <div
+                class="sticky left-0 top-0 z-20 m-4 mb-4 flex w-[calc(100%-2rem)] items-center rounded bg-base-200 p-2"
             >
-                <div class="prefix" matPrefix>
-                    <app-icon class="relative -left-0.5 text-2xl">
-                        search
-                    </app-icon>
-                </div>
-                <input
-                    matInput
-                    [(ngModel)]="filter"
-                    [placeholder]="
-                        'ADMIN.CLUSTERS_SEARCH_PROCESSES' | translate
+                <a icon matRipple [routerLink]="['/admin', 'clusters']">
+                    <app-icon>arrow_back</app-icon>
+                </a>
+                <h3 class="text-lg font-medium">
+                    {{ 'ADMIN.CLUSTER' | translate }} -
+                    {{ cluster()?.hostname }}
+                </h3>
+                <div class="flex-1"></div>
+                <mat-form-field
+                    appearance="outline"
+                    class="no-subscript rounded bg-base-100"
+                >
+                    <div class="prefix" matPrefix>
+                        <app-icon class="relative -left-0.5 text-2xl">
+                            search
+                        </app-icon>
+                    </div>
+                    <input
+                        matInput
+                        [(ngModel)]="filter"
+                        [placeholder]="
+                            'ADMIN.CLUSTERS_SEARCH_PROCESSES' | translate
+                        "
+                    />
+                </mat-form-field>
+            </div>
+            <div class="px-4">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.opacity-0]="!loading()"
+                />
+            </div>
+            <div class="mb-4 w-full overflow-auto px-4">
+                <simple-table
+                    class="block min-w-[46rem] text-sm"
+                    [data]="filtered_list()"
+                    [columns]="[
+                        {
+                            key: 'id',
+                            name: 'COMMON.FIELD_NAME' | translate,
+                            content: name_template,
+                        },
+                        {
+                            key: 'cpu_usage',
+                            name: 'ADMIN.CLUSTERS_FIELD_CPU_USAGE' | translate,
+                            content: cpu_template,
+                            size: '6rem',
+                        },
+                        {
+                            key: 'used_memory',
+                            name:
+                                'ADMIN.CLUSTERS_FIELD_MEMORY_USAGE' | translate,
+                            size: '7rem',
+                        },
+                        {
+                            key: 'module_instances',
+                            name: 'ADMIN.CLUSTERS_FIELD_INSTANCES' | translate,
+                            size: '6rem',
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            content: actions_template,
+                            size: '3.5rem',
+                            sortable: false,
+                        },
+                    ]"
+                    [sortable]="true"
+                    [empty_message]="
+                        'ADMIN.CLUSTER_PROCESSES_EMPTY' | translate
                     "
                 />
-            </mat-form-field>
+            </div>
         </div>
-        <mat-progress-bar
-            mode="indeterminate"
-            class="w-full"
-            [class.opacity-0]="!loading()"
-        />
-        <simple-table
-            class="block min-w-[46rem] text-sm"
-            [data]="filtered_list()"
-            [columns]="[
-                {
-                    key: 'id',
-                    name: 'COMMON.FIELD_NAME' | translate,
-                    content: name_template,
-                },
-                {
-                    key: 'cpu_usage',
-                    name: 'ADMIN.CLUSTERS_FIELD_CPU_USAGE' | translate,
-                    content: cpu_template,
-                    size: '6rem',
-                },
-                {
-                    key: 'used_memory',
-                    name: 'ADMIN.CLUSTERS_FIELD_MEMORY_USAGE' | translate,
-                    size: '7rem',
-                },
-                {
-                    key: 'module_instances',
-                    name: 'ADMIN.CLUSTERS_FIELD_INSTANCES' | translate,
-                    size: '6rem',
-                },
-                {
-                    key: 'actions',
-                    name: ' ',
-                    content: actions_template,
-                    size: '3.5rem',
-                    sortable: false,
-                },
-            ]"
-            [sortable]="true"
-            [empty_message]="'ADMIN.CLUSTER_PROCESSES_EMPTY' | translate"
-        />
         <ng-template #name_template let-row="row">
             <div class="flex flex-col px-4 py-2 font-mono">
                 <div class="mb-1">{{ taskDetails(row.id).path }}</div>
@@ -148,7 +152,6 @@ const task_details = {};
             :host {
                 display: flex;
                 flex-direction: column;
-                padding: 1rem;
                 height: 100%;
                 width: 100%;
             }
@@ -165,6 +168,7 @@ const task_details = {};
         MatFormFieldModule,
         MatInputModule,
         FormsModule,
+        RouterModule,
     ],
 })
 export class PlaceClusterTaskListComponent
@@ -172,10 +176,8 @@ export class PlaceClusterTaskListComponent
     implements OnInit
 {
     private _dialog = inject(MatDialog);
-    /** Cluster to display tasks details for */
-    public readonly cluster = input<PlaceCluster>(undefined);
-    /** Emitter for close events */
-    public readonly closed = output<void>();
+    private _route = inject(ActivatedRoute);
+    public readonly cluster = signal<PlaceCluster>(null);
     /** Whether the task list is updating */
     public readonly loading = signal(false);
     /** ID of the process being killed */
@@ -212,6 +214,15 @@ export class PlaceClusterTaskListComponent
     }
 
     public ngOnInit() {
+        this.subscription(
+            'route.params',
+            this._route.paramMap.subscribe((params) => {
+                if (params.has('id')) {
+                    const id = params.get('id');
+                    this.loadCluster(id);
+                }
+            }),
+        );
         this.interval('poll', () => this.updateProcessList(), 15 * 1000);
         this.updateProcessList();
     }
@@ -262,7 +273,17 @@ export class PlaceClusterTaskListComponent
         return lastValueFrom(terminateProcess(this.cluster().id, process.id));
     }
 
+    public async loadCluster(id: string) {
+        const clusters = await lastValueFrom(
+            queryClusters({ q: id } as any).pipe(map((_) => _.data)),
+        );
+        console.log('Clusters:', clusters);
+        this.cluster.set(clusters[0]);
+        this.updateProcessList();
+    }
+
     public async updateProcessList() {
+        if (!this.cluster()) return;
         this.loading.set(true);
         const list = await lastValueFrom(
             queryProcesses(this.cluster().id, {
