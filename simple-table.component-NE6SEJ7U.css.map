@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;b43c89d67a30cf5d1c58094c1d55872507506d7b96d5a4ccd35c127135301771;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/simple-table.component.ts"],
+  "sourcesContent": ["\n            :host,\n            :host > button {\n                min-width: 100%;\n                overflow: hidden;\n            }\n\n            [header] icon {\n                opacity: 0;\n            }\n            [header]:hover icon {\n                opacity: 0.3;\n            }\n            [header]:hover.pointer-events-none icon {\n                opacity: 0;\n            }\n            [header].active icon {\n                opacity: 1;\n            }\n        "],
+  "mappings": "AACY,MACA,KAAM,CAAE,OACJ,UAAW,KACX,SAAU,MACd,CAEA,CAAC,QAAQ,KACL,QAAS,CACb,CACA,CAAC,OAAO,OAAO,KACX,QAAS,EACb,CACA,CAAC,OAAO,MAAM,CAAC,oBAAoB,KAC/B,QAAS,CACb,CACA,CAAC,OAAO,CAAC,OAAO,KACZ,QAAS,CACb",
+  "names": []
+}
