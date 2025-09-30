@@ -42,7 +42,9 @@ export interface SelectItemModalData<T = any> {
                 ></item-search-field>
             </main>
         } @else {
-            <main class="info-block">
+            <main
+                class="flex w-full flex-col items-center justify-center p-16 opacity-30"
+            >
                 <div class="icon">
                     <mat-spinner diameter="32"></mat-spinner>
                 </div>

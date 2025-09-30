@@ -1,49 +1,55 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { PlaceUser } from '@placeos/ts-client';
 
 import { CommonModule } from '@angular/common';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
+import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
+
+interface UserLogEntry {
+    start: number;
+    end: number;
+    systems: string[];
+}
 
 @Component({
     selector: 'user-history',
     template: `
-        @if (logs?.length) {
-            <div role="table">
-                <div table-head>
-                    <div class="w-1/3">
-                        {{ 'USERS.FIELD_SESSION_START' | translate }}
-                    </div>
-                    <div class="w-1/3">
-                        {{ 'USERS.FIELD_SESSION_END' | translate }}
-                    </div>
-                    <div class="w-1/3">
-                        {{ 'USERS.FIELD_SYSTEMS_ACCESSED' | translate }}
-                    </div>
-                </div>
-                <div table-body>
-                    @for (item of logs; track item.id) {
-                        <div table-row>
-                            <div class="w-1/3">
-                                {{ item.start | date: 'MMM d, y, h:mm a' }}
-                            </div>
-                            <div class="w-1/3">
-                                {{ item.end | date: 'MMM d, y, h:mm a' }}
-                            </div>
-                            <div class="w-1/3">
-                                <div>{{ item.systems.length }}</div>
-                                <div>{{ 'USERS.VIEW_LOGS' | translate }}</div>
-                            </div>
-                        </div>
-                    }
-                </div>
+        <simple-table
+            class="block min-w-[64rem] text-sm"
+            [data]="logs()"
+            [columns]="[
+                {
+                    key: 'start',
+                    name: 'USERS.FIELD_SESSION_START' | translate,
+                    content: date_template,
+                },
+                {
+                    key: 'end',
+                    name: 'USERS.FIELD_SESSION_END' | translate,
+                    content: date_template,
+                },
+                {
+                    key: 'systems',
+                    name: 'USERS.FIELD_SYSTEMS_ACCESSED' | translate,
+                    content: sys_template,
+                },
+            ]"
+            [sortable]="true"
+            [empty_message]="'USERS.LOGS_EMPTY' | translate"
+        />
+        <ng-template #date_template let-date="data">
+            <div class="p-4">
+                {{ date | date: 'MMM d, y, h:mm a' }}
             </div>
-        } @else {
-            <div class="p-8 text-center opacity-30">
-                {{ 'USERS.LOGS_EMPTY' | translate }}
+        </ng-template>
+        <ng-template #sys_template let-systems="data">
+            <div class="p-4">
+                <div>{{ systems.length }}</div>
+                <div>{{ 'USERS.VIEW_LOGS' | translate }}</div>
             </div>
-        }
+        </ng-template>
     `,
     styles: [
         `
@@ -53,24 +59,23 @@ import { TranslatePipe } from '../ui/translate.pipe';
             }
         `,
     ],
-    imports: [TranslatePipe, CommonModule],
+    imports: [TranslatePipe, CommonModule, SimpleTableComponent],
 })
-export class UserHistoryComponent extends AsyncHandler {
+export class UserHistoryComponent extends AsyncHandler implements OnInit {
     private _service = inject(ActiveItemService);
 
-    public logs: { start: number; end: number; systems: string[] }[] = [];
+    public readonly logs = signal<UserLogEntry[]>([]);
 
     public get item(): PlaceUser {
         return this._service.active_item as any;
     }
+
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.item.subscribe((item) => {
-                this.loadUserLogs();
-            }),
+            this._service.item.subscribe(() => this.loadUserLogs()),
         );
     }
 
-    public loadUserLogs(offset: number = 0) {}
+    public loadUserLogs(offset = 0) {}
 }

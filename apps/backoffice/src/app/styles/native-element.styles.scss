@@ -12,6 +12,10 @@ a:not([btn]).underline {
     }
 }
 
+hr {
+    color: var(--b3);
+}
+
 .theme-dark {
     input {
         color-scheme: dark;
