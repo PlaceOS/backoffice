@@ -112,10 +112,10 @@ import { SystemStateService } from './system-state.service';
                                 "
                             >
                                 <div class="flex items-center space-x-2">
-                                    <app-icon
+                                    <icon
                                         class="text-xl"
                                         [icon]="m_item.icon"
-                                    ></app-icon>
+                                    ></icon>
                                     <div class="text">
                                         {{ m_item.name | translate }}
                                     </div>
@@ -251,9 +251,9 @@ import { SystemStateService } from './system-state.service';
                 </ng-template>
                 <ng-template #url_template let-row="row">
                     <div class="flex max-w-[22rem] items-center p-4">
-                        <app-icon [class.opacity-0]="!row.tls" class="text-xl">
+                        <icon [class.opacity-0]="!row.tls" class="text-xl">
                             lock
-                        </app-icon>
+                        </icon>
                         <a
                             [href]="
                                 row.ip
@@ -289,7 +289,7 @@ import { SystemStateService } from './system-state.service';
                 <ng-template #actions_template let-i="index" let-row="row">
                     <div class="mx-auto flex items-center space-x-2 p-2">
                         <button icon matRipple (click)="editModule(row)">
-                            <app-icon>edit</app-icon>
+                            <icon>edit</icon>
                         </button>
                         <button
                             icon
@@ -297,7 +297,7 @@ import { SystemStateService } from './system-state.service';
                             (click)="setActive(i)"
                             [matMenuTriggerFor]="context_menu"
                         >
-                            <app-icon>more_vert</app-icon>
+                            <icon>more_vert</icon>
                         </button>
                     </div>
                 </ng-template>

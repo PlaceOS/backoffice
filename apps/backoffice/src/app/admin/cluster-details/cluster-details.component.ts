@@ -72,7 +72,7 @@ import { AdminClusterNodeComponent } from './cluster-node.component';
                 <div
                     class="absolute inset-0 flex flex-col items-center justify-center space-y-8 opacity-30"
                 >
-                    <app-icon class="text-8xl">hub</app-icon>
+                    <icon class="text-8xl">hub</icon>
                     <div class="text">
                         {{ 'ADMIN.CLUSTERS_LIST_EMPTY' | translate }}
                     </div>

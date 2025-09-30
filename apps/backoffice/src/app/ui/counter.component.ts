@@ -29,7 +29,7 @@ import { IconComponent } from './icon.component';
                 [disabled]="!value || value === min()"
                 (click)="remove()"
             >
-                <app-icon>remove</app-icon>
+                <icon>remove</icon>
             </button>
             <div
                 value
@@ -58,7 +58,7 @@ import { IconComponent } from './icon.component';
                 [disabled]="value === max()"
                 (click)="add()"
             >
-                <app-icon>add</app-icon>
+                <icon>add</icon>
             </button>
         </div>
     `,

@@ -25,7 +25,7 @@ export interface MetadataDetailsModalData {
         >
             <h2 class="text-xl font-medium">Update metadata details</h2>
             <button btn icon mat-dialog-close>
-                <app-icon>close</app-icon>
+                <icon>close</icon>
             </button>
         </header>
         @if (form) {
@@ -70,7 +70,7 @@ export interface MetadataDetailsModalData {
                                     matChipRemove
                                     [attr.aria-label]="'Remove ' + item"
                                 >
-                                    <app-icon>cancel</app-icon>
+                                    <icon>cancel</icon>
                                 </button>
                             </mat-chip-row>
                         }

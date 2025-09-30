@@ -72,7 +72,7 @@ import { TranslatePipe } from '../translate.pipe';
                                     (removed)="removePlaylist(item)"
                                 >
                                     {{ item }}
-                                    <app-icon matChipRemove>close</app-icon>
+                                    <icon matChipRemove>close</icon>
                                 </mat-chip>
                             }
                             <input

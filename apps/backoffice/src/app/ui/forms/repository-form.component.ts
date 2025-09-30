@@ -183,12 +183,12 @@ import { TranslatePipe } from '../translate.pipe';
                                     "
                                     formControlName="password"
                                 />
-                                <app-icon
+                                <icon
                                     matSuffix
                                     (click)="show_password = !show_password"
                                 >
                                     visibility
-                                </app-icon>
+                                </icon>
                             </mat-form-field>
                         </div>
                     }

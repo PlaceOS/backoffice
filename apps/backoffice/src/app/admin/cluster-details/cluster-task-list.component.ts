@@ -38,7 +38,7 @@ const task_details = {};
                 class="sticky left-0 top-0 z-20 m-4 mb-4 flex w-[calc(100%-2rem)] items-center rounded border border-base-300 bg-base-200 p-2"
             >
                 <a icon matRipple [routerLink]="['/admin', 'clusters']">
-                    <app-icon>arrow_back</app-icon>
+                    <icon>arrow_back</icon>
                 </a>
                 <h3 class="text-lg font-medium">
                     {{ 'ADMIN.CLUSTER' | translate }} -
@@ -50,9 +50,9 @@ const task_details = {};
                     class="no-subscript rounded bg-base-100"
                 >
                     <div class="prefix" matPrefix>
-                        <app-icon class="relative -left-0.5 text-2xl">
+                        <icon class="relative -left-0.5 text-2xl">
                             search
-                        </app-icon>
+                        </icon>
                     </div>
                     <input
                         matInput
@@ -142,7 +142,7 @@ const task_details = {};
                     [matTooltip]="'ADMIN.CLUSTER_PROCESS_KILL' | translate"
                     (click)="confirmKillProcess(row)"
                 >
-                    <app-icon>delete</app-icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

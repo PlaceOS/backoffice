@@ -39,7 +39,7 @@ export interface ModuleStateModalData {
                 {{ 'MODULES.STATE' | translate }}
             </h3>
             <button icon matRipple mat-dialog-close>
-                <app-icon>close</app-icon>
+                <icon>close</icon>
             </button>
         </div>
         @if (!loading()) {

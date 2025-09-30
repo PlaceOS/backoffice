@@ -74,7 +74,7 @@ import { DomainStateService } from './domain-state.service';
                     [matTooltip]="'DOMAINS.AUTHENTICATION_EDIT' | translate"
                     (click)="editAuthSource(row)"
                 >
-                    <app-icon>edit</app-icon>
+                    <icon>edit</icon>
                 </button>
                 <button
                     icon
@@ -83,7 +83,7 @@ import { DomainStateService } from './domain-state.service';
                     [matTooltip]="'DOMAINS.AUTHENTICATION_REMOVE' | translate"
                     (click)="removeAuthSource(row)"
                 >
-                    <app-icon>delete</app-icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

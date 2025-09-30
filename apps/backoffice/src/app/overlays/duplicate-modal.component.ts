@@ -56,13 +56,13 @@ export interface DuplicateModalData {
                             </div>
                             <div class="status">
                                 @if (status[i] !== 'loading') {
-                                    <app-icon [class]="status[i]">
+                                    <icon [class]="status[i]">
                                         {{
                                             status[i] === 'done'
                                                 ? 'done'
                                                 : 'close'
                                         }}
-                                    </app-icon>
+                                    </icon>
                                 }
                                 @if (status[i] === 'loading') {
                                     <mat-spinner diameter="24"></mat-spinner>

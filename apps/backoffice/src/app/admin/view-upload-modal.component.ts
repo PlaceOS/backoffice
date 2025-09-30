@@ -13,7 +13,7 @@ import { UploadInfo } from './upload-library.component';
         >
             <h2 class="text-xl font-medium">View Upload</h2>
             <button icon matRipple mat-dialog-close>
-                <app-icon>close</app-icon>
+                <icon>close</icon>
             </button>
         </header>
         <main class="px-2 pb-2">

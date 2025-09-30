@@ -64,9 +64,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                     class="flex w-full items-center space-x-2"
                                     [class.sm:justify-center]="compact()"
                                 >
-                                    <app-icon class="text-xl">{{
-                                        link.icon
-                                    }}</app-icon>
+                                    <icon class="text-xl">{{ link.icon }}</icon>
                                     <p [class.sm:hidden]="compact()">
                                         {{ link.name | translate }}
                                     </p>
@@ -80,7 +78,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         matRipple
                         (click)="open.set(false)"
                     >
-                        <app-icon>close</app-icon>
+                        <icon>close</icon>
                     </button>
                 </div>
             </div>
@@ -123,9 +121,9 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 class="absolute bottom-12 right-0 z-[999] hidden h-6 w-6 min-w-6 translate-x-1/2 rounded-full border border-base-200 bg-base-100 shadow hover:bg-base-200 sm:flex"
                 (click)="toggleCompactMode()"
             >
-                <app-icon>
+                <icon>
                     {{ compact() ? 'chevron_right' : 'chevron_left' }}
-                </app-icon>
+                </icon>
             </button>
         </div>
     `,

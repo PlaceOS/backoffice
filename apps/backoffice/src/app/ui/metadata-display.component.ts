@@ -168,7 +168,7 @@ function replaceDescTag(inputString, newContent) {
             <div
                 class="flex w-full flex-col items-center justify-center space-y-8 p-16 opacity-30"
             >
-                <app-icon class="text-8xl">settings_alert</app-icon>
+                <icon class="text-8xl">settings_alert</icon>
                 <div>{{ 'COMMON.METADATA_EMPTY' | translate }}</div>
             </div>
         }

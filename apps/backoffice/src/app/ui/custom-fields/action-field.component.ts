@@ -19,9 +19,9 @@ import { IconComponent } from '../icon.component';
             >
                 <ng-content></ng-content>
             </div>
-            <app-icon class="-mr-2 text-2xl" (click)="performAction()">
+            <icon class="-mr-2 text-2xl" (click)="performAction()">
                 arrow_drop_{{ show_tooltip ? 'up' : 'down' }}
-            </app-icon>
+            </icon>
         </div>
     `,
     styles: [

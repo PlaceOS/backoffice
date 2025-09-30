@@ -63,7 +63,7 @@ const SYSTEMS = {};
                                     {{ ev.timestamp * 1000 | dateFrom }}
                                 </div>
                                 <button icon matRipple>
-                                    <app-icon class="text-xl">done</app-icon>
+                                    <icon class="text-xl">done</icon>
                                 </button>
                             </div>
                         }

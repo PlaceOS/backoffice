@@ -127,9 +127,9 @@ export function extractTextFromHTML(html_string: string) {
                     </mat-form-field>
                 </div>
                 <mat-form-field appearance="outline" class="w-full">
-                    <app-icon matPrefix class="relative -left-1 text-2xl">
+                    <icon matPrefix class="relative -left-1 text-2xl">
                         description
-                    </app-icon>
+                    </icon>
                     <input
                         matInput
                         placeholder="Template Subject"

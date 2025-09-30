@@ -175,7 +175,7 @@ import { APIKeyService } from './api-keys.service';
                     [matTooltip]="'ADMIN.APP_KEYS_REMOVE' | translate"
                     (click)="deleteKey(row)"
                 >
-                    <app-icon class="text-error">delete</app-icon>
+                    <icon class="text-error">delete</icon>
                 </button>
             </div>
         </ng-template>

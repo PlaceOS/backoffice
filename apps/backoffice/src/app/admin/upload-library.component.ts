@@ -276,7 +276,7 @@ export interface UploadInfo {
                                                 | translate
                                         "
                                     >
-                                        <app-icon>download</app-icon>
+                                        <icon>download</icon>
                                     </button>
                                     <button
                                         icon

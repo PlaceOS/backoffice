@@ -34,10 +34,7 @@ export interface ItemTab {
                             #rla="routerLinkActive"
                             [active]="rla.isActive"
                         >
-                            <app-icon
-                                class="text-xl"
-                                [icon]="link.icon"
-                            ></app-icon
+                            <icon class="text-xl" [icon]="link.icon"></icon
                             >&nbsp;
                             <div class="name">{{ link.name }}&nbsp;</div>
                             @if (link.count || link.count === 0) {

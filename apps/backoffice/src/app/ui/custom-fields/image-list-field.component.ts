@@ -61,7 +61,7 @@ export interface UploadDetails {
                 class="hover:bg-base-content/10 :bg-base-100/10 relative flex h-32 w-36 flex-shrink-0 cursor-pointer flex-col items-center justify-center rounded border-2 border-dashed border-base-200"
                 [style.transform]="'translate(-' + offset + '00%)'"
             >
-                <app-icon class="text-4xl opacity-60">add</app-icon>
+                <icon class="text-4xl opacity-60">add</icon>
                 <p class="w-4/5 text-center opacity-60">
                     {{ 'COMMON.IMAGE_UPLOADS' | translate }}
                 </p>
@@ -92,13 +92,13 @@ export interface UploadDetails {
                             class="absolute left-0 right-0 top-0 flex items-center justify-center space-x-2 opacity-0"
                         >
                             <button icon (click)="copyLink(url)">
-                                <app-icon>link</app-icon>
+                                <icon>link</icon>
                             </button>
                             <button icon (click)="viewImage(url)">
-                                <app-icon>visibility</app-icon>
+                                <icon>visibility</icon>
                             </button>
                             <button icon (click)="removeImage(url)">
-                                <app-icon>close</app-icon>
+                                <icon>close</icon>
                             </button>
                         </div>
                     </div>
@@ -120,16 +120,14 @@ export interface UploadDetails {
                         ></mat-progress-spinner>
                     }
                     @if (item.error) {
-                        <app-icon class="text-6xl text-error">warning</app-icon>
+                        <icon class="text-6xl text-error">warning</icon>
                     }
                     @if (item.error) {
                         <div
                             overlay
                             class="absolute inset-0 flex items-center justify-center text-base-100 hover:bg-base-content hover:bg-opacity-50"
                         >
-                            <app-icon class="text-3xl opacity-0"
-                                >refresh</app-icon
-                            >
+                            <icon class="text-3xl opacity-0">refresh</icon>
                         </div>
                     }
                 </div>
@@ -142,7 +140,7 @@ export interface UploadDetails {
                     class="absolute left-0 top-1/2 -translate-y-1/2 transform bg-base-100"
                     (click)="decrement()"
                 >
-                    <app-icon>chevron_left</app-icon>
+                    <icon>chevron_left</icon>
                 </button>
                 <button
                     icon
@@ -151,7 +149,7 @@ export interface UploadDetails {
                     class="absolute right-0 top-1/2 -translate-y-1/2 transform bg-base-100"
                     (click)="increment()"
                 >
-                    <app-icon>chevron_right</app-icon>
+                    <icon>chevron_right</icon>
                 </button>
             }
         </div>
@@ -164,7 +162,7 @@ export interface UploadDetails {
                             matChipRemove
                             [attr.aria-label]="'Remove ' + item"
                         >
-                            <app-icon>cancel</app-icon>
+                            <icon>cancel</icon>
                         </button>
                     </mat-chip-row>
                 }
@@ -189,7 +187,7 @@ export interface UploadDetails {
             }
 
             [image]:hover [actions],
-            [image]:hover > app-icon {
+            [image]:hover > icon {
                 opacity: 1 !important;
             }
 
@@ -198,7 +196,7 @@ export interface UploadDetails {
             }
 
             [actions],
-            [image] > app-icon {
+            [image] > icon {
                 transition: opacity 200ms;
             }
 

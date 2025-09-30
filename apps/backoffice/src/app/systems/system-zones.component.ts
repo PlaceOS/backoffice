@@ -143,7 +143,7 @@ import { SystemStateService } from './system-state.service';
                             [matTooltip]="'SYSTEMS.ZONE_REMOVE' | translate"
                             (click)="removeZone(row)"
                         >
-                            <app-icon class="text-error">delete</app-icon>
+                            <icon class="text-error">delete</icon>
                         </button>
                     </div>
                 </ng-template>

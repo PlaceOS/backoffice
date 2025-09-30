@@ -89,14 +89,14 @@ import { TranslatePipe } from './translate.pipe';
                                 class="rounded-full bg-neutral-focus text-neutral-content shadow"
                                 (click)="downloadLogs()"
                             >
-                                <app-icon
+                                <icon
                                     [matTooltip]="
                                         'COMMON.DEBUG_DOWNLOAD_MESSAGES'
                                             | translate
                                     "
                                 >
                                     download
-                                </app-icon>
+                                </icon>
                             </button>
                             <button
                                 icon
@@ -104,7 +104,7 @@ import { TranslatePipe } from './translate.pipe';
                                 class="rounded-full bg-neutral-focus text-neutral-content shadow"
                                 (click)="toggleDebugPosition()"
                             >
-                                <app-icon
+                                <icon
                                     [matTooltip]="
                                         'COMMON.DEBUG_TOGGLE_POSITION'
                                             | translate
@@ -113,7 +113,7 @@ import { TranslatePipe } from './translate.pipe';
                                         debug_position === 'side'
                                             ? 'border_bottom'
                                             : 'border_right'
-                                    }}</app-icon
+                                    }}</icon
                                 >
                             </button>
                             <button
@@ -122,14 +122,14 @@ import { TranslatePipe } from './translate.pipe';
                                 class="rounded-full bg-neutral-focus text-neutral-content shadow"
                                 (click)="clearDebugMessages()"
                             >
-                                <app-icon
+                                <icon
                                     [matTooltip]="
                                         'COMMON.DEBUG_CLEAR_MESSAGES'
                                             | translate
                                     "
                                 >
                                     clear_all
-                                </app-icon>
+                                </icon>
                             </button>
                             <button
                                 icon
@@ -140,7 +140,7 @@ import { TranslatePipe } from './translate.pipe';
                                     'COMMON.DEBUG_UNBIND_MODULES' | translate
                                 "
                             >
-                                <app-icon>cancel_presentation</app-icon>
+                                <icon>cancel_presentation</icon>
                             </button>
                             <button
                                 icon
@@ -151,7 +151,7 @@ import { TranslatePipe } from './translate.pipe';
                                     'COMMON.DEBUG_CLOSE_CONSOLE' | translate
                                 "
                             >
-                                <app-icon>close</app-icon>
+                                <icon>close</icon>
                             </button>
                         </div>
                     </div>

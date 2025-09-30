@@ -119,9 +119,9 @@ import { ModuleStateService } from './module-state.service';
                                     xPosition="center"
                                 >
                                     @if ((edge | async).description) {
-                                        <app-icon
+                                        <icon
                                             class="rounded-full border border-base-200"
-                                            >info</app-icon
+                                            >info</icon
                                         >
                                     }
                                 </button>

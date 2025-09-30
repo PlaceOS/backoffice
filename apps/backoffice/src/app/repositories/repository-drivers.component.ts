@@ -59,7 +59,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     matTooltipPosition="left"
                     (click)="newDriver(item)"
                 >
-                    <app-icon>add</app-icon>
+                    <icon>add</icon>
                 </button>
             </div>
         </ng-template>

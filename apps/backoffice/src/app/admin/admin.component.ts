@@ -35,9 +35,9 @@ import { BackofficeUsersService } from '../users/users.service';
                                 routerLinkActive="!bg-secondary text-secondary-content"
                             >
                                 <div class="flex w-full items-center space-x-2">
-                                    <app-icon class="text-2xl">{{
+                                    <icon class="text-2xl">{{
                                         item.icon?.value
-                                    }}</app-icon>
+                                    }}</icon>
                                     <span class="hidden sm:block">{{
                                         item.name
                                     }}</span>
@@ -54,7 +54,7 @@ import { BackofficeUsersService } from '../users/users.service';
                         class="absolute left-4 top-2 z-40 mr-2 sm:hidden"
                         (click)="open_menu = true"
                     >
-                        <app-icon>menu</app-icon>
+                        <icon>menu</icon>
                     </button>
                 </div>
                 @if (debug_position() === 'below') {

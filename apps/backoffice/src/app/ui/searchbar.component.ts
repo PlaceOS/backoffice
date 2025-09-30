@@ -30,7 +30,7 @@ import { IconComponent } from './icon.component';
             tabindex="0"
             (focus)="focused() || filter() || dictate() ? '' : focusInput()"
         >
-            <app-icon class="text-xl">search</app-icon>
+            <icon class="text-xl">search</icon>
             <input
                 #input
                 class="w-24 flex-1 border-none bg-base-100 bg-opacity-0 outline-none"
@@ -47,12 +47,12 @@ import { IconComponent } from './icon.component';
                     [class.active]="dictate()"
                     (click)="startDictation()"
                 >
-                    <app-icon>mic</app-icon>
+                    <icon>mic</icon>
                 </button>
             }
             @if (filter() && clearable()) {
                 <button icon matRipple class="close" (click)="clear()">
-                    <app-icon>close</app-icon>
+                    <icon>close</icon>
                 </button>
             }
             <ng-content></ng-content>

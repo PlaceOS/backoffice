@@ -126,7 +126,7 @@ export interface ExternalResource {
                         [class.bg-success]="data"
                         class="mx-auto flex h-8 w-8 items-center justify-center rounded text-2xl text-white"
                     >
-                        <app-icon>{{ data ? 'done' : 'close' }}</app-icon>
+                        <icon>{{ data ? 'done' : 'close' }}</icon>
                     </div>
                 </ng-template>
                 <ng-template #name_template let-row="row">
@@ -157,7 +157,7 @@ export interface ExternalResource {
                                 'ADMIN.RESOURCE_IMPORTS_IMPORT' | translate
                             "
                         >
-                            <app-icon>publish</app-icon>
+                            <icon>publish</icon>
                         </button>
                         <a
                             icon
@@ -168,7 +168,7 @@ export interface ExternalResource {
                             [attr.disabled]="row.system_id === ''"
                             [routerLink]="['/systems', row.system_id, 'about']"
                         >
-                            <app-icon>visibility</app-icon>
+                            <icon>visibility</icon>
                         </a>
                     </div>
                 </ng-template>

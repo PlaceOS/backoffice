@@ -21,7 +21,7 @@ import { TranslatePipe } from './translate.pipe';
                 {{ 'COMMON.UPLOAD_FILE' | translate }}
             </h2>
             <button icon matRipple mat-dialog-close>
-                <app-icon>close</app-icon>
+                <icon>close</icon>
             </button>
         </header>
         <main class="min-w-[20rem] p-4">

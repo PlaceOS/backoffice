@@ -129,9 +129,7 @@ export interface TriggerActionModalData {
                                                                       }
                                                         "
                                                     >
-                                                        <app-icon
-                                                            >cancel</app-icon
-                                                        >
+                                                        <icon>cancel</icon>
                                                     </button>
                                                 </mat-chip-row>
                                             }

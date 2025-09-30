@@ -23,7 +23,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     {{ 'COMMON.METADATA_HISTORY' | translate }}
                 </h3>
                 <button icon matRipple mat-dialog-close>
-                    <app-icon>close</app-icon>
+                    <icon>close</icon>
                 </button>
             </div>
             <main class="flex flex-1 flex-col pb-4">

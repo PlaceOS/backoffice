@@ -104,7 +104,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [disabled]="!template_system"
                 (click)="editCondition()"
             >
-                <app-icon class="text-2xl">add</app-icon>
+                <icon class="text-2xl">add</icon>
                 <div class="ml-2 mr-4">
                     {{ 'TRIGGERS.CONDITION_ADD' | translate }}
                 </div>
@@ -174,10 +174,10 @@ import { TriggerStateService } from './trigger-state.service';
                         [disabled]="!template_system"
                         (click)="editCondition(row)"
                     >
-                        <app-icon>edit</app-icon>
+                        <icon>edit</icon>
                     </button>
                     <button icon matRipple (click)="removeCondition(row)">
-                        <app-icon class="text-error">delete</app-icon>
+                        <icon class="text-error">delete</icon>
                     </button>
                 </div>
             </ng-template>
@@ -193,7 +193,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [disabled]="!template_system"
                 (click)="editAction()"
             >
-                <app-icon class="text-2xl">add</app-icon>
+                <icon class="text-2xl">add</icon>
                 <div class="ml-2 mr-4">
                     {{ 'TRIGGERS.ACTION_ADD' | translate }}
                 </div>
@@ -265,10 +265,10 @@ import { TriggerStateService } from './trigger-state.service';
                         [disabled]="!template_system"
                         (click)="editAction(row)"
                     >
-                        <app-icon>edit</app-icon>
+                        <icon>edit</icon>
                     </button>
                     <button icon matRipple (click)="removeAction(row)">
-                        <app-icon class="text-error">delete</app-icon>
+                        <icon class="text-error">delete</icon>
                     </button>
                 </div>
             </ng-template>

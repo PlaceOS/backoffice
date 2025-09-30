@@ -40,7 +40,7 @@ import { TranslatePipe } from './translate.pipe';
                 (click)="open()"
                 class="flex max-w-[calc(100vw-1rem)] flex-1 items-center rounded-lg border border-base-200 sm:max-w-[512px] sm:flex-auto"
             >
-                <app-icon class="ml-2 text-2xl">search</app-icon>
+                <icon class="ml-2 text-2xl">search</icon>
                 <p class="w-1/2 flex-1 p-2 text-left text-lg opacity-30">
                     {{ 'COMMON.VIEW_TYPE' | translate: { name: title() } }}
                 </p>
@@ -60,11 +60,11 @@ import { TranslatePipe } from './translate.pipe';
                 <div
                     class="relative flex items-center border-b border-base-200"
                 >
-                    <app-icon
+                    <icon
                         class="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-2xl"
                     >
                         search
-                    </app-icon>
+                    </icon>
                     <input
                         #search_input
                         class="bg-transparent flex-1 border-none py-4 pl-10 pr-4"

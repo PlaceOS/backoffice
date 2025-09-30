@@ -42,11 +42,11 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                 <div
                     class="relative flex flex-1 items-center rounded-lg border border-base-300 shadow"
                 >
-                    <app-icon
+                    <icon
                         class="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 text-2xl"
                     >
                         search
-                    </app-icon>
+                    </icon>
                     <input
                         #search_input
                         class="bg-transparent w-full flex-1 rounded-lg border-none py-2.5 pl-9 pr-4"
@@ -151,11 +151,11 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                 item.update_available &&
                                 item.commit !== item.update_info.commit
                             ) {
-                                <app-icon
+                                <icon
                                     class="absolute -right-1 -top-1 rotate-12 text-2xl text-info"
                                 >
                                     new_releases
-                                </app-icon>
+                                </icon>
                             }
                             @if (item.zone_issues) {
                                 <div
@@ -167,7 +167,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                         ) | translate
                                     "
                                 >
-                                    <app-icon> brightness_alert </app-icon>
+                                    <icon> brightness_alert </icon>
                                 </div>
                             }
                             @if (item.has_runtime_error) {
@@ -175,7 +175,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                     class="absolute -right-1 -top-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full bg-error text-2xl text-error-content"
                                     [matTooltip]="'MODULES.ERROR' | translate"
                                 >
-                                    <app-icon> error </app-icon>
+                                    <icon> error </icon>
                                 </div>
                             }
                         </a>

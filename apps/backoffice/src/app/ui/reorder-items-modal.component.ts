@@ -23,7 +23,7 @@ export interface ReorderItemsOptions {
         >
             <h2 class="p-2">Reorder {{ type }}</h2>
             <button icon matRipple mat-dialog-close>
-                <app-icon>close</app-icon>
+                <icon>close</icon>
             </button>
         </header>
         <main class="max-h-[65vh] min-w-[20rem] overflow-auto p-4">

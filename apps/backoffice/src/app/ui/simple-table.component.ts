@@ -96,13 +96,13 @@ export interface TableColumn {
                         {{ column.name || column.key }}
                     </div>
                     @if (can_sort && column.sortable !== false) {
-                        <app-icon class="text-[1.25em]">
+                        <icon class="text-[1.25em]">
                             {{
                                 sort?.key === column.key && sort?.reverse
                                     ? 'arrow_upward'
                                     : 'arrow_downward'
                             }}
-                        </app-icon>
+                        </icon>
                     }
                 </button>
             }
@@ -137,9 +137,7 @@ export interface TableColumn {
                                 class="h-full w-full rounded-none"
                                 cdkDragHandle
                             >
-                                <app-icon class="text-2xl"
-                                    >unfold_more</app-icon
-                                >
+                                <icon class="text-2xl">unfold_more</icon>
                             </button>
                         </div>
                         <ng-container
@@ -245,16 +243,16 @@ export interface TableColumn {
                 overflow: hidden;
             }
 
-            [header] app-icon {
+            [header] icon {
                 opacity: 0;
             }
-            [header]:hover app-icon {
+            [header]:hover icon {
                 opacity: 0.3;
             }
-            [header]:hover.pointer-events-none app-icon {
+            [header]:hover.pointer-events-none icon {
                 opacity: 0;
             }
-            [header].active app-icon {
+            [header].active icon {
                 opacity: 1;
             }
         `,

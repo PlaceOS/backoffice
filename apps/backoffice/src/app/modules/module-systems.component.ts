@@ -21,9 +21,9 @@ import { ModuleStateService } from './module-state.service';
             <section class="mb-4 flex items-center">
                 <mat-form-field appearance="outline" class="h-12 flex-1">
                     <div class="prefix" matPrefix>
-                        <app-icon class="relative -left-0.5 text-2xl">
+                        <icon class="relative -left-0.5 text-2xl">
                             search
-                        </app-icon>
+                        </icon>
                     </div>
                     <input
                         [ngModel]="''"

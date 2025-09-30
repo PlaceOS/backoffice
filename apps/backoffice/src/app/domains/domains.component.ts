@@ -40,7 +40,7 @@ import { DomainStateService } from './domain-state.service';
                         class="mr-2 sm:hidden"
                         (click)="open_menu = true"
                     >
-                        <app-icon>menu</app-icon>
+                        <icon>menu</icon>
                     </button>
                 </item-selection>
                 <div class="flex h-1/2 flex-1 flex-col">
@@ -73,7 +73,7 @@ import { DomainStateService } from './domain-state.service';
                     matRipple
                     (click)="newItem()"
                 >
-                    <app-icon class="text-3xl">add</app-icon>
+                    <icon class="text-3xl">add</icon>
                 </button>
             </div>
         </div>

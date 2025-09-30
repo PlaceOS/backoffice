@@ -204,12 +204,12 @@ import { TranslatePipe } from '../translate.pipe';
                                     "
                                     formControlName="password"
                                 />
-                                <app-icon
+                                <icon
                                     matSuffix
                                     (click)="show_password = !show_password"
                                 >
                                     visibility
-                                </app-icon>
+                                </icon>
                                 <mat-error>{{
                                     'USERS.PASSWORD_REQUIRED' | translate
                                 }}</mat-error>
@@ -239,12 +239,12 @@ import { TranslatePipe } from '../translate.pipe';
                                     formControlName="confirm_password"
                                     minlength="1"
                                 />
-                                <app-icon
+                                <icon
                                     matSuffix
                                     (click)="show_confirm = !show_confirm"
                                 >
                                     visibility
-                                </app-icon>
+                                </icon>
                                 <mat-error>{{
                                     'USERS.PASSWORDS_MATCH' | translate
                                 }}</mat-error>
@@ -277,7 +277,7 @@ import { TranslatePipe } from '../translate.pipe';
                                                     | translate: { item: item }
                                             "
                                         >
-                                            <app-icon>cancel</app-icon>
+                                            <icon>cancel</icon>
                                         </button>
                                     </mat-chip-row>
                                 }

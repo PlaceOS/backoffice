@@ -149,7 +149,7 @@ export interface BackofficeExtension {
                             [matTooltip]="'ADMIN.EXTENSIONS_EDIT' | translate"
                             (click)="editExtension(row)"
                         >
-                            <app-icon>edit</app-icon>
+                            <icon>edit</icon>
                         </button>
                         <button
                             icon
@@ -157,7 +157,7 @@ export interface BackofficeExtension {
                             [matTooltip]="'ADMIN.EXTENSIONS_REMOVE' | translate"
                             (click)="removeExtension(row)"
                         >
-                            <app-icon class="text-error">delete</app-icon>
+                            <icon class="text-error">delete</icon>
                         </button>
                     </div>
                 </ng-template>

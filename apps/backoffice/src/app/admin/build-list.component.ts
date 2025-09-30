@@ -113,7 +113,7 @@ function cancelBuildJob(id, q = {}) {
                     [matTooltip]="'ADMIN.BUILD_LIST_REMOVE' | translate"
                     (click)="remove(row)"
                 >
-                    <app-icon>delete</app-icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

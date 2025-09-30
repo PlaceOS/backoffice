@@ -54,9 +54,9 @@ import { IconComponent } from '../icon.component';
                 class="relative -right-1 top-1"
                 (click)="showSelect()"
             >
-                <app-icon class="text-2xl text-base-content text-opacity-50">
+                <icon class="text-2xl text-base-content text-opacity-50">
                     arrow_drop_down
-                </app-icon>
+                </icon>
             </button>
             <mat-error><ng-content /></mat-error>
         </mat-form-field>

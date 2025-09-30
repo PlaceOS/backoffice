@@ -56,7 +56,7 @@ export interface BulkItemModalData<T = HashMap<any>> {
             </h3>
             @if (!loading) {
                 <button icon matRipple mat-dialog-close>
-                    <app-icon>close</app-icon>
+                    <icon>close</icon>
                 </button>
             }
         </div>

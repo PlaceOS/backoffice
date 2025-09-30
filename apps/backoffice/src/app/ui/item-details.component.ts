@@ -91,7 +91,7 @@ export interface DisplayItem {
                         <div
                             class="flex items-center space-x-2 rounded-xl bg-success px-2 py-1 text-xs text-success-content"
                         >
-                            <app-icon>lock</app-icon>
+                            <icon>lock</icon>
                             <div class="text">
                                 {{ 'COMMON.SECURE' | translate }}
                             </div>
@@ -100,7 +100,7 @@ export interface DisplayItem {
                 </div>
             </div>
             <button icon matRipple [matMenuTriggerFor]="action_menu">
-                <app-icon>more_vert</app-icon>
+                <icon>more_vert</icon>
             </button>
         </div>
         <mat-menu #action_menu="matMenu" class="min-w-[22rem]">
@@ -110,7 +110,7 @@ export interface DisplayItem {
                     class="flex items-center space-x-2"
                     (click)="edit.emit(); editItem()"
                 >
-                    <app-icon class="text-2xl">edit</app-icon>
+                    <icon class="text-2xl">edit</icon>
                     <div class="flex-1">
                         {{ 'COMMON.EDIT_TYPE' | translate: { name: type() } }}
                     </div>
@@ -123,7 +123,7 @@ export interface DisplayItem {
                 disabled="true"
                 (click)="create.emit(false); newFromItem()"
             >
-                <app-icon class="text-2xl">add</app-icon>
+                <icon class="text-2xl">add</icon>
                 <div>
                     {{
                         'COMMON.CREATE_FROM_TYPE' | translate: { name: type() }
@@ -136,7 +136,7 @@ export interface DisplayItem {
                 disabled="true"
                 (click)="create.emit(true); duplicateItem()"
             >
-                <app-icon class="text-2xl">call_split</app-icon>
+                <icon class="text-2xl">call_split</icon>
                 <div>
                     {{ 'COMMON.DUPLICATE_TYPE' | translate: { name: type() } }}
                 </div>
@@ -146,7 +146,7 @@ export interface DisplayItem {
                 class="flex items-center space-x-2"
                 (click)="exportAsTSV()"
             >
-                <app-icon class="text-2xl">download</app-icon>
+                <icon class="text-2xl">download</icon>
                 <div>
                     {{
                         'COMMON.EXPORT_TYPE_AS_TSV'
@@ -160,7 +160,7 @@ export interface DisplayItem {
                     class="flex items-center space-x-2"
                     (click)="item.action()"
                 >
-                    <app-icon class="text-2xl">{{ item.icon }}</app-icon>
+                    <icon class="text-2xl">{{ item.icon }}</icon>
                     <div class="flex-1">
                         {{ item.label | translate }}
                     </div>
@@ -175,7 +175,7 @@ export interface DisplayItem {
                     class="flex items-center space-x-2"
                     (click)="delete.emit(); deleteItem()"
                 >
-                    <app-icon class="text-2xl text-error">delete</app-icon>
+                    <icon class="text-2xl text-error">delete</icon>
                     <div class="flex-1">
                         {{ 'COMMON.DELETE_TYPE' | translate: { name: type() } }}
                     </div>

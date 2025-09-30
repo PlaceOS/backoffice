@@ -149,7 +149,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                     [matTooltip]="'ADMIN.STORAGE_EDIT' | translate"
                     (click)="edit(row)"
                 >
-                    <app-icon>edit</app-icon>
+                    <icon>edit</icon>
                 </button>
                 <button
                     icon
@@ -157,7 +157,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                     [matTooltip]="'ADMIN.STORAGE_REMOVE' | translate"
                     (click)="remove(row)"
                 >
-                    <app-icon class="text-error">delete</app-icon>
+                    <icon class="text-error">delete</icon>
                 </button>
             </div>
         </ng-template>

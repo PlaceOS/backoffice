@@ -42,7 +42,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                     <code class="flex-1 truncate">{{ item.x_api_key }}</code>
                 </div>
                 <button btn icon class="rounded-none">
-                    <app-icon>content_copy</app-icon>
+                    <icon>content_copy</icon>
                 </button>
             </div>
         }
@@ -145,7 +145,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                     [matTooltip]="'ADMIN.EDGE_EDIT' | translate"
                     (click)="edit(row)"
                 >
-                    <app-icon>edit</app-icon>
+                    <icon>edit</icon>
                 </button>
                 <button
                     icon
@@ -154,7 +154,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                     [matTooltip]="'ADMIN.EDGE_REMOVE' | translate"
                     (click)="remove(row)"
                 >
-                    <app-icon>delete</app-icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

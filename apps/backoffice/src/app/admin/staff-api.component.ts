@@ -145,7 +145,7 @@ export interface PlaceTenant {
                     "
                     (click)="editLimits(row)"
                 >
-                    <app-icon>app_registration</app-icon>
+                    <icon>app_registration</icon>
                 </button>
                 <button
                     icon
@@ -153,7 +153,7 @@ export interface PlaceTenant {
                     [matTooltip]="'ADMIN.TENANTS_EDIT' | translate"
                     (click)="editTenant(row)"
                 >
-                    <app-icon>edit</app-icon>
+                    <icon>edit</icon>
                 </button>
                 <button
                     icon
@@ -162,7 +162,7 @@ export interface PlaceTenant {
                     [matTooltip]="'ADMIN.TENANTS_REMOVE' | translate"
                     (click)="removeTenant(row)"
                 >
-                    <app-icon>delete</app-icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

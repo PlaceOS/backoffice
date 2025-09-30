@@ -47,11 +47,11 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                                 "
                                 [matTooltip]="status[i]"
                             >
-                                <app-icon>
+                                <icon>
                                     {{
                                         status[i] === 'done' ? 'done' : 'close'
                                     }}
-                                </app-icon>
+                                </icon>
                             </div>
                         }
                         @if (status[i] === 'loading') {

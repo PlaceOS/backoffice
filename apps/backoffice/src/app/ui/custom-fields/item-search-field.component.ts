@@ -65,9 +65,7 @@ import { SanitizePipe } from '../pipes/sanitise.pipe';
                     (blur)="resetSearchString()"
                 />
                 <div class="prefix" matPrefix>
-                    <app-icon class="relative -left-0.5 text-2xl"
-                        >search</app-icon
-                    >
+                    <icon class="relative -left-0.5 text-2xl">search</icon>
                 </div>
                 @if (loading()) {
                     <div class="suffix" matSuffix>

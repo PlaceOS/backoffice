@@ -163,7 +163,7 @@ import { BackofficeExtension } from '../extensions.component';
                                 class="h-12 w-12 rounded border border-error text-error"
                                 (click)="removeCondition(condition)"
                             >
-                                <app-icon>delete</app-icon>
+                                <icon>delete</icon>
                             </button>
                         </div>
                     }

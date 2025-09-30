@@ -94,7 +94,7 @@ import { DomainStateService } from './domain-state.service';
                     (click)="copySecret(row)"
                     [matTooltip]="'DOMAINS.COPY_SECRET' | translate"
                 >
-                    <app-icon>content_copy</app-icon>
+                    <icon>content_copy</icon>
                 </button>
                 <button
                     icon
@@ -105,7 +105,7 @@ import { DomainStateService } from './domain-state.service';
                     (window:touchend)="show_secret[row.id] = false"
                     [matTooltip]="'DOMAINS.VIEW_SECRET' | translate"
                 >
-                    <app-icon>visibility</app-icon>
+                    <icon>visibility</icon>
                 </button>
                 <div class="p-2 font-mono text-xs">
                     @if (!show_secret[row.id]) {
@@ -127,7 +127,7 @@ import { DomainStateService } from './domain-state.service';
                     [matTooltip]="'DOMAINS.APPLICATION_EDIT' | translate"
                     (click)="editApplication(row)"
                 >
-                    <app-icon>edit</app-icon>
+                    <icon>edit</icon>
                 </button>
                 <button
                     icon
@@ -136,7 +136,7 @@ import { DomainStateService } from './domain-state.service';
                     [matTooltip]="'DOMAINS.APPLICATION_REMOVE' | translate"
                     (click)="removeApplication(row)"
                 >
-                    <app-icon>delete</app-icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

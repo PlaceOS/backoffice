@@ -27,11 +27,11 @@ import { TranslatePipe } from './translate.pipe';
                 [routerLink]="['/users', 'current', 'about']"
                 class="space-x-2"
             >
-                <app-icon>person</app-icon>
+                <icon>person</icon>
                 {{ 'COMMON.PROFILE' | translate }}
             </a>
             <div dark-mode class="flex w-[16rem] items-center p-4">
-                <app-icon>dark_mode</app-icon>
+                <icon>dark_mode</icon>
                 <p class="w-1/2 flex-1">
                     {{ 'COMMON.DARK_MODE' | translate }}
                 </p>
@@ -44,7 +44,7 @@ import { TranslatePipe } from './translate.pipe';
                 class="space-x-2"
                 (click)="logout()"
             >
-                <app-icon>logout</app-icon>
+                <icon>logout</icon>
                 {{ 'COMMON.LOGOUT' | translate }}
             </button>
             <button
@@ -54,12 +54,12 @@ import { TranslatePipe } from './translate.pipe';
                 uploads
                 (click)="showUploadHistory()"
             >
-                <app-icon>schedule</app-icon>
+                <icon>schedule</icon>
                 {{ 'COMMON.UPLOAD_HISTORY' | translate }}
             </button>
             @if (languages.length > 1) {
                 <button matRipple type="button" [matMenuTriggerFor]="lang_menu">
-                    <app-icon>language</app-icon>
+                    <icon>language</icon>
                     <div class="flex-1 text-left">
                         {{ 'COMMON.LANGUAGE' | translate }}
                     </div>
@@ -95,7 +95,7 @@ import { TranslatePipe } from './translate.pipe';
                 [href]="github_link | safe: 'url'"
                 class="space-x-2"
             >
-                <app-icon [className]="'backoffice-github'"></app-icon>
+                <icon [className]="'backoffice-github'"></icon>
                 {{ 'COMMON.REPORT_ISSUE' | translate }}
             </a>
         </div>
@@ -113,7 +113,7 @@ import { TranslatePipe } from './translate.pipe';
                 background-color: rgba(0, 0, 0, 0.2);
             }
 
-            app-icon {
+            icon {
                 margin-right: 0.5rem;
             }
         `,

@@ -34,7 +34,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 <div class="flex items-center space-x-2">
                     <button btn matRipple (click)="newBroker()">
                         <div class="flex items-center">
-                            <app-icon class="text-2xl">add</app-icon>
+                            <icon class="text-2xl">add</icon>
                             <div class="text">
                                 {{ 'ADMIN.BROKERS_ADD' | translate }}
                             </div>
@@ -127,18 +127,14 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 <div
                     class="mx-auto flex h-8 w-8 items-center justify-center rounded bg-success"
                 >
-                    <app-icon class="text-xl text-success-content"
-                        >lock</app-icon
-                    >
+                    <icon class="text-xl text-success-content">lock</icon>
                 </div>
             }
             @if (!data) {
                 <div
                     class="mx-auto flex h-8 w-8 items-center justify-center rounded bg-error"
                 >
-                    <app-icon class="text-xl text-error-content">
-                        lock_open
-                    </app-icon>
+                    <icon class="text-xl text-error-content"> lock_open </icon>
                 </div>
             }
         </ng-template>
@@ -162,7 +158,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     [matTooltip]="'ADMIN.BROKERS_EDIT' | translate"
                     (click)="editBroker(row)"
                 >
-                    <app-icon>edit</app-icon>
+                    <icon>edit</icon>
                 </button>
                 <button
                     icon
@@ -171,7 +167,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     class="text-error"
                     (click)="deleteBroker(row)"
                 >
-                    <app-icon>delete</app-icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

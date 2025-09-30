@@ -174,7 +174,7 @@ import { TranslatePipe } from '../translate.pipe';
                                                     | translate: { item: item }
                                             "
                                         >
-                                            <app-icon>cancel</app-icon>
+                                            <icon>cancel</icon>
                                         </button>
                                     </mat-chip-row>
                                 }

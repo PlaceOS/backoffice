@@ -22,7 +22,7 @@ import { TranslatePipe } from './translate.pipe';
                 </h2>
                 @if (!loading()) {
                     <button icon matRipple mat-dialog-close>
-                        <app-icon>close</app-icon>
+                        <icon>close</icon>
                     </button>
                 }
             </header>

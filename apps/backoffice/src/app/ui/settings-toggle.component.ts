@@ -24,7 +24,7 @@ import { IconComponent } from './icon.component';
             <div class="ml-2 flex flex-1 items-center space-x-2 text-left">
                 <div>{{ name() }}<ng-content></ng-content></div>
                 @if (info()) {
-                    <app-icon [matTooltip]="info()">info</app-icon>
+                    <icon [matTooltip]="info()">info</icon>
                 }
             </div>
             <mat-checkbox

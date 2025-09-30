@@ -87,7 +87,7 @@ import { APIKeyService } from './api-keys.service';
                                     (removed)="removeScope(scope)"
                                 >
                                     {{ scope }}
-                                    <app-icon matChipRemove>close</app-icon>
+                                    <icon matChipRemove>close</icon>
                                 </mat-chip>
                             }
                             <input

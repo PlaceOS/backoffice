@@ -20,9 +20,9 @@ import { ZonesStateService } from './zones-state.service';
             <div class="flex items-center">
                 <mat-form-field class="flex-1" appearance="outline">
                     <div class="prefix" matPrefix>
-                        <app-icon class="relative -left-0.5 text-2xl">
+                        <icon class="relative -left-0.5 text-2xl">
                             search
-                        </app-icon>
+                        </icon>
                     </div>
                     <input
                         matInput

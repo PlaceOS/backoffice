@@ -46,9 +46,7 @@ import { SettingsToggleComponent } from '../../settings-toggle.component';
                             'COMMON.TIMEZONE' | translate
                         }}</label>
                         <mat-form-field appearance="outline">
-                            <app-icon matPrefix class="text-2xl"
-                                >search</app-icon
-                            >
+                            <icon matPrefix class="text-2xl">search</icon>
                             <input
                                 matInput
                                 formControlName="timezone"

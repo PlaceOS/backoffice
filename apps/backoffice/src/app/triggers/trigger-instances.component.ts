@@ -81,7 +81,7 @@ import { TriggerStateService } from './trigger-state.service';
                     [matTooltip]="'TRIGGERS.DELETE_INSTANCE' | translate"
                     (click)="deleteTrigger(item)"
                 >
-                    <app-icon class="text-error">delete</app-icon>
+                    <icon class="text-error">delete</icon>
                 </button>
             </div>
         </ng-template>

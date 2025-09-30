@@ -49,14 +49,14 @@ import { TranslatePipe } from '../translate.pipe';
                             class="h-12 w-12 rounded border border-error text-error"
                             (click)="removeRow(item)"
                         >
-                            <app-icon>delete</app-icon>
+                            <icon>delete</icon>
                         </button>
                     </div>
                 }
                 <div class="row h-10 text-center">
                     <button btn type="button" class="w-full" (click)="addRow()">
                         <div class="contents">
-                            <app-icon class="text-2xl">add</app-icon>
+                            <icon class="text-2xl">add</icon>
                             <div class="text">
                                 {{ 'COMMON.NEW_ITEM' | translate }}
                             </div>

@@ -29,7 +29,7 @@ export interface ChangelogModalData {
                 <div
                     class="flex h-[50vh] w-full flex-col items-center justify-center space-y-4"
                 >
-                    <app-icon class="text-7xl">playlist_remove</app-icon>
+                    <icon class="text-7xl">playlist_remove</icon>
                     <div class="text">
                         {{ 'COMMON.CHANGELOG_EMPTY' | translate }}
                     </div>

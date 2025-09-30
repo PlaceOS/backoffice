@@ -47,7 +47,7 @@ import { ZonesStateService } from './zones-state.service';
                                 class="mr-2 sm:hidden"
                                 (click)="open_menu.set(true)"
                             >
-                                <app-icon>menu</app-icon>
+                                <icon>menu</icon>
                             </button>
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
@@ -79,7 +79,7 @@ import { ZonesStateService } from './zones-state.service';
                             matRipple
                             (click)="newItem()"
                         >
-                            <app-icon class="text-3xl">add</app-icon>
+                            <icon class="text-3xl">add</icon>
                         </button>
                         <button
                             class="absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-8"
@@ -88,7 +88,7 @@ import { ZonesStateService } from './zones-state.service';
                             matRipple
                             (click)="bulkAdd()"
                         >
-                            <app-icon class="text-2xl">playlist_add</app-icon>
+                            <icon class="text-2xl">playlist_add</icon>
                         </button>
                     </div>
                 </div>

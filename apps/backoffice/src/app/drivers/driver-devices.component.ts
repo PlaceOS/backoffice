@@ -25,9 +25,9 @@ import { DriverStateService } from './driver-state.service';
             <section class="mb-4 flex items-center">
                 <mat-form-field appearance="outline" class="h-12 flex-1">
                     <div class="prefix" matPrefix>
-                        <app-icon class="relative -left-0.5 text-2xl">
+                        <icon class="relative -left-0.5 text-2xl">
                             search
-                        </app-icon>
+                        </icon>
                     </div>
                     <input
                         [ngModel]="''"
@@ -112,7 +112,7 @@ import { DriverStateService } from './driver-state.service';
                             [matMenuTriggerFor]="menu"
                             (click)="loadSystems(row)"
                         >
-                            <app-icon>visibility</app-icon>
+                            <icon>visibility</icon>
                         </button>
                         <button
                             icon
@@ -120,7 +120,7 @@ import { DriverStateService } from './driver-state.service';
                             [matTooltip]="'MODULES.DELETE' | translate"
                             (click)="removeModule(row)"
                         >
-                            <app-icon class="text-error">delete</app-icon>
+                            <icon class="text-error">delete</icon>
                         </button>
                         <mat-menu #menu="matMenu">
                             <div

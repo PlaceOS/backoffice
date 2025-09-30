@@ -20,7 +20,7 @@ export interface SystemLogModalData {
         <header>
             <h3 mat-dialog-title>System Logs</h3>
             <button btn icon mat-dialog-close>
-                <app-icon>close</app-icon>
+                <icon>close</icon>
             </button>
         </header>
         <mat-dialog-content>

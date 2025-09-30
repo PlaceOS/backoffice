@@ -267,7 +267,7 @@ import { TranslatePipe } from '../translate.pipe';
                                                     | translate: { item: item }
                                             "
                                         >
-                                            <app-icon>cancel</app-icon>
+                                            <icon>cancel</icon>
                                         </button>
                                     </mat-chip-row>
                                 }
@@ -303,9 +303,9 @@ import { TranslatePipe } from '../translate.pipe';
                     }}</label>
                     <mat-form-field appearance="outline">
                         <div class="prefix" matPrefix>
-                            <app-icon class="relative -left-0.5 text-2xl">
+                            <icon class="relative -left-0.5 text-2xl">
                                 search
-                            </app-icon>
+                            </icon>
                         </div>
                         <input
                             matInput

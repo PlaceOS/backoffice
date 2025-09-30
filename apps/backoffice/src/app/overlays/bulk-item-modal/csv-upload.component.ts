@@ -24,7 +24,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                 (dragleave)="dragging = false"
                 (dragend)="dragging = false"
             >
-                <app-icon class="text-6xl">cloud_upload</app-icon>
+                <icon class="text-6xl">cloud_upload</icon>
                 <div class="text">{{ 'COMMON.BULK_DROP_MSG' | translate }}</div>
                 <input
                     class="absolute inset-0 opacity-0"

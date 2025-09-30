@@ -39,10 +39,10 @@ import { TranslatePipe } from './translate.pipe';
                         (click)="clearList()"
                         [matTooltip]="'COMMON.CLEAR_UPLOADS' | translate"
                     >
-                        <app-icon>clear_all</app-icon>
+                        <icon>clear_all</icon>
                     </button>
                     <button icon matRipple (click)="show.set(false)">
-                        <app-icon>close</app-icon>
+                        <icon>close</icon>
                     </button>
                 </div>
                 <div list class="max-h-[65vh] overflow-auto">
@@ -71,19 +71,19 @@ import { TranslatePipe } from './translate.pipe';
                                         </div>
                                     }
                                     @if (item.progress >= 100 && !item.error) {
-                                        <app-icon
+                                        <icon
                                             class="rounded-full bg-success text-xl text-base-100"
                                         >
                                             done
-                                        </app-icon>
+                                        </icon>
                                     }
                                     @if (item.error) {
-                                        <app-icon
+                                        <icon
                                             class="rounded-full bg-error text-xl text-base-100"
                                             [matTooltip]="item.error"
                                         >
                                             close
-                                        </app-icon>
+                                        </icon>
                                     }
                                     @if (item.progress >= 100 && item.link) {
                                         <button
@@ -131,7 +131,7 @@ import { TranslatePipe } from './translate.pipe';
                         <div
                             class="m-auto flex w-full flex-col items-center space-y-4 p-8 opacity-30"
                         >
-                            <app-icon class="text-4xl">cloud_off</app-icon>
+                            <icon class="text-4xl">cloud_off</icon>
                             <p>{{ 'COMMON.NO_UPLOADS' | translate }}</p>
                         </div>
                     }
@@ -157,11 +157,9 @@ import { TranslatePipe } from './translate.pipe';
                 <div
                     class="pointer-events-none absolute bottom-0 left-1/2 flex -translate-x-1/2 transform flex-col items-center p-4"
                 >
-                    <app-icon
-                        class="mb-4 animate-bounce text-7xl text-base-100"
-                    >
+                    <icon class="mb-4 animate-bounce text-7xl text-base-100">
                         cloud_upload
-                    </app-icon>
+                    </icon>
                     <div
                         class="rounded bg-base-100 p-4 text-base-content shadow"
                     >

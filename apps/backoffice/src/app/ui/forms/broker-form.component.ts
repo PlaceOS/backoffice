@@ -201,7 +201,7 @@ import { TranslatePipe } from '../translate.pipe';
                                         "
                                         formControlName="password"
                                     />
-                                    <app-icon
+                                    <icon
                                         matSuffix
                                         (mousedown)="show_password = true"
                                         (window:mouseup)="show_password = false"
@@ -211,7 +211,7 @@ import { TranslatePipe } from '../translate.pipe';
                                         "
                                     >
                                         visibility
-                                    </app-icon>
+                                    </icon>
                                     <mat-error>{{
                                         'ADMIN.BROKERS_PASSWORD_REQUIRED'
                                             | translate
@@ -266,7 +266,7 @@ import { TranslatePipe } from '../translate.pipe';
                                                         : { item: filter }
                                             "
                                         >
-                                            <app-icon>cancel</app-icon>
+                                            <icon>cancel</icon>
                                         </button>
                                     </mat-chip-row>
                                 }

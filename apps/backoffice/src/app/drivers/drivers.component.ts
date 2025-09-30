@@ -47,7 +47,7 @@ import { DriverStateService } from './driver-state.service';
                                 class="mr-2 sm:hidden"
                                 (click)="open_menu.set(true)"
                             >
-                                <app-icon>menu</app-icon>
+                                <icon>menu</icon>
                             </button>
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
@@ -80,7 +80,7 @@ import { DriverStateService } from './driver-state.service';
                                 matRipple
                                 (click)="showUpdateList()"
                             >
-                                <app-icon class="text-3xl">update</app-icon>
+                                <icon class="text-3xl">update</icon>
                             </button>
                         }
                         <button
@@ -90,7 +90,7 @@ import { DriverStateService } from './driver-state.service';
                             matRipple
                             (click)="newItem()"
                         >
-                            <app-icon class="text-3xl">add</app-icon>
+                            <icon class="text-3xl">add</icon>
                         </button>
                     </div>
                 </div>

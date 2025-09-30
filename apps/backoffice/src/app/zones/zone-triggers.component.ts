@@ -23,9 +23,9 @@ import { ZonesStateService } from './zones-state.service';
             <section class="mb-4 flex items-center space-x-2">
                 <mat-form-field appearance="outline" class="h-12 flex-1">
                     <div class="prefix" matPrefix>
-                        <app-icon class="relative -left-0.5 text-2xl">
+                        <icon class="relative -left-0.5 text-2xl">
                             search
-                        </app-icon>
+                        </icon>
                     </div>
                     <input
                         [ngModel]="''"
@@ -97,7 +97,7 @@ import { ZonesStateService } from './zones-state.service';
                             [matTooltip]="'TRIGGERS.REMOVE'"
                             (click)="deleteTrigger(row)"
                         >
-                            <app-icon class="text-error">delete</app-icon>
+                            <icon class="text-error">delete</icon>
                         </button>
                     </div>
                 </ng-template>
