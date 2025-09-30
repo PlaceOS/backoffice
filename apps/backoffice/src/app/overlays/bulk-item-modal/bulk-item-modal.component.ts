@@ -120,10 +120,6 @@ export interface BulkItemModalData<T = HashMap<any>> {
                 font-size: 0.8em;
             }
 
-            .info-block {
-                margin: 2em 6em;
-            }
-
             mat-dialog-actions button {
                 min-width: 8em;
             }

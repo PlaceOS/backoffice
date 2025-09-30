@@ -15,7 +15,7 @@ import { TranslatePipe } from './translate.pipe';
                 class="fixed top-0 mx-auto h-screen w-[40rem] max-w-full border-x border-base-300 bg-base-100"
             ></div>
             <header
-                class="sticky top-0 z-10 mx-auto my-2 w-[39rem] max-w-full rounded border border-base-100 bg-base-200 px-4 py-2"
+                class="sticky top-0 z-10 mx-auto my-2 flex w-[39rem] max-w-full items-center justify-between rounded border border-base-100 bg-base-200 px-4 py-2"
             >
                 <h2 class="text-xl font-medium">
                     {{ heading() }}

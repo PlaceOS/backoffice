@@ -62,7 +62,7 @@ import { LocaleService, setTranslationService } from './common/locale.service';
         </div>
         @if (!online && !loading()) {
             <div
-                class="fixed bottom-2 left-1/2 z-[9999] -translate-x-1/2 rounded-3xl bg-error px-4 py-2 text-xs text-base-100 shadow"
+                class="fixed bottom-2 left-1/2 z-[9999] -translate-x-1/2 rounded-3xl bg-error px-4 py-2 text-xs text-error-content shadow"
             >
                 Unable to reach server... Some features may not work.
             </div>

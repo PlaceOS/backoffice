@@ -15,7 +15,7 @@ export interface ItemTab {
 @Component({
     selector: 'item-tablist',
     template: `
-        <div class="h-12 w-full">
+        <div class="h-12 w-full border-b border-base-300">
             <div class="h-14 w-full overflow-hidden">
                 <nav
                     mat-tab-nav-bar
