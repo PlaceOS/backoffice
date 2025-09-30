@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;946abd99d31a31a3ccb02251b4e5438b13007a4772c0c88251566e95d97cc68b;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/overlays/bulk-item-modal/bulk-item-modal.component.ts"],
+  "sourcesContent": ["\n            .body {\n                display: flex;\n                align-items: center;\n                flex-direction: column;\n                padding: 1em;\n            }\n\n            .icon {\n                height: 1.2em;\n                width: 1.2em;\n                display: flex;\n                align-items: center;\n                justify-content: center;\n                font-size: 2em;\n            }\n\n            .content {\n                width: 16rem;\n                text-align: center;\n                font-size: 0.8em;\n            }\n\n            mat-dialog-actions button {\n                min-width: 8em;\n            }\n        "],
+  "mappings": "AACY,CAAC,KACG,QAAS,KACT,YAAa,OACb,eAAgB,OAJhC,QAKyB,GACb,CAEA,CAAC,KACG,OAAQ,MACR,MAAO,MACP,QAAS,KACT,YAAa,OACb,gBAAiB,OACjB,UAAW,GACf,CAEA,CAAC,QACG,MAAO,MACP,WAAY,OACZ,UAAW,IACf,CAEA,mBAAmB,OACf,UAAW,GACf",
+  "names": []
+}
