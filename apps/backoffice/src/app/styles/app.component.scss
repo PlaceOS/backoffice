@@ -198,21 +198,32 @@ span.highlight {
         margin-bottom: 1rem;
         margin-top: 0.5rem;
         font-weight: 600;
+        border-bottom: 1px solid var(--b3);
+        padding-bottom: 0.5rem;
     }
     h2 {
         font-size: 1.125rem;
-        margin: 0 -0.5rem;
         margin-bottom: 0.5rem;
+        margin-top: 1rem;
+        font-weight: 600;
+        border-bottom: 1px solid var(--b3);
+        padding-bottom: 0.25rem;
+    }
+    &.changelog h2 {
+        margin: 0 -0.5rem;
         font-family: monospace;
         padding: 0.5rem 1rem;
         border-radius: 0.25rem;
         background-color: var(--b2);
+        font-weight: 400;
     }
     h3 {
         font-size: 1.125rem;
         margin-bottom: 0.5rem;
-        padding-left: 0.5rem;
+        margin-top: 1rem;
         font-weight: 500;
+        width: 100%;
+        border-bottom: 1px solid var(--b3);
     }
 
     a {
@@ -221,19 +232,18 @@ span.highlight {
     }
 
     pre {
-        max-width: 100%;
+        white-space: pre;
         overflow-x: auto;
-        margin-bottom: 0.5rem;
-        padding: 1rem 0;
+        padding: 0.75rem;
+        background: var(--b2);
+        color: var(--bc);
+        border-radius: 4px;
+        margin-bottom: 1rem;
     }
 
     code {
-        max-width: 100%;
-        overflow: auto;
-    }
-
-    pre > code {
-        padding: 1rem 1rem;
+        font-family: 'Fira Code', monospace;
+        white-space: inherit; /* ensures consistency */
     }
 }
 

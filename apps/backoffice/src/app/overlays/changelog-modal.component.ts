@@ -22,7 +22,7 @@ export interface ChangelogModalData {
         >
             @if (changelog) {
                 <div
-                    class="markdown items-start"
+                    class="markdown changelog items-start"
                     [innerHTML]="changelog | safe: 'html'"
                 ></div>
             } @else {

@@ -9,6 +9,7 @@ import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
+import { nextValueFrom } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { DebugOutputComponent } from '../ui/debug-output.component';
@@ -143,13 +144,18 @@ export class DriversComponent extends AsyncHandler implements OnInit {
         return extensionsForItem(this._service.active_item, this.name);
     }
 
-    public updateTabList() {
+    public async updateTabList() {
         this.tab_list.set(
             [
                 {
                     id: 'about',
                     name: i18n('DRIVERS.TAB_ABOUT'),
                     icon: { content: 'info' },
+                },
+                {
+                    id: 'docs',
+                    name: i18n('DRIVERS.TAB_DOCS'),
+                    icon: { content: 'docs' },
                 },
                 {
                     id: 'modules',
@@ -164,6 +170,9 @@ export class DriversComponent extends AsyncHandler implements OnInit {
                 },
             ].concat(this.extensions),
         );
+        const docs = await nextValueFrom(this._drivers.docs);
+        if (!docs)
+            this.tab_list.update((l) => l.filter((_) => _.id !== 'docs'));
     }
 
     public ngOnInit(): void {

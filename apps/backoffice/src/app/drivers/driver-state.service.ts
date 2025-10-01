@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
+    driverReadme,
     PlaceDriver,
     PlaceModule,
     queryDrivers,
@@ -10,8 +11,14 @@ import {
     removeSystemModule,
     updateDriver,
 } from '@placeos/ts-client';
-import { BehaviorSubject, of } from 'rxjs';
-import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, lastValueFrom, Observable, of } from 'rxjs';
+import {
+    catchError,
+    debounceTime,
+    map,
+    shareReplay,
+    switchMap,
+} from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
@@ -55,7 +62,22 @@ export class DriverStateService {
             return details;
         }),
         map((d) => d.data),
-        shareReplay(),
+        shareReplay(1),
+    );
+
+    public readonly docs: Observable<string> = this.item.pipe(
+        debounceTime(100),
+        switchMap(async (item: PlaceDriver) => {
+            if (!item) return '';
+            this._loading.next(true);
+            const docs = await lastValueFrom(driverReadme(item.id)).catch(
+                () => '',
+            );
+            this._loading.next(false);
+            return docs;
+        }),
+        map((d) => d || ''),
+        shareReplay(1),
     );
 
     public get active_item() {
