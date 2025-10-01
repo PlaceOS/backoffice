@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -67,13 +68,13 @@ import { SystemStateService } from './system-state.service';
                     [query_fn]="query_fn"
                     [exclude]="exclude_fn"
                     [ngModel]="null"
-                    (ngModelChange)="new_module = $event.id"
+                    (ngModelChange)="new_module.set($event.id)"
                 ></item-search-field>
                 <button
                     btn
                     matRipple
                     class="h-11 w-40 flex-1 sm:w-32 sm:flex-none"
-                    [disabled]="!new_module"
+                    [disabled]="!new_module()"
                     (click)="addModule()"
                 >
                     {{ 'COMMON.ADD_EXISTING' | translate }}
@@ -350,6 +351,7 @@ import { SystemStateService } from './system-state.service';
         ContextMenuComponent,
         RouterModule,
         ItemSearchFieldComponent,
+        FormsModule,
     ],
 })
 export class SystemModulesComponent extends AsyncHandler {
@@ -359,7 +361,7 @@ export class SystemModulesComponent extends AsyncHandler {
     /** Whether a device should be listened to */
     public device_listener: HashMap<boolean> = {};
     /** Store for ID of new module to add to system */
-    public new_module: string;
+    public readonly new_module = signal('');
     /** Whether to show exec block */
     public hide_exec: boolean;
 
@@ -586,8 +588,8 @@ export class SystemModulesComponent extends AsyncHandler {
 
     public addModule() {
         if (!this.new_module) return;
-        this.joinModule(this.new_module);
-        this.new_module = '';
+        this.joinModule(this.new_module());
+        this.new_module.set('');
     }
 
     public viewRuntimeError(device: PlaceModule) {
