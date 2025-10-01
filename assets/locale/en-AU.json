@@ -433,6 +433,7 @@
         "UPDATE_SELECTED": "Update selected drivers",
         "NO_UPDATES": "No drivers require updating.",
         "TAB_ABOUT": "About",
+        "TAB_DOCS": "Readme",
         "TAB_MODULES": "Modules",
         "TAB_SETTINGS_HISTORY": "Settings History",
         "DEFAULT_URI": "Default URI",
