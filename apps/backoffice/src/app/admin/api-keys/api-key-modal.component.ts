@@ -4,8 +4,11 @@ import {
     Component,
     ElementRef,
     EventEmitter,
+    OnInit,
     Output,
+    computed,
     inject,
+    signal,
     viewChild,
 } from '@angular/core';
 import {
@@ -17,17 +20,21 @@ import {
 } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
-import { BehaviorSubject, combineLatest } from 'rxjs';
+import { PlaceDomain, PlaceUser, queryUsers } from '@placeos/ts-client';
+import { lastValueFrom, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AsyncHandler } from '../../common/async-handler.class';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { getInvalidFields } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { DialogEvent } from '../../common/types';
+import { ActionFieldComponent } from '../../ui/custom-fields/action-field.component';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { APIKeyService } from './api-keys.service';
@@ -37,7 +44,7 @@ import { APIKeyService } from './api-keys.service';
     template: `
         <fullscreen-modal-shell
             [heading]="'ADMIN.APP_KEYS_NEW' | translate"
-            [loading]="loading"
+            [loading]="loading()"
             (save)="save()"
         >
             <form class="w-full" [formGroup]="form">
@@ -133,7 +140,7 @@ import { APIKeyService } from './api-keys.service';
                     <mat-menu #menu="matMenu">
                         <mat-form-field
                             appearance="outline"
-                            class="no-subscript min-w-[20rem] px-2"
+                            class="no-subscript w-full px-2"
                             (click)="
                                 $event.preventDefault();
                                 $event.stopPropagation()
@@ -142,18 +149,16 @@ import { APIKeyService } from './api-keys.service';
                             <input
                                 matInput
                                 #input
-                                ngModel
+                                [(ngModel)]="search_term"
                                 (ngModelChange)="setSearch($event)"
                                 [ngModelOptions]="{ standalone: true }"
                                 [placeholder]="'USERS.SEARCH' | translate"
                             />
                         </mat-form-field>
-                        @for (
-                            item of users | async | slice: 0 : 10;
-                            track item
-                        ) {
+                        @for (item of users() | slice: 0 : 10; track item) {
                             <button
                                 mat-menu-item
+                                class="min-w-[24rem]"
                                 (click)="
                                     form.patchValue({
                                         user: item,
@@ -183,7 +188,7 @@ import { APIKeyService } from './api-keys.service';
                                 </div>
                             </button>
                         }
-                        @if (!(users | async)?.length) {
+                        @if (!users()?.length) {
                             <button
                                 mat-menu-item
                                 [disabled]="true"
@@ -225,22 +230,26 @@ import { APIKeyService } from './api-keys.service';
     styles: [``],
     imports: [
         CommonModule,
+        TranslatePipe,
+        FormsModule,
+        ReactiveFormsModule,
         FullscreenModalShellComponent,
         MatFormFieldModule,
         MatSelectModule,
-        TranslatePipe,
-        ReactiveFormsModule,
         MatMenuModule,
-        FormsModule,
         MatAutocompleteModule,
         MatInputModule,
         MatChipsModule,
+        ActionFieldComponent,
     ],
 })
-export class APIKeyModalComponent {
+export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     private _service = inject(APIKeyService);
+    private _domain: PlaceDomain = inject(MAT_DIALOG_DATA);
 
     @Output() public event = new EventEmitter<DialogEvent>();
+    public readonly scopes = this._service.available_scopes;
+
     public form = new FormGroup({
         name: new FormControl('', [Validators.required]),
         user: new FormControl(null),
@@ -252,40 +261,48 @@ export class APIKeyModalComponent {
         ),
         permissions: new FormControl(''),
     });
-    public loading: string;
-    public readonly search_str = new BehaviorSubject('');
-    public readonly scopes = this._service.available_scopes;
+
+    public readonly loading = signal('');
+    public readonly search_term = signal('');
+    public readonly domain = signal<PlaceDomain>(null);
+    public readonly permissions = signal('');
+    public readonly user_list = signal<PlaceUser[]>([]);
+    public readonly users = computed(() => {
+        if (this.permissions() === 'admin')
+            return this.user_list().filter((_) => _.sys_admin);
+        if (this.permissions() === 'support')
+            return this.user_list().filter((_) => _.support || _.sys_admin);
+        return this.user_list().sort((a, b) => a.name?.localeCompare(b.name));
+    });
+    /** List of separator characters for tags */
+    public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
     public readonly _input_el =
         viewChild<ElementRef<HTMLInputElement>>('input');
 
-    public readonly users = combineLatest([
-        this._service.users,
-        this.form.valueChanges,
-    ]).pipe(
-        map(([users, { permissions }]) => {
-            if (permissions === 'admin')
-                return users.filter((_) => _.sys_admin);
-            if (permissions === 'support')
-                return users.filter((_) => _.support || _.sys_admin);
-            return users.sort((a, b) => a.name?.localeCompare(b.name));
-        }),
-    );
-
-    /** List of separator characters for tags */
-    public readonly separators: number[] = [ENTER, COMMA, SPACE];
-
     public readonly focusInput = () =>
         setTimeout(() => this._input_el()?.nativeElement?.focus(), 100);
-    public readonly setSearch = (s) => this._service.setSearch(s);
+    public readonly setSearch = (s) => this.loadUsers();
 
     public readonly addScope = (e) =>
         addChipItem(this.form.controls.scopes as any, e);
     public readonly removeScope = (i) =>
         removeChipItem(this.form.controls.scopes as any, i);
 
-    constructor() {
-        setTimeout(() => this.form.patchValue({ permissions: null }), 100);
+    public ngOnInit() {
+        this.domain.set(this._domain);
+        this.subscription(
+            'changes',
+            this.form.controls.permissions.valueChanges.subscribe((v) =>
+                this.permissions.set(v),
+            ),
+        );
+        this.timeout(
+            'reset_perms',
+            () => this.form.patchValue({ permissions: null }),
+            100,
+        );
+        this.loadUsers();
     }
 
     public get scope_list(): string[] {
@@ -304,5 +321,19 @@ export class APIKeyModalComponent {
         const data = { ...this.form.value };
         delete data.user;
         this.event.emit({ reason: 'done', metadata: this.form.value });
+    }
+
+    public loadUsers() {
+        this.timeout('load_users', async () => {
+            const users = await lastValueFrom(
+                this.domain()
+                    ? queryUsers({
+                          authority_id: this.domain().id,
+                          q: this.search_term(),
+                      }).pipe(map((_) => _.data as PlaceUser[]))
+                    : of([] as PlaceUser[]),
+            );
+            this.user_list.set(users);
+        });
     }
 }

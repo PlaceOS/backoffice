@@ -89,7 +89,7 @@ import { APIKeyService } from './api-keys.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!(loading | async)"
+                    [class.opacity-0]="(loading | async) !== true"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-[64rem] text-sm"

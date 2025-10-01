@@ -83,6 +83,7 @@ export class APIKeyService {
     ]).pipe(
         debounceTime(300),
         switchMap(([domain, q]) => {
+            console.log('Users:', domain, q);
             return domain
                 ? queryUsers({ authority_id: domain.id, q }).pipe(
                       map((_) => _.data as PlaceUser[]),
@@ -93,6 +94,7 @@ export class APIKeyService {
     );
 
     public setDomain(domain: PlaceDomain) {
+        console.log('Setting domain:', domain);
         this._domain.next(domain);
     }
 
@@ -101,7 +103,9 @@ export class APIKeyService {
     }
 
     public async newKey() {
-        const ref = this._dialog.open(APIKeyModalComponent);
+        const ref = this._dialog.open(APIKeyModalComponent, {
+            data: this._domain.getValue(),
+        });
         const details = await Promise.race([
             lastValueFrom(
                 ref.componentInstance.event.pipe(
@@ -111,7 +115,7 @@ export class APIKeyService {
             lastValueFrom(ref.afterClosed()),
         ]);
         if (details?.reason !== 'done') return;
-        ref.componentInstance.loading = 'Creating new API key...';
+        ref.componentInstance.loading.set('Creating new API key...');
         const domain = this._domain.getValue();
         const key = await lastValueFrom(
             create({
