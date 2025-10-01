@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RouterModule } from '@angular/router';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -100,6 +101,7 @@ import { ZonesStateService } from './zones-state.service';
         MatInputModule,
         MatProgressBarModule,
         FormsModule,
+        RouterModule,
     ],
 })
 export class ZoneChildrenComponent {
