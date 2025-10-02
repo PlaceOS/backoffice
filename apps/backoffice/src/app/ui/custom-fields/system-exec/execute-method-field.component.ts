@@ -187,6 +187,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         this.loading.set(true);
         this.arguments.set(this.arguments() || {});
         const method = this.zone() ? executeOnZone : executeOnSystem;
+        console.log('Fn:', this.fn(), this.arguments());
         const result = await lastValueFrom(
             method(
                 this.zone() || this.system().id,
@@ -199,8 +200,8 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
                         return JSON.parse(this.arguments()[key]);
                     } catch {
                         return (
-                            (this.arguments[key] !== ''
-                                ? this.arguments[key]
+                            (this.arguments()[key] !== ''
+                                ? this.arguments()[key]
                                 : null) ??
                             fn_details?.default ??
                             null
