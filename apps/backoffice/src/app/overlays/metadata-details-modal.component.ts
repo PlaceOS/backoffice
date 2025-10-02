@@ -1,6 +1,11 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, OnInit, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+    FormControl,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import {
@@ -21,7 +26,7 @@ export interface MetadataDetailsModalData {
     selector: 'app-metadata-details-modal',
     template: `
         <header
-            class="z-10 mx-auto my-2 w-[calc(100%-1rem)] rounded border border-base-100 bg-base-200 px-4 py-2"
+            class="z-10 mx-auto my-2 flex w-[calc(100%-1rem)] items-center justify-between rounded border border-base-100 bg-base-200 px-4 py-2"
         >
             <h2 class="text-xl font-medium">Update metadata details</h2>
             <button btn icon mat-dialog-close>
@@ -115,9 +120,11 @@ export interface MetadataDetailsModalData {
         MatFormFieldModule,
         ReactiveFormsModule,
         MatChipsModule,
+        MatInputModule,
         IconComponent,
         MatInputModule,
         ReactiveFormsModule,
+        FormsModule,
     ],
 })
 export class MetadataDetailsModalComponent implements OnInit {

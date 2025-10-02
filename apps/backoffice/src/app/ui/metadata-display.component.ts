@@ -256,12 +256,10 @@ export class MetadataDisplayComponent
     }
 
     public editMetadataDetails(field: PlaceMetadata) {
-        const form = this.form_map[field.name];
+        const form = this.form_map()[field.name];
         this._dialog.open(MetadataDetailsModalComponent, {
             maxWidth: '95vw',
-            data: {
-                form,
-            },
+            data: { form },
         });
     }
 
