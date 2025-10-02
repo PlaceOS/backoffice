@@ -71,7 +71,7 @@ export class SystemStateService extends AsyncHandler {
     private _dialog = inject(MatDialog);
 
     /** Observable of the active item */
-    public readonly item = this._state.item;
+    public readonly item = this._state.active_item$;
 
     private _loading = new BehaviorSubject<HashMap<boolean>>({});
     private _modules = new BehaviorSubject<PlaceModule[]>([]);
@@ -83,6 +83,7 @@ export class SystemStateService extends AsyncHandler {
             if (!item || !(item instanceof PlaceSystem)) return [];
             return systemSettings(item.id);
         }),
+        shareReplay(1),
     );
     /** Observable of the counts of the active item */
     public readonly counts = combineLatest([

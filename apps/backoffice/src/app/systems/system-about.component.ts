@@ -197,7 +197,7 @@ import { SystemStateService } from './system-state.service';
                     <a-settings-form
                         [id]="item()?.id"
                         [merge]="true"
-                        [settings]="item()?.settings"
+                        [settings]="item()?.settings || []"
                         [merge_settings]="(other_settings | async) || []"
                     ></a-settings-form>
                 </section>
