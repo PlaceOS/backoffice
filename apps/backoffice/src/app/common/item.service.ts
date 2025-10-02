@@ -6,7 +6,6 @@ import { BehaviorSubject, lastValueFrom, of } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 
 import {
-    EncryptionLevel,
     PlaceSettings,
     QueryResponse,
     querySettings,
@@ -417,23 +416,20 @@ export class ActiveItemService extends AsyncHandler {
     private async updateSettings() {
         const item = this.active_item;
         if (item && (item as any).settings) {
-            const settings = await lastValueFrom(
+            let settings = await lastValueFrom(
                 querySettings({ parent_id: item.id }).pipe(
                     map((resp) => resp.data),
                 ),
             );
-            for (const level in EncryptionLevel) {
-                if (isNaN(Number(level))) continue;
-                if (
-                    !settings.find((s) => s.encryption_level === Number(level))
-                ) {
-                    settings.push(
-                        new PlaceSettings({
-                            encryption_level: Number(level),
-                        }),
-                    );
-                }
-            }
+            // Remove duplicate encryption_level
+            settings = new Array(5).fill(0).map(
+                (_, idx) =>
+                    settings.find((_) => _.encryption_level === idx) ||
+                    new PlaceSettings({
+                        encryption_level: idx,
+                    }),
+            );
+
             settings.sort((a, b) => a.encryption_level - b.encryption_level);
             this._active_item.next(
                 new this.actions.itemConstructor({ ...item, settings }),

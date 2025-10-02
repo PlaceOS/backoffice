@@ -10,8 +10,9 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import {
+    FormControl,
+    FormGroup,
     ReactiveFormsModule,
-    UntypedFormControl,
     UntypedFormGroup,
 } from '@angular/forms';
 import {
@@ -268,7 +269,15 @@ export class SettingsFormComponent
     /** List of settings to merge into the main settings */
     public readonly merge_settings = input<PlaceSettings[]>(undefined);
     /** Form fields for settings */
-    public readonly form = signal<UntypedFormGroup>(new UntypedFormGroup({}));
+    public readonly form = signal<UntypedFormGroup>(
+        new FormGroup({
+            settings0: new FormControl('', [validateYAML]),
+            settings1: new FormControl('', [validateYAML]),
+            settings2: new FormControl('', [validateYAML]),
+            settings3: new FormControl('', [validateYAML]),
+            settings4: new FormControl('', [validateYAML]),
+        }),
+    );
     /** Whether a setting is being saved */
     public readonly saving = signal<[boolean, boolean, boolean, boolean]>([
         false,
@@ -398,22 +407,10 @@ export class SettingsFormComponent
             );
         }
         if (changes.merge_settings) {
-            this.timeout(
-                'upete_merge',
-                () => {
-                    this.used_settings.set(
-                        this._processSettings(this.settings() || []),
-                    );
-                    this._initForm();
-                },
-                50,
-            );
+            this.timeout('update_merge', () => this.clearChanges(), 50);
         }
         if (changes.settings) {
-            this.used_settings.set(
-                this._processSettings(this.settings() || []),
-            );
-            this._initForm();
+            this.clearChanges();
         }
     }
 
@@ -450,10 +447,7 @@ export class SettingsFormComponent
                         type: this.type(level),
                     }),
                 );
-                this.used_settings.set(
-                    this._processSettings(this.settings() || []),
-                );
-                this._initForm();
+                this.clearChanges();
             },
             (err) => {
                 this.saving.update((s) => {
@@ -505,10 +499,7 @@ export class SettingsFormComponent
                         this.settings()[result.encryption_level] = result;
                     }
                     notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
-                    this.used_settings.set(
-                        this._processSettings(this.settings() || []),
-                    );
-                    this._initForm();
+                    this.clearChanges();
                 },
                 (err) => {
                     for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
@@ -530,7 +521,6 @@ export class SettingsFormComponent
     }
 
     public clearChanges() {
-        if (this.edited_count() < 1) return;
         this.used_settings.set(this._processSettings(this.settings() || []));
         this._initForm();
     }
@@ -538,20 +528,20 @@ export class SettingsFormComponent
     private _initForm() {
         const used = this.used_settings();
         this.form.set(
-            new UntypedFormGroup({
-                settings0: new UntypedFormControl(used[0].settings_string, [
+            new FormGroup({
+                settings0: new FormControl(used[0].settings_string, [
                     validateYAML,
                 ]),
-                settings1: new UntypedFormControl(used[1].settings_string, [
+                settings1: new FormControl(used[1].settings_string, [
                     validateYAML,
                 ]),
-                settings2: new UntypedFormControl(used[2].settings_string, [
+                settings2: new FormControl(used[2].settings_string, [
                     validateYAML,
                 ]),
-                settings3: new UntypedFormControl(used[3].settings_string, [
+                settings3: new FormControl(used[3].settings_string, [
                     validateYAML,
                 ]),
-                settings4: new UntypedFormControl(used[4].settings_string, [
+                settings4: new FormControl(used[4].settings_string, [
                     validateYAML,
                 ]),
             }),
@@ -567,6 +557,15 @@ export class SettingsFormComponent
     private _processSettings(settings: PlaceSettings[]): PlaceSettings[] {
         const processed_settings = [];
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
+            const setting = settings.find((_) => _.encryption_level === i);
+            if (!setting) {
+                processed_settings.push(
+                    this._processSetting(
+                        new PlaceSettings({ encryption_level: i }),
+                    ),
+                );
+                continue;
+            }
             processed_settings.push(this._processSetting(settings[i]));
         }
         processed_settings.push(
