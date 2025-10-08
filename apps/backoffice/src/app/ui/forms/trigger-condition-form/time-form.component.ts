@@ -25,7 +25,9 @@ import { Identity } from '../../../common/types';
 import { CronInputFieldComponent } from '../../custom-fields/cron-input-field.component';
 import { DateFieldComponent } from '../../custom-fields/date-field.component';
 import { TimeFieldComponent } from '../../custom-fields/time-field.component';
+import { IconComponent } from '../../icon.component';
 import { SettingsToggleComponent } from '../../settings-toggle.component';
+import { TranslatePipe } from '../../translate.pipe';
 
 @Component({
     selector: 'trigger-condition-time-form',
@@ -287,6 +289,9 @@ import { SettingsToggleComponent } from '../../settings-toggle.component';
                         <cron-input-field
                             [(ngModel)]="cron_string"
                             (ngModelChange)="saveCRON($event)"
+                            [ngModelOptions]="{
+                                standalone: true,
+                            }"
                         ></cron-input-field>
                     }
                 }
@@ -306,6 +311,8 @@ import { SettingsToggleComponent } from '../../settings-toggle.component';
         SettingsToggleComponent,
         MatInputModule,
         ReactiveFormsModule,
+        TranslatePipe,
+        IconComponent,
     ],
 })
 export class TriggerConditionTimeFormComponent
