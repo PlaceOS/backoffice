@@ -1,6 +1,6 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -213,6 +213,7 @@ import { TranslatePipe } from '../translate.pipe';
         MatChipsModule,
         MatInputModule,
         TranslatePipe,
+        ReactiveFormsModule,
     ],
 })
 export class DomainFormComponent {
