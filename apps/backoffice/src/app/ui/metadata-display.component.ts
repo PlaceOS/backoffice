@@ -1,5 +1,6 @@
 import {
     Component,
+    computed,
     inject,
     input,
     OnChanges,
@@ -70,7 +71,7 @@ function replaceDescTag(inputString, newContent) {
                         block
                         [id]="'md-block-' + item.name"
                         class="rounded border border-base-300"
-                        [class.shadow]="show_view === item.name"
+                        [class.shadow]="show_view() === item.name"
                         [class.opacity-30]="item.match === false"
                         [formGroup]="form_map()[item.name]"
                     >
@@ -80,7 +81,7 @@ function replaceDescTag(inputString, newContent) {
                             (click)="toggleView(item)"
                         >
                             <h3 class="truncate px-2 font-mono text-sm">
-                                {{ form_map()[item.name].controls.name.value }}
+                                {{ names()[item.name] }}
                             </h3>
                             <div class="flex-1"></div>
                             <div
@@ -203,7 +204,6 @@ export class MetadataDisplayComponent
 {
     private _dialog = inject(MatDialog);
     // private _schemas = inject(SchemaStateService);
-
     public readonly item = input<any>(undefined);
     /** List of metadata associated with the zone */
     public readonly metadata = signal<PlaceMetadata[]>([]);
@@ -219,6 +219,15 @@ export class MetadataDisplayComponent
     public readonly show_view = signal('');
     /** Search text for filtering metadata */
     public readonly search_text = signal('');
+    public readonly change = signal(0);
+    public readonly names = computed(() => {
+        this.change();
+        const name_map = {};
+        for (const key in this.form_map()) {
+            name_map[key] = this.form_map()[key].value.name;
+        }
+        return name_map;
+    });
 
     private validateName(name_list: string[]) {
         return (control: AbstractControl) => {
@@ -259,7 +268,7 @@ export class MetadataDisplayComponent
         const form = this.form_map()[field.name];
         this._dialog.open(MetadataDetailsModalComponent, {
             maxWidth: '95vw',
-            data: { form },
+            data: { form, change: this.change },
         });
     }
 

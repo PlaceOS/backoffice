@@ -1,5 +1,5 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, WritableSignal, inject } from '@angular/core';
 import {
     FormControl,
     FormGroup,
@@ -20,6 +20,7 @@ import { IconComponent } from '../ui/icon.component';
 
 export interface MetadataDetailsModalData {
     form: FormGroup;
+    change: WritableSignal<number>;
 }
 
 @Component({
@@ -159,16 +160,9 @@ export class MetadataDetailsModalComponent implements OnInit {
 
     public updateDetails() {
         this._data.form.patchValue(this.form.value);
-        this._data.form.controls.name.setValue(this.form.controls.name.value);
-        this._data.form.controls.description.setValue(
-            this.form.controls.description.value,
-        );
-        this._data.form.controls.editors.setValue(
-            this.form.controls.editors.value,
-        );
-        this._data.form.controls.schema.setValue(
-            this.form.controls.schema.value,
-        );
+        const { name, description, editors, schema } = this.form.getRawValue();
+        this._data.form.patchValue({ name, description, editors, schema });
+        this._data.change.set(Date.now());
         this._dialog_ref.close();
     }
 }
