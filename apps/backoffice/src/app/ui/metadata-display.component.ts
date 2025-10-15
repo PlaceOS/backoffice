@@ -361,15 +361,16 @@ export class MetadataDisplayComponent
                 );
                 this.edited[field.name] = false;
                 if (field.name !== item.name) {
-                    lastValueFrom(removeMetadata(this.item().id, field)).catch(
-                        (err) =>
-                            notifyError(
-                                `Error removing old "${
-                                    field.name
-                                }" metadata. Error: ${JSON.stringify(
-                                    err.response || err.message || err,
-                                )}`,
-                            ),
+                    lastValueFrom(
+                        removeMetadata(this.item().id, { name: field.name }),
+                    ).catch((err) =>
+                        notifyError(
+                            `Error removing old "${
+                                field.name
+                            }" metadata. Error: ${JSON.stringify(
+                                err.response || err.message || err,
+                            )}`,
+                        ),
                     );
                 }
                 if (index >= 0) {
