@@ -277,8 +277,9 @@ export class PlaceClusterTaskListComponent
         const clusters = await lastValueFrom(
             queryClusters({ q: id } as any).pipe(map((_) => _.data)),
         );
+        const match = clusters.find((_) => _.id === id) || clusters[0];
         console.log('Clusters:', clusters);
-        this.cluster.set(clusters[0]);
+        this.cluster.set(match);
         this.updateProcessList();
     }
 
