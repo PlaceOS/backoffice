@@ -380,7 +380,7 @@
         "TAB_SETTINGS_HISTORY": "Settings History",
         "TAG_WARNING": "Tags set in this zone require a parent zone to work correctly.",
         "SELECT_SYSTEM": "Select system",
-        "PARENT_ID": "Parent ID",
+        "PARENT_ID": "Parent",
         "PARENT": "Parent Zone",
         "LOCATION": "Location",
         "LOCATION_PLACEHOLDER": "Geo-location details for zone. <lat, long>",

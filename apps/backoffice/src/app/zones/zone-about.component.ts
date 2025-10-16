@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
+import { PlaceSystem, PlaceZone, showZone } from '@placeos/ts-client';
 
 import { ZonesStateService } from './zones-state.service';
 
@@ -9,7 +9,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { marked } from 'marked';
+import { lastValueFrom } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
@@ -46,8 +48,15 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                         item()?.parent_id,
                                         'about',
                                     ]"
-                                    >{{ item()?.parent_id }}</a
-                                >
+                                    >{{
+                                        parent()?.display_name ||
+                                            parent()?.name ||
+                                            item()?.parent_id
+                                    }}
+                                    @if (parent()) {
+                                        ({{ item()?.parent_id }})
+                                    }
+                                </a>
                             </div>
                         }
                         @if (item()?.location) {
@@ -249,6 +258,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         MatFormFieldModule,
         MatSelectModule,
         FormsModule,
+        RouterModule,
     ],
 })
 export class ZoneAboutComponent extends AsyncHandler implements OnInit {
@@ -259,6 +269,7 @@ export class ZoneAboutComponent extends AsyncHandler implements OnInit {
     /** Selected system */
     public readonly active_system = signal<PlaceSystem | undefined>(undefined);
     public readonly item = signal<PlaceZone | undefined>(undefined);
+    public readonly parent = signal<PlaceZone | undefined>(undefined);
     public readonly description = computed(() =>
         this.item() ? marked(this.item()?.description) : '',
     );
@@ -277,7 +288,16 @@ export class ZoneAboutComponent extends AsyncHandler implements OnInit {
     public ngOnInit() {
         this.subscription(
             'item',
-            this._service.item.subscribe((item) => this.item.set(item as any)),
+            this._service.item.subscribe(async (item) => {
+                this.parent.set(undefined);
+                this.item.set(item as any);
+                if ((item as any)?.parent_id) {
+                    const zone = await lastValueFrom(
+                        showZone((item as any)?.parent_id),
+                    );
+                    if (zone) this.parent.set(zone);
+                }
+            }),
         );
     }
 }
