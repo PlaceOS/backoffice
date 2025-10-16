@@ -15,6 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { i18n } from '../common/locale.service';
 import { HashMap } from '../common/types';
+import { BindingDirective } from '../ui/binding.directive';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -210,6 +211,7 @@ export interface TriggerInstanceState {
         SimpleTableComponent,
         MatProgressBarModule,
         RouterModule,
+        BindingDirective,
     ],
 })
 export class SystemTriggersComponent {
