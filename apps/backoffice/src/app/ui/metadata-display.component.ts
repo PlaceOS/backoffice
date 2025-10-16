@@ -360,6 +360,7 @@ export class MetadataDisplayComponent
                     (i) => i.name === field.name,
                 );
                 this.edited[field.name] = false;
+                console.log('Field:', field.name, value.name, item);
                 if (field.name !== value.name) {
                     lastValueFrom(
                         removeMetadata(this.item().id, { name: field.name }),
