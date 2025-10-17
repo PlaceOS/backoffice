@@ -76,7 +76,7 @@ import { SanitizePipe } from '../pipes/sanitise.pipe';
             @if (display_list()) {
                 @if (item_list()?.length) {
                     <div class="h-[50vh] flex-1 space-y-2 overflow-auto">
-                        @for (option of item_list(); track option) {
+                        @for (option of item_list(); track option?.id) {
                             <button
                                 matRipple
                                 (click)="search$.next(option); setValue(option)"

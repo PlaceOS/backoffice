@@ -17,6 +17,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
 import { CounterComponent } from '../counter.component';
 import { ImageListFieldComponent } from '../custom-fields/image-list-field.component';
 import { ItemSearchFieldComponent } from '../custom-fields/item-search-field.component';
+import { IconComponent } from '../icon.component';
 import { TranslatePipe } from '../translate.pipe';
 
 @Component({
@@ -289,6 +290,7 @@ import { TranslatePipe } from '../translate.pipe';
         ImageListFieldComponent,
         ReactiveFormsModule,
         TranslatePipe,
+        IconComponent,
         MatFormFieldModule,
         MatInputModule,
         CounterComponent,
