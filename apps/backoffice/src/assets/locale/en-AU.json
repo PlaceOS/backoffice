@@ -553,7 +553,7 @@
         "ACTION_ADD": "Add Action",
         "ACTION_NEW": "New Action",
         "ACTION_EDIT": "Edit Action",
-        "ACTION_FIELD_TYPE": "ACtion Type",
+        "ACTION_FIELD_TYPE": "Action Type",
         "ACTION_EXECUTE": "Execute Method",
         "ACTION_EXECUTE_SELECT": "Select method to execute",
         "ACTION_EMAIL": "Send Email",

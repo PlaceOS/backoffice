@@ -56,7 +56,7 @@ export interface TriggerActionModalData {
             @if (form) {
                 <form
                     trigger-action
-                    class="flex w-[36rem] max-w-[calc(100vw-4rem)] flex-col"
+                    class="flex w-full max-w-[calc(100vw-2rem)] flex-col"
                     [formGroup]="form"
                 >
                     @if (form.controls.action_type) {
