@@ -79,8 +79,8 @@ import { BackofficeUsersService } from '../users/users.service';
             }
 
             .active {
-                background-color: var(--s) !important;
-                color: var(--sc);
+                background-color: var(--secondary) !important;
+                color: var(--secondary-content);
                 margin-right: -1px;
             }
         `,

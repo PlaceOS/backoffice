@@ -134,8 +134,8 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             }
 
             .active {
-                background-color: var(--s);
-                color: var(--sc);
+                background-color: var(--secondary);
+                color: var(--secondary-content);
             }
 
             @media screen and (min-width: 512px) {

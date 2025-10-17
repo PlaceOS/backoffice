@@ -203,11 +203,11 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                 height: 100%;
             }
             scroll-item:nth-child(2n) > a {
-                background-color: var(--b2);
+                background-color: var(--base-200);
             }
             a.active {
-                background-color: var(--s) !important;
-                color: var(--sc);
+                background-color: var(--secondary) !important;
+                color: var(--secondary-content);
             }
         `,
     ],

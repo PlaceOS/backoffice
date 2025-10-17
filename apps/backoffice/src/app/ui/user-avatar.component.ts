@@ -32,9 +32,9 @@ import { AuthenticatedImageDirective } from './authenticated-image.directive';
             :host > div {
                 height: 2.5em;
                 width: 2.5em;
-                background-color: var(--b2);
+                background-color: var(--base-200);
                 overflow: hidden;
-                border: 2px solid var(--b1);
+                border: 2px solid var(--base-100);
             }
 
             .initials {

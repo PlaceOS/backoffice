@@ -6,14 +6,14 @@ textarea {
 
 .underline > a:not([btn]),
 a:not([btn]).underline {
-    color: var(--in);
+    color: var(--info);
     &:hover {
-        color: var(--er);
+        color: var(--error);
     }
 }
 
 hr {
-    color: var(--b3);
+    color: var(--base-300);
 }
 
 .theme-dark {
@@ -31,7 +31,7 @@ section > label {
     font-size: 0.8rem;
     font-weight: 500;
     span[required] {
-        color: var(--wa);
+        color: var(--warn);
     }
 }
 
@@ -42,11 +42,11 @@ section > label {
     font-weight: bold;
 
     > span:first-child {
-        color: var(--wa);
+        color: var(--warn);
     }
 
     &.error {
-        color: var(--er);
+        color: var(--error);
     }
 }
 
@@ -58,11 +58,11 @@ section > label {
     ::placeholder,
     .mat-form-field-label,
     .mat-mdc-select-placeholder {
-        color: var(--n);
+        color: var(--neutral);
     }
 
     input {
-        caret-color: var(--p);
+        caret-color: var(--primary);
     }
 }
 
@@ -79,29 +79,29 @@ table {
 table:not([role='grid']) {
     thead {
         opacity: 0.85;
-        background-color: var(--b3);
+        background-color: var(--base-300);
     }
 
     tr {
         width: 100%;
         &:nth-child(2n) {
-            background-color: var(--b2);
+            background-color: var(--base-200);
         }
 
         &:hover {
-            background-color: var(--b3);
+            background-color: var(--base-300);
         }
 
         &.cdk-drag-preview {
-            background-color: var(--b1);
-            border-color: var(--n);
+            background-color: var(--base-100);
+            border-color: var(--neutral);
             border-radius: 4px;
             @apply shadow;
         }
     }
 
     td {
-        border-color: var(--n);
+        border-color: var(--neutral);
         padding: 0.25em 0.5em;
 
         &.small {
@@ -114,7 +114,7 @@ table:not([role='grid']) {
 
 :not(.markdown) code {
     padding: 0.125rem 0.25rem;
-    background-color: var(--b2);
+    background-color: var(--base-200);
     border-radius: 4px;
     font-size: 0.75rem;
     @apply truncate;
