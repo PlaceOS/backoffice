@@ -40,6 +40,7 @@ import { i18n } from '../../common/locale.service';
 import { isValidUrl } from '../../common/validation';
 import { IconComponent } from '../icon.component';
 import { DateFromPipe } from '../pipes/date-from.pipe';
+import { SettingsToggleComponent } from '../settings-toggle.component';
 import { TranslatePipe } from '../translate.pipe';
 
 @Component({
@@ -302,12 +303,13 @@ import { TranslatePipe } from '../translate.pipe';
                         </mat-form-field>
                     </div>
                     <div class="field">
-                        <settings-form-field
+                        <settings-toggle
                             name="Follow latest commit"
+                            class="mb-4"
                             [ngModel]="follow_latest"
                             [ngModelOptions]="{ standalone: true }"
                             (ngModelChange)="setFollow($event)"
-                        ></settings-form-field>
+                        />
                     </div>
                 }
                 @if (form().controls.description) {
@@ -355,6 +357,7 @@ import { TranslatePipe } from '../translate.pipe';
         MatSelectModule,
         CommonModule,
         IconComponent,
+        SettingsToggleComponent,
     ],
 })
 export class RepositoryFormComponent
@@ -394,6 +397,7 @@ export class RepositoryFormComponent
                 name: i18n('REPOS.TYPE_INTERFACE'),
             },
         ];
+        this.follow_latest = this.form()?.value.commit_hash === 'HEAD';
     }
 
     public ngOnChanges(changes: SimpleChanges) {
