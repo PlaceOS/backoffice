@@ -19,6 +19,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatChipGrid, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     notifyError,
@@ -205,6 +206,7 @@ export interface TriggerActionModalData {
         ExecuteMethodFieldComponent,
         TranslatePipe,
         IconComponent,
+        MatSelectModule,
     ],
 })
 export class TriggerActionModalComponent extends AsyncHandler {
