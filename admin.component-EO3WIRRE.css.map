@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;4c34848e81ecf6b9b7778d73257c8028c151a626667041ab096a4ba75a794d73;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/admin/admin.component.ts"],
+  "sourcesContent": ["\n            :host {\n                display: flex;\n                flex-direction: column;\n                width: 100%;\n                height: 100%;\n            }\n\n            .active {\n                background-color: var(--secondary) !important;\n                color: var(--secondary-content);\n                margin-right: -1px;\n            }\n        "],
+  "mappings": "AACY,MACI,QAAS,KACT,eAAgB,OAChB,MAAO,KACP,OAAQ,IACZ,CAEA,CAAC,OACG,iBAAkB,IAAI,uBACtB,MAAO,IAAI,qBACX,aAAc,IAClB",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;612834c1828a2f2552c88283bf5ecd8a26395d562afbe5e24c677f61fcc74c67;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/item-sidebar.component.ts"],
+  "sourcesContent": ["\n            :host {\n                height: 100%;\n            }\n            scroll-item:nth-child(2n) > a {\n                background-color: var(--base-200);\n            }\n            a.active {\n                background-color: var(--secondary) !important;\n                color: var(--secondary-content);\n            }\n        "],
+  "mappings": "AACY,MACI,OAAQ,IACZ,CACA,WAAW,cAAe,CAAE,EACxB,iBAAkB,IAAI,WAC1B,CACA,CAAC,CAAC,OACE,iBAAkB,IAAI,uBACtB,MAAO,IAAI,oBACf",
+  "names": []
+}
