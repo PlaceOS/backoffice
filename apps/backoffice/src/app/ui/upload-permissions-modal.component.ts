@@ -1,6 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import {
     MAT_DIALOG_DATA,
@@ -8,16 +7,20 @@ import {
     MatDialogRef,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { UploadPermissions } from '../common/uploads';
 import { IconComponent } from './icon.component';
+import { SettingsToggleComponent } from './settings-toggle.component';
 import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'upload-permissions-modal',
     template: `
-        <header>
-            <h2>
+        <header
+            class="sticky top-0 z-10 m-2 flex w-[calc(100%-1rem)] items-center justify-between rounded border-none bg-base-200 p-2"
+        >
+            <h2 class="px-2 text-xl font-medium">
                 {{ 'COMMON.UPLOAD_FILE' | translate }}
             </h2>
             <button icon matRipple mat-dialog-close>
@@ -37,11 +40,11 @@ import { TranslatePipe } from './translate.pipe';
                 </mat-form-field>
             </div>
             <div class="pb-4">
-                <mat-checkbox [(ngModel)]="is_public">
-                    {{ 'COMMON.PUBLIC' | translate }}</mat-checkbox
-                >
+                <settings-toggle [(ngModel)]="is_public">{{
+                    'COMMON.PUBLIC' | translate
+                }}</settings-toggle>
             </div>
-            @if (!is_public) {
+            @if (!is_public()) {
                 <div class="flex flex-col space-y-2">
                     <label> {{ 'COMMON.PERMISSIONS' | translate }}</label>
                     <mat-form-field appearance="outline">
@@ -90,10 +93,11 @@ import { TranslatePipe } from './translate.pipe';
         TranslatePipe,
         MatRippleModule,
         MatFormFieldModule,
+        MatInputModule,
         MatSelectModule,
         FormsModule,
-        MatCheckboxModule,
         IconComponent,
+        SettingsToggleComponent,
     ],
 })
 export class UploadPermissionsModalComponent {
