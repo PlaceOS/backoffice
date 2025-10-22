@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { PlaceModule } from '@placeos/ts-client';
 
 import { CommonModule } from '@angular/common';
@@ -195,15 +195,14 @@ import { ModuleStateService } from './module-state.service';
                                 btn
                                 matRipple
                                 class="m-1 min-w-36 flex-1"
-                                [disabled]="item.running || stopping"
+                                [disabled]="item.running || stopping()"
                                 (click)="toggleModuleState()"
                             >
-                                @if (!stopping) {
+                                @if (!stopping()) {
                                     <div class="text">
                                         {{ 'MODULES.START' | translate }}
                                     </div>
-                                }
-                                @if (stopping) {
+                                } @else {
                                     <mat-spinner diameter="32"></mat-spinner>
                                 }
                             </button>
@@ -211,15 +210,14 @@ import { ModuleStateService } from './module-state.service';
                                 btn
                                 matRipple
                                 class="inverse error m-1 min-w-36 flex-1"
-                                [disabled]="!item.running || stopping"
+                                [disabled]="!item.running || stopping()"
                                 (click)="toggleModuleState()"
                             >
-                                @if (!stopping) {
+                                @if (!stopping()) {
                                     <div class="text">
                                         {{ 'MODULES.STOP' | translate }}
                                     </div>
-                                }
-                                @if (stopping) {
+                                } @else {
                                     <mat-spinner diameter="32"></mat-spinner>
                                 }
                             </button>
@@ -285,16 +283,16 @@ export class ModuleAboutComponent {
     /** List of settings for associated modules, drivers and zones */
     public readonly other_settings = this._service.associated_settings;
     /** Whether module is being stopped */
-    public stopping: boolean;
+    public readonly stopping = signal(false);
 
     public get item(): PlaceModule {
         return this._service.active_item as any;
     }
 
     public async toggleModuleState() {
-        this.stopping = true;
+        this.stopping.set(true);
         await this._service.toggleModuleState();
-        this.stopping = false;
+        this.stopping.set(false);
     }
 
     public viewErrors() {
