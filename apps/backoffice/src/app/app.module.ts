@@ -26,6 +26,7 @@ import localeFr from '@angular/common/locales/fr';
 import localeIt from '@angular/common/locales/it';
 import localeJa from '@angular/common/locales/ja';
 import localeZh from '@angular/common/locales/zh';
+import { UploadListComponent } from './ui/upload-list.component';
 
 @NgModule({
     declarations: [AppComponent],
@@ -42,6 +43,7 @@ import localeZh from '@angular/common/locales/zh';
             registrationStrategy: 'registerWhenStable:30000',
         }),
         CommonModule,
+        UploadListComponent,
     ],
     providers: [
         provideZonelessChangeDetection(),

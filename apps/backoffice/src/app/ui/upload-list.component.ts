@@ -139,7 +139,7 @@ import { TranslatePipe } from './translate.pipe';
             </div>
         }
         <div
-            class="absolute inset-0"
+            class="fixed inset-0"
             (document:dragenter)="onEnter($event)"
             (drop)="hideOverlay()"
         ></div>
