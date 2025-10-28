@@ -438,10 +438,10 @@ export class SettingsFormComponent
                     s[level] = false;
                     return s;
                 });
-                this.settings.update((s) => ({
-                    ...s,
-                    [level]: new_settings,
-                }));
+                this.settings.update((s) => {
+                    s[level] = new_settings;
+                    return s;
+                });
                 notifySuccess(
                     i18n('COMMON.SETTINGS_SAVE_SUCCESS', {
                         type: this.type(level),
@@ -496,7 +496,10 @@ export class SettingsFormComponent
                             s[result.encryption_level] = false;
                             return s;
                         });
-                        this.settings()[result.encryption_level] = result;
+                        this.settings.update((s) => {
+                            s[result.encryption_level] = result;
+                            return s;
+                        });
                     }
                     notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
                     this.clearChanges();
@@ -521,6 +524,7 @@ export class SettingsFormComponent
     }
 
     public clearChanges() {
+        console.log('Settings', this.settings());
         this.used_settings.set(this._processSettings(this.settings() || []));
         this._initForm();
     }
@@ -555,9 +559,11 @@ export class SettingsFormComponent
     }
 
     private _processSettings(settings: PlaceSettings[]): PlaceSettings[] {
+        console.log('Settings:', settings);
+        if (!settings.length) return [];
         const processed_settings = [];
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
-            const setting = settings.find((_) => _.encryption_level === i);
+            const setting = settings?.find((_) => _.encryption_level === i);
             if (!setting) {
                 processed_settings.push(
                     this._processSetting(
