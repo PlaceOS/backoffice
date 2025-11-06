@@ -693,6 +693,7 @@
         "SETTINGS_CONFIG": "Config",
         "SETTINGS_INTERNALS": "Internals",
         "COPIED_EMAIL_DOMAIN": "Copied email domain to clipboard.",
+        "SETTINGS_ERROR": "Unable to save settings as they contain errors.",
         "SETTINGS_SAVED": "Successfully updated domain settings.",
         "APPLICATION_NEW": "New Application",
         "APPLICATION_EDIT": "Edit Application",
