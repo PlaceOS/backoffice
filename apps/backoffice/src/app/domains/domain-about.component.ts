@@ -11,7 +11,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
 import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
 import { marked } from 'marked';
 import { i18n } from '../common/locale.service';
-import { notifySuccess } from '../common/notifications';
+import { notifyError, notifySuccess } from '../common/notifications';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
@@ -151,7 +151,8 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
 
     /** Save changes to the form fields */
     public async saveChanges() {
-        if (!this.form.valid) return;
+        if (!this.form.valid)
+            return notifyError(i18n('DOMAINS.SETTINGS_ERROR'));
         const domain = new PlaceDomain({
             ...this.item,
             config: JSON.parse(this.form.value.config),
