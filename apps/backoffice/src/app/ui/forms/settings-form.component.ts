@@ -559,7 +559,6 @@ export class SettingsFormComponent
     }
 
     private _processSettings(settings: PlaceSettings[]): PlaceSettings[] {
-        console.log('Settings:', settings);
         if (!settings.length) return [];
         const processed_settings = [];
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
@@ -639,6 +638,12 @@ export class SettingsFormComponent
         const merged_settings = remote_settings
             .concat(local_settings)
             .reduce((m, i) => ({ ...m, ...i }), {});
+        console.log(
+            'Settings:',
+            local_settings,
+            remote_settings,
+            merge_settings,
+        );
         const settings_string = Object.keys(merged_settings).length
             ? yaml.dump(merged_settings, { strict: true })
             : '';
