@@ -417,7 +417,6 @@ export class SettingsFormComponent
     /** Save changes to the given setting level */
     public save(level: EncryptionLevel) {
         const item = this.used_settings()[level];
-        console.log('Save:', item, level, this.form().controls);
         if (!item && this.saving()[level]) return;
         this.saving.update((s) => {
             s[level] = true;
@@ -524,7 +523,6 @@ export class SettingsFormComponent
     }
 
     public clearChanges() {
-        console.log('Settings', this.settings());
         this.used_settings.set(this._processSettings(this.settings() || []));
         this._initForm();
     }
@@ -639,10 +637,10 @@ export class SettingsFormComponent
             .concat(local_settings)
             .reduce((m, i) => ({ ...m, ...i }), {});
         console.log(
-            'Settings:',
+            'Settings(Local, Remote, Merged):',
             local_settings,
             remote_settings,
-            merge_settings,
+            merged_settings,
         );
         const settings_string = Object.keys(merged_settings).length
             ? yaml.dump(merged_settings, { strict: true })
