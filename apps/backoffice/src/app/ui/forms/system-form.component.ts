@@ -160,11 +160,9 @@ import { TranslatePipe } from '../translate.pipe';
                                 "
                                 formControlName="support_url"
                             />
-                            @if (form().controls.support_url.invalid) {
-                                <mat-error>
-                                    {{ 'SYSTEMS.URL_VALID' | translate }}
-                                </mat-error>
-                            }
+                            <mat-error>
+                                {{ 'SYSTEMS.URL_VALID' | translate }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                 }
@@ -336,6 +334,82 @@ import { TranslatePipe } from '../translate.pipe';
                             name="images"
                             formControlName="images"
                         ></image-list-field>
+                    </div>
+                }
+                @if (form().controls.timetable_url) {
+                    <div class="field">
+                        <label
+                            for="timetable-url"
+                            [class.error]="
+                                form().controls.timetable_url.invalid &&
+                                form().controls.timetable_url.touched
+                            "
+                        >
+                            {{ 'SYSTEMS.TIMETABLE_URL' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="timetable-url"
+                                [placeholder]="
+                                    'SYSTEMS.TIMETABLE_URL' | translate
+                                "
+                                formControlName="timetable_url"
+                            />
+                            <mat-error>
+                                {{ 'SYSTEMS.URL_VALID' | translate }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                }
+                @if (form().controls.camera_url) {
+                    <div class="field">
+                        <label
+                            for="camera-url"
+                            [class.error]="
+                                form().controls.camera_url.invalid &&
+                                form().controls.camera_url.touched
+                            "
+                        >
+                            {{ 'SYSTEMS.CAMERA_URL' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="camera-url"
+                                [placeholder]="'SYSTEMS.CAMERA_URL' | translate"
+                                formControlName="camera_url"
+                            />
+                            <mat-error>
+                                {{ 'SYSTEMS.URL_VALID' | translate }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                }
+                @if (form().controls.room_booking_url) {
+                    <div class="field">
+                        <label
+                            for="room-booking-url"
+                            [class.error]="
+                                form().controls.room_booking_url.invalid &&
+                                form().controls.room_booking_url.touched
+                            "
+                        >
+                            {{ 'SYSTEMS.ROOM_BOOKING_URL' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="room-booking-url"
+                                [placeholder]="
+                                    'SYSTEMS.ROOM_BOOKING_URL' | translate
+                                "
+                                formControlName="room_booking_url"
+                            />
+                            <mat-error>
+                                {{ 'SYSTEMS.URL_VALID' | translate }}
+                            </mat-error>
+                        </mat-form-field>
                     </div>
                 }
             </form>
