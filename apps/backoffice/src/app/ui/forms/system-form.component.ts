@@ -386,6 +386,32 @@ import { TranslatePipe } from '../translate.pipe';
                         </mat-form-field>
                     </div>
                 }
+                @if (form().controls.camera_snapshot_url) {
+                    <div class="field">
+                        <label
+                            for="camera-snap-url"
+                            [class.error]="
+                                form().controls.camera_snapshot_url.invalid &&
+                                form().controls.camera_snapshot_url.touched
+                            "
+                        >
+                            {{ 'SYSTEMS.CAMERA_SNAPSHOT_URL' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="camera-snap-url"
+                                [placeholder]="
+                                    'SYSTEMS.CAMERA_SNAPSHOT_URL' | translate
+                                "
+                                formControlName="camera_snapshot_url"
+                            />
+                            <mat-error>
+                                {{ 'SYSTEMS.URL_VALID' | translate }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                }
                 @if (form().controls.room_booking_url) {
                     <div class="field">
                         <label
