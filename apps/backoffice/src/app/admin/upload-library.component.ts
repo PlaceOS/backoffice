@@ -159,7 +159,10 @@ export interface UploadInfo {
                     [class.opacity-0]="!loading()"
                 />
                 @if (uploads_list()?.length > 0) {
-                    <div role="table" class="mb-4 block min-w-[68rem] text-sm">
+                    <div
+                        role="table"
+                        class="mb-4 block min-w-[60rem] overflow-hidden text-sm"
+                    >
                         <div
                             header
                             class="grid min-w-full grid-cols-5 divide-x divide-base-100 border border-base-300 bg-base-200"
@@ -232,21 +235,22 @@ export interface UploadInfo {
                             <div class="p-4"></div>
                         </div>
                         <cdk-virtual-scroll-viewport
-                            itemSize="64"
+                            itemSize="48"
                             class="min-h-[calc(100vh-13.25rem)]"
                         >
                             <div
                                 *cdkVirtualFor="let upload of sorted_uploads()"
-                                class="grid h-16 min-w-full grid-cols-5 divide-x divide-base-300 border-x border-b border-base-300"
+                                class="grid h-12 min-w-full grid-cols-5 divide-x divide-base-300 overflow-hidden border-x border-b border-base-300"
                                 [style.grid-template-columns]="
                                     'auto 10rem 7rem 10rem 11.5rem'
                                 "
                             >
                                 <div
-                                    class="flex h-full max-w-[24rem] items-center p-4 text-xs"
+                                    class="flex h-full items-center p-4 text-xs"
                                 >
                                     <div
-                                        class="mono line-clamp-2 overflow-hidden break-words"
+                                        class="mono w-px flex-1 truncate"
+                                        [matTooltip]="upload.file_name"
                                     >
                                         {{ upload.file_name }}
                                     </div>
