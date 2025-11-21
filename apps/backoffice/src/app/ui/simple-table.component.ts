@@ -2,25 +2,23 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import {
     Component,
-    OnChanges,
-    SimpleChanges,
     TemplateRef,
+    computed,
+    effect,
     input,
     model,
     output,
     signal,
 } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { AsyncHandler } from '../common/async-handler.class';
-import { nextValueFrom } from '../common/general';
+import { Observable } from 'rxjs';
 import { IconComponent } from './icon.component';
 
 export interface TableColumn {
     key: string;
     name: string;
     sortable?: boolean;
+    sort_fn?: (a, b) => number;
     filterable?: boolean;
     content?: string | TemplateRef<any> | Component;
     size?: string;
@@ -33,7 +31,7 @@ export interface TableColumn {
         <div
             role="table"
             class="grid overflow-visible border border-base-200"
-            [style.gridTemplateColumns]="column_template"
+            [style.gridTemplateColumns]="column_template()"
             (click)="onclick.emit(0)"
             cdkDropList
             (cdkDropListDropped)="
@@ -54,12 +52,10 @@ export interface TableColumn {
                     "
                 >
                     <mat-checkbox
-                        [checked]="
-                            selected().length === (data$ | async)?.length
-                        "
+                        [checked]="selected().length === data_length()"
                         [indeterminate]="
                             selected().length > 0 &&
-                            selected().length < (data$ | async)?.length
+                            selected().length < data_length()
                         "
                         (change)="selectAll($event.checked)"
                     ></mat-checkbox>
@@ -85,20 +81,20 @@ export interface TableColumn {
                         )
                     "
                     [class.pointer-events-none]="
-                        !can_sort || column.sortable === false
+                        !can_sort() || column.sortable === false
                     "
                     (click)="setSort(column.key)"
-                    [class.active]="sort?.key === column.key"
-                    [class.border-r]="i !== active_columns.length - 1"
+                    [class.active]="sort()?.key === column.key"
+                    [class.border-r]="i !== active_columns().length - 1"
                     [class.width]="column.size"
                 >
                     <div class="font-medium">
                         {{ column.name || column.key }}
                     </div>
-                    @if (can_sort && column.sortable !== false) {
+                    @if (can_sort() && column.sortable !== false) {
                         <icon class="text-[1.25em]">
                             {{
-                                sort?.key === column.key && sort?.reverse
+                                sort()?.key === column.key && sort()?.reverse
                                     ? 'arrow_upward'
                                     : 'arrow_downward'
                             }}
@@ -107,7 +103,7 @@ export interface TableColumn {
                 </button>
             }
             @for (
-                row of (data$ | async) || [];
+                row of paginated_data();
                 track row.id || $index;
                 let i = $index
             ) {
@@ -116,19 +112,19 @@ export interface TableColumn {
                         class="grid"
                         cdkDrag
                         [style.gridArea]="i + 2 + '/1/' + (i + 2) + '/' + -1"
-                        [style.gridTemplateColumns]="column_template"
+                        [style.gridTemplateColumns]="column_template()"
                     >
                         <div
                             *cdkDragPlaceholder
                             class="h-16 w-full border-2 border-dashed border-base-300 bg-base-200"
                             [style.gridArea]="
-                                i + 2 + '/1/' + (i + 2) + '/' + column_count
+                                i + 2 + '/1/' + (i + 2) + '/' + column_count()
                             "
                         ></div>
                         <div
                             class="z-0 flex min-h-full items-center justify-center border-r border-base-200 px-2"
                             [style.gridArea]="gridSquare(2 + i, 1)"
-                            [class.border-b]="i !== (data$ | async)?.length - 1"
+                            [class.border-b]="i !== data_length() - 1"
                             [style.background]="color()[i]"
                         >
                             <button
@@ -156,7 +152,7 @@ export interface TableColumn {
                     ></ng-container>
                 }
             }
-            @if (!(data$ | async)?.length) {
+            @if (!paginated_data()?.length) {
                 <div
                     [style.gridArea]="2 + '/1/' + 2 + '/' + -1"
                     class="flex items-center justify-center p-4 opacity-30"
@@ -173,7 +169,7 @@ export interface TableColumn {
                     [style.gridArea]="
                         gridSquare(2 + i, 1 + (can_reorder() ? 1 : 0))
                     "
-                    [class.border-b]="i !== (data$ | async)?.length - 1"
+                    [class.border-b]="i !== data_length() - 1"
                     [style.background]="color()[i]"
                     (mouseenter)="enter_row.emit(i)"
                     (touchstart)="enter_row.emit(i)"
@@ -196,8 +192,8 @@ export interface TableColumn {
                                 (can_reorder() ? 1 : 0)
                         )
                     "
-                    [class.border-b]="i !== (data$ | async)?.length - 1"
-                    [class.border-r]="j !== active_columns.length - 1"
+                    [class.border-b]="i !== data_length() - 1"
+                    [class.border-r]="j !== active_columns().length - 1"
                     [class.width]="column.size"
                     (mouseenter)="enter_row.emit(i)"
                     (touchstart)="enter_row.emit(i)"
@@ -207,7 +203,10 @@ export interface TableColumn {
                         @default {
                             <div class="p-4">
                                 {{ row[column.key] }}
-                                @if (row[column.key] == null) {
+                                @if (
+                                    row[column.key] === null ||
+                                    row[column.key] === undefined
+                                ) {
                                     <span class="opacity-30"> N/A </span>
                                 }
                             </div>
@@ -218,9 +217,7 @@ export interface TableColumn {
                                     column.content;
                                     context: {
                                         first: i === 0,
-                                        last:
-                                            i === (data$ | async)?.length - 1 ||
-                                            i === (data$ | async)?.length - 1,
+                                        last: i === data_length() - 1,
                                         index: i,
                                         data: row[column.key],
                                         row: row,
@@ -259,20 +256,20 @@ export interface TableColumn {
     ],
     imports: [CommonModule, MatCheckboxModule, DragDropModule, IconComponent],
 })
-export class SimpleTableComponent<T extends {} = any>
-    extends AsyncHandler
-    implements OnChanges
-{
+export class SimpleTableComponent<T = any> {
+    public readonly selected = model<number[]>([]);
+
     public readonly data = input<T[] | Observable<T[]>>(undefined);
     public readonly columns = input<TableColumn[]>([]);
     public readonly selectable = input(false);
     public readonly filter = input<string>('');
     public readonly sortable = input(false);
     public readonly can_reorder = input(false);
-    public readonly selected = model<number[]>([]);
-    public readonly page_size = input(-1);
+    public readonly page_size = input(0);
     public readonly color = input<Record<number, string>>({});
     public readonly empty_message = input('No data to list');
+    public readonly filter_on = input<string[]>([]);
+
     public readonly selectedChange = output<number[]>();
     public readonly enter_row = output<number>();
     public readonly onclick = output<number>();
@@ -280,97 +277,131 @@ export class SimpleTableComponent<T extends {} = any>
     public readonly ondrop = output<[number, number]>();
 
     public readonly page = signal(0);
+    public readonly total_count = signal(0);
+    public readonly total_pages = signal(0);
     public readonly active_columns = signal<TableColumn[]>([]);
-
-    private _data$ = new BehaviorSubject<T[]>([]);
-    private _filter$ = new BehaviorSubject<string>('');
-    private _sort$ = new BehaviorSubject<{ key: string; reverse: boolean }>(
+    public readonly sort = signal<{ key: string; reverse: boolean } | null>(
         null,
     );
 
-    public data$: Observable<T[]> = combineLatest([
-        this._data$,
-        this._filter$,
-        this._sort$,
-    ]).pipe(
-        map(([data, filter, sort]) => {
-            data = [...(data || [])];
-            if (filter) {
-                data = data.filter((_) =>
-                    Object.values(_).some((i) =>
-                        JSON.stringify(i)
-                            .toLowerCase()
-                            .includes(filter.toLowerCase()),
-                    ),
+    // Internal signal to hold the actual data array
+    private readonly _data = signal<T[]>([]);
+
+    // Computed data view with filtering and sorting
+    public readonly data_view = computed(() => {
+        let data = [...this._data()];
+        const filter_str = this.filter()?.toLowerCase();
+        const current_sort = this.sort();
+
+        // Apply filter
+        if (filter_str) {
+            data = data.filter((v) => {
+                const filter_on = this.filter_on();
+                const keys = filter_on.length ? filter_on : Object.keys(v);
+                return keys.some((key) => {
+                    const value = v[key];
+                    const cmp_str = `${JSON.stringify(value)}`.toLowerCase();
+                    return cmp_str.includes(filter_str);
+                });
+            });
+        }
+
+        // Apply sort
+        if (current_sort && data.length) {
+            const type = typeof data[0][current_sort.key];
+            const default_fn =
+                type === 'number'
+                    ? (a, b) => a - b
+                    : (a, b) => {
+                          const a_value = JSON.stringify(a);
+                          const b_value = JSON.stringify(b);
+                          return a_value?.localeCompare(b_value);
+                      };
+            data = data.sort((a, b) => {
+                const sort_fn =
+                    this.column(current_sort.key)?.sort_fn || default_fn;
+                const result = sort_fn(
+                    a[current_sort.key],
+                    b[current_sort.key],
                 );
+                return current_sort.reverse ? -result : result;
+            });
+        }
+
+        return data;
+    });
+
+    // Computed column count
+    public readonly column_count = computed(() => {
+        return this.active_columns().length + (this.selectable() ? 1 : 0);
+    });
+
+    // Computed data length
+    public readonly data_length = computed(() => this._data().length);
+
+    constructor() {
+        // Handle Observable vs array data input
+        effect((onCleanup) => {
+            const data = this.data();
+            if (data instanceof Observable) {
+                const sub = data.subscribe((value) => {
+                    this._data.set(value || []);
+                });
+                onCleanup(() => sub.unsubscribe());
+            } else {
+                this._data.set(data || []);
             }
-            if (sort && data.length) {
-                const type = data[0][sort.key];
-                if (type === 'number') {
-                    data = data.sort((a, b) => {
-                        const result = a[sort.key] - b[sort.key];
-                        return sort.reverse ? -result : result;
-                    });
-                } else {
-                    data = data.sort((a, b) => {
-                        const a_value = JSON.stringify(a[sort.key]);
-                        const b_value = JSON.stringify(b[sort.key]);
-                        const result = a_value.localeCompare(b_value);
-                        return sort.reverse ? -result : result;
-                    });
-                }
-            }
+        });
+
+        // Update active columns when columns input changes
+        effect(() => {
+            this.active_columns.set(
+                this.columns().filter((_) => _.show !== false),
+            );
+        });
+
+        // Reset page and update pagination info when data view changes
+        effect(() => {
+            const data = this.data_view();
+            const page_size_value = this.page_size();
+
             this.selected.set([]);
             this.page.set(0);
-            return data;
-        }),
-    );
 
-    public get can_sort() {
-        return !this.can_reorder() && this.sortable();
+            if (page_size_value) {
+                this.total_count.set(data.length);
+                this.total_pages.set(Math.ceil(data.length / page_size_value));
+            }
+        });
     }
 
-    public get sort() {
-        return this._sort$.getValue();
-    }
+    // Paginated data view
+    public readonly paginated_data = computed(() => {
+        const data = this.data_view();
+        const page_size_value = this.page_size();
+        if (!page_size_value) return data;
 
-    public get column_count() {
-        return (
-            this.active_columns.length +
-            (this.selectable() ? 1 : 0) +
-            (this.can_reorder() ? 1 : 0)
-        );
-    }
+        const start = this.page() * page_size_value;
+        const end = (this.page() + 1) * page_size_value;
+        return data.slice(start, end);
+    });
 
-    public get column_template() {
+    // Computed column template
+    public readonly column_template = computed(() => {
         let template = this.active_columns()
             .map((_) => _.size || 'auto')
             .join(' ');
         template = this.selectable() ? `3.5rem ${template}` : template;
         template = this.can_reorder() ? `3.5rem ${template}` : template;
         return template;
-    }
+    });
 
-    public ngOnChanges(changes: SimpleChanges) {
-        if (changes.filter) {
-            this._filter$.next(this.filter());
-        }
-        if (changes.columns) {
-            this.active_columns.set(
-                this.columns().filter((_) => _.show !== false),
-            );
-        }
-        if (changes.data) {
-            const data = this.data();
-            if (data instanceof Array) {
-                this._data$.next(data);
-            } else {
-                this.subscription(
-                    'data',
-                    data.subscribe((_) => this._data$.next(_)),
-                );
-            }
-        }
+    public readonly can_sort = computed(
+        () => !this.can_reorder() && this.sortable(),
+    );
+
+    public column(key: string) {
+        return this.active_columns().find((_) => _.key === key);
     }
 
     public columnType(column: TableColumn) {
@@ -382,24 +413,27 @@ export class SimpleTableComponent<T extends {} = any>
     }
 
     public select(index: number, state: boolean) {
-        if (state) this.selected().push(index);
-        else this.selected.set(this.selected().filter((i) => i !== index));
+        const current_selected = this.selected();
+        if (state) {
+            this.selected.set([...current_selected, index]);
+        } else {
+            this.selected.set(current_selected.filter((i) => i !== index));
+        }
     }
 
-    public async selectAll(state: boolean) {
-        const list = await nextValueFrom(this.data$);
-        if (state) this.selected.set(list.map((_, i) => i));
-        else this.selected.set([]);
+    public selectAll(state: boolean) {
+        const list = this.data_view();
+        this.selected.set(state ? list.map((_, i) => i) : []);
     }
 
     public setSort(key: string) {
-        const sort = this._sort$.getValue();
-        if (!sort || sort.key !== key) {
-            this._sort$.next({ key, reverse: false });
-        } else if (!sort.reverse) {
-            this._sort$.next({ key, reverse: true });
+        const current_sort = this.sort();
+        if (!current_sort || current_sort.key !== key) {
+            this.sort.set({ key, reverse: false });
+        } else if (!current_sort.reverse) {
+            this.sort.set({ key, reverse: true });
         } else {
-            this._sort$.next(null);
+            this.sort.set(null);
         }
     }
 }
