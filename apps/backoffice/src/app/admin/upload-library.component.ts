@@ -167,7 +167,7 @@ export interface UploadInfo {
                             header
                             class="grid min-w-full grid-cols-5 divide-x divide-base-100 border border-base-300 bg-base-200"
                             [style.grid-template-columns]="
-                                'auto 10rem 7rem 10rem 11.5rem'
+                                'auto 10rem 7rem 8rem 11.5rem'
                             "
                         >
                             <button
@@ -242,7 +242,7 @@ export interface UploadInfo {
                                 *cdkVirtualFor="let upload of sorted_uploads()"
                                 class="grid h-12 min-w-full grid-cols-5 divide-x divide-base-300 overflow-hidden border-x border-b border-base-300"
                                 [style.grid-template-columns]="
-                                    'auto 10rem 7rem 10rem 11.5rem'
+                                    'auto 10rem 7rem 8rem 11.5rem'
                                 "
                             >
                                 <div

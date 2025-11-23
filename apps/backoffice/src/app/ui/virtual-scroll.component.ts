@@ -35,7 +35,7 @@ import {
                     class="absolute w-full"
                     [style.top]="(offset_start() + i) * item_size() + 'px'"
                 >
-                    <ng-conatiner
+                    <ng-container
                         *ngTemplateOutlet="
                             item_template();
                             context: { item, index: offset_start() + i }
