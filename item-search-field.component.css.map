@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;c9abedfedede68850d67d4a13d94632f6b77b2600b74803d4fff85b115f0b56c;/home/runner/work/backoffice/backoffice/src/app/ui/custom-fields/item-search-field.component.ts"],
+  "sourcesContent": ["\n            :host,\n            mat-form-field {\n                width: 100%;\n            }\n\n            .disabled {\n                color: rgba(0, 0, 0, 0.35);\n            }\n\n            .name {\n                display: flex;\n                align-items: center;\n                height: 1.1em;\n                line-height: 1em;\n            }\n\n            .email {\n                font-size: 0.6em;\n                opacity: 0.65;\n                line-height: 1.2em;\n            }\n        "],
+  "mappings": ";AACY;AACA;AACI,SAAO;AACX;AAEA,CAAC;AACG,SAAO,KAAK,CAAC,EAAE,CAAC,EAAE,CAAC,EAAE;AACzB;AAEA,CAAC;AACG,WAAS;AACT,eAAa;AACb,UAAQ;AACR,eAAa;AACjB;AAEA,CAAC;AACG,aAAW;AACX,WAAS;AACT,eAAa;AACjB;",
+  "names": []
+}

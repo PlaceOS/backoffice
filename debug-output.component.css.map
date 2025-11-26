@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;e36b6b62788ada7ab07d67f8707dbe1c023ddb670fe27ee2079e78bc5b6b3a73;/home/runner/work/backoffice/backoffice/src/app/ui/debug-output.component.ts"],
+  "sourcesContent": ["\n            :host > div {\n                max-height: 100%;\n                max-width: 100%;\n                z-index: 20;\n            }\n\n            [content] {\n                min-width: 24rem;\n                min-height: 15rem;\n                max-height: 100%;\n                max-width: 100%;\n            }\n\n            [content] [actions] {\n                opacity: 0;\n                transition: opacity 200ms;\n            }\n\n            [content]:hover [actions] {\n                opacity: 1;\n            }\n\n            .disabled {\n                pointer-events: none;\n            }\n\n            [ns-resize] {\n                cursor: ns-resize;\n            }\n\n            [ew-resize] {\n                cursor: ew-resize;\n            }\n\n            [nwse-resize] {\n                cursor: nwse-resize;\n            }\n        "],
+  "mappings": ";AACY,MAAM,EAAE;AACJ,cAAY;AACZ,aAAW;AACX,WAAS;AACb;AAEA,CAAC;AACG,aAAW;AACX,cAAY;AACZ,cAAY;AACZ,aAAW;AACf;AAEA,CAAC,SAAS,CAAC;AACP,WAAS;AACT,cAAY,QAAQ;AACxB;AAEA,CAAC,QAAQ,OAAO,CAAC;AACb,WAAS;AACb;AAEA,CAAC;AACG,kBAAgB;AACpB;AAEA,CAAC;AACG,UAAQ;AACZ;AAEA,CAAC;AACG,UAAQ;AACZ;AAEA,CAAC;AACG,UAAQ;AACZ;",
+  "names": []
+}

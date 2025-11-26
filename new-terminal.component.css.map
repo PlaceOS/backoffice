@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;6bdb6109b6070dfbef40c061336d5b71cd67b3b726c9cbe2b6c546961f29d5d5;/home/runner/work/backoffice/backoffice/src/app/ui/new-terminal.component.ts"],
+  "sourcesContent": ["\n            :host {\n                display: block;\n                height: 1px;\n                flex-grow: 1;\n                width: 100%;\n            }\n        "],
+  "mappings": ";AACY;AACI,WAAS;AACT,UAAQ;AACR,aAAW;AACX,SAAO;AACX;",
+  "names": []
+}

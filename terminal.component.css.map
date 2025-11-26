@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;a1c38499a34d197a9bf461620f93b9121a70acbb96487084f9ce73767be75a3c;/home/runner/work/backoffice/backoffice/src/app/ui/terminal.component.ts"],
+  "sourcesContent": ["\n            :host > div {\n                background-color: #263238;\n            }\n        "],
+  "mappings": ";AACY,MAAM,EAAE;AACJ,oBAAkB;AACtB;",
+  "names": []
+}
