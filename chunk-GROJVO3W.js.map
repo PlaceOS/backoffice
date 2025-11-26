@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/ui/translate.pipe.ts"],
+  "sourcesContent": ["import { Pipe, PipeTransform, inject } from '@angular/core';\n\nimport { LocaleService } from '../common/locale.service';\n\n@Pipe({\n    name: 'translate',\n})\nexport class TranslatePipe implements PipeTransform {\n    private _locale = inject(LocaleService);\n\n    public transform(\n        value: string,\n        args: Record<string, any> = {},\n        plural?: number,\n    ) {\n        return this._locale.get(value, args, plural);\n    }\n}\n"],
+  "mappings": ";;;;;;;;;;;AAOM,IAAO,gBAAP,MAAO,eAAa;EACd,UAAU,OAAO,aAAa;EAE/B,UACH,OACA,OAA4B,CAAA,GAC5B,QAAe;AAEf,WAAO,KAAK,QAAQ,IAAI,OAAO,MAAM,MAAM;EAC/C;;qCATS,gBAAa;EAAA;wFAAb,gBAAa,MAAA,KAAA,CAAA;;;sEAAb,eAAa,CAAA;UAHzB;WAAK;MACF,MAAM;KACT;;;",
+  "names": []
+}
