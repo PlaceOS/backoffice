@@ -1038,6 +1038,9 @@ video {
 #placeos .w-2 {
   width: 0.5rem;
 }
+#placeos .w-2\/3 {
+  width: 66.666667%;
+}
 #placeos .w-2\/5 {
   width: 40%;
 }
@@ -1047,8 +1050,14 @@ video {
 #placeos .w-24 {
   width: 6rem;
 }
+#placeos .w-28 {
+  width: 7rem;
+}
 #placeos .w-3 {
   width: 0.75rem;
+}
+#placeos .w-3\/4 {
+  width: 75%;
 }
 #placeos .w-32 {
   width: 8rem;
@@ -1343,6 +1352,14 @@ video {
 }
 #placeos .animate-bounce {
   animation: bounce 1s infinite;
+}
+@keyframes pulse {
+  50% {
+    opacity: .5;
+  }
+}
+#placeos .animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 #placeos .cursor-pointer {
   cursor: pointer;
