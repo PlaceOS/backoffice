@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["angular:styles/component:css;db5d7a027ab0a8f92cd3b5fbd3a40f8d6c4b919b25a7d3d745546ade88155ef4;/home/runner/work/backoffice/backoffice/src/app/ui/custom-fields/system-exec/function-argument.component.ts"],
+  "sources": ["function-argument.component.ts"],
   "sourcesContent": ["\n            input {\n                font-family: var(--mono-font);\n            }\n        "],
-  "mappings": ";AACY;AACI,eAAa,IAAI;AACrB;",
+  "mappings": ";AACY;AACI,eAAA,IAAA;AACJ;",
   "names": []
 }

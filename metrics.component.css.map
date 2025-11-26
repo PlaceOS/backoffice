@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["angular:styles/component:css;ed85d7ba01f400a44b64c9f8437fa2af58b8d6567abc5869d392bb1e3ca7155f;/home/runner/work/backoffice/backoffice/src/app/metrics/metrics.component.ts"],
+  "sources": ["metrics.component.ts"],
   "sourcesContent": ["\n            :host {\n                height: 100%;\n                width: 100%;\n            }\n            .fullscreen {\n                position: fixed !important;\n                top: 0;\n                left: 0;\n                height: 100vh;\n                width: 100vw;\n                z-index: 9999;\n            }\n        "],
-  "mappings": ";AACY;AACI,UAAQ;AACR,SAAO;AACX;AACA,CAAC;AACG,YAAU;AACV,OAAK;AACL,QAAM;AACN,UAAQ;AACR,SAAO;AACP,WAAS;AACb;",
+  "mappings": ";AACY;AACI,UAAA;AACA,SAAA;AACJ;AACA,CAAA;AACI,YAAA;AACA,OAAA;AACA,QAAA;AACA,UAAA;AACA,SAAA;AACA,WAAA;AACJ;",
   "names": []
 }

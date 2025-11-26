@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["angular:styles/component:css;12eeaf2f97b0a02f824d213a17b33a48d1ee31074c7c7409a825ef75d2d1e217;/home/runner/work/backoffice/backoffice/src/app/admin/database-details.component.ts"],
+  "sources": ["database-details.component.ts"],
   "sourcesContent": ["\n            :host {\n                padding-top: 1em;\n                display: flex;\n                flex-wrap: wrap;\n            }\n\n            button {\n                min-width: 10em;\n                margin: 0.25em;\n            }\n\n            mat-card {\n                margin: 0.5em;\n                text-align: center;\n            }\n        "],
-  "mappings": ";AACY;AACI,eAAa;AACb,WAAS;AACT,aAAW;AACf;AAEA;AACI,aAAW;AACX,UAAQ;AACZ;AAEA;AACI,UAAQ;AACR,cAAY;AAChB;",
+  "mappings": ";AACY;AACI,eAAA;AACA,WAAA;AACA,aAAA;AACJ;AAEA;AACI,aAAA;AACA,UAAA;AACJ;AAEA;AACI,UAAA;AACA,cAAA;AACJ;",
   "names": []
 }

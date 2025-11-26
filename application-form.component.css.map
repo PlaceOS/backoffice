@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["angular:styles/component:css;0ad2801bf20fdba1813d81d82012ea077876a6eec759fec0061750263a0c4155;/home/runner/work/backoffice/backoffice/src/app/ui/forms/application-form.component.ts"],
+  "sources": ["application-form.component.ts"],
   "sourcesContent": ["\n            settings-form-field {\n                margin-bottom: 1.5em;\n            }\n        "],
-  "mappings": ";AACY;AACI,iBAAe;AACnB;",
+  "mappings": ";AACY;AACI,iBAAA;AACJ;",
   "names": []
 }

@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["angular:styles/component:css;a9c9b54ac1150998ce0ae85eb89bb6d8fd79aeab8edd84be4a671d3bf76cdf8a;/home/runner/work/backoffice/backoffice/src/app/admin/details.component.ts"],
+  "sources": ["details.component.ts"],
   "sourcesContent": ["\n            :host {\n                position: absolute;\n                top: 0;\n                left: 0;\n                padding: 1rem;\n                width: 100%;\n                height: 100%;\n                overflow: auto;\n            }\n        "],
-  "mappings": ";AACY;AACI,YAAU;AACV,OAAK;AACL,QAAM;AACN,WAAS;AACT,SAAO;AACP,UAAQ;AACR,YAAU;AACd;",
+  "mappings": ";AACY;AACI,YAAA;AACA,OAAA;AACA,QAAA;AACA,WAAA;AACA,SAAA;AACA,UAAA;AACA,YAAA;AACJ;",
   "names": []
 }

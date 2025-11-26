@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/users/user-metadata.component.ts"],
+  "sourcesContent": ["import { Component, inject } from '@angular/core';\nimport { PlaceUser } from '@placeos/ts-client';\nimport { ActiveItemService } from '../common/item.service';\nimport { MetadataDisplayComponent } from '../ui/metadata-display.component';\n\n@Component({\n    selector: 'user-metadata',\n    template: `\n        @if (item) {\n            <metadata-display [item]=\"item\" />\n        }\n    `,\n    styles: [``],\n    imports: [MetadataDisplayComponent],\n})\nexport class UserMetadataComponent {\n    private _service = inject(ActiveItemService);\n\n    public get item(): PlaceUser {\n        return this._service.active_item as any;\n    }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AASY,IAAA,oBAAA,GAAA,oBAAA,CAAA;;;;AAAkB,IAAA,qBAAA,QAAA,OAAA,IAAA;;;AAMxB,IAAO,wBAAP,MAAO,uBAAqB;EACtB,WAAW,OAAO,iBAAiB;EAE3C,IAAW,OAAI;AACX,WAAO,KAAK,SAAS;EACzB;;qCALS,wBAAqB;EAAA;yEAArB,wBAAqB,WAAA,CAAA,CAAA,eAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,QAAA,CAAA,CAAA,GAAA,MAAA,CAAA,GAAA,UAAA,SAAA,+BAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAP1B,MAAA,8BAAA,GAAA,8CAAA,GAAA,GAAA,oBAAA,CAAA;;;AAAA,MAAA,wBAAA,IAAA,OAAA,IAAA,EAAA;;oBAKM,wBAAwB,GAAA,eAAA,EAAA,CAAA;;;sEAEzB,uBAAqB,CAAA;UAVjC;uBACa,iBAAe,UACf;;;;OAIT,SAEQ,CAAC,wBAAwB,EAAC,CAAA;;;;6EAE1B,uBAAqB,EAAA,WAAA,yBAAA,UAAA,4CAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
+  "names": []
+}

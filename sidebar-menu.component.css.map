@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["angular:styles/component:css;3d279d646b35e672e2b8e6ef5d55f533fac4601c8f33a2be8bb9af4e2f3a813d;/home/runner/work/backoffice/backoffice/src/app/ui/sidebar-menu.component.ts"],
+  "sources": ["sidebar-menu.component.ts"],
   "sourcesContent": ["\n            [sidebar-menu] {\n                transition: width 200ms;\n            }\n\n            .active {\n                background-color: var(--secondary);\n                color: var(--secondary-content);\n            }\n\n            @media screen and (min-width: 512px) {\n                .compact {\n                    width: 4.5rem;\n                }\n            }\n        "],
-  "mappings": ";AACY,CAAC;AACG,cAAY,MAAM;AACtB;AAEA,CAAC;AACG,oBAAkB,IAAI;AACtB,SAAO,IAAI;AACf;AAEA,OAAO,OAAO,IAAI,CAAC,SAAS,EAAE;AAC1B,GAAC;AACG,WAAO;AACX;AACJ;",
+  "mappings": ";AACY,CAAA;AACI,cAAA,MAAA;AACJ;AAEA,CAAA;AACI,oBAAA,IAAA;AACA,SAAA,IAAA;AACJ;AAEA,OAAA,OAAA,IAAA,CAAA,SAAA,EAAA;AACI,GAAA;AACI,WAAA;AACJ;AACJ;",
   "names": []
 }

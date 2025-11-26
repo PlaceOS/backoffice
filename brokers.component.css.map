@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "sources": ["angular:styles/component:css;572731b77438e4c922c62954d78fd970f67110b5e9d4f700617f449621eb8577;/home/runner/work/backoffice/backoffice/src/app/admin/brokers.component.ts"],
+  "sources": ["brokers.component.ts"],
   "sourcesContent": ["\n            :host {\n            }\n        "],
   "mappings": ";AACY;AACA;",
   "names": []

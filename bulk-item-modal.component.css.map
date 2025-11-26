@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["angular:styles/component:css;946abd99d31a31a3ccb02251b4e5438b13007a4772c0c88251566e95d97cc68b;/home/runner/work/backoffice/backoffice/src/app/overlays/bulk-item-modal/bulk-item-modal.component.ts"],
+  "sources": ["bulk-item-modal.component.ts"],
   "sourcesContent": ["\n            .body {\n                display: flex;\n                align-items: center;\n                flex-direction: column;\n                padding: 1em;\n            }\n\n            .icon {\n                height: 1.2em;\n                width: 1.2em;\n                display: flex;\n                align-items: center;\n                justify-content: center;\n                font-size: 2em;\n            }\n\n            .content {\n                width: 16rem;\n                text-align: center;\n                font-size: 0.8em;\n            }\n\n            mat-dialog-actions button {\n                min-width: 8em;\n            }\n        "],
-  "mappings": ";AACY,CAAC;AACG,WAAS;AACT,eAAa;AACb,kBAAgB;AAChB,WAAS;AACb;AAEA,CAAC;AACG,UAAQ;AACR,SAAO;AACP,WAAS;AACT,eAAa;AACb,mBAAiB;AACjB,aAAW;AACf;AAEA,CAAC;AACG,SAAO;AACP,cAAY;AACZ,aAAW;AACf;AAEA,mBAAmB;AACf,aAAW;AACf;",
+  "mappings": ";AACY,CAAA;AACI,WAAA;AACA,eAAA;AACA,kBAAA;AACA,WAAA;AACJ;AAEA,CAAA;AACI,UAAA;AACA,SAAA;AACA,WAAA;AACA,eAAA;AACA,mBAAA;AACA,aAAA;AACJ;AAEA,CAAA;AACI,SAAA;AACA,cAAA;AACA,aAAA;AACJ;AAEA,mBAAA;AACI,aAAA;AACJ;",
   "names": []
 }

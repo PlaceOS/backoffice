@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["angular:styles/component:css;718dcd01f875d00ec29dd2a5b05b455147e97149118a0543eb67a28069a10c01;/home/runner/work/backoffice/backoffice/src/app/ui/upload-list.component.ts"],
+  "sources": ["upload-list.component.ts"],
   "sourcesContent": ["\n            :host {\n                position: absolute;\n                pointer-events: none;\n                z-index: 999;\n                top: 0;\n                left: 0;\n                right: 0;\n                bottom: 0;\n            }\n\n            [upload-list] {\n                width: 32rem;\n                max-width: calc(100vw - 2rem);\n            }\n        "],
-  "mappings": ";AACY;AACI,YAAU;AACV,kBAAgB;AAChB,WAAS;AACT,OAAK;AACL,QAAM;AACN,SAAO;AACP,UAAQ;AACZ;AAEA,CAAC;AACG,SAAO;AACP,aAAW,KAAK,MAAM,EAAE;AAC5B;",
+  "mappings": ";AACY;AACI,YAAA;AACA,kBAAA;AACA,WAAA;AACA,OAAA;AACA,QAAA;AACA,SAAA;AACA,UAAA;AACJ;AAEA,CAAA;AACI,SAAA;AACA,aAAA,KAAA,MAAA,EAAA;AACJ;",
   "names": []
 }

@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["angular:styles/component:css;9cc846b1d3396d19d698e2501a8588454ccaa6c3b66998133007dfe2e1ef00a8;/home/runner/work/backoffice/backoffice/src/app/ui/custom-fields/object-list-field.component.ts"],
+  "sources": ["object-list-field.component.ts"],
   "sourcesContent": ["\n            :host,\n            mat-form-field {\n                width: 100%;\n            }\n\n            .row {\n                display: flex;\n                width: 100%;\n                height: 3.5em;\n            }\n\n            .row > * {\n                margin: 0 0.25em;\n            }\n\n            .row > *:first-child {\n                margin-left: 0;\n            }\n\n            .row > *:last-child {\n                margin-right: 0;\n            }\n\n            .header > * {\n                padding: 0 0.5em;\n            }\n\n            .field {\n                flex: 1;\n                min-width: 1px;\n            }\n\n            button .contents {\n                display: flex;\n                align-items: center;\n            }\n        "],
-  "mappings": ";AACY;AACA;AACI,SAAO;AACX;AAEA,CAAC;AACG,WAAS;AACT,SAAO;AACP,UAAQ;AACZ;AAEA,CANC,IAMI,EAAE;AACH,UAAQ,EAAE;AACd;AAEA,CAVC,IAUI,EAAE,CAAC;AACJ,eAAa;AACjB;AAEA,CAdC,IAcI,EAAE,CAAC;AACJ,gBAAc;AAClB;AAEA,CAAC,OAAO,EAAE;AACN,WAAS,EAAE;AACf;AAEA,CAAC;AACG,QAAM;AACN,aAAW;AACf;AAEA,OAAO,CAAC;AACJ,WAAS;AACT,eAAa;AACjB;",
+  "mappings": ";AACY;;AAEI,SAAA;AACJ;AAEA,CAAA;AACI,WAAA;AACA,SAAA;AACA,UAAA;AACJ;AAEA,CANA,IAMA,EAAA;AACI,UAAA,EAAA;AACJ;AAEA,CAVA,IAUA,EAAA,CAAA;AACI,eAAA;AACJ;AAEA,CAdA,IAcA,EAAA,CAAA;AACI,gBAAA;AACJ;AAEA,CAAA,OAAA,EAAA;AACI,WAAA,EAAA;AACJ;AAEA,CAAA;AACI,QAAA;AACA,aAAA;AACJ;AAEA,OAAA,CAAA;AACI,WAAA;AACA,eAAA;AACJ;",
   "names": []
 }
