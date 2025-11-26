@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;24d451efdbb17a5cdfb8e05cfb2d1569ac686a3100bfa8038bda8ba81662895a;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/unauthorised.component.ts"],
-  "sourcesContent": ["\n            :host {\n                display: flex;\n                align-items: center;\n                justify-content: center;\n            }\n\n            .unauthorised {\n                width: 24em;\n            }\n\n            @media (prefers-color-scheme: dark) {\n                .unauthorised {\n                    background-color: #262626 !important;\n                    color: #fff !important;\n                }\n            }\n        "],
-  "mappings": "AACY,MACI,QAAS,KACT,YAAa,OACb,gBAAiB,MACrB,CAEA,CAAC,aACG,MAAO,IACX,CAEA,OAAO,CAAC,oBAAoB,EAAE,MAC1B,CALH,aAMO,iBAAkB,kBAClB,MAAO,cACX,CACJ",
-  "names": []
-}

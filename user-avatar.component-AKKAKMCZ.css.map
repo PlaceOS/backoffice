@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;7e5108eb93cc1b6b75798556330d7fd5cf3da60c87e8ff23e271dab094184f05;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/user-avatar.component.ts"],
-  "sourcesContent": ["\n            :host > div {\n                height: 2.5em;\n                width: 2.5em;\n                background-color: var(--base-200);\n                overflow: hidden;\n                border: 2px solid var(--base-100);\n            }\n\n            .initials {\n                font-size: 1em;\n            }\n        "],
-  "mappings": "AACY,KAAM,CAAE,IACJ,OAAQ,MACR,MAAO,MACP,iBAAkB,IAAI,YACtB,SAAU,OACV,OAAQ,IAAI,MAAM,IAAI,WAC1B,CAEA,CAAC,SACG,UAAW,GACf",
-  "names": []
-}

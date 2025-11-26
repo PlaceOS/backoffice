@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;8a8075fae583a18e45f09e4bb44347a7183adb7a510ba559b95edba15222aaa8;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/admin/staff-tenant-modal.component.ts"],
-  "sourcesContent": ["\n            main {\n                width: 32rem;\n                max-width: calc(100vw - 5rem);\n                max-height: 65vh;\n            }\n        "],
-  "mappings": "AACY,KACI,MAAO,MACP,UAAW,KAAK,MAAM,EAAE,MACxB,WAAY,IAChB",
-  "names": []
-}

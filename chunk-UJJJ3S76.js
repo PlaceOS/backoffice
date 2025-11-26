@@ -1,2 +1,0 @@
-import{c as r,d as t,f as e,g as i,h as n}from"./chunk-G37KNMCL.js";var w=r("show",[n(":enter",[e({opacity:0,height:0}),t(300,e({opacity:1,height:"*"}))]),n(":leave",[e({opacity:1,height:"*"}),t(300,e({opacity:0,height:0}))])]),I=r("show",[i("show",e({opacity:1,height:"*"})),i("hide",e({opacity:0,height:0})),n("show <=> hide",t("200ms ease-in"))]),T=r("show",[i("show",e({opacity:1,height:"*",width:"*"})),i("hide",e({opacity:0,height:0,width:0})),n("show <=> hide",t("200ms ease-in"))]);export{I as a,T as b};
-//# sourceMappingURL=chunk-UJJJ3S76.js.map
