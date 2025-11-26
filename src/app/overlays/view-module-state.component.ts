@@ -33,7 +33,7 @@ export interface ModuleStateModalData {
     selector: 'view-module-state-modal',
     template: `
         <div
-            class="mx-4 mb-2 mt-4 flex items-center justify-between rounded bg-base-200 px-4 py-2"
+            class="mx-4 mb-2 mt-4 flex items-center justify-between rounded-sm bg-base-200 px-4 py-2"
         >
             <h3 class="text-xl font-medium">
                 {{ 'MODULES.STATE' | translate }}
@@ -44,14 +44,14 @@ export interface ModuleStateModalData {
         </div>
         @if (!loading()) {
             <main
-                class="flex h-[40rem] max-h-[70vh] w-[80vw] flex-col space-y-2 overflow-auto p-4"
+                class="flex h-160 max-h-[70vh] w-[80vw] flex-col space-y-2 overflow-auto p-4"
             >
                 <div class="mb-2 flex items-center space-x-2">
                     <div
-                        class="relative min-w-48 rounded border border-base-300 px-4 py-2"
+                        class="relative min-w-48 rounded-sm border border-base-300 px-4 py-2"
                     >
                         <div
-                            class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
+                            class="absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 px-2 py-1 text-xs"
                         >
                             {{ 'SYSTEMS.SINGULAR' | translate }}
                         </div>
@@ -61,10 +61,10 @@ export interface ModuleStateModalData {
                         <div class="text-xs opacity-30">{{ system?.id }}</div>
                     </div>
                     <div
-                        class="relative min-w-48 rounded border border-base-300 px-4 py-2"
+                        class="relative min-w-48 rounded-sm border border-base-300 px-4 py-2"
                     >
                         <div
-                            class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
+                            class="absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 px-2 py-1 text-xs"
                         >
                             {{ 'MODULES.SINGULAR' | translate }}
                         </div>

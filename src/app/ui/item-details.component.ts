@@ -68,8 +68,8 @@ export interface DisplayItem {
                     ) {
                         <div
                             class="rounded-xl bg-error px-2 py-1 text-xs text-error-content"
-                            [class.!bg-success]="item()?.running"
-                            [class.!text-success-content]="item()?.running"
+                            [class.bg-success!]="item()?.running"
+                            [class.text-success-content!]="item()?.running"
                         >
                             {{
                                 (item()?.running
@@ -103,7 +103,7 @@ export interface DisplayItem {
                 <icon>more_vert</icon>
             </button>
         </div>
-        <mat-menu #action_menu="matMenu" class="min-w-[22rem]">
+        <mat-menu #action_menu="matMenu" class="min-w-88">
             @if (can_edit()) {
                 <button
                     mat-menu-item

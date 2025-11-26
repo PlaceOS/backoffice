@@ -12,10 +12,10 @@ import { TranslatePipe } from './translate.pipe';
             class="flex h-screen w-screen flex-col items-center overflow-auto bg-base-200"
         >
             <div
-                class="fixed top-0 mx-auto h-screen w-[40rem] max-w-full border-x border-base-300 bg-base-100"
+                class="fixed top-0 mx-auto h-screen w-160 max-w-full border-x border-base-300 bg-base-100"
             ></div>
             <header
-                class="sticky top-0 z-10 mx-auto my-2 flex w-[39rem] max-w-full items-center justify-between rounded border border-base-100 bg-base-200 px-4 py-2"
+                class="sticky top-0 z-10 mx-auto my-2 flex w-156 max-w-full items-center justify-between rounded-sm border border-base-100 bg-base-200 px-4 py-2"
             >
                 <h2 class="text-xl font-medium">
                     {{ heading() }}
@@ -27,14 +27,14 @@ import { TranslatePipe } from './translate.pipe';
                 }
             </header>
             <main
-                class="z-0 mx-auto h-1/2 w-[39rem] max-w-full flex-1 space-y-8 p-2"
+                class="z-0 mx-auto h-1/2 w-156 max-w-full flex-1 space-y-8 p-2"
             >
                 <ng-content></ng-content>
                 <div class="h-10 w-full"></div>
             </main>
             @if (!loading() && !hide_confirm()) {
                 <footer
-                    class="fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-[39rem] max-w-full -translate-x-1/2 items-center justify-end rounded border border-base-100 bg-base-200 px-4 py-2"
+                    class="fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-156 max-w-full -translate-x-1/2 items-center justify-end rounded-sm border border-base-100 bg-base-200 px-4 py-2"
                 >
                     <button
                         btn

@@ -31,7 +31,7 @@ import { DomainStateService } from './domain-state.service';
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[40rem] text-sm"
+                    class="block min-w-160 text-sm"
                     [data]="auth_sources"
                     [columns]="[
                         {

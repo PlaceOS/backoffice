@@ -76,7 +76,7 @@ import { ZonesStateService } from './zones-state.service';
                             }
                         </div>
                         <button
-                            class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-9"
+                            class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-9"
                             [matTooltip]="'ZONES.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
@@ -85,7 +85,7 @@ import { ZonesStateService } from './zones-state.service';
                             <icon class="text-3xl">add</icon>
                         </button>
                         <button
-                            class="absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-8"
+                            class="absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-8"
                             [matTooltip]="'ZONES.BULK' | translate"
                             matTooltipPosition="right"
                             matRipple
@@ -102,7 +102,7 @@ import { ZonesStateService } from './zones-state.service';
             @if (debug_position() === 'side') {
                 <app-debug-output
                     side
-                    class="h-full max-w-[30rem]"
+                    class="h-full max-w-120"
                 ></app-debug-output>
             }
         </div>

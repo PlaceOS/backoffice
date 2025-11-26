@@ -23,7 +23,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
             }
             @for (item of list(); track item.id; let i = $index) {
                 <div
-                    class="flex w-[24rem] items-center rounded border border-base-200 p-2"
+                    class="flex w-[24rem] items-center rounded-sm border border-base-200 p-2"
                 >
                     <div class="flex flex-1 flex-col justify-center px-2">
                         <div class="name flex-1">{{ item.name }}</div>
@@ -36,7 +36,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                     <div class="status">
                         @if (status[i] !== 'loading') {
                             <div
-                                class="flex h-8 w-8 items-center justify-center rounded-full text-2xl shadow"
+                                class="flex h-8 w-8 items-center justify-center rounded-full text-2xl shadow-sm"
                                 [class.bg-error]="status[i] !== 'done'"
                                 [class.text-error-content]="
                                     status[i] !== 'done'

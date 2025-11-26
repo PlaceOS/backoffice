@@ -161,7 +161,7 @@ export interface UploadInfo {
                 @if (uploads_list()?.length > 0) {
                     <div
                         role="table"
-                        class="mb-4 block min-w-[60rem] overflow-hidden text-sm"
+                        class="mb-4 block min-w-240 overflow-hidden text-sm"
                     >
                         <div
                             header

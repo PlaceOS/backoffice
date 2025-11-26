@@ -25,7 +25,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         <div class="p-4">
             @if (requires_parent()) {
                 <div
-                    class="mono mb-2 w-full rounded bg-warning p-2 text-center text-xs text-warning-content"
+                    class="mono mb-2 w-full rounded-sm bg-warning p-2 text-center text-xs text-warning-content"
                 >
                     {{ 'ZONES.TAG_WARNING' | translate }}
                 </div>
@@ -33,7 +33,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <section class="mb-4 flex space-x-2">
                 <div class="w-1/3 flex-1">
                     <div
-                        class="grid gap-2 rounded border border-base-200 p-4"
+                        class="grid gap-2 rounded-sm border border-base-200 p-4"
                         [style.gridTemplateColumns]="'5.5rem auto'"
                     >
                         @if (item()?.parent_id) {
@@ -117,7 +117,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             <div class="-mx-1 flex flex-1 flex-wrap">
                                 @for (tag of tag_list(); track tag) {
                                     <div
-                                        class="mono m-1 h-6 rounded bg-base-200 px-2 py-1 text-[0.625rem]"
+                                        class="mono m-1 h-6 rounded-sm bg-base-200 px-2 py-1 text-[0.625rem]"
                                     >
                                         {{ tag }}
                                     </div>
@@ -168,10 +168,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 @if ((systems | async)?.length) {
                     <div class="w-1/3 flex-1">
                         <div
-                            class="flex flex-col rounded border border-base-200"
+                            class="flex flex-col rounded-sm border border-base-200"
                         >
                             <header
-                                class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
+                                class="w-full rounded-sm bg-base-200 px-4 py-3 text-lg font-medium"
                             >
                                 {{ 'COMMON.EXECUTE_COMMAND' | translate }}
                             </header>
@@ -209,9 +209,9 @@ import { TranslatePipe } from '../ui/translate.pipe';
             </section>
             @if (item()?.description) {
                 <hr class="my-4 text-base-300" />
-                <div class="w-full rounded border border-base-200">
+                <div class="w-full rounded-sm border border-base-200">
                     <h3
-                        class="w-full rounded bg-base-200 p-4 text-lg font-medium"
+                        class="w-full rounded-sm bg-base-200 p-4 text-lg font-medium"
                     >
                         {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                     </h3>

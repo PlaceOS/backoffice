@@ -54,7 +54,7 @@ import { EmailStateService } from './email-state.service';
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="mb-4 block min-w-[56rem] text-sm"
+                    class="mb-4 block min-w-4xl text-sm"
                     [data]="templates"
                     [columns]="[]"
                 ></simple-table>

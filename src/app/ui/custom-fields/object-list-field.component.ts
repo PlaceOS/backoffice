@@ -46,7 +46,7 @@ import { TranslatePipe } from '../translate.pipe';
                         <button
                             icon
                             matRipple
-                            class="h-12 w-12 rounded border border-error text-error"
+                            class="h-12 w-12 rounded-sm border border-error text-error"
                             (click)="removeRow(item)"
                         >
                             <icon>delete</icon>

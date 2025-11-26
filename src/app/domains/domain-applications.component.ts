@@ -34,7 +34,7 @@ import { DomainStateService } from './domain-state.service';
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[84rem] text-sm"
+                    class="block min-w-336 text-sm"
                     [data]="applications"
                     [columns]="[
                         { key: 'name', name: 'Name', content: name_template },
@@ -109,7 +109,7 @@ import { DomainStateService } from './domain-state.service';
                 </button>
                 <div class="p-2 font-mono text-xs">
                     @if (!show_secret[row.id]) {
-                        <span class="rounded bg-base-200 p-2">{{
+                        <span class="rounded-sm bg-base-200 p-2">{{
                             'DOMAINS.SECRET_HIDDEN' | translate
                         }}</span>
                     }

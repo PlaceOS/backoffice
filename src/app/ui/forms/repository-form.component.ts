@@ -247,7 +247,7 @@ import { TranslatePipe } from '../translate.pipe';
                                             }}
                                         </div>
                                         <div
-                                            class="!mr-4 rounded bg-base-200 px-1.5 font-mono text-[0.625rem]"
+                                            class="mr-4! rounded-sm bg-base-200 px-1.5 font-mono text-[0.625rem]"
                                         >
                                             {{
                                                 form().value.commit_hash ||
@@ -263,7 +263,7 @@ import { TranslatePipe } from '../translate.pipe';
                                     <mat-option [value]="commit.hash">
                                         <div
                                             class="flex w-[calc(100%-2.20rem)] flex-1 items-center space-x-2"
-                                            [class.!w-full]="
+                                            [class.w-full!]="
                                                 form().value.commit_hash ===
                                                 commit.hash
                                             "
@@ -286,12 +286,12 @@ import { TranslatePipe } from '../translate.pipe';
                                             </div>
                                             @if (commit.author) {
                                                 <code
-                                                    class="rounded bg-base-200 p-1 text-xs"
+                                                    class="rounded-sm bg-base-200 p-1 text-xs"
                                                     >{{ commit.author }}</code
                                                 >
                                             }
                                             <code
-                                                class="rounded bg-base-200 p-1 text-xs"
+                                                class="rounded-sm bg-base-200 p-1 text-xs"
                                                 >{{
                                                     commit.hash | slice: 0 : 8
                                                 }}</code

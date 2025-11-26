@@ -54,7 +54,7 @@ type SettingsArray = [
     selector: 'a-settings-form',
     template: `
         <header
-            class="mb-2 flex h-16 w-full items-center justify-between rounded bg-base-200 px-2 text-lg font-medium"
+            class="mb-2 flex h-16 w-full items-center justify-between rounded-sm bg-base-200 px-2 text-lg font-medium"
         >
             <h3 class="px-2">{{ 'COMMON.SETTINGS' | translate }}</h3>
             @if (active_edited()) {
@@ -62,7 +62,7 @@ type SettingsArray = [
                     <button
                         icon
                         matRipple
-                        class="rounded border border-secondary bg-base-100 text-secondary"
+                        class="rounded-sm border border-secondary bg-base-100 text-secondary"
                         [disabled]="edited_count() <= 0"
                         [matTooltip]="'COMMON.CLEAR' | translate"
                         (click)="clearChanges()"
@@ -76,7 +76,7 @@ type SettingsArray = [
                     <button
                         icon
                         matRipple
-                        class="rounded bg-secondary text-secondary-content"
+                        class="rounded-sm bg-secondary text-secondary-content"
                         [disabled]="
                             !active_edited() ||
                             (has_errors() && !saving()[shown_option().id])
@@ -207,7 +207,7 @@ type SettingsArray = [
                 padding: 0.5em;
                 border-radius: 0 0 4px 4px;
                 font-family: var(--mono-font);
-                @apply shadow;
+                box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
             }
 
             .actions {

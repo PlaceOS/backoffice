@@ -24,7 +24,7 @@ import { ModuleStateService } from './module-state.service';
             >
                 <div class="flex-1 sm:w-1/3">
                     <div
-                        class="grid flex-1 gap-2 rounded border border-base-200 p-4"
+                        class="grid flex-1 gap-2 rounded-sm border border-base-200 p-4"
                         [style.gridTemplateColumns]="'4.5rem auto'"
                     >
                         @if (item.notes) {
@@ -128,7 +128,7 @@ import { ModuleStateService } from './module-state.service';
                             </div>
                             <ng-template #edge_desc_template>
                                 <div
-                                    class="pointer-events-none max-w-[24rem] rounded border border-base-200 bg-base-100 p-2 shadow"
+                                    class="pointer-events-none max-w-[24rem] rounded-sm border border-base-200 bg-base-100 p-2 shadow-sm"
                                 >
                                     <pre
                                         class="overflow-hidden rounded-xl bg-base-200 p-2 text-sm"
@@ -183,10 +183,10 @@ import { ModuleStateService } from './module-state.service';
                 </div>
                 <div class="flex-1 sm:w-1/3">
                     <div
-                        class="flex flex-1 flex-col rounded border border-base-200"
+                        class="flex flex-1 flex-col rounded-sm border border-base-200"
                     >
                         <h3
-                            class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
+                            class="w-full rounded-sm bg-base-200 px-4 py-3 text-lg font-medium"
                         >
                             {{ 'MODULES.CONTROLS' | translate }}
                         </h3>

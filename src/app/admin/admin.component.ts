@@ -32,7 +32,7 @@ import { BackofficeUsersService } from '../users/users.service';
                                 matRipple
                                 class="clear w-auto min-w-full text-left hover:bg-base-200"
                                 [routerLink]="['/admin', item.id]"
-                                routerLinkActive="!bg-secondary text-secondary-content"
+                                routerLinkActive="bg-secondary! text-secondary-content"
                             >
                                 <div class="flex w-full items-center space-x-2">
                                     <icon class="text-2xl">{{
@@ -64,7 +64,7 @@ import { BackofficeUsersService } from '../users/users.service';
             @if (debug_position() === 'side') {
                 <app-debug-output
                     side
-                    class="h-full max-w-[30rem]"
+                    class="h-full max-w-120"
                 ></app-debug-output>
             }
         </div>

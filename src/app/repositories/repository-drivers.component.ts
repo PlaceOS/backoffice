@@ -24,7 +24,7 @@ import { RepositoriesStateService } from './repositories-state.service';
             [class.opacity-0]="!loading"
         />
         <simple-table
-            class="block min-w-[32rem] text-sm"
+            class="block min-w-lg text-sm"
             [data]="driver_list"
             [columns]="[
                 {

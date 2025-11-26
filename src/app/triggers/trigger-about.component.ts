@@ -30,7 +30,7 @@ import { TriggerStateService } from './trigger-state.service';
     template: `
         <section class="mb-4 flex space-x-2">
             <div
-                class="grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
+                class="grid w-1/3 flex-1 gap-2 rounded-sm border border-base-200 p-4"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div class="flex items-center text-sm font-medium">
@@ -67,8 +67,8 @@ import { TriggerStateService } from './trigger-state.service';
         </section>
         @if (item?.description) {
             <hr class="my-4 text-base-300" />
-            <div class="w-full rounded border border-base-200">
-                <h3 class="w-full rounded bg-base-200 p-4 text-lg font-medium">
+            <div class="w-full rounded-sm border border-base-200">
+                <h3 class="w-full rounded-sm bg-base-200 p-4 text-lg font-medium">
                     {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                 </h3>
                 <div
@@ -112,7 +112,7 @@ import { TriggerStateService } from './trigger-state.service';
         </header>
         <section>
             <simple-table
-                class="mb-4 block w-full min-w-[32rem] text-sm"
+                class="mb-4 block w-full min-w-lg text-sm"
                 [data]="comparisons || []"
                 [columns]="[
                     {
@@ -132,7 +132,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [empty_message]="'TRIGGERS.CONDITION_COMPARE_EMPTY' | translate"
             ></simple-table>
             <simple-table
-                class="block w-full min-w-[32rem] text-sm"
+                class="block w-full min-w-lg text-sm"
                 [data]="time_dependents || []"
                 [columns]="[
                     {
@@ -201,7 +201,7 @@ import { TriggerStateService } from './trigger-state.service';
         </header>
         <section>
             <simple-table
-                class="mb-4 block w-full min-w-[32rem] text-sm"
+                class="mb-4 block w-full min-w-lg text-sm"
                 [data]="functions || []"
                 [columns]="[
                     {
@@ -222,7 +222,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [empty_message]="'TRIGGERS.ACTION_FN_EMPTY' | translate"
             ></simple-table>
             <simple-table
-                class="mb-4 block w-full min-w-[32rem] text-sm"
+                class="mb-4 block w-full min-w-lg text-sm"
                 [data]="mailers || []"
                 [columns]="[
                     {

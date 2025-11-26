@@ -68,7 +68,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     }
                 </div>
                 <button
-                    class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-9"
+                    class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-9"
                     [matTooltip]="'USERS.NEW' | translate"
                     matTooltipPosition="right"
                     matRipple
@@ -77,7 +77,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     <icon class="text-3xl">add</icon>
                 </button>
                 <button
-                    class="absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-8"
+                    class="absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-8"
                     [matTooltip]="'USERS.BULK' | translate"
                     matTooltipPosition="right"
                     matRipple

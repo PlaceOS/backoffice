@@ -49,7 +49,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[64rem] text-sm"
+                    class="block min-w-5xl text-sm"
                     [data]="brokers()"
                     [columns]="[
                         { key: 'name', name: 'COMMON.FIELD_NAME' | translate },
@@ -125,14 +125,14 @@ import { TranslatePipe } from '../ui/translate.pipe';
         <ng-template #tls_template let-data="data">
             @if (data) {
                 <div
-                    class="mx-auto flex h-8 w-8 items-center justify-center rounded bg-success"
+                    class="mx-auto flex h-8 w-8 items-center justify-center rounded-sm bg-success"
                 >
                     <icon class="text-xl text-success-content">lock</icon>
                 </div>
             }
             @if (!data) {
                 <div
-                    class="mx-auto flex h-8 w-8 items-center justify-center rounded bg-error"
+                    class="mx-auto flex h-8 w-8 items-center justify-center rounded-sm bg-error"
                 >
                     <icon class="text-xl text-error-content"> lock_open </icon>
                 </div>

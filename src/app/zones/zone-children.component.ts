@@ -40,7 +40,7 @@ import { ZonesStateService } from './zones-state.service';
                 [class.opacity-0]="!(loading | async)"
             />
             <simple-table
-                class="block min-w-[32rem] text-sm"
+                class="block min-w-lg text-sm"
                 [data]="children"
                 [columns]="[
                     {

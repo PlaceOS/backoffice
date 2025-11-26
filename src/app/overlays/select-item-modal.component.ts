@@ -20,7 +20,7 @@ export interface SelectItemModalData<T = any> {
     selector: 'select-item-modal',
     template: `
         <div
-            class="mx-2 mt-2 flex items-center justify-between rounded bg-base-200 px-4 py-2"
+            class="mx-2 mt-2 flex items-center justify-between rounded-sm bg-base-200 px-4 py-2"
         >
             <h3 class="text-xl font-medium">
                 {{ 'COMMON.ITEM_ADD' | translate: { item: name } }}
@@ -32,7 +32,7 @@ export interface SelectItemModalData<T = any> {
             }
         </div>
         @if (!loading) {
-            <main class="h-[65vh] w-[32rem] max-w-[calc(100vw-2rem)] px-2 pt-2">
+            <main class="h-[65vh] w-lg max-w-[calc(100vw-2rem)] px-2 pt-2">
                 <item-search-field
                     class="block h-full"
                     [query_fn]="query_fn"

@@ -41,7 +41,7 @@ export interface ItemTab {
                             <div class="name">{{ link.name }}&nbsp;</div>
                             @if (link.count || link.count === 0) {
                                 <div
-                                    class="mono flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-base-200 px-1.5 text-[0.625rem]"
+                                    class="mono flex h-5 min-w-5 items-center justify-center rounded-full bg-base-200 px-1.5 text-[0.625rem]"
                                 >
                                     {{ link.count || '0' }}
                                 </div>

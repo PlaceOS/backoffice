@@ -84,7 +84,7 @@ export interface ExternalResource {
                     [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
-                    class="mb-4 block min-w-[48rem] text-sm"
+                    class="mb-4 block min-w-3xl text-sm"
                     [data]="resource_list()"
                     [columns]="[
                         {
@@ -124,7 +124,7 @@ export interface ExternalResource {
                     <div
                         [class.bg-error]="!data"
                         [class.bg-success]="data"
-                        class="mx-auto flex h-8 w-8 items-center justify-center rounded text-2xl text-white"
+                        class="mx-auto flex h-8 w-8 items-center justify-center rounded-sm text-2xl text-white"
                     >
                         <icon>{{ data ? 'done' : 'close' }}</icon>
                     </div>

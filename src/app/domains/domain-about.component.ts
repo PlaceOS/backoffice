@@ -22,8 +22,8 @@ import { DomainStateService } from './domain-state.service';
     selector: 'app-domain-about',
     template: `
         @if (item?.description) {
-            <div class="w-full rounded border border-base-200">
-                <h3 class="w-full rounded bg-base-200 p-4 text-lg font-medium">
+            <div class="w-full rounded-sm border border-base-200">
+                <h3 class="w-full rounded-sm bg-base-200 p-4 text-lg font-medium">
                     {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                 </h3>
                 <div
@@ -35,17 +35,17 @@ import { DomainStateService } from './domain-state.service';
         }
         @if (item.email_domains?.length) {
             <div
-                class="relative my-2 flex w-1/2 min-w-[20rem] flex-col rounded border border-base-200 p-4"
+                class="relative my-2 flex w-1/2 min-w-[20rem] flex-col rounded-sm border border-base-200 p-4"
             >
                 <div
-                    class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 p-2 text-sm font-medium"
+                    class="absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 p-2 text-sm font-medium"
                 >
                     {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
                 </div>
                 @for (domain of item.email_domains; track domain) {
                     <button
                         matRipple
-                        class="mono rounded p-2 text-left text-sm hover:bg-base-200"
+                        class="mono rounded-sm p-2 text-left text-sm hover:bg-base-200"
                         (click)="copyEmailDomain(domain)"
                     >
                         {{ domain }}
@@ -54,7 +54,7 @@ import { DomainStateService } from './domain-state.service';
             </div>
         }
         <header
-            class="mb-2 flex h-16 w-full items-center justify-between rounded bg-base-200 px-2 text-lg font-medium"
+            class="mb-2 flex h-16 w-full items-center justify-between rounded-sm bg-base-200 px-2 text-lg font-medium"
         >
             <h3 class="px-2 text-lg font-medium">
                 {{ 'COMMON.SETTINGS' | translate }}
@@ -62,7 +62,7 @@ import { DomainStateService } from './domain-state.service';
             <button
                 icon
                 matRipple
-                class="rounded bg-secondary text-secondary-content"
+                class="rounded-sm bg-secondary text-secondary-content"
                 [matTooltip]="'COMMON.SAVE_CHANGES' | translate"
                 (click)="saveChanges()"
             >

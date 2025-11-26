@@ -46,7 +46,7 @@ import { DriverStateService } from './driver-state.service';
                     [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[32rem] text-sm"
+                    class="block min-w-lg text-sm"
                     [data]="modules"
                     [columns]="[
                         {
@@ -125,7 +125,7 @@ import { DriverStateService } from './driver-state.service';
                         </button>
                         <mat-menu #menu="matMenu">
                             <div
-                                class="mx-1 -mt-1 mb-1 min-w-64 rounded bg-base-200 px-4 py-2 text-sm opacity-70"
+                                class="mx-1 -mt-1 mb-1 min-w-64 rounded-sm bg-base-200 px-4 py-2 text-sm opacity-70"
                             >
                                 {{
                                     'DRIVERS.SYSTEM_COUNT'

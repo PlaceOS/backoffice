@@ -76,7 +76,7 @@ export interface BackofficeExtension {
                 </div>
             </div>
             <div
-                class="mx-4 mb-4 flex items-center space-x-4 rounded bg-info p-4 text-sm text-info-content shadow"
+                class="mx-4 mb-4 flex items-center space-x-4 rounded-sm bg-info p-4 text-sm text-info-content shadow-sm"
             >
                 <p>{{ 'ADMIN.EXTENSIONS_NOTICE' | translate }}</p>
             </div>
@@ -87,7 +87,7 @@ export interface BackofficeExtension {
                     [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[56rem] text-sm"
+                    class="block min-w-4xl text-sm"
                     [data]="extensions()"
                     [columns]="[
                         {

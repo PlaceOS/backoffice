@@ -1,7 +1,27 @@
+@import 'tailwindcss/theme.css';
+@import 'tailwindcss/preflight.css';
+@import 'tailwindcss/utilities.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@config '../tailwind.config.js';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  Note: In Tailwind v4, @layer creates actual CSS cascade layers where layered
+  styles have lower precedence than unlayered styles. We keep this unlayered
+  so it acts as a default that utilities can override.
+*/
+@layer theme {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
+}
 
 :root {
     --placeos-pink: #c52b67;
@@ -323,7 +343,7 @@ span.highlight {
     background-color: var(--base-100);
     border: none;
     border-radius: 4px;
-    @apply shadow;
+    @apply shadow-sm;
 }
 
 html,
@@ -1106,6 +1126,128 @@ nav {
 }
 
 /* PlaceOS Specific Styles */
+/*=============================================================*\
+ ||||||||||||||||||||||||   Animations   |||||||||||||||||||||||
+\*=============================================================*/
+
+/* Expandable container using grid for smooth height animation */
+#placeos .expandable {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 200ms ease-in-out;
+}
+
+#placeos .expandable.expanded {
+    grid-template-rows: 1fr;
+}
+
+#placeos .expandable > * {
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* Expandable with width animation */
+#placeos .expandable-all {
+    display: grid;
+    grid-template-rows: 0fr;
+    width: 0;
+    overflow: hidden;
+    transition:
+        grid-template-rows 200ms ease-in-out,
+        width 200ms ease-in-out;
+}
+
+#placeos .expandable-all.expanded {
+    grid-template-rows: 1fr;
+    width: auto;
+}
+
+#placeos .expandable-all > * {
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* Fade animation */
+#placeos .fade-in-out {
+    opacity: 0;
+    transition: opacity 200ms ease-in-out;
+}
+
+#placeos .fade-in-out.visible {
+    opacity: 1;
+}
+
+/* Keyframe animations for enter transitions */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in-scale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slide-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#placeos .animate-fade-in {
+    animation: fade-in 200ms ease-out;
+}
+
+#placeos .animate-fade-in-scale {
+    animation: fade-in-scale 200ms ease-out;
+}
+
+#placeos .animate-slide-in-up {
+    animation: slide-in-up 200ms ease-out;
+}
+
+/* Slide animations */
+#placeos .slide-up {
+    transform: translateY(100%);
+    opacity: 0;
+    transition:
+        transform 200ms ease-in-out,
+        opacity 200ms ease-in-out;
+}
+
+#placeos .slide-up.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+#placeos .slide-down {
+    transform: translateY(-100%);
+    opacity: 0;
+    transition:
+        transform 200ms ease-in-out,
+        opacity 200ms ease-in-out;
+}
+
+#placeos .slide-down.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
 #placeos {
     .mdc-text-field--outlined {
         padding: 0 1rem;
@@ -1184,7 +1326,7 @@ nav {
 
     .mdc-menu-surface,
     .mat-mdc-menu-content {
-        @apply border border-base-300 bg-base-100;
+        @apply border-base-300 bg-base-100 border;
 
         .mdc-list-item__primary-text,
         .mat-mdc-menu-item-text {

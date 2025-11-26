@@ -83,7 +83,7 @@ import { SanitizePipe } from '../pipes/sanitise.pipe';
                                     search$.next(option.name || '' + option.id);
                                     setValue(option)
                                 "
-                                class="w-full rounded px-4 py-2 text-left hover:bg-base-200"
+                                class="w-full rounded-sm px-4 py-2 text-left hover:bg-base-200"
                             >
                                 <div class="leading-tight">
                                     <ng-container
@@ -140,7 +140,7 @@ import { SanitizePipe } from '../pipes/sanitise.pipe';
                         [innerHTML]="item_name[option.id] | sanitize"
                     ></div>
                     @if (option.notes) {
-                        <code class="truncate !text-xs">{{
+                        <code class="truncate text-xs!">{{
                             option.notes
                         }}</code>
                     }

@@ -13,7 +13,7 @@ import { TranslatePipe } from '../translate.pipe';
         @if (form()) {
             <form
                 trigger
-                class="flex w-[36rem] max-w-[calc(100vw-4rem)] flex-col"
+                class="flex w-xl max-w-[calc(100vw-4rem)] flex-col"
                 [formGroup]="form()"
             >
                 @if (form().controls.name) {

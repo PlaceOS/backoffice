@@ -17,7 +17,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             class="flex h-screen w-screen flex-col overflow-hidden bg-base-100"
         >
             <div
-                class="m-4 flex items-center justify-between rounded bg-base-200 px-4 py-2"
+                class="m-4 flex items-center justify-between rounded-sm bg-base-200 px-4 py-2"
             >
                 <h3 class="text-xl font-medium">
                     {{ 'COMMON.METADATA_HISTORY' | translate }}
@@ -29,10 +29,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <main class="flex flex-1 flex-col pb-4">
                 <div class="mb-2 flex items-center space-x-2 px-4">
                     <div
-                        class="relative h-14 min-w-48 rounded border border-base-300 px-4 py-2"
+                        class="relative h-14 min-w-48 rounded-sm border border-base-300 px-4 py-2"
                     >
                         <div
-                            class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
+                            class="absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 px-2 py-1 text-xs"
                         >
                             {{ 'COMMON.METADATA_OWNER' | translate }}
                         </div>
@@ -46,10 +46,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         }
                     </div>
                     <div
-                        class="relative flex h-14 min-w-48 items-center rounded border border-base-300 px-4 py-2"
+                        class="relative flex h-14 min-w-48 items-center rounded-sm border border-base-300 px-4 py-2"
                     >
                         <div
-                            class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
+                            class="absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 px-2 py-1 text-xs"
                         >
                             {{ 'COMMON.METADATA_KEY' | translate }}
                         </div>

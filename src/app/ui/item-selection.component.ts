@@ -56,7 +56,7 @@ import { TranslatePipe } from './translate.pipe';
                 (window:keydown.esc)="show.set(false)"
             ></div>
             <div
-                class="absolute left-1/2 top-2 flex w-[512px] max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded bg-base-100 shadow"
+                class="absolute left-1/2 top-2 flex w-[512px] max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded-sm bg-base-100 shadow-sm"
                 (click)="$event.stopPropagation()"
             >
                 <div
@@ -108,7 +108,7 @@ import { TranslatePipe } from './translate.pipe';
                                         : ['/', route(), item.id]
                                 "
                                 routerLinkActive="active"
-                                class="m-2 block max-w-[calc(100vw-2rem)] rounded p-2"
+                                class="m-2 block max-w-[calc(100vw-2rem)] rounded-sm p-2"
                                 (click)="show.set(false)"
                             >
                                 <p class="flex-1 truncate">
@@ -120,7 +120,7 @@ import { TranslatePipe } from './translate.pipe';
                                     >
                                         <span
                                             extra
-                                            class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded px-2 py-1 text-xs opacity-60"
+                                            class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded-sm px-2 py-1 text-xs opacity-60"
                                         >
                                             {{ item.extra }}
                                         </span>

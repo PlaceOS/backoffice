@@ -15,10 +15,10 @@ import { TranslatePipe } from '../translate.pipe';
             <div class="mb-4 flex space-x-4">
                 @if (form().controls.name) {
                     <div
-                        class="relative flex flex-1 items-center rounded border border-base-300 p-4"
+                        class="relative flex flex-1 items-center rounded-sm border border-base-300 p-4"
                     >
                         <div
-                            class="truncation absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 p-2 text-xs"
+                            class="truncation absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 p-2 text-xs"
                         >
                             {{ 'SYSTEMS.TRIGGER_NAME' | translate }}
                         </div>
@@ -29,10 +29,10 @@ import { TranslatePipe } from '../translate.pipe';
                 }
                 @if (form().controls.name) {
                     <div
-                        class="relative flex-1 rounded border border-base-300 p-4"
+                        class="relative flex-1 rounded-sm border border-base-300 p-4"
                     >
                         <div
-                            class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 p-2 text-xs"
+                            class="absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 p-2 text-xs"
                         >
                             {{ 'SYSTEMS.TRIGGER_ACTIVE' | translate }}
                         </div>

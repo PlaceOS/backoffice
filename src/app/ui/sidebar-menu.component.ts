@@ -27,7 +27,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             [class.compact]="compact()"
             [class.sm:w-52]="!compact()"
             [class.!flex]="open()"
-            [class.!pointer-events-auto]="open()"
+            [class.pointer-events-auto!]="open()"
             (click)="close()"
         >
             <div class="flex h-1/2 flex-1 flex-col items-center space-y-2">
@@ -54,7 +54,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                 matRipple
                                 class="clear mx-auto w-[calc(100%-1rem)] text-left hover:bg-base-100"
                                 [routerLink]="[link.route]"
-                                routerLinkActive="!bg-secondary text-secondary-content"
+                                routerLinkActive="bg-secondary! text-secondary-content"
                                 [matTooltip]="
                                     compact() ? (link.name | translate) : ''
                                 "
@@ -118,7 +118,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             <button
                 icon
                 matRipple
-                class="absolute bottom-12 right-0 z-[999] hidden h-6 w-6 min-w-6 translate-x-1/2 rounded-full border border-base-200 bg-base-100 shadow hover:bg-base-200 sm:flex"
+                class="absolute bottom-12 right-0 z-999 hidden h-6 w-6 min-w-6 translate-x-1/2 rounded-full border border-base-200 bg-base-100 shadow-sm hover:bg-base-200 sm:flex"
                 (click)="toggleCompactMode()"
             >
                 <icon>

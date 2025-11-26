@@ -19,7 +19,7 @@ import { TranslatePipe } from './translate.pipe';
         @if (show()) {
             <div
                 upload-list
-                class="pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded border border-base-300 bg-base-100 text-sm text-base-content shadow"
+                class="pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded-sm border border-base-300 bg-base-100 text-sm text-base-content shadow-sm"
             >
                 <div
                     class="flex items-center bg-base-200 p-2 text-base-content"
@@ -119,7 +119,7 @@ import { TranslatePipe } from './translate.pipe';
                                     }
                                     @if (item.progress < 100 && !item.error) {
                                         <mat-progress-bar
-                                            class="absolute inset-x-0 bottom-0 !mx-0"
+                                            class="absolute inset-x-0 bottom-0 mx-0!"
                                             mode="determinate"
                                             [value]="item.progress"
                                         ></mat-progress-bar>
@@ -161,13 +161,13 @@ import { TranslatePipe } from './translate.pipe';
                         cloud_upload
                     </icon>
                     <div
-                        class="rounded bg-base-100 p-4 text-base-content shadow"
+                        class="rounded-sm bg-base-100 p-4 text-base-content shadow-sm"
                     >
                         {{ 'COMMON.DROP_UPLOAD_MSG' | translate }}
                     </div>
                 </div>
                 <input
-                    class="pointer-events-auto absolute inset-0 z-[9999] w-full opacity-0"
+                    class="pointer-events-auto absolute inset-0 z-9999 w-full opacity-0"
                     type="file"
                     multiple
                     (change)="handleFileEvent($event)"

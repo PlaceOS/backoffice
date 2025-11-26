@@ -167,7 +167,7 @@ import { BackofficeExtension } from '../extensions.component';
                             <button
                                 icon
                                 matRipple
-                                class="h-12 w-12 rounded border border-error text-error"
+                                class="h-12 w-12 rounded-sm border border-error text-error"
                                 (click)="removeCondition(condition)"
                             >
                                 <icon>delete</icon>

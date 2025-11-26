@@ -41,7 +41,7 @@ import { ModuleStateService } from './module-state.service';
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[32rem] text-sm"
+                    class="block min-w-lg text-sm"
                     [data]="system_list"
                     [columns]="[
                         {

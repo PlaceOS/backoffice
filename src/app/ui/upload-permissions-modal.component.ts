@@ -18,7 +18,7 @@ import { TranslatePipe } from './translate.pipe';
     selector: 'upload-permissions-modal',
     template: `
         <header
-            class="sticky top-0 z-10 m-2 flex w-[calc(100%-1rem)] items-center justify-between rounded border-none bg-base-200 p-2"
+            class="sticky top-0 z-10 m-2 flex w-[calc(100%-1rem)] items-center justify-between rounded-sm border-none bg-base-200 p-2"
         >
             <h2 class="px-2 text-xl font-medium">
                 {{ 'COMMON.UPLOAD_FILE' | translate }}

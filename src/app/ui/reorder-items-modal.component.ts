@@ -29,7 +29,7 @@ export interface ReorderItemsOptions {
         <main class="max-h-[65vh] min-w-[20rem] overflow-auto p-4">
             <div
                 cdkDropList
-                class="flex w-full flex-col divide-y divide-base-200 rounded border border-base-200"
+                class="flex w-full flex-col divide-y divide-base-200 rounded-sm border border-base-200"
                 (cdkDropListDropped)="drop($event)"
             >
                 @for (item of items | async; track item; let i = $index) {

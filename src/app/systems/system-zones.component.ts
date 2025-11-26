@@ -66,7 +66,7 @@ import { SystemStateService } from './system-state.service';
             </section>
             @if (zone_issues | async) {
                 <div
-                    class="mono mb-2 rounded bg-warning p-2 text-center text-xs text-warning-content"
+                    class="mono mb-2 rounded-sm bg-warning p-2 text-center text-xs text-warning-content"
                 >
                     {{ zone_issues | async }}
                 </div>
@@ -78,7 +78,7 @@ import { SystemStateService } from './system-state.service';
                     [class.opacity-0]="!(loading | async).zones"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[32rem] text-sm"
+                    class="block min-w-lg text-sm"
                     [data]="show_original ? original_zones : zones"
                     [columns]="[
                         {

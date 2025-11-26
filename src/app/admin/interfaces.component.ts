@@ -19,7 +19,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 [class.opacity-0]="!loading()"
             />
             <simple-table
-                class="block min-w-[36rem] text-sm"
+                class="block min-w-xl text-sm"
                 [data]="interfaces()"
                 [columns]="[
                     { key: 'id', name: 'REPOS.SINGULAR' | translate },

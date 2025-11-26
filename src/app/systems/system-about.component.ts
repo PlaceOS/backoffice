@@ -21,7 +21,7 @@ import { SystemStateService } from './system-state.service';
             >
                 <div class="flex-1">
                     <div
-                        class="grid w-full gap-2 rounded border border-base-200 p-4"
+                        class="grid w-full gap-2 rounded-sm border border-base-200 p-4"
                         [style.gridTemplateColumns]="'7.5rem auto'"
                     >
                         @if (item()?.support_url) {
@@ -148,9 +148,9 @@ import { SystemStateService } from './system-state.service';
                     </div>
                 </div>
                 <div class="flex-1">
-                    <div class="flex flex-col rounded border border-base-200">
+                    <div class="flex flex-col rounded-sm border border-base-200">
                         <h3
-                            class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
+                            class="w-full rounded-sm bg-base-200 px-4 py-3 text-lg font-medium"
                         >
                             {{ 'SYSTEMS.CONTROLS' | translate }}
                         </h3>
@@ -179,9 +179,9 @@ import { SystemStateService } from './system-state.service';
             </section>
             @if (item()?.description) {
                 <hr class="my-4 text-base-300" />
-                <div class="w-full rounded border border-base-200">
+                <div class="w-full rounded-sm border border-base-200">
                     <h3
-                        class="w-full rounded bg-base-200 p-4 text-lg font-medium"
+                        class="w-full rounded-sm bg-base-200 p-4 text-lg font-medium"
                     >
                         {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                     </h3>

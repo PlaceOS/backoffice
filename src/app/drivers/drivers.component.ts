@@ -78,7 +78,7 @@ import { DriverStateService } from './driver-state.service';
                         </div>
                         @if (updates_available | async) {
                             <button
-                                class="absolute bottom-16 left-1 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-8"
+                                class="absolute bottom-16 left-1 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-8"
                                 [matTooltip]="'DRIVERS.UPDATE' | translate"
                                 matTooltipPosition="right"
                                 matRipple
@@ -88,7 +88,7 @@ import { DriverStateService } from './driver-state.service';
                             </button>
                         }
                         <button
-                            class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-9"
+                            class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-9"
                             [matTooltip]="'DRIVERS.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
@@ -105,7 +105,7 @@ import { DriverStateService } from './driver-state.service';
             @if (debug_position() === 'side') {
                 <app-debug-output
                     side
-                    class="h-full max-w-[30rem]"
+                    class="h-full max-w-120"
                 ></app-debug-output>
             }
         </div>

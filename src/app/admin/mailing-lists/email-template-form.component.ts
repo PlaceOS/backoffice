@@ -32,7 +32,7 @@ export function extractTextFromHTML(html_string: string) {
     template: `
         <div class="absolute inset-0 overflow-auto bg-base-100 p-4">
             <form
-                class="mx-auto min-h-full w-[48rem] max-w-full pt-4"
+                class="mx-auto min-h-full w-3xl max-w-full pt-4"
                 [formGroup]="form"
             >
                 <div class="mb-8 flex items-center space-x-2">
@@ -82,7 +82,7 @@ export function extractTextFromHTML(html_string: string) {
                     >
                         Placeholders
                     </button>
-                    <mat-menu #tracking_menu="matMenu" class="max-h-[24rem]">
+                    <mat-menu #tracking_menu="matMenu" class="max-h-96">
                         @for (
                             field of active_trigger?.fields || [];
                             track field

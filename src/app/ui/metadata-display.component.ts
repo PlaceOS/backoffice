@@ -29,7 +29,6 @@ import {
 import { lastValueFrom } from 'rxjs';
 import { VERSION } from '../../env/version';
 // import { SchemaStateService } from '../admin/schema-state.service';
-import { ANIMATION_SHOW_CONTRACT_EXPAND } from '../common/angular-animations';
 import { AsyncHandler } from '../common/async-handler.class';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
@@ -74,7 +73,7 @@ function replaceDescTag(inputString, newContent) {
                     <div
                         block
                         [id]="'md-block-' + item.name"
-                        class="rounded border border-base-300"
+                        class="rounded-sm border border-base-300"
                         [class.shadow]="show_view() === item.name"
                         [class.opacity-30]="item.match === false"
                         [formGroup]="form_map()[item.name]"
@@ -89,7 +88,7 @@ function replaceDescTag(inputString, newContent) {
                             </h3>
                             <div class="flex-1"></div>
                             <div
-                                class="whitespace-nowrap rounded border border-base-300 px-2 py-1 font-mono text-[0.625rem]"
+                                class="whitespace-nowrap rounded-sm border border-base-300 px-2 py-1 font-mono text-[0.625rem]"
                             >
                                 {{ item.updated_at | dateFrom }}
                             </div>
@@ -148,22 +147,22 @@ function replaceDescTag(inputString, newContent) {
                         </button>
                         <div
                             body
-                            class="overflow-hidden"
-                            [@show]="
-                                show_view() === item.name ? 'show' : 'hide'
-                            "
+                            class="expandable"
+                            [class.expanded]="show_view() === item.name"
                         >
-                            <div
-                                class="h-[32.5rem] border-t border-base-300 p-1"
-                            >
-                                @if (show_view() === item.name) {
-                                    <settings-form-field
-                                        formControlName="details"
-                                        lang="json"
-                                        [schema]="schema_map()[item.name]"
-                                        [readonly]="false"
-                                    ></settings-form-field>
-                                }
+                            <div>
+                                <div
+                                    class="h-130 border-t border-base-300 p-1"
+                                >
+                                    @if (show_view() === item.name) {
+                                        <settings-form-field
+                                            formControlName="details"
+                                            lang="json"
+                                            [schema]="schema_map()[item.name]"
+                                            [readonly]="false"
+                                        ></settings-form-field>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -188,7 +187,6 @@ function replaceDescTag(inputString, newContent) {
             }
         `,
     ],
-    animations: [ANIMATION_SHOW_CONTRACT_EXPAND],
     imports: [
         MatProgressSpinnerModule,
         TranslatePipe,

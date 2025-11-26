@@ -17,7 +17,7 @@ interface UserLogEntry {
     selector: 'user-history',
     template: `
         <simple-table
-            class="block min-w-[64rem] text-sm"
+            class="block min-w-5xl text-sm"
             [data]="logs()"
             [columns]="[
                 {

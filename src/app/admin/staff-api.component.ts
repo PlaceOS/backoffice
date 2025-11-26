@@ -83,7 +83,7 @@ export interface PlaceTenant {
                     [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[48rem] text-sm"
+                    class="block min-w-3xl text-sm"
                     [data]="tenants"
                     [columns]="[
                         { key: 'name', name: 'COMMON.FIELD_NAME' | translate },

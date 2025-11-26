@@ -69,7 +69,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
             </div>
             @if (loading()) {
                 <div
-                    class="absolute -inset-2 flex flex-col items-center justify-center rounded"
+                    class="absolute -inset-2 flex flex-col items-center justify-center rounded-sm"
                 >
                     <div class="absolute inset-0 bg-base-100 opacity-60"></div>
                     <mat-spinner diameter="32"></mat-spinner>

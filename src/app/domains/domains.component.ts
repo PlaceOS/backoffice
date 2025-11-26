@@ -70,7 +70,7 @@ import { DomainStateService } from './domain-state.service';
                     }
                 </div>
                 <button
-                    class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-9"
+                    class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-9"
                     [matTooltip]="'DOMAINS.NEW' | translate"
                     matTooltipPosition="right"
                     matRipple

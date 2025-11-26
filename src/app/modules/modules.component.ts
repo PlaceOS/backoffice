@@ -72,7 +72,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             }
                         </div>
                         <button
-                            class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-9"
+                            class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-9"
                             [matTooltip]="'MODULES.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
@@ -89,7 +89,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             @if (debug_position() === 'side') {
                 <app-debug-output
                     side
-                    class="h-full max-w-[30rem]"
+                    class="h-full max-w-120"
                 ></app-debug-output>
             }
         </div>

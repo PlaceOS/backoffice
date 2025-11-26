@@ -59,16 +59,16 @@ import { APIKeyService } from './api-keys.service';
                     class="mx-4 mb-4 flex w-[calc(100%-2rem)] items-start space-x-2"
                 >
                     <div
-                        class="flex w-full flex-col rounded border border-base-300 shadow"
+                        class="flex w-full flex-col rounded-sm border border-base-300 shadow-sm"
                     >
                         <div
-                            class="flex w-full items-center space-x-2 rounded border-b border-base-300 bg-base-200"
+                            class="flex w-full items-center space-x-2 rounded-sm border-b border-base-300 bg-base-200"
                         >
                             <h3 class="px-4 py-2 text-lg font-medium">
                                 {{ 'ADMIN.APP_KEYS_LAST_DETAILS' | translate }}
                             </h3>
                             <div
-                                class="mono rounded bg-base-100 px-2 py-1 text-xs opacity-60"
+                                class="mono rounded-sm bg-base-100 px-2 py-1 text-xs opacity-60"
                             >
                                 {{
                                     (last_key | async)?.name ||
@@ -77,7 +77,7 @@ import { APIKeyService } from './api-keys.service';
                             </div>
                         </div>
                         <div
-                            class="mono cursor-pointer select-all break-words px-4 py-3 opacity-60"
+                            class="mono cursor-pointer select-all wrap-break-word px-4 py-3 opacity-60"
                             (click)="copyKey()"
                         >
                             {{ (last_key | async)?.x_api_key }}
@@ -92,7 +92,7 @@ import { APIKeyService } from './api-keys.service';
                     [class.opacity-0]="(loading | async) !== true"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[64rem] text-sm"
+                    class="block min-w-5xl text-sm"
                     [data]="key_list"
                     [columns]="[
                         { key: 'name', name: 'COMMON.FIELD_NAME' | translate },

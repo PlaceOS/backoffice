@@ -50,7 +50,7 @@ function cancelBuildJob(id, q = {}) {
                     [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[64rem] text-sm"
+                    class="block min-w-5xl text-sm"
                     [data]="jobs()"
                     [columns]="[
                         {

@@ -60,7 +60,7 @@ export interface TriggerInstanceState {
                     [class.opacity-0]="!(loading | async).triggers"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[42rem] text-sm"
+                    class="block min-w-2xl text-sm"
                     [data]="triggers"
                     [columns]="[
                         {

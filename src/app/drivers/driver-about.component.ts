@@ -27,7 +27,7 @@ import { DriverStateService } from './driver-state.service';
             >
                 <div class="flex-1 sm:w-1/3">
                     <div
-                        class="grid gap-2 rounded border border-base-200 p-4"
+                        class="grid gap-2 rounded-sm border border-base-200 p-4"
                         [style.gridTemplateColumns]="'6rem auto'"
                     >
                         @if (item().default_uri) {
@@ -110,7 +110,7 @@ import { DriverStateService } from './driver-state.service';
                 </div>
                 <div class="flex-1 sm:w-1/3">
                     <div
-                        class="grid gap-4 rounded border border-base-200 p-4"
+                        class="grid gap-4 rounded-sm border border-base-200 p-4"
                         [style.gridTemplateColumns]="'5.5rem auto'"
                     >
                         <div class="flex items-center text-sm font-medium">
@@ -145,7 +145,7 @@ import { DriverStateService } from './driver-state.service';
                                 matRipple
                                 [matTooltip]="'COMMON.UPDATE' | translate"
                                 (click)="updateDriver()"
-                                class="h-12 w-12 rounded bg-secondary text-secondary-content"
+                                class="h-12 w-12 rounded-sm bg-secondary text-secondary-content"
                             >
                                 <icon class="text-2xl">update</icon>
                             </button>
@@ -154,7 +154,7 @@ import { DriverStateService } from './driver-state.service';
                                 matRipple
                                 [matTooltip]="'DRIVERS.RECOMPILE' | translate"
                                 (click)="recompile()"
-                                class="h-12 w-12 rounded bg-secondary text-secondary-content"
+                                class="h-12 w-12 rounded-sm bg-secondary text-secondary-content"
                             >
                                 <icon class="text-2xl">build</icon>
                             </button>
@@ -163,7 +163,7 @@ import { DriverStateService } from './driver-state.service';
                                 matRipple
                                 [matTooltip]="'DRIVERS.RELOAD' | translate"
                                 (click)="reload()"
-                                class="h-12 w-12 rounded bg-secondary text-secondary-content"
+                                class="h-12 w-12 rounded-sm bg-secondary text-secondary-content"
                             >
                                 <icon class="text-2xl">refresh</icon>
                             </button>
@@ -173,9 +173,9 @@ import { DriverStateService } from './driver-state.service';
             </section>
             @if (item()?.description) {
                 <hr class="my-4 text-base-300" />
-                <div class="w-full rounded border border-base-200">
+                <div class="w-full rounded-sm border border-base-200">
                     <h3
-                        class="w-full rounded bg-base-200 p-4 text-lg font-medium"
+                        class="w-full rounded-sm bg-base-200 p-4 text-lg font-medium"
                     >
                         {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                     </h3>

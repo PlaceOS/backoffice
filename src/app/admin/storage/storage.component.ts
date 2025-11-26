@@ -57,7 +57,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                     [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[44rem] text-sm"
+                    class="block min-w-176 text-sm"
                     [data]="storage_list()"
                     [columns]="[
                         {
@@ -131,7 +131,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
         <ng-template #bool_template let-data="data">
             <div class="flex h-full w-full items-center justify-center">
                 <div
-                    class="flex h-8 w-8 items-center justify-center rounded"
+                    class="flex h-8 w-8 items-center justify-center rounded-sm"
                     [class.bg-success]="data"
                     [class.text-success-content]="data"
                     [class.bg-error]="!data"

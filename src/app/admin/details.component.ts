@@ -44,7 +44,7 @@ export interface PlaceServiceDetails {
             <div class="text-2xl">Backoffice & PlaceOS Details</div>
         </div>
         <div
-            class="mb-4 flex items-center space-x-2 rounded bg-base-200 px-4 py-2"
+            class="mb-4 flex items-center space-x-2 rounded-sm bg-base-200 px-4 py-2"
         >
             <h3 class="text-lg font-medium">
                 {{ 'ADMIN.APPLICATION_DETAILS' | translate }}
@@ -61,7 +61,7 @@ export interface PlaceServiceDetails {
             }
         </div>
         <section
-            class="mb-4 inline-grid gap-2 rounded border border-base-200 p-4"
+            class="mb-4 inline-grid gap-2 rounded-sm border border-base-200 p-4"
             [style.gridTemplateColumns]="'6.5rem auto'"
         >
             <div class="flex items-center text-sm font-medium" for="version">
@@ -101,7 +101,7 @@ export interface PlaceServiceDetails {
                 {{ backoffice_build }}
             </div>
         </section>
-        <div class="flex items-center space-x-4 rounded bg-base-200 px-4 py-2">
+        <div class="flex items-center space-x-4 rounded-sm bg-base-200 px-4 py-2">
             <div class="text-lg font-medium">
                 {{ 'ADMIN.BACKEND_SERVICES' | translate }}
                 <span class="mono ml-2 opacity-60">API</span>
@@ -125,7 +125,7 @@ export interface PlaceServiceDetails {
             @if (api_details().length > 0) {
                 @for (api of api_details(); track $index) {
                     <div
-                        class="m-2 min-w-[40%] flex-1 overflow-hidden rounded border border-base-200 bg-base-100"
+                        class="m-2 min-w-[40%] flex-1 overflow-hidden rounded-sm border border-base-200 bg-base-100"
                     >
                         <h3
                             class="mono w-full border-b border-base-200 px-4 py-2"

@@ -35,12 +35,12 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
     selector: 'item-sidebar',
     template: `
         <div
-            class="flex h-full w-[24rem] min-w-64 max-w-[25vw] flex-col space-y-2 overflow-hidden rounded border-base-200 bg-base-100 shadow sm:border-r"
+            class="flex h-full w-[24rem] min-w-64 max-w-[25vw] flex-col space-y-2 overflow-hidden rounded-sm border-base-200 bg-base-100 shadow-sm sm:border-r"
             (click)="$event.stopPropagation()"
         >
             <div class="flex items-center space-x-2 px-1 pt-1">
                 <div
-                    class="relative flex flex-1 items-center rounded-lg border border-base-300 shadow"
+                    class="relative flex flex-1 items-center rounded-lg border border-base-300 shadow-sm"
                 >
                     <icon
                         class="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 text-2xl"
@@ -131,7 +131,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                     : ''
                             "
                             [class.bg-base-200]="idx % 2 === 1"
-                            class="relative m-1 flex h-16 w-[23rem] max-w-[calc(100%-0.5rem)] flex-col justify-center rounded border border-base-100 px-2 py-1 hover:border-info"
+                            class="relative m-1 flex h-16 w-92 max-w-[calc(100%-0.5rem)] flex-col justify-center rounded-sm border border-base-100 px-2 py-1 hover:border-info"
                             (click)="show.set(false)"
                         >
                             <p class="w-full truncate">
@@ -141,7 +141,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                 @if (item.extra) {
                                     <div
                                         extra
-                                        class="mono mt-1 max-w-full truncate rounded border border-base-300 p-1 text-[0.625rem] opacity-60"
+                                        class="mono mt-1 max-w-full truncate rounded-sm border border-base-300 p-1 text-[0.625rem] opacity-60"
                                     >
                                         {{ item.extra }}
                                     </div>

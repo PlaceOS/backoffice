@@ -44,7 +44,7 @@ import { SystemStateService } from './system-state.service';
             @if (item.id && item.modules && !hide_exec) {
                 <section exec class="p-4">
                     <h3
-                        class="mb-2 w-full rounded bg-base-200 p-4 text-lg font-medium"
+                        class="mb-2 w-full rounded-sm bg-base-200 p-4 text-lg font-medium"
                     >
                         {{ 'COMMON.EXECUTE_COMMAND' | translate }}
                     </h3>
@@ -54,13 +54,13 @@ import { SystemStateService } from './system-state.service';
                 </section>
             }
             <h3
-                class="mx-auto mb-2 w-[calc(100%-2rem)] rounded bg-base-200 p-4 text-lg font-medium"
+                class="mx-auto mb-2 w-[calc(100%-2rem)] rounded-sm bg-base-200 p-4 text-lg font-medium"
             >
                 {{ 'SYSTEMS.MODULE_LIST' | translate }}
             </h3>
             <section add-module class="flex w-full flex-wrap space-x-2 px-4">
                 <item-search-field
-                    class="flex-grow-1 h-12 w-full sm:w-auto sm:flex-1"
+                    class="grow h-12 w-full sm:w-auto sm:flex-1"
                     name="module"
                     [placeholder]="'SYSTEMS.FIND_MODULE' | translate"
                     [query_fn]="query_fn"
@@ -125,7 +125,7 @@ import { SystemStateService } from './system-state.service';
                 </mat-menu>
                 <div [context-menu]="context_menu" class="flex">
                     <simple-table
-                        class="block min-w-[78rem] text-sm"
+                        class="block min-w-312 text-sm"
                         [data]="modules"
                         (enter_row)="setActive($event)"
                         [columns]="[
@@ -249,7 +249,7 @@ import { SystemStateService } from './system-state.service';
                     </div>
                 </ng-template>
                 <ng-template #url_template let-row="row">
-                    <div class="flex max-w-[22rem] items-center p-4">
+                    <div class="flex max-w-88 items-center p-4">
                         <icon [class.opacity-0]="!row.tls" class="text-xl">
                             lock
                         </icon>

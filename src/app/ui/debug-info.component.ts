@@ -15,14 +15,14 @@ import { TranslatePipe } from './translate.pipe';
             >
                 @if (compact()) {
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded bg-info text-info-content"
+                        class="flex h-10 w-10 items-center justify-center rounded-sm bg-info text-info-content"
                         [matTooltip]="'COMMON.DEBUG_ENABLED' | translate"
                         matTooltipPosition="right"
                     >
                         <icon class="text-2xl">bug_report</icon>
                     </div>
                     <div
-                        class="relative flex h-10 w-10 items-center justify-center rounded"
+                        class="relative flex h-10 w-10 items-center justify-center rounded-sm"
                         [matTooltip]="
                             'COMMON.DEBUG_LISTENING_MSG'
                                 | translate
@@ -38,7 +38,7 @@ import { TranslatePipe } from './translate.pipe';
                         <div>{{ debug_module_count() }}</div>
                     </div>
                     <div
-                        class="relative flex h-10 w-10 items-center justify-center rounded"
+                        class="relative flex h-10 w-10 items-center justify-center rounded-sm"
                         [matTooltip]="
                             'COMMON.DEBUG_MSG_COUNT_MSG'
                                 | translate

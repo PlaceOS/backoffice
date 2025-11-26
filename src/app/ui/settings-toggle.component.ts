@@ -14,7 +14,7 @@ import { IconComponent } from './icon.component';
     template: `
         <button
             matRipple
-            class="relative flex min-h-12 flex-1 items-center space-x-2 overflow-hidden rounded border px-2"
+            class="relative flex min-h-12 flex-1 items-center space-x-2 overflow-hidden rounded-sm border px-2"
             [class.border-base-300]="!value"
             [class.border-info]="value"
             (click)="setValue(!value)"

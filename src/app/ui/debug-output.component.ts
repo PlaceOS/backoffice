@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from '../common/angular-animations';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { eventToPoint } from '../common/general';
@@ -33,10 +32,9 @@ import { TranslatePipe } from './translate.pipe';
                     (window:resize)="onWindowResize()"
                 >
                     <div
-                        class="relative z-10 flex flex-col overflow-hidden border border-base-200 bg-[#212121] text-white shadow"
+                        class="animate-fade-in relative z-10 flex flex-col overflow-hidden border border-base-200 bg-[#212121] text-white shadow-sm"
                         content
                         #content
-                        [@show]="is_shown() ? 'show' : 'hide'"
                         [style.height]="
                             debug_position() === 'side'
                                 ? '100%'
@@ -86,7 +84,7 @@ import { TranslatePipe } from './translate.pipe';
                             <button
                                 icon
                                 matRipple
-                                class="rounded-full bg-neutral-focus text-neutral-content shadow"
+                                class="rounded-full bg-neutral-focus text-neutral-content shadow-sm"
                                 (click)="downloadLogs()"
                             >
                                 <icon
@@ -101,7 +99,7 @@ import { TranslatePipe } from './translate.pipe';
                             <button
                                 icon
                                 matRipple
-                                class="rounded-full bg-neutral-focus text-neutral-content shadow"
+                                class="rounded-full bg-neutral-focus text-neutral-content shadow-sm"
                                 (click)="toggleDebugPosition()"
                             >
                                 <icon
@@ -119,7 +117,7 @@ import { TranslatePipe } from './translate.pipe';
                             <button
                                 icon
                                 matRipple
-                                class="rounded-full bg-neutral-focus text-neutral-content shadow"
+                                class="rounded-full bg-neutral-focus text-neutral-content shadow-sm"
                                 (click)="clearDebugMessages()"
                             >
                                 <icon
@@ -135,7 +133,7 @@ import { TranslatePipe } from './translate.pipe';
                                 icon
                                 matRipple
                                 (click)="clearBindings()"
-                                class="rounded-full bg-neutral-focus text-neutral-content shadow"
+                                class="rounded-full bg-neutral-focus text-neutral-content shadow-sm"
                                 [matTooltip]="
                                     'COMMON.DEBUG_UNBIND_MODULES' | translate
                                 "
@@ -146,7 +144,7 @@ import { TranslatePipe } from './translate.pipe';
                                 icon
                                 matRipple
                                 (click)="close()"
-                                class="rounded-full bg-neutral-focus text-neutral-content shadow"
+                                class="rounded-full bg-neutral-focus text-neutral-content shadow-sm"
                                 [matTooltip]="
                                     'COMMON.DEBUG_CLOSE_CONSOLE' | translate
                                 "
@@ -200,7 +198,6 @@ import { TranslatePipe } from './translate.pipe';
             }
         `,
     ],
-    animations: [ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR],
     imports: [
         IconComponent,
         TranslatePipe,

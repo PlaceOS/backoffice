@@ -6,7 +6,7 @@ import { AsyncHandler } from '../common/async-handler.class';
     template: `
         <div class="relative h-12 w-12 rounded-full border-2 border-base-100">
             <div
-                class="hand absolute bottom-1/2 left-1/2 h-3 w-1 rounded bg-base-100"
+                class="hand absolute bottom-1/2 left-1/2 h-3 w-1 rounded-sm bg-base-100"
                 [style.transform]="
                     'translateX(-50%) rotate(' + hour_angle + 'deg)'
                 "

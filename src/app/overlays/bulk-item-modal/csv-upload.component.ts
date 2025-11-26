@@ -14,7 +14,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
         @if (!loading) {
             <button
                 matRipple
-                class="relative mx-4 flex h-[24rem] w-[24rem] flex-col items-center justify-center space-y-4 rounded-xl border-4 border-dashed border-base-300 hover:bg-base-200"
+                class="relative mx-4 flex h-96 w-[24rem] flex-col items-center justify-center space-y-4 rounded-xl border-4 border-dashed border-base-300 hover:bg-base-200"
                 [class.hover]="dragging"
                 (dragenter)="dragging = true"
                 (dragleave)="dragging = false"
@@ -30,7 +30,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
             </button>
         } @else {
             <div
-                class="flex h-[24rem] w-[24rem] flex-col items-center justify-center space-y-4"
+                class="flex h-96 w-[24rem] flex-col items-center justify-center space-y-4"
             >
                 <mat-spinner diameter="32"></mat-spinner>
                 <div class="text">

@@ -34,7 +34,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                 (click)="copyKey(item.x_api_key)"
                 matRipple
                 [matTooltip]="'Copy API Key for ' + item.name"
-                class="absolute right-4 top-4 flex max-w-[calc(100%-11rem)] cursor-pointer items-center overflow-hidden rounded border border-base-200 bg-base-100 shadow"
+                class="absolute right-4 top-4 flex max-w-[calc(100%-11rem)] cursor-pointer items-center overflow-hidden rounded-sm border border-base-200 bg-base-100 shadow-sm"
             >
                 <div
                     class="flex h-full w-1/2 flex-1 items-center border-r border-base-200 p-2"
@@ -64,7 +64,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                     [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-[64rem] text-sm"
+                    class="block min-w-5xl text-sm"
                     [data]="edges()"
                     [columns]="[
                         {

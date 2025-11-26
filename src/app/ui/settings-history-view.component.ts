@@ -22,7 +22,7 @@ import { TranslatePipe } from './translate.pipe';
             <div class="flex items-center justify-between space-x-4">
                 <mat-form-field
                     appearance="outline"
-                    class="h-[3.25rem] w-1/2 max-w-[32rem] flex-1"
+                    class="h-13 w-1/2 max-w-lg flex-1"
                 >
                     <mat-select
                         ngModel
@@ -76,7 +76,7 @@ import { TranslatePipe } from './translate.pipe';
                 </mat-form-field>
                 <mat-form-field
                     appearance="outline"
-                    class="h-[3.25rem] w-1/2 max-w-[32rem] flex-1"
+                    class="h-13 w-1/2 max-w-lg flex-1"
                 >
                     <mat-select
                         ngModel

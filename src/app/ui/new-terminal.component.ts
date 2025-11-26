@@ -64,7 +64,7 @@ import { TranslatePipe } from './translate.pipe';
             :host {
                 display: block;
                 height: 1px;
-                flex-grow: 1;
+                grow: 1;
                 width: 100%;
             }
         `,
