@@ -25,10 +25,8 @@ gitInfo.time = Date.now();
 const file = resolve(
     __dirname,
     '..',
-    'apps',
-    'backoffice',
     'src',
-    'environments',
+    'env',
     'version.ts'
 );
 writeFileSync(

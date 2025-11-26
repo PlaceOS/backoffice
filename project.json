@@ -1,0 +1,142 @@
+{
+    "name": "backoffice",
+    "$schema": "node_modules/nx/schemas/project-schema.json",
+    "includedScripts": [],
+    "projectType": "application",
+    "prefix": "app",
+    "sourceRoot": "./src",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@angular/build:application",
+            "outputs": ["{options.outputPath}"],
+            "options": {
+                "outputPath": "dist/backoffice",
+                "browser": "./src/main.ts",
+                "polyfills": [],
+                "tsConfig": "tsconfig.app.json",
+                "assets": [
+                    {
+                        "glob": "**/*",
+                        "input": "public"
+                    },
+                    {
+                        "glob": "oauth-resp.html",
+                        "input": "node_modules/@placeos/ts-client/dist/",
+                        "output": "/"
+                    },
+                    {
+                        "glob": "*.woff2",
+                        "input": "node_modules/material-symbols",
+                        "output": "/assets/"
+                    },
+                    {
+                        "glob": "**/*.woff2",
+                        "input": "node_modules/firacode/distr",
+                        "output": "/assets/firacode"
+                    },
+                    {
+                        "glob": "**/*.woff",
+                        "input": "node_modules/firacode/distr",
+                        "output": "/assets/firacode"
+                    },
+                    {
+                        "glob": "**/*.css",
+                        "input": "node_modules/firacode/distr",
+                        "output": "/assets/firacode"
+                    },
+                    {
+                        "glob": "**/*",
+                        "input": "node_modules/monaco-editor/min/",
+                        "output": "./assets/monaco/min/"
+                    },
+                    {
+                        "glob": "**/*",
+                        "input": "node_modules/monaco-editor/min-maps/",
+                        "output": "./assets/monaco/min-maps/"
+                    },
+                    {
+                        "input": "src/environments/dev",
+                        "output": "/assets",
+                        "glob": "*.js"
+                    },
+                    {
+                        "input": "node_modules/ts-md5/dist/",
+                        "output": "/assets",
+                        "glob": "*worker.js"
+                    }
+                ],
+                "styles": [
+                    "./src/styles.css",
+                    "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+                ]
+            },
+            "configurations": {
+                "production": {
+                    "budgets": [
+                        {
+                            "type": "initial",
+                            "maximumWarning": "1mb",
+                            "maximumError": "1.5mb"
+                        },
+                        {
+                            "type": "anyComponentStyle",
+                            "maximumWarning": "4kb",
+                            "maximumError": "8kb"
+                        }
+                    ],
+                    "outputHashing": "all"
+                },
+                "development": {
+                    "optimization": false,
+                    "extractLicenses": false,
+                    "sourceMap": true
+                }
+            },
+            "defaultConfiguration": "production"
+        },
+        "serve": {
+            "continuous": true,
+            "executor": "@angular/build:dev-server",
+            "configurations": {
+                "production": {
+                    "buildTarget": "backoffice:build:production"
+                },
+                "development": {
+                    "proxyConfig": "config/proxy.conf.js",
+                    "buildTarget": "backoffice:build:development"
+                }
+            },
+            "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+            "executor": "@angular/build:extract-i18n",
+            "options": {
+                "buildTarget": "backoffice:build"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint",
+            "options": {
+                "lintFilePatterns": ["./src"]
+            }
+        },
+        "test": {
+            "executor": "@nx/vite:test",
+            "outputs": ["{options.reportsDirectory}"],
+            "options": {
+                "reportsDirectory": "coverage/backoffice"
+            }
+        },
+        "serve-static": {
+            "continuous": true,
+            "executor": "@nx/web:file-server",
+            "options": {
+                "buildTarget": "backoffice:build",
+                "port": 4200,
+                "staticFilePath": "dist/backoffice/browser",
+                "spa": true
+            }
+        }
+    }
+}

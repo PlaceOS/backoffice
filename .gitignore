@@ -1,13 +1,12 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # compiled output
-/dist
-/tmp
-/out-tsc
+dist
+tmp
+out-tsc
 
 # dependencies
-/node_modules
-/cypress-tests/node_modules
+node_modules
 
 # IDEs and editors
 /.idea
@@ -26,7 +25,6 @@
 !.vscode/extensions.json
 
 # misc
-/.angular/cache
 /.sass-cache
 /connect.lock
 /coverage
@@ -35,15 +33,17 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-/cypress-tests/cypress/downloads
 
 # System Files
 .DS_Store
 Thumbs.db
-apps/backoffice/src/environments/version.ts
 
 .nx/cache
 .nx/workspace-data
-migrations.json
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+
+.angular
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*

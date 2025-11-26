@@ -31,4 +31,3 @@ Code coverage can be run using `npm run coverage`
 E2E tests can be run using `npm run test:e2e`
 
 ## Usage
-
