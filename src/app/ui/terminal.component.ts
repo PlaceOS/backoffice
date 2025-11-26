@@ -8,7 +8,6 @@ import {
     input,
     viewChild,
 } from '@angular/core';
-// import { Terminal } from '@xterm/xterm';
 import { AsyncHandler } from '../common/async-handler.class';
 
 @Component({
