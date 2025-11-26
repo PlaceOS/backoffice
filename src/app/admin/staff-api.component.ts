@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -80,7 +80,7 @@ export interface PlaceTenant {
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading"
+                    [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-[48rem] text-sm"
@@ -193,7 +193,7 @@ export class PlaceStaffAPIComponent implements OnInit {
     private _dialog = inject(MatDialog);
 
     /** Loading state */
-    public loading: string = '';
+    public readonly loading = signal('');
     /** List of available domains */
     public domain_list: PlaceDomain[];
     /** Currently active domain */
@@ -201,12 +201,12 @@ export class PlaceStaffAPIComponent implements OnInit {
 
     public readonly tenants = this.domain.pipe(
         switchMap(() => {
-            this.loading = 'Loading tenants for domain...';
+            this.loading.set('Loading tenants for domain...');
             return get('/api/staff/v1/tenants');
         }),
         catchError((_) => []),
         map((tenants) => {
-            this.loading = '';
+            this.loading.set('');
             return tenants.filter(
                 (t) => t.domain === this.domain.getValue()?.domain,
             );
@@ -227,7 +227,7 @@ export class PlaceStaffAPIComponent implements OnInit {
     }
 
     public async ngOnInit() {
-        this.loading = 'Loading domains...';
+        this.loading.set('Loading domains...');
         this.domain_list = await queryDomains()
             .pipe(map((r) => r.data))
             .toPromise();
@@ -235,7 +235,7 @@ export class PlaceStaffAPIComponent implements OnInit {
         if (!this.domain_list?.length) return;
         const match = this.domain_list.find((d) => d.id === domain.id);
         if (match) this.domain.next(match);
-        this.loading = '';
+        this.loading.set('');
     }
 
     public editTenant(tenant?: PlaceTenant) {

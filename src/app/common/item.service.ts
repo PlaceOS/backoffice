@@ -431,9 +431,11 @@ export class ActiveItemService extends AsyncHandler {
             );
 
             settings.sort((a, b) => a.encryption_level - b.encryption_level);
-            this._active_item.next(
-                new this.actions.itemConstructor({ ...item, settings }),
-            );
+            if (this.actions?.itemConstructor) {
+                this._active_item.next(
+                    new this.actions.itemConstructor({ ...item, settings }),
+                );
+            }
         }
     }
 }

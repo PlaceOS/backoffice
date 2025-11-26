@@ -9,6 +9,7 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
@@ -43,7 +44,9 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     </button>
                 </item-selection>
                 <div class="flex h-1/2 flex-1 flex-col">
-                    @if (item()?.id) {
+                    @if (loading()) {
+                        <item-details-skeleton></item-details-skeleton>
+                    } @else if (item()?.id) {
                         <item-details
                             [can_edit]="true"
                             [item]="item()"
@@ -95,6 +98,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         ItemTablistComponent,
         ItemSidebarComponent,
         ItemDetailsComponent,
+        ItemDetailsSkeletonComponent,
         ItemSelectionComponent,
         SidebarMenuComponent,
     ],
@@ -106,6 +110,7 @@ export class UsersComponent extends AsyncHandler {
     public open_menu = false;
     public tab_list = [];
     public readonly scroll = signal(0);
+    public readonly loading = signal(false);
 
     public readonly newItem = () => this._service.create();
     public readonly bulkAdd = () => this._service.bulkAdd();
@@ -138,6 +143,10 @@ export class UsersComponent extends AsyncHandler {
     }
 
     public ngOnInit() {
+        this.subscription(
+            'loading',
+            this._service.loading.subscribe((l) => this.loading.set(l)),
+        );
         this.subscription(
             'item',
             this._service.item.subscribe((item) => {

@@ -15,6 +15,7 @@ import { i18n } from '../common/locale.service';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
@@ -52,7 +53,9 @@ import { DriverStateService } from './driver-state.service';
                             </button>
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
-                            @if (item()?.id) {
+                            @if (loading()) {
+                                <item-details-skeleton></item-details-skeleton>
+                            } @else if (item()?.id) {
                                 <item-details
                                     [can_edit]="true"
                                     [item]="item()"
@@ -116,6 +119,7 @@ import { DriverStateService } from './driver-state.service';
         MatRippleModule,
         MatTooltipModule,
         ItemDetailsComponent,
+        ItemDetailsSkeletonComponent,
         ItemTablistComponent,
         ItemSelectionComponent,
         ItemSidebarComponent,
@@ -130,6 +134,7 @@ export class DriversComponent extends AsyncHandler implements OnInit {
 
     public readonly name = 'drivers';
     public readonly item = signal<PlaceDriver>(null);
+    public readonly loading = signal(false);
     public readonly scroll = signal(0);
     public readonly open_menu = signal(false);
     public readonly device_count = signal(0);
@@ -176,6 +181,10 @@ export class DriversComponent extends AsyncHandler implements OnInit {
     }
 
     public ngOnInit(): void {
+        this.subscription(
+            'loading',
+            this._service.loading.subscribe((l) => this.loading.set(l)),
+        );
         this.subscription(
             'item',
             this._service.item.subscribe((item) => {

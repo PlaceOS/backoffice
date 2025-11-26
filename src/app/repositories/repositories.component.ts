@@ -9,6 +9,7 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
@@ -44,7 +45,9 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </button>
                 </item-selection>
                 <div class="flex h-1/2 flex-1 flex-col">
-                    @if (item()?.id) {
+                    @if (loading()) {
+                        <item-details-skeleton></item-details-skeleton>
+                    } @else if (item()?.id) {
                         <item-details
                             [can_edit]="true"
                             [item]="item()"
@@ -86,6 +89,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         RouterModule,
         ItemTablistComponent,
         ItemDetailsComponent,
+        ItemDetailsSkeletonComponent,
         ItemSelectionComponent,
         SidebarMenuComponent,
         ItemSidebarComponent,
@@ -103,6 +107,7 @@ export class RepositoriesComponent extends AsyncHandler implements OnInit {
     public readonly newItem = () => this._item.create();
 
     public readonly item = signal<PlaceRepository>(null);
+    public readonly loading = signal(false);
     public readonly tab_list = signal([]);
     public readonly scroll = signal(0);
 
@@ -138,6 +143,10 @@ export class RepositoriesComponent extends AsyncHandler implements OnInit {
     }
 
     public async ngOnInit() {
+        this.subscription(
+            'loading',
+            this._item.loading.subscribe((l) => this.loading.set(l)),
+        );
         this.subscription(
             'list',
             this._service.driver_list.subscribe((list) => {

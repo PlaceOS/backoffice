@@ -633,12 +633,6 @@ export class SettingsFormComponent
         const merged_settings = remote_settings
             .concat(local_settings)
             .reduce((m, i) => ({ ...m, ...i }), {});
-        console.log(
-            'Settings(Local, Remote, Merged):',
-            local_settings,
-            remote_settings,
-            merged_settings,
-        );
         const settings_string = Object.keys(merged_settings).length
             ? yaml.dump(merged_settings, { strict: true })
             : '';

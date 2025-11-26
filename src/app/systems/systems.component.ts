@@ -11,6 +11,7 @@ import { i18n } from '../common/locale.service';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
@@ -46,7 +47,9 @@ import { SystemStateService } from './system-state.service';
                             </button>
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
-                            @if (item()?.id) {
+                            @if (loading()) {
+                                <item-details-skeleton></item-details-skeleton>
+                            } @else if (item()?.id) {
                                 <item-details
                                     [can_edit]="true"
                                     [item]="item()"
@@ -108,6 +111,7 @@ import { SystemStateService } from './system-state.service';
         TranslatePipe,
         ItemTablistComponent,
         ItemDetailsComponent,
+        ItemDetailsSkeletonComponent,
         ItemSelectionComponent,
         ItemSidebarComponent,
         SidebarMenuComponent,
@@ -120,6 +124,7 @@ export class SystemsComponent extends AsyncHandler implements OnInit {
     private _debug = inject(PlaceDebugService);
 
     public readonly item = signal<PlaceSystem>(null);
+    public readonly loading = signal(false);
     public readonly open_menu = signal(false);
     public readonly name = 'systems';
     public readonly scroll = signal(0);
@@ -171,6 +176,10 @@ export class SystemsComponent extends AsyncHandler implements OnInit {
     }
 
     public ngOnInit(): void {
+        this.subscription(
+            'loading',
+            this._item.loading.subscribe((l) => this.loading.set(l)),
+        );
         this.subscription(
             'item-change',
             this._item.active_item$.subscribe((i) => {

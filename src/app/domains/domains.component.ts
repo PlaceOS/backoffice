@@ -9,6 +9,7 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsComponent } from '../ui/item-details.component';
+import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
@@ -44,7 +45,9 @@ import { DomainStateService } from './domain-state.service';
                     </button>
                 </item-selection>
                 <div class="flex h-1/2 flex-1 flex-col">
-                    @if (item()?.id) {
+                    @if (loading()) {
+                        <item-details-skeleton></item-details-skeleton>
+                    } @else if (item()?.id) {
                         <item-details
                             [can_edit]="true"
                             [item]="item()"
@@ -87,6 +90,7 @@ import { DomainStateService } from './domain-state.service';
         RouterModule,
         ItemTablistComponent,
         ItemDetailsComponent,
+        ItemDetailsSkeletonComponent,
         ItemSelectionComponent,
         ItemSidebarComponent,
         SidebarMenuComponent,
@@ -102,6 +106,7 @@ export class DomainsComponent extends AsyncHandler implements OnInit {
     public tab_list = [];
     public extra_actions = [];
     public readonly scroll = signal(0);
+    public readonly loading = signal(false);
 
     public readonly newItem = () => this._item.create();
 
@@ -120,6 +125,10 @@ export class DomainsComponent extends AsyncHandler implements OnInit {
             },
         ];
         this.updateTabList({});
+        this.subscription(
+            'loading',
+            this._item.loading.subscribe((l) => this.loading.set(l)),
+        );
         this.subscription(
             'counts',
             this._service.counts.subscribe((c) => {
