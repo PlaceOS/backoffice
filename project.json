@@ -15,6 +15,7 @@
                 "browser": "./src/main.ts",
                 "polyfills": [],
                 "tsConfig": "tsconfig.app.json",
+                "baseHref": "./",
                 "assets": [
                     {
                         "glob": "**/*",
