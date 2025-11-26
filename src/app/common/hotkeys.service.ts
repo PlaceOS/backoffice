@@ -34,10 +34,7 @@ export class HotkeysService {
         window.addEventListener('keydown', (event: KeyboardEvent) => {
             if (
                 document.getSelection().type === 'Range' ||
-                (document.activeElement &&
-                    (document.activeElement.tagName.toLowerCase() === 'input' ||
-                        document.activeElement.tagName.toLowerCase() ===
-                            'textarea'))
+                this.isEditableElementFocused()
             ) {
                 return;
             }
@@ -104,6 +101,34 @@ export class HotkeysService {
             });
         }
         return null;
+    }
+
+    /**
+     * Check if an editable element is currently focused
+     * This includes input, textarea, contenteditable elements, and code editors
+     */
+    private isEditableElementFocused(): boolean {
+        const active = document.activeElement;
+        if (!active) return false;
+
+        const tag_name = active.tagName.toLowerCase();
+
+        // Check for standard form inputs
+        if (tag_name === 'input' || tag_name === 'textarea') {
+            return true;
+        }
+
+        // Check for contenteditable elements
+        if (active.getAttribute('contenteditable') === 'true') {
+            return true;
+        }
+
+        // Check if inside a Monaco editor (used for settings forms)
+        if (active.closest('.monaco-editor')) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
