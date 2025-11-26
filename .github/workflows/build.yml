@@ -58,7 +58,7 @@ jobs:
                       echo "configuration=staging" >> $GITHUB_OUTPUT
                       echo "deploy_branch=uat" >> $GITHUB_OUTPUT
                   else
-                      echo "configuration=staging" >> $GITHUB_OUTPUT
+                      echo "configuration=development" >> $GITHUB_OUTPUT
                       echo "deploy_branch=dev" >> $GITHUB_OUTPUT
                   fi
 
