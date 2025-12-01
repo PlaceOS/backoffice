@@ -1,13 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SwUpdate } from '@angular/service-worker';
-import {
-    Amazon,
-    Azure,
-    Google,
-    initialiseUploadService,
-    OpenStack,
-} from '@placeos/cloud-uploads';
+import { initUploads } from '@placeos/cloud-uploads';
 import {
     get,
     invalidateToken,
@@ -64,7 +58,7 @@ import { UploadListComponent } from './ui/upload-list.component';
         </div>
         @if (!online && !loading()) {
             <div
-                class="fixed bottom-2 left-1/2 z-9999 -translate-x-1/2 rounded-3xl bg-error px-4 py-2 text-xs text-error-content shadow-sm"
+                class="bg-error text-error-content fixed bottom-2 left-1/2 z-9999 -translate-x-1/2 rounded-3xl px-4 py-2 text-xs shadow-sm"
             >
                 Unable to reach server... Some features may not work.
             </div>
@@ -137,12 +131,11 @@ export class AppComponent extends AsyncHandler implements OnInit {
         this.clearTimeout('wait_for_user');
         this.loading.set(false);
         this.timeout('init_uploads', () => {
-            initialiseUploadService({
+            initUploads({
                 auto_start: true,
                 token: token(),
                 endpoint: '/api/engine/v2/uploads',
                 worker_url: 'assets/md5_worker.js',
-                providers: [Amazon, Azure, Google, OpenStack] as any,
             });
         });
         // this.interval(

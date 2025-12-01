@@ -1,7 +1,6 @@
 import {
-    Upload,
     humanReadableByteCount,
-    uploadFiles,
+    uploadFile as uploadNewFile,
 } from '@placeos/cloud-uploads';
 import { Observable } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
@@ -32,7 +31,7 @@ export interface UploadDetails {
     /** Error with upload request */
     error?: string;
     /** Upload object associated with the file */
-    upload: Upload;
+    upload: any;
 }
 
 export type UploadPermissions = 'none' | 'support' | 'admin';
@@ -48,15 +47,13 @@ export function uploadFile(
 ): Observable<UploadDetails> {
     return new Observable((observer) => {
         const fileReader = new FileReader();
-        fileReader.addEventListener('loadend', (e: any) => {
+        fileReader.addEventListener('loadend', async (e: any) => {
             const arrayBuffer = e.target.result;
             const blob = blobUtil.arrayBufferToBlob(arrayBuffer, file.type);
-            const upload_list = uploadFiles([blob], {
-                file_name: file.name,
+            const upload = await uploadNewFile(file, {
                 permissions,
                 public: is_public,
             } as any);
-            const upload = upload_list[0];
             const upload_details: UploadDetails = {
                 id: randomInt(9999_9999_9999),
                 name: file.name,
@@ -64,24 +61,24 @@ export function uploadFile(
                 link: uploadURL(upload.id),
                 formatted_size: humanReadableByteCount(file.size),
                 size: file.size,
-                upload,
+                upload: upload as any,
             };
-            upload.status
-                .pipe(takeWhile((_) => _.status !== 'complete', true))
+            upload.state
+                .pipe(takeWhile((_) => _.status !== 'COMPLETED', true))
                 .subscribe((state) => {
-                    if (upload.access_url) {
+                    if ((upload as any).access_url || state.progress >= 100) {
                         upload_details.link = !is_public
                             ? uploadURL(upload.id)
-                            : upload.access_url;
+                            : (upload as any).access_url;
                     }
                     upload_details.progress = state.progress;
                     observer.next(upload_details);
-                    if (state.status === 'error')
+                    if (state.status === 'FAILED')
                         observer.error({
                             ...upload_details,
-                            error: state.error,
+                            error: (state as any).error || 'Error',
                         });
-                    if (state.status === 'complete') observer.complete();
+                    if (state.status === 'COMPLETED') observer.complete();
                 });
             observer.next(upload_details);
         });

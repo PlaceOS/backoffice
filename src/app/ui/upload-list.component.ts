@@ -19,16 +19,16 @@ import { TranslatePipe } from './translate.pipe';
         @if (show()) {
             <div
                 upload-list
-                class="pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded-sm border border-base-300 bg-base-100 text-sm text-base-content shadow-sm"
+                class="border-base-300 bg-base-100 text-base-content pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded-sm border text-sm shadow-sm"
             >
                 <div
-                    class="flex items-center bg-base-200 p-2 text-base-content"
+                    class="bg-base-200 text-base-content flex items-center p-2"
                 >
                     <div class="px-2 text-lg font-medium">
                         {{ 'COMMON.UPLOADS' | translate }}
                     </div>
                     <div
-                        class="mono rounded-full border border-base-100 bg-base-300 px-2 py-1 text-xs"
+                        class="mono border-base-100 bg-base-300 rounded-full border px-2 py-1 text-xs"
                     >
                         {{ (uploads | async)?.length || '0' }}
                     </div>
@@ -51,7 +51,7 @@ import { TranslatePipe } from './translate.pipe';
                             @for (item of uploads | async; track item.id) {
                                 <li
                                     upload-file
-                                    class="relative my-1 flex h-12 items-center space-x-2 px-2 hover:bg-base-200"
+                                    class="hover:bg-base-200 relative my-1 flex h-12 items-center space-x-2 px-2"
                                     [class.error]="item.error"
                                     [title]="item.name"
                                 >
@@ -72,14 +72,14 @@ import { TranslatePipe } from './translate.pipe';
                                     }
                                     @if (item.progress >= 100 && !item.error) {
                                         <icon
-                                            class="rounded-full bg-success text-xl text-base-100"
+                                            class="bg-success text-base-100 rounded-full text-xl"
                                         >
                                             done
                                         </icon>
                                     }
                                     @if (item.error) {
                                         <icon
-                                            class="rounded-full bg-error text-xl text-base-100"
+                                            class="bg-error text-base-100 rounded-full text-xl"
                                             [matTooltip]="item.error"
                                         >
                                             close
@@ -152,16 +152,16 @@ import { TranslatePipe } from './translate.pipe';
                 (drop)="handleFileEvent($event)"
             >
                 <div
-                    class="absolute inset-0 z-0 bg-base-content opacity-60"
+                    class="bg-base-content absolute inset-0 z-0 opacity-60"
                 ></div>
                 <div
                     class="pointer-events-none absolute bottom-0 left-1/2 flex -translate-x-1/2 transform flex-col items-center p-4"
                 >
-                    <icon class="mb-4 animate-bounce text-7xl text-base-100">
+                    <icon class="text-base-100 mb-4 animate-bounce text-7xl">
                         cloud_upload
                     </icon>
                     <div
-                        class="rounded-sm bg-base-100 p-4 text-base-content shadow-sm"
+                        class="bg-base-100 text-base-content rounded-sm p-4 shadow-sm"
                     >
                         {{ 'COMMON.DROP_UPLOAD_MSG' | translate }}
                     </div>
