@@ -1,6 +1,6 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-WTKR34EK.js";
+} from "./chunk-UGL5KEHP.js";
 import {
   getUnixTime
 } from "./chunk-MXECN6VN.js";
@@ -10,7 +10,7 @@ import {
 } from "./chunk-44YZUTI2.js";
 import {
   BackofficeUsersService
-} from "./chunk-JBFK7H5E.js";
+} from "./chunk-EHPTLS2Q.js";
 import {
   addDays
 } from "./chunk-LYW23EPM.js";
@@ -24,14 +24,10 @@ import {
 } from "./chunk-D444NJCZ.js";
 import {
   UploadsService
-} from "./chunk-WR2EAA36.js";
+} from "./chunk-ZJC3MM5W.js";
 import {
-  Bt,
-  Gt,
-  Jt,
-  Qt,
-  Yt
-} from "./chunk-L2T7ZGS6.js";
+  tr
+} from "./chunk-5XL4QLJK.js";
 import "./chunk-OHL342VN.js";
 import "./chunk-YEYFARTO.js";
 import "./chunk-W3LP6CHX.js";
@@ -66,7 +62,7 @@ import "./chunk-TZTONW54.js";
 import {
   SettingsService,
   currentUser
-} from "./chunk-EH3SL4TV.js";
+} from "./chunk-KEM7763Q.js";
 import {
   format
 } from "./chunk-ZQ2RL7UU.js";
@@ -2675,7 +2671,7 @@ var UploadListComponent = class _UploadListComponent extends AsyncHandler {
       return (\u0275UploadListComponent_BaseFactory || (\u0275UploadListComponent_BaseFactory = \u0275\u0275getInheritedFactory(_UploadListComponent)))(__ngFactoryType__ || _UploadListComponent);
     };
   })();
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _UploadListComponent, selectors: [["app-upload-list"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 3, vars: 2, consts: [["upload-list", "", 1, "pointer-events-auto", "absolute", "bottom-2", "left-2", "overflow-hidden", "rounded-sm", "border", "border-base-300", "bg-base-100", "text-sm", "text-base-content", "shadow-sm"], [1, "fixed", "inset-0", 3, "dragenter", "drop"], ["dropzone", "", 1, "fixed", "inset-0"], [1, "flex", "items-center", "bg-base-200", "p-2", "text-base-content"], [1, "px-2", "text-lg", "font-medium"], [1, "mono", "rounded-full", "border", "border-base-100", "bg-base-300", "px-2", "py-1", "text-xs"], [1, "flex-1"], ["icon", "", "matRipple", "", 3, "click", "matTooltip"], ["icon", "", "matRipple", "", 3, "click"], ["list", "", 1, "max-h-[65vh]", "overflow-auto"], [1, "m-auto", "flex", "w-full", "flex-col", "items-center", "space-y-4", "p-8", "opacity-30"], ["upload-file", "", 1, "relative", "my-1", "flex", "h-12", "items-center", "space-x-2", "px-2", "hover:bg-base-200", 3, "error", "title"], ["upload-file", "", 1, "relative", "my-1", "flex", "h-12", "items-center", "space-x-2", "px-2", "hover:bg-base-200", 3, "title"], [1, "w-1/2", "flex-1", "truncate", "pl-2"], [1, "size", "mr-2", "w-20", "text-right", "font-mono", "text-sm"], [1, "progress", "font-mono"], [1, "rounded-full", "bg-success", "text-xl", "text-base-100"], [1, "rounded-full", "bg-error", "text-xl", "text-base-100", 3, "matTooltip"], ["icon", "", "matRipple", "", "matTooltipPosition", "right", 1, "clear", 3, "matTooltip"], ["mode", "determinate", 1, "absolute", "inset-x-0", "bottom-0", "mx-0!", 3, "value"], ["icon", "", "matRipple", "", "matTooltipPosition", "right", 1, "clear", 3, "click", "matTooltip"], [1, "text-2xl"], [1, "text-4xl"], ["dropzone", "", 1, "fixed", "inset-0", 3, "dragend", "dragleave", "drop"], [1, "absolute", "inset-0", "z-0", "bg-base-content", "opacity-60"], [1, "pointer-events-none", "absolute", "bottom-0", "left-1/2", "flex", "-translate-x-1/2", "transform", "flex-col", "items-center", "p-4"], [1, "mb-4", "animate-bounce", "text-7xl", "text-base-100"], [1, "rounded-sm", "bg-base-100", "p-4", "text-base-content", "shadow-sm"], ["type", "file", "multiple", "", 1, "pointer-events-auto", "absolute", "inset-0", "z-9999", "w-full", "opacity-0", 3, "change"]], template: function UploadListComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _UploadListComponent, selectors: [["app-upload-list"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 3, vars: 2, consts: [["upload-list", "", 1, "border-base-300", "bg-base-100", "text-base-content", "pointer-events-auto", "absolute", "bottom-2", "left-2", "overflow-hidden", "rounded-sm", "border", "text-sm", "shadow-sm"], [1, "fixed", "inset-0", 3, "dragenter", "drop"], ["dropzone", "", 1, "fixed", "inset-0"], [1, "bg-base-200", "text-base-content", "flex", "items-center", "p-2"], [1, "px-2", "text-lg", "font-medium"], [1, "mono", "border-base-100", "bg-base-300", "rounded-full", "border", "px-2", "py-1", "text-xs"], [1, "flex-1"], ["icon", "", "matRipple", "", 3, "click", "matTooltip"], ["icon", "", "matRipple", "", 3, "click"], ["list", "", 1, "max-h-[65vh]", "overflow-auto"], [1, "m-auto", "flex", "w-full", "flex-col", "items-center", "space-y-4", "p-8", "opacity-30"], ["upload-file", "", 1, "hover:bg-base-200", "relative", "my-1", "flex", "h-12", "items-center", "space-x-2", "px-2", 3, "error", "title"], ["upload-file", "", 1, "hover:bg-base-200", "relative", "my-1", "flex", "h-12", "items-center", "space-x-2", "px-2", 3, "title"], [1, "w-1/2", "flex-1", "truncate", "pl-2"], [1, "size", "mr-2", "w-20", "text-right", "font-mono", "text-sm"], [1, "progress", "font-mono"], [1, "bg-success", "text-base-100", "rounded-full", "text-xl"], [1, "bg-error", "text-base-100", "rounded-full", "text-xl", 3, "matTooltip"], ["icon", "", "matRipple", "", "matTooltipPosition", "right", 1, "clear", 3, "matTooltip"], ["mode", "determinate", 1, "absolute", "inset-x-0", "bottom-0", "mx-0!", 3, "value"], ["icon", "", "matRipple", "", "matTooltipPosition", "right", 1, "clear", 3, "click", "matTooltip"], [1, "text-2xl"], [1, "text-4xl"], ["dropzone", "", 1, "fixed", "inset-0", 3, "dragend", "dragleave", "drop"], [1, "bg-base-content", "absolute", "inset-0", "z-0", "opacity-60"], [1, "pointer-events-none", "absolute", "bottom-0", "left-1/2", "flex", "-translate-x-1/2", "transform", "flex-col", "items-center", "p-4"], [1, "text-base-100", "mb-4", "animate-bounce", "text-7xl"], [1, "bg-base-100", "text-base-content", "rounded-sm", "p-4", "shadow-sm"], ["type", "file", "multiple", "", 1, "pointer-events-auto", "absolute", "inset-0", "z-9999", "w-full", "opacity-0", 3, "change"]], template: function UploadListComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275conditionalCreate(0, UploadListComponent_Conditional_0_Template, 20, 12, "div", 0);
       \u0275\u0275elementStart(1, "div", 1);
@@ -2713,16 +2709,16 @@ var UploadListComponent = class _UploadListComponent extends AsyncHandler {
         @if (show()) {
             <div
                 upload-list
-                class="pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded-sm border border-base-300 bg-base-100 text-sm text-base-content shadow-sm"
+                class="border-base-300 bg-base-100 text-base-content pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded-sm border text-sm shadow-sm"
             >
                 <div
-                    class="flex items-center bg-base-200 p-2 text-base-content"
+                    class="bg-base-200 text-base-content flex items-center p-2"
                 >
                     <div class="px-2 text-lg font-medium">
                         {{ 'COMMON.UPLOADS' | translate }}
                     </div>
                     <div
-                        class="mono rounded-full border border-base-100 bg-base-300 px-2 py-1 text-xs"
+                        class="mono border-base-100 bg-base-300 rounded-full border px-2 py-1 text-xs"
                     >
                         {{ (uploads | async)?.length || '0' }}
                     </div>
@@ -2745,7 +2741,7 @@ var UploadListComponent = class _UploadListComponent extends AsyncHandler {
                             @for (item of uploads | async; track item.id) {
                                 <li
                                     upload-file
-                                    class="relative my-1 flex h-12 items-center space-x-2 px-2 hover:bg-base-200"
+                                    class="hover:bg-base-200 relative my-1 flex h-12 items-center space-x-2 px-2"
                                     [class.error]="item.error"
                                     [title]="item.name"
                                 >
@@ -2766,14 +2762,14 @@ var UploadListComponent = class _UploadListComponent extends AsyncHandler {
                                     }
                                     @if (item.progress >= 100 && !item.error) {
                                         <icon
-                                            class="rounded-full bg-success text-xl text-base-100"
+                                            class="bg-success text-base-100 rounded-full text-xl"
                                         >
                                             done
                                         </icon>
                                     }
                                     @if (item.error) {
                                         <icon
-                                            class="rounded-full bg-error text-xl text-base-100"
+                                            class="bg-error text-base-100 rounded-full text-xl"
                                             [matTooltip]="item.error"
                                         >
                                             close
@@ -2846,16 +2842,16 @@ var UploadListComponent = class _UploadListComponent extends AsyncHandler {
                 (drop)="handleFileEvent($event)"
             >
                 <div
-                    class="absolute inset-0 z-0 bg-base-content opacity-60"
+                    class="bg-base-content absolute inset-0 z-0 opacity-60"
                 ></div>
                 <div
                     class="pointer-events-none absolute bottom-0 left-1/2 flex -translate-x-1/2 transform flex-col items-center p-4"
                 >
-                    <icon class="mb-4 animate-bounce text-7xl text-base-100">
+                    <icon class="text-base-100 mb-4 animate-bounce text-7xl">
                         cloud_upload
                     </icon>
                     <div
-                        class="rounded-sm bg-base-100 p-4 text-base-content shadow-sm"
+                        class="bg-base-100 text-base-content rounded-sm p-4 shadow-sm"
                     >
                         {{ 'COMMON.DROP_UPLOAD_MSG' | translate }}
                     </div>
@@ -2971,12 +2967,11 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     this.clearTimeout("wait_for_user");
     this.loading.set(false);
     this.timeout("init_uploads", () => {
-      Bt({
+      tr({
         auto_start: true,
         token: Y(),
         endpoint: "/api/engine/v2/uploads",
-        worker_url: "assets/md5_worker.js",
-        providers: [Gt, Jt, Yt, Qt]
+        worker_url: "assets/md5_worker.js"
       });
     });
     this._router.events.subscribe((event) => {
@@ -3040,7 +3035,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       return (\u0275AppComponent_BaseFactory || (\u0275AppComponent_BaseFactory = \u0275\u0275getInheritedFactory(_AppComponent)))(__ngFactoryType__ || _AppComponent);
     };
   })();
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 4, vars: 2, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], [1, "absolute", "inset-0", "z-50", "flex", "items-center", "justify-center"], [1, "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "bg-error", "px-4", "py-2", "text-xs", "text-error-content", "shadow-sm"], [1, "relative", "h-1/2", "w-full", "flex-1"], [3, "diameter"]], template: function AppComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 4, vars: 2, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], [1, "absolute", "inset-0", "z-50", "flex", "items-center", "justify-center"], [1, "bg-error", "text-error-content", "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "px-4", "py-2", "text-xs", "shadow-sm"], [1, "relative", "h-1/2", "w-full", "flex-1"], [3, "diameter"]], template: function AppComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0);
       \u0275\u0275conditionalCreate(1, AppComponent_Conditional_1_Template, 4, 1)(2, AppComponent_Conditional_2_Template, 2, 1, "div", 1);
@@ -3087,7 +3082,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
         </div>
         @if (!online && !loading()) {
             <div
-                class="fixed bottom-2 left-1/2 z-9999 -translate-x-1/2 rounded-3xl bg-error px-4 py-2 text-xs text-error-content shadow-sm"
+                class="bg-error text-error-content fixed bottom-2 left-1/2 z-9999 -translate-x-1/2 rounded-3xl px-4 py-2 text-xs shadow-sm"
             >
                 Unable to reach server... Some features may not work.
             </div>
@@ -3101,7 +3096,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 81 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 75 });
 })();
 
 // src/app/ui/guards/authorised-user.guard.ts
@@ -3207,52 +3202,52 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-EFJIA3TZ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-EEARY5CP.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-Z4JJCMQS.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-6OMEGPTL.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-ST3AEWL4.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-FYU6G3UC.js").then((m) => m.ROUTES)
   },
   {
     path: "metrics",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-FPGG6QAW.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-CJRPUTOF.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-DXJ7KBTB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YS5H5NSH.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-7PE4A6QG.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-DRXYSJD4.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-MREKXZC7.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-SI3UHWB4.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-4Z7MVPOJ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YMPIF74S.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-YV2F2IAV.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-OXW65RYS.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-7YPXJLY2.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-OYMZVUK7.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];

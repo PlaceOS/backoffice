@@ -1,0 +1,55 @@
+import {
+  BackofficeUsersService
+} from "./chunk-EHPTLS2Q.js";
+import {
+  Router
+} from "./chunk-D444NJCZ.js";
+import {
+  $s,
+  Injectable,
+  first,
+  inject,
+  setClassMetadata,
+  ɵɵdefineInjectable
+} from "./chunk-C25AKIFS.js";
+
+// src/app/ui/guards/authorised-admin.guard.ts
+var AuthorisedAdminGuard = class _AuthorisedAdminGuard {
+  _router = inject(Router);
+  _users = inject(BackofficeUsersService);
+  async canActivate(next, state) {
+    await $s().pipe(first((_) => _)).toPromise();
+    const user = await this._users.user.pipe(first((_) => !!_)).toPromise();
+    const can_activate = user && user.sys_admin;
+    if (!can_activate) {
+      this._router.navigate(["/unauthorised"]);
+    }
+    return can_activate;
+  }
+  async canLoad(route, segments) {
+    await $s().pipe(first((_) => _)).toPromise();
+    const user = await this._users.user.pipe(first((_) => !!_)).toPromise();
+    const can_activate = user && user.sys_admin;
+    if (!can_activate) {
+      this._router.navigate(["/unauthorised"]);
+    }
+    return can_activate;
+  }
+  static \u0275fac = function AuthorisedAdminGuard_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _AuthorisedAdminGuard)();
+  };
+  static \u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _AuthorisedAdminGuard, factory: _AuthorisedAdminGuard.\u0275fac, providedIn: "root" });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(AuthorisedAdminGuard, [{
+    type: Injectable,
+    args: [{
+      providedIn: "root"
+    }]
+  }], null, null);
+})();
+
+export {
+  AuthorisedAdminGuard
+};
+//# sourceMappingURL=chunk-UGL5KEHP.js.map
