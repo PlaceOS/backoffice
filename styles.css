@@ -1870,6 +1870,11 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (min-width: 40rem) {
+  #placeos .sm\:mx-auto {
+    margin-inline: auto;
+  }
+}
+@media (min-width: 40rem) {
   #placeos .sm\:mb-2 {
     margin-bottom: calc(var(--spacing) * 2);
   }
@@ -2031,6 +2036,12 @@ input:where([type=button], [type=reset], [type=submit]),
 @media (min-width: 40rem) {
   #placeos .sm\:pl-2 {
     padding-left: calc(var(--spacing) * 2);
+  }
+}
+@media (min-width: 40rem) {
+  #placeos .sm\:text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
   }
 }
 @media print {
