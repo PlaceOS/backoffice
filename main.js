@@ -1,16 +1,16 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-FRLE7N5O.js";
+} from "./chunk-QFTH3QM2.js";
 import {
   getUnixTime
 } from "./chunk-MXECN6VN.js";
 import {
   MatProgressBar,
   MatProgressBarModule
-} from "./chunk-44YZUTI2.js";
+} from "./chunk-GRP3BQR3.js";
 import {
   BackofficeUsersService
-} from "./chunk-UB5TGMZA.js";
+} from "./chunk-D6MTFZL5.js";
 import {
   addDays
 } from "./chunk-LYW23EPM.js";
@@ -21,25 +21,25 @@ import {
   RouterOutlet,
   provideRouter,
   withHashLocation
-} from "./chunk-D444NJCZ.js";
+} from "./chunk-TN2YCJSA.js";
 import {
   UploadsService
-} from "./chunk-VWFQ2G7G.js";
+} from "./chunk-M5EEY4M7.js";
 import {
   tr
-} from "./chunk-LD7UQSHX.js";
-import "./chunk-OHL342VN.js";
-import "./chunk-YEYFARTO.js";
+} from "./chunk-3KGMPJGM.js";
+import "./chunk-K64JFNOT.js";
+import "./chunk-XWGHYPL7.js";
 import "./chunk-W3LP6CHX.js";
 import {
   MatTooltip,
   MatTooltipModule
-} from "./chunk-TDDLCX2F.js";
-import "./chunk-GNMPSLDT.js";
-import "./chunk-UJ4OAW4C.js";
+} from "./chunk-CTV2QXII.js";
+import "./chunk-UHI4WW5B.js";
+import "./chunk-2275BRFB.js";
 import {
   MatDialog
-} from "./chunk-GYVRTF64.js";
+} from "./chunk-IAQS7CDE.js";
 import {
   BasePortalOutlet,
   CdkPortalOutlet,
@@ -50,36 +50,34 @@ import {
   TemplatePortal,
   createGlobalPositionStrategy,
   createOverlayRef
-} from "./chunk-GAQFKYD5.js";
+} from "./chunk-VSSUEFHJ.js";
 import {
-  MatProgressSpinner,
-  MatProgressSpinnerModule,
   notifyInfo,
   setNotifyOutlet
-} from "./chunk-BJ7RDLLP.js";
-import "./chunk-QU5HIE6N.js";
-import "./chunk-TZTONW54.js";
+} from "./chunk-ZMPXDLFL.js";
+import "./chunk-SLAQJABM.js";
+import "./chunk-LPBQ3YJT.js";
 import {
   SettingsService,
   currentUser
-} from "./chunk-KGM4YXXK.js";
+} from "./chunk-YQJVG7MY.js";
 import {
   format
 } from "./chunk-ZQ2RL7UU.js";
 import "./chunk-4CBXDUSX.js";
 import {
   TranslatePipe
-} from "./chunk-GROJVO3W.js";
+} from "./chunk-5DKHD7PA.js";
 import {
   MatRippleLoader
-} from "./chunk-WDR2GARE.js";
+} from "./chunk-LUC25G4J.js";
 import {
   MatRippleModule
-} from "./chunk-ZF3Z6LCK.js";
+} from "./chunk-O5V2SR2Q.js";
 import {
   IconComponent
-} from "./chunk-VLW6LVHT.js";
-import "./chunk-SU3MJTQD.js";
+} from "./chunk-LZD4U4FI.js";
+import "./chunk-TDKJZEL2.js";
 import {
   BreakpointObserver,
   Breakpoints,
@@ -92,19 +90,19 @@ import {
   _IdGenerator,
   _StructuralStylesLoader,
   _animationsDisabled
-} from "./chunk-PECY6EPM.js";
+} from "./chunk-FLUVNX4R.js";
 import "./chunk-W3GXKXZC.js";
 import {
   AsyncHandler
-} from "./chunk-7UVGUB3C.js";
-import "./chunk-W37MESDG.js";
+} from "./chunk-C2J4JAY6.js";
+import "./chunk-GBLYF56R.js";
 import {
   bootstrapApplication
-} from "./chunk-PCFRJ6OJ.js";
+} from "./chunk-SL7UBQ7L.js";
 import {
   LocaleService,
   setTranslationService
-} from "./chunk-FG3K2BCB.js";
+} from "./chunk-E7QDOMTV.js";
 import {
   $s,
   ApplicationRef,
@@ -141,10 +139,12 @@ import {
   ee,
   filter,
   first,
+  firstTruthyValueFrom,
   formatRuntimeError,
   inject,
   isDevMode,
   ks,
+  kt,
   log,
   makeEnvironmentProviders,
   map,
@@ -203,7 +203,7 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-C25AKIFS.js";
+} from "./chunk-Q7FFLWMX.js";
 import {
   __spreadValues
 } from "./chunk-KWSTWQNB.js";
@@ -2265,6 +2265,13 @@ async function activateUpdate(cache) {
 }
 
 // src/app/common/placeos.ts
+var LOADING_MESSAGE = signal("Loading...", ...ngDevMode ? [{ debugName: "LOADING_MESSAGE" }] : []);
+function getLoadingMessage() {
+  return LOADING_MESSAGE;
+}
+function setLoadingMessage(message) {
+  LOADING_MESSAGE.set(message);
+}
 async function setupPlace(settings) {
   const protocol = settings.protocol || location.protocol;
   const host = settings.domain || location.hostname;
@@ -2365,6 +2372,86 @@ var GlobalBannerComponent = class _GlobalBannerComponent {
 })();
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GlobalBannerComponent, { className: "GlobalBannerComponent", filePath: "src/app/ui/global-banner.component.ts", lineNumber: 44 });
+})();
+
+// src/app/ui/global-loading.component.ts
+function GlobalLoadingComponent_Conditional_0_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 0)(1, "div", 1)(2, "p", 2);
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(4, "div", 3);
+    \u0275\u0275element(5, "mat-progress-bar", 4);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext();
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate(ctx_r0.message());
+  }
+}
+var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler {
+  _settings = inject(SettingsService);
+  loading = signal(true, ...ngDevMode ? [{ debugName: "loading" }] : []);
+  online = signal(true, ...ngDevMode ? [{ debugName: "online" }] : []);
+  message = getLoadingMessage();
+  async ngOnInit() {
+    this.loading.set(true);
+    await firstTruthyValueFrom(this._settings.initialised);
+    this.online.set(xs());
+    this.interval("has_token", () => {
+      this.online.set(xs());
+      if (!kt() || !Y())
+        return;
+      this.loading.set(false);
+      this.online.set(xs());
+      this.clearInterval("has_token");
+    }, 1e3);
+  }
+  static \u0275fac = /* @__PURE__ */ (() => {
+    let \u0275GlobalLoadingComponent_BaseFactory;
+    return function GlobalLoadingComponent_Factory(__ngFactoryType__) {
+      return (\u0275GlobalLoadingComponent_BaseFactory || (\u0275GlobalLoadingComponent_BaseFactory = \u0275\u0275getInheritedFactory(_GlobalLoadingComponent)))(__ngFactoryType__ || _GlobalLoadingComponent);
+    };
+  })();
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _GlobalLoadingComponent, selectors: [["global-loading"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 1, vars: 1, consts: [["loader", "", 1, "bg-base-300", "pointer-events-auto", "fixed", "inset-0", "z-9998", "flex", "items-center", "justify-center"], [1, "border-base-300", "bg-base-100", "absolute", "bottom-5", "left-1/2", "w-[24rem]", "max-w-[calc(100vw-2rem)]", "-translate-x-1/2", "rounded-lg", "border", "p-2", "text-center", "text-xs", "shadow"], [1, "text-center", "font-mono"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", 1, "scale-150", "rounded"]], template: function GlobalLoadingComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275conditionalCreate(0, GlobalLoadingComponent_Conditional_0_Template, 6, 1, "div", 0);
+    }
+    if (rf & 2) {
+      \u0275\u0275conditional(ctx.loading() ? 0 : -1);
+    }
+  }, dependencies: [MatProgressBarModule, MatProgressBar], styles: ["\n\n[_nghost-%COMP%] {\n  pointer-events: none;\n}\n[loader][_ngcontent-%COMP%] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=global-loading.component.css.map */"] });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(GlobalLoadingComponent, [{
+    type: Component,
+    args: [{ selector: "global-loading", template: `
+        @if (loading()) {
+            <div
+                loader
+                class="bg-base-300 pointer-events-auto fixed inset-0 z-9998 flex items-center justify-center"
+            >
+                <div
+                    class="border-base-300 bg-base-100 absolute bottom-5 left-1/2 w-[24rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border p-2 text-center text-xs shadow"
+                >
+                    <p class="text-center font-mono">{{ message() }}</p>
+                </div>
+                <div
+                    class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
+                >
+                    <mat-progress-bar
+                        mode="indeterminate"
+                        class="scale-150 rounded"
+                    ></mat-progress-bar>
+                </div>
+            </div>
+        }
+    `, imports: [MatProgressBarModule, TranslatePipe], styles: ["/* angular:styles/component:css;ac091864e9a72045d72142542da9389793ffc7a75787e2bf22145bec368d4ec3;/home/runner/work/backoffice/backoffice/src/app/ui/global-loading.component.ts */\n:host {\n  pointer-events: none;\n}\n[loader] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=global-loading.component.css.map */\n"] }]
+  }], null, null);
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GlobalLoadingComponent, { className: "GlobalLoadingComponent", filePath: "src/app/ui/global-loading.component.ts", lineNumber: 52 });
 })();
 
 // src/app/ui/upload-list.component.ts
@@ -2900,16 +2987,12 @@ function AppComponent_Conditional_1_Template(rf, ctx) {
 }
 function AppComponent_Conditional_2_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 1);
-    \u0275\u0275element(1, "mat-spinner", 4);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    \u0275\u0275advance();
-    \u0275\u0275property("diameter", 64);
+    \u0275\u0275elementStart(0, "div", 1)(1, "div", 4);
+    \u0275\u0275element(2, "mat-progress-bar", 5);
+    \u0275\u0275elementEnd()();
   }
 }
-function AppComponent_Conditional_3_Template(rf, ctx) {
+function AppComponent_Conditional_4_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "div", 2);
     \u0275\u0275text(1, " Unable to reach server... Some features may not work. ");
@@ -2939,6 +3022,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     return false;
   }
   async ngOnInit() {
+    setLoadingMessage("Initialising application...");
     if (detectIE() && detectIE() < 12) {
       location.href = `${location.origin}${location.pathname}assets/not-supported.html`;
       return;
@@ -2956,16 +3040,19 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     setNotifyOutlet(this._snackbar);
     setTranslationService(this._locale);
     this.loading.set(true);
+    setLoadingMessage("Loading application settings...");
     await this._settings.initialised.pipe(first((_) => _)).toPromise();
     const settings = this._settings.get("composer") || {};
     settings.mock = !!this._settings.get("mock");
     settings.ignore_api_key = true;
+    setLoadingMessage("Authenticating user...");
     await setupPlace(settings).catch(() => this.onInitError());
     setupCache(this._cache);
     this.timeout("wait_for_user", () => this.onInitError(), 30 * 1e3);
     await this._users.initialised.pipe(first((_) => _)).toPromise();
     this.clearTimeout("wait_for_user");
     this.loading.set(false);
+    setLoadingMessage("Initialising upload service...");
     this.timeout("init_uploads", () => {
       tr({
         auto_start: true,
@@ -2979,7 +3066,9 @@ var AppComponent = class _AppComponent extends AsyncHandler {
         this.simple.set(this._router.url.includes("mqtt"));
       }
     });
+    setLoadingMessage("Checking staff tenants...");
     this._checkTenants();
+    setLoadingMessage("Initialising locales...");
     this._initLocale();
   }
   onInitError() {
@@ -3035,26 +3124,28 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       return (\u0275AppComponent_BaseFactory || (\u0275AppComponent_BaseFactory = \u0275\u0275getInheritedFactory(_AppComponent)))(__ngFactoryType__ || _AppComponent);
     };
   })();
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 4, vars: 2, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], [1, "absolute", "inset-0", "z-50", "flex", "items-center", "justify-center"], [1, "bg-error", "text-error-content", "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "px-4", "py-2", "text-xs", "shadow-sm"], [1, "relative", "h-1/2", "w-full", "flex-1"], [3, "diameter"]], template: function AppComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 5, vars: 2, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], ["loader", "", 1, "absolute", "inset-0", "z-50", "flex", "items-center", "justify-center"], [1, "bg-error", "text-error-content", "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "px-4", "py-2", "text-xs", "shadow-sm"], [1, "relative", "h-1/2", "w-full", "flex-1"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", 1, "scale-150", "rounded"]], template: function AppComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0);
-      \u0275\u0275conditionalCreate(1, AppComponent_Conditional_1_Template, 4, 1)(2, AppComponent_Conditional_2_Template, 2, 1, "div", 1);
+      \u0275\u0275conditionalCreate(1, AppComponent_Conditional_1_Template, 4, 1)(2, AppComponent_Conditional_2_Template, 3, 0, "div", 1);
       \u0275\u0275elementEnd();
-      \u0275\u0275conditionalCreate(3, AppComponent_Conditional_3_Template, 2, 0, "div", 2);
+      \u0275\u0275element(3, "global-loading");
+      \u0275\u0275conditionalCreate(4, AppComponent_Conditional_4_Template, 2, 0, "div", 2);
     }
     if (rf & 2) {
       \u0275\u0275advance();
       \u0275\u0275conditional(!ctx.loading() ? 1 : 2);
-      \u0275\u0275advance(2);
-      \u0275\u0275conditional(!ctx.online && !ctx.loading() ? 3 : -1);
+      \u0275\u0275advance(3);
+      \u0275\u0275conditional(!ctx.online && !ctx.loading() ? 4 : -1);
     }
   }, dependencies: [
     GlobalBannerComponent,
     RouterOutlet,
     UploadListComponent,
-    MatProgressSpinnerModule,
-    MatProgressSpinner
-  ], encapsulation: 2 });
+    MatProgressBarModule,
+    MatProgressBar,
+    GlobalLoadingComponent
+  ], styles: ["\n\n[loader][_ngcontent-%COMP%] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=app.css.map */"] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(AppComponent, [{
@@ -3074,12 +3165,21 @@ var AppComponent = class _AppComponent extends AsyncHandler {
                 }
             } @else {
                 <div
+                    loader
                     class="absolute inset-0 z-50 flex items-center justify-center"
                 >
-                    <mat-spinner [diameter]="64"></mat-spinner>
+                    <div
+                        class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
+                    >
+                        <mat-progress-bar
+                            mode="indeterminate"
+                            class="scale-150 rounded"
+                        ></mat-progress-bar>
+                    </div>
                 </div>
             }
         </div>
+        <global-loading />
         @if (!online && !loading()) {
             <div
                 class="bg-error text-error-content fixed bottom-2 left-1/2 z-9999 -translate-x-1/2 rounded-3xl px-4 py-2 text-xs shadow-sm"
@@ -3091,12 +3191,13 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       GlobalBannerComponent,
       RouterOutlet,
       UploadListComponent,
-      MatProgressSpinnerModule
-    ] }]
+      MatProgressBarModule,
+      GlobalLoadingComponent
+    ], styles: ["/* angular:styles/component:css;014ea54e3a0c35073e918aea542f90943f3e6d306dafcf1bef51d87ebded5ceb;/home/runner/work/backoffice/backoffice/src/app/app.ts */\n[loader] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=app.css.map */\n"] }]
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 75 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 96 });
 })();
 
 // src/app/ui/guards/authorised-user.guard.ts
@@ -3197,57 +3298,57 @@ var appRoutes = [
   {
     path: "mqtt-dashboard",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-XIAYG4H2.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-D6LIXC3V.js").then((m) => m.ROUTES)
   },
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-KKJGICA5.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-FFO3XAZ5.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-X3DDJ72Z.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IZCSIHNE.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-S6WCHWUE.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-PH64KNVW.js").then((m) => m.ROUTES)
   },
   {
     path: "metrics",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-HGCWE2HC.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QFOYYBIC.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-YWDIZTON.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-CLZ67LIA.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-Q3AIIT4V.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-6TB6NRKV.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-DE2DEWFC.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-762O4M5O.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-ZXPDGIB3.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IGUWSEPH.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-MVXN5GDJ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-7EEU45AM.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-MYENJREB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-OERMYUST.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];

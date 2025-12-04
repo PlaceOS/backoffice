@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["app.ts"],
+  "sourcesContent": ["\n            [loader] {\n                background-image: linear-gradient(\n                    to right,\n                    #c62828 0%,\n                    #ef5350 100%\n                );\n            }\n        "],
+  "mappings": ";AACY,CAAA;AACI;IAAA;cAAA;gBAAA;;AAKJ;",
+  "names": []
+}
