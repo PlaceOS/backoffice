@@ -384,6 +384,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .left-2 {
   left: calc(var(--spacing) * 2);
 }
+#placeos .left-3 {
+  left: calc(var(--spacing) * 3);
+}
 #placeos .left-4 {
   left: calc(var(--spacing) * 4);
 }
@@ -1264,6 +1267,9 @@ input:where([type=button], [type=reset], [type=submit]),
   --tw-border-style: none;
   border-style: none;
 }
+#placeos .border-\[hsl\(0\,0\%\,40\%\)\] {
+  border-color: hsl(0, 0%, 40%);
+}
 #placeos .border-base-100 {
   border-color: var(--base-100);
 }
@@ -1307,8 +1313,11 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .bg-\[\#212121\] {
   background-color: #212121;
 }
-#placeos .bg-\[\#424242\] {
-  background-color: #424242;
+#placeos .bg-\[hsl\(0\,0\%\,15\%\)\] {
+  background-color: hsl(0, 0%, 15%);
+}
+#placeos .bg-\[hsl\(0\,0\%\,30\%\)\] {
+  background-color: hsl(0, 0%, 30%);
 }
 #placeos .bg-base-100 {
   background-color: var(--base-100);
@@ -1349,9 +1358,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .bg-info {
   background-color: var(--info);
-}
-#placeos .bg-neutral-focus {
-  background-color: var(--neutral-focus);
 }
 #placeos .bg-secondary {
   background-color: var(--secondary);
@@ -1463,6 +1469,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .pr-0 {
   padding-right: calc(var(--spacing) * 0);
+}
+#placeos .pr-1 {
+  padding-right: calc(var(--spacing) * 1);
 }
 #placeos .pr-2 {
   padding-right: calc(var(--spacing) * 2);
@@ -1615,9 +1624,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .text-neutral {
   color: var(--neutral);
-}
-#placeos .text-neutral-content {
-  color: var(--neutral-content);
 }
 #placeos .text-primary {
   color: var(--primary);
@@ -1801,6 +1807,11 @@ input:where([type=button], [type=reset], [type=submit]),
     #placeos .hover\:bg-base-content\/10:hover {
       background-color: color-mix(in oklab, var(--base-content) 10%, transparent);
     }
+  }
+}
+@media (hover: hover) {
+  #placeos .hover\:bg-white\/10:hover {
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
 #placeos .focus\:opacity-100:focus {
@@ -2356,7 +2367,7 @@ kbd,
   color: #fbc02d;
 }
 .tc-34 {
-  color: #1976d2;
+  color: #1e88e5;
 }
 .tc-35 {
   color: #c2185b;
