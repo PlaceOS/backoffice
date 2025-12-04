@@ -23,7 +23,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     template: `
         <div
             sidebar-menu
-            class="pointer-events-none absolute inset-0 z-40 hidden h-full flex-col justify-between bg-base-200 sm:pointer-events-auto sm:relative sm:inset-auto sm:z-10 sm:flex"
+            class="bg-base-200 pointer-events-none absolute inset-0 z-40 hidden h-full flex-col justify-between sm:pointer-events-auto sm:relative sm:inset-auto sm:z-10 sm:flex"
             [class.compact]="compact()"
             [class.sm:w-52]="!compact()"
             [class.!flex]="open()"
@@ -33,7 +33,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             <div class="flex h-1/2 flex-1 flex-col items-center space-y-2">
                 <a
                     [routerLink]="['/']"
-                    class="font-heading ml-16 mt-4 text-4xl sm:mb-2 sm:ml-0"
+                    class="font-heading mt-4 ml-16 text-4xl sm:mb-2 sm:ml-0"
                     [style.width]="compact() ? 'auto' : 'calc(100%-2rem)'"
                 >
                     <div [class.sm:hidden]="compact()">
@@ -52,7 +52,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                 btn
                                 link
                                 matRipple
-                                class="clear mx-auto w-[calc(100%-1rem)] text-left hover:bg-base-100"
+                                class="clear hover:bg-base-100 mx-auto w-[calc(100%-1rem)] text-left"
                                 [routerLink]="[link.route]"
                                 routerLinkActive="bg-secondary! text-secondary-content"
                                 [matTooltip]="
@@ -64,7 +64,12 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                     class="flex w-full items-center space-x-2"
                                     [class.sm:justify-center]="compact()"
                                 >
-                                    <icon class="text-xl">{{ link.icon }}</icon>
+                                    <icon
+                                        class="text-xl"
+                                        [class.sm:text-2xl]="compact()"
+                                        [class.sm:mx-auto]="compact()"
+                                        >{{ link.icon }}</icon
+                                    >
                                     <p [class.sm:hidden]="compact()">
                                         {{ link.name | translate }}
                                     </p>
@@ -73,7 +78,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         }
                     }
                     <button
-                        class="absolute left-1 top-1 sm:hidden"
+                        class="absolute top-1 left-1 sm:hidden"
                         icon
                         matRipple
                         (click)="open.set(false)"
@@ -85,7 +90,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             <debug-info [compact]="compact()" />
             <button
                 matRipple
-                class="flex min-h-16 items-center space-x-2 border-t border-base-300 p-2 text-left"
+                class="border-base-300 flex min-h-16 items-center space-x-2 border-t p-2 text-left"
                 customTooltip
                 user
                 [content]="user_controls"
@@ -118,7 +123,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             <button
                 icon
                 matRipple
-                class="absolute bottom-12 right-0 z-999 hidden h-6 w-6 min-w-6 translate-x-1/2 rounded-full border border-base-200 bg-base-100 shadow-sm hover:bg-base-200 sm:flex"
+                class="border-base-200 bg-base-100 hover:bg-base-200 absolute right-0 bottom-12 z-999 hidden h-6 w-6 min-w-6 translate-x-1/2 rounded-full border shadow-sm sm:flex"
                 (click)="toggleCompactMode()"
             >
                 <icon>
