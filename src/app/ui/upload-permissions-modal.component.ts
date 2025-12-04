@@ -18,7 +18,7 @@ import { TranslatePipe } from './translate.pipe';
     selector: 'upload-permissions-modal',
     template: `
         <header
-            class="sticky top-0 z-10 m-2 flex w-[calc(100%-1rem)] items-center justify-between rounded-sm border-none bg-base-200 p-2"
+            class="bg-base-200 sticky top-0 z-10 m-2 flex w-[24rem] max-w-[calc(100%-1rem)] items-center justify-between rounded-sm border-none p-2"
         >
             <h2 class="px-2 text-xl font-medium">
                 {{ 'COMMON.UPLOAD_FILE' | translate }}
@@ -27,7 +27,7 @@ import { TranslatePipe } from './translate.pipe';
                 <icon>close</icon>
             </button>
         </header>
-        <main class="min-w-[20rem] p-4">
+        <main class="min-w-[20rem] px-4">
             <div class="flex flex-col space-y-2">
                 <label> {{ 'COMMON.FILENAME' | translate }}</label>
                 <mat-form-field appearance="outline">
@@ -38,11 +38,6 @@ import { TranslatePipe } from './translate.pipe';
                         [placeholder]="'COMMON.FILENAME' | translate"
                     />
                 </mat-form-field>
-            </div>
-            <div class="pb-4">
-                <settings-toggle [(ngModel)]="is_public">{{
-                    'COMMON.PUBLIC' | translate
-                }}</settings-toggle>
             </div>
             @if (!is_public()) {
                 <div class="flex flex-col space-y-2">
@@ -66,17 +61,22 @@ import { TranslatePipe } from './translate.pipe';
                     </mat-form-field>
                 </div>
             }
+            <div class="pb-4">
+                <settings-toggle [(ngModel)]="is_public">{{
+                    'COMMON.PUBLIC' | translate
+                }}</settings-toggle>
+            </div>
         </main>
         <footer
-            class="flex items-center justify-end space-x-2 border-t border-base-200 px-4 py-2"
+            class="border-base-200 flex items-center justify-end space-x-2 border-t px-4 py-2"
         >
-            <button btn matRipple class="inverse w-32" mat-dialog-close>
+            <button btn matRipple class="inverse w-32 flex-1" mat-dialog-close>
                 {{ 'COMMON.CANCEL' | translate }}
             </button>
             <button
                 btn
                 matRipple
-                class="w-32"
+                class="w-32 flex-1"
                 [mat-dialog-close]="{
                     file,
                     is_public: is_public(),
@@ -110,7 +110,7 @@ export class UploadPermissionsModalComponent {
     /** File to upload */
     public readonly file: File = this._data.file;
     /** Whether file should be public */
-    public readonly is_public = signal(true);
+    public readonly is_public = signal(false);
     /** Permissions for file */
     public readonly permissions = signal<UploadPermissions>('none');
     public readonly close = () => this._dialog_ref.close();
