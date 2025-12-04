@@ -1,10 +1,7 @@
-import {
-    CdkVirtualScrollViewport,
-    ScrollingModule,
-} from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import {
     Component,
+    effect,
     ElementRef,
     SimpleChanges,
     computed,
@@ -16,31 +13,36 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AsyncHandler } from '../common/async-handler.class';
+import { IconComponent } from './icon.component';
 import { SafePipe } from './pipes/safe.pipe';
 import { SanitizePipe } from './pipes/sanitise.pipe';
 import { TranslatePipe } from './translate.pipe';
+import { VirtualScrollComponent } from './virtual-scroll.component';
 
 @Component({
     selector: 'new-terminal',
     template: `
+        <ng-template #line_template let-item="item">
+            <div
+                [innerHTML]="item | safe"
+                class="mono p-1 hover:bg-white/10"
+            ></div>
+        </ng-template>
         <div
-            class="relative flex h-full w-full items-end bg-[#424242] text-xs text-white"
+            class="relative flex h-full w-full items-end border-t border-[hsl(0,0%,40%)] bg-[hsl(0,0%,15%)] text-xs text-white"
             #container
         >
-            <cdk-virtual-scroll-viewport
-                itemSize="24"
+            <virtual-scroll
                 class="max-h-full w-full"
                 [style.height]="24 * item_count() + 'px'"
-            >
-                <div
-                    *cdkVirtualFor="let item of displayed_lines()"
-                    [innerHTML]="item | safe"
-                    class="mono hover:bg-base-content/10 p-1"
-                ></div>
-            </cdk-virtual-scroll-viewport>
+                [items]="displayed_lines()"
+                [item_size]="24"
+                [item_template]="line_template"
+                (scrolled)="onScrolled($event)"
+            />
             @if (!displayed_lines().length) {
                 <div
-                    class="absolute inset-0 flex select-none flex-col items-center justify-center text-base"
+                    class="absolute inset-0 flex flex-col items-center justify-center text-base select-none"
                 >
                     <p class="opacity-60">
                         {{ 'COMMON.DEBUG_NO_MESSAGES' | translate }}
@@ -50,10 +52,13 @@ import { TranslatePipe } from './translate.pipe';
             <div
                 class="absolute -top-11 right-0 flex items-center space-x-2 p-2"
             >
+                <icon class="absolute top-1/2 left-3 -translate-y-1/2 text-xl"
+                    >search</icon
+                >
                 <input
-                    class="bg-neutral-700 mono border-none p-1 text-sm"
+                    class="mono rounded-lg border-none bg-[hsl(0,0%,30%)] px-8 py-1 pr-1 text-sm text-white"
                     [(ngModel)]="search"
-                    placeholder="🔍 Filter output"
+                    placeholder="Filter output"
                 />
                 <div>{{ search_count() }} / {{ lines().length }}</div>
             </div>
@@ -71,11 +76,12 @@ import { TranslatePipe } from './translate.pipe';
     ],
     providers: [SanitizePipe],
     imports: [
+        IconComponent,
         FormsModule,
-        ScrollingModule,
         CommonModule,
         SafePipe,
         TranslatePipe,
+        VirtualScrollComponent,
     ],
 })
 export class NewTerminalComponent extends AsyncHandler {
@@ -87,32 +93,50 @@ export class NewTerminalComponent extends AsyncHandler {
 
     public readonly old_count = signal(0);
     public readonly line_length = signal(80);
-    public readonly search_count = computed(() => {
+    private readonly _filtered_events = computed(() => {
         const s = this.search().toLowerCase();
-        const list = this.lines().filter((_) => _.toLowerCase().includes(s));
-        return list.length;
+        return this.lines().filter((event) => event.toLowerCase().includes(s));
     });
+    public readonly search_count = computed(
+        () => this._filtered_events().length,
+    );
     public readonly displayed_lines = computed(() => {
-        const s = this.search().toLowerCase();
-        const list = this.lines().filter((_) => _.toLowerCase().includes(s));
-        let out_lines = [];
-        for (const ln of list) {
-            if (!ln) continue;
-            out_lines = out_lines.concat(this._formatLineWithHTML(ln));
+        const out_lines: string[] = [];
+        for (const event of this._filtered_events()) {
+            if (!event) continue;
+            // Split event into individual lines, then format each
+            for (const ln of event.split('\n')) {
+                out_lines.push(...this._formatLineWithHTML(ln));
+            }
         }
-        this._handleOutputLines(out_lines);
         return out_lines;
     });
     public readonly item_count = computed(() => this.displayed_lines().length);
 
-    private readonly _scroll_viewport = viewChild(CdkVirtualScrollViewport);
+    private readonly _scroll_viewport = viewChild(VirtualScrollComponent);
     private readonly _container_el =
         viewChild<ElementRef<HTMLDivElement>>('container');
+
+    private _scroll_offset = 0;
+    private _scroll_range = 0;
+
+    constructor() {
+        super();
+        effect(() => {
+            const lines = this.displayed_lines();
+            this._handleOutputLines(lines);
+        });
+    }
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.resize) {
             this._updateLineLength();
         }
+    }
+
+    public onScrolled([offset, end]: [number, number]) {
+        this._scroll_offset = offset;
+        this._scroll_range = end - offset;
     }
 
     private _updateLineLength() {
@@ -129,23 +153,29 @@ export class NewTerminalComponent extends AsyncHandler {
 
     private _formatLineWithHTML(line: string) {
         const sanitized_line = this._sanitize_pipe.transform(line).toString();
-        if (sanitized_line.length < this.line_length())
+        const max_length = this.line_length();
+        if (sanitized_line.length <= max_length)
             return [setTermColorsForLine(sanitized_line)];
         const lines = [];
+        let remaining = sanitized_line;
         let count = 0;
-        while (
-            count < 128 &&
-            count * this.line_length() < sanitized_line.length
-        ) {
+        while (count < 128 && remaining.length > 0) {
+            let break_at = max_length;
+            if (remaining.length > max_length) {
+                // Find last space within the limit
+                const last_space = remaining.lastIndexOf(' ', max_length);
+                if (last_space > max_length * 0.3) {
+                    break_at = last_space;
+                }
+            } else {
+                break_at = remaining.length;
+            }
+            const segment = remaining.substring(0, break_at);
+            remaining = remaining.substring(break_at).trimStart();
             lines.push(
                 `${
                     count > 0 ? '&nbsp;&nbsp;&nbsp;&nbsp;' : ''
-                }${setTermColorsForLine(
-                    sanitized_line.substring(
-                        count * this.line_length(),
-                        (count + 1) * this.line_length(),
-                    ),
-                )}`,
+                }${setTermColorsForLine(segment)}`,
             );
             count += 1;
         }
@@ -154,17 +184,21 @@ export class NewTerminalComponent extends AsyncHandler {
 
     private _handleOutputLines(lines: string[]) {
         const new_count = lines.length;
-        const old_count = new_count || 0;
-        const offset =
-            this._scroll_viewport().getOffsetToRenderedContentStart();
-        const size = this._scroll_viewport().getViewportSize();
+        const old_count = this.old_count();
         this.timeout(
             'update_viewport',
             () => {
-                this._scroll_viewport()?.checkViewportSize();
-                if ((offset + size) / 24 > old_count - 7 || old_count < 5) {
-                    this._scroll_viewport().scrollToIndex(new_count);
+                const viewport = this._scroll_viewport();
+                if (!viewport) return;
+                viewport.updateContainer();
+                // Auto-scroll to bottom if near the end
+                if (
+                    this._scroll_offset + this._scroll_range > old_count - 7 ||
+                    old_count < 5
+                ) {
+                    viewport.scrollToIndex(new_count);
                 }
+                this.old_count.set(new_count);
             },
             10,
         );

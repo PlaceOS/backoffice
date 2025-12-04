@@ -6,6 +6,7 @@ import {
     ElementRef,
     inject,
     input,
+    OnDestroy,
     output,
     signal,
     TemplateRef,
@@ -18,7 +19,6 @@ import {
         <div
             #scroll_container
             class="relative h-full w-full overflow-auto"
-            (window:resize)="updateContainer()"
             (scroll)="updateOffsets()"
         >
             <div
@@ -56,7 +56,7 @@ import {
     ],
     imports: [CommonModule],
 })
-export class VirtualScrollComponent implements AfterViewInit {
+export class VirtualScrollComponent implements AfterViewInit, OnDestroy {
     public readonly items = input<any[]>([]);
     public readonly item_size = input(0);
     public readonly item_template = input<TemplateRef<any>>(null);
@@ -79,9 +79,16 @@ export class VirtualScrollComponent implements AfterViewInit {
     private _el = inject(ElementRef<HTMLElement>);
     private _scroll_container_el =
         viewChild<ElementRef<HTMLDivElement>>('scroll_container');
+    private _resize_observer: ResizeObserver;
 
     public ngAfterViewInit() {
         this.updateContainer();
+        this._resize_observer = new ResizeObserver(() => this.updateContainer());
+        this._resize_observer.observe(this._el.nativeElement);
+    }
+
+    public ngOnDestroy() {
+        this._resize_observer?.disconnect();
     }
 
     public updateOffsets() {
@@ -97,5 +104,12 @@ export class VirtualScrollComponent implements AfterViewInit {
         if (!el) return;
         const box = el.getBoundingClientRect();
         this.range.set(Math.ceil(box.height / this.item_size()));
+    }
+
+    public scrollToIndex(index: number) {
+        const el = this._scroll_container_el()?.nativeElement;
+        if (!el) return;
+        el.scrollTop = index * this.item_size();
+        this.updateOffsets();
     }
 }

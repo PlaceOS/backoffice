@@ -18,6 +18,7 @@ const TERMINAL_COLOURS = {
     verbose: '\u001b[34m',
     info: '\u001b[32m',
     warning: '\u001b[33m',
+    warn: '\u001b[33m',
     error: '\u001b[31m',
     fatal: '\u001b[31m',
 };
@@ -44,12 +45,13 @@ export class PlaceDebugService extends AsyncHandler {
     public readonly is_listening = computed(
         () => this.enabled() && this.bound_modules().length > 0,
     );
-    /** Get terminal display string for all the events */
-    public readonly terminal_string = computed(() => {
-        const list = this.events().map(
+    /** Get terminal display strings for all events (one string per event) */
+    public readonly terminal_lines = computed(() => {
+        return this.events().map(
             (event) =>
                 `${
-                    TERMINAL_COLOURS[event.level] || TERMINAL_COLOURS.debug
+                    TERMINAL_COLOURS[event.level?.toLowerCase()] ||
+                    TERMINAL_COLOURS.debug
                 }${format(Date.now(), 'h:mm a')}, ${
                     this._module_names[event.mod_id] ||
                     event.mod_id ||
@@ -59,7 +61,6 @@ export class PlaceDebugService extends AsyncHandler {
                     .reverse()
                     .join('\n')}`,
         );
-        return list.join('\n');
     });
 
     public readonly changed = this._changed.asObservable();

@@ -26,13 +26,13 @@ import { TranslatePipe } from './translate.pipe';
                 <div
                     [class]="
                         debug_position() === 'floating'
-                            ? 'absolute bottom-2 right-2'
+                            ? 'absolute right-2 bottom-2'
                             : 'h-full w-full'
                     "
                     (window:resize)="onWindowResize()"
                 >
                     <div
-                        class="animate-fade-in relative z-10 flex flex-col overflow-hidden border border-base-200 bg-[#212121] text-white shadow-sm"
+                        class="animate-fade-in relative z-10 flex flex-col overflow-hidden border bg-[hsl(0,0%,15%)] text-white shadow-sm"
                         content
                         #content
                         [style.height]="
@@ -57,34 +57,35 @@ import { TranslatePipe } from './translate.pipe';
                         <new-terminal
                             [lines]="logs()"
                             [resize]="resize()"
+                            class="h-1/2 w-full flex-1"
                         ></new-terminal>
                         <!-- <a-terminal [content]="logs" [resize]="resize"></a-terminal> -->
                         <div
-                            class="absolute -top-2 left-0 right-0 h-4 select-none"
+                            class="absolute -top-2 right-0 left-0 h-4 select-none"
                             ns-resize
                             (mousedown)="startResize($event, 'y')"
                             (touchstart)="startResize($event, 'y')"
                         ></div>
                         <div
-                            class="absolute -left-2 bottom-0 top-0 w-4 select-none"
+                            class="absolute top-0 bottom-0 -left-2 w-4 select-none"
                             ew-resize
                             (mousedown)="startResize($event, 'x')"
                             (touchstart)="startResize($event, 'x')"
                         ></div>
                         <div
-                            class="absolute -left-2 -top-2 h-4 w-4 select-none"
+                            class="absolute -top-2 -left-2 h-4 w-4 select-none"
                             nwse-resize
                             (mousedown)="startResize($event, 'xy')"
                             (touchstart)="startResize($event, 'xy')"
                         ></div>
                         <div
                             actions
-                            class="absolute bottom-2 right-2 flex items-center space-x-2"
+                            class="absolute right-2 bottom-2 flex items-center space-x-2"
                         >
                             <button
                                 icon
                                 matRipple
-                                class="rounded-full bg-neutral-focus text-neutral-content shadow-sm"
+                                class="rounded-full bg-[hsl(0,0%,30%)] text-white shadow-sm"
                                 (click)="downloadLogs()"
                             >
                                 <icon
@@ -99,7 +100,7 @@ import { TranslatePipe } from './translate.pipe';
                             <button
                                 icon
                                 matRipple
-                                class="rounded-full bg-neutral-focus text-neutral-content shadow-sm"
+                                class="rounded-full bg-[hsl(0,0%,30%)] text-white shadow-sm"
                                 (click)="toggleDebugPosition()"
                             >
                                 <icon
@@ -117,7 +118,7 @@ import { TranslatePipe } from './translate.pipe';
                             <button
                                 icon
                                 matRipple
-                                class="rounded-full bg-neutral-focus text-neutral-content shadow-sm"
+                                class="rounded-full bg-[hsl(0,0%,30%)] text-white shadow-sm"
                                 (click)="clearDebugMessages()"
                             >
                                 <icon
@@ -133,7 +134,7 @@ import { TranslatePipe } from './translate.pipe';
                                 icon
                                 matRipple
                                 (click)="clearBindings()"
-                                class="rounded-full bg-neutral-focus text-neutral-content shadow-sm"
+                                class="rounded-full bg-[hsl(0,0%,30%)] text-white shadow-sm"
                                 [matTooltip]="
                                     'COMMON.DEBUG_UNBIND_MODULES' | translate
                                 "
@@ -144,7 +145,7 @@ import { TranslatePipe } from './translate.pipe';
                                 icon
                                 matRipple
                                 (click)="close()"
-                                class="rounded-full bg-neutral-focus text-neutral-content shadow-sm"
+                                class="rounded-full bg-[hsl(0,0%,30%)] text-white shadow-sm"
                                 [matTooltip]="
                                     'COMMON.DEBUG_CLOSE_CONSOLE' | translate
                                 "
@@ -212,9 +213,7 @@ export class DebugOutputComponent extends AsyncHandler {
 
     public readonly compact = input(false);
     /** Display string for debug logs */
-    public readonly logs = computed(() =>
-        this._service.terminal_string().split('\n'),
-    );
+    public readonly logs = this._service.terminal_lines;
     /** Height of the debug console */
     public readonly height = signal(240);
     /** Width of the debug console */
