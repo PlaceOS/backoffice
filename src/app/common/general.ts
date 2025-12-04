@@ -1,6 +1,6 @@
 import { UntypedFormGroup } from '@angular/forms';
 import { lastValueFrom, Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { first, map, take } from 'rxjs/operators';
 import { HashMap, Point } from './types';
 
 /** Available console output streams. */
@@ -375,8 +375,8 @@ export function predictableRandomInt(ceil: number = 100, floor: number = 0) {
 // https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
 function xmur3(str) {
     for (var i = 0, h = 1779033703 ^ str.length; i < str.length; i++)
-        (h = Math.imul(h ^ str.charCodeAt(i), 3432918353)),
-            (h = (h << 13) | (h >>> 19));
+        ((h = Math.imul(h ^ str.charCodeAt(i), 3432918353)),
+            (h = (h << 13) | (h >>> 19)));
     return function () {
         h = Math.imul(h ^ (h >>> 16), 2246822507);
         h = Math.imul(h ^ (h >>> 13), 3266489909);
@@ -458,7 +458,28 @@ export function getInvalidFields(form: UntypedFormGroup, prefix: string = '') {
  * @param obs Observable to use
  */
 export function nextValueFrom<T = any>(obs: Observable<T>): Promise<T> {
-    return lastValueFrom(obs.pipe(take(1)));
+    return obs ? lastValueFrom(obs.pipe(take(1))) : Promise.resolve(null);
+}
+
+/**
+ * Create a promise that returns the first truthy value returned by the given observable
+ * @param obs Observable to use
+ */
+export function firstTruthyValueFrom<T = any>(obs: Observable<T>): Promise<T> {
+    return obs
+        ? lastValueFrom(obs.pipe(first((_) => !!_)))
+        : Promise.resolve(null);
+}
+
+export function mapLastValueFrom<T = any>(
+    obs: Observable<T>,
+    map_fn?: (value: any) => T,
+): Promise<T> {
+    return obs
+        ? map_fn
+            ? lastValueFrom(obs.pipe(map(map_fn)))
+            : lastValueFrom(obs)
+        : Promise.resolve(null);
 }
 
 /**

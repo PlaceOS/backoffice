@@ -195,12 +195,11 @@ body {
     padding: 0;
     margin: 0;
     font-size: var(--font-size);
-    background: var(--base-200);
+    background-image: linear-gradient(to right, #c62828 0%, #ef5350 100%);
 }
 
 body {
     touch-action: pan-x pan-y;
-    background-color: var(--base-100);
     color: var(--base-content);
     font-family: var(--font);
 }

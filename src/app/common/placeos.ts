@@ -1,4 +1,15 @@
+import { signal } from '@angular/core';
 import { PlaceAuthOptions, setup } from '@placeos/ts-client';
+
+const LOADING_MESSAGE = signal('Loading...');
+
+export function getLoadingMessage() {
+    return LOADING_MESSAGE;
+}
+
+export function setLoadingMessage(message: string) {
+    LOADING_MESSAGE.set(message);
+}
 
 export interface PlaceSettings {
     /** Protocol used by the application server */

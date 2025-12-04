@@ -12,7 +12,6 @@ import {
 } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
     ActivatedRoute,
     NavigationEnd,
@@ -24,13 +23,15 @@ import { setupCache } from './common/application';
 import { AsyncHandler } from './common/async-handler.class';
 import { detectIE, log } from './common/general';
 import { setNotifyOutlet } from './common/notifications';
-import { setupPlace } from './common/placeos';
+import { setLoadingMessage, setupPlace } from './common/placeos';
 import { SettingsService } from './common/settings.service';
 import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
 
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LocaleService, setTranslationService } from './common/locale.service';
 import { GlobalBannerComponent } from './ui/global-banner.component';
+import { GlobalLoadingComponent } from './ui/global-loading.component';
 import { UploadListComponent } from './ui/upload-list.component';
 
 @Component({
@@ -50,12 +51,21 @@ import { UploadListComponent } from './ui/upload-list.component';
                 }
             } @else {
                 <div
+                    loader
                     class="absolute inset-0 z-50 flex items-center justify-center"
                 >
-                    <mat-spinner [diameter]="64"></mat-spinner>
+                    <div
+                        class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
+                    >
+                        <mat-progress-bar
+                            mode="indeterminate"
+                            class="scale-150 rounded"
+                        ></mat-progress-bar>
+                    </div>
                 </div>
             }
         </div>
+        <global-loading />
         @if (!online && !loading()) {
             <div
                 class="bg-error text-error-content fixed bottom-2 left-1/2 z-9999 -translate-x-1/2 rounded-3xl px-4 py-2 text-xs shadow-sm"
@@ -64,12 +74,23 @@ import { UploadListComponent } from './ui/upload-list.component';
             </div>
         }
     `,
-    styles: [],
+    styles: [
+        `
+            [loader] {
+                background-image: linear-gradient(
+                    to right,
+                    #c62828 0%,
+                    #ef5350 100%
+                );
+            }
+        `,
+    ],
     imports: [
         GlobalBannerComponent,
         RouterOutlet,
         UploadListComponent,
-        MatProgressSpinnerModule,
+        MatProgressBarModule,
+        GlobalLoadingComponent,
     ],
 })
 export class AppComponent extends AsyncHandler implements OnInit {
@@ -100,6 +121,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
     }
 
     public async ngOnInit() {
+        setLoadingMessage('Initialising application...');
         /* istanbul ignore if */
         if (detectIE() && detectIE() < 12) {
             location.href = `${location.origin}${location.pathname}assets/not-supported.html`;
@@ -118,11 +140,13 @@ export class AppComponent extends AsyncHandler implements OnInit {
         setNotifyOutlet(this._snackbar);
         setTranslationService(this._locale);
         this.loading.set(true);
+        setLoadingMessage('Loading application settings...');
         /** Wait for settings to initialise */
         await this._settings.initialised.pipe(first((_) => _)).toPromise();
         const settings = this._settings.get('composer') || {};
         settings.mock = !!this._settings.get('mock');
         settings.ignore_api_key = true;
+        setLoadingMessage('Authenticating user...');
         /** Wait for authentication details to load */
         await setupPlace(settings).catch(() => this.onInitError());
         setupCache(this._cache);
@@ -130,6 +154,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
         await this._users.initialised.pipe(first((_) => _)).toPromise();
         this.clearTimeout('wait_for_user');
         this.loading.set(false);
+        setLoadingMessage('Initialising upload service...');
         this.timeout('init_uploads', () => {
             initUploads({
                 auto_start: true,
@@ -152,7 +177,9 @@ export class AppComponent extends AsyncHandler implements OnInit {
                 this.simple.set(this._router.url.includes('mqtt'));
             }
         });
+        setLoadingMessage('Checking staff tenants...');
         this._checkTenants();
+        setLoadingMessage('Initialising locales...');
         this._initLocale();
     }
 
