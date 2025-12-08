@@ -1,6 +1,10 @@
 import { HashMap } from '../../common/types';
 import { API, endpointData, generateBasicHandlers } from '../common.mock';
 import { MODULES as MODULE_DATA } from '../data/modules';
+import {
+    MockHttpRequestHandler,
+    registerMockEndpoint,
+} from '@placeos/ts-client';
 
 const FILTER_FN = (item: any, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
@@ -29,5 +33,73 @@ const FILTER_FN = (item: any, q: HashMap) => {
     return match;
 };
 
-/** Add basic API handlers for systems */
+/** Add basic API handlers for modules */
 generateBasicHandlers(`${API}/modules`, MODULE_DATA, FILTER_FN);
+
+/** Add handler for starting a module */
+registerMockEndpoint({
+    path: `${API}/modules/:id/start`,
+    metadata: [],
+    method: 'POST',
+    callback: (event) => {
+        if (event.route_params.id) {
+            const module = endpointData(`${API}/modules`).find(
+                (mod) => mod.id === event.route_params.id,
+            );
+            if (module) {
+                module.running = true;
+                return module;
+            }
+        }
+        throw { status: 404, message: 'Module not found' };
+    },
+} as MockHttpRequestHandler);
+
+/** Add handler for stopping a module */
+registerMockEndpoint({
+    path: `${API}/modules/:id/stop`,
+    metadata: [],
+    method: 'POST',
+    callback: (event) => {
+        if (event.route_params.id) {
+            const module = endpointData(`${API}/modules`).find(
+                (mod) => mod.id === event.route_params.id,
+            );
+            if (module) {
+                module.running = false;
+                return module;
+            }
+        }
+        throw { status: 404, message: 'Module not found' };
+    },
+} as MockHttpRequestHandler);
+
+/** Add handler for pinging a module */
+registerMockEndpoint({
+    path: `${API}/modules/:id/ping`,
+    metadata: [],
+    method: 'POST',
+    callback: (event) => {
+        return { host: 'localhost', pingable: true, warning: null };
+    },
+} as MockHttpRequestHandler);
+
+/** Add handler for module settings */
+registerMockEndpoint({
+    path: `${API}/modules/:id/settings`,
+    metadata: [],
+    method: 'GET',
+    callback: (event) => {
+        return [];
+    },
+} as MockHttpRequestHandler);
+
+/** Add handler for module state */
+registerMockEndpoint({
+    path: `${API}/modules/:id/state`,
+    metadata: [],
+    method: 'GET',
+    callback: (event) => {
+        return { connected: true, running: true };
+    },
+} as MockHttpRequestHandler);

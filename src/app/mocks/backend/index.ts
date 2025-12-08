@@ -9,3 +9,8 @@ import './zones.mock';
 
 import './general.mock';
 import './settings.mock';
+import './metadata.mock';
+import './auth-sources.mock';
+import './admin.mock';
+import './staff-api.mock';
+import './history.mock';

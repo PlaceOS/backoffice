@@ -102,3 +102,77 @@ registerMockEndpoint({
         throw { status: 404, message: 'System not found' };
     },
 } as MockHttpRequestHandler);
+
+/** Add handler for starting a system */
+registerMockEndpoint({
+    path: `${API}/systems/:id/start`,
+    metadata: [],
+    method: 'POST',
+    callback: (event) => {
+        if (event.route_params.id) {
+            const system = endpointData(`${API}/systems`).find(
+                (sys) => sys.id === event.route_params.id,
+            );
+            if (system) {
+                system.running = true;
+                return system;
+            }
+        }
+        throw { status: 404, message: 'System not found' };
+    },
+} as MockHttpRequestHandler);
+
+/** Add handler for stopping a system */
+registerMockEndpoint({
+    path: `${API}/systems/:id/stop`,
+    metadata: [],
+    method: 'POST',
+    callback: (event) => {
+        if (event.route_params.id) {
+            const system = endpointData(`${API}/systems`).find(
+                (sys) => sys.id === event.route_params.id,
+            );
+            if (system) {
+                system.running = false;
+                return system;
+            }
+        }
+        throw { status: 404, message: 'System not found' };
+    },
+} as MockHttpRequestHandler);
+
+/** Add handler for executing module methods on system */
+registerMockEndpoint({
+    path: `${API}/systems/:id/exec/:module/:index/:method`,
+    metadata: [],
+    method: 'POST',
+    callback: (event) => {
+        return { result: 'ok' };
+    },
+} as MockHttpRequestHandler);
+
+/** Add handler for system functions list */
+registerMockEndpoint({
+    path: `${API}/systems/:id/funcs/:module/:index`,
+    metadata: [],
+    method: 'GET',
+    callback: (event) => {
+        return {
+            functions: {
+                power: { arity: 1, params: ['state'] },
+                volume: { arity: 1, params: ['level'] },
+                mute: { arity: 1, params: ['state'] },
+            },
+        };
+    },
+} as MockHttpRequestHandler);
+
+/** Add handler for counting systems */
+registerMockEndpoint({
+    path: `${API}/systems/count`,
+    metadata: [],
+    method: 'GET',
+    callback: (event) => {
+        return { count: endpointData(`${API}/systems`).length };
+    },
+} as MockHttpRequestHandler);
