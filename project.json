@@ -138,6 +138,13 @@
                 "staticFilePath": "dist/backoffice/browser",
                 "spa": true
             }
+        },
+        "e2e": {
+            "executor": "@nx/playwright:playwright",
+            "outputs": ["{workspaceRoot}/playwright-report"],
+            "options": {
+                "config": "e2e/playwright.config.ts"
+            }
         }
     }
 }

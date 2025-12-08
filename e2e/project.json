@@ -4,6 +4,13 @@
     "projectType": "application",
     "sourceRoot": "e2e/src",
     "implicitDependencies": ["backoffice"],
-    "// targets": "to see all targets run: nx show project e2e --web",
-    "targets": {}
+    "targets": {
+        "e2e": {
+            "executor": "@nx/playwright:playwright",
+            "outputs": ["{workspaceRoot}/playwright-report"],
+            "options": {
+                "config": "e2e/playwright.config.ts"
+            }
+        }
+    }
 }

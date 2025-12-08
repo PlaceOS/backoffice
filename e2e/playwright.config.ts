@@ -2,33 +2,85 @@ import { workspaceRoot } from '@nx/devkit';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
 
-// For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
-
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
+ * E2E Test Configuration for PlaceOS Backoffice
+ *
+ * Environment Variables:
+ * - BASE_URL: Base URL for the application (default: http://localhost:4200)
+ * - USE_MOCK: Set to 'false' to use live environment (default: true)
+ * - API_DOMAIN: API domain for live environment
+ * - API_PORT: API port for live environment
+ * - API_PROTOCOL: API protocol (http/https) for live environment
+ *
+ * Usage:
+ *   # Run tests with mock data (default)
+ *   npx nx e2e backoffice
+ *
+ *   # Run tests against live environment
+ *   USE_MOCK=false API_DOMAIN=placeos-dev.aca.im npx nx e2e backoffice
+ *
+ *   # Run specific test file
+ *   npx nx e2e backoffice --grep "Systems"
  */
-// require('dotenv').config();
+
+// Load environment variables from .env file if present
+try {
+    require('dotenv').config({ path: './e2e/.env' });
+} catch {
+    // dotenv not available, continue without it
+}
+
+// Determine if using mock mode
+const useMock = process.env['USE_MOCK'] !== 'false';
+const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
     ...nxE2EPreset(__filename, { testDir: './src' }),
+
+    /* Test timeout - increase for mock mode as it may need longer to initialize */
+    timeout: 60000,
+
+    /* Expect timeout for assertions */
+    expect: {
+        timeout: 10000,
+    },
+
+    /* Retry failed tests */
+    retries: useMock ? 1 : 2,
+
+    /* Reporter configuration */
+    reporter: [
+        ['html', { open: 'never' }],
+        ['list'],
+    ],
+
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
         baseURL,
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry',
+        /* Screenshot on failure */
+        screenshot: 'only-on-failure',
+        /* Video on failure */
+        video: 'on-first-retry',
+        /* Action timeout */
+        actionTimeout: 15000,
+        /* Navigation timeout */
+        navigationTimeout: 30000,
     },
+
     /* Run your local dev server before starting the tests */
     webServer: {
         command: 'npx nx run backoffice:serve',
         url: 'http://localhost:4200',
         reuseExistingServer: true,
         cwd: workspaceRoot,
+        timeout: 120000,
     },
+
     projects: [
         {
             name: 'chromium',
@@ -45,24 +97,14 @@ export default defineConfig({
             use: { ...devices['Desktop Safari'] },
         },
 
-        // Uncomment for mobile browsers support
-        /* {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    }, */
-
-        // Uncomment for branded browsers
-        /* {
-      name: 'Microsoft Edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    },
-    {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    } */
+        // Mobile browsers - disabled by default as UI requires different test flows
+        // {
+        //     name: 'mobile-chrome',
+        //     use: { ...devices['Pixel 5'] },
+        // },
+        // {
+        //     name: 'mobile-safari',
+        //     use: { ...devices['iPhone 12'] },
+        // },
     ],
 });
