@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { authority } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
@@ -48,33 +49,64 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 <div class="w-full flex-1 space-y-2 overflow-auto pb-2">
                     @for (link of links; track $index) {
                         @if (!link.show_on || link.show_on()) {
-                            <a
-                                btn
-                                link
-                                matRipple
-                                class="clear hover:bg-base-100 mx-auto w-[calc(100%-1rem)] text-left"
-                                [routerLink]="[link.route]"
-                                routerLinkActive="bg-secondary! text-secondary-content"
-                                [matTooltip]="
-                                    compact() ? (link.name | translate) : ''
-                                "
-                                matTooltipPosition="right"
-                            >
-                                <div
-                                    class="flex w-full items-center space-x-2"
-                                    [class.sm:justify-center]="compact()"
+                            @if (link.external) {
+                                <a
+                                    btn
+                                    link
+                                    matRipple
+                                    class="clear hover:bg-base-100 mx-auto w-[calc(100%-1rem)] text-left"
+                                    [href]="link.external()"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    [matTooltip]="
+                                        compact() ? (link.name | translate) : ''
+                                    "
+                                    matTooltipPosition="right"
                                 >
-                                    <icon
-                                        class="text-xl"
-                                        [class.sm:text-2xl]="compact()"
-                                        [class.sm:mx-auto]="compact()"
-                                        >{{ link.icon }}</icon
+                                    <div
+                                        class="flex w-full items-center space-x-2"
+                                        [class.sm:justify-center]="compact()"
                                     >
-                                    <p [class.sm:hidden]="compact()">
-                                        {{ link.name | translate }}
-                                    </p>
-                                </div>
-                            </a>
+                                        <icon
+                                            class="text-xl"
+                                            [class.sm:text-2xl]="compact()"
+                                            [class.sm:mx-auto]="compact()"
+                                            >{{ link.icon }}</icon
+                                        >
+                                        <p [class.sm:hidden]="compact()">
+                                            {{ link.name | translate }}
+                                        </p>
+                                    </div>
+                                </a>
+                            } @else {
+                                <a
+                                    btn
+                                    link
+                                    matRipple
+                                    class="clear hover:bg-base-100 mx-auto w-[calc(100%-1rem)] text-left"
+                                    [routerLink]="[link.route]"
+                                    routerLinkActive="bg-secondary! text-secondary-content"
+                                    [matTooltip]="
+                                        compact() ? (link.name | translate) : ''
+                                    "
+                                    matTooltipPosition="right"
+                                >
+                                    <div
+                                        class="flex w-full items-center space-x-2"
+                                        [class.sm:justify-center]="compact()"
+                                    >
+                                        <icon
+                                            class="text-xl"
+                                            [class.sm:text-2xl]="compact()"
+                                            [class.sm:mx-auto]="compact()"
+                                            >{{ link.icon }}</icon
+                                        >
+                                        <p [class.sm:hidden]="compact()">
+                                            {{ link.name | translate }}
+                                        </p>
+                                    </div>
+                                </a>
+                            }
                         }
                     }
                     <button
@@ -178,7 +210,18 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         { name: 'COMMON.DRIVERS', route: '/drivers', icon: 'construction' },
         { name: 'COMMON.REPOS', route: '/repositories', icon: 'inventory_2' },
         { name: 'COMMON.TRIGGERS', route: '/triggers', icon: 'timer' },
-        { name: 'COMMON.METRICS', route: '/metrics', icon: 'monitoring' },
+        {
+            name: 'COMMON.ALERTS',
+            icon: 'monitoring',
+            show_on: () => !!this.alerts_url,
+            external: () => this.alerts_url,
+        },
+        {
+            name: 'COMMON.METRICS',
+            icon: 'monitoring',
+            show_on: () => !!this.metrics_url,
+            external: () => this.metrics_url,
+        },
         {
             name: 'COMMON.USERS',
             route: '/users',
@@ -213,6 +256,14 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
 
     public get is_support() {
         return this._users.current().support;
+    }
+
+    public get alerts_url(): string {
+        return authority()?.config?.backoffice?.alerts_url;
+    }
+
+    public get metrics_url(): string {
+        return authority()?.config?.backoffice?.metrics_url;
     }
 
     public readonly close = () => this._tooltip?.close();
