@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["dashboard.component.ts"],
-  "sourcesContent": ["\n            :host > div {\n                z-index: 9999;\n            }\n        "],
-  "mappings": ";AACY,MAAA,EAAA;AACI,WAAA;AACJ;",
-  "names": []
-}

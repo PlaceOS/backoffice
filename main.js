@@ -1,19 +1,21 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-2IPJ2H46.js";
+} from "./chunk-DSGRIJMZ.js";
 import {
   getUnixTime
 } from "./chunk-MXECN6VN.js";
 import {
   MatProgressBar,
   MatProgressBarModule
-} from "./chunk-GRP3BQR3.js";
+} from "./chunk-DQSPRRFK.js";
 import {
-  BackofficeUsersService
-} from "./chunk-32RLFOCM.js";
+  UploadsService
+} from "./chunk-WNITRNVL.js";
 import {
-  addDays
-} from "./chunk-LYW23EPM.js";
+  tr
+} from "./chunk-455FOZWA.js";
+import "./chunk-RFIJAS3V.js";
+import "./chunk-NGLYGBSE.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -21,25 +23,33 @@ import {
   RouterOutlet,
   provideRouter,
   withHashLocation
-} from "./chunk-TN2YCJSA.js";
-import {
-  UploadsService
-} from "./chunk-M5EEY4M7.js";
-import {
-  tr
-} from "./chunk-3KGMPJGM.js";
-import "./chunk-K64JFNOT.js";
-import "./chunk-XWGHYPL7.js";
-import "./chunk-W3LP6CHX.js";
+} from "./chunk-563VOQEB.js";
+import "./chunk-C5EPULW7.js";
+import "./chunk-JVJWK7OL.js";
 import {
   MatTooltip,
   MatTooltipModule
-} from "./chunk-CTV2QXII.js";
-import "./chunk-UHI4WW5B.js";
-import "./chunk-2275BRFB.js";
+} from "./chunk-U4CQSA3Q.js";
+import "./chunk-OCEHEAUM.js";
+import {
+  BackofficeUsersService
+} from "./chunk-EPKFBMI6.js";
+import {
+  SettingsService,
+  currentUser
+} from "./chunk-QQTCTN2T.js";
+import "./chunk-W3LP6CHX.js";
+import {
+  format
+} from "./chunk-D6PVNXBZ.js";
+import {
+  addDays
+} from "./chunk-LYW23EPM.js";
+import "./chunk-4CBXDUSX.js";
+import "./chunk-W3GXKXZC.js";
 import {
   MatDialog
-} from "./chunk-IAQS7CDE.js";
+} from "./chunk-IWX2OQVL.js";
 import {
   BasePortalOutlet,
   CdkPortalOutlet,
@@ -50,34 +60,33 @@ import {
   TemplatePortal,
   createGlobalPositionStrategy,
   createOverlayRef
-} from "./chunk-VSSUEFHJ.js";
+} from "./chunk-QVTLGZEG.js";
+import {
+  AsyncHandler
+} from "./chunk-5X4EUYHA.js";
+import "./chunk-3TSVSCMW.js";
+import {
+  IconComponent
+} from "./chunk-GX3YM4OA.js";
+import {
+  bootstrapApplication
+} from "./chunk-HWY7SC7O.js";
 import {
   notifyInfo,
   setNotifyOutlet
 } from "./chunk-ZMPXDLFL.js";
-import "./chunk-SLAQJABM.js";
-import "./chunk-LPBQ3YJT.js";
-import {
-  SettingsService,
-  currentUser
-} from "./chunk-FOHJAMRV.js";
-import {
-  format
-} from "./chunk-ZQ2RL7UU.js";
-import "./chunk-4CBXDUSX.js";
-import {
-  TranslatePipe
-} from "./chunk-5DKHD7PA.js";
 import {
   MatRippleLoader
-} from "./chunk-LUC25G4J.js";
+} from "./chunk-JNHGG7IP.js";
 import {
   MatRippleModule
-} from "./chunk-O5V2SR2Q.js";
+} from "./chunk-GIPOOO6B.js";
 import {
-  IconComponent
-} from "./chunk-LZD4U4FI.js";
-import "./chunk-TDKJZEL2.js";
+  LocaleService,
+  TranslatePipe,
+  setTranslationService
+} from "./chunk-KSJPNMKV.js";
+import "./chunk-Z76VKXD6.js";
 import {
   BreakpointObserver,
   Breakpoints,
@@ -90,19 +99,7 @@ import {
   _IdGenerator,
   _StructuralStylesLoader,
   _animationsDisabled
-} from "./chunk-FLUVNX4R.js";
-import "./chunk-W3GXKXZC.js";
-import {
-  AsyncHandler
-} from "./chunk-C2J4JAY6.js";
-import "./chunk-GBLYF56R.js";
-import {
-  bootstrapApplication
-} from "./chunk-SL7UBQ7L.js";
-import {
-  LocaleService,
-  setTranslationService
-} from "./chunk-E7QDOMTV.js";
+} from "./chunk-ZGUCA4AJ.js";
 import {
   $s,
   ApplicationRef,
@@ -203,10 +200,10 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-Q7FFLWMX.js";
+} from "./chunk-3J5ZMTAK.js";
 import {
   __spreadValues
-} from "./chunk-KWSTWQNB.js";
+} from "./chunk-VYXW4D3Z.js";
 
 // node_modules/@angular/material/fesm2022/icon-button.mjs
 var _c0 = ["mat-icon-button", ""];
@@ -3296,59 +3293,49 @@ var UnauthorisedComponent = class _UnauthorisedComponent {
 var appRoutes = [
   { path: "unauthorised", component: UnauthorisedComponent },
   {
-    path: "mqtt-dashboard",
-    canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-D6LIXC3V.js").then((m) => m.ROUTES)
-  },
-  {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-K2RXOD5P.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-KMM2INES.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-4GYSCEZY.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-TY6DCVTR.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-GXJTBIAW.js").then((m) => m.ROUTES)
-  },
-  {
-    path: "metrics",
-    canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-W3BBZMAF.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-SRE6NSQG.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-X3WHBYEH.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-L4NNZKUB.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-3GSQ7ZVO.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QCMH4FND.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-QYNCAY4U.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-V6UP2737.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-IQGXO6AA.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YN2VDCLX.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-FUMAGBEX.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-N4PPJ2EY.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-HK3TJMSD.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-P7TQMHM2.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];

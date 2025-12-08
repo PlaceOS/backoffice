@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/alert-dashboard/dashboard.routes.ts"],
-  "sourcesContent": ["import { Routes } from '@angular/router';\n\nexport const ROUTES: Routes = [\n    {\n        path: '',\n        loadComponent: () =>\n            import('./dashboard.component').then(\n                (m) => m.MqttDashboardComponent,\n            ),\n    },\n    { path: '**', redirectTo: '' },\n];\n"],
-  "mappings": ";;;AAEO,IAAM,SAAiB;EAC1B;IACI,MAAM;IACN,eAAe,MACX,OAAO,qBAAuB,EAAE,KAC5B,CAAC,MAAM,EAAE,sBAAsB;;EAG3C,EAAE,MAAM,MAAM,YAAY,GAAE;;",
-  "names": []
-}

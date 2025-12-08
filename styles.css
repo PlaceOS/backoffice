@@ -348,9 +348,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .bottom-0 {
   bottom: calc(var(--spacing) * 0);
 }
-#placeos .bottom-1\/2 {
-  bottom: calc(1/2 * 100%);
-}
 #placeos .bottom-2 {
   bottom: calc(var(--spacing) * 2);
 }
@@ -658,9 +655,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .h-\[50vh\] {
   height: 50vh;
 }
-#placeos .h-\[60vh\] {
-  height: 60vh;
-}
 #placeos .h-\[65vh\] {
   height: 65vh;
 }
@@ -718,9 +712,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .w-0 {
   width: calc(var(--spacing) * 0);
 }
-#placeos .w-1 {
-  width: calc(var(--spacing) * 1);
-}
 #placeos .w-1\/2 {
   width: calc(1/2 * 100%);
 }
@@ -729,9 +720,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .w-1\/4 {
   width: calc(1/4 * 100%);
-}
-#placeos .w-1\/6 {
-  width: calc(1/6 * 100%);
 }
 #placeos .w-2 {
   width: calc(var(--spacing) * 2);
@@ -1160,14 +1148,6 @@ input:where([type=button], [type=reset], [type=submit]),
 :where(#placeos .divide-base-100 > :not(:last-child)) {
   border-color: var(--base-100);
 }
-:where(#placeos .divide-base-100\/50 > :not(:last-child)) {
-  border-color: var(--base-100);
-}
-@supports (color: color-mix(in lab, red, red)) {
-  :where(#placeos .divide-base-100\/50 > :not(:last-child)) {
-    border-color: color-mix(in oklab, var(--base-100) 50%, transparent);
-  }
-}
 :where(#placeos .divide-base-200 > :not(:last-child)) {
   border-color: var(--base-200);
 }
@@ -1285,22 +1265,11 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .border-base-100 {
   border-color: var(--base-100);
 }
-#placeos .border-base-100\/50 {
-  border-color: var(--base-100);
-}
-@supports (color: color-mix(in lab, red, red)) {
-  #placeos .border-base-100\/50 {
-    border-color: color-mix(in oklab, var(--base-100) 50%, transparent);
-  }
-}
 #placeos .border-base-200 {
   border-color: var(--base-200);
 }
 #placeos .border-base-300 {
   border-color: var(--base-300);
-}
-#placeos .border-base-content {
-  border-color: var(--base-content);
 }
 #placeos .border-base-content\/10 {
   border-color: var(--base-content);
@@ -1321,9 +1290,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .border-secondary {
   border-color: var(--secondary);
-}
-#placeos .bg-\[\#212121\] {
-  background-color: #212121;
 }
 #placeos .bg-\[hsl\(0\,0\%\,15\%\)\] {
   background-color: hsl(0, 0%, 15%);

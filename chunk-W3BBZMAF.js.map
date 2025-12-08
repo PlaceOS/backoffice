@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/metrics/metrics.routes.ts"],
-  "sourcesContent": ["import { Routes } from '@angular/router';\n\nexport const ROUTES: Routes = [\n    {\n        path: '',\n        loadComponent: () =>\n            import('./metrics.component').then((m) => m.MetricsComponent),\n        children: [],\n    },\n    {\n        path: 'dashboard',\n        loadComponent: () =>\n            import('./metrics.component').then((m) => m.MetricsComponent),\n        children: [],\n    },\n    {\n        path: 'dashboard/:period',\n        loadComponent: () =>\n            import('./metrics.component').then((m) => m.MetricsComponent),\n        children: [],\n    },\n    {\n        path: ':period',\n        loadComponent: () =>\n            import('./metrics.component').then((m) => m.MetricsComponent),\n        children: [],\n    },\n    { path: '**', redirectTo: '' },\n];\n"],
-  "mappings": ";;;AAEO,IAAM,SAAiB;EAC1B;IACI,MAAM;IACN,eAAe,MACX,OAAO,qBAAqB,EAAE,KAAK,CAAC,MAAM,EAAE,gBAAgB;IAChE,UAAU,CAAA;;EAEd;IACI,MAAM;IACN,eAAe,MACX,OAAO,qBAAqB,EAAE,KAAK,CAAC,MAAM,EAAE,gBAAgB;IAChE,UAAU,CAAA;;EAEd;IACI,MAAM;IACN,eAAe,MACX,OAAO,qBAAqB,EAAE,KAAK,CAAC,MAAM,EAAE,gBAAgB;IAChE,UAAU,CAAA;;EAEd;IACI,MAAM;IACN,eAAe,MACX,OAAO,qBAAqB,EAAE,KAAK,CAAC,MAAM,EAAE,gBAAgB;IAChE,UAAU,CAAA;;EAEd,EAAE,MAAM,MAAM,YAAY,GAAE;;",
-  "names": []
-}
