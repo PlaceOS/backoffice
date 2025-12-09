@@ -35,7 +35,7 @@ const task_details = {};
     template: `
         <div class="h-full w-full overflow-auto">
             <div
-                class="sticky left-0 top-0 z-20 m-4 mb-4 flex w-[calc(100%-2rem)] items-center rounded-sm border border-base-300 bg-base-200 p-2"
+                class="border-base-300 bg-base-200 sticky top-0 left-0 z-20 m-4 mb-4 flex w-[calc(100%-2rem)] items-center rounded-sm border p-2"
             >
                 <a icon matRipple [routerLink]="['/admin', 'clusters']">
                     <icon>arrow_back</icon>
@@ -47,7 +47,7 @@ const task_details = {};
                 <div class="flex-1"></div>
                 <mat-form-field
                     appearance="outline"
-                    class="no-subscript rounded-sm bg-base-100"
+                    class="no-subscript bg-base-100 rounded-sm"
                 >
                     <div class="prefix" matPrefix>
                         <icon class="relative -left-0.5 text-2xl">
@@ -116,13 +116,13 @@ const task_details = {};
             <div class="flex flex-col px-4 py-2 font-mono">
                 <div class="mb-1">{{ taskDetails(row.id).path }}</div>
                 <div class="flex items-center space-x-2 text-[0.625rem]">
-                    <div class="rounded-sm bg-info px-2 text-info-content">
+                    <div class="bg-info text-info-content rounded-sm px-2">
                         {{ taskDetails(row.id).type }}
                     </div>
-                    <div class="rounded-sm bg-base-200 px-2">
+                    <div class="bg-base-200 rounded-sm px-2">
                         {{ taskDetails(row.id).hash }}
                     </div>
-                    <div class="rounded-sm bg-base-200 px-2">
+                    <div class="bg-base-200 rounded-sm px-2">
                         {{ taskDetails(row.id).arch }}
                     </div>
                 </div>

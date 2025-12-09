@@ -76,7 +76,7 @@ export interface BackofficeExtension {
                 </div>
             </div>
             <div
-                class="mx-4 mb-4 flex items-center space-x-4 rounded-sm bg-info p-4 text-sm text-info-content shadow-sm"
+                class="bg-info text-info-content mx-4 mb-4 flex items-center space-x-4 rounded-sm p-4 text-sm shadow-sm"
             >
                 <p>{{ 'ADMIN.EXTENSIONS_NOTICE' | translate }}</p>
             </div>

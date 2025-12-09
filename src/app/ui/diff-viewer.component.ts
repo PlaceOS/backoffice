@@ -17,7 +17,7 @@ import { BackofficeUsersService } from '../users/users.service';
     selector: 'diff-viewer',
     template: `
         <div
-            class="border-gray-300 select-initial relative h-128 w-full border"
+            class="select-initial relative h-128 w-full border border-gray-300"
             editor
             (window:resize)="resizeEditor()"
             #editor

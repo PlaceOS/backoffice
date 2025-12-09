@@ -1,10 +1,10 @@
-import { HashMap } from '../../common/types';
-import { API, endpointData, generateBasicHandlers } from '../common.mock';
-import { MODULES as MODULE_DATA } from '../data/modules';
 import {
     MockHttpRequestHandler,
     registerMockEndpoint,
 } from '@placeos/ts-client';
+import { HashMap } from '../../common/types';
+import { API, endpointData, generateBasicHandlers } from '../common.mock';
+import { MODULES as MODULE_DATA } from '../data/modules';
 
 const FILTER_FN = (item: any, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {

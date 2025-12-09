@@ -1,9 +1,8 @@
-import { HashMap } from '../../common/types';
-import { API, generateID } from '../common.mock';
 import {
     MockHttpRequestHandler,
     registerMockEndpoint,
 } from '@placeos/ts-client';
+import { API, generateID } from '../common.mock';
 
 /**
  * Generate mock history entries
@@ -28,7 +27,15 @@ function generateHistory(parent_id: string, count: number = 5): any[] {
 }
 
 // Parent types that support history
-const PARENT_TYPES = ['systems', 'zones', 'drivers', 'modules', 'users', 'triggers', 'repositories'];
+const PARENT_TYPES = [
+    'systems',
+    'zones',
+    'drivers',
+    'modules',
+    'users',
+    'triggers',
+    'repositories',
+];
 
 // Register history endpoints for each parent type
 PARENT_TYPES.forEach((parent_type) => {

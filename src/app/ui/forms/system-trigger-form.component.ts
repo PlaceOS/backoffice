@@ -15,10 +15,10 @@ import { TranslatePipe } from '../translate.pipe';
             <div class="mb-4 flex space-x-4">
                 @if (form().controls.name) {
                     <div
-                        class="relative flex flex-1 items-center rounded-sm border border-base-300 p-4"
+                        class="border-base-300 relative flex flex-1 items-center rounded-sm border p-4"
                     >
                         <div
-                            class="truncation absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 p-2 text-xs"
+                            class="truncation bg-base-100 absolute top-0 left-4 -translate-y-1/2 rounded-sm p-2 text-xs"
                         >
                             {{ 'SYSTEMS.TRIGGER_NAME' | translate }}
                         </div>
@@ -29,10 +29,10 @@ import { TranslatePipe } from '../translate.pipe';
                 }
                 @if (form().controls.name) {
                     <div
-                        class="relative flex-1 rounded-sm border border-base-300 p-4"
+                        class="border-base-300 relative flex-1 rounded-sm border p-4"
                     >
                         <div
-                            class="absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 p-2 text-xs"
+                            class="bg-base-100 absolute top-0 left-4 -translate-y-1/2 rounded-sm p-2 text-xs"
                         >
                             {{ 'SYSTEMS.TRIGGER_ACTIVE' | translate }}
                         </div>
@@ -92,17 +92,17 @@ import { TranslatePipe } from '../translate.pipe';
             }
             <div class="-mx-2 flex flex-wrap items-center">
                 <settings-toggle
-                    class="m-2 min-w-[40%] max-w-[calc(50%-1rem)] flex-1"
+                    class="m-2 max-w-[calc(50%-1rem)] min-w-[40%] flex-1"
                     [name]="'SYSTEMS.TRIGGER_ENABLED' | translate"
                     formControlName="enabled"
                 ></settings-toggle>
                 <settings-toggle
-                    class="m-2 min-w-[40%] max-w-[calc(50%-1rem)] flex-1"
+                    class="m-2 max-w-[calc(50%-1rem)] min-w-[40%] flex-1"
                     [name]="'SYSTEMS.TRIGGER_EXECUTE_ENABLED' | translate"
                     formControlName="exec_enabled"
                 ></settings-toggle>
                 <settings-toggle
-                    class="m-2 min-w-[40%] max-w-[calc(50%-1rem)] flex-1"
+                    class="m-2 max-w-[calc(50%-1rem)] min-w-[40%] flex-1"
                     [name]="'SYSTEMS.TRIGGER_IMPORTANT' | translate"
                     formControlName="important"
                 ></settings-toggle>

@@ -1,9 +1,14 @@
-import { HashMap } from '../../common/types';
-import { API, generateID, loadFromSession, saveToSession } from '../common.mock';
 import {
     MockHttpRequestHandler,
     registerMockEndpoint,
 } from '@placeos/ts-client';
+import { HashMap } from '../../common/types';
+import {
+    API,
+    generateID,
+    loadFromSession,
+    saveToSession,
+} from '../common.mock';
 
 /** In-memory storage for auth sources with session persistence */
 const OAUTH_SOURCES: any[] = loadFromSession('oauth_sources', []);
@@ -46,7 +51,9 @@ registerMockEndpoint({
     metadata: [],
     method: 'GET',
     callback: (event) => {
-        const source = OAUTH_SOURCES.find((s) => s.id === event.route_params.id);
+        const source = OAUTH_SOURCES.find(
+            (s) => s.id === event.route_params.id,
+        );
         if (source) return source;
         throw { status: 404, message: 'OAuth source not found' };
     },
@@ -76,9 +83,15 @@ registerMockEndpoint({
     metadata: [],
     method: 'PUT',
     callback: (event) => {
-        const index = OAUTH_SOURCES.findIndex((s) => s.id === event.route_params.id);
+        const index = OAUTH_SOURCES.findIndex(
+            (s) => s.id === event.route_params.id,
+        );
         if (index >= 0) {
-            OAUTH_SOURCES[index] = { ...OAUTH_SOURCES[index], ...event.body, updated_at: Date.now() / 1000 };
+            OAUTH_SOURCES[index] = {
+                ...OAUTH_SOURCES[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('oauth_sources', OAUTH_SOURCES);
             return OAUTH_SOURCES[index];
         }
@@ -91,9 +104,15 @@ registerMockEndpoint({
     metadata: [],
     method: 'PATCH',
     callback: (event) => {
-        const index = OAUTH_SOURCES.findIndex((s) => s.id === event.route_params.id);
+        const index = OAUTH_SOURCES.findIndex(
+            (s) => s.id === event.route_params.id,
+        );
         if (index >= 0) {
-            OAUTH_SOURCES[index] = { ...OAUTH_SOURCES[index], ...event.body, updated_at: Date.now() / 1000 };
+            OAUTH_SOURCES[index] = {
+                ...OAUTH_SOURCES[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('oauth_sources', OAUTH_SOURCES);
             return OAUTH_SOURCES[index];
         }
@@ -107,7 +126,9 @@ registerMockEndpoint({
     metadata: [],
     method: 'DELETE',
     callback: (event) => {
-        const index = OAUTH_SOURCES.findIndex((s) => s.id === event.route_params.id);
+        const index = OAUTH_SOURCES.findIndex(
+            (s) => s.id === event.route_params.id,
+        );
         if (index >= 0) {
             OAUTH_SOURCES.splice(index, 1);
             saveToSession('oauth_sources', OAUTH_SOURCES);
@@ -163,9 +184,15 @@ registerMockEndpoint({
     metadata: [],
     method: 'PUT',
     callback: (event) => {
-        const index = SAML_SOURCES.findIndex((s) => s.id === event.route_params.id);
+        const index = SAML_SOURCES.findIndex(
+            (s) => s.id === event.route_params.id,
+        );
         if (index >= 0) {
-            SAML_SOURCES[index] = { ...SAML_SOURCES[index], ...event.body, updated_at: Date.now() / 1000 };
+            SAML_SOURCES[index] = {
+                ...SAML_SOURCES[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('saml_sources', SAML_SOURCES);
             return SAML_SOURCES[index];
         }
@@ -178,9 +205,15 @@ registerMockEndpoint({
     metadata: [],
     method: 'PATCH',
     callback: (event) => {
-        const index = SAML_SOURCES.findIndex((s) => s.id === event.route_params.id);
+        const index = SAML_SOURCES.findIndex(
+            (s) => s.id === event.route_params.id,
+        );
         if (index >= 0) {
-            SAML_SOURCES[index] = { ...SAML_SOURCES[index], ...event.body, updated_at: Date.now() / 1000 };
+            SAML_SOURCES[index] = {
+                ...SAML_SOURCES[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('saml_sources', SAML_SOURCES);
             return SAML_SOURCES[index];
         }
@@ -194,7 +227,9 @@ registerMockEndpoint({
     metadata: [],
     method: 'DELETE',
     callback: (event) => {
-        const index = SAML_SOURCES.findIndex((s) => s.id === event.route_params.id);
+        const index = SAML_SOURCES.findIndex(
+            (s) => s.id === event.route_params.id,
+        );
         if (index >= 0) {
             SAML_SOURCES.splice(index, 1);
             saveToSession('saml_sources', SAML_SOURCES);
@@ -250,9 +285,15 @@ registerMockEndpoint({
     metadata: [],
     method: 'PUT',
     callback: (event) => {
-        const index = LDAP_SOURCES.findIndex((s) => s.id === event.route_params.id);
+        const index = LDAP_SOURCES.findIndex(
+            (s) => s.id === event.route_params.id,
+        );
         if (index >= 0) {
-            LDAP_SOURCES[index] = { ...LDAP_SOURCES[index], ...event.body, updated_at: Date.now() / 1000 };
+            LDAP_SOURCES[index] = {
+                ...LDAP_SOURCES[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('ldap_sources', LDAP_SOURCES);
             return LDAP_SOURCES[index];
         }
@@ -265,9 +306,15 @@ registerMockEndpoint({
     metadata: [],
     method: 'PATCH',
     callback: (event) => {
-        const index = LDAP_SOURCES.findIndex((s) => s.id === event.route_params.id);
+        const index = LDAP_SOURCES.findIndex(
+            (s) => s.id === event.route_params.id,
+        );
         if (index >= 0) {
-            LDAP_SOURCES[index] = { ...LDAP_SOURCES[index], ...event.body, updated_at: Date.now() / 1000 };
+            LDAP_SOURCES[index] = {
+                ...LDAP_SOURCES[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('ldap_sources', LDAP_SOURCES);
             return LDAP_SOURCES[index];
         }
@@ -281,7 +328,9 @@ registerMockEndpoint({
     metadata: [],
     method: 'DELETE',
     callback: (event) => {
-        const index = LDAP_SOURCES.findIndex((s) => s.id === event.route_params.id);
+        const index = LDAP_SOURCES.findIndex(
+            (s) => s.id === event.route_params.id,
+        );
         if (index >= 0) {
             LDAP_SOURCES.splice(index, 1);
             saveToSession('ldap_sources', LDAP_SOURCES);

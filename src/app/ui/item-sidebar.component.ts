@@ -35,21 +35,21 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
     selector: 'item-sidebar',
     template: `
         <div
-            class="flex h-full w-[24rem] min-w-64 max-w-[25vw] flex-col space-y-2 overflow-hidden rounded-sm border-base-200 bg-base-100 shadow-sm sm:border-r"
+            class="border-base-200 bg-base-100 flex h-full w-[24rem] max-w-[25vw] min-w-64 flex-col space-y-2 overflow-hidden rounded-sm shadow-sm sm:border-r"
             (click)="$event.stopPropagation()"
         >
             <div class="flex items-center space-x-2 px-1 pt-1">
                 <div
-                    class="relative flex flex-1 items-center rounded-lg border border-base-300 shadow-sm"
+                    class="border-base-300 relative flex flex-1 items-center rounded-lg border shadow-sm"
                 >
                     <icon
-                        class="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 text-2xl"
+                        class="pointer-events-none absolute top-1/2 left-1 -translate-y-1/2 text-2xl"
                     >
                         search
                     </icon>
                     <input
                         #search_input
-                        class="bg-transparent w-full flex-1 rounded-lg border-none py-2.5 pl-9 pr-4"
+                        class="w-full flex-1 rounded-lg border-none bg-transparent py-2.5 pr-4 pl-9"
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
                         [placeholder]="
@@ -59,7 +59,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                     @if (loading | async) {
                         <mat-spinner
                             diameter="24"
-                            class="absolute right-2 top-1/2 mr-2 -translate-y-1/2"
+                            class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
                         ></mat-spinner>
                     }
                 </div>
@@ -76,7 +76,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                         </button>
                         <mat-form-field
                             appearance="outline"
-                            class="no-subscript absolute -right-2 top-1/2 -translate-y-1/2 opacity-0"
+                            class="no-subscript absolute top-1/2 -right-2 -translate-y-1/2 opacity-0"
                         >
                             <mat-select
                                 multiple
@@ -102,7 +102,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                 @let t = total | async;
                 {{ 'COMMON.TOTAL_ITEMS' | translate: { count: t } : t }}
             </p>
-            <div class="flex h-1/2 flex-1 flex-col border-t border-base-200">
+            <div class="border-base-200 flex h-1/2 flex-1 flex-col border-t">
                 @if ((items | async)?.length) {
                     <virtual-scroll
                         [item_size]="72"
@@ -131,7 +131,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                     : ''
                             "
                             [class.bg-base-200]="idx % 2 === 1"
-                            class="relative m-1 flex h-16 w-92 max-w-[calc(100%-0.5rem)] flex-col justify-center rounded-sm border border-base-100 px-2 py-1 hover:border-info"
+                            class="border-base-100 hover:border-info relative m-1 flex h-16 w-92 max-w-[calc(100%-0.5rem)] flex-col justify-center rounded-sm border px-2 py-1"
                             (click)="show.set(false)"
                         >
                             <p class="w-full truncate">
@@ -141,7 +141,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                 @if (item.extra) {
                                     <div
                                         extra
-                                        class="mono mt-1 max-w-full truncate rounded-sm border border-base-300 p-1 text-[0.625rem] opacity-60"
+                                        class="mono border-base-300 mt-1 max-w-full truncate rounded-sm border p-1 text-[0.625rem] opacity-60"
                                     >
                                         {{ item.extra }}
                                     </div>
@@ -152,14 +152,14 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                 item.commit !== item.update_info.commit
                             ) {
                                 <icon
-                                    class="absolute -right-1 -top-1 rotate-12 text-2xl text-info"
+                                    class="text-info absolute -top-1 -right-1 rotate-12 text-2xl"
                                 >
                                     new_releases
                                 </icon>
                             }
                             @if (item.zone_issues) {
                                 <div
-                                    class="absolute -right-1 -top-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full bg-warning text-2xl text-warning-content"
+                                    class="bg-warning text-warning-content absolute -top-1 -right-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full text-2xl"
                                     [matTooltip]="
                                         (item.zone_issues === 'system'
                                             ? 'SYSTEMS.MISCONFIGURED'
@@ -172,7 +172,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                             }
                             @if (item.has_runtime_error) {
                                 <div
-                                    class="absolute -right-1 -top-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full bg-error text-2xl text-error-content"
+                                    class="bg-error text-error-content absolute -top-1 -right-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full text-2xl"
                                     [matTooltip]="'MODULES.ERROR' | translate"
                                 >
                                     <icon> error </icon>

@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 /**
@@ -22,21 +22,33 @@ export class UsersPage extends BasePage {
      * Get the metadata tab
      */
     get metadataTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Metadata"), [role="tab"]:has-text("Metadata")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Metadata"), [role="tab"]:has-text("Metadata")',
+            )
+            .first();
     }
 
     /**
      * Get the history tab
      */
     get historyTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("History"), [role="tab"]:has-text("History")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("History"), [role="tab"]:has-text("History")',
+            )
+            .first();
     }
 
     /**
      * Get the groups tab
      */
     get groupsTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Groups"), [role="tab"]:has-text("Groups")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Groups"), [role="tab"]:has-text("Groups")',
+            )
+            .first();
     }
 
     /**
@@ -64,7 +76,9 @@ export class UsersPage extends BasePage {
      * Get the disable/enable button
      */
     get toggleStatusButton(): Locator {
-        return this.page.locator('button:has-text("Disable"), button:has-text("Enable")').first();
+        return this.page
+            .locator('button:has-text("Disable"), button:has-text("Enable")')
+            .first();
     }
 
     /**
@@ -87,9 +101,14 @@ export class UsersPage extends BasePage {
         await this.fillField('Email', data.email);
 
         // Fill password fields - use accessible name within dialog to avoid hidden fake password field
-        const passwordField = this.dialog.getByRole('textbox', { name: 'Password', exact: true });
+        const passwordField = this.dialog.getByRole('textbox', {
+            name: 'Password',
+            exact: true,
+        });
         await passwordField.fill(data.password);
-        const confirmPasswordField = this.dialog.getByRole('textbox', { name: 'Confirm Password' });
+        const confirmPasswordField = this.dialog.getByRole('textbox', {
+            name: 'Confirm Password',
+        });
         await confirmPasswordField.fill(data.password);
 
         if (data.domain) {
@@ -173,9 +192,16 @@ export class UsersPage extends BasePage {
      * Filter users by domain
      */
     async filterByDomain(domain: string): Promise<void> {
-        const domainFilter = this.page.locator('mat-select[placeholder*="Domain"], mat-select:near(:text("Domain"))').first();
+        const domainFilter = this.page
+            .locator(
+                'mat-select[placeholder*="Domain"], mat-select:near(:text("Domain"))',
+            )
+            .first();
         await domainFilter.click();
-        await this.page.locator(`mat-option:has-text("${domain}")`).first().click();
+        await this.page
+            .locator(`mat-option:has-text("${domain}")`)
+            .first()
+            .click();
         await this.page.waitForTimeout(500);
     }
 
@@ -183,28 +209,40 @@ export class UsersPage extends BasePage {
      * Assert user details are visible
      */
     async expectUserDetails(name: string): Promise<void> {
-        await expect(this.page.locator(`item-details [name]:has-text("${name}"), item-details:has-text("${name}")`).first()).toBeVisible({ timeout: 10000 });
+        await expect(
+            this.page
+                .locator(
+                    `item-details [name]:has-text("${name}"), item-details:has-text("${name}")`,
+                )
+                .first(),
+        ).toBeVisible({ timeout: 10000 });
     }
 
     /**
      * Assert user email is displayed
      */
     async expectUserEmail(email: string): Promise<void> {
-        await expect(this.page.locator(`text=${email}`)).toBeVisible({ timeout: 10000 });
+        await expect(this.page.locator(`text=${email}`)).toBeVisible({
+            timeout: 10000,
+        });
     }
 
     /**
      * Assert user is in the list
      */
     async expectUserInList(name: string): Promise<void> {
-        await expect(this.usersList.filter({ hasText: name }).first()).toBeVisible({ timeout: 10000 });
+        await expect(
+            this.usersList.filter({ hasText: name }).first(),
+        ).toBeVisible({ timeout: 10000 });
     }
 
     /**
      * Assert user is not in the list
      */
     async expectUserNotInList(name: string): Promise<void> {
-        await expect(this.usersList.filter({ hasText: name }).first()).not.toBeVisible({ timeout: 5000 });
+        await expect(
+            this.usersList.filter({ hasText: name }).first(),
+        ).not.toBeVisible({ timeout: 5000 });
     }
 
     /**
@@ -212,9 +250,13 @@ export class UsersPage extends BasePage {
      */
     async expectUserStatus(status: 'active' | 'disabled'): Promise<void> {
         if (status === 'active') {
-            await expect(this.toggleStatusButton.locator(':has-text("Disable")')).toBeVisible();
+            await expect(
+                this.toggleStatusButton.locator(':has-text("Disable")'),
+            ).toBeVisible();
         } else {
-            await expect(this.toggleStatusButton.locator(':has-text("Enable")')).toBeVisible();
+            await expect(
+                this.toggleStatusButton.locator(':has-text("Enable")'),
+            ).toBeVisible();
         }
     }
 }

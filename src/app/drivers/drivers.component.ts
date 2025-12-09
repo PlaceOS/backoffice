@@ -14,8 +14,8 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
-import { ItemDetailsComponent } from '../ui/item-details.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
+import { ItemDetailsComponent } from '../ui/item-details.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
@@ -27,7 +27,7 @@ import { DriverStateService } from './driver-state.service';
     selector: 'new-drivers-view',
     template: `
         <div
-            class="absolute inset-0 flex items-center divide-y divide-base-200 bg-base-100 sm:divide-x sm:divide-y-0"
+            class="divide-base-200 bg-base-100 absolute inset-0 flex items-center divide-y sm:divide-x sm:divide-y-0"
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
             <div class="flex h-full w-px flex-1 flex-col overflow-hidden">
@@ -78,7 +78,7 @@ import { DriverStateService } from './driver-state.service';
                         </div>
                         @if (updates_available | async) {
                             <button
-                                class="absolute bottom-16 left-1 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-8"
+                                class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-1 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm sm:-left-8"
                                 [matTooltip]="'DRIVERS.UPDATE' | translate"
                                 matTooltipPosition="right"
                                 matRipple
@@ -88,7 +88,7 @@ import { DriverStateService } from './driver-state.service';
                             </button>
                         }
                         <button
-                            class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-9"
+                            class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm sm:-left-9"
                             [matTooltip]="'DRIVERS.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple

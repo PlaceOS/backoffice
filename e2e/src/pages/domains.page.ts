@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 /**
@@ -22,28 +22,44 @@ export class DomainsPage extends BasePage {
      * Get the applications tab
      */
     get applicationsTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Application"), [role="tab"]:has-text("Application")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Application"), [role="tab"]:has-text("Application")',
+            )
+            .first();
     }
 
     /**
      * Get the users tab
      */
     get usersTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Users"), [role="tab"]:has-text("Users")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Users"), [role="tab"]:has-text("Users")',
+            )
+            .first();
     }
 
     /**
      * Get the auth sources tab
      */
     get authSourcesTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Auth"), item-tablist a:has-text("Authentication"), [role="tab"]:has-text("Auth")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Auth"), item-tablist a:has-text("Authentication"), [role="tab"]:has-text("Auth")',
+            )
+            .first();
     }
 
     /**
      * Get the extensions tab
      */
     get extensionsTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Extension"), [role="tab"]:has-text("Extension")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Extension"), [role="tab"]:has-text("Extension")',
+            )
+            .first();
     }
 
     /**
@@ -57,28 +73,36 @@ export class DomainsPage extends BasePage {
      * Get user count display
      */
     get userCount(): Locator {
-        return this.page.locator('[class*="count"], :text("Users") ~ *').first();
+        return this.page
+            .locator('[class*="count"], :text("Users") ~ *')
+            .first();
     }
 
     /**
      * Get the add OAuth button
      */
     get addOAuthButton(): Locator {
-        return this.page.locator('button:has-text("OAuth"), button:has-text("Add OAuth")').first();
+        return this.page
+            .locator('button:has-text("OAuth"), button:has-text("Add OAuth")')
+            .first();
     }
 
     /**
      * Get the add SAML button
      */
     get addSAMLButton(): Locator {
-        return this.page.locator('button:has-text("SAML"), button:has-text("Add SAML")').first();
+        return this.page
+            .locator('button:has-text("SAML"), button:has-text("Add SAML")')
+            .first();
     }
 
     /**
      * Get the add LDAP button
      */
     get addLDAPButton(): Locator {
-        return this.page.locator('button:has-text("LDAP"), button:has-text("Add LDAP")').first();
+        return this.page
+            .locator('button:has-text("LDAP"), button:has-text("Add LDAP")')
+            .first();
     }
 
     /**
@@ -96,7 +120,11 @@ export class DomainsPage extends BasePage {
         await this.fillField('Name', data.name);
 
         // Domain Name field has specific placeholder - use that to find it
-        const domainField = this.page.locator('input[placeholder*="Domain e.g."], input[placeholder*="www.google.com"]').first();
+        const domainField = this.page
+            .locator(
+                'input[placeholder*="Domain e.g."], input[placeholder*="www.google.com"]',
+            )
+            .first();
         await domainField.fill(data.domain);
 
         if (data.description) {
@@ -217,20 +245,30 @@ export class DomainsPage extends BasePage {
      * Assert domain details are visible
      */
     async expectDomainDetails(name: string): Promise<void> {
-        await expect(this.page.locator(`item-details [name]:has-text("${name}"), item-details:has-text("${name}")`).first()).toBeVisible({ timeout: 10000 });
+        await expect(
+            this.page
+                .locator(
+                    `item-details [name]:has-text("${name}"), item-details:has-text("${name}")`,
+                )
+                .first(),
+        ).toBeVisible({ timeout: 10000 });
     }
 
     /**
      * Assert domain is in the list
      */
     async expectDomainInList(name: string): Promise<void> {
-        await expect(this.domainsList.filter({ hasText: name }).first()).toBeVisible({ timeout: 10000 });
+        await expect(
+            this.domainsList.filter({ hasText: name }).first(),
+        ).toBeVisible({ timeout: 10000 });
     }
 
     /**
      * Assert domain is not in the list
      */
     async expectDomainNotInList(name: string): Promise<void> {
-        await expect(this.domainsList.filter({ hasText: name }).first()).not.toBeVisible({ timeout: 5000 });
+        await expect(
+            this.domainsList.filter({ hasText: name }).first(),
+        ).not.toBeVisible({ timeout: 5000 });
     }
 }

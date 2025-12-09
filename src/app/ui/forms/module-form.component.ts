@@ -196,7 +196,7 @@ import { TranslatePipe } from '../translate.pipe';
                             !(role === 'service' || role === 'websocket')
                         ) {
                             <settings-toggle
-                                class="max-w-1/2 m-2 min-w-[40%] flex-1"
+                                class="m-2 max-w-1/2 min-w-[40%] flex-1"
                                 [name]="'COMMON.TLS' | translate"
                                 formControlName="tls"
                             ></settings-toggle>
@@ -206,14 +206,14 @@ import { TranslatePipe } from '../translate.pipe';
                             !(role === 'service' || role === 'websocket')
                         ) {
                             <settings-toggle
-                                class="max-w-1/2 m-2 min-w-[40%] flex-1"
+                                class="m-2 max-w-1/2 min-w-[40%] flex-1"
                                 [name]="'COMMON.UDP' | translate"
                                 formControlName="udp"
                             ></settings-toggle>
                         }
                         @if (form().controls.makebreak && role !== 'logic') {
                             <settings-toggle
-                                class="max-w-1/2 m-2 min-w-[40%] flex-1"
+                                class="m-2 max-w-1/2 min-w-[40%] flex-1"
                                 [name]="'MODULES.MAKEBREAK' | translate"
                                 formControlName="makebreak"
                             ></settings-toggle>
@@ -222,7 +222,7 @@ import { TranslatePipe } from '../translate.pipe';
                             form().controls.ignore_connected && role !== 'logic'
                         ) {
                             <settings-toggle
-                                class="max-w-1/2 m-2 min-w-[40%] flex-1"
+                                class="m-2 max-w-1/2 min-w-[40%] flex-1"
                                 [name]="'MODULES.IGNORE_CONNECTED' | translate"
                                 formControlName="ignore_connected"
                             ></settings-toggle>

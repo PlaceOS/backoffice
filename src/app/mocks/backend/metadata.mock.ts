@@ -1,9 +1,9 @@
-import { HashMap } from '../../common/types';
-import { API, generateID } from '../common.mock';
 import {
     MockHttpRequestHandler,
     registerMockEndpoint,
 } from '@placeos/ts-client';
+import { HashMap } from '../../common/types';
+import { API } from '../common.mock';
 
 /** In-memory metadata storage */
 const METADATA_STORE: HashMap<HashMap<any>> = {};

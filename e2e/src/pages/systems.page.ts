@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 /**
@@ -22,35 +22,55 @@ export class SystemsPage extends BasePage {
      * Get the modules tab
      */
     get modulesTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Modules"), [role="tab"]:has-text("Modules")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Modules"), [role="tab"]:has-text("Modules")',
+            )
+            .first();
     }
 
     /**
      * Get the zones tab
      */
     get zonesTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Zones"), [role="tab"]:has-text("Zones")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Zones"), [role="tab"]:has-text("Zones")',
+            )
+            .first();
     }
 
     /**
      * Get the triggers tab
      */
     get triggersTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Triggers"), [role="tab"]:has-text("Triggers")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Triggers"), [role="tab"]:has-text("Triggers")',
+            )
+            .first();
     }
 
     /**
      * Get the metadata tab
      */
     get metadataTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Metadata"), [role="tab"]:has-text("Metadata")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Metadata"), [role="tab"]:has-text("Metadata")',
+            )
+            .first();
     }
 
     /**
      * Get the history tab
      */
     get historyTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("History"), [role="tab"]:has-text("History")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("History"), [role="tab"]:has-text("History")',
+            )
+            .first();
     }
 
     /**
@@ -71,7 +91,11 @@ export class SystemsPage extends BasePage {
      * Get the add module button
      */
     get addModuleButton(): Locator {
-        return this.page.locator('button:has-text("Add Module"), button[mattooltip*="module"]').first();
+        return this.page
+            .locator(
+                'button:has-text("Add Module"), button[mattooltip*="module"]',
+            )
+            .first();
     }
 
     /**
@@ -121,19 +145,30 @@ export class SystemsPage extends BasePage {
      * Select a zone from the autocomplete combobox
      */
     async selectZone(zoneName: string): Promise<void> {
-        const zoneInput = this.page.locator('input[placeholder*="zone" i], combobox[placeholder*="zone" i]').first();
+        const zoneInput = this.page
+            .locator(
+                'input[placeholder*="zone" i], combobox[placeholder*="zone" i]',
+            )
+            .first();
         await zoneInput.click();
         await zoneInput.fill(zoneName);
         await this.page.waitForTimeout(500);
         // Click the matching option
-        await this.page.locator(`mat-option:has-text("${zoneName}")`).first().click();
+        await this.page
+            .locator(`mat-option:has-text("${zoneName}")`)
+            .first()
+            .click();
     }
 
     /**
      * Select the first available zone from the dropdown
      */
     async selectFirstZone(): Promise<void> {
-        const zoneInput = this.page.locator('input[placeholder*="zone" i], combobox[placeholder*="zone" i]').first();
+        const zoneInput = this.page
+            .locator(
+                'input[placeholder*="zone" i], combobox[placeholder*="zone" i]',
+            )
+            .first();
         await zoneInput.click();
         await this.page.waitForTimeout(500);
         // Click the first option
@@ -235,20 +270,30 @@ export class SystemsPage extends BasePage {
      * Assert system details are visible (looks in item-details component)
      */
     async expectSystemDetails(name: string): Promise<void> {
-        await expect(this.page.locator(`item-details [name]:has-text("${name}"), item-details:has-text("${name}")`).first()).toBeVisible({ timeout: 10000 });
+        await expect(
+            this.page
+                .locator(
+                    `item-details [name]:has-text("${name}"), item-details:has-text("${name}")`,
+                )
+                .first(),
+        ).toBeVisible({ timeout: 10000 });
     }
 
     /**
      * Assert system is in the list
      */
     async expectSystemInList(name: string): Promise<void> {
-        await expect(this.systemsList.filter({ hasText: name }).first()).toBeVisible({ timeout: 10000 });
+        await expect(
+            this.systemsList.filter({ hasText: name }).first(),
+        ).toBeVisible({ timeout: 10000 });
     }
 
     /**
      * Assert system is not in the list
      */
     async expectSystemNotInList(name: string): Promise<void> {
-        await expect(this.systemsList.filter({ hasText: name }).first()).not.toBeVisible({ timeout: 5000 });
+        await expect(
+            this.systemsList.filter({ hasText: name }).first(),
+        ).not.toBeVisible({ timeout: 5000 });
     }
 }

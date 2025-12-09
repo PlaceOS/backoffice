@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import {
     Component,
+    computed,
     effect,
     ElementRef,
-    SimpleChanges,
-    computed,
     inject,
     input,
     model,
     signal,
+    SimpleChanges,
     viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';

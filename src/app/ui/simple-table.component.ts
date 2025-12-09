@@ -30,7 +30,7 @@ export interface TableColumn {
     template: `
         <div
             role="table"
-            class="grid overflow-visible border border-base-200"
+            class="border-base-200 grid overflow-visible border"
             [style.gridTemplateColumns]="column_template()"
             (click)="onclick.emit(0)"
             cdkDropList
@@ -40,13 +40,13 @@ export interface TableColumn {
         >
             @if (can_reorder()) {
                 <div
-                    class="sticky top-0 z-10 flex min-h-full items-center justify-between border-r border-base-200 bg-base-300 px-2"
+                    class="border-base-200 bg-base-300 sticky top-0 z-10 flex min-h-full items-center justify-between border-r px-2"
                     [style.gridArea]="gridSquare(1, 1)"
                 ></div>
             }
             @if (selectable()) {
                 <div
-                    class="sticky top-0 z-10 flex min-h-full items-center justify-between border-r border-base-200 bg-base-300 px-2"
+                    class="border-base-200 bg-base-300 sticky top-0 z-10 flex min-h-full items-center justify-between border-r px-2"
                     [style.gridArea]="
                         gridSquare(1, 1 + (can_reorder() ? 1 : 0))
                     "
@@ -70,7 +70,7 @@ export interface TableColumn {
                     header
                     matRipple
                     [id]="'column-' + column.key"
-                    class="sticky top-0 z-10 flex min-h-full items-center justify-between border-base-200 bg-base-300 p-4"
+                    class="border-base-200 bg-base-300 sticky top-0 z-10 flex min-h-full items-center justify-between p-4"
                     [style.gridArea]="
                         gridSquare(
                             1,
@@ -116,13 +116,13 @@ export interface TableColumn {
                     >
                         <div
                             *cdkDragPlaceholder
-                            class="h-16 w-full border-2 border-dashed border-base-300 bg-base-200"
+                            class="border-base-300 bg-base-200 h-16 w-full border-2 border-dashed"
                             [style.gridArea]="
                                 i + 2 + '/1/' + (i + 2) + '/' + column_count()
                             "
                         ></div>
                         <div
-                            class="z-0 flex min-h-full items-center justify-center border-r border-base-200 px-2"
+                            class="border-base-200 z-0 flex min-h-full items-center justify-center border-r px-2"
                             [style.gridArea]="gridSquare(2 + i, 1)"
                             [class.border-b]="i !== data_length() - 1"
                             [style.background]="color()[i]"
@@ -165,7 +165,7 @@ export interface TableColumn {
         <ng-template #row_template let-row="row" let-i="index">
             @if (selectable()) {
                 <div
-                    class="z-0 flex min-h-full items-center justify-between border-r border-base-200 px-2"
+                    class="border-base-200 z-0 flex min-h-full items-center justify-between border-r px-2"
                     [style.gridArea]="
                         gridSquare(2 + i, 1 + (can_reorder() ? 1 : 0))
                     "
@@ -182,7 +182,7 @@ export interface TableColumn {
             }
             @for (column of active_columns(); track column; let j = $index) {
                 <div
-                    class="relative z-0 flex min-h-full items-center justify-between border-base-200"
+                    class="border-base-200 relative z-0 flex min-h-full items-center justify-between"
                     [style.gridArea]="
                         gridSquare(
                             2 + i,

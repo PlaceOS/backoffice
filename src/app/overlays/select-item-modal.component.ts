@@ -20,7 +20,7 @@ export interface SelectItemModalData<T = any> {
     selector: 'select-item-modal',
     template: `
         <div
-            class="mx-2 mt-2 flex items-center justify-between rounded-sm bg-base-200 px-4 py-2"
+            class="bg-base-200 mx-2 mt-2 flex items-center justify-between rounded-sm px-4 py-2"
         >
             <h3 class="text-xl font-medium">
                 {{ 'COMMON.ITEM_ADD' | translate: { item: name } }}
@@ -54,7 +54,7 @@ export interface SelectItemModalData<T = any> {
             </main>
         }
         @if (!loading) {
-            <footer class="flex justify-end border-t border-base-200 px-4 py-2">
+            <footer class="border-base-200 flex justify-end border-t px-4 py-2">
                 <button
                     btn
                     matRipple

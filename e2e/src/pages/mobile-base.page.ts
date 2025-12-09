@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 /**
@@ -33,7 +33,9 @@ export abstract class MobileBasePage extends BasePage {
      * Get the close button in sidebar menu
      */
     get sidebarCloseButton(): Locator {
-        return this.page.locator('sidebar-menu button:has(icon:has-text("close"))');
+        return this.page.locator(
+            'sidebar-menu button:has(icon:has-text("close"))',
+        );
     }
 
     /**
@@ -68,7 +70,9 @@ export abstract class MobileBasePage extends BasePage {
      * Get items in the item selection list
      */
     get itemSelectionItems(): Locator {
-        return this.page.locator('item-selection cdk-virtual-scroll-viewport a');
+        return this.page.locator(
+            'item-selection cdk-virtual-scroll-viewport a',
+        );
     }
 
     /**
@@ -77,7 +81,9 @@ export abstract class MobileBasePage extends BasePage {
     async openHamburgerMenu(): Promise<void> {
         await this.hamburgerMenuButton.click();
         // Wait for sidebar to be visible
-        await this.page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', { timeout: 5000 });
+        await this.page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', {
+            timeout: 5000,
+        });
     }
 
     /**
@@ -93,7 +99,9 @@ export abstract class MobileBasePage extends BasePage {
      */
     async navigateViaMenu(linkText: string): Promise<void> {
         await this.openHamburgerMenu();
-        await this.page.locator(`sidebar-menu a[btn]:has-text("${linkText}")`).click();
+        await this.page
+            .locator(`sidebar-menu a[btn]:has-text("${linkText}")`)
+            .click();
         await this.waitForLoad();
     }
 
@@ -102,7 +110,9 @@ export abstract class MobileBasePage extends BasePage {
      */
     async openItemSelection(): Promise<void> {
         await this.itemSelectionTrigger.click();
-        await this.page.waitForSelector('item-selection input', { timeout: 5000 });
+        await this.page.waitForSelector('item-selection input', {
+            timeout: 5000,
+        });
     }
 
     /**
@@ -129,10 +139,18 @@ export abstract class MobileBasePage extends BasePage {
         }
 
         // Wait for items to load
-        await this.page.waitForSelector('item-selection cdk-virtual-scroll-viewport a', { timeout: 10000 });
+        await this.page.waitForSelector(
+            'item-selection cdk-virtual-scroll-viewport a',
+            { timeout: 10000 },
+        );
 
         // Click on the item
-        await this.page.locator(`item-selection cdk-virtual-scroll-viewport a:has-text("${name}")`).first().click();
+        await this.page
+            .locator(
+                `item-selection cdk-virtual-scroll-viewport a:has-text("${name}")`,
+            )
+            .first()
+            .click();
         await this.page.waitForTimeout(500);
     }
 
@@ -147,7 +165,10 @@ export abstract class MobileBasePage extends BasePage {
         }
 
         // Wait for items to load
-        await this.page.waitForSelector('item-selection cdk-virtual-scroll-viewport a', { timeout: 10000 });
+        await this.page.waitForSelector(
+            'item-selection cdk-virtual-scroll-viewport a',
+            { timeout: 10000 },
+        );
 
         // Click on the first item
         await this.itemSelectionItems.first().click();
@@ -167,13 +188,20 @@ export abstract class MobileBasePage extends BasePage {
      */
     override async waitForLoad(): Promise<void> {
         // Wait for loader to disappear
-        await this.page.waitForSelector('[loader]', { state: 'detached', timeout: 30000 }).catch(() => {});
+        await this.page
+            .waitForSelector('[loader]', { state: 'detached', timeout: 30000 })
+            .catch(() => {});
 
         // Wait for router outlet
-        await this.page.waitForSelector('router-outlet', { state: 'attached', timeout: 30000 });
+        await this.page.waitForSelector('router-outlet', {
+            state: 'attached',
+            timeout: 30000,
+        });
 
         // On mobile, wait for item-selection component
-        await this.page.waitForSelector('item-selection', { timeout: 30000 }).catch(() => {});
+        await this.page
+            .waitForSelector('item-selection', { timeout: 30000 })
+            .catch(() => {});
 
         // Wait for any progress bars to complete
         await this.page.waitForTimeout(500);
@@ -190,7 +218,9 @@ export abstract class MobileBasePage extends BasePage {
      * Verify item selection has items
      */
     async expectItemSelectionHasItems(): Promise<void> {
-        await expect(this.itemSelectionItems.first()).toBeVisible({ timeout: 10000 });
+        await expect(this.itemSelectionItems.first()).toBeVisible({
+            timeout: 10000,
+        });
     }
 
     /**

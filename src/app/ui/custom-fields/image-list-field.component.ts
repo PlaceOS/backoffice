@@ -59,7 +59,7 @@ export interface UploadDetails {
         >
             <div
                 image
-                class="hover:bg-base-content/10 :bg-base-100/10 relative flex h-32 w-36 shrink-0 cursor-pointer flex-col items-center justify-center rounded-sm border-2 border-dashed border-base-200"
+                class="hover:bg-base-content/10 :bg-base-100/10 border-base-200 relative flex h-32 w-36 shrink-0 cursor-pointer flex-col items-center justify-center rounded-sm border-2 border-dashed"
                 [style.transform]="'translate(-' + offset + '00%)'"
             >
                 <icon class="text-4xl opacity-60">add</icon>
@@ -75,22 +75,22 @@ export interface UploadDetails {
             @for (url of list(); track url; let i = $index) {
                 <div
                     image
-                    class="relative h-32 w-36 shrink-0 overflow-hidden rounded-sm bg-base-200 bg-cover bg-center"
+                    class="bg-base-200 relative h-32 w-36 shrink-0 overflow-hidden rounded-sm bg-cover bg-center"
                     [style.transform]="'translate(-' + offset + '00%)'"
                 >
                     <img
                         auth
                         [source]="url"
-                        class="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 object-contain"
+                        class="pointer-events-none absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 object-contain"
                     />
-                    <div overlay class="absolute inset-0 z-20 text-base-100">
+                    <div overlay class="text-base-100 absolute inset-0 z-20">
                         <div
                             bg
                             class="absolute inset-0 bg-black opacity-0"
                         ></div>
                         <div
                             actions
-                            class="absolute left-0 right-0 top-0 flex items-center justify-center space-x-2 opacity-0"
+                            class="absolute top-0 right-0 left-0 flex items-center justify-center space-x-2 opacity-0"
                         >
                             <button icon (click)="copyLink(url)">
                                 <icon>link</icon>
@@ -108,7 +108,7 @@ export interface UploadDetails {
             @for (item of uploads | async; track item.id; let i = $index) {
                 <div
                     image
-                    class="border-base-content/10 /5 flex h-32 w-36 shrink-0 items-center justify-center rounded-sm border bg-base-200 bg-cover bg-center"
+                    class="border-base-content/10 /5 bg-base-200 flex h-32 w-36 shrink-0 items-center justify-center rounded-sm border bg-cover bg-center"
                     [style.transform]="'translate(-' + offset + '00%)'"
                     [matTooltip]="item.error"
                     (click)="retryUpload(item)"
@@ -121,12 +121,12 @@ export interface UploadDetails {
                         ></mat-progress-spinner>
                     }
                     @if (item.error) {
-                        <icon class="text-6xl text-error">warning</icon>
+                        <icon class="text-error text-6xl">warning</icon>
                     }
                     @if (item.error) {
                         <div
                             overlay
-                            class="absolute inset-0 flex items-center justify-center text-base-100 hover:bg-base-content hover:bg-opacity-50"
+                            class="text-base-100 hover:bg-base-content hover:bg-opacity-50 absolute inset-0 flex items-center justify-center"
                         >
                             <icon class="text-3xl opacity-0">refresh</icon>
                         </div>
@@ -138,7 +138,7 @@ export interface UploadDetails {
                     icon
                     matRipple
                     [disabled]="offset() === 0"
-                    class="absolute left-0 top-1/2 -translate-y-1/2 transform bg-base-100"
+                    class="bg-base-100 absolute top-1/2 left-0 -translate-y-1/2 transform"
                     (click)="decrement()"
                 >
                     <icon>chevron_left</icon>
@@ -147,7 +147,7 @@ export interface UploadDetails {
                     icon
                     matRipple
                     [disabled]="offset() >= length() - view_space()"
-                    class="absolute right-0 top-1/2 -translate-y-1/2 transform bg-base-100"
+                    class="bg-base-100 absolute top-1/2 right-0 -translate-y-1/2 transform"
                     (click)="increment()"
                 >
                     <icon>chevron_right</icon>

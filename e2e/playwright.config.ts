@@ -52,10 +52,7 @@ export default defineConfig({
     retries: useMock ? 1 : 2,
 
     /* Reporter configuration */
-    reporter: [
-        ['html', { open: 'never' }],
-        ['list'],
-    ],
+    reporter: [['html', { open: 'never' }], ['list']],
 
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {

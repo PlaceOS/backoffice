@@ -25,7 +25,7 @@ import { IconComponent } from './icon.component';
                 icon
                 matRipple
                 type="button"
-                class="z-10 h-12 w-12 rounded-l rounded-r-none border border-secondary text-secondary"
+                class="border-secondary text-secondary z-10 h-12 w-12 rounded-l rounded-r-none border"
                 [disabled]="!value || value === min()"
                 (click)="remove()"
             >
@@ -33,7 +33,7 @@ import { IconComponent } from './icon.component';
             </button>
             <div
                 value
-                class="relative z-0 flex h-12 min-w-16 flex-1 items-center justify-center rounded-none border-y border-base-300 p-1 focus-within:z-20"
+                class="border-base-300 relative z-0 flex h-12 min-w-16 flex-1 items-center justify-center rounded-none border-y p-1 focus-within:z-20"
             >
                 @if (!focused) {
                     <span>
@@ -54,7 +54,7 @@ import { IconComponent } from './icon.component';
                 icon
                 matRipple
                 type="button"
-                class="z-10 h-12 w-12 rounded-l-none rounded-r border border-secondary text-secondary"
+                class="border-secondary text-secondary z-10 h-12 w-12 rounded-l-none rounded-r border"
                 [disabled]="value === max()"
                 (click)="add()"
             >

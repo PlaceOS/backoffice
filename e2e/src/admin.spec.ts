@@ -1,6 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { AdminPage } from './pages';
-import { buildAppUrl, isMockMode } from './config/test-env';
 
 /**
  * Admin E2E Tests
@@ -23,7 +22,9 @@ test.describe('Admin', () => {
      * US-ADM-001: View Cluster Status
      */
     test.describe('US-ADM-001: View Cluster Status', () => {
-        test('AC-ADM-001-1: Display Cluster Nodes - should show cluster information', async ({ page }) => {
+        test('AC-ADM-001-1: Display Cluster Nodes - should show cluster information', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Navigate to clusters section
@@ -38,7 +39,9 @@ test.describe('Admin', () => {
      * US-ADM-003: View System Information
      */
     test.describe('US-ADM-003: View System Information', () => {
-        test('AC-ADM-003-1: Display Version Info - should show system version', async ({ page }) => {
+        test('AC-ADM-003-1: Display Version Info - should show system version', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Navigate to about section
@@ -53,7 +56,9 @@ test.describe('Admin', () => {
      * US-ADM-008: Manage Backoffice Extensions
      */
     test.describe('US-ADM-008: Manage Backoffice Extensions', () => {
-        test('AC-ADM-008-1: View Extensions - should show extensions section', async ({ page }) => {
+        test('AC-ADM-008-1: View Extensions - should show extensions section', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Navigate to extensions section
@@ -63,7 +68,9 @@ test.describe('Admin', () => {
             await expect(adminPage.mainContent).toBeVisible();
         });
 
-        test('AC-ADM-008-2: Create Extension - should open extension create dialog', async ({ page }) => {
+        test('AC-ADM-008-2: Create Extension - should open extension create dialog', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Navigate to extensions section
@@ -83,7 +90,9 @@ test.describe('Admin', () => {
      * US-ADM-009: Manage Tenants
      */
     test.describe('US-ADM-009: Manage Tenants', () => {
-        test('AC-ADM-009-1: View Tenants - should show tenants section', async ({ page }) => {
+        test('AC-ADM-009-1: View Tenants - should show tenants section', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Navigate to staff API section
@@ -98,7 +107,9 @@ test.describe('Admin', () => {
      * US-ADM-011: Manage API Keys
      */
     test.describe('US-ADM-011: Manage API Keys', () => {
-        test('AC-ADM-011-1: View API Keys - should show API keys section', async ({ page }) => {
+        test('AC-ADM-011-1: View API Keys - should show API keys section', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Navigate to API keys section
@@ -108,14 +119,20 @@ test.describe('Admin', () => {
             await expect(adminPage.mainContent).toBeVisible();
         });
 
-        test('AC-ADM-011-2: Generate New Key - should open key generation dialog', async ({ page }) => {
+        test('AC-ADM-011-2: Generate New Key - should open key generation dialog', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Navigate to API keys section
             await adminPage.viewApiKeys();
 
             // Click add/generate button
-            const addButton = page.locator('button:has-text("Add"), button:has-text("Generate"), button:has(mat-icon:text("add"))').first();
+            const addButton = page
+                .locator(
+                    'button:has-text("Add"), button:has-text("Generate"), button:has(mat-icon:text("add"))',
+                )
+                .first();
             await addButton.click().catch(() => {
                 // Button might not be visible
             });
@@ -129,7 +146,9 @@ test.describe('Admin', () => {
      * US-ADM-012: Configure Upload Storage
      */
     test.describe('US-ADM-012: Configure Upload Storage', () => {
-        test('AC-ADM-012-1: View Storage Providers - should show storage section', async ({ page }) => {
+        test('AC-ADM-012-1: View Storage Providers - should show storage section', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Navigate to upload storage section
@@ -145,7 +164,9 @@ test.describe('Admin', () => {
      * NOTE: This test is skipped because the mailing-list tab is disabled in the application
      */
     test.describe('US-ADM-014: Manage Email Templates', () => {
-        test.skip('AC-ADM-014-1: View Templates - should show email templates section', async ({ page }) => {
+        test.skip('AC-ADM-014-1: View Templates - should show email templates section', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Navigate to email templates section
@@ -160,7 +181,9 @@ test.describe('Admin', () => {
      * US-ADM-015: Monitor Build Jobs
      */
     test.describe('US-ADM-015: Monitor Build Jobs', () => {
-        test('AC-ADM-015-1: View Build Jobs - should show build jobs section', async ({ page }) => {
+        test('AC-ADM-015-1: View Build Jobs - should show build jobs section', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Navigate to build jobs section
@@ -175,7 +198,9 @@ test.describe('Admin', () => {
      * Admin Navigation Tests
      */
     test.describe('Admin Navigation', () => {
-        test('should be able to navigate between admin sections', async ({ page }) => {
+        test('should be able to navigate between admin sections', async ({
+            page,
+        }) => {
             await adminPage.goto();
 
             // Test navigating to different sections
@@ -186,7 +211,9 @@ test.describe('Admin', () => {
             ];
 
             for (const section of sections) {
-                const isVisible = await section.link.isVisible().catch(() => false);
+                const isVisible = await section.link
+                    .isVisible()
+                    .catch(() => false);
                 if (isVisible) {
                     await section.link.click();
                     await page.waitForTimeout(500);

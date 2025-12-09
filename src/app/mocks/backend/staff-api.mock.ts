@@ -1,9 +1,14 @@
-import { HashMap } from '../../common/types';
-import { DOMAIN, generateID, loadFromSession, saveToSession } from '../common.mock';
 import {
     MockHttpRequestHandler,
     registerMockEndpoint,
 } from '@placeos/ts-client';
+import { HashMap } from '../../common/types';
+import {
+    DOMAIN,
+    generateID,
+    loadFromSession,
+    saveToSession,
+} from '../common.mock';
 
 const STAFF_API = '/api/staff/v1';
 
@@ -94,7 +99,11 @@ registerMockEndpoint({
     callback: (event) => {
         const index = TENANTS.findIndex((t) => t.id === event.route_params.id);
         if (index >= 0) {
-            TENANTS[index] = { ...TENANTS[index], ...event.body, updated_at: Date.now() / 1000 };
+            TENANTS[index] = {
+                ...TENANTS[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('tenants', TENANTS);
             return TENANTS[index];
         }
@@ -109,7 +118,11 @@ registerMockEndpoint({
     callback: (event) => {
         const index = TENANTS.findIndex((t) => t.id === event.route_params.id);
         if (index >= 0) {
-            TENANTS[index] = { ...TENANTS[index], ...event.body, updated_at: Date.now() / 1000 };
+            TENANTS[index] = {
+                ...TENANTS[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('tenants', TENANTS);
             return TENANTS[index];
         }

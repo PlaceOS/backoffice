@@ -51,10 +51,10 @@ import { IconComponent } from '../icon.component';
                 btn
                 icon
                 matSuffix
-                class="relative -right-1 top-1"
+                class="relative top-1 -right-1"
                 (click)="showSelect()"
             >
-                <icon class="text-2xl text-base-content text-opacity-50">
+                <icon class="text-base-content text-opacity-50 text-2xl">
                     arrow_drop_down
                 </icon>
             </button>

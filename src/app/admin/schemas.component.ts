@@ -92,7 +92,7 @@ export interface JsonSchema {
                     ></settings-form-field>
                 } @else {
                     <div
-                        class="absolute inset-x-2 bottom-5 top-2 flex items-center justify-center rounded-xl bg-base-200"
+                        class="bg-base-200 absolute inset-x-2 top-2 bottom-5 flex items-center justify-center rounded-xl"
                     >
                         <p class="p-8 opacity-30">
                             {{ 'ADMIN.SCHEMA_SELECT_MSG' | translate }}

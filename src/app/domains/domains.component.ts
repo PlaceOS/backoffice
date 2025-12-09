@@ -8,8 +8,8 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { IconComponent } from '../ui/icon.component';
-import { ItemDetailsComponent } from '../ui/item-details.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
+import { ItemDetailsComponent } from '../ui/item-details.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
@@ -21,7 +21,7 @@ import { DomainStateService } from './domain-state.service';
     selector: 'new-domains-view',
     template: `
         <div
-            class="absolute inset-0 flex items-center divide-y divide-base-200 bg-base-100 sm:divide-x sm:divide-y-0"
+            class="divide-base-200 bg-base-100 absolute inset-0 flex items-center divide-y sm:divide-x sm:divide-y-0"
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
             <item-sidebar
@@ -70,7 +70,7 @@ import { DomainStateService } from './domain-state.service';
                     }
                 </div>
                 <button
-                    class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow-sm sm:-left-9"
+                    class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm sm:-left-9"
                     [matTooltip]="'DOMAINS.NEW' | translate"
                     matTooltipPosition="right"
                     matRipple

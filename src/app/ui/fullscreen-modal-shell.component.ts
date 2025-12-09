@@ -9,13 +9,13 @@ import { TranslatePipe } from './translate.pipe';
     selector: 'fullscreen-modal-shell,[fs-modal-shell]',
     template: `
         <div
-            class="flex h-screen w-screen flex-col items-center overflow-auto bg-base-200"
+            class="bg-base-200 flex h-screen w-screen flex-col items-center overflow-auto"
         >
             <div
-                class="fixed top-0 mx-auto h-screen w-160 max-w-full border-x border-base-300 bg-base-100"
+                class="border-base-300 bg-base-100 fixed top-0 mx-auto h-screen w-160 max-w-full border-x"
             ></div>
             <header
-                class="sticky top-0 z-10 mx-auto my-2 flex w-156 max-w-full items-center justify-between rounded-sm border border-base-100 bg-base-200 px-4 py-2"
+                class="border-base-100 bg-base-200 sticky top-0 z-10 mx-auto my-2 flex w-156 max-w-full items-center justify-between rounded-sm border px-4 py-2"
             >
                 <h2 class="text-xl font-medium">
                     {{ heading() }}
@@ -34,7 +34,7 @@ import { TranslatePipe } from './translate.pipe';
             </main>
             @if (!loading() && !hide_confirm()) {
                 <footer
-                    class="fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-156 max-w-full -translate-x-1/2 items-center justify-end rounded-sm border border-base-100 bg-base-200 px-4 py-2"
+                    class="border-base-100 bg-base-200 fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-156 max-w-full -translate-x-1/2 items-center justify-end rounded-sm border px-4 py-2"
                 >
                     <button
                         btn

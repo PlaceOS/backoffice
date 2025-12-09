@@ -54,7 +54,7 @@ type SettingsArray = [
     selector: 'a-settings-form',
     template: `
         <header
-            class="mb-2 flex h-16 w-full items-center justify-between rounded-sm bg-base-200 px-2 text-lg font-medium"
+            class="bg-base-200 mb-2 flex h-16 w-full items-center justify-between rounded-sm px-2 text-lg font-medium"
         >
             <h3 class="px-2">{{ 'COMMON.SETTINGS' | translate }}</h3>
             @if (active_edited()) {
@@ -62,7 +62,7 @@ type SettingsArray = [
                     <button
                         icon
                         matRipple
-                        class="rounded-sm border border-secondary bg-base-100 text-secondary"
+                        class="border-secondary bg-base-100 text-secondary rounded-sm border"
                         [disabled]="edited_count() <= 0"
                         [matTooltip]="'COMMON.CLEAR' | translate"
                         (click)="clearChanges()"
@@ -76,7 +76,7 @@ type SettingsArray = [
                     <button
                         icon
                         matRipple
-                        class="rounded-sm bg-secondary text-secondary-content"
+                        class="bg-secondary text-secondary-content rounded-sm"
                         [disabled]="
                             !active_edited() ||
                             (has_errors() && !saving()[shown_option().id])
@@ -100,7 +100,7 @@ type SettingsArray = [
                     (selectedIndexChange)="
                         encryption_level.set(+levels()[$event].id)
                     "
-                    class="border-x border-t border-base-300"
+                    class="border-base-300 border-x border-t"
                 >
                     @for (option of levels(); track $index) {
                         <mat-tab
@@ -149,7 +149,7 @@ type SettingsArray = [
                             settings()[i - 1]?.modified_by_id
                         ) {
                             <div
-                                class="border-gray-300 mb-4 flex items-center justify-between space-x-2 border-x border-b border-base-300 p-1"
+                                class="border-base-300 mb-4 flex items-center justify-between space-x-2 border-x border-b border-gray-300 p-1"
                             >
                                 <div class="pl-2 text-xs">
                                     {{
@@ -207,7 +207,9 @@ type SettingsArray = [
                 padding: 0.5em;
                 border-radius: 0 0 4px 4px;
                 font-family: var(--mono-font);
-                box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+                box-shadow:
+                    0 1px 3px 0 rgb(0 0 0 / 0.1),
+                    0 1px 2px -1px rgb(0 0 0 / 0.1);
             }
 
             .actions {

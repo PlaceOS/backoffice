@@ -34,10 +34,10 @@ import { EdgeModalComponent } from './edge-modal.component';
                 (click)="copyKey(item.x_api_key)"
                 matRipple
                 [matTooltip]="'Copy API Key for ' + item.name"
-                class="absolute right-4 top-4 flex max-w-[calc(100%-11rem)] cursor-pointer items-center overflow-hidden rounded-sm border border-base-200 bg-base-100 shadow-sm"
+                class="border-base-200 bg-base-100 absolute top-4 right-4 flex max-w-[calc(100%-11rem)] cursor-pointer items-center overflow-hidden rounded-sm border shadow-sm"
             >
                 <div
-                    class="flex h-full w-1/2 flex-1 items-center border-r border-base-200 p-2"
+                    class="border-base-200 flex h-full w-1/2 flex-1 items-center border-r p-2"
                 >
                     <code class="flex-1 truncate">{{ item.x_api_key }}</code>
                 </div>
@@ -128,7 +128,7 @@ import { EdgeModalComponent } from './edge-modal.component';
             </div>
         </ng-template>
         <ng-template #description_template let-data="data">
-            <div class="w-full select-text overflow-hidden px-4 py-2 text-xs">
+            <div class="w-full overflow-hidden px-4 py-2 text-xs select-text">
                 {{ data }}
                 @if (!data) {
                     <span class="opacity-30">

@@ -99,7 +99,7 @@ export interface UploadInfo {
     template: `
         <div class="flex h-full w-full flex-col">
             <div
-                class="mb-2 mt-4 flex items-center justify-between space-x-2 px-4"
+                class="mt-4 mb-2 flex items-center justify-between space-x-2 px-4"
             >
                 <div class="text-2xl">
                     {{ 'ADMIN.UPLOADS_LIB_HEADER' | translate }}
@@ -165,7 +165,7 @@ export interface UploadInfo {
                     >
                         <div
                             header
-                            class="grid min-w-full grid-cols-5 divide-x divide-base-100 border border-base-300 bg-base-200"
+                            class="divide-base-100 border-base-300 bg-base-200 grid min-w-full grid-cols-5 divide-x border"
                             [style.grid-template-columns]="
                                 'auto 10rem 7rem 8rem 11.5rem'
                             "
@@ -240,7 +240,7 @@ export interface UploadInfo {
                         >
                             <div
                                 *cdkVirtualFor="let upload of sorted_uploads()"
-                                class="grid h-12 min-w-full grid-cols-5 divide-x divide-base-300 overflow-hidden border-x border-b border-base-300"
+                                class="divide-base-300 border-base-300 grid h-12 min-w-full grid-cols-5 divide-x overflow-hidden border-x border-b"
                                 [style.grid-template-columns]="
                                     'auto 10rem 7rem 8rem 11.5rem'
                                 "
@@ -326,7 +326,7 @@ export interface UploadInfo {
                     </div>
                 } @else {
                     <div
-                        class="flex flex-col items-center justify-center space-y-4 rounded-xl bg-base-200 p-16"
+                        class="bg-base-200 flex flex-col items-center justify-center space-y-4 rounded-xl p-16"
                     >
                         <icon class="text-8xl opacity-30">file_upload</icon>
                         <p class="opacity-30">

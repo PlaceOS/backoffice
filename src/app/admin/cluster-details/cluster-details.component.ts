@@ -30,10 +30,10 @@ import { AdminClusterNodeComponent } from './cluster-node.component';
                 <div class="px-2">
                     @for (cluster of cluster_list(); track cluster.id) {
                         <div
-                            class="m-2 space-y-2 rounded-lg border border-base-200 bg-base-100 p-2 shadow-sm"
+                            class="border-base-200 bg-base-100 m-2 space-y-2 rounded-lg border p-2 shadow-sm"
                         >
                             <h3
-                                class="mono mb-2 rounded-sm bg-base-200 p-2 text-lg font-medium uppercase"
+                                class="mono bg-base-200 mb-2 rounded-sm p-2 text-lg font-medium uppercase"
                             >
                                 {{ cluster.hostname || '&lt;BLANK&gt;' }}
                             </h3>

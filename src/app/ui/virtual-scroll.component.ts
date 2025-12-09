@@ -83,7 +83,9 @@ export class VirtualScrollComponent implements AfterViewInit, OnDestroy {
 
     public ngAfterViewInit() {
         this.updateContainer();
-        this._resize_observer = new ResizeObserver(() => this.updateContainer());
+        this._resize_observer = new ResizeObserver(() =>
+            this.updateContainer(),
+        );
         this._resize_observer.observe(this._el.nativeElement);
     }
 

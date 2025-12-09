@@ -83,7 +83,7 @@ import { SanitizePipe } from '../pipes/sanitise.pipe';
                                     search$.next(option.name || '' + option.id);
                                     setValue(option)
                                 "
-                                class="w-full rounded-sm px-4 py-2 text-left hover:bg-base-200"
+                                class="hover:bg-base-200 w-full rounded-sm px-4 py-2 text-left"
                             >
                                 <div class="leading-tight">
                                     <ng-container

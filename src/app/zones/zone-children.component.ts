@@ -72,7 +72,7 @@ import { ZonesStateService } from './zones-state.service';
             </ng-template>
             <ng-template #description_template let-data="data">
                 <div
-                    class="w-full select-text overflow-hidden px-4 py-2 text-xs"
+                    class="w-full overflow-hidden px-4 py-2 text-xs select-text"
                 >
                     {{ data }}
                     @if (!data) {

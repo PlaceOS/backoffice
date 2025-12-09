@@ -109,7 +109,7 @@ import { DomainStateService } from './domain-state.service';
                 </button>
                 <div class="p-2 font-mono text-xs">
                     @if (!show_secret[row.id]) {
-                        <span class="rounded-sm bg-base-200 p-2">{{
+                        <span class="bg-base-200 rounded-sm p-2">{{
                             'DOMAINS.SECRET_HIDDEN' | translate
                         }}</span>
                     }

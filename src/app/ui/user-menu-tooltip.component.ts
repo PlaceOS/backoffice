@@ -18,7 +18,7 @@ import { TranslatePipe } from './translate.pipe';
     selector: 'user-menu-tooltip',
     template: `
         <div
-            class="m-2 divide-y divide-base-200 rounded-sm border border-base-300 bg-base-100 shadow-sm"
+            class="divide-base-200 border-base-300 bg-base-100 m-2 divide-y rounded-sm border shadow-sm"
         >
             <a
                 matRipple
@@ -64,7 +64,7 @@ import { TranslatePipe } from './translate.pipe';
                         {{ 'COMMON.LANGUAGE' | translate }}
                     </div>
                     <div
-                        class="max-w-24 truncate rounded-sm bg-base-200 px-2 py-1 text-sm"
+                        class="bg-base-200 max-w-24 truncate rounded-sm px-2 py-1 text-sm"
                     >
                         {{ active_lang.name }}
                     </div>

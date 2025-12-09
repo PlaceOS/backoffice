@@ -14,10 +14,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
     selector: 'metadata-history-modal',
     template: `
         <div
-            class="flex h-screen w-screen flex-col overflow-hidden bg-base-100"
+            class="bg-base-100 flex h-screen w-screen flex-col overflow-hidden"
         >
             <div
-                class="m-4 flex items-center justify-between rounded-sm bg-base-200 px-4 py-2"
+                class="bg-base-200 m-4 flex items-center justify-between rounded-sm px-4 py-2"
             >
                 <h3 class="text-xl font-medium">
                     {{ 'COMMON.METADATA_HISTORY' | translate }}
@@ -29,10 +29,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <main class="flex flex-1 flex-col pb-4">
                 <div class="mb-2 flex items-center space-x-2 px-4">
                     <div
-                        class="relative h-14 min-w-48 rounded-sm border border-base-300 px-4 py-2"
+                        class="border-base-300 relative h-14 min-w-48 rounded-sm border px-4 py-2"
                     >
                         <div
-                            class="absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 px-2 py-1 text-xs"
+                            class="bg-base-100 absolute top-0 left-4 -translate-y-1/2 rounded-sm px-2 py-1 text-xs"
                         >
                             {{ 'COMMON.METADATA_OWNER' | translate }}
                         </div>
@@ -46,10 +46,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         }
                     </div>
                     <div
-                        class="relative flex h-14 min-w-48 items-center rounded-sm border border-base-300 px-4 py-2"
+                        class="border-base-300 relative flex h-14 min-w-48 items-center rounded-sm border px-4 py-2"
                     >
                         <div
-                            class="absolute left-4 top-0 -translate-y-1/2 rounded-sm bg-base-100 px-2 py-1 text-xs"
+                            class="bg-base-100 absolute top-0 left-4 -translate-y-1/2 rounded-sm px-2 py-1 text-xs"
                         >
                             {{ 'COMMON.METADATA_KEY' | translate }}
                         </div>
@@ -140,7 +140,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     }
                     @if (!(first_details && second_details)) {
                         <div
-                            class="flex h-full w-full items-center justify-center rounded-lg bg-base-200 opacity-40"
+                            class="bg-base-200 flex h-full w-full items-center justify-center rounded-lg opacity-40"
                         >
                             Select 2 versions of the metadata to get started
                         </div>

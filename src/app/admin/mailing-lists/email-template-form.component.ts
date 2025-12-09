@@ -30,7 +30,7 @@ export function extractTextFromHTML(html_string: string) {
 @Component({
     selector: 'email-template-form',
     template: `
-        <div class="absolute inset-0 overflow-auto bg-base-100 p-4">
+        <div class="bg-base-100 absolute inset-0 overflow-auto p-4">
             <form
                 class="mx-auto min-h-full w-3xl max-w-full pt-4"
                 [formGroup]="form"
@@ -144,7 +144,7 @@ export function extractTextFromHTML(html_string: string) {
                     class="block min-h-[calc(100vh-28rem)]"
                 ></rich-text-input>
                 <div
-                    class="sticky bottom-0 flex items-center justify-end space-x-2 bg-base-100"
+                    class="bg-base-100 sticky bottom-0 flex items-center justify-end space-x-2"
                 >
                     <a
                         btn
@@ -167,7 +167,7 @@ export function extractTextFromHTML(html_string: string) {
             </form>
         </div>
         <ng-template #load_state>
-            <div class="absolute inset-0 bg-base-100">
+            <div class="bg-base-100 absolute inset-0">
                 <div
                     class="flex h-full w-full flex-col items-center justify-center space-y-2"
                 >

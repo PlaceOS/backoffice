@@ -25,7 +25,7 @@ function backfill() {
         </div>
         <div class="flex w-full space-x-4 p-4">
             <div
-                class="flex w-1/3 flex-1 flex-col space-y-2 rounded-sm border border-base-200 p-2"
+                class="border-base-200 flex w-1/3 flex-1 flex-col space-y-2 rounded-sm border p-2"
             >
                 <p class="mx-auto max-w-64 p-2 text-center">
                     {{ 'ADMIN.DATABASE_REINDEX_MSG' | translate }}
@@ -47,7 +47,7 @@ function backfill() {
                 </button>
             </div>
             <div
-                class="flex w-1/3 flex-1 flex-col space-y-2 rounded-sm border border-base-200 p-2"
+                class="border-base-200 flex w-1/3 flex-1 flex-col space-y-2 rounded-sm border p-2"
             >
                 <p class="mx-auto max-w-64 p-2 text-center">
                     {{ 'ADMIN.DATABASE_BACKFILL_MSG' | translate }}

@@ -17,7 +17,7 @@ export interface ItemTab {
 @Component({
     selector: 'item-tablist',
     template: `
-        <div class="h-12 w-full border-b border-base-300">
+        <div class="border-base-300 h-12 w-full border-b">
             <div class="h-14 w-full overflow-hidden">
                 <nav
                     mat-tab-nav-bar
@@ -41,7 +41,7 @@ export interface ItemTab {
                             <div class="name">{{ link.name }}&nbsp;</div>
                             @if (link.count || link.count === 0) {
                                 <div
-                                    class="mono flex h-5 min-w-5 items-center justify-center rounded-full bg-base-200 px-1.5 text-[0.625rem]"
+                                    class="mono bg-base-200 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[0.625rem]"
                                 >
                                     {{ link.count || '0' }}
                                 </div>

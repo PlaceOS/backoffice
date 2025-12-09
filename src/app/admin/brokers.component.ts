@@ -125,16 +125,16 @@ import { TranslatePipe } from '../ui/translate.pipe';
         <ng-template #tls_template let-data="data">
             @if (data) {
                 <div
-                    class="mx-auto flex h-8 w-8 items-center justify-center rounded-sm bg-success"
+                    class="bg-success mx-auto flex h-8 w-8 items-center justify-center rounded-sm"
                 >
-                    <icon class="text-xl text-success-content">lock</icon>
+                    <icon class="text-success-content text-xl">lock</icon>
                 </div>
             }
             @if (!data) {
                 <div
-                    class="mx-auto flex h-8 w-8 items-center justify-center rounded-sm bg-error"
+                    class="bg-error mx-auto flex h-8 w-8 items-center justify-center rounded-sm"
                 >
-                    <icon class="text-xl text-error-content"> lock_open </icon>
+                    <icon class="text-error-content text-xl"> lock_open </icon>
                 </div>
             }
         </ng-template>

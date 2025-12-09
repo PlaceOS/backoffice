@@ -32,7 +32,8 @@ export function getTestEnvConfig(): TestEnvConfig {
         base_url: process.env['BASE_URL'] || 'http://localhost:4200',
         api_domain: process.env['API_DOMAIN'] || 'localhost',
         api_port: process.env['API_PORT'] || '4200',
-        api_protocol: (process.env['API_PROTOCOL'] as 'http' | 'https') || 'http',
+        api_protocol:
+            (process.env['API_PROTOCOL'] as 'http' | 'https') || 'http',
         test_user_email: process.env['TEST_USER_EMAIL'] || 'admin@place.tech',
         test_user_password: process.env['TEST_USER_PASSWORD'] || '',
     };
@@ -50,7 +51,9 @@ export function buildAppUrl(path: string = '/'): string {
     // e.g., http://localhost:4200/?mock=true#/systems
     if (path.startsWith('/#')) {
         const hash_part = path.substring(1); // Remove leading /
-        return mock_param ? `${base}/?${mock_param}${hash_part}` : `${base}${path}`;
+        return mock_param
+            ? `${base}/?${mock_param}${hash_part}`
+            : `${base}${path}`;
     }
 
     // Handle path with existing query params

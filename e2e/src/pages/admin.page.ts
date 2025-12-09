@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 /**
@@ -130,7 +130,11 @@ export class AdminPage extends BasePage {
      */
     get mainContent(): Locator {
         // Look for admin-specific content components
-        return this.page.locator('app-engine router-outlet + *, app-engine .flex-1.overflow-auto > *').first();
+        return this.page
+            .locator(
+                'app-engine router-outlet + *, app-engine .flex-1.overflow-auto > *',
+            )
+            .first();
     }
 
     /**
@@ -138,7 +142,9 @@ export class AdminPage extends BasePage {
      */
     async waitForAdminContent(): Promise<void> {
         // Wait for the admin navigation to be visible (the sidebar with links)
-        await this.page.waitForSelector('a[href*="/admin/about"]', { timeout: 10000 });
+        await this.page.waitForSelector('a[href*="/admin/about"]', {
+            timeout: 10000,
+        });
     }
 
     // Cluster Management
@@ -155,7 +161,9 @@ export class AdminPage extends BasePage {
      * Get cluster nodes list
      */
     get clusterNodes(): Locator {
-        return this.mainContent.locator('[class*="node"], [class*="cluster-item"]');
+        return this.mainContent.locator(
+            '[class*="node"], [class*="cluster-item"]',
+        );
     }
 
     // System Information
@@ -172,7 +180,9 @@ export class AdminPage extends BasePage {
      * Get version info
      */
     get versionInfo(): Locator {
-        return this.mainContent.locator('[class*="version"], :text("Version") ~ *').first();
+        return this.mainContent
+            .locator('[class*="version"], :text("Version") ~ *')
+            .first();
     }
 
     // API Keys Management
@@ -264,10 +274,7 @@ export class AdminPage extends BasePage {
     /**
      * Create tenant
      */
-    async createTenant(data: {
-        name: string;
-        domain?: string;
-    }): Promise<void> {
+    async createTenant(data: { name: string; domain?: string }): Promise<void> {
         await this.viewTenants();
         await this.addButton.click();
         await this.dialog.waitFor({ timeout: 5000 });
@@ -368,7 +375,9 @@ export class AdminPage extends BasePage {
      * Get build jobs list
      */
     get buildJobsList(): Locator {
-        return this.mainContent.locator('[class*="job"], [class*="build"], table tr');
+        return this.mainContent.locator(
+            '[class*="job"], [class*="build"], table tr',
+        );
     }
 
     // Assertions

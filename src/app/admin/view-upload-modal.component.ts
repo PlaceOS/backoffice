@@ -9,7 +9,7 @@ import { UploadInfo } from './upload-library.component';
     selector: 'view-upload-modal',
     template: `
         <header
-            class="sticky top-0 z-10 m-2 w-[calc(100%-1rem)] rounded-sm border border-base-100 bg-base-200 px-4 py-2"
+            class="border-base-100 bg-base-200 sticky top-0 z-10 m-2 w-[calc(100%-1rem)] rounded-sm border px-4 py-2"
         >
             <h2 class="text-xl font-medium">View Upload</h2>
             <button icon matRipple mat-dialog-close>
@@ -18,7 +18,7 @@ import { UploadInfo } from './upload-library.component';
         </header>
         <main class="px-2 pb-2">
             <div
-                class="relative flex h-[65vh] max-h-[65vh] w-[80vw] max-w-[80vw] items-center justify-center overflow-hidden rounded-xl border border-base-200"
+                class="border-base-200 relative flex h-[65vh] max-h-[65vh] w-[80vw] max-w-[80vw] items-center justify-center overflow-hidden rounded-xl border"
             >
                 @if (type === 'image') {
                     <img
@@ -37,7 +37,7 @@ import { UploadInfo } from './upload-library.component';
                     ></video>
                 }
                 <div
-                    class="absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded-full border border-base-200 bg-base-100 px-2 py-1 font-mono text-sm"
+                    class="border-base-200 bg-base-100 absolute top-2 left-2 max-w-[calc(100%-1rem)] rounded-full border px-2 py-1 font-mono text-sm"
                 >
                     {{ name }}
                 </div>

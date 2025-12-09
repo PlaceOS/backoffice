@@ -14,7 +14,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
         @if (!loading) {
             <button
                 matRipple
-                class="relative mx-4 flex h-96 w-[24rem] flex-col items-center justify-center space-y-4 rounded-xl border-4 border-dashed border-base-300 hover:bg-base-200"
+                class="border-base-300 hover:bg-base-200 relative mx-4 flex h-96 w-[24rem] flex-col items-center justify-center space-y-4 rounded-xl border-4 border-dashed"
                 [class.hover]="dragging"
                 (dragenter)="dragging = true"
                 (dragleave)="dragging = false"

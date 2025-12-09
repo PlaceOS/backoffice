@@ -43,21 +43,21 @@ export interface DisplayItem {
                     </a>
                     @if (driver_type) {
                         <div
-                            class="rounded-xl bg-info px-2 py-1 text-xs text-info-content"
+                            class="bg-info text-info-content rounded-xl px-2 py-1 text-xs"
                         >
                             {{ driver_type }}
                         </div>
                     }
                     @if (domain) {
                         <div
-                            class="mono rounded-xl bg-info px-2 py-1 text-xs text-info-content"
+                            class="mono bg-info text-info-content rounded-xl px-2 py-1 text-xs"
                         >
                             {{ domain }}
                         </div>
                     }
                     @for (tag of tags; track $index) {
                         <div
-                            class="rounded-xl bg-info px-2 py-1 text-xs uppercase text-info-content"
+                            class="bg-info text-info-content rounded-xl px-2 py-1 text-xs uppercase"
                         >
                             {{ tag }}
                         </div>
@@ -67,7 +67,7 @@ export interface DisplayItem {
                         item()?.running !== undefined
                     ) {
                         <div
-                            class="rounded-xl bg-error px-2 py-1 text-xs text-error-content"
+                            class="bg-error text-error-content rounded-xl px-2 py-1 text-xs"
                             [class.bg-success!]="item()?.running"
                             [class.text-success-content!]="item()?.running"
                         >
@@ -81,7 +81,7 @@ export interface DisplayItem {
                     }
                     @if (item()?.edge_id) {
                         <div
-                            class="rounded-xl bg-info px-2 py-1 text-xs text-info-content"
+                            class="bg-info text-info-content rounded-xl px-2 py-1 text-xs"
                             [matTooltip]="item()?.edge_id"
                         >
                             {{ 'COMMON.EDGE' | translate }}
@@ -89,7 +89,7 @@ export interface DisplayItem {
                     }
                     @if (item()?.tls) {
                         <div
-                            class="flex items-center space-x-2 rounded-xl bg-success px-2 py-1 text-xs text-success-content"
+                            class="bg-success text-success-content flex items-center space-x-2 rounded-xl px-2 py-1 text-xs"
                         >
                             <icon>lock</icon>
                             <div class="text">
@@ -175,7 +175,7 @@ export interface DisplayItem {
                     class="flex items-center space-x-2"
                     (click)="delete.emit(); deleteItem()"
                 >
-                    <icon class="text-2xl text-error">delete</icon>
+                    <icon class="text-error text-2xl">delete</icon>
                     <div class="flex-1">
                         {{ 'COMMON.DELETE_TYPE' | translate: { name: type() } }}
                     </div>

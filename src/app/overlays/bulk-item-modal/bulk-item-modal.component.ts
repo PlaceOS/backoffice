@@ -49,7 +49,7 @@ export interface BulkItemModalData<T = HashMap<any>> {
     selector: 'app-bulk-item-modal',
     template: `
         <div
-            class="m-4 flex items-center justify-between rounded-sm bg-base-200 px-4 py-2"
+            class="bg-base-200 m-4 flex items-center justify-between rounded-sm px-4 py-2"
         >
             <h3 class="text-xl font-medium">
                 {{ 'COMMON.BULK_ADD' | translate: { type: type } }}

@@ -73,14 +73,14 @@ function replaceDescTag(inputString, newContent) {
                     <div
                         block
                         [id]="'md-block-' + item.name"
-                        class="rounded-sm border border-base-300"
+                        class="border-base-300 rounded-sm border"
                         [class.shadow]="show_view() === item.name"
                         [class.opacity-30]="item.match === false"
                         [formGroup]="form_map()[item.name]"
                     >
                         <button
                             header
-                            class="flex w-full items-center space-x-2 bg-base-200 px-2 py-1"
+                            class="bg-base-200 flex w-full items-center space-x-2 px-2 py-1"
                             (click)="toggleView(item)"
                         >
                             <h3 class="truncate px-2 font-mono text-sm">
@@ -88,12 +88,12 @@ function replaceDescTag(inputString, newContent) {
                             </h3>
                             <div class="flex-1"></div>
                             <div
-                                class="whitespace-nowrap rounded-sm border border-base-300 px-2 py-1 font-mono text-[0.625rem]"
+                                class="border-base-300 rounded-sm border px-2 py-1 font-mono text-[0.625rem] whitespace-nowrap"
                             >
                                 {{ item.updated_at | dateFrom }}
                             </div>
                             <button
-                                class="flex items-center rounded-full border border-base-300 bg-base-100"
+                                class="border-base-300 bg-base-100 flex items-center rounded-full border"
                                 (click)="$event.stopPropagation()"
                             >
                                 <button
@@ -151,9 +151,7 @@ function replaceDescTag(inputString, newContent) {
                             [class.expanded]="show_view() === item.name"
                         >
                             <div>
-                                <div
-                                    class="h-130 border-t border-base-300 p-1"
-                                >
+                                <div class="border-base-300 h-130 border-t p-1">
                                     @if (show_view() === item.name) {
                                         <settings-form-field
                                             formControlName="details"

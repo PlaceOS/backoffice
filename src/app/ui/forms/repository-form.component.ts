@@ -247,7 +247,7 @@ import { TranslatePipe } from '../translate.pipe';
                                             }}
                                         </div>
                                         <div
-                                            class="mr-4! rounded-sm bg-base-200 px-1.5 font-mono text-[0.625rem]"
+                                            class="bg-base-200 mr-4! rounded-sm px-1.5 font-mono text-[0.625rem]"
                                         >
                                             {{
                                                 form().value.commit_hash ||
@@ -276,7 +276,7 @@ import { TranslatePipe } from '../translate.pipe';
                                                     {{ commit.subject }}
                                                 </div>
                                                 <div
-                                                    class="truncate font-mono text-[0.625rem] text-base-content opacity-30"
+                                                    class="text-base-content truncate font-mono text-[0.625rem] opacity-30"
                                                 >
                                                     {{
                                                         commit.date
@@ -286,12 +286,12 @@ import { TranslatePipe } from '../translate.pipe';
                                             </div>
                                             @if (commit.author) {
                                                 <code
-                                                    class="rounded-sm bg-base-200 p-1 text-xs"
+                                                    class="bg-base-200 rounded-sm p-1 text-xs"
                                                     >{{ commit.author }}</code
                                                 >
                                             }
                                             <code
-                                                class="rounded-sm bg-base-200 p-1 text-xs"
+                                                class="bg-base-200 rounded-sm p-1 text-xs"
                                                 >{{
                                                     commit.hash | slice: 0 : 8
                                                 }}</code

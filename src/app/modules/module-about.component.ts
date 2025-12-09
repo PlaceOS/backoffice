@@ -20,11 +20,11 @@ import { ModuleStateService } from './module-state.service';
     template: `
         <div class="p-4">
             <section
-                class="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0"
+                class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2"
             >
                 <div class="flex-1 sm:w-1/3">
                     <div
-                        class="grid flex-1 gap-2 rounded-sm border border-base-200 p-4"
+                        class="border-base-200 grid flex-1 gap-2 rounded-sm border p-4"
                         [style.gridTemplateColumns]="'4.5rem auto'"
                     >
                         @if (item.notes) {
@@ -120,7 +120,7 @@ import { ModuleStateService } from './module-state.service';
                                 >
                                     @if ((edge | async).description) {
                                         <icon
-                                            class="rounded-full border border-base-200"
+                                            class="border-base-200 rounded-full border"
                                             >info</icon
                                         >
                                     }
@@ -128,10 +128,10 @@ import { ModuleStateService } from './module-state.service';
                             </div>
                             <ng-template #edge_desc_template>
                                 <div
-                                    class="pointer-events-none max-w-[24rem] rounded-sm border border-base-200 bg-base-100 p-2 shadow-sm"
+                                    class="border-base-200 bg-base-100 pointer-events-none max-w-[24rem] rounded-sm border p-2 shadow-sm"
                                 >
                                     <pre
-                                        class="overflow-hidden rounded-xl bg-base-200 p-2 text-sm"
+                                        class="bg-base-200 overflow-hidden rounded-xl p-2 text-sm"
                                         >{{ (edge | async).description }}</pre
                                     >
                                 </div>
@@ -183,10 +183,10 @@ import { ModuleStateService } from './module-state.service';
                 </div>
                 <div class="flex-1 sm:w-1/3">
                     <div
-                        class="flex flex-1 flex-col rounded-sm border border-base-200"
+                        class="border-base-200 flex flex-1 flex-col rounded-sm border"
                     >
                         <h3
-                            class="w-full rounded-sm bg-base-200 px-4 py-3 text-lg font-medium"
+                            class="bg-base-200 w-full rounded-sm px-4 py-3 text-lg font-medium"
                         >
                             {{ 'MODULES.CONTROLS' | translate }}
                         </h3>

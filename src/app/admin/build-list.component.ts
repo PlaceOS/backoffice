@@ -95,7 +95,7 @@ function cancelBuildJob(id, q = {}) {
             </div>
         </ng-template>
         <ng-template #description_template let-data="data">
-            <div class="w-full select-text overflow-hidden px-4 py-2 text-xs">
+            <div class="w-full overflow-hidden px-4 py-2 text-xs select-text">
                 {{ data }}
                 @if (!data) {
                     <span class="opacity-30">

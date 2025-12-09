@@ -66,7 +66,7 @@ import { SystemStateService } from './system-state.service';
             </section>
             @if (zone_issues | async) {
                 <div
-                    class="mono mb-2 rounded-sm bg-warning p-2 text-center text-xs text-warning-content"
+                    class="mono bg-warning text-warning-content mb-2 rounded-sm p-2 text-center text-xs"
                 >
                     {{ zone_issues | async }}
                 </div>
@@ -123,7 +123,7 @@ import { SystemStateService } from './system-state.service';
                 </ng-template>
                 <ng-template #description_template let-data="data">
                     <div
-                        class="w-full select-text overflow-hidden px-4 py-2 text-xs"
+                        class="w-full overflow-hidden px-4 py-2 text-xs select-text"
                     >
                         {{ data }}
                         @if (!data) {

@@ -59,16 +59,16 @@ import { APIKeyService } from './api-keys.service';
                     class="mx-4 mb-4 flex w-[calc(100%-2rem)] items-start space-x-2"
                 >
                     <div
-                        class="flex w-full flex-col rounded-sm border border-base-300 shadow-sm"
+                        class="border-base-300 flex w-full flex-col rounded-sm border shadow-sm"
                     >
                         <div
-                            class="flex w-full items-center space-x-2 rounded-sm border-b border-base-300 bg-base-200"
+                            class="border-base-300 bg-base-200 flex w-full items-center space-x-2 rounded-sm border-b"
                         >
                             <h3 class="px-4 py-2 text-lg font-medium">
                                 {{ 'ADMIN.APP_KEYS_LAST_DETAILS' | translate }}
                             </h3>
                             <div
-                                class="mono rounded-sm bg-base-100 px-2 py-1 text-xs opacity-60"
+                                class="mono bg-base-100 rounded-sm px-2 py-1 text-xs opacity-60"
                             >
                                 {{
                                     (last_key | async)?.name ||
@@ -77,7 +77,7 @@ import { APIKeyService } from './api-keys.service';
                             </div>
                         </div>
                         <div
-                            class="mono cursor-pointer select-all wrap-break-word px-4 py-3 opacity-60"
+                            class="mono cursor-pointer px-4 py-3 wrap-break-word opacity-60 select-all"
                             (click)="copyKey()"
                         >
                             {{ (last_key | async)?.x_api_key }}

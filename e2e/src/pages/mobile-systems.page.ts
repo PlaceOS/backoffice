@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { MobileBasePage } from './mobile-base.page';
 
 /**
@@ -23,7 +23,10 @@ export class MobileSystemsPage extends MobileBasePage {
     /**
      * Create a new system (opens modal)
      */
-    async createSystem(data: { name: string; description?: string }): Promise<void> {
+    async createSystem(data: {
+        name: string;
+        description?: string;
+    }): Promise<void> {
         await this.openAddModal();
         await this.fillField('Name', data.name);
         if (data.description) {
@@ -37,7 +40,13 @@ export class MobileSystemsPage extends MobileBasePage {
      */
     async expectSystemInList(name: string): Promise<void> {
         await this.openItemSelection();
-        await expect(this.page.locator(`item-selection cdk-virtual-scroll-viewport a:has-text("${name}")`).first()).toBeVisible({ timeout: 10000 });
+        await expect(
+            this.page
+                .locator(
+                    `item-selection cdk-virtual-scroll-viewport a:has-text("${name}")`,
+                )
+                .first(),
+        ).toBeVisible({ timeout: 10000 });
     }
 
     /**
@@ -67,13 +76,21 @@ export class MobileSystemsPage extends MobileBasePage {
      * Get start button
      */
     get startButton(): Locator {
-        return this.page.locator('button:has-text("Start"), button:has(icon:has-text("play_arrow"))').first();
+        return this.page
+            .locator(
+                'button:has-text("Start"), button:has(icon:has-text("play_arrow"))',
+            )
+            .first();
     }
 
     /**
      * Get stop button
      */
     get stopButton(): Locator {
-        return this.page.locator('button:has-text("Stop"), button:has(icon:has-text("stop"))').first();
+        return this.page
+            .locator(
+                'button:has-text("Stop"), button:has(icon:has-text("stop"))',
+            )
+            .first();
     }
 }

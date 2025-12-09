@@ -3,12 +3,12 @@
  * Export all page objects for easy importing in tests
  */
 
+export { AdminPage } from './admin.page';
 export { BasePage } from './base.page';
+export { DomainsPage } from './domains.page';
 export { SystemsPage } from './systems.page';
 export { UsersPage } from './users.page';
 export { ZonesPage } from './zones.page';
-export { DomainsPage } from './domains.page';
-export { AdminPage } from './admin.page';
 
 // Mobile page objects
 export { MobileBasePage } from './mobile-base.page';

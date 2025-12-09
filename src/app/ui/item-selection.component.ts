@@ -35,12 +35,12 @@ import { TranslatePipe } from './translate.pipe';
     selector: 'item-selection',
     template: `
         <div
-            class="flex w-full items-center justify-center border-b border-base-200 p-2"
+            class="border-base-200 flex w-full items-center justify-center border-b p-2"
         >
             <ng-content></ng-content>
             <button
                 (click)="open()"
-                class="flex max-w-[calc(100vw-1rem)] flex-1 items-center rounded-lg border border-base-200 sm:max-w-[512px] sm:flex-auto"
+                class="border-base-200 flex max-w-[calc(100vw-1rem)] flex-1 items-center rounded-lg border sm:max-w-[512px] sm:flex-auto"
             >
                 <icon class="ml-2 text-2xl">search</icon>
                 <p class="w-1/2 flex-1 p-2 text-left text-lg opacity-30">
@@ -56,20 +56,20 @@ import { TranslatePipe } from './translate.pipe';
                 (window:keydown.esc)="show.set(false)"
             ></div>
             <div
-                class="absolute left-1/2 top-2 flex w-[512px] max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded-sm bg-base-100 shadow-sm"
+                class="bg-base-100 absolute top-2 left-1/2 flex w-[512px] max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded-sm shadow-sm"
                 (click)="$event.stopPropagation()"
             >
                 <div
-                    class="relative flex items-center border-b border-base-200"
+                    class="border-base-200 relative flex items-center border-b"
                 >
                     <icon
-                        class="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-2xl"
+                        class="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-2xl"
                     >
                         search
                     </icon>
                     <input
                         #search_input
-                        class="bg-transparent flex-1 border-none py-4 pl-10 pr-4"
+                        class="flex-1 border-none bg-transparent py-4 pr-4 pl-10"
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
                         [placeholder]="
@@ -79,7 +79,7 @@ import { TranslatePipe } from './translate.pipe';
                     @if (loading | async) {
                         <mat-spinner
                             diameter="24"
-                            class="absolute right-2 top-1/2 mr-2 -translate-y-1/2"
+                            class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
                         ></mat-spinner>
                     }
                 </div>

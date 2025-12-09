@@ -61,7 +61,7 @@ import { DomainStateService } from './domain-state.service';
         <ng-template #name_template let-row="row">
             <div class="flex flex-col px-4 py-2">
                 <div class="text-sm">{{ row.name }}</div>
-                <div class="select-all text-xs opacity-30">{{ row.id }}</div>
+                <div class="text-xs opacity-30 select-all">{{ row.id }}</div>
             </div>
         </ng-template>
         <ng-template #type_template let-row="row">

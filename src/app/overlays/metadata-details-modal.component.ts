@@ -27,7 +27,7 @@ export interface MetadataDetailsModalData {
     selector: 'app-metadata-details-modal',
     template: `
         <header
-            class="z-10 mx-auto my-2 flex w-[calc(100%-1rem)] items-center justify-between rounded-sm border border-base-100 bg-base-200 px-4 py-2"
+            class="border-base-100 bg-base-200 z-10 mx-auto my-2 flex w-[calc(100%-1rem)] items-center justify-between rounded-sm border px-4 py-2"
         >
             <h2 class="text-xl font-medium">Update metadata details</h2>
             <button btn icon mat-dialog-close>
@@ -101,7 +101,7 @@ export interface MetadataDetailsModalData {
             </main>
         }
         <footer
-            class="mx-2 mb-2 flex items-center justify-end space-x-2 rounded-sm bg-base-200 p-2"
+            class="bg-base-200 mx-2 mb-2 flex items-center justify-end space-x-2 rounded-sm p-2"
         >
             <button
                 btn

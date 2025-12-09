@@ -1,9 +1,14 @@
-import { HashMap } from '../../common/types';
-import { API, generateID, loadFromSession, saveToSession } from '../common.mock';
 import {
     MockHttpRequestHandler,
     registerMockEndpoint,
 } from '@placeos/ts-client';
+import { HashMap } from '../../common/types';
+import {
+    API,
+    generateID,
+    loadFromSession,
+    saveToSession,
+} from '../common.mock';
 
 /** In-memory storage with session persistence */
 const API_KEYS: any[] = loadFromSession('api_keys', []);
@@ -138,7 +143,11 @@ registerMockEndpoint({
     callback: (event) => {
         const index = BROKERS.findIndex((b) => b.id === event.route_params.id);
         if (index >= 0) {
-            BROKERS[index] = { ...BROKERS[index], ...event.body, updated_at: Date.now() / 1000 };
+            BROKERS[index] = {
+                ...BROKERS[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('brokers', BROKERS);
             return BROKERS[index];
         }
@@ -153,7 +162,11 @@ registerMockEndpoint({
     callback: (event) => {
         const index = BROKERS.findIndex((b) => b.id === event.route_params.id);
         if (index >= 0) {
-            BROKERS[index] = { ...BROKERS[index], ...event.body, updated_at: Date.now() / 1000 };
+            BROKERS[index] = {
+                ...BROKERS[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('brokers', BROKERS);
             return BROKERS[index];
         }
@@ -225,7 +238,11 @@ registerMockEndpoint({
     callback: (event) => {
         const index = EDGES.findIndex((e) => e.id === event.route_params.id);
         if (index >= 0) {
-            EDGES[index] = { ...EDGES[index], ...event.body, updated_at: Date.now() / 1000 };
+            EDGES[index] = {
+                ...EDGES[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('edges', EDGES);
             return EDGES[index];
         }
@@ -240,7 +257,11 @@ registerMockEndpoint({
     callback: (event) => {
         const index = EDGES.findIndex((e) => e.id === event.route_params.id);
         if (index >= 0) {
-            EDGES[index] = { ...EDGES[index], ...event.body, updated_at: Date.now() / 1000 };
+            EDGES[index] = {
+                ...EDGES[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('edges', EDGES);
             return EDGES[index];
         }
@@ -322,9 +343,15 @@ registerMockEndpoint({
     metadata: [],
     method: 'PUT',
     callback: (event) => {
-        const index = APPLICATIONS.findIndex((a) => a.id === event.route_params.id);
+        const index = APPLICATIONS.findIndex(
+            (a) => a.id === event.route_params.id,
+        );
         if (index >= 0) {
-            APPLICATIONS[index] = { ...APPLICATIONS[index], ...event.body, updated_at: Date.now() / 1000 };
+            APPLICATIONS[index] = {
+                ...APPLICATIONS[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('applications', APPLICATIONS);
             return APPLICATIONS[index];
         }
@@ -337,9 +364,15 @@ registerMockEndpoint({
     metadata: [],
     method: 'PATCH',
     callback: (event) => {
-        const index = APPLICATIONS.findIndex((a) => a.id === event.route_params.id);
+        const index = APPLICATIONS.findIndex(
+            (a) => a.id === event.route_params.id,
+        );
         if (index >= 0) {
-            APPLICATIONS[index] = { ...APPLICATIONS[index], ...event.body, updated_at: Date.now() / 1000 };
+            APPLICATIONS[index] = {
+                ...APPLICATIONS[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('applications', APPLICATIONS);
             return APPLICATIONS[index];
         }
@@ -353,7 +386,9 @@ registerMockEndpoint({
     metadata: [],
     method: 'DELETE',
     callback: (event) => {
-        const index = APPLICATIONS.findIndex((a) => a.id === event.route_params.id);
+        const index = APPLICATIONS.findIndex(
+            (a) => a.id === event.route_params.id,
+        );
         if (index >= 0) {
             APPLICATIONS.splice(index, 1);
             saveToSession('applications', APPLICATIONS);
@@ -436,7 +471,9 @@ registerMockEndpoint({
     metadata: [],
     method: 'GET',
     callback: (event) => {
-        const provider = STORAGE_PROVIDERS.find((p) => p.id === event.route_params.id);
+        const provider = STORAGE_PROVIDERS.find(
+            (p) => p.id === event.route_params.id,
+        );
         if (provider) return provider;
         throw { status: 404, message: 'Storage provider not found' };
     },
@@ -466,9 +503,15 @@ registerMockEndpoint({
     metadata: [],
     method: 'PUT',
     callback: (event) => {
-        const index = STORAGE_PROVIDERS.findIndex((p) => p.id === event.route_params.id);
+        const index = STORAGE_PROVIDERS.findIndex(
+            (p) => p.id === event.route_params.id,
+        );
         if (index >= 0) {
-            STORAGE_PROVIDERS[index] = { ...STORAGE_PROVIDERS[index], ...event.body, updated_at: Date.now() / 1000 };
+            STORAGE_PROVIDERS[index] = {
+                ...STORAGE_PROVIDERS[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('storage_providers', STORAGE_PROVIDERS);
             return STORAGE_PROVIDERS[index];
         }
@@ -481,9 +524,15 @@ registerMockEndpoint({
     metadata: [],
     method: 'PATCH',
     callback: (event) => {
-        const index = STORAGE_PROVIDERS.findIndex((p) => p.id === event.route_params.id);
+        const index = STORAGE_PROVIDERS.findIndex(
+            (p) => p.id === event.route_params.id,
+        );
         if (index >= 0) {
-            STORAGE_PROVIDERS[index] = { ...STORAGE_PROVIDERS[index], ...event.body, updated_at: Date.now() / 1000 };
+            STORAGE_PROVIDERS[index] = {
+                ...STORAGE_PROVIDERS[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
             saveToSession('storage_providers', STORAGE_PROVIDERS);
             return STORAGE_PROVIDERS[index];
         }
@@ -497,7 +546,9 @@ registerMockEndpoint({
     metadata: [],
     method: 'DELETE',
     callback: (event) => {
-        const index = STORAGE_PROVIDERS.findIndex((p) => p.id === event.route_params.id);
+        const index = STORAGE_PROVIDERS.findIndex(
+            (p) => p.id === event.route_params.id,
+        );
         if (index >= 0) {
             STORAGE_PROVIDERS.splice(index, 1);
             saveToSession('storage_providers', STORAGE_PROVIDERS);

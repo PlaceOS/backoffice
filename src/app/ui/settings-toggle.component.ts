@@ -20,7 +20,7 @@ import { IconComponent } from './icon.component';
             (click)="setValue(!value)"
         >
             @if (value) {
-                <div class="absolute inset-0 bg-info opacity-10"></div>
+                <div class="bg-info absolute inset-0 opacity-10"></div>
             }
             <div class="ml-2 flex flex-1 items-center space-x-2 text-left">
                 <div>{{ name() }}<ng-content></ng-content></div>

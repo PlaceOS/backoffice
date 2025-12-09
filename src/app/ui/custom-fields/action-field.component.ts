@@ -5,7 +5,7 @@ import { IconComponent } from '../icon.component';
     selector: 'an-action-field',
     template: `
         <div
-            class="border-gray-200 flex items-center rounded-sm border px-4 py-2.5 hover:border-base-content"
+            class="hover:border-base-content flex items-center rounded-sm border border-gray-200 px-4 py-2.5"
             role="button"
             [attr.disabled]="disabled()"
             form-field

@@ -33,9 +33,9 @@ export const ROUTES: Routes = [
             {
                 path: 'clusters/:id',
                 loadComponent: () =>
-                    import('./cluster-details/cluster-task-list.component').then(
-                        (m) => m.PlaceClusterTaskListComponent,
-                    ),
+                    import(
+                        './cluster-details/cluster-task-list.component'
+                    ).then((m) => m.PlaceClusterTaskListComponent),
             },
             {
                 path: 'interfaces',
@@ -54,12 +54,16 @@ export const ROUTES: Routes = [
             {
                 path: 'edge',
                 loadComponent: () =>
-                    import('./edge.component').then((m) => m.PlaceEdgeComponent),
+                    import('./edge.component').then(
+                        (m) => m.PlaceEdgeComponent,
+                    ),
             },
             {
                 path: 'edge/:id',
                 loadComponent: () =>
-                    import('./edge.component').then((m) => m.PlaceEdgeComponent),
+                    import('./edge.component').then(
+                        (m) => m.PlaceEdgeComponent,
+                    ),
             },
             {
                 path: 'extensions',
@@ -116,23 +120,23 @@ export const ROUTES: Routes = [
                     {
                         path: '',
                         loadComponent: () =>
-                            import('./mailing-lists/email-templates.component').then(
-                                (m) => m.EmailTemplatesComponent,
-                            ),
+                            import(
+                                './mailing-lists/email-templates.component'
+                            ).then((m) => m.EmailTemplatesComponent),
                     },
                     {
                         path: 'edit',
                         loadComponent: () =>
-                            import('./mailing-lists/email-template-form.component').then(
-                                (m) => m.EmailTemplateFormComponent,
-                            ),
+                            import(
+                                './mailing-lists/email-template-form.component'
+                            ).then((m) => m.EmailTemplateFormComponent),
                     },
                     {
                         path: 'edit/:id',
                         loadComponent: () =>
-                            import('./mailing-lists/email-template-form.component').then(
-                                (m) => m.EmailTemplateFormComponent,
-                            ),
+                            import(
+                                './mailing-lists/email-template-form.component'
+                            ).then((m) => m.EmailTemplateFormComponent),
                     },
                     { path: '**', redirectTo: '' },
                 ],

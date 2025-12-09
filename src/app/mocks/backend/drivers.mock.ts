@@ -1,5 +1,5 @@
 import { HashMap } from '../../common/types';
-import { API, generateBasicHandlers, endpointData } from '../common.mock';
+import { API, endpointData, generateBasicHandlers } from '../common.mock';
 import { DRIVERS as DRIVER_DATA } from '../data/drivers';
 
 import {

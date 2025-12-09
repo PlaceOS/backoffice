@@ -23,7 +23,7 @@ const COLORS: [string, string][] = [
 @Component({
     selector: '[basic-line-graph]',
     template: `
-        <canvas #canvas class="h-full w-full text-base-content"></canvas>
+        <canvas #canvas class="text-base-content h-full w-full"></canvas>
     `,
     styles: [
         `

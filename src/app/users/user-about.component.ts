@@ -26,7 +26,7 @@ let domain_obs;
     template: `
         <section class="mb-4 flex items-center space-x-2">
             <div
-                class="flex items-center space-x-2 rounded-3xl border border-base-300 p-2"
+                class="border-base-300 flex items-center space-x-2 rounded-3xl border p-2"
             >
                 <div class="px-2">{{ 'USERS.ROLE_SUPPORT' | translate }}</div>
                 <div
@@ -45,7 +45,7 @@ let domain_obs;
                 </div>
             </div>
             <div
-                class="flex items-center space-x-2 rounded-3xl border border-base-300 p-2"
+                class="border-base-300 flex items-center space-x-2 rounded-3xl border p-2"
             >
                 <div class="px-2">{{ 'USERS.ROLE_ADMIN' | translate }}</div>
                 <div
@@ -66,7 +66,7 @@ let domain_obs;
         </section>
         <section class="mb-4 flex space-x-2">
             <div
-                class="grid w-1/3 flex-1 gap-2 rounded-sm border border-base-200 p-4"
+                class="border-base-200 grid w-1/3 flex-1 gap-2 rounded-sm border p-4"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div class="flex items-center text-sm font-medium">
@@ -109,7 +109,7 @@ let domain_obs;
                         @for (group of item.groups; track group) {
                             <button
                                 matRipple
-                                class="mono m-1 rounded-sm bg-base-200 px-2 py-1 text-[0.625rem]"
+                                class="mono bg-base-200 m-1 rounded-sm px-2 py-1 text-[0.625rem]"
                                 (click)="copyGroup(group)"
                             >
                                 {{ group }}

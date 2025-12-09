@@ -54,7 +54,7 @@ const validateType = (type) => (control: AbstractControl) => {
                 @for (key of method().order; track key; let i = $index) {
                     <div field class="relative flex items-center space-x-2">
                         <div
-                            class="absolute left-0 w-4 -translate-x-full -translate-y-1/2 transform border-b-2 border-l-2 border-base-200"
+                            class="border-base-200 absolute left-0 w-4 -translate-x-full -translate-y-1/2 transform border-b-2 border-l-2"
                             [class.h-6]="i === 0"
                             [class.h-14]="i !== 0"
                         ></div>

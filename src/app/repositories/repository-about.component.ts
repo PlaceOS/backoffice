@@ -18,7 +18,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         <section class="mb-4 flex space-x-2">
             <div class="w-1/3 flex-1">
                 <div
-                    class="grid gap-4 rounded-sm border border-base-200 p-4"
+                    class="border-base-200 grid gap-4 rounded-sm border p-4"
                     [style.gridTemplateColumns]="'5.5rem auto'"
                 >
                     <div class="flex items-center text-sm font-medium">
@@ -96,13 +96,13 @@ import { RepositoriesStateService } from './repositories-state.service';
             </div>
             <div class="w-1/3 flex-1">
                 <div
-                    class="grid gap-4 overflow-hidden rounded-sm border border-base-200 p-4"
+                    class="border-base-200 grid gap-4 overflow-hidden rounded-sm border p-4"
                     [style.gridTemplateColumns]="'6.5rem auto'"
                 >
                     <div class="flex items-center text-sm font-medium">
                         {{ 'REPOS.URI' | translate }}
                     </div>
-                    <div class="select-all overflow-hidden underline">
+                    <div class="overflow-hidden underline select-all">
                         <a
                             class="block w-full truncate"
                             [href]="item().uri | safe: 'url'"
@@ -135,7 +135,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         >
                             {{ item().commit_hash || 'HEAD' }}
                             @if (commit() && commit() !== item().commit_hash) {
-                                <span class="mono select-text wrap-break-word">
+                                <span class="mono wrap-break-word select-text">
                                     ({{ commit() }})
                                 </span>
                             }
@@ -160,9 +160,11 @@ import { RepositoriesStateService } from './repositories-state.service';
             </div>
         </section>
         @if (item()?.description) {
-            <hr class="my-4 text-base-300" />
-            <div class="w-full rounded-sm border border-base-200">
-                <h3 class="w-full rounded-sm bg-base-200 p-4 text-lg font-medium">
+            <hr class="text-base-300 my-4" />
+            <div class="border-base-200 w-full rounded-sm border">
+                <h3
+                    class="bg-base-200 w-full rounded-sm p-4 text-lg font-medium"
+                >
                     {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                 </h3>
                 <div

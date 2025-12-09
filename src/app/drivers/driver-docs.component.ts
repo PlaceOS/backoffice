@@ -21,7 +21,7 @@ import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
                 ></div>
             } @else {
                 <div
-                    class="flex min-h-[calc(100vh-20rem)] w-full flex-col items-center justify-center space-y-4 rounded-xl bg-base-200 opacity-30"
+                    class="bg-base-200 flex min-h-[calc(100vh-20rem)] w-full flex-col items-center justify-center space-y-4 rounded-xl opacity-30"
                 >
                     <icon class="text-8xl">comments_disabled</icon>
                     <p>No documentation available for this driver</p>

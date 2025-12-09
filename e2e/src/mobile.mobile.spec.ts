@@ -1,6 +1,6 @@
-import { test, expect, Page } from '@playwright/test';
-import { MobileSystemsPage } from './pages';
+import { expect, Page, test } from '@playwright/test';
 import { buildAppUrl } from './config/test-env';
+import { MobileSystemsPage } from './pages';
 
 /**
  * Mobile E2E Tests
@@ -19,13 +19,20 @@ import { buildAppUrl } from './config/test-env';
  */
 async function waitForAppReady(page: Page): Promise<void> {
     // Wait for loader to disappear
-    await page.waitForSelector('[loader]', { state: 'detached', timeout: 30000 }).catch(() => {});
+    await page
+        .waitForSelector('[loader]', { state: 'detached', timeout: 30000 })
+        .catch(() => {});
 
     // Wait for router outlet
-    await page.waitForSelector('router-outlet', { state: 'attached', timeout: 30000 });
+    await page.waitForSelector('router-outlet', {
+        state: 'attached',
+        timeout: 30000,
+    });
 
     // Wait for item-selection component (mobile)
-    await page.waitForSelector('item-selection', { timeout: 30000 }).catch(() => {});
+    await page
+        .waitForSelector('item-selection', { timeout: 30000 })
+        .catch(() => {});
 
     // Small delay for animations
     await page.waitForTimeout(500);
@@ -42,27 +49,41 @@ async function closeItemSelectionIfOpen(page: Page): Promise<void> {
 
     if (is_open) {
         // Wait for items to load
-        await page.waitForSelector('item-selection cdk-virtual-scroll-viewport a', { timeout: 10000 }).catch(() => {});
+        await page
+            .waitForSelector('item-selection cdk-virtual-scroll-viewport a', {
+                timeout: 10000,
+            })
+            .catch(() => {});
 
         // Select first item to close the overlay
-        const first_item = page.locator('item-selection cdk-virtual-scroll-viewport a').first();
+        const first_item = page
+            .locator('item-selection cdk-virtual-scroll-viewport a')
+            .first();
         if (await first_item.isVisible().catch(() => false)) {
             await first_item.click();
             await page.waitForTimeout(500);
 
             // Verify overlay closed
-            await page.waitForFunction(() => {
-                const input = document.querySelector('item-selection input');
-                return !input || !input.checkVisibility();
-            }, { timeout: 5000 }).catch(() => {});
+            await page
+                .waitForFunction(
+                    () => {
+                        const input = document.querySelector(
+                            'item-selection input',
+                        );
+                        return !input || !input.checkVisibility();
+                    },
+                    { timeout: 5000 },
+                )
+                .catch(() => {});
         }
     }
 }
 
 test.describe('Mobile', () => {
-
     test.describe('Navigation', () => {
-        test('should display hamburger menu button on mobile', async ({ page }) => {
+        test('should display hamburger menu button on mobile', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -71,11 +92,15 @@ test.describe('Mobile', () => {
             await waitForAppReady(page);
 
             // Hamburger menu should be visible on mobile
-            const hamburger_button = page.locator('button:has(icon:has-text("menu"))');
+            const hamburger_button = page.locator(
+                'button:has(icon:has-text("menu"))',
+            );
             await expect(hamburger_button).toBeVisible({ timeout: 10000 });
         });
 
-        test('should open sidebar menu when hamburger button is clicked', async ({ page }) => {
+        test('should open sidebar menu when hamburger button is clicked', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -94,7 +119,9 @@ test.describe('Mobile', () => {
             await expect(sidebar).toHaveClass(/!flex/, { timeout: 5000 });
         });
 
-        test('should close sidebar menu when close button is clicked', async ({ page }) => {
+        test('should close sidebar menu when close button is clicked', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -107,10 +134,14 @@ test.describe('Mobile', () => {
 
             // Open hamburger menu
             await page.locator('button:has(icon:has-text("menu"))').click();
-            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', { timeout: 5000 });
+            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', {
+                timeout: 5000,
+            });
 
             // Click close button
-            await page.locator('sidebar-menu button:has(icon:has-text("close"))').click();
+            await page
+                .locator('sidebar-menu button:has(icon:has-text("close"))')
+                .click();
             await page.waitForTimeout(300);
 
             // Verify sidebar is closed (doesn't have !flex class)
@@ -118,7 +149,9 @@ test.describe('Mobile', () => {
             await expect(sidebar).not.toHaveClass(/!flex/);
         });
 
-        test('should navigate to different sections via hamburger menu', async ({ page }) => {
+        test('should navigate to different sections via hamburger menu', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -131,7 +164,9 @@ test.describe('Mobile', () => {
 
             // Open hamburger menu and navigate to Zones
             await page.locator('button:has(icon:has-text("menu"))').click();
-            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', { timeout: 5000 });
+            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', {
+                timeout: 5000,
+            });
 
             await page.locator('sidebar-menu a[btn]:has-text("Zones")').click();
             await page.waitForTimeout(500);
@@ -142,7 +177,9 @@ test.describe('Mobile', () => {
     });
 
     test.describe('Item Selection', () => {
-        test('should display item selection component on mobile', async ({ page }) => {
+        test('should display item selection component on mobile', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -155,7 +192,9 @@ test.describe('Mobile', () => {
             await expect(item_selection).toBeVisible({ timeout: 10000 });
         });
 
-        test('should open item selection overlay when search button is clicked', async ({ page }) => {
+        test('should open item selection overlay when search button is clicked', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -168,7 +207,9 @@ test.describe('Mobile', () => {
 
             // Now click the search/selection trigger to re-open
             // The trigger button has a search icon and text
-            await page.locator('item-selection button:has(icon:has-text("search"))').click();
+            await page
+                .locator('item-selection button:has(icon:has-text("search"))')
+                .click();
 
             // Search input should be visible (give more time as there may be animation)
             const search_input = page.locator('item-selection input');
@@ -184,7 +225,9 @@ test.describe('Mobile', () => {
             await waitForAppReady(page);
 
             // The overlay should already be open, items should be listed
-            const items = page.locator('item-selection cdk-virtual-scroll-viewport a');
+            const items = page.locator(
+                'item-selection cdk-virtual-scroll-viewport a',
+            );
             await expect(items.first()).toBeVisible({ timeout: 10000 });
         });
 
@@ -201,7 +244,9 @@ test.describe('Mobile', () => {
             await page.waitForTimeout(500);
 
             // Verify search input has the value
-            await expect(page.locator('item-selection input')).toHaveValue('Activity');
+            await expect(page.locator('item-selection input')).toHaveValue(
+                'Activity',
+            );
         });
 
         test('should select an item and show details', async ({ page }) => {
@@ -213,17 +258,27 @@ test.describe('Mobile', () => {
             await waitForAppReady(page);
 
             // Wait for items to load (overlay auto-opens)
-            await page.waitForSelector('item-selection cdk-virtual-scroll-viewport a', { timeout: 10000 });
+            await page.waitForSelector(
+                'item-selection cdk-virtual-scroll-viewport a',
+                { timeout: 10000 },
+            );
 
             // Select first item
-            await page.locator('item-selection cdk-virtual-scroll-viewport a').first().click();
+            await page
+                .locator('item-selection cdk-virtual-scroll-viewport a')
+                .first()
+                .click();
             await page.waitForTimeout(500);
 
             // Item details should be visible
-            await expect(page.locator('item-details')).toBeVisible({ timeout: 10000 });
+            await expect(page.locator('item-details')).toBeVisible({
+                timeout: 10000,
+            });
         });
 
-        test('should close item selection with Escape key', async ({ page }) => {
+        test('should close item selection with Escape key', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -232,13 +287,23 @@ test.describe('Mobile', () => {
             await waitForAppReady(page);
 
             // First select an item so the overlay can be closed
-            await page.waitForSelector('item-selection cdk-virtual-scroll-viewport a', { timeout: 10000 });
-            await page.locator('item-selection cdk-virtual-scroll-viewport a').first().click();
+            await page.waitForSelector(
+                'item-selection cdk-virtual-scroll-viewport a',
+                { timeout: 10000 },
+            );
+            await page
+                .locator('item-selection cdk-virtual-scroll-viewport a')
+                .first()
+                .click();
             await page.waitForTimeout(500);
 
             // Open selection again using the button with search icon
-            await page.locator('item-selection button:has(icon:has-text("search"))').click();
-            await page.waitForSelector('item-selection input', { timeout: 10000 });
+            await page
+                .locator('item-selection button:has(icon:has-text("search"))')
+                .click();
+            await page.waitForSelector('item-selection input', {
+                timeout: 10000,
+            });
 
             // Press Escape
             await page.keyboard.press('Escape');
@@ -278,10 +343,14 @@ test.describe('Mobile', () => {
             await page.waitForTimeout(500);
 
             // Verify search input has the value
-            await expect(systems_page.itemSelectionSearchInput).toHaveValue('Activity');
+            await expect(systems_page.itemSelectionSearchInput).toHaveValue(
+                'Activity',
+            );
         });
 
-        test('should select a system and view details on mobile', async ({ page }) => {
+        test('should select a system and view details on mobile', async ({
+            page,
+        }) => {
             await systems_page.goto();
 
             // Select first system
@@ -289,7 +358,9 @@ test.describe('Mobile', () => {
 
             // Verify details are displayed
             await expect(systems_page.mainContent).toBeVisible();
-            await expect(systems_page.itemDetails).toBeVisible({ timeout: 10000 });
+            await expect(systems_page.itemDetails).toBeVisible({
+                timeout: 10000,
+            });
         });
 
         test('should open add modal on mobile', async ({ page }) => {
@@ -374,11 +445,15 @@ test.describe('Mobile', () => {
             await waitForAppReady(page);
 
             // Add button should be visible
-            const add_button = page.locator('button:has(icon:has-text("add"))').first();
+            const add_button = page
+                .locator('button:has(icon:has-text("add"))')
+                .first();
             await expect(add_button).toBeVisible();
         });
 
-        test('should display PlaceOS logo in sidebar menu', async ({ page }) => {
+        test('should display PlaceOS logo in sidebar menu', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -391,15 +466,21 @@ test.describe('Mobile', () => {
 
             // Open hamburger menu
             await page.locator('button:has(icon:has-text("menu"))').click();
-            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', { timeout: 5000 });
+            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', {
+                timeout: 5000,
+            });
 
             // Logo text should be visible
-            await expect(page.locator('sidebar-menu a:has-text("PlaceOS")')).toBeVisible();
+            await expect(
+                page.locator('sidebar-menu a:has-text("PlaceOS")'),
+            ).toBeVisible();
         });
     });
 
     test.describe('Cross-Feature Navigation', () => {
-        test('should navigate from Systems to Zones on mobile', async ({ page }) => {
+        test('should navigate from Systems to Zones on mobile', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -412,7 +493,9 @@ test.describe('Mobile', () => {
 
             // Navigate via hamburger menu
             await page.locator('button:has(icon:has-text("menu"))').click();
-            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', { timeout: 5000 });
+            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', {
+                timeout: 5000,
+            });
             await page.locator('sidebar-menu a[btn]:has-text("Zones")').click();
 
             // Verify zones page loaded
@@ -420,7 +503,9 @@ test.describe('Mobile', () => {
             await expect(page.locator('item-selection')).toBeVisible();
         });
 
-        test('should navigate from Systems to Modules on mobile', async ({ page }) => {
+        test('should navigate from Systems to Modules on mobile', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -433,15 +518,21 @@ test.describe('Mobile', () => {
 
             // Navigate via hamburger menu
             await page.locator('button:has(icon:has-text("menu"))').click();
-            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', { timeout: 5000 });
-            await page.locator('sidebar-menu a[btn]:has-text("Modules")').click();
+            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', {
+                timeout: 5000,
+            });
+            await page
+                .locator('sidebar-menu a[btn]:has-text("Modules")')
+                .click();
 
             // Verify modules page loaded
             await expect(page).toHaveURL(/modules/);
             await expect(page.locator('item-selection')).toBeVisible();
         });
 
-        test('should navigate from Systems to Drivers on mobile', async ({ page }) => {
+        test('should navigate from Systems to Drivers on mobile', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -454,15 +545,21 @@ test.describe('Mobile', () => {
 
             // Navigate via hamburger menu
             await page.locator('button:has(icon:has-text("menu"))').click();
-            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', { timeout: 5000 });
-            await page.locator('sidebar-menu a[btn]:has-text("Drivers")').click();
+            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', {
+                timeout: 5000,
+            });
+            await page
+                .locator('sidebar-menu a[btn]:has-text("Drivers")')
+                .click();
 
             // Verify drivers page loaded
             await expect(page).toHaveURL(/drivers/);
             await expect(page.locator('item-selection')).toBeVisible();
         });
 
-        test('should navigate from Systems to Triggers on mobile', async ({ page }) => {
+        test('should navigate from Systems to Triggers on mobile', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -475,8 +572,12 @@ test.describe('Mobile', () => {
 
             // Navigate via hamburger menu
             await page.locator('button:has(icon:has-text("menu"))').click();
-            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', { timeout: 5000 });
-            await page.locator('sidebar-menu a[btn]:has-text("Triggers")').click();
+            await page.waitForSelector('sidebar-menu [sidebar-menu].\\!flex', {
+                timeout: 5000,
+            });
+            await page
+                .locator('sidebar-menu a[btn]:has-text("Triggers")')
+                .click();
 
             // Verify triggers page loaded
             await expect(page).toHaveURL(/triggers/);
@@ -497,18 +598,30 @@ test.describe('Mobile', () => {
             await closeItemSelectionIfOpen(page);
 
             // Open add modal
-            await page.locator('button:has(icon:has-text("add"))').first().click();
-            await page.waitForSelector('fullscreen-modal-shell, mat-dialog-container', { timeout: 5000 });
+            await page
+                .locator('button:has(icon:has-text("add"))')
+                .first()
+                .click();
+            await page.waitForSelector(
+                'fullscreen-modal-shell, mat-dialog-container',
+                { timeout: 5000 },
+            );
 
             // Fill name field
-            const name_field = page.locator('mat-form-field:has(mat-label:text("Name")) input, input[placeholder*="Name" i]').first();
+            const name_field = page
+                .locator(
+                    'mat-form-field:has(mat-label:text("Name")) input, input[placeholder*="Name" i]',
+                )
+                .first();
             await name_field.fill('Test Mobile System');
 
             // Verify value
             await expect(name_field).toHaveValue('Test Mobile System');
         });
 
-        test('should close modal with cancel button on mobile', async ({ page }) => {
+        test('should close modal with cancel button on mobile', async ({
+            page,
+        }) => {
             await page.addInitScript(() => {
                 localStorage.setItem('mock', 'true');
             });
@@ -520,15 +633,28 @@ test.describe('Mobile', () => {
             await closeItemSelectionIfOpen(page);
 
             // Open add modal
-            await page.locator('button:has(icon:has-text("add"))').first().click();
-            await page.waitForSelector('fullscreen-modal-shell, mat-dialog-container', { timeout: 5000 });
+            await page
+                .locator('button:has(icon:has-text("add"))')
+                .first()
+                .click();
+            await page.waitForSelector(
+                'fullscreen-modal-shell, mat-dialog-container',
+                { timeout: 5000 },
+            );
 
             // Click cancel
-            await page.locator('fullscreen-modal-shell button[mat-dialog-close], mat-dialog-container button:has-text("Cancel")').first().click();
+            await page
+                .locator(
+                    'fullscreen-modal-shell button[mat-dialog-close], mat-dialog-container button:has-text("Cancel")',
+                )
+                .first()
+                .click();
             await page.waitForTimeout(500);
 
             // Modal should be closed
-            await expect(page.locator('fullscreen-modal-shell, mat-dialog-container')).not.toBeVisible();
+            await expect(
+                page.locator('fullscreen-modal-shell, mat-dialog-container'),
+            ).not.toBeVisible();
         });
     });
 
@@ -542,14 +668,22 @@ test.describe('Mobile', () => {
             await waitForAppReady(page);
 
             // Wait for items in the auto-opened selection
-            await page.waitForSelector('item-selection cdk-virtual-scroll-viewport a', { timeout: 10000 });
+            await page.waitForSelector(
+                'item-selection cdk-virtual-scroll-viewport a',
+                { timeout: 10000 },
+            );
 
             // Tap on first item
-            await page.locator('item-selection cdk-virtual-scroll-viewport a').first().tap();
+            await page
+                .locator('item-selection cdk-virtual-scroll-viewport a')
+                .first()
+                .tap();
             await page.waitForTimeout(500);
 
             // Item details should be visible
-            await expect(page.locator('item-details')).toBeVisible({ timeout: 10000 });
+            await expect(page.locator('item-details')).toBeVisible({
+                timeout: 10000,
+            });
         });
 
         test('should support tap on hamburger menu', async ({ page }) => {

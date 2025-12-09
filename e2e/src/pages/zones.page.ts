@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 /**
@@ -22,35 +22,55 @@ export class ZonesPage extends BasePage {
      * Get the children tab
      */
     get childrenTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Children"), [role="tab"]:has-text("Children")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Children"), [role="tab"]:has-text("Children")',
+            )
+            .first();
     }
 
     /**
      * Get the systems tab
      */
     get systemsTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Systems"), [role="tab"]:has-text("Systems")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Systems"), [role="tab"]:has-text("Systems")',
+            )
+            .first();
     }
 
     /**
      * Get the triggers tab
      */
     get triggersTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Triggers"), [role="tab"]:has-text("Triggers")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Triggers"), [role="tab"]:has-text("Triggers")',
+            )
+            .first();
     }
 
     /**
      * Get the metadata tab
      */
     get metadataTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("Metadata"), [role="tab"]:has-text("Metadata")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("Metadata"), [role="tab"]:has-text("Metadata")',
+            )
+            .first();
     }
 
     /**
      * Get the history tab
      */
     get historyTab(): Locator {
-        return this.page.locator('item-tablist a:has-text("History"), [role="tab"]:has-text("History")').first();
+        return this.page
+            .locator(
+                'item-tablist a:has-text("History"), [role="tab"]:has-text("History")',
+            )
+            .first();
     }
 
     /**
@@ -64,14 +84,18 @@ export class ZonesPage extends BasePage {
      * Get parent zone display
      */
     get parentZone(): Locator {
-        return this.page.locator('[class*="parent"], :text("Parent") ~ *').first();
+        return this.page
+            .locator('[class*="parent"], :text("Parent") ~ *')
+            .first();
     }
 
     /**
      * Get system count
      */
     get systemCount(): Locator {
-        return this.page.locator('[class*="count"], :text("Systems") ~ *').first();
+        return this.page
+            .locator('[class*="count"], :text("Systems") ~ *')
+            .first();
     }
 
     /**
@@ -186,28 +210,40 @@ export class ZonesPage extends BasePage {
      * Assert zone details are visible
      */
     async expectZoneDetails(name: string): Promise<void> {
-        await expect(this.page.locator(`item-details [name]:has-text("${name}"), item-details:has-text("${name}")`).first()).toBeVisible({ timeout: 10000 });
+        await expect(
+            this.page
+                .locator(
+                    `item-details [name]:has-text("${name}"), item-details:has-text("${name}")`,
+                )
+                .first(),
+        ).toBeVisible({ timeout: 10000 });
     }
 
     /**
      * Assert zone is in the list
      */
     async expectZoneInList(name: string): Promise<void> {
-        await expect(this.zonesList.filter({ hasText: name }).first()).toBeVisible({ timeout: 10000 });
+        await expect(
+            this.zonesList.filter({ hasText: name }).first(),
+        ).toBeVisible({ timeout: 10000 });
     }
 
     /**
      * Assert zone is not in the list
      */
     async expectZoneNotInList(name: string): Promise<void> {
-        await expect(this.zonesList.filter({ hasText: name }).first()).not.toBeVisible({ timeout: 5000 });
+        await expect(
+            this.zonesList.filter({ hasText: name }).first(),
+        ).not.toBeVisible({ timeout: 5000 });
     }
 
     /**
      * Assert parent zone is displayed
      */
     async expectParentZone(parentName: string): Promise<void> {
-        await expect(this.page.locator(`text=${parentName}`)).toBeVisible({ timeout: 10000 });
+        await expect(this.page.locator(`text=${parentName}`)).toBeVisible({
+            timeout: 10000,
+        });
     }
 
     /**

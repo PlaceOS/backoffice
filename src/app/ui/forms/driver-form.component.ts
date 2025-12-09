@@ -203,7 +203,7 @@ import { TranslatePipe } from '../translate.pipe';
         <!-- Form fields go here -->
         @if (loading()) {
             <div
-                class="flex w-full flex-col items-center justify-center space-y-4 rounded-xl bg-base-200 px-8 py-16"
+                class="bg-base-200 flex w-full flex-col items-center justify-center space-y-4 rounded-xl px-8 py-16"
             >
                 <mat-spinner [diameter]="32" />
                 <p>{{ loading() | translate }}</p>

@@ -1,6 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { DomainsPage } from './pages';
-import { buildAppUrl, isMockMode } from './config/test-env';
 
 /**
  * Domains E2E Tests
@@ -23,7 +22,9 @@ test.describe('Domains', () => {
      * US-DOM-001: View Domains List
      */
     test.describe('US-DOM-001: View Domains List', () => {
-        test('AC-DOM-001-1: Display Domains List - should show sidebar with all domains', async ({ page }) => {
+        test('AC-DOM-001-1: Display Domains List - should show sidebar with all domains', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             // Verify the sidebar is visible
@@ -33,7 +34,9 @@ test.describe('Domains', () => {
             await page.waitForTimeout(2000);
         });
 
-        test('AC-DOM-001-2: Search Domains - should filter domains by search term', async ({ page }) => {
+        test('AC-DOM-001-2: Search Domains - should filter domains by search term', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             // Wait for list to load
@@ -49,7 +52,9 @@ test.describe('Domains', () => {
             await expect(domainsPage.sidebarList).toBeVisible();
         });
 
-        test('AC-DOM-001-3: Domain Selection - should display domain details when selected', async ({ page }) => {
+        test('AC-DOM-001-3: Domain Selection - should display domain details when selected', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             // Wait for list to load
@@ -71,7 +76,9 @@ test.describe('Domains', () => {
      * US-DOM-002: View Domain Details
      */
     test.describe('US-DOM-002: View Domain Details', () => {
-        test('AC-DOM-002-1: Display Basic Information - should show domain name', async ({ page }) => {
+        test('AC-DOM-002-1: Display Basic Information - should show domain name', async ({
+            page,
+        }) => {
             await domainsPage.goto();
             await page.waitForTimeout(1000);
 
@@ -92,7 +99,9 @@ test.describe('Domains', () => {
      * US-DOM-003: Create New Domain
      */
     test.describe('US-DOM-003: Create New Domain', () => {
-        test('AC-DOM-003-1: Access Create Form - should open create modal', async ({ page }) => {
+        test('AC-DOM-003-1: Access Create Form - should open create modal', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             // Click add button
@@ -102,7 +111,9 @@ test.describe('Domains', () => {
             await expect(domainsPage.dialog).toBeVisible();
         });
 
-        test('AC-DOM-003-4: Successful Creation - should create domain', async ({ page }) => {
+        test('AC-DOM-003-4: Successful Creation - should create domain', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             const timestamp = Date.now();
@@ -128,7 +139,9 @@ test.describe('Domains', () => {
      * US-DOM-004: Edit Domain Configuration
      */
     test.describe('US-DOM-004: Edit Domain Configuration', () => {
-        test('AC-DOM-004-1: Access Edit Mode - should open edit modal', async ({ page }) => {
+        test('AC-DOM-004-1: Access Edit Mode - should open edit modal', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             // Check if there are any domains
@@ -151,7 +164,9 @@ test.describe('Domains', () => {
      * US-DOM-005: Delete Domain
      */
     test.describe('US-DOM-005: Delete Domain', () => {
-        test('AC-DOM-005-1: Delete Confirmation - should show confirmation dialog', async ({ page }) => {
+        test('AC-DOM-005-1: Delete Confirmation - should show confirmation dialog', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             // Check if there are any domains
@@ -174,7 +189,9 @@ test.describe('Domains', () => {
      * US-DOM-006: Manage OAuth Applications
      */
     test.describe('US-DOM-006: Manage OAuth Applications', () => {
-        test('AC-DOM-006-1: View Applications List - should show applications tab', async ({ page }) => {
+        test('AC-DOM-006-1: View Applications List - should show applications tab', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             // Check if there are any domains
@@ -197,7 +214,9 @@ test.describe('Domains', () => {
      * US-DOM-007: Configure OAuth Authentication
      */
     test.describe('US-DOM-007: Configure OAuth Authentication', () => {
-        test('AC-DOM-007-1: View Auth Sources - should show authentication tab', async ({ page }) => {
+        test('AC-DOM-007-1: View Auth Sources - should show authentication tab', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             // Check if there are any domains
@@ -220,7 +239,9 @@ test.describe('Domains', () => {
      * US-DOM-010: View Domain Users
      */
     test.describe('US-DOM-010: View Domain Users', () => {
-        test('AC-DOM-010-1: Display Users List - should show users in domain', async ({ page }) => {
+        test('AC-DOM-010-1: Display Users List - should show users in domain', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             // Check if there are any domains
@@ -243,7 +264,9 @@ test.describe('Domains', () => {
      * US-DOM-011: View Domain Extensions
      */
     test.describe('US-DOM-011: View Domain Extensions', () => {
-        test('AC-DOM-011-1: View Extensions - should show extensions tab', async ({ page }) => {
+        test('AC-DOM-011-1: View Extensions - should show extensions tab', async ({
+            page,
+        }) => {
             await domainsPage.goto();
 
             // Check if there are any domains

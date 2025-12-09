@@ -21,9 +21,9 @@ import { IconComponent } from './icon.component';
     template: `
         <div
             [class]="
-                'absolute right-16 top-2 flex w-12 items-center space-x-2 overflow-hidden rounded-sm px-2 sm:relative sm:right-auto sm:top-auto sm:w-full! sm:bg-base-100 ' +
+                'sm:bg-base-100 absolute top-2 right-16 flex w-12 items-center space-x-2 overflow-hidden rounded-sm px-2 sm:relative sm:top-auto sm:right-auto sm:w-full! ' +
                 (focused() || filter() || dictate()
-                    ? 'w-4/5 bg-base-100 bg-opacity-100 text-base-content'
+                    ? 'bg-base-100 bg-opacity-100 text-base-content w-4/5'
                     : 'bg-opacity-20 text-base-100 sm:bg-opacity-20')
             "
             widget
@@ -33,7 +33,7 @@ import { IconComponent } from './icon.component';
             <icon class="text-xl">search</icon>
             <input
                 #input
-                class="w-24 flex-1 border-none bg-base-100 bg-opacity-0 outline-hidden"
+                class="bg-base-100 bg-opacity-0 w-24 flex-1 border-none outline-hidden"
                 [ngModel]="filter()"
                 (ngModelChange)="filter.set($event); post()"
                 (focus)="focused.set(true); focus.emit()"

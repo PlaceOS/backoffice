@@ -19,7 +19,7 @@ export interface ReorderItemsOptions {
     selector: 'reorder-items-modal',
     template: `
         <header
-            class="flex w-full items-center justify-between border-b border-base-200 p-2"
+            class="border-base-200 flex w-full items-center justify-between border-b p-2"
         >
             <h2 class="p-2">Reorder {{ type }}</h2>
             <button icon matRipple mat-dialog-close>
@@ -29,13 +29,13 @@ export interface ReorderItemsOptions {
         <main class="max-h-[65vh] min-w-[20rem] overflow-auto p-4">
             <div
                 cdkDropList
-                class="flex w-full flex-col divide-y divide-base-200 rounded-sm border border-base-200"
+                class="divide-base-200 border-base-200 flex w-full flex-col divide-y rounded-sm border"
                 (cdkDropListDropped)="drop($event)"
             >
                 @for (item of items | async; track item; let i = $index) {
                     <div class="flex items-center space-x-2 p-2" cdkDrag>
                         <div
-                            class="flex h-8 min-w-8 items-center justify-center rounded-full bg-base-200 text-sm font-medium"
+                            class="bg-base-200 flex h-8 min-w-8 items-center justify-center rounded-full text-sm font-medium"
                         >
                             {{ i + 1 }}
                         </div>
@@ -44,7 +44,7 @@ export interface ReorderItemsOptions {
                             <div></div>
                         }
                         <div
-                            class="h-12 w-full border-4 border-dashed border-base-300 bg-base-200"
+                            class="border-base-300 bg-base-200 h-12 w-full border-4 border-dashed"
                             *cdkDragPlaceholder
                         ></div>
                     </div>
@@ -52,7 +52,7 @@ export interface ReorderItemsOptions {
             </div>
         </main>
         <footer
-            class="flex items-center justify-end space-x-2 border-t border-base-200 p-2"
+            class="border-base-200 flex items-center justify-end space-x-2 border-t p-2"
         >
             <button
                 btn

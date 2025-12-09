@@ -13,7 +13,7 @@ import { AuthenticatedImageDirective } from './authenticated-image.directive';
                 @if (!user().photo && !user().image) {
                     <div
                         initials
-                        class="uppercase text-base-content text-opacity-80"
+                        class="text-base-content text-opacity-80 uppercase"
                     >
                         {{ initials() }}
                     </div>

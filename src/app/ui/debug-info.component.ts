@@ -11,11 +11,11 @@ import { TranslatePipe } from './translate.pipe';
     template: `
         @if (debug_enabled()) {
             <div
-                class="m-2 flex flex-col space-y-2 rounded-xl border border-base-300 p-2"
+                class="border-base-300 m-2 flex flex-col space-y-2 rounded-xl border p-2"
             >
                 @if (compact()) {
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-sm bg-info text-info-content"
+                        class="bg-info text-info-content flex h-10 w-10 items-center justify-center rounded-sm"
                         [matTooltip]="'COMMON.DEBUG_ENABLED' | translate"
                         matTooltipPosition="right"
                     >
@@ -32,7 +32,7 @@ import { TranslatePipe } from './translate.pipe';
                         matTooltipPosition="right"
                     >
                         <icon
-                            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl opacity-10"
+                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl opacity-10"
                             >sdk</icon
                         >
                         <div>{{ debug_module_count() }}</div>
@@ -48,14 +48,14 @@ import { TranslatePipe } from './translate.pipe';
                         matTooltipPosition="right"
                     >
                         <icon
-                            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl opacity-10"
+                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl opacity-10"
                             >business_messages</icon
                         >
                         <div>{{ debug_message_count() }}</div>
                     </div>
                 } @else {
                     <div
-                        class="mono rounded-xl bg-info p-1 text-center text-xs text-info-content"
+                        class="mono bg-info text-info-content rounded-xl p-1 text-center text-xs"
                     >
                         {{ 'COMMON.DEBUG_ENABLED' | translate }}
                     </div>
@@ -78,7 +78,7 @@ import { TranslatePipe } from './translate.pipe';
                     <button
                         icon
                         matRipple
-                        class="rounded-lg border border-base-300 bg-base-100"
+                        class="border-base-300 bg-base-100 rounded-lg border"
                         [matMenuTriggerFor]="menu"
                     >
                         <icon>more_horiz</icon>
