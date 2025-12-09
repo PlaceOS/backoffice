@@ -44,7 +44,7 @@ import { SystemStateService } from './system-state.service';
             @if (item.id && item.modules && !hide_exec) {
                 <section exec class="p-4">
                     <h3
-                        class="mb-2 w-full rounded-sm bg-base-200 p-4 text-lg font-medium"
+                        class="bg-base-200 mb-2 w-full rounded-sm p-4 text-lg font-medium"
                     >
                         {{ 'COMMON.EXECUTE_COMMAND' | translate }}
                     </h3>
@@ -54,13 +54,13 @@ import { SystemStateService } from './system-state.service';
                 </section>
             }
             <h3
-                class="mx-auto mb-2 w-[calc(100%-2rem)] rounded-sm bg-base-200 p-4 text-lg font-medium"
+                class="bg-base-200 mx-auto mb-2 w-[calc(100%-2rem)] rounded-sm p-4 text-lg font-medium"
             >
                 {{ 'SYSTEMS.MODULE_LIST' | translate }}
             </h3>
             <section add-module class="flex w-full flex-wrap space-x-2 px-4">
                 <item-search-field
-                    class="grow h-12 w-full sm:w-auto sm:flex-1"
+                    class="h-12 w-full grow sm:w-auto sm:flex-1"
                     name="module"
                     [placeholder]="'SYSTEMS.FIND_MODULE' | translate"
                     [query_fn]="query_fn"
@@ -203,7 +203,7 @@ import { SystemStateService } from './system-state.service';
                     ></button>
                     @if (row.running && row.connected === undefined) {
                         <mat-spinner
-                            class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                            class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                             diameter="32"
                         />
                     }
@@ -229,7 +229,7 @@ import { SystemStateService } from './system-state.service';
                             <a
                                 icon
                                 matRipple
-                                class="h-6 w-6 min-w-6 max-w-6 rounded-full border border-base-200 bg-info text-xs text-info-content"
+                                class="border-base-200 bg-info text-info-content h-6 w-6 max-w-6 min-w-6 rounded-full border text-xs"
                                 [matTooltip]="row.edge_id"
                                 [routerLink]="['/admin', 'edge', row.edge_id]"
                             >
@@ -379,7 +379,7 @@ export class SystemModulesComponent extends AsyncHandler {
             const colors: Record<number, string> = {};
             for (const i in list) {
                 if (list[i].has_runtime_error) {
-                    colors[i] = 'var(--erl)';
+                    colors[i] = 'var(--error-light)';
                 }
             }
             return colors;
