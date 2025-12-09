@@ -85,26 +85,31 @@ export default defineConfig({
         {
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] },
+            testIgnore: '**/*.mobile.spec.ts',
         },
 
         {
             name: 'firefox',
             use: { ...devices['Desktop Firefox'] },
+            testIgnore: '**/*.mobile.spec.ts',
         },
 
         {
             name: 'webkit',
             use: { ...devices['Desktop Safari'] },
+            testIgnore: '**/*.mobile.spec.ts',
         },
 
-        // Mobile browsers - disabled by default as UI requires different test flows
-        // {
-        //     name: 'mobile-chrome',
-        //     use: { ...devices['Pixel 5'] },
-        // },
-        // {
-        //     name: 'mobile-safari',
-        //     use: { ...devices['iPhone 12'] },
-        // },
+        // Mobile browsers - use dedicated mobile test files
+        {
+            name: 'mobile-chrome',
+            use: { ...devices['Pixel 5'] },
+            testMatch: '**/*.mobile.spec.ts',
+        },
+        {
+            name: 'mobile-safari',
+            use: { ...devices['iPhone 12'] },
+            testMatch: '**/*.mobile.spec.ts',
+        },
     ],
 });

@@ -9,3 +9,7 @@ export { UsersPage } from './users.page';
 export { ZonesPage } from './zones.page';
 export { DomainsPage } from './domains.page';
 export { AdminPage } from './admin.page';
+
+// Mobile page objects
+export { MobileBasePage } from './mobile-base.page';
+export { MobileSystemsPage } from './mobile-systems.page';
