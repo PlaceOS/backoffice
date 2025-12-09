@@ -1,33 +1,65 @@
-# PlaceOS Angular Backoffice UI
+# PlaceOS Backoffice
 
 ![PROD](https://github.com/PlaceOS/backoffice/workflows/PROD/badge.svg)
 ![UAT](https://github.com/PlaceOS/backoffice/workflows/UAT/badge.svg)
 [![CodeFactor](https://www.codefactor.io/repository/github/PlaceOS/backoffice/badge/master)](https://www.codefactor.io/repository/github/PlaceOS/backoffice/overview/master)
 
+An Angular 20 admin UI for managing PlaceOS building automation systems. Built with standalone components, zoneless change detection with signals, and PlaceOS backend API integration.
+
+## Tech Stack
+
+- **Framework**: Angular 20 with standalone components and signals
+- **Build**: Nx 22 + Vite 7 + @analogjs/vite-plugin-angular
+- **Testing**: Vitest (unit) + Playwright (E2E)
+- **Styling**: Tailwind CSS 4
+- **Backend**: @placeos/ts-client for PlaceOS REST API integration
+- **Real-time**: MQTT for dashboard updates
+
 ## Setup
 
-1. Install [NodeJS](https://nodejs.org/en/download/current/)
-1. Run `npm install` in the root folder
-1. Run `npm install --global @angular/cli` to Install [Angular CLI](https://github.com/angular/angular-cli)
+1. Install [Node.js](https://nodejs.org/en/download/current/)
+2. Run `npm install` in the root folder
 
 ## Development
 
-To run the dev server use the command `ng serve`
+```bash
+npm start                    # Dev server at localhost:4200
+```
 
-By default the dev web server proxies all requests to the set live system, if you wish to use a mock system change `mock` to true in `src/assets/settings.js`
+The dev server proxies requests to the configured PlaceOS backend (see `config/proxy.conf.js`).
 
-## Compilation
+## Build
 
-Compile the application into static files using `ng build`
+```bash
+npm run build                # Production build
+```
 
-The command takes the arguments `--prod` to minify the resulting build and `--aot` to compile the angular code using the angular Ahead of Time compiler.
+Production builds output to `dist/backoffice/browser`.
 
-Application/Runtime settings can be found in `src/assets/settings.json`
+## Testing
 
-## Tests
+```bash
+npm test                     # Unit tests (Vitest)
+npx nx e2e backoffice        # E2E tests (Playwright)
+```
 
-Unit tests can be run using `npm run test:local`
-Code coverage can be run using `npm run coverage`
-E2E tests can be run using `npm run test:e2e`
+## Linting
 
-## Usage
+```bash
+npx nx lint backoffice       # ESLint
+```
+
+## Project Structure
+
+```
+src/app/
+├── common/           # Shared utilities and services
+├── ui/               # Shared UI components and guards
+├── overlays/         # Modal/dialog components
+└── [features]/       # Feature modules (systems, domains, drivers,
+                      # modules, repositories, triggers, users, zones, etc.)
+```
+
+## License
+
+MIT
