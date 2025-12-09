@@ -1,6 +1,6 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-72MUDUZF.js";
+} from "./chunk-OOPOUWXE.js";
 import {
   getUnixTime
 } from "./chunk-MXECN6VN.js";
@@ -10,11 +10,11 @@ import {
 } from "./chunk-GTRRNUZ6.js";
 import {
   UploadsService
-} from "./chunk-TM4V3C5C.js";
+} from "./chunk-IILHXXQZ.js";
 import {
   tr
 } from "./chunk-5XCHDAM3.js";
-import "./chunk-KWUQFCBO.js";
+import "./chunk-ATZN34PE.js";
 import "./chunk-PUYRIMA6.js";
 import {
   ActivatedRoute,
@@ -33,11 +33,11 @@ import {
 import "./chunk-GWVX43QP.js";
 import {
   BackofficeUsersService
-} from "./chunk-ZDBP7OUD.js";
+} from "./chunk-T6C2VOGJ.js";
 import {
   SettingsService,
   currentUser
-} from "./chunk-QMI3AHNO.js";
+} from "./chunk-WM7PBM5T.js";
 import "./chunk-W3LP6CHX.js";
 import {
   format
@@ -3240,7 +3240,7 @@ var UnauthorisedComponent = class _UnauthorisedComponent {
   static \u0275fac = function UnauthorisedComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _UnauthorisedComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _UnauthorisedComponent, selectors: [["app-unauthorised"]], decls: 12, vars: 9, consts: [[1, "unauthorised", "border-gray-300", "m-4", "rounded-sm", "border", "bg-base-100", "px-8", "pb-8", "pt-2", "text-center", "text-base-content"]], template: function UnauthorisedComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _UnauthorisedComponent, selectors: [["app-unauthorised"]], decls: 12, vars: 9, consts: [[1, "unauthorised", "bg-base-100", "text-base-content", "m-4", "rounded-sm", "border", "border-gray-300", "px-8", "pt-2", "pb-8", "text-center"]], template: function UnauthorisedComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275domElementStart(0, "div", 0)(1, "h1");
       \u0275\u0275text(2, "403");
@@ -3273,7 +3273,7 @@ var UnauthorisedComponent = class _UnauthorisedComponent {
     type: Component,
     args: [{ selector: "app-unauthorised", template: `
         <div
-            class="unauthorised border-gray-300 m-4 rounded-sm border bg-base-100 px-8 pb-8 pt-2 text-center text-base-content"
+            class="unauthorised bg-base-100 text-base-content m-4 rounded-sm border border-gray-300 px-8 pt-2 pb-8 text-center"
         >
             <h1>403</h1>
             <h3>{{ 'COMMON.FORBIDDEN' | translate }}</h3>
@@ -3297,47 +3297,47 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-YEEUJG4E.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-RAWZGJ5D.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-RR5OGO3O.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-KIEYJDDE.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-HNUACZRB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-3XNI4LFK.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-GSN5QVO2.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-UCRVEAES.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-HM2SI5XR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-TX57GNKO.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-EKS3T4WL.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QN42OY2U.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-CDPIUMEK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-RUVOS76M.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-FE2RTIUV.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-MSEMOOVM.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-2YT456CJ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-VSBDO2TR.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -3359,7 +3359,7 @@ var appConfig = {
 var is_mock = location.href.includes("mock=true") || localStorage.getItem("mock") === "true";
 var bootstrap = async () => {
   if (is_mock) {
-    await import("./chunk-5JKWR5DN.js");
+    await import("./chunk-EDJ6QVKJ.js");
   }
   bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
 };
