@@ -1,12 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { moduleRuntimeError, showModule } from '@placeos/ts-client';
-import { BehaviorSubject, of } from 'rxjs';
-import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { AsyncHandler } from '../common/async-handler.class';
+import {
+    moduleRuntimeError,
+    PlaceModule,
+    showModule,
+} from '@placeos/ts-client';
+import { firstValueFrom } from 'rxjs';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 
@@ -14,32 +15,34 @@ import { TranslatePipe } from './translate.pipe';
     selector: 'module-runtime-errors-modal',
     template: `
         <header
-            class="border-base-100 bg-base-200 sticky top-0 z-10 mx-auto my-2 flex max-w-full items-center justify-between rounded-sm border px-4 py-2"
+            class="border-base-100 bg-base-200 sticky top-0 z-10 mx-auto my-2 flex h-14 w-[calc(100%-1rem)] max-w-full items-center justify-between rounded-sm border px-2"
         >
-            <h3 class="px-2">
-                {{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }} -
-                {{ (module | async)?.custom_name || (module | async)?.name }}
+            <h3 class="flex items-center space-x-2 px-2 text-xl font-medium">
+                <div>{{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }}</div>
+                <div class="bg-base-100 rounded px-2 py-1 font-mono text-xs">
+                    {{ module()?.custom_name || module()?.name }}
+                </div>
             </h3>
-            @if (!loading) {
+            @if (!loading()) {
                 <button icon matRipple mat-dialog-close>
                     <icon>close</icon>
                 </button>
             }
         </header>
-        @if (!loading) {
+        @if (!loading()) {
             <main class="max-h-[65vh] overflow-auto p-4">
-                @if ((errors | async)?.length) {
+                @if (errors().length) {
                     <code>
                         {{
-                            (errors | async)?.join(
+                            errors().join(
                                 '
-                '
+'
                             )
                         }}
                     </code>
                 } @else {
                     <div
-                        class="flex h-64 w-[24rem] flex-col items-center justify-center space-y-2 opacity-30"
+                        class="flex h-64 w-md flex-col items-center justify-center space-y-2 opacity-30"
                     >
                         {{ 'MODULES.RUNTIME_ERRORS_NO' | translate }}
                     </div>
@@ -58,7 +61,6 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [``],
     imports: [
-        CommonModule,
         TranslatePipe,
         MatProgressSpinnerModule,
         IconComponent,
@@ -66,31 +68,32 @@ import { TranslatePipe } from './translate.pipe';
         MatRippleModule,
     ],
 })
-export class ModuleRuntimeErrorsModalComponent
-    extends AsyncHandler
-    implements OnInit
-{
-    private _module_id = inject(MAT_DIALOG_DATA);
+export class ModuleRuntimeErrorsModalComponent {
+    private _module_id = inject<string>(MAT_DIALOG_DATA);
 
-    public loading = false;
-    public readonly id = new BehaviorSubject('');
-    public readonly module = this.id.pipe(
-        switchMap((id) => {
-            this.loading = true;
-            return showModule(id);
-        }),
-        shareReplay(1),
-    );
-    public readonly errors = this.module.pipe(
-        switchMap(({ id }) =>
-            moduleRuntimeError(id).pipe(catchError(() => of([] as string[]))),
-        ),
-        tap(() => (this.loading = false)),
-        shareReplay(1),
-    );
+    public readonly loading = signal(true);
+    public readonly module = signal<PlaceModule | null>(null);
+    public readonly errors = signal<string[]>([]);
 
-    public ngOnInit() {
-        this.id.next(this._module_id);
-        this.subscription('errors', this.errors.subscribe());
+    constructor() {
+        this._loadData();
+    }
+
+    private async _loadData() {
+        this.loading.set(true);
+        try {
+            const module = await firstValueFrom(showModule(this._module_id));
+            this.module.set(module);
+            try {
+                const errors = await firstValueFrom(
+                    moduleRuntimeError(module.id),
+                );
+                this.errors.set(errors);
+            } catch {
+                this.errors.set([]);
+            }
+        } finally {
+            this.loading.set(false);
+        }
     }
 }
