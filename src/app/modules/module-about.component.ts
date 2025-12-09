@@ -10,7 +10,7 @@ import { RouterModule } from '@angular/router';
 import { CustomTooltipComponent } from '../ui/custom-tooltip.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { IconComponent } from '../ui/icon.component';
-import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
+import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors-modal.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { ModuleStateService } from './module-state.service';

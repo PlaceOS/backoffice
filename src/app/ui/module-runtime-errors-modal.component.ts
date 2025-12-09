@@ -13,7 +13,9 @@ import { TranslatePipe } from './translate.pipe';
 @Component({
     selector: 'module-runtime-errors-modal',
     template: `
-        <header class="h-14">
+        <header
+            class="border-base-100 bg-base-200 sticky top-0 z-10 mx-auto my-2 flex max-w-full items-center justify-between rounded-sm border px-4 py-2"
+        >
             <h3 class="px-2">
                 {{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }} -
                 {{ (module | async)?.custom_name || (module | async)?.name }}

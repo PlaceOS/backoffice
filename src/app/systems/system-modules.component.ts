@@ -32,7 +32,7 @@ import { ContextMenuComponent } from '../ui/context-menu.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { IconComponent } from '../ui/icon.component';
-import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
+import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors-modal.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { SystemStateService } from './system-state.service';
