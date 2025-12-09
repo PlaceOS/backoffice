@@ -3,9 +3,36 @@ name: TEST
 on:
     pull_request:
         branches: [develop]
+    workflow_call:
 
 jobs:
-    test:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Cache node modules
+              id: cache
+              uses: actions/cache@v4
+              with:
+                  path: node_modules
+                  key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-build-
+
+            - name: Setup Node.js environment
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+
+            - name: NPM install
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: npm install --force
+
+            - name: Lint
+              run: npx nx lint backoffice
+
+    unit-test:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -40,8 +67,54 @@ jobs:
             - name: Setup version
               run: npm run postinstall
 
-            - name: Lint
-              run: npx nx lint backoffice
-
-            - name: Test
+            - name: Unit tests
               run: npx nx test backoffice --runInBand
+
+    e2e-test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Cache node modules
+              id: cache
+              uses: actions/cache@v4
+              with:
+                  path: node_modules
+                  key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-build-
+
+            - name: Setup Node.js environment
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+
+            - name: NPM install
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: npm install --force
+
+            - name: Cache nx build cache
+              id: cache-nx
+              uses: actions/cache@v4
+              with:
+                  path: node_modules/.cache/nx
+                  key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-nx-
+
+            - name: Setup version
+              run: npm run postinstall
+
+            - name: Install Playwright browsers
+              run: npx playwright install --with-deps chromium
+
+            - name: Run E2E tests
+              run: npx nx e2e e2e --project=chromium
+
+            - name: Upload Playwright report
+              uses: actions/upload-artifact@v4
+              if: failure()
+              with:
+                  name: playwright-report
+                  path: playwright-report/
+                  retention-days: 7

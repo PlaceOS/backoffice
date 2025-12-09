@@ -5,7 +5,29 @@ on:
         branches: [develop, release/**, rc/**, release]
 
 jobs:
+    # Run tests for all branches
+    test:
+        uses: ./.github/workflows/test.yml
+
+    # Check if this is a production build (release branches)
+    check-production:
+        runs-on: ubuntu-latest
+        outputs:
+            is_production: ${{ steps.check.outputs.is_production }}
+        steps:
+            - name: Check if production branch
+              id: check
+              run: |
+                  if [[ "${{ github.ref }}" == refs/heads/release* ]] || [[ "${{ github.ref }}" == "refs/heads/release" ]]; then
+                      echo "is_production=true" >> $GITHUB_OUTPUT
+                  else
+                      echo "is_production=false" >> $GITHUB_OUTPUT
+                  fi
+
     build:
+        needs: [test, check-production]
+        # For production: require tests to pass. For non-production: run regardless of test result
+        if: always() && (needs.check-production.outputs.is_production == 'false' || needs.test.result == 'success')
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
