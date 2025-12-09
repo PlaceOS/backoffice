@@ -1,21 +1,21 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-5J7CE25R.js";
+} from "./chunk-NK7FXEDG.js";
 import {
   getUnixTime
 } from "./chunk-MXECN6VN.js";
 import {
   MatProgressBar,
   MatProgressBarModule
-} from "./chunk-GTRRNUZ6.js";
+} from "./chunk-OBX2CJKT.js";
 import {
   UploadsService
-} from "./chunk-IILHXXQZ.js";
+} from "./chunk-Y4UIOVDN.js";
 import {
   tr
-} from "./chunk-5XCHDAM3.js";
-import "./chunk-ATZN34PE.js";
-import "./chunk-PUYRIMA6.js";
+} from "./chunk-AX7CZQ4V.js";
+import "./chunk-AB2DELE4.js";
+import "./chunk-L4LNMNAU.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -23,21 +23,21 @@ import {
   RouterOutlet,
   provideRouter,
   withHashLocation
-} from "./chunk-HLPJDMLG.js";
-import "./chunk-JGKWW7VX.js";
-import "./chunk-2N4WVO5O.js";
+} from "./chunk-BFQZUVQ3.js";
+import "./chunk-KACAXRUK.js";
+import "./chunk-R3CS2OQD.js";
 import {
   MatTooltip,
   MatTooltipModule
-} from "./chunk-BFILZFNY.js";
-import "./chunk-GWVX43QP.js";
+} from "./chunk-457I3P7O.js";
+import "./chunk-REQ7BP4U.js";
 import {
   BackofficeUsersService
-} from "./chunk-UKPYILA6.js";
+} from "./chunk-QNJSC2X3.js";
 import {
   SettingsService,
   currentUser
-} from "./chunk-JZVO25QW.js";
+} from "./chunk-YOAPN2AS.js";
 import "./chunk-W3LP6CHX.js";
 import {
   format
@@ -49,7 +49,7 @@ import "./chunk-4CBXDUSX.js";
 import "./chunk-W3GXKXZC.js";
 import {
   MatDialog
-} from "./chunk-WF6YZHUO.js";
+} from "./chunk-6DCZX4UE.js";
 import {
   BasePortalOutlet,
   CdkPortalOutlet,
@@ -60,33 +60,33 @@ import {
   TemplatePortal,
   createGlobalPositionStrategy,
   createOverlayRef
-} from "./chunk-BKRK4NUB.js";
+} from "./chunk-UPZUGYHP.js";
 import {
   AsyncHandler
-} from "./chunk-RAVBIGYQ.js";
-import "./chunk-2WXWFTBN.js";
+} from "./chunk-HZ7P5O2S.js";
+import "./chunk-WJHMIHHS.js";
 import {
   IconComponent
-} from "./chunk-POU26KIO.js";
+} from "./chunk-RYIKAYVN.js";
 import {
   bootstrapApplication
-} from "./chunk-X6AVAIR4.js";
+} from "./chunk-USSSLHL5.js";
 import {
   notifyInfo,
   setNotifyOutlet
 } from "./chunk-ZMPXDLFL.js";
 import {
   MatRippleLoader
-} from "./chunk-ZDWHOOB3.js";
+} from "./chunk-F2GG244F.js";
 import {
   MatRippleModule
-} from "./chunk-VDOGH5QV.js";
+} from "./chunk-ZXSXDT5W.js";
 import {
   LocaleService,
   TranslatePipe,
   setTranslationService
-} from "./chunk-GUX2IT3J.js";
-import "./chunk-2VKYFPZX.js";
+} from "./chunk-JGQFOLKM.js";
+import "./chunk-XCUSELP4.js";
 import {
   BreakpointObserver,
   Breakpoints,
@@ -99,7 +99,7 @@ import {
   _IdGenerator,
   _StructuralStylesLoader,
   _animationsDisabled
-} from "./chunk-47BQ5GYC.js";
+} from "./chunk-WRCAB6XW.js";
 import {
   ApplicationRef,
   AsyncPipe,
@@ -181,7 +181,7 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-HTG7JMGL.js";
+} from "./chunk-HV66NOZY.js";
 import {
   $s,
   As,
@@ -202,7 +202,7 @@ import {
   takeUntil,
   xs,
   yn
-} from "./chunk-72HWXKQ6.js";
+} from "./chunk-K7VBXBIC.js";
 import {
   __spreadValues
 } from "./chunk-VYXW4D3Z.js";
@@ -3297,47 +3297,47 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-HRQJBNNV.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-N7GXEQM7.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-44FHN72H.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-7EMGA7BE.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-Y2ZCYWNS.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-VEFXHD3W.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-TLELQENI.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-53IN5ANZ.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-I6FGJ2I6.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-TWV3ZCWI.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-5NKENCUR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-VU6XDZPJ.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-NIABIMBY.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-KIDP4CTK.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-MZMFT2R4.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QCGOF377.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-6MFDZ5OU.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-52U3OWOB.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -3359,7 +3359,7 @@ var appConfig = {
 var is_mock = location.href.includes("mock=true") || localStorage.getItem("mock") === "true";
 var bootstrap = async () => {
   if (is_mock) {
-    await import("./chunk-EDJ6QVKJ.js");
+    await import("./chunk-LANPPJRO.js");
   }
   bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
 };
