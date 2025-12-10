@@ -12,6 +12,7 @@ jobs:
     # Build job runs immediately without waiting for tests
     build:
         runs-on: ubuntu-latest
+        timeout-minutes: 3
         outputs:
             configuration: ${{ steps.build_ext.outputs.configuration }}
             deploy_branch: ${{ steps.build_ext.outputs.deploy_branch }}
@@ -96,6 +97,7 @@ jobs:
         needs: [build]
         if: needs.build.outputs.is_production == 'false'
         runs-on: ubuntu-latest
+        timeout-minutes: 3
         steps:
             - uses: actions/checkout@v4
 
@@ -127,6 +129,7 @@ jobs:
         needs: [build, test]
         if: needs.build.outputs.is_production == 'true'
         runs-on: ubuntu-latest
+        timeout-minutes: 3
         steps:
             - uses: actions/checkout@v4
 
