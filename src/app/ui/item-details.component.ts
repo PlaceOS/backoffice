@@ -21,7 +21,9 @@ export interface DisplayItem {
     tls?: boolean;
     running?: boolean;
     role?: number;
-    toJSON: () => Record<string, any>;
+    domain?: string;
+    tags?: unknown[];
+    toJSON: () => Record<string, unknown>;
 }
 
 @Component({
@@ -38,9 +40,9 @@ export interface DisplayItem {
                     }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <a class="mono text-xs opacity-60" (click)="copyID()">
+                    <button class="mono text-xs opacity-60" (click)="copyID()">
                         {{ item()?.id }}
-                    </a>
+                    </button>
                     @if (driver_type) {
                         <div
                             class="bg-info text-info-content rounded-xl px-2 py-1 text-xs"
@@ -225,18 +227,18 @@ export class ItemDetailsComponent {
     /** Duplicate the active item */
     public readonly duplicateItem = () => this._service.duplicate();
     /** Create a new item using the current as a template */
-    public readonly newFromItem = () => this._service.create(true);
+    public readonly newFromItem = () => this._service.create(undefined, true);
 
     public get is_admin() {
         return this._users.current().sys_admin;
     }
 
     public get domain() {
-        return (this.item() as any)?.domain || '';
+        return this.item()?.domain || '';
     }
 
     public get tags() {
-        return (this.item() as any)?.tags || [];
+        return this.item()?.tags || [];
     }
 
     public get driver_type(): string {
@@ -260,7 +262,7 @@ export class ItemDetailsComponent {
      */
     public exportAsTSV() {
         const item = this.item()?.toJSON();
-        const filename = `${item?.name.toLowerCase().split(' ').join('_')}.${this.type()}.tsv`;
+        const filename = `${(item?.name as string).toLowerCase().split(' ').join('_')}.${this.type()}.tsv`;
         const ignore_keys = ['module_list', 'settings', '_type', 'version'];
         const csv_data = jsonToCsv(
             [item],

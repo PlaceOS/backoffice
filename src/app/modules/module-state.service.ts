@@ -38,7 +38,7 @@ export class ModuleStateService {
     /** Active module */
     public readonly item: Observable<PlaceModule> = this._state.item.pipe(
         filter((_) => _ instanceof PlaceModule),
-    ) as any;
+    ) as Observable<PlaceModule>;
     /** Observable for associated settings of the active item */
     public readonly associated_settings = this._state.active_item$.pipe(
         debounceTime(300),
@@ -74,18 +74,18 @@ export class ModuleStateService {
             );
         }),
         map((details) => details.data),
-        tap((_) => this._loading.next(false)),
+        tap(() => this._loading.next(false)),
         shareReplay(1),
     );
 
     public get active_item(): PlaceModule {
-        return this._state.active_item as any;
+        return this._state.active_item as PlaceModule;
     }
 
     public async toggleModuleState() {
         const method = this.active_item.running ? stopModule : startModule;
         const error = await method(this.active_item.id)
-            .pipe(map((_) => null))
+            .pipe(map(() => null))
             .toPromise()
             .catch((err) => err);
         if (error) {
@@ -111,7 +111,7 @@ export class ModuleStateService {
     }
 
     /** View Results of the execute */
-    private viewDetails(content: any) {
+    private viewDetails(content: unknown) {
         this._dialog.open<ViewResponseModalComponent>(
             ViewResponseModalComponent,
             {

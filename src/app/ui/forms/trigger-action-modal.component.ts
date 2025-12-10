@@ -1,6 +1,7 @@
 import {
     Component,
     EventEmitter,
+    OnInit,
     Output,
     inject,
     signal,
@@ -10,6 +11,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceSystem,
     PlaceTrigger,
+    TriggerActions,
     TriggerFunction,
     TriggerMailer,
     updateTrigger,
@@ -207,7 +209,10 @@ export interface TriggerActionModalData {
         MatSelectModule,
     ],
 })
-export class TriggerActionModalComponent extends AsyncHandler {
+export class TriggerActionModalComponent
+    extends AsyncHandler
+    implements OnInit
+{
     private _dialog =
         inject<MatDialogRef<TriggerActionModalComponent>>(MatDialogRef);
     private _data = inject<TriggerActionModalData>(MAT_DIALOG_DATA);
@@ -219,7 +224,7 @@ export class TriggerActionModalComponent extends AsyncHandler {
     /** Form fields for trigger action */
     public form = generateTriggerActionForm(this._data.action);
     /** Store for changes to actions */
-    public actions: any;
+    public actions: TriggerActions;
     /** List of seperators for storing emails */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
     /** Variable to hold new email addresses */

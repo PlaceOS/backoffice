@@ -14,7 +14,7 @@ import { HashMap } from '../../common/types';
 
 import { MatRippleModule } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
-import { interval } from 'rxjs';
+import { interval, of } from 'rxjs';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { AdminClusterNodeComponent } from './cluster-node.component';
@@ -97,7 +97,9 @@ export class PlaceClusterDetailsComponent
     public cluster_list = signal<PlaceCluster[]>([]);
     public cluster_nodes = signal({});
     /** Map of clusters to CPU usage history */
-    public usage_history: HashMap<HashMap<any[]>> = {};
+    public usage_history: HashMap<
+        HashMap<Array<{ id: number; cpu: number; memory: number }>>
+    > = {};
     /** Whether cluster details are being loaded */
     public readonly loading = signal(false);
 
@@ -106,11 +108,11 @@ export class PlaceClusterDetailsComponent
         filter(() => !this.loading()),
         switchMap(() => {
             this.loading.set(true);
-            return queryClusters({ include_status: false } as any).pipe(
-                catchError((_) => ({ data: [] }) as any),
+            return queryClusters({ include_status: false }).pipe(
+                catchError(() => of({ data: [] as PlaceCluster[] })),
             );
         }),
-        map((resp: { data: any[] }) => resp.data),
+        map((resp: { data: PlaceCluster[] }) => resp.data),
         map((list) => {
             this.cluster_list.set(list || []);
             const date = Date.now();
@@ -118,20 +120,27 @@ export class PlaceClusterDetailsComponent
             this.cluster_list().forEach((cluster) => {
                 if (!this.usage_history[cluster.id])
                     this.usage_history[cluster.id] = {};
-                const nodes = [cluster, ...cluster.edge_nodes] as any;
+                const nodes = [cluster, ...cluster.edge_nodes] as Array<any>;
                 node_map[cluster.id] = nodes;
                 for (const node of nodes) {
-                    if (!this.usage_history[cluster.id][node.hostname]) {
-                        this.usage_history[cluster.id][node.hostname] = [];
+                    if (
+                        !this.usage_history[cluster.id][node.hostname as string]
+                    ) {
+                        this.usage_history[cluster.id][
+                            node.hostname as string
+                        ] = [];
                     }
-                    const block = this.usage_history[cluster.id][node.hostname];
+                    const block =
+                        this.usage_history[cluster.id][node.hostname as string];
                     block.unshift({
                         id: date,
                         cpu: node.total_cpu,
                         memory: node.memory_percentage,
                     });
                     if (block.length > 120) block.pop();
-                    this.usage_history[cluster.id][node.hostname] = [...block];
+                    this.usage_history[cluster.id][node.hostname as string] = [
+                        ...block,
+                    ];
                 }
             });
             this.cluster_nodes.set(node_map);

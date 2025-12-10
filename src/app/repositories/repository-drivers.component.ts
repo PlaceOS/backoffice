@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { PlaceRepository } from '@placeos/ts-client';
 
 import { MatRippleModule } from '@angular/material/core';
@@ -82,7 +82,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         MatRippleModule,
     ],
 })
-export class RepositoryDriversComponent extends AsyncHandler {
+export class RepositoryDriversComponent extends AsyncHandler implements OnInit {
     private _service = inject(RepositoriesStateService);
     private _router = inject(Router);
 
@@ -92,7 +92,7 @@ export class RepositoryDriversComponent extends AsyncHandler {
     public readonly driver_list = this._service.driver_list;
 
     public get item(): PlaceRepository {
-        return this._service.active_item as any;
+        return this._service.active_item as PlaceRepository;
     }
 
     public readonly newDriver = (d) => this._service.newDriver(d);

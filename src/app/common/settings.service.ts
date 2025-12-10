@@ -17,7 +17,7 @@ import { currentUser, current_user } from './user-state';
 declare global {
     interface Window {
         debug: boolean;
-        application: HashMap;
+        application: HashMap<unknown>;
     }
 }
 
@@ -35,11 +35,11 @@ export class SettingsService extends AsyncHandler {
     /** User's personal settings */
     private _user_settings = new BehaviorSubject<HashMap>({});
     /** Mapping of behaviour subjects */
-    private _subjects: HashMap<BehaviorSubject<any>> = {};
+    private _subjects: HashMap<BehaviorSubject<unknown>> = {};
     /** Mapping of observables */
-    private _observables: HashMap<Observable<any>> = {};
+    private _observables: HashMap<Observable<unknown>> = {};
     /** Mapping of pending settings */
-    private _pending_settings: HashMap = {};
+    private _pending_settings: HashMap<unknown> = {};
 
     /**
      * @hidden
@@ -50,12 +50,12 @@ export class SettingsService extends AsyncHandler {
     }
 
     /** Get observable for key */
-    public listen<T = any>(name: string): Observable<T> {
+    public listen<T = unknown>(name: string): Observable<T> {
         if (!this._observables[name]) {
             this._subjects[name] = new BehaviorSubject<T>(null);
             this._observables[name] = this._subjects[name].asObservable();
         }
-        return this._observables[name];
+        return this._observables[name] as Observable<T>;
     }
 
     /** Update observable value for key */
@@ -67,10 +67,10 @@ export class SettingsService extends AsyncHandler {
         this._subjects[name].next(value);
     }
 
-    public value<T = any>(name: string): T {
+    public value<T = unknown>(name: string): T {
         return !this._observables[name]
             ? null
-            : this._subjects[name].getValue();
+            : this._subjects[name].getValue() as T;
     }
 
     /** Page title */
@@ -104,8 +104,9 @@ export class SettingsService extends AsyncHandler {
     public async init() {
         this._applyTheme();
         if (this.get('debug')) window.debug = true;
-        if (this.get('app')?.name) {
-            this._app_name = this.get('app').name;
+        const app = this.get('app') as any;
+        if (app?.name) {
+            this._app_name = app.name;
         }
         this._app_name =
             location.pathname.replace(/[\\/]/g, '').trim() || this._app_name;
@@ -121,7 +122,7 @@ export class SettingsService extends AsyncHandler {
         );
         const user = await current_user.pipe(first((_) => !!_)).toPromise();
         const data = await showMetadata(user.id, 'settings').toPromise();
-        this._user_settings.next(data.details || {});
+        this._user_settings.next((data.details || {}) as HashMap);
         this._initDarkMode();
         this._applyTheme();
         this._setFontSize();
@@ -140,23 +141,23 @@ export class SettingsService extends AsyncHandler {
      * Get a setting
      * @param key Name of the setting. i.e. nested items can be grabbed using `.` to seperate key names
      */
-    public get<T = any>(key: string): T {
+    public get<T = unknown>(key: string): T {
         const keys = key.split('.');
         if (keys[0] !== 'app') {
             return (
                 getItemWithKeys(keys, this._pending_settings) ??
                 getItemWithKeys(keys, this._user_settings.getValue()) ??
-                getItemWithKeys(keys, DEFAULT_SETTINGS)
-            );
+                getItemWithKeys(keys, DEFAULT_SETTINGS as HashMap<unknown>)
+            ) as T;
         }
         const override_settings = [...this._overrides.getValue()];
         for (const override of override_settings) {
             const value = getItemWithKeys(keys.slice(1), override);
             if (value != null) {
-                return value;
+                return value as T;
             }
         }
-        return getItemWithKeys(keys, DEFAULT_SETTINGS);
+        return getItemWithKeys(keys, DEFAULT_SETTINGS as HashMap<unknown>) as T;
     }
 
     public saveUserSetting<T>(name: string, value: T) {
@@ -187,7 +188,7 @@ export class SettingsService extends AsyncHandler {
     }
 
     private _applyCssVariables() {
-        const variable_map = this.get('app.css_variables') || {};
+        const variable_map = (this.get('app.css_variables') || {}) as Record<string, string>;
         let css_string = 'body { ';
         for (const key in variable_map) {
             css_string += `--${key}: ${variable_map[key]}; `;
@@ -216,7 +217,7 @@ export class SettingsService extends AsyncHandler {
         this._user_settings.next({
             ...this._user_settings.getValue(),
             ...this._pending_settings,
-        });
+        } as HashMap);
         this._pending_settings = {};
     }
 

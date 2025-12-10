@@ -1,5 +1,11 @@
 import { Location } from '@angular/common';
-import { Component, ElementRef, inject, viewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    inject,
+    OnInit,
+    viewChild,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
     apiKey,
@@ -18,13 +24,14 @@ import { SafePipe } from './pipes/safe.pipe';
 
 const RESOURCE_STORE = new Map<string, string>();
 
-export interface FrameMessage {
+export interface FrameMessage<T = any> {
     id: string;
     type: 'backoffice';
-    action: 'update' | 'load' | 'metadata' | 'resource';
+    action: 'update' | 'load' | 'metadata' | 'resource' | 'result';
     name?: string;
     parent?: boolean;
-    content: HashMap;
+    status?: string;
+    content: string | HashMap<T> | T[];
 }
 
 @Component({
@@ -40,7 +47,7 @@ export interface FrameMessage {
     `,
     imports: [SafePipe],
 })
-export class ExtensionOutletComponent extends AsyncHandler {
+export class ExtensionOutletComponent extends AsyncHandler implements OnInit {
     private _route = inject(ActivatedRoute);
     private _location = inject(Location);
     private _service = inject(ActiveItemService);
@@ -81,32 +88,39 @@ export class ExtensionOutletComponent extends AsyncHandler {
             if (message.type === 'backoffice' && item) {
                 if (message.action === 'update') {
                     // Handle update to item model
-                    this.updateItem(item, message);
+                    this.updateItem(item as any, message);
                 } else if (message.action === 'metadata' && message.name) {
                     // Handle updating metadata
-                    this.updateMetadata(item, message);
+                    this.updateMetadata(item as any, message);
                 } else if (message.action === 'load' && message.name) {
                     // Handle updating metadata
-                    this.loadMetadata(item, message, message.parent);
+                    this.loadMetadata(item as any, message, message.parent);
                 } else if (message.action === 'resource' && message.name) {
                     // Handle updating metadata
-                    const url = await this.loadResource(item, message);
+                    const url = await this.loadResource(item as any, message);
                     this._postMessage({
                         id: message.id,
                         type: 'backoffice',
                         status: 'success',
                         content: url,
-                    } as any);
+                        action: 'result',
+                    });
                 }
             }
         });
     }
 
-    private async updateItem(item: any, message: FrameMessage) {
+    private async updateItem(
+        item: { id: string } & Record<string, string>,
+        message: FrameMessage,
+    ) {
         const updated_item = await this._service.actions
-            .save({ ...item, ...message.content })
+            .save({
+                ...item,
+                ...(typeof message.content === 'object' ? message.content : {}),
+            })
             .toPromise()
-            .catch((e) => notifyError(i18n('COMMON.ITEM_ERROR')));
+            .catch(() => notifyError(i18n('COMMON.ITEM_ERROR')));
 
         if (this._frame_el()?.nativeElement) {
             if (updated_item) {
@@ -116,46 +130,52 @@ export class ExtensionOutletComponent extends AsyncHandler {
                 id: message.id,
                 type: 'backoffice',
                 status: updated_item ? 'success' : 'error',
-            } as any);
+            } as unknown as FrameMessage);
         }
     }
 
-    private async updateMetadata(item: any, message: FrameMessage) {
-        const exists = await showMetadata(item.id, message.name).toPromise();
-        await updateMetadata(item.id, {
-            id: item.id,
+    private async updateMetadata(
+        item: { id: string; parent_id?: string } & Record<string, string>,
+        message: FrameMessage,
+    ) {
+        await showMetadata(item.id as string, message.name).toPromise();
+        await updateMetadata(item.id as string, {
+            id: item.id as string,
             name: message.name,
             description: `Metadata from ${this.url}`,
-            details: message.content || {},
+            details: typeof message.content === 'object' ? message.content : {},
         }).toPromise();
         notifySuccess(i18n('COMMON.METADTA_SAVE'));
         this._postMessage({
             id: message.id,
             type: 'backoffice',
             status: 'success',
-        } as any);
+        } as unknown as FrameMessage);
     }
 
     private async loadMetadata(
-        item: any,
+        item: { id: string; parent_id?: string } & Record<string, string>,
         message: FrameMessage,
         parent = false,
     ) {
         const metadata = await showMetadata(
-            parent ? item.parent_id : item.id,
+            (parent ? item.parent_id : item.id) as string,
             message.name,
         ).toPromise();
         if (metadata) {
             this._postMessage({
                 id: message.id,
                 type: 'backoffice',
-                content: (metadata as any).details,
+                content: metadata.details,
                 status: 'success',
-            } as any);
+            } as unknown as FrameMessage);
         }
     }
 
-    private async loadResource(item: any, message: FrameMessage) {
+    private async loadResource(
+        item: Record<string, string | number>,
+        message: FrameMessage,
+    ) {
         const src = message.name;
         // If not an API call, just load the image
         if (!src.includes('/api/engine/v2/uploads')) return src;
@@ -178,7 +198,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
 
         const url = await new Promise<string>((resolve) => {
             const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target.result as any);
+            reader.onload = (e) => resolve(e.target.result as string);
             reader.readAsDataURL(blob);
         });
 

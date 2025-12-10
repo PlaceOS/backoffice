@@ -1,11 +1,15 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, input } from '@angular/core';
-import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { Component, input, OnInit } from '@angular/core';
+import {
+    FormControl,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
 import { queryDomains } from '@placeos/ts-client';
 import { map, shareReplay } from 'rxjs/operators';
 
 import { CommonModule } from '@angular/common';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -336,7 +340,7 @@ import { TranslatePipe } from '../translate.pipe';
         MatSelectModule,
     ],
 })
-export class UserFormComponent {
+export class UserFormComponent implements OnInit {
     /** Group of form fields used for creating the system */
     public readonly form = input<UntypedFormGroup>(undefined);
     /** Whether password should be visible in plaintext */
@@ -360,10 +364,10 @@ export class UserFormComponent {
         );
     }
 
-    public readonly addGroup = (e) =>
-        addChipItem(this.form().controls.groups as any, e);
-    public readonly removeGroup = (i) =>
-        removeChipItem(this.form().controls.groups as any, i);
+    public readonly addGroup = (e: MatChipInputEvent) =>
+        addChipItem(this.form().controls.groups as FormControl<string[]>, e);
+    public readonly removeGroup = (i: string) =>
+        removeChipItem(this.form().controls.groups as FormControl<string[]>, i);
 
     public async ngOnInit() {
         this.loading = i18n('DOMAINS.LOADING');

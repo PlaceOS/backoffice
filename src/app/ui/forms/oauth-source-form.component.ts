@@ -329,11 +329,11 @@ export class OauthSourceFormComponent
         { id: 'basic_auth', name: 'Basic Auth' },
     ];
     /** List of info mapping pairs */
-    public info_mapping_list: any[] = [];
+    public info_mapping_list: Record<string, unknown>[] = [];
     /** List of authorize params pairs */
-    public auth_params_list: any[] = [];
+    public auth_params_list: Record<string, unknown>[] = [];
     /** List of ensure_matching pairs */
-    public ensure_matching_list: any[] = [];
+    public ensure_matching_list: Record<string, unknown>[] = [];
 
     public ngOnChanges(changes: SimpleChanges): void {
         const form = this.form();
@@ -365,7 +365,7 @@ export class OauthSourceFormComponent
     public updateMappings(
         mappings: { PlaceOS: string; Remote: string }[],
         control: AbstractControl,
-        split: boolean = false,
+        split = false,
         fields: [string, string] = ['PlaceOS', 'Remote'],
     ) {
         const map: HashMap = {};

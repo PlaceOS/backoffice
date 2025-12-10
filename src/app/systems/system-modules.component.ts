@@ -413,7 +413,7 @@ export class SystemModulesComponent extends AsyncHandler {
             name: 'MODULES.VIEW_ERRORS',
             enable_on: 'has_runtime_error',
             icon: { type: 'icon', content: 'error' },
-        } as any,
+        } as AppLink,
         {
             id: 'add-to-system',
             name: 'MODULES.ADD_TO_SYSTEM',
@@ -465,15 +465,15 @@ export class SystemModulesComponent extends AsyncHandler {
     public readonly query_fn = (_: string) =>
         queryModules({ q: _, no_logic: true }).pipe(
             map(
-                (_) =>
-                    _.data.map((mod) => ({
+                (resp) =>
+                    resp.data.map((mod: PlaceModule) => ({
                         ...mod,
                         extra: mod.driver?.name,
                     })) as any[],
             ),
         );
     /** Function for excluding modules already within this system */
-    public readonly exclude_fn = (item: PlaceModule, _: string) =>
+    public readonly exclude_fn = (item: any, __: string) =>
         item.control_system_id === this.item.id ||
         item.role === PlaceDriverRole.Logic;
 
@@ -503,7 +503,7 @@ export class SystemModulesComponent extends AsyncHandler {
     }
 
     public get item(): PlaceSystem {
-        return this._service.active_item as any;
+        return this._service.active_item as PlaceSystem;
     }
 
     /**

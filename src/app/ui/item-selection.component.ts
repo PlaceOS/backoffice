@@ -4,8 +4,11 @@ import {
 } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import {
+    AfterViewInit,
     Component,
     ElementRef,
+    OnChanges,
+    OnInit,
     SimpleChanges,
     inject,
     input,
@@ -22,6 +25,7 @@ import {
     PlaceRepository,
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
+import { Observable } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { nextValueFrom } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
@@ -35,12 +39,12 @@ import { TranslatePipe } from './translate.pipe';
     selector: 'item-selection',
     template: `
         <div
-            class="border-base-200 flex w-full items-center justify-center border-b p-2"
+            class="border-base-300 flex w-full items-center justify-center border-b p-2"
         >
             <ng-content></ng-content>
             <button
                 (click)="open()"
-                class="border-base-200 flex max-w-[calc(100vw-1rem)] flex-1 items-center rounded-lg border sm:max-w-[512px] sm:flex-auto"
+                class="border-base-300 flex max-w-[calc(100vw-1rem)] flex-1 items-center rounded-lg border sm:max-w-lg sm:flex-auto"
             >
                 <icon class="ml-2 text-2xl">search</icon>
                 <p class="w-1/2 flex-1 p-2 text-left text-lg opacity-30">
@@ -50,105 +54,111 @@ import { TranslatePipe } from './translate.pipe';
             </button>
         </div>
         @if (show_view) {
-            <div
-                class="bg-base-100/80 /30 absolute inset-0"
+            <button
+                class="bg-base-100/80 absolute inset-0"
                 (click)="show.set(false)"
-                (window:keydown.esc)="show.set(false)"
-            ></div>
-            <div
-                class="bg-base-100 absolute top-2 left-1/2 flex w-[512px] max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded-sm shadow-sm"
-                (click)="$event.stopPropagation()"
             >
-                <div
-                    class="border-base-200 relative flex items-center border-b"
+                <button
+                    class="bg-base-100 border-base-300 absolute top-2 left-1/2 flex w-lg max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded-sm border shadow-sm"
+                    (click)="$event.stopPropagation()"
                 >
-                    <icon
-                        class="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-2xl"
+                    <div
+                        class="border-base-300 relative flex items-center border-b"
                     >
-                        search
-                    </icon>
-                    <input
-                        #search_input
-                        class="flex-1 border-none bg-transparent py-4 pr-4 pl-10"
-                        [(ngModel)]="search"
-                        (ngModelChange)="updateSearch($event)"
-                        [placeholder]="
-                            'COMMON.SEARCH_FOR' | translate: { name: title() }
-                        "
-                    />
-                    @if (loading | async) {
-                        <mat-spinner
-                            diameter="24"
-                            class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
-                        ></mat-spinner>
-                    }
-                </div>
-                <p class="w-full px-4 text-sm opacity-60">
-                    {{
-                        'COMMON.TOTAL_ITEMS'
-                            | translate: { count: (total | async) }
-                    }}
-                </p>
-                <div class="flex h-1/2 flex-1 flex-col">
-                    @if ((items | async)?.length) {
-                        <cdk-virtual-scroll-viewport
-                            itemSize="48"
-                            (scroll)="is_scrolled.set(true)"
-                            (scrolledIndexChange)="atBottom()"
-                            class="h-[768px] max-h-[75vh]"
+                        <icon
+                            class="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-2xl"
                         >
-                            <a
-                                *cdkVirtualFor="
-                                    let item of items | async;
-                                    trackBy: trackByFn
-                                "
-                                [routerLink]="
-                                    subroute()
-                                        ? ['/', route(), item.id, subroute()]
-                                        : ['/', route(), item.id]
-                                "
-                                routerLinkActive="active"
-                                class="m-2 block max-w-[calc(100vw-2rem)] rounded-sm p-2"
-                                (click)="show.set(false)"
+                            search
+                        </icon>
+                        <input
+                            #search_input
+                            class="flex-1 border-none bg-transparent py-4 pr-4 pl-10"
+                            [(ngModel)]="search"
+                            (ngModelChange)="updateSearch($event)"
+                            [placeholder]="
+                                'COMMON.SEARCH_FOR'
+                                    | translate: { name: title() }
+                            "
+                        />
+                        @if (loading | async) {
+                            <mat-spinner
+                                diameter="24"
+                                class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
+                            ></mat-spinner>
+                        }
+                    </div>
+                    <p class="w-full px-4 text-sm opacity-60">
+                        {{
+                            'COMMON.TOTAL_ITEMS'
+                                | translate: { count: (total | async) }
+                        }}
+                    </p>
+                    <div class="border-base-300 flex h-1/2 flex-1 flex-col">
+                        @if ((items | async)?.length) {
+                            <cdk-virtual-scroll-viewport
+                                itemSize="48"
+                                (scroll)="is_scrolled.set(true)"
+                                (scrolledIndexChange)="atBottom()"
+                                class="h-[768px] max-h-[75vh]"
                             >
-                                <p class="flex-1 truncate">
-                                    {{ item.name }}
-                                </p>
-                                @if (item.extra) {
-                                    <div
-                                        class="inline-block w-full overflow-hidden"
-                                    >
-                                        <span
-                                            extra
-                                            class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded-sm px-2 py-1 text-xs opacity-60"
+                                <a
+                                    *cdkVirtualFor="
+                                        let item of items | async;
+                                        trackBy: trackByFn
+                                    "
+                                    [routerLink]="
+                                        subroute()
+                                            ? [
+                                                  '/',
+                                                  route(),
+                                                  item.id,
+                                                  subroute(),
+                                              ]
+                                            : ['/', route(), item.id]
+                                    "
+                                    routerLinkActive="active"
+                                    class="m-2 block max-w-[calc(100vw-2rem)] rounded-sm p-2 text-left"
+                                    (click)="show.set(false)"
+                                >
+                                    <p class="flex-1 truncate">
+                                        {{ item.name }}
+                                    </p>
+                                    @if (item.extra) {
+                                        <div
+                                            class="inline-block w-full overflow-hidden"
                                         >
-                                            {{ item.extra }}
-                                        </span>
-                                    </div>
-                                }
-                            </a>
+                                            <span
+                                                extra
+                                                class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded-sm px-2 py-1 text-xs opacity-60"
+                                            >
+                                                {{ item.extra }}
+                                            </span>
+                                        </div>
+                                    }
+                                </a>
+                                <div
+                                    class="bg-base-200 p-2 text-center text-sm opacity-30"
+                                >
+                                    {{ 'COMMON.END_OF_LIST' | translate }}
+                                </div>
+                            </cdk-virtual-scroll-viewport>
+                        } @else {
                             <div
-                                class="bg-base-200 p-2 text-center text-sm opacity-30"
+                                class="flex flex-col items-center justify-center p-8 opacity-30"
                             >
-                                {{ 'COMMON.END_OF_LIST' | translate }}
+                                <p>
+                                    {{
+                                        (search
+                                            ? 'COMMON.SEARCH_EMPTY'
+                                            : 'COMMON.LIST_EMPTY'
+                                        ) | translate: { name: title() }
+                                    }}
+                                </p>
                             </div>
-                        </cdk-virtual-scroll-viewport>
-                    } @else {
-                        <div
-                            class="flex flex-col items-center justify-center p-8 opacity-30"
-                        >
-                            <p>
-                                {{
-                                    (search
-                                        ? 'COMMON.SEARCH_EMPTY'
-                                        : 'COMMON.LIST_EMPTY'
-                                    ) | translate: { name: title() }
-                                }}
-                            </p>
-                        </div>
-                    }
-                </div>
-            </div>
+                        }
+                    </div>
+                </button>
+            </button>
         }
     `,
     styles: [
@@ -175,7 +185,10 @@ import { TranslatePipe } from './translate.pipe';
         FormsModule,
     ],
 })
-export class ItemSelectionComponent extends AsyncHandler {
+export class ItemSelectionComponent
+    extends AsyncHandler
+    implements OnInit, OnChanges, AfterViewInit
+{
     private _users = inject(BackofficeUsersService);
     private _router = inject(Router);
     private _settings = inject(SettingsService);
@@ -192,7 +205,12 @@ export class ItemSelectionComponent extends AsyncHandler {
     public last_check = 0;
     public search = '';
     /** List of items for the active route */
-    public readonly items = this._service.list;
+    public readonly items = this._service.list as Observable<
+        ({ id?: string; name?: string; extra?: string } & Record<
+            string,
+            unknown
+        >)[]
+    >;
     /** Whether list of items for the active route are loading */
     public readonly loading = this._service.loading_list;
     /** Total number of items in the last request */
@@ -217,7 +235,16 @@ export class ItemSelectionComponent extends AsyncHandler {
         );
         this.subscription(
             'list',
-            this._service.list.subscribe((l) => this._processItems(l)),
+            this._service.list.subscribe((l) =>
+                this._processItems(
+                    l as ({
+                        id?: string;
+                        name?: string;
+                        display_name?: string;
+                        custom_name?: string;
+                    } & Record<string, unknown>)[],
+                ),
+            ),
         );
         this.subscription(
             'hotkey',
@@ -254,7 +281,10 @@ export class ItemSelectionComponent extends AsyncHandler {
         this._service.setSearch(str);
     }
 
-    public trackByFn(index: number, item: Record<string, any>) {
+    public trackByFn(
+        index: number,
+        item: { id?: string } & Record<string, unknown>,
+    ) {
         return item.id || index;
     }
 
@@ -289,8 +319,15 @@ export class ItemSelectionComponent extends AsyncHandler {
         }
     }
 
-    private _processItems(list: any[]) {
-        for (let item of list) {
+    private _processItems(
+        list: ({
+            id?: string;
+            name?: string;
+            display_name?: string;
+            custom_name?: string;
+        } & Record<string, unknown>)[],
+    ) {
+        for (const item of list) {
             if (item instanceof PlaceModule) {
                 const detail =
                     item.role === PlaceDriverRole.Service
@@ -298,19 +335,20 @@ export class ItemSelectionComponent extends AsyncHandler {
                         : item.role === PlaceDriverRole.Logic
                           ? item.control_system_id
                           : item.ip;
-                (item as any).display_name =
+                (item as Record<string, unknown>).display_name =
                     item.custom_name || item.name || '<Unnamed>';
-                (item as any).extra = detail;
+                (item as Record<string, unknown>).extra = detail;
             } else if (item instanceof PlaceRepository) {
-                (item as any).display_name = item.name || '<Unnamed>';
-                (item as any).extra = item.repo_type;
+                (item as Record<string, unknown>).display_name =
+                    item.name || '<Unnamed>';
+                (item as Record<string, unknown>).extra = item.repo_type;
             } else {
-                (item as any).display_name =
+                (item as Record<string, unknown>).display_name =
                     item.display_name ||
                     item.custom_name ||
                     item.name ||
                     '<Unnamed>';
-                (item as any).extra = item.id;
+                (item as Record<string, unknown>).extra = item.id;
             }
         }
     }

@@ -6,12 +6,12 @@ import { HashMap } from '../../common/types';
 import { API } from '../common.mock';
 
 /** In-memory metadata storage */
-const METADATA_STORE: HashMap<HashMap<any>> = {};
+const METADATA_STORE: HashMap<HashMap<Record<string, unknown>>> = {};
 
 /**
  * Get metadata for a parent
  */
-function getMetadata(parent_id: string): any[] {
+function getMetadata(parent_id: string): Record<string, unknown>[] {
     if (!METADATA_STORE[parent_id]) {
         METADATA_STORE[parent_id] = {};
     }
@@ -32,7 +32,7 @@ function getMetadata(parent_id: string): any[] {
 /**
  * Add or update metadata
  */
-function setMetadata(parent_id: string, name: string, data: any): any {
+function setMetadata(parent_id: string, name: string, data: Record<string, unknown>): Record<string, unknown> {
     if (!METADATA_STORE[parent_id]) {
         METADATA_STORE[parent_id] = {};
     }
@@ -149,7 +149,7 @@ registerMockEndpoint({
     path: `${API}/metadata/:id/history`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return [];
     },
 } as MockHttpRequestHandler);

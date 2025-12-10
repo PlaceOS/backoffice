@@ -270,12 +270,16 @@ export class PlaceClusterTaskListComponent
     }
 
     public killProcess(process: PlaceProcess) {
-        return lastValueFrom(terminateProcess(this.cluster().id, process.id));
+        return lastValueFrom(
+            terminateProcess(this.cluster().id, { driver: process.id }),
+        );
     }
 
     public async loadCluster(id: string) {
         const clusters = await lastValueFrom(
-            queryClusters({ q: id } as any).pipe(map((_) => _.data)),
+            queryClusters({ q: id } as Record<string, string>).pipe(
+                map((_) => _.data),
+            ),
         );
         const match = clusters.find((_) => _.id === id) || clusters[0];
         console.log('Clusters:', clusters);
@@ -289,8 +293,8 @@ export class PlaceClusterTaskListComponent
         const list = await lastValueFrom(
             queryProcesses(this.cluster().id, {
                 include_status: true,
-            } as any),
-        ).catch((_) => []);
+            }),
+        ).catch(() => []);
         this.process_list.set(
             list.sort((a, b) => b.module_instances - a.module_instances),
         );

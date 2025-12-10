@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -190,7 +190,7 @@ export interface ExternalResource {
         MatProgressBarModule,
     ],
 })
-export class ResourceImportsComponent {
+export class ResourceImportsComponent implements OnInit {
     private _dialog = inject(MatDialog);
 
     public readonly loading = signal(false);
@@ -273,14 +273,14 @@ export class ResourceImportsComponent {
         if (!this.domain()) return;
         this.loading.set(true);
         const result = await lastValueFrom(
-            query<any>({
+            query<{ data: ExternalResource[] }>({
                 path: 'place',
                 endpoint: '/api/staff/v1',
                 query_params: {
                     limit: 1000,
                     authority_id: this.domain().id,
                 },
-            }).pipe(catchError((_) => of({ data: [] }))),
+            }).pipe(catchError((__) => of({ data: [] }))),
         );
         const list = result.data.map((_) => ({
             id: _.id || '',

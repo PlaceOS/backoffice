@@ -18,7 +18,7 @@ import { MetadataDisplayComponent } from '../ui/metadata-display.component';
 export class SystemMetadataComponent {
     private _service = inject(ActiveItemService);
 
-    public get item(): PlaceSystem {
-        return this._service.active_item as any;
+    public get item(): any {
+        return this._service.active_item;
     }
 }

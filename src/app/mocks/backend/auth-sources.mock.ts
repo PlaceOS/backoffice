@@ -11,11 +11,11 @@ import {
 } from '../common.mock';
 
 /** In-memory storage for auth sources with session persistence */
-const OAUTH_SOURCES: any[] = loadFromSession('oauth_sources', []);
-const SAML_SOURCES: any[] = loadFromSession('saml_sources', []);
-const LDAP_SOURCES: any[] = loadFromSession('ldap_sources', []);
+const OAUTH_SOURCES: Record<string, any>[] = loadFromSession('oauth_sources', []);
+const SAML_SOURCES: Record<string, any>[] = loadFromSession('saml_sources', []);
+const LDAP_SOURCES: Record<string, any>[] = loadFromSession('ldap_sources', []);
 
-const createFilter = (items: any[]) => (q: HashMap) => {
+const createFilter = (items: Record<string, any>[]) => (q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return items;
     }
@@ -29,7 +29,7 @@ const createFilter = (items: any[]) => (q: HashMap) => {
                 match &&
                 (item.name || '')
                     .toLowerCase()
-                    .indexOf((q.q || '').toLowerCase()) >= 0;
+                    .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
         }
         return match;
     });

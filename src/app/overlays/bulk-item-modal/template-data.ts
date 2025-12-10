@@ -1,6 +1,6 @@
 import { PlaceDriverRole } from '@placeos/ts-client';
 
-export const SYSTEM_TEMPLATE: any = {
+export const SYSTEM_TEMPLATE: Record<string, unknown> = {
     name: 'A System',
     display_name: 'Your System',
     description: 'A description',
@@ -16,7 +16,7 @@ export const SYSTEM_TEMPLATE: any = {
     module_data: [{ id: 'mod-001', name: 'A Module' }],
 };
 
-export const MODULE_TEMPLATE: any = {
+export const MODULE_TEMPLATE: Record<string, unknown> = {
     name: 'A Module',
     driver_id: 'dep-001',
     control_system_id: 'sys-001',
@@ -32,7 +32,7 @@ export const MODULE_TEMPLATE: any = {
     ignore_connected: false,
 };
 
-export const DRIVER_TEMPLATE: any = {
+export const DRIVER_TEMPLATE: Record<string, unknown> = {
     name: 'A Driver',
     description: 'In a galaxy far far away...',
     module_name: 'SteamShip',
@@ -47,7 +47,7 @@ export const DRIVER_TEMPLATE: any = {
     commit: 'some-hash',
 };
 
-export const USER_TEMPLATE: any = {
+export const USER_TEMPLATE: Record<string, unknown> = {
     name: 'A User',
     authority_id: "On who's authority",
     email: 'jon@place.tech',
@@ -62,7 +62,7 @@ export const USER_TEMPLATE: any = {
     card_number: '1234567890',
 };
 
-export const ZONE_TEMPLATE: any = {
+export const ZONE_TEMPLATE: Record<string, unknown> = {
     name: 'A Zone',
     description: 'In a galaxy far far away...',
     triggers: ['trig-001'],

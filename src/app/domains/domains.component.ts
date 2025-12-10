@@ -132,7 +132,7 @@ export class DomainsComponent extends AsyncHandler implements OnInit {
         this.subscription(
             'counts',
             this._service.counts.subscribe((c) => {
-                this.updateTabList(c as any);
+                this.updateTabList(c as Record<string, number>);
             }),
         );
         this.subscription(

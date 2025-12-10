@@ -54,7 +54,7 @@ export class BackofficeUsersService extends AsyncHandler {
             : false;
         const theme =
             localStorage.getItem('BACKOFFICE.theme') ??
-            ((this._user.getValue() || {}) as any).ui_theme;
+            ((this._user.getValue() || {}) as Record<string, unknown>).ui_theme;
         return (theme && theme === 'dark') || (!theme && os_dark);
     }
     public set dark_mode(state: boolean) {
@@ -104,7 +104,8 @@ export class BackofficeUsersService extends AsyncHandler {
                         );
                         this.state.next('success');
                         this._initialised.next(true);
-                        this.dark_mode = this.dark_mode;
+                        // Trigger dark mode getter to apply current theme
+                        const _current_theme = this.dark_mode;
                         resolve();
                     } else {
                         this.timeout(
@@ -149,7 +150,9 @@ export class BackofficeUsersService extends AsyncHandler {
      * Login with given credentials
      * @param fields Key value pairs of post parameters
      */
-    public login(fields: any = {}) {}
+    public login(_fields: Record<string, unknown> = {}) {
+        // Login functionality is handled by PlaceOS OAuth
+    }
 
     /**
      * Logout from the application

@@ -183,7 +183,7 @@ export class SystemsComponent extends AsyncHandler implements OnInit {
         this.subscription(
             'item-change',
             this._item.active_item$.subscribe((i) => {
-                this.item.set(i as any);
+                this.item.set(i as PlaceSystem);
                 this.extensions.set(extensionsForItem(i, this.name));
                 this.updateTabList({});
             }),

@@ -16,6 +16,7 @@ import { SafePipe } from './pipes/safe.pipe';
                 <img
                     class="h-[1em] w-[1em]"
                     [src]="icon().src | safe: 'resource'"
+                    alt="icon"
                 />
             }
         </div>

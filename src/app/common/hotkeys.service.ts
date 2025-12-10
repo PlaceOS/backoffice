@@ -154,7 +154,7 @@ export class HotkeysService {
         for (const combo of this.registered_combos) {
             key_list.push(combo[combo.length - 1]);
         }
-        this.combo_end = unique(key_list);
+        this.combo_end = unique(key_list) as string[];
     }
 
     /**

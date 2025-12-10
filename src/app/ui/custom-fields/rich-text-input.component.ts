@@ -128,7 +128,7 @@ export class RichTextInputComponent
             title: 'Insert Image',
             innerHTML:
                 '<div class="h-full w-full flex justify-center items-center"><i class="material-symbols-outlined text-2xl">image</i></div>',
-            add: (core: any, targetElement: any) => {
+            add: (_core: unknown, _targetElement: unknown) => {
                 // Plugin initialization if needed
             },
             action: () => this._embedImage(),
@@ -140,7 +140,7 @@ export class RichTextInputComponent
             title: 'Insert Attachment',
             innerHTML:
                 '<div class="h-full w-full flex justify-center items-center"><i class="material-symbols-outlined text-2xl">attachment</i></div>',
-            add: (core: any, targetElement: any) => {
+            add: (_core: unknown, _targetElement: unknown) => {
                 // Plugin initialization if needed
             },
             action: () => this._embedAttachment(),

@@ -1,7 +1,11 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, input } from '@angular/core';
-import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
-import { MatChipsModule } from '@angular/material/chips';
+import {
+    FormControl,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { addChipItem, removeChipItem } from '../../common/forms';
@@ -124,8 +128,11 @@ export class SystemTriggerFormComponent {
     public readonly form = input<UntypedFormGroup>(undefined);
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
-    public readonly addPlaylist = (e) =>
-        addChipItem(this.form().controls.playlists as any, e);
-    public readonly removePlaylist = (i) =>
-        removeChipItem(this.form().controls.playlists as any, i);
+    public readonly addPlaylist = (e: MatChipInputEvent) =>
+        addChipItem(this.form().controls.playlists as FormControl<string[]>, e);
+    public readonly removePlaylist = (i: string) =>
+        removeChipItem(
+            this.form().controls.playlists as FormControl<string[]>,
+            i,
+        );
 }

@@ -4,7 +4,7 @@ import {
     moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
@@ -74,7 +74,7 @@ export interface ReorderItemsOptions {
         IconComponent,
     ],
 })
-export class ReorderItemsModalComponent {
+export class ReorderItemsModalComponent implements OnInit {
     private _data = inject<ReorderItemsOptions>(MAT_DIALOG_DATA);
 
     public readonly items = new BehaviorSubject([]);

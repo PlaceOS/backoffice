@@ -82,6 +82,6 @@ export class DomainUsersComponent {
     public readonly loading = this._service.loading;
 
     public get item(): PlaceDomain {
-        return this._service.active_item as any;
+        return this._service.active_item as PlaceDomain;
     }
 }

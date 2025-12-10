@@ -155,7 +155,7 @@ export class TriggersComponent extends AsyncHandler implements OnInit {
             'item',
             this._service.item.subscribe((item) => {
                 this.item.set(item as PlaceTrigger);
-                this.loadValues(item as any);
+                this.loadValues(item as PlaceTrigger);
             }),
         );
         this.updateTabList();

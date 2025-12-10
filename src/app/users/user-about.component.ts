@@ -19,8 +19,6 @@ import { notifySuccess } from '../common/notifications';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 
-let domain_obs;
-
 @Component({
     selector: 'user-about',
     template: `
@@ -180,13 +178,13 @@ export class UserAboutComponent {
     public readonly domain = this._service.item.pipe(
         distinctUntilChanged(),
         debounceTime(300),
-        filter((_) => !!_ && (_ as any).authority_id),
-        switchMap((i) => showDomain((i as any).authority_id)),
+        filter((_): _ is PlaceUser => !!_ && typeof (_ as PlaceUser).authority_id === 'string'),
+        switchMap((i) => showDomain(i.authority_id)),
         shareReplay(1),
     );
 
     public get item(): PlaceUser {
-        return (this._service.active_item as any) || {};
+        return (this._service.active_item as PlaceUser) || ({} as PlaceUser);
     }
 
     public copyGroup(group: string) {

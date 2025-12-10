@@ -41,7 +41,7 @@ export class UsersStateService {
                 listMetadata(item.id)
                     .pipe(map((d) => d.length))
                     .toPromise()
-                    .catch((_) => 0),
+                    .catch((_err) => 0),
             ]);
             const [metadata] = details;
             this._loading.next(false);
@@ -56,12 +56,12 @@ export class UsersStateService {
             if (!(item instanceof PlaceUser)) return of([]);
             return listMetadata(item.id);
         }),
-        catchError((_) => []),
+        catchError((_err) => []),
         shareReplay(1),
     );
 
     public get active_item(): PlaceZone {
-        return this._service.active_item as any;
+        return this._service.active_item as unknown as PlaceZone;
     }
 
     constructor() {

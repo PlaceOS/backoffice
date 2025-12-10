@@ -57,9 +57,9 @@ import {
     imports: [CommonModule],
 })
 export class VirtualScrollComponent implements AfterViewInit, OnDestroy {
-    public readonly items = input<any[]>([]);
+    public readonly items = input<unknown[]>([]);
     public readonly item_size = input(0);
-    public readonly item_template = input<TemplateRef<any>>(null);
+    public readonly item_template = input<TemplateRef<unknown>>(null);
     public readonly buffer = input(2);
     public readonly scrolled = output<[number, number]>();
 

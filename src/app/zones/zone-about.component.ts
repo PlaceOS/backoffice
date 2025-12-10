@@ -290,10 +290,10 @@ export class ZoneAboutComponent extends AsyncHandler implements OnInit {
             'item',
             this._service.item.subscribe(async (item) => {
                 this.parent.set(undefined);
-                this.item.set(item as any);
-                if ((item as any)?.parent_id) {
+                this.item.set(item as unknown as PlaceZone);
+                if ((item as unknown as PlaceZone)?.parent_id) {
                     const zone = await lastValueFrom(
-                        showZone((item as any)?.parent_id),
+                        showZone((item as unknown as PlaceZone)?.parent_id),
                     );
                     if (zone) this.parent.set(zone);
                 }

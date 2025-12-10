@@ -52,13 +52,12 @@ import {
 } from '@placeos/ts-client';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { HashMap } from './types';
 
 export interface ItemActions<T> {
     query: (_?: string) => QueryResponse<T>;
     show: (_: string) => Observable<T>;
     save: (_: T) => Observable<T>;
-    remove: (_: T) => Observable<any>;
+    remove: (_: T) => Observable<unknown>;
     itemConstructor: Type<T>;
     delete_message: string;
     delete_extra?: (_: T) => Promise<[string, string]>;
@@ -84,18 +83,22 @@ const drivers: ItemActions<PlaceDriver> = {
         queryDrivers({
             q: _,
             fields: ['id', 'name', 'module_name'].join(','),
-        } as any),
+        }),
     show: (_) => showDriver(_),
     save: (item) => (item.id ? updateDriver(item.id, item) : addDriver(item)),
     remove: (item) => removeDriver(item.id),
     itemConstructor: PlaceDriver,
     delete_message: ``,
     delete_extra: async (_) => {
-        const query: any = { offset: 0, limit: 1, driver_id: _.id };
+        const query: Record<string, string | number> = {
+            offset: 0,
+            limit: 1,
+            driver_id: _.id,
+        };
         const count = await queryModules(query)
             .pipe(map(({ total }) => total))
             .toPromise()
-            .catch((_) => 0);
+            .catch((_err) => 0);
         return count
             ? [
                   'error',
@@ -146,11 +149,11 @@ const systems: ItemActions<PlaceSystem> = {
         item.id
             ? updateSystem(item.id, {
                   ...item,
-                  support_url: processURL(item, item.support_url),
+                  support_url: processURL(item as any, item.support_url),
               })
             : addSystem({
                   ...item,
-                  support_url: processURL(item, item.support_url),
+                  support_url: processURL(item as any, item.support_url),
               }),
     remove: (item) => removeSystem(item.id),
     itemConstructor: PlaceSystem,
@@ -158,9 +161,9 @@ const systems: ItemActions<PlaceSystem> = {
     name: 'SYSTEMS',
 };
 
-function processURL(system: HashMap, url: string) {
+function processURL(system: Record<string, any>, url: string) {
     for (const key in system) {
-        url = url.replace(new RegExp(`{{${key}}}`, 'g'), system[key]);
+        url = url.replace(new RegExp(`{{${key}}}`, 'g'), `${system[key]}`);
     }
     url = url.replace(new RegExp(`{{origin}}`, 'g'), location.origin);
     url = url.replace(new RegExp(`{{host}}`, 'g'), location.host);

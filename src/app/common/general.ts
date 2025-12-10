@@ -17,7 +17,7 @@ export type ConsoleStream = 'debug' | 'warn' | 'log' | 'error';
 export function log(
     type: string,
     msg: string,
-    args?: any,
+    args?: (object | string | number | boolean)[] | string,
     stream: ConsoleStream = 'debug',
     force = false,
     app_name = 'BACKOFFICE',
@@ -76,11 +76,11 @@ export function detectIE(): number {
  * @param keys List of sub-keys to search for
  * @param map Object to search
  */
-export function getItemWithKeys(keys: string[], map: HashMap) {
+export function getItemWithKeys(keys: string[], map: HashMap<unknown>): unknown {
     const key = keys[0];
     if (map && key in map) {
         return keys.length > 1
-            ? getItemWithKeys(keys.slice(1), map[key] || {})
+            ? getItemWithKeys(keys.slice(1), (map[key] || {}) as HashMap<unknown>)
             : map[key];
     }
     return null;
@@ -91,7 +91,7 @@ export function getItemWithKeys(keys: string[], map: HashMap) {
  * @param array List of items to remove duplicates from
  * @param key Key on array objects to compare for uniqueness
  */
-export function unique(array: any[], key = '') {
+export function unique<T = string>(array: T[], key = '') {
     return array.filter(
         (el, pos, arr) =>
             arr.indexOf(
@@ -170,7 +170,10 @@ export const csvToJson = parseCSV;
  * @param separator - The delimiter (comma by default).
  * @returns An array of objects.
  */
-export function parseCSV(csv: string, separator = ','): any[] {
+export function parseCSV(
+    csv: string,
+    separator = ',',
+): Record<string, unknown>[] {
     // Split on newlines, remove any empty lines
     const lines = csv.split('\n').filter((line) => line.trim() !== '');
     if (!lines.length) return [];
@@ -181,7 +184,7 @@ export function parseCSV(csv: string, separator = ','): any[] {
     return dataLines.map((line) => {
         const cells = splitCsvLine(line, separator);
 
-        const record: Record<string, any> = {};
+        const record: Record<string, unknown> = {};
 
         headers.forEach((header, idx) => {
             const cell = cells[idx] ?? '';
@@ -247,7 +250,7 @@ function splitCsvLine(line: string, separator: string): string[] {
  * @param separator - The optional field separator (comma by default).
  * @returns A string in CSV format.
  */
-export function jsonToCsv<T extends Record<string, any>>(
+export function jsonToCsv<T extends Record<string, unknown>>(
     data: T[],
     use_keys: string[] = [],
     separator = ',',
@@ -348,7 +351,7 @@ export function parseJWT(token: string) {
  * Flatten nested array
  * @param an_array Array to flatten
  */
-export function flatten<T = any>(an_array: T[]) {
+export function flatten<T = unknown>(an_array: T[]) {
     const stack = [...an_array];
     const res = [];
     while (stack.length) {
@@ -459,7 +462,7 @@ export function getInvalidFields(form: UntypedFormGroup, prefix = '') {
  * Create a promise that returns the next value returned by the given observable
  * @param obs Observable to use
  */
-export function nextValueFrom<T = any>(obs: Observable<T>): Promise<T> {
+export function nextValueFrom<T = unknown>(obs: Observable<T>): Promise<T> {
     return obs ? lastValueFrom(obs.pipe(take(1))) : Promise.resolve(null);
 }
 
@@ -467,16 +470,16 @@ export function nextValueFrom<T = any>(obs: Observable<T>): Promise<T> {
  * Create a promise that returns the first truthy value returned by the given observable
  * @param obs Observable to use
  */
-export function firstTruthyValueFrom<T = any>(obs: Observable<T>): Promise<T> {
+export function firstTruthyValueFrom<T>(obs: Observable<T>): Promise<T> {
     return obs
         ? lastValueFrom(obs.pipe(first((_) => !!_)))
         : Promise.resolve(null);
 }
 
-export function mapLastValueFrom<T = any>(
+export function mapLastValueFrom<T, R>(
     obs: Observable<T>,
-    map_fn?: (value: any) => T,
-): Promise<T> {
+    map_fn?: (value: T) => R,
+): Promise<T | R> {
     return obs
         ? map_fn
             ? lastValueFrom(obs.pipe(map(map_fn)))

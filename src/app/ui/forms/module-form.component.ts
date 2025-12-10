@@ -293,13 +293,13 @@ export class ModuleFormComponent extends AsyncHandler implements OnDestroy {
     public readonly readonly = input<boolean>(undefined);
 
     public readonly driver_query_fn = (_: string) =>
-        queryDrivers({ q: _ } as any).pipe(map((resp) => resp.data));
+        queryDrivers({ q: _ } as Record<string, unknown>).pipe(map((resp) => resp.data as any));
 
     public readonly system_query_fn = (_: string) =>
-        querySystems({ q: _ }).pipe(map((resp) => resp.data));
+        querySystems({ q: _ }).pipe(map((resp) => resp.data as any));
 
     public readonly edge_query_fn = (_: string) =>
-        queryEdges({ q: _ }).pipe(map((resp) => resp.data));
+        queryEdges({ q: _ }).pipe(map((resp) => resp.data as any));
 
     /** Role of the selected driver */
     public get role(): string {

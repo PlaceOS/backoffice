@@ -79,7 +79,7 @@ export class PlaceDebugService extends AsyncHandler {
             if (this.bound_modules().find((mod) => mod.id === event.mod_id)) {
                 let event_list = [...this.events(), event];
                 if (event_list.length > 2000) {
-                    const [_, ...events] = event_list;
+                    const [_first, ...events] = event_list;
                     event_list = events;
                 }
                 this.events.set(event_list);

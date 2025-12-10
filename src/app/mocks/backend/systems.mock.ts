@@ -7,7 +7,7 @@ import {
     registerMockEndpoint,
 } from '@placeos/ts-client';
 
-const FILTER_FN = (item: any, q: HashMap) => {
+const FILTER_FN = (item: Record<string, any>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return true;
     }
@@ -17,7 +17,7 @@ const FILTER_FN = (item: any, q: HashMap) => {
             match &&
             (item.name || '')
                 .toLowerCase()
-                .indexOf((q.q || '').toLowerCase()) >= 0;
+                .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
     }
     if (q.zone_id) {
         match = match && (item.zones || []).includes(q.zone_id);
@@ -76,8 +76,8 @@ registerMockEndpoint({
     path: `${API}/systems/:id/triggers`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
-        if (event.route_params.id) {
+    callback: (_event) => {
+        if (_event.route_params.id) {
             return [];
         }
         throw { status: 404, message: 'System not found' };
@@ -146,7 +146,7 @@ registerMockEndpoint({
     path: `${API}/systems/:id/exec/:module/:index/:method`,
     metadata: [],
     method: 'POST',
-    callback: (event) => {
+    callback: (_event) => {
         return { result: 'ok' };
     },
 } as MockHttpRequestHandler);
@@ -156,7 +156,7 @@ registerMockEndpoint({
     path: `${API}/systems/:id/funcs/:module/:index`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return {
             functions: {
                 power: { arity: 1, params: ['state'] },
@@ -172,7 +172,7 @@ registerMockEndpoint({
     path: `${API}/systems/count`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return { count: endpointData(`${API}/systems`).length };
     },
 } as MockHttpRequestHandler);

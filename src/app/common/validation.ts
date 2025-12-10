@@ -26,7 +26,7 @@ export const isValidUrl = (url) => {
     if (!url) return true;
     try {
         new URL(url);
-    } catch (e) {
+    } catch {
         return false;
     }
     return true;
@@ -46,8 +46,8 @@ export function validateJSONString(control: AbstractControl) {
         return null;
     }
     try {
-        const json = JSON.parse(control.value);
-    } catch (e) {
+        JSON.parse(control.value);
+    } catch {
         return { json: true };
     }
     return null;

@@ -247,10 +247,10 @@ export class SystemZonesComponent {
     }
 
     /** Query function for systems */
-    public readonly query_fn = (_) =>
+    public readonly query_fn = (_: string) =>
         queryZones({ q: _ }).pipe(map((resp) => resp.data));
 
-    public readonly exclude_fn = (zone: PlaceZone, _: string) =>
+    public readonly exclude_fn = (zone: any, __: string) =>
         this.item.zones.indexOf(zone.id) >= 0;
 
     public readonly removeZone = (z) =>
@@ -292,7 +292,7 @@ export class SystemZonesComponent {
     }
 
     public get item(): PlaceSystem {
-        return this._service.active_item as any;
+        return this._service.active_item as PlaceSystem;
     }
 
     public async reorder([previous, current]: [number, number]) {

@@ -31,7 +31,7 @@ export interface UploadDetails {
     /** Error with upload request */
     error?: string;
     /** Upload object associated with the file */
-    upload: any;
+    upload: Awaited<ReturnType<typeof uploadNewFile>>;
 }
 
 export type UploadPermissions = 'none' | 'support' | 'admin';
@@ -47,13 +47,13 @@ export function uploadFile(
 ): Observable<UploadDetails> {
     return new Observable((observer) => {
         const fileReader = new FileReader();
-        fileReader.addEventListener('loadend', async (e: any) => {
+        fileReader.addEventListener('loadend', async (e: ProgressEvent<FileReader>) => {
             const arrayBuffer = e.target.result;
-            const blob = blobUtil.arrayBufferToBlob(arrayBuffer, file.type);
+            const _blob = blobUtil.arrayBufferToBlob(arrayBuffer as ArrayBuffer, file.type);
             const upload = await uploadNewFile(file, {
                 permissions,
                 public: is_public,
-            } as any);
+            } as Record<string, unknown>);
             const upload_details: UploadDetails = {
                 id: randomInt(9999_9999_9999),
                 name: file.name,
@@ -61,22 +61,18 @@ export function uploadFile(
                 link: uploadURL(upload.id),
                 formatted_size: humanReadableByteCount(file.size),
                 size: file.size,
-                upload: upload as any,
+                upload: upload,
             };
             upload.state
                 .pipe(takeWhile((_) => _.status !== 'COMPLETED', true))
                 .subscribe((state) => {
-                    if ((upload as any).access_url || state.progress >= 100) {
-                        upload_details.link = !is_public
-                            ? uploadURL(upload.id)
-                            : (upload as any).access_url;
-                    }
                     upload_details.progress = state.progress;
+                    upload_details.link = uploadURL(upload.id);
                     observer.next(upload_details);
                     if (state.status === 'FAILED')
                         observer.error({
                             ...upload_details,
-                            error: (state as any).error || 'Error',
+                            error: 'Upload failed',
                         });
                     if (state.status === 'COMPLETED') observer.complete();
                 });

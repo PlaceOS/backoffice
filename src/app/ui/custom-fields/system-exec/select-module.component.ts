@@ -103,7 +103,7 @@ export class SelectModuleComponent
                       control_system_id: id,
                       limit: 500,
                       complete: true,
-                  } as any).pipe(map(({ data }) => data))
+                  } as Record<string, unknown>).pipe(map(({ data }) => data))
                 : of([]),
         ),
         catchError(() => of([])),

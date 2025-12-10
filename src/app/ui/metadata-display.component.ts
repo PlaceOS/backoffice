@@ -23,6 +23,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     listMetadata,
     PlaceMetadata,
+    PlaceResource,
     removeMetadata,
     updateMetadata,
 } from '@placeos/ts-client';
@@ -44,6 +45,7 @@ import { TranslatePipe } from './translate.pipe';
 
 interface Metadata extends PlaceMetadata {
     match?: boolean;
+    [key: string]: unknown;
 }
 
 function replaceDescTag(inputString, newContent) {
@@ -204,7 +206,7 @@ export class MetadataDisplayComponent
 {
     private _dialog = inject(MatDialog);
     // private _schemas = inject(SchemaStateService);
-    public readonly item = input<any>(undefined);
+    public readonly item = input<PlaceResource>();
     /** List of metadata associated with the zone */
     public readonly metadata = signal<Metadata[]>([]);
     /** Map of form field groups to metadata fields */
@@ -243,9 +245,9 @@ export class MetadataDisplayComponent
         }
     }
 
-    public toggleView(item: any) {
+    public toggleView(item: Metadata) {
         this.show_view.update((current) =>
-            current === item.name ? '' : item.name,
+            current === item.name ? '' : (item.name as string),
         );
         this.search_text.set('');
         this.filterMetadata();
@@ -258,7 +260,7 @@ export class MetadataDisplayComponent
                 description: '',
                 new: true,
                 details: {},
-            } as any);
+            } as unknown as Metadata);
             return l;
         });
         this.generateForms();
@@ -310,7 +312,7 @@ export class MetadataDisplayComponent
         if (search) this.show_view.set('');
         this.metadata.update((list) => {
             for (const block of list) {
-                (block as any).match =
+                (block as Record<string, unknown>).match =
                     block.name.toLowerCase().includes(search) ||
                     `${this.form_map()[block.name].controls.name.value}`
                         .toLowerCase()
@@ -379,7 +381,7 @@ export class MetadataDisplayComponent
                         l.splice(index, 1, {
                             ...item,
                             new: false,
-                        } as any);
+                        } as unknown as Metadata);
                         return l;
                     });
                 }
@@ -464,11 +466,11 @@ export class MetadataDisplayComponent
     }
 
     public viewMetadataHistory(item: PlaceMetadata) {
-        const itemValue = this.item();
+        const item_value = this.item();
         this._dialog.open(MetadataHistoryModalComponent, {
             data: {
                 id: this.item().id,
-                parent_name: itemValue.display_name || itemValue.name,
+                parent_name: item_value['display_name'] || item_value.name,
                 name: item.name,
             },
         });

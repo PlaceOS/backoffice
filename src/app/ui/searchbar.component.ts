@@ -95,7 +95,7 @@ export class SearchbarComponent extends AsyncHandler implements OnInit {
     public readonly focused = signal(false);
     public readonly has_speech = signal(false);
     public readonly dictate = signal(false);
-    public readonly recognition = signal<any>(null);
+    public readonly recognition = signal<unknown>(null);
 
     private readonly _input_el = viewChild<ElementRef>('input');
 
@@ -105,7 +105,7 @@ export class SearchbarComponent extends AsyncHandler implements OnInit {
     }
 
     public ngOnInit() {
-        const win = window as any;
+        const win = window as unknown as Record<string, unknown>;
         this.has_speech.set(
             !!(win.SpeechRecognition || win.webkitSpeechRecognition),
         );
@@ -116,36 +116,36 @@ export class SearchbarComponent extends AsyncHandler implements OnInit {
     public startDictation() {
         if (!this._input_el()?.nativeElement) return;
         if (this.recognition()) {
-            this.recognition().stop();
+            (this.recognition() as unknown as { stop: () => void }).stop();
             this.dictate.set(false);
             this.recognition.set(null);
             return;
         }
-        const win = self as any;
-        const Speech: any =
+        const win = self as unknown as Record<string, unknown>;
+        const Speech: unknown =
             win.SpeechRecognition || win.webkitSpeechRecognition;
         if (Speech) {
-            const sr = new Speech();
-            sr.continuous = false;
-            sr.interimResults = false;
+            const sr = new (Speech as new () => unknown)();
+            (sr as unknown as Record<string, unknown>).continuous = false;
+            (sr as unknown as Record<string, unknown>).interimResults = false;
 
-            sr.lang = 'en-US';
-            sr.start();
+            (sr as unknown as Record<string, unknown>).lang = 'en-US';
+            (sr as unknown as { start: () => void }).start();
             this.recognition.set(sr);
             this.dictate.set(true);
 
-            sr.onresult = (e: any) => {
+            (sr as unknown as Record<string, unknown>).onresult = (_e: unknown) => {
                 // Update search field with dictation result
                 this._input_el().nativeElement.value =
-                    e.results[0][0].transcript;
-                this.filter.set(e.results[0][0].transcript);
-                sr.stop();
+                    (_e as Record<string, unknown>).results[0][0].transcript;
+                this.filter.set((_e as Record<string, unknown>).results[0][0].transcript);
+                (sr as unknown as { stop: () => void }).stop();
                 this.post();
                 this.dictate.set(false);
             };
 
-            sr.onerror = (e: any) => {
-                sr.stop();
+            (sr as unknown as Record<string, unknown>).onerror = (_e: unknown) => {
+                (sr as unknown as { stop: () => void }).stop();
                 this.dictate.set(false);
             };
         }

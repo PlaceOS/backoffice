@@ -4,9 +4,9 @@ import { log } from './general';
 
 declare global {
     interface Window {
-        ga: any;
-        gtag: any;
-        dataLayer: any[];
+        ga: unknown;
+        gtag: unknown;
+        dataLayer: unknown[];
         debug: boolean;
     }
 }
@@ -18,7 +18,7 @@ export class GoogleAnalyticsService {
     private title = inject(Title);
 
     /** Google Analytics API object */
-    private service: any;
+    private service: unknown;
     /** Application prefix to add to event categories */
     public app_prefix: string;
     /** Whether posting analytics events is enabled */
@@ -41,7 +41,7 @@ export class GoogleAnalyticsService {
                     event: 'gtm.js',
                 });
                 const f = d.getElementsByTagName(s)[0];
-                const j = d.createElement(s) as any;
+                const j = d.createElement(s) as HTMLScriptElement;
                 const dl = l != 'dataLayer' ? '&l=' + l : '';
                 j.async = true;
                 j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
@@ -52,7 +52,7 @@ export class GoogleAnalyticsService {
         this.service = window.gtag;
     }
 
-    public push(obj: Record<string, any>) {
+    public push(obj: Record<string, unknown>) {
         window.dataLayer.push(obj);
     }
 
@@ -89,7 +89,7 @@ export class GoogleAnalyticsService {
                 `user|${id}`,
                 () => {
                     log('Analytics', 'Service', `Set user ID: ${id}`);
-                    this.service('set', 'userId', id);
+                    (this.service as any)('set', 'userId', id);
                     this.event('authentication', 'user-id available');
                 },
                 100,
@@ -97,7 +97,7 @@ export class GoogleAnalyticsService {
         }
     }
 
-    public send(type: string, value: Record<string, any>) {
+    public send(type: string, value: Record<string, unknown>) {
         if (!this.service) {
             throw new Error(
                 "Google Analytics hasn't been installed on this page",
@@ -143,7 +143,6 @@ export class GoogleAnalyticsService {
                             value ? ', ' + value : ''
                         }`,
                     );
-                    const prefix = this.app_prefix ? this.app_prefix + '_' : '';
                     this.push({
                         event: 'event',
                         category: category,
@@ -267,7 +266,7 @@ export class GoogleAnalyticsService {
             clearTimeout(this.timers[name]);
             delete this.timers[name];
         }
-        this.timers[name] = <any>setTimeout(() => {
+        this.timers[name] = setTimeout(() => {
             if (fn instanceof Function) {
                 fn();
             }

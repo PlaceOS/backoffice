@@ -204,7 +204,7 @@ export class PlaceStaffAPIComponent implements OnInit {
             this.loading.set('Loading tenants for domain...');
             return get('/api/staff/v1/tenants');
         }),
-        catchError((_) => []),
+        catchError((__) => []),
         map((tenants) => {
             this.loading.set('');
             return tenants.filter(
@@ -242,7 +242,7 @@ export class PlaceStaffAPIComponent implements OnInit {
         const ref = this._dialog.open(StaffTenantModalComponent, {
             data: { tenant, domain: this.domain.getValue() },
         });
-        ref.afterClosed().subscribe((_) =>
+        ref.afterClosed().subscribe((__) =>
             this.domain.next(this.domain.getValue()),
         );
     }
@@ -251,7 +251,7 @@ export class PlaceStaffAPIComponent implements OnInit {
         const ref = this._dialog.open(BookingLimitsModalComponent, {
             data: { tenant, domain: this.domain.getValue() },
         });
-        ref.afterClosed().subscribe((_) =>
+        ref.afterClosed().subscribe((__) =>
             this.domain.next(this.domain.getValue()),
         );
     }

@@ -1,5 +1,5 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, input } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 
@@ -305,7 +305,7 @@ import { TranslatePipe } from '../translate.pipe';
         SettingsToggleComponent,
     ],
 })
-export class BrokerFormComponent {
+export class BrokerFormComponent implements OnInit {
     /** Group of form fields used for creating the system */
     public readonly form = input<UntypedFormGroup>(undefined);
     /** List of available authentication types */
@@ -345,7 +345,7 @@ export class BrokerFormComponent {
                 filters: unique([...filter_list, value]),
             });
         }
-        event.chipInput!.clear();
+        event.chipInput?.clear();
     }
 
     /**

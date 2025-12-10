@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { DatePipe } from '@angular/common';
 import { AsyncHandler } from '../common/async-handler.class';
+import { HashMap } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
 
 export interface SystemLogModalData {
@@ -36,9 +37,9 @@ export interface SystemLogModalData {
                         <tbody>
                             @for (item of logs; track item.id) {
                                 <tr class="item">
-                                    <td>{{ item?.user?.name }}</td>
-                                    <td>{{ item?.created_at | date }}</td>
-                                    <td>{{ item?.installed_device }}</td>
+                                    <td>{{ $any(item?.user)?.name }}</td>
+                                    <td>{{ $any(item)?.created_at | date }}</td>
+                                    <td>{{ $any(item)?.installed_device }}</td>
                                 </tr>
                             }
                         </tbody>
@@ -89,7 +90,7 @@ export class SystemLogModalComponent extends AsyncHandler implements OnInit {
     /** ID of the system to get logs for */
     public id: string;
     /** List of the available log entries for the set system */
-    public logs: any[];
+    public logs: HashMap[] = [];
     /** Whether the system's logs are loading */
     public loading: boolean;
     /**  */

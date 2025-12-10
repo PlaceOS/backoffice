@@ -31,6 +31,7 @@ import {
 import { unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {
     SelectItemModalComponent,
@@ -65,18 +66,18 @@ export class ZonesStateService {
                     querySystems({ zone_id: item.id, limit: 1 }).pipe(
                         map((d) => d.total),
                     ),
-                ).catch((_) => 0),
+                ).catch(() => 0),
                 lastValueFrom(
                     listZoneTriggers(item.id).pipe(map((d) => d.total)),
-                ).catch((_) => 0),
+                ).catch(() => 0),
                 lastValueFrom(
                     listMetadata(item.id).pipe(map((d) => d.length)),
-                ).catch((_) => 0),
+                ).catch(() => 0),
                 lastValueFrom(
                     queryZones({ parent_id: item.id, limit: 1 }).pipe(
                         map((d) => d.total),
                     ),
-                ).catch((_) => 0),
+                ).catch(() => 0),
             ]);
             const [systems, triggers, metadata, children] = details;
             this._loading.next(false);
@@ -103,7 +104,7 @@ export class ZonesStateService {
 
     public readonly triggers = this.item.pipe(
         switchMap((item) => {
-            if (!(item instanceof PlaceZone)) return [];
+            if (!(item instanceof PlaceZone)) return of({ data: [] });
             return listZoneTriggers(item.id).pipe(
                 catchError(() => of({ data: [] })),
                 startWith({ data: [] }),
@@ -126,7 +127,7 @@ export class ZonesStateService {
 
     public readonly children = this.item.pipe(
         switchMap((item) => {
-            if (!(item instanceof PlaceZone)) return [];
+            if (!(item instanceof PlaceZone)) return of({ data: [] });
             return queryZones({ parent_id: item.id }).pipe(
                 catchError(() => of({ data: [] })),
                 startWith({ data: [] }),
@@ -137,7 +138,7 @@ export class ZonesStateService {
     );
 
     public get active_item(): PlaceZone {
-        return this._service.active_item as any;
+        return this._service.active_item as unknown as PlaceZone;
     }
 
     constructor() {
@@ -164,16 +165,17 @@ export class ZonesStateService {
             lastValueFrom(ref.afterClosed()),
         ]);
         if (!details || !details.reason) return ref.close();
-        const zone = await this.addTrigger(ref.componentInstance.item);
+        const zone = await this.addTrigger(ref.componentInstance.item as PlaceTrigger);
         ref.close();
-        if (zone) this._service.replaceItem(zone);
+        if (zone) this._service.replaceItem(zone as unknown as Identity);
     }
 
-    public async addTrigger(trigger: PlaceTrigger) {
+    public async addTrigger(trigger: PlaceTrigger): Promise<PlaceZone | undefined> {
+        const triggers_list = unique([...this.active_item.triggers, trigger.id]) as string[];
         return updateZone(this.active_item.id, {
             ...this.active_item,
-            triggers: unique([...this.active_item.triggers, trigger.id]),
-        }).toPromise();
+            triggers: triggers_list,
+        }).toPromise() as Promise<PlaceZone | undefined>;
     }
 
     public async removeTrigger(trigger: PlaceTrigger) {
@@ -204,6 +206,6 @@ export class ZonesStateService {
         });
         details.close();
         notifySuccess(`Successfully removed trigger from zone.`);
-        if (zone) this._service.replaceItem(zone);
+        if (zone) this._service.replaceItem(zone as unknown as Identity);
     }
 }

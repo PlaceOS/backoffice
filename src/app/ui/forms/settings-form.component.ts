@@ -82,7 +82,7 @@ type SettingsArray = [
                             (has_errors() && !saving()[shown_option().id])
                         "
                         [matTooltip]="'COMMON.SAVE' | translate"
-                        (click)="save(shown_option().id)"
+                        (click)="save(+shown_option().id)"
                     >
                         @if (!saving()[shown_option().id]) {
                             <icon class="text-2xl">save</icon>
@@ -305,7 +305,7 @@ export class SettingsFormComponent
     public readonly shown_option = computed(() => {
         return this.levels().find(
             (i) => i.id === this.encryption_level(),
-        ) as any;
+        ) as Identity;
     });
 
     /** Whether the currently active settings have been edited */
@@ -614,7 +614,7 @@ export class SettingsFormComponent
             let obj = {};
             try {
                 obj = yaml.load(item.settings_string) || {};
-            } catch (err) {
+            } catch {
                 for (const key of item.keys) {
                     obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
                 }
@@ -625,7 +625,7 @@ export class SettingsFormComponent
             let obj = {};
             try {
                 obj = yaml.load(item.settings_string) || {};
-            } catch (err) {
+            } catch {
                 for (const key of item.keys) {
                     obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
                 }
@@ -667,12 +667,12 @@ export class SettingsFormComponent
                 type,
             );
         }
-        return Object.keys(decorations).map((i) => decorations[i]);
+        return Object.keys(decorations).map((i) => decorations[i] as any);
     }
 
     private _decorationsForObject(
-        decorations: HashMap,
-        obj: HashMap,
+        decorations: HashMap<unknown>,
+        obj: HashMap<unknown>,
         display: string,
         settings: PlaceSettings,
         type: number,
@@ -699,10 +699,11 @@ export class SettingsFormComponent
                         level * 2,
                     ),
                 };
-                if (obj[key] instanceof Object) {
+                const value = obj[key];
+                if (typeof value === 'object' && value !== null) {
                     this._decorationsForObject(
                         decorations,
-                        obj[key],
+                        value as HashMap<unknown>,
                         display,
                         settings,
                         type,

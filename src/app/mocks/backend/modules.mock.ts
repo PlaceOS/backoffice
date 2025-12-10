@@ -6,7 +6,7 @@ import { HashMap } from '../../common/types';
 import { API, endpointData, generateBasicHandlers } from '../common.mock';
 import { MODULES as MODULE_DATA } from '../data/modules';
 
-const FILTER_FN = (item: any, q: HashMap) => {
+const FILTER_FN = (item: Record<string, any>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return true;
     }
@@ -16,7 +16,7 @@ const FILTER_FN = (item: any, q: HashMap) => {
             match &&
             (item.name || '')
                 .toLowerCase()
-                .indexOf((q.q || '').toLowerCase()) >= 0;
+                .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
     }
     if (q.control_system_id) {
         const system = endpointData(`${API}/systems`).find(
@@ -79,7 +79,7 @@ registerMockEndpoint({
     path: `${API}/modules/:id/ping`,
     metadata: [],
     method: 'POST',
-    callback: (event) => {
+    callback: (_event) => {
         return { host: 'localhost', pingable: true, warning: null };
     },
 } as MockHttpRequestHandler);
@@ -89,7 +89,7 @@ registerMockEndpoint({
     path: `${API}/modules/:id/settings`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return [];
     },
 } as MockHttpRequestHandler);
@@ -99,7 +99,7 @@ registerMockEndpoint({
     path: `${API}/modules/:id/state`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return { connected: true, running: true };
     },
 } as MockHttpRequestHandler);

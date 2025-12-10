@@ -56,7 +56,7 @@ export class EmailStateService {
         return this._domain.getValue();
     }
 
-    public async loadTemplate(id: string) {
+    public async loadTemplate(_id: string) {
         const domain = this.getDomain();
         if (!domain) return;
         const template = {} as EmailTemplate;
@@ -72,7 +72,7 @@ export class EmailStateService {
     public async saveTemplate(template: EmailTemplate) {
         const domain = this.getDomain();
         if (!domain) return;
-        const details = {
+        const _details = {
             ...template,
             subject: template.subject || '',
             html: template.html || '',

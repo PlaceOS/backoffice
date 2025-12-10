@@ -67,7 +67,7 @@ export class UserHistoryComponent extends AsyncHandler implements OnInit {
     public readonly logs = signal<UserLogEntry[]>([]);
 
     public get item(): PlaceUser {
-        return this._service.active_item as any;
+        return this._service.active_item as PlaceUser;
     }
 
     public ngOnInit(): void {
@@ -77,5 +77,7 @@ export class UserHistoryComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    public loadUserLogs(offset = 0) {}
+    public loadUserLogs(_offset = 0) {
+        // TODO: Implement user log loading functionality
+    }
 }

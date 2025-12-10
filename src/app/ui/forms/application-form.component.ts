@@ -1,4 +1,4 @@
-import { Component, SimpleChanges, input } from '@angular/core';
+import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -133,7 +133,7 @@ import { TranslatePipe } from '../translate.pipe';
         MatInputModule,
     ],
 })
-export class ApplicationFormComponent extends AsyncHandler {
+export class ApplicationFormComponent extends AsyncHandler implements OnChanges {
     /** Group of form fields used for creating the system */
     public readonly form = input<UntypedFormGroup>(undefined);
 
@@ -144,7 +144,7 @@ export class ApplicationFormComponent extends AsyncHandler {
     public ngOnChanges(changes: SimpleChanges) {
         const form = this.form();
         if (changes.form && form) {
-            const { id, client_id, redirect_uri } = form.value;
+            const { client_id, redirect_uri } = form.value;
             this.default_redirect_uri = redirect_uri || '';
             this.client_id.next(
                 client_id || redirect_uri

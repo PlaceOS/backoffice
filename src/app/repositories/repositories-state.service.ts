@@ -25,6 +25,7 @@ import {
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
+import { Identity } from '../common/types';
 import {
     CreateEditModalData,
     ItemCreateUpdateModalComponent,
@@ -53,10 +54,10 @@ export class RepositoriesStateService {
                 return of(null);
             this._loading.next(true);
             return listRepositoryDrivers(item.id, { limit: 2000 }).pipe(
-                catchError((_) => []),
+                catchError(() => []),
             );
         }),
-        tap((_) => this._loading.next(false)),
+        tap(() => this._loading.next(false)),
         startWith([]),
         shareReplay(1),
     );
@@ -64,18 +65,18 @@ export class RepositoriesStateService {
     public readonly commit = this._state.active_item$.pipe(
         filter((i) => i instanceof PlaceRepository),
         switchMap((item) =>
-            listRepositoryCommits(item.id, { count: 1 } as any),
+            listRepositoryCommits(item.id, { count: 1 } as Record<string, unknown>),
         ),
-        catchError((_) => []),
+        catchError(() => []),
         map((details) => details[0]?.commit || 'HEAD'),
     );
 
     public get active_item(): PlaceRepository {
-        return this._state.active_item as any;
+        return this._state.active_item as unknown as PlaceRepository;
     }
 
     public async pullLatestCommit() {
-        const commit: any = await pullRepositoryChanges(this.active_item.id)
+        const commit: unknown = await pullRepositoryChanges(this.active_item.id)
             .toPromise()
             .catch((err) => {
                 notifyError(
@@ -90,24 +91,21 @@ export class RepositoriesStateService {
             });
         if (!commit) return;
         const repo = await showRepository(this.active_item.id).toPromise();
-        this._state.replaceItem(repo);
+        if (repo) this._state.replaceItem(repo as unknown as Identity);
     }
 
     public async newDriver(driver: string) {
-        this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
-            ItemCreateUpdateModalComponent,
-            {
-                data: {
-                    item: new PlaceDriver({
-                        name: '',
-                        module_name: '',
-                        repository_id: this.active_item.id,
-                        file_name: driver,
-                    }),
-                    name: 'DRIVERS.NEW',
-                    save: (item) => addDriver(item),
-                },
+        this._dialog.open(ItemCreateUpdateModalComponent, {
+            data: {
+                item: new PlaceDriver({
+                    name: '',
+                    module_name: '',
+                    repository_id: this.active_item.id,
+                    file_name: driver,
+                }),
+                name: 'DRIVERS.NEW',
+                save: (item: any) => addDriver(item),
             },
-        );
+        });
     }
 }

@@ -176,7 +176,7 @@ export class AdminSchemasComponent implements OnInit {
         this.loadSchemas();
     }
 
-    public getSchema(id: string): Record<string, any> {
+    public getSchema(id: string): Record<string, string> {
         const schema_list = this.schema_list();
         const schema = schema_list.find((_) => _.id === id);
         if (!schema) return null;
@@ -187,9 +187,14 @@ export class AdminSchemasComponent implements OnInit {
         const schema_list = await lastValueFrom(
             query<JsonSchema>({
                 query_params: {},
-                fn: (_) => _ as any,
+                fn: (_) =>
+                    ({
+                        name: _.name || '',
+                        schema: _.schema || '{}',
+                        ..._,
+                    }) as JsonSchema,
                 path: 'schema',
-            }).pipe(map((_) => _.data)),
+            }).pipe(map((_) => _.data as JsonSchema[])),
         );
         schema_list.sort((a, b) => a.name?.localeCompare(b.name));
         this.schema_list.set(schema_list);

@@ -97,10 +97,10 @@ function endpointToStorageKey(endpoint: string): string {
  * @param data Initial data (used as fallback if no session data)
  * @param filter Filter function for queries
  */
-export function generateBasicHandlers<T = any>(
+export function generateBasicHandlers<T = unknown>(
     endpoint: string,
     data: T[],
-    filter: FilterFn<T> = (_: T, q: HashMap) => true,
+    filter: FilterFn<T> = (_: T, _q: HashMap) => true,
 ): Observable<T[]> {
     const storage_key = endpointToStorageKey(endpoint);
 

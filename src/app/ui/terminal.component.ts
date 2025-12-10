@@ -39,7 +39,7 @@ export class TerminalComponent
     /** Resizes terminal display on change */
     public readonly resize = input<boolean>(undefined);
     /** Local instance of an xterm terminal */
-    public terminal: any;
+    public terminal: unknown;
 
     public readonly terminal_element =
         viewChild<ElementRef<HTMLDivElement>>('terminal');
@@ -75,8 +75,8 @@ export class TerminalComponent
     }
 
     public ngOnDestroy(): void {
-        this.terminal.clear();
-        this.terminal.dispose();
+        (this.terminal as { clear: () => void; dispose: () => void })?.clear();
+        (this.terminal as { clear: () => void; dispose: () => void })?.dispose();
     }
 
     /**
@@ -85,14 +85,15 @@ export class TerminalComponent
     public resizeTerminal(): void {
         const container_el = this.container_el();
         if (!this.terminal || !container_el) return;
-        const font_size = this.terminal.options.fontSize;
-        const line_height = this.terminal.options.lineHeight;
+        const term = this.terminal as { options: { fontSize: number; lineHeight: number }; resize: (w: number, h: number) => void };
+        const font_size = term.options.fontSize;
+        const line_height = term.options.lineHeight;
         const box = container_el.nativeElement.getBoundingClientRect();
         const width = Math.floor(box.width / (font_size * 0.6));
         const height = Math.floor(
             box.height / (line_height * font_size * 1.28),
         );
-        this.terminal.resize(width - 2, height);
+        term.resize(width - 2, height);
     }
 
     /**
@@ -101,11 +102,12 @@ export class TerminalComponent
      */
     private updateTerminalContents(new_content: string) {
         if (!this.terminal) return;
-        this.terminal.selectAll();
-        this.terminal.clearSelection();
-        this.terminal.write('\x1b[H\x1b[2J');
+        const term = this.terminal as { selectAll: () => void; clearSelection: () => void; write: (s: string) => void; writeln: (s: string) => void };
+        term.selectAll();
+        term.clearSelection();
+        term.write('\x1b[H\x1b[2J');
         const lines: string[] = new_content.split('\n');
-        lines.reverse().forEach((line) => this.terminal.writeln(line));
+        lines.reverse().forEach((line) => term.writeln(line));
         // this.timeout('scroll', () => this.terminal.scrollToBottom(), 50);
     }
 }

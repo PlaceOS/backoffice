@@ -196,7 +196,7 @@ export class ZonesComponent extends AsyncHandler implements OnInit {
         this.subscription(
             'item-change',
             this._item.active_item$.subscribe((i) => {
-                this.item.set(i as any);
+                this.item.set(i as unknown as PlaceZone);
                 this.updateTabList({});
             }),
         );

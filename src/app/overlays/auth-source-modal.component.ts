@@ -198,7 +198,7 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
             return;
         }
         this.loading.set('Saving authentication source...');
-        const method: Promise<any> = lastValueFrom<any>(
+        const method: Promise<unknown> = lastValueFrom<unknown>(
             this.updateMethod({
                 ...this.item().toJSON(),
                 ...this.form().value,

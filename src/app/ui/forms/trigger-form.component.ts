@@ -135,5 +135,5 @@ export class TriggerFormComponent {
     /** Group of form fields used for creating the system */
     public readonly form = input<UntypedFormGroup>(undefined);
 
-    public readonly render_debounce = (v) => `${v} ms`;
+    public readonly render_debounce = (v: number) => `${v} ms`;
 }

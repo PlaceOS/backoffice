@@ -61,9 +61,9 @@ import { TranslatePipe } from '../../ui/translate.pipe';
 })
 export class CsvUploadComponent {
     /** Data for the template CSV */
-    readonly template = input<HashMap[]>([]);
+    readonly template = input<HashMap<unknown>[]>([]);
     /** Emitter for changes to the data displayed */
-    public readonly list = output<HashMap[]>();
+    public readonly list = output<HashMap<unknown>[]>();
     /** Whether user has dragged item */
     public dragging: boolean;
     /** Whether CSV data is being processed */
@@ -81,7 +81,7 @@ export class CsvUploadComponent {
                 reader.readAsText(file, 'UTF-8');
                 reader.addEventListener('load', (evt) => {
                     this.processCSVData(
-                        (evt.srcElement as any).result,
+                        (evt.target as FileReader).result as string,
                         file.name.endsWith('.csv') ? ',' : '\t',
                     );
                     element.value = '';

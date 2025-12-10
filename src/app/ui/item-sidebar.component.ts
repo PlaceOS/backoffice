@@ -34,6 +34,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
 @Component({
     selector: 'item-sidebar',
     template: `
+        <!-- eslint-disable @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
         <div
             class="border-base-200 bg-base-100 flex h-full w-[24rem] max-w-[25vw] min-w-64 flex-col space-y-2 overflow-hidden rounded-sm shadow-sm sm:border-r"
             (click)="$event.stopPropagation()"
@@ -242,7 +243,7 @@ export class ItemSidebarComponent
     public selected_filters: string[] = [];
     /** List of items for the active route */
     public readonly items = this._service.list.pipe(
-        map((l) => this._processItems(l)),
+        map((l) => this._processItems(l as ({ id?: string; name?: string; display_name?: string; custom_name?: string } & Record<string, unknown>)[])),
     );
     /** Whether list of items for the active route are loading */
     public readonly loading = this._service.loading_list;
@@ -290,7 +291,7 @@ export class ItemSidebarComponent
         this._service.setSearch(search_str);
     }
 
-    public trackByFn(item: Record<string, any>, index: number) {
+    public trackByFn(item: Record<string, unknown>, index: number) {
         return item.id || index;
     }
 
@@ -303,7 +304,7 @@ export class ItemSidebarComponent
             isBefore(now, last_check + 60 * 1000)
         );
     }
-    public async atBottom([_, end]: [number, number]) {
+    public async atBottom([_start, end]: [number, number]) {
         this.timeout(
             'load_more',
             async () => {
@@ -324,7 +325,7 @@ export class ItemSidebarComponent
         ); // 150ms debounce for smooth feel
     }
 
-    private _processItems(list: any[]) {
+    private _processItems(list: ({ id?: string; name?: string; display_name?: string; custom_name?: string } & Record<string, unknown>)[]) {
         for (const item of list) {
             if (item instanceof PlaceModule) {
                 const name = item.system?.display_name || item.system?.name;
@@ -336,23 +337,23 @@ export class ItemSidebarComponent
                               ? `${name} | ${item.control_system_id} `
                               : item.control_system_id
                           : item.ip;
-                (item as any).display_name =
+                (item as Record<string, unknown>).display_name =
                     item.custom_name || item.name || '<Unnamed>';
-                (item as any).extra = detail;
+                (item as Record<string, unknown>).extra = detail;
             } else if (item instanceof PlaceRepository) {
-                (item as any).display_name = item.name || '<Unnamed>';
-                (item as any).extra = item.repo_type;
+                (item as Record<string, unknown>).display_name = item.name || '<Unnamed>';
+                (item as Record<string, unknown>).extra = item.repo_type;
             } else if (item instanceof PlaceSystem) {
-                (item as any).display_name =
+                (item as Record<string, unknown>).display_name =
                     item.display_name || item.name || '<Unnamed>';
-                (item as any).zone_issues =
+                (item as Record<string, unknown>).zone_issues =
                     (item.email || item.map_id) && item.zones.length < 3
                         ? 'system'
                         : '';
             } else if (item instanceof PlaceZone) {
-                (item as any).display_name =
+                (item as Record<string, unknown>).display_name =
                     item.display_name || item.name || '<Unnamed>';
-                (item as any).zone_issues =
+                (item as Record<string, unknown>).zone_issues =
                     (item.tags.includes('level') ||
                         item.tags.includes('building') ||
                         item.tags.includes('region')) &&
@@ -360,12 +361,12 @@ export class ItemSidebarComponent
                         ? 'zone'
                         : '';
             } else {
-                (item as any).display_name =
+                (item as Record<string, unknown>).display_name =
                     item.display_name ||
                     item.custom_name ||
                     item.name ||
                     '<Unnamed>';
-                (item as any).extra = item.id;
+                (item as Record<string, unknown>).extra = item.id;
             }
         }
         return list;

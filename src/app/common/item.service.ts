@@ -61,9 +61,9 @@ export class ActiveItemService extends AsyncHandler {
     /** Currently active item */
     private _active_item = new BehaviorSubject<PlaceResource>(null);
     /** Currently active item */
-    private _next_query = new BehaviorSubject<() => QueryResponse<any>>(null);
+    private _next_query = new BehaviorSubject<() => QueryResponse<unknown>>(null);
     /** List of items for the current type */
-    private _list = new BehaviorSubject<any[]>([]);
+    private _list = new BehaviorSubject<unknown[]>([]);
     /** Whether item list is loading */
     private _loading_list = new BehaviorSubject<boolean>(false);
     /** Whether active item is loading */
@@ -100,7 +100,7 @@ export class ActiveItemService extends AsyncHandler {
     public readonly show_options = this._show_options.asObservable();
 
     /** Available API actions for the active type */
-    public get actions(): ItemActions<any> {
+    public get actions(): ItemActions<unknown> {
         return ACTIONS[this._type];
     }
 
@@ -147,7 +147,7 @@ export class ActiveItemService extends AsyncHandler {
             id.length > 2
         ) {
             const url = this._router.url.split('/');
-            this._type = url[1] as any;
+            this._type = url[1] as ResourceType;
             if (!this.type)
                 return this.timeout('setItem', () => this.setItem(id));
             this._loading.next(true);
@@ -156,7 +156,7 @@ export class ActiveItemService extends AsyncHandler {
                 .show(id)
                 .toPromise()
                 .catch(() => notifyError(`Error loading ${id}`));
-            this._active_item.next(item);
+            this._active_item.next(item as PlaceResource);
             const name = this._type[0].toUpperCase() + this._type.slice(1);
             this._name.next(name);
             this._settings.title = name;
@@ -170,7 +170,7 @@ export class ActiveItemService extends AsyncHandler {
         this._show_options.next(!this._show_options.getValue());
     }
 
-    public create(item?: any, copy = false) {
+    public create(item?: PlaceResource, copy = false) {
         if (!this._user.current().sys_admin) return;
         item = item || this._active_item.getValue();
         const actions =
@@ -179,12 +179,12 @@ export class ActiveItemService extends AsyncHandler {
             ) || this.actions;
         return this.edit(
             copy
-                ? new actions.itemConstructor({
+                ? (new actions.itemConstructor({
                       ...item,
                       id: '',
                       name: `${item.name} (1)`,
-                  })
-                : new actions.itemConstructor(),
+                  }) as PlaceResource)
+                : (new actions.itemConstructor() as PlaceResource),
         );
     }
 
@@ -208,19 +208,19 @@ export class ActiveItemService extends AsyncHandler {
         );
     }
 
-    public async edit<T extends PlaceResource = any>(
+    public async edit<T extends PlaceResource = PlaceResource>(
         item?: T,
         options: HashMap = {},
     ) {
         if (!this._user.current().sys_admin) return;
-        item = item || (this._active_item.getValue() as any);
+        item = item || (this._active_item.getValue() as T);
         if (item) {
             const actions =
                 Object.values(ACTIONS).find(
                     (v) => item instanceof v.itemConstructor,
                 ) || this.actions;
             if (item.id) {
-                item = await actions.show(item.id).toPromise();
+                item = await actions.show(item.id).toPromise() as T;
             }
             return new Promise<T>((resolve) => {
                 const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
@@ -233,16 +233,16 @@ export class ActiveItemService extends AsyncHandler {
                 });
                 ref.componentInstance.event
                     .pipe(filter((e) => e.reason === 'done'))
-                    .subscribe((event) => {
+                    .subscribe((event: DialogEvent<{ item: T }>) => {
                         resolve(event.metadata.item);
-                        this.replaceItem(event.metadata.item);
+                        this.replaceItem(event.metadata.item as unknown as Identity);
                         if (
                             event.metadata.item instanceof
                             this.actions.itemConstructor
                         ) {
                             this._router.navigate([
                                 `/${this._type}`,
-                                event.metadata.item.id,
+                                (event.metadata.item as unknown as Identity).id,
                                 'about',
                             ]);
                         }
@@ -263,7 +263,7 @@ export class ActiveItemService extends AsyncHandler {
                 data: {
                     title: i18n(`${this.actions.name}.DELETE`),
                     content: i18n(`${this.actions.name}.DELETE_MSG`, {
-                        name: (item as any).display_name || item.name,
+                        name: (item as PlaceResource & { display_name?: string }).display_name || item.name,
                     }),
                     extra: this.actions.delete_extra
                         ? await this.actions.delete_extra(item)
@@ -273,7 +273,7 @@ export class ActiveItemService extends AsyncHandler {
             });
             ref.componentInstance.event
                 .pipe(filter((e) => e.reason === 'done'))
-                .subscribe((event: DialogEvent) => {
+                .subscribe((_event: DialogEvent) => {
                     ref.componentInstance.loading.set(
                         i18n(`${this.actions.name}.DELETE_LOADING`),
                     );
@@ -312,39 +312,36 @@ export class ActiveItemService extends AsyncHandler {
         if (!this._user.current().sys_admin) return;
         const item = this._active_item.getValue();
         if (item) {
-            const ref = this._dialog.open<
-                DuplicateModalComponent,
-                DuplicateModalData
-            >(DuplicateModalComponent, {
-                data: { item, save: this.actions.save as any },
+            const ref = this._dialog.open(DuplicateModalComponent, {
+                data: { item: item as any, save: this.actions.save } as any,
             });
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    this._active_item.next(e.metadata[0]);
-                    this.replaceItem(e.metadata[0]);
+                    this._active_item.next(e.metadata[0] as PlaceResource);
+                    this.replaceItem(e.metadata[0] as unknown as Identity);
                 }
             });
         }
     }
 
-    public replaceItem(item: Identity) {
+    public replaceItem(item: Identity | PlaceResource) {
         if (
             item?.id &&
             (!this.active_item || this.active_item.id === item.id)
         ) {
-            this._active_item.next(item as any);
-            const list = this._list.getValue().filter((i) => i.id !== item.id);
+            this._active_item.next(item as PlaceResource);
+            const list = this._list.getValue().filter((i) => (i as Identity).id !== item.id);
             list.push(item);
-            list.sort((a, b) => a.name?.localeCompare(b.name));
+            list.sort((a, b) => (a as Identity).name?.localeCompare((b as Identity).name));
             this.updateSettings();
             this._list.next(list);
         }
     }
 
-    public removeItem(item: any) {
-        if (item.id) {
-            const list = this._list.getValue().filter((i) => i.id !== item.id);
-            list.sort((a, b) => a.name?.localeCompare(b.name));
+    public removeItem(item: unknown) {
+        if ((item as Identity).id) {
+            const list = this._list.getValue().filter((i) => (i as Identity).id !== (item as Identity).id);
+            list.sort((a, b) => (a as Identity).name?.localeCompare((b as Identity).name));
             this._count.next(this._count.getValue() - 1);
             this._list.next(list);
         }
@@ -353,7 +350,7 @@ export class ActiveItemService extends AsyncHandler {
     private async updateType() {
         const url = this._router.url.split('/');
         const old_type = this._type;
-        this._type = url[1] as any;
+        this._type = url[1] as ResourceType;
         if (old_type !== this._type) {
             log('Service', `Item type set to ${this._type}`);
             this._next_query.next(null);
@@ -369,7 +366,7 @@ export class ActiveItemService extends AsyncHandler {
             await this.setItem(url[2]);
         }
         if (this._type === 'admin') {
-            this._active_item.next({ name: 'PlaceOS Admin' } as any);
+            this._active_item.next({ name: 'PlaceOS Admin' } as PlaceResource);
         }
     }
 
@@ -401,10 +398,10 @@ export class ActiveItemService extends AsyncHandler {
                     const list = this._list
                         .getValue()
                         .filter(
-                            (i) => !resp.data.find((item) => item.id === i.id),
+                            (i) => !resp.data.find((item) => (item as Identity).id === (i as Identity).id),
                         );
                     const new_list = list.concat(resp.data);
-                    new_list.sort((a, b) => a.name?.localeCompare(b.name));
+                    new_list.sort((a, b) => (a as Identity).name?.localeCompare((b as Identity).name));
                     this._list.next(new_list);
                     this._loading_list.next(false);
                 }
@@ -415,7 +412,7 @@ export class ActiveItemService extends AsyncHandler {
 
     private async updateSettings() {
         const item = this.active_item;
-        if (item && (item as any).settings) {
+        if (item && (item as PlaceResource & { settings?: unknown }).settings) {
             let settings = await lastValueFrom(
                 querySettings({ parent_id: item.id }).pipe(
                     map((resp) => resp.data),
@@ -433,7 +430,7 @@ export class ActiveItemService extends AsyncHandler {
             settings.sort((a, b) => a.encryption_level - b.encryption_level);
             if (this.actions?.itemConstructor) {
                 this._active_item.next(
-                    new this.actions.itemConstructor({ ...item, settings }),
+                    new this.actions.itemConstructor({ ...item, settings }) as PlaceResource,
                 );
             }
         }

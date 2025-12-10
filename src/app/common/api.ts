@@ -6,7 +6,7 @@ import { AppComponentExtensions, HashMap } from './types';
  * Convert map into a query string
  * @param map Key value pairs to convert
  */
-export function toQueryString(map: HashMap) {
+export function toQueryString(map: HashMap<unknown>) {
     let str = '';
     if (map) {
         for (const key in map) {
@@ -15,10 +15,11 @@ export function toQueryString(map: HashMap) {
                 map[key] !== undefined &&
                 map[key] !== null
             ) {
+                const value = map[key];
                 str += `${str ? '&' : ''}${key}=${encodeURIComponent(
-                    map[key] instanceof Object
-                        ? JSON.stringify(map[key])
-                        : map[key],
+                    typeof value === 'object' && value !== null
+                        ? JSON.stringify(value)
+                        : `${value}`,
                 )}`;
             }
         }

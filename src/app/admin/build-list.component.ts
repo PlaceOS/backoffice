@@ -24,9 +24,13 @@ interface BuildJob {
     timestamp: string;
 }
 
-function queryBuildJobs(q: any = {}): Observable<BuildJob> {
+function queryBuildJobs(
+    q: Record<string, string> = {},
+): Observable<{ data: BuildJob[] }> {
     const query = toQueryString(q);
-    return get(`/api/build/v1/monitor${query ? '?' + query : ''}`) as any;
+    return get(
+        `/api/build/v1/monitor${query ? '?' + query : ''}`,
+    ) as Observable<{ data: BuildJob[] }>;
 }
 
 function cancelBuildJob(id, q = {}) {
@@ -180,9 +184,9 @@ export class PlaceBuildListComponent implements OnInit {
 
     public async loadJobList() {
         this.loading.set('Loading build jobs...');
-        const { data }: any = await lastValueFrom(queryBuildJobs()).catch(
-            (_) => ({ data: [] }),
-        );
+        const { data }: { data: BuildJob[] } = await lastValueFrom(
+            queryBuildJobs(),
+        ).catch(() => ({ data: [] }));
         this.job_list.set(
             (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
         );

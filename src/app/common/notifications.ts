@@ -21,7 +21,7 @@ export function notify(
     message: string,
     action = 'OK',
     on_action?: () => void,
-    icon: ApplicationIcon = {
+    _icon: ApplicationIcon = {
         type: 'icon',
         content: 'info',
     },

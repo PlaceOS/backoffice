@@ -73,7 +73,7 @@ export class BookingLimitsModalComponent {
             `/api/staff/v1/tenants/${this.tenant.id}/limits`,
             booking_limits,
         );
-        const resp = await call.toPromise().catch((_) => null);
+        const resp = await call.toPromise().catch(() => null);
         this.loading = false;
         this._dialog_ref.disableClose = false;
         if (!resp) return notifyError('Error adding new tenant.');

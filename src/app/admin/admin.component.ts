@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 
 import { MatRippleModule } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
@@ -93,7 +93,7 @@ import { BackofficeUsersService } from '../users/users.service';
         RouterModule,
     ],
 })
-export class PlaceComponent extends AsyncHandler {
+export class PlaceComponent extends AsyncHandler implements OnInit {
     private _settings = inject(SettingsService);
     private _service = inject(ActiveItemService);
     private _users = inject(BackofficeUsersService);

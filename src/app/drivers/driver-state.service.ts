@@ -21,7 +21,7 @@ import {
 } from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { HashMap } from '../common/types';
+import { HashMap, Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 import { DriverUpdateListModalComponent } from './driver-update-list-modal.component';
@@ -121,7 +121,7 @@ export class DriverStateService {
             commit: item.update_info.commit,
         })
             .toPromise()
-            .catch((_) => null);
+            .catch(() => null);
         if (!success) {
             notifyError('Failed to update driver.');
         }
@@ -142,7 +142,7 @@ export class DriverStateService {
         details.loading('Recompiling driver... This may take a while.');
         const success = await recompileDriver(item.id)
             .toPromise()
-            .catch((_) => false);
+            .catch(() => false);
         if (success === false) {
             notifyError('Failed to recompile driver.');
         }
@@ -197,7 +197,7 @@ export class DriverStateService {
             });
         details.close();
         if (!system) return;
-        this._state.replaceItem(system);
+        this._state.replaceItem(system as unknown as Identity);
         notifySuccess(`Successfully removed module.`);
     }
 }

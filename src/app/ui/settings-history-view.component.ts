@@ -28,7 +28,7 @@ import { TranslatePipe } from './translate.pipe';
                         ngModel
                         (ngModelChange)="old_setting.next($event)"
                         [disabled]="
-                            !(active_setting | async) ||
+                            (active_setting | async) !== undefined ||
                             !(history$ | async)?.length
                         "
                         [placeholder]="'COMMON.SELECT_OLD_SETTING' | translate"

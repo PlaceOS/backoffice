@@ -242,7 +242,7 @@ export class ExtensionModalComponent extends AsyncHandler implements OnInit {
         conditions.push(['', '', '']);
     }
 
-    public removeCondition(condition: [string, string, any]) {
+    public removeCondition(condition: [string, string, unknown]) {
         this.form.controls.conditions.setValue(
             this.form.controls.conditions.value.filter((c) => c !== condition),
         );

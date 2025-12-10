@@ -219,7 +219,7 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
             'show',
             this._settings
                 .listen('show_upload_manager')
-                .subscribe((show) => this.show.set(show)),
+                .subscribe((show) => this.show.set(show as boolean)),
         );
         this.subscription(
             'on_dialog_open',
@@ -235,8 +235,8 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    public onEnter(e) {
-        this.show_overlay.set(e?.dataTransfer?.types.includes('Files'));
+    public onEnter(e: unknown) {
+        this.show_overlay.set(((e as Record<string, unknown>)?.dataTransfer as { types: string[] })?.types.includes('Files'));
     }
 
     public hideOverlay() {
@@ -248,11 +248,11 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     }
 
     /** Upload the image to the cloud */
-    public handleFileEvent(event: any) {
+    public handleFileEvent(event: unknown) {
         this.clearTimeout('hide_overlay');
         this.timeout('file_event', () => {
             this.show_overlay.set(false);
-            const element: HTMLInputElement = event.target as any;
+            const element: HTMLInputElement = (event as Record<string, unknown>).target as HTMLInputElement;
             /* istanbul ignore else */
             if (element?.files) {
                 const files: FileList = element.files;

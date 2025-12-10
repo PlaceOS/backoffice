@@ -13,7 +13,7 @@ export function addChipItem<T = string>(
         return;
     }
     const input = event.input;
-    const value = (event.value || '').trim() as any;
+    const value = (event.value || '').trim() as T;
     const item_list = control.value;
     if (value) {
         item_list.push(value);

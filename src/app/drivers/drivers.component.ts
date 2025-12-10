@@ -189,20 +189,20 @@ export class DriversComponent extends AsyncHandler implements OnInit {
             'item',
             this._service.item.subscribe((item) => {
                 this.device_count.set(undefined);
-                this.item.set(item as any);
+                this.item.set(item as PlaceDriver);
                 this.updateTabList();
-                this.loadValues(item as any);
+                this.loadValues(item as PlaceDriver);
             }),
         );
     }
 
     protected async loadValues(item: PlaceDriver) {
         if (!item) return;
-        const query: any = { offset: 0, limit: 1, driver_id: item.id };
+        const query: Record<string, unknown> = { offset: 0, limit: 1, driver_id: item.id };
         this.device_count.set(
             await lastValueFrom(
                 queryModules(query).pipe(map(({ total }) => total)),
-            ).catch((_) => 0),
+            ).catch(() => 0),
         );
         this.updateTabList();
     }

@@ -37,7 +37,7 @@ import { ZonesStateService } from './zones-state.service';
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
-                [class.opacity-0]="!(loading | async)"
+                [class.opacity-0]="(loading | async) === false"
             />
             <simple-table
                 class="block min-w-lg text-sm"

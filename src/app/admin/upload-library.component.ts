@@ -399,17 +399,17 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         this.domain,
         this.search_term,
     ]).pipe(
-        filter(([_]) => !!_),
+        filter(([domain]) => !!domain),
         debounceTime(300),
         switchMap(([domain, search]) =>
-            query<any>({
+            query<unknown>({
                 path: 'uploads',
                 query_params: {
                     limit: 1000,
                     file_search: search,
                     authority_id: domain.id,
                 },
-            }).pipe(catchError((_) => of({ data: [] }))),
+            }).pipe(catchError(() => of({ data: [] }))),
         ),
         map((r) =>
             r.data
@@ -460,9 +460,9 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     }
 
     /** Upload the image to the cloud */
-    public handleFileEvent(event) {
+    public handleFileEvent(event: Event) {
         this.timeout('file_event', async () => {
-            const element: HTMLInputElement = event.target as any;
+            const element: HTMLInputElement = event.target as HTMLInputElement;
             /* istanbul ignore else */
             if (element?.files) {
                 const files: FileList = element.files;

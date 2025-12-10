@@ -9,7 +9,7 @@ const USERS: PlaceUser[] = [];
 })
 export class UserPipe implements PipeTransform {
     public async transform(id: string): Promise<PlaceUser> {
-        if (!id) return {} as any;
+        if (!id) return {} as PlaceUser;
         let user = USERS.find(
             (_) => _.id === id || _.email === id || _.card_number === id,
         );

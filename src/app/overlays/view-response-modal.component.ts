@@ -7,7 +7,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ViewResponseModalData {
     title?: string;
-    content: any;
+    content: unknown;
 }
 
 @Component({
@@ -48,12 +48,12 @@ export class ViewResponseModalComponent {
         } else {
             try {
                 this.content_string = JSON.stringify(
-                    JSON.parse(this._data.content),
+                    JSON.parse(this._data.content as string),
                     undefined,
                     4,
                 );
             } catch {
-                this.content_string = this._data.content;
+                this.content_string = this._data.content as string;
             }
         }
     }

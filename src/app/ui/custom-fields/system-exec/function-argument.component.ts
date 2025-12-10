@@ -24,10 +24,10 @@ import { HashMap } from '../../../common/types';
 import { TranslatePipe } from '../../translate.pipe';
 
 const validateType = (type) => (control: AbstractControl) => {
-    let value: any = '';
+    let value: unknown = '';
     try {
         value = JSON.parse(control.value);
-    } catch (e) {
+    } catch {
         value = control.value;
     }
     if (value === undefined || value == '') return null;
@@ -128,15 +128,15 @@ export class FunctionArgumentComponent
 
     public readonly form = signal<UntypedFormGroup>(new UntypedFormGroup({}));
 
-    public value: HashMap;
+    public value: HashMap<unknown>;
 
-    public required: HashMap = {};
-    public defaults: HashMap = {};
+    public required: HashMap<boolean> = {};
+    public defaults: HashMap<unknown> = {};
 
     /** Form control on change handler */
-    private _onChange: (_: HashMap) => void;
+    private _onChange: (_: HashMap<unknown>) => void;
     /** Form control on touch handler */
-    private _onTouch: (_: HashMap) => void;
+    private _onTouch: (_: HashMap<unknown>) => void;
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.method) this.loadForm();
@@ -147,17 +147,17 @@ export class FunctionArgumentComponent
         if (!method && !method.order.length) return;
         const form_controls = {};
         for (const prop in method.params) {
-            const prop_details = method.params[prop] as any;
+            const prop_details = method.params[prop] as unknown as Record<string, unknown>;
             const optional = 'default' in prop_details;
             this.required[prop] = !optional;
             form_controls[prop] = new UntypedFormControl(
                 (this.value ? this.value[prop] : '') || '',
                 !optional
                     ? [
-                          validateType(prop_details.type) as any,
+                          validateType(prop_details.type as string),
                           Validators.required,
                       ]
-                    : [validateType(prop_details.type) as any],
+                    : [validateType(prop_details.type as string)],
             );
             if (optional) {
                 try {
@@ -179,7 +179,7 @@ export class FunctionArgumentComponent
      * Update the form field value
      * @param new_value New value to set on the form field
      */
-    public setValue(new_value: HashMap): void {
+    public setValue(new_value: HashMap<unknown>): void {
         this.value = new_value || {};
         this.valid.emit(this.form()?.valid);
         if (this._onChange) {
@@ -191,7 +191,7 @@ export class FunctionArgumentComponent
      * Update local value when form control value is changed
      * @param value The new value for the component
      */
-    public writeValue(value: HashMap) {
+    public writeValue(value: HashMap<unknown>) {
         this.value = value || {};
         if (!value || !this.form) return;
         this.form().patchValue(value);

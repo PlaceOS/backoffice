@@ -1,7 +1,11 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, input } from '@angular/core';
-import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
-import { MatChipsModule } from '@angular/material/chips';
+import {
+    FormControl,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { addChipItem, removeChipItem } from '../../common/forms';
@@ -226,13 +230,20 @@ export class DomainFormComponent {
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
-    public readonly addEmailDomain = (e) => {
+    public readonly addEmailDomain = (e: MatChipInputEvent) => {
         if (!e?.value) return;
-        if (!isValidDomain(e.value)) return notifyWarn('Invalid email');
-        addChipItem(this.form().controls.email_domains as any, e);
+        if (!isValidDomain(e.value as string))
+            return notifyWarn('Invalid email');
+        addChipItem(
+            this.form().controls.email_domains as FormControl<string[]>,
+            e,
+        );
     };
-    public readonly removeEmailDomain = (i) =>
-        removeChipItem(this.form().controls.email_domains as any, i);
+    public readonly removeEmailDomain = (i: string) =>
+        removeChipItem(
+            this.form().controls.email_domains as FormControl<string[]>,
+            i,
+        );
 
     public get email_domain_list(): string[] {
         return this.form().controls.email_domains.value;

@@ -9,6 +9,7 @@ import {
     PlaceMQTTBroker,
     PlaceModule,
     PlaceRepository,
+    PlaceResource,
     PlaceSettings,
     PlaceSystem,
     PlaceTrigger,
@@ -53,13 +54,13 @@ import { TranslatePipe } from '../ui/translate.pipe';
 import { generateUserFormFields } from '../users/users.utilities';
 import { generateZoneFormFields } from '../zones/zones.utilites';
 
-export interface CreateEditModalData<T extends Identity = any> {
+export interface CreateEditModalData<T extends Identity = Identity> {
     /** Service associated with the item being created/edited */
     save: (item: T) => Observable<T>;
     /** Item being worked on */
     item: T;
     /** Form fields for item */
-    form?: any[];
+    form?: unknown[];
     /** Translation key for new item */
     name?: string;
     /** Whether parts of the form are readonly */
@@ -156,9 +157,9 @@ export class ItemCreateUpdateModalComponent
     /** Whether the item is being editing */
     public edit: boolean;
     /** Item to edit */
-    public item: HashMap<any>;
+    public item: PlaceResource | Identity;
     /** Saved version of the item */
-    public result: any;
+    public result: unknown;
     /** List of the form fields needed for the item */
     public form: UntypedFormGroup;
     /** Loading status for the item request is being processed */
@@ -260,27 +261,28 @@ export class ItemCreateUpdateModalComponent
         }
         this.loading = i18n(`${this.name}.SAVING`);
         this._dialog_ref.disableClose = true;
+        const item_json = (this.item as PlaceResource).toJSON ? (this.item as PlaceResource).toJSON() : this.item;
         const item = this.item.id
             ? cleanObject(
-                  { ...this.item.toJSON(), ...this.form.value },
+                  { ...item_json, ...this.form.value },
                   this.item_type === 'user'
                       ? [undefined, null, '']
                       : [undefined, null],
               )
-            : { ...this.item.toJSON(), ...this.form.value };
+            : { ...item_json, ...this.form.value };
         if (this._data.external_save) {
             this.event.emit({ reason: 'action', metadata: item });
             return;
         }
         this._data.save(item).subscribe(
-            (item) => {
-                this.result = item;
+            (_item) => {
+                this.result = _item;
                 this._dialog_ref.disableClose = false;
-                this.event.emit({ reason: 'done', metadata: { item } });
+                this.event.emit({ reason: 'done', metadata: { item: _item } });
                 notifySuccess(i18n(`${this.name}.SAVE_SUCCESS`));
                 if (!this.form.value.id && this.form.controls.settings) {
                     this.newSettings(
-                        item,
+                        _item,
                         this.form.controls.settings.value,
                     ).then(() => this._dialog_ref.close());
                 } else {
@@ -304,9 +306,9 @@ export class ItemCreateUpdateModalComponent
     /**
      * Save initial settings for resources
      */
-    private async newSettings(item: HashMap<any>, settings_string: string) {
+    private async newSettings(item: Identity, settings_string: string) {
         const new_settings = new PlaceSettings({
-            parent_id: item.id,
+            parent_id: item.id as string,
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
@@ -322,7 +324,7 @@ export class ItemCreateUpdateModalComponent
                     )}`,
                 );
             });
-        (item as any).settings[EncryptionLevel.None] = settings;
+        (item as Record<string, unknown>).settings[EncryptionLevel.None] = settings;
     }
 
     /**

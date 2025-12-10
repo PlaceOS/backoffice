@@ -50,7 +50,7 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
         ),
         features: new FormControl(
             (typeof system.features === 'string'
-                ? (system.features as any).split(' ')
+                ? (system.features as string).split(' ')
                 : system.features) || [],
         ),
         capacity: new FormControl(system.capacity || 0, [

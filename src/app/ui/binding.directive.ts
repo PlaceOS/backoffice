@@ -19,7 +19,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 @Directive({
     selector: 'i[bind], [binding], co-bind',
 })
-export class BindingDirective<T = any>
+export class BindingDirective<T = unknown>
     extends AsyncHandler
     implements OnInit, OnChanges, OnDestroy
 {
@@ -41,7 +41,7 @@ export class BindingDirective<T = any>
     /** Event to listen for on the parent */
     public readonly on_event = input('', { alias: 'onEvent' });
     /** ID of the system to bind to */
-    public readonly params = input<any[]>(null);
+    public readonly params = input<unknown[] | null>(null);
     public readonly ignore = input(false);
     /** Current value of the binding */
     public readonly model = model<T | null>(null);

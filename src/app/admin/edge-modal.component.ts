@@ -1,4 +1,4 @@
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, OnInit, inject, output, signal } from '@angular/core';
 import {
     FormControl,
     FormGroup,
@@ -84,7 +84,7 @@ export interface EdgeModalData {
         ReactiveFormsModule,
     ],
 })
-export class EdgeModalComponent {
+export class EdgeModalComponent implements OnInit {
     private _data = inject<EdgeModalData>(MAT_DIALOG_DATA);
     private _dialog_ref =
         inject<MatDialogRef<EdgeModalComponent>>(MatDialogRef);
@@ -111,7 +111,7 @@ export class EdgeModalComponent {
         this.loading.set('Saving edge node...');
         const edge = { ...this.edge, ...this.form.value };
         const method = edge.id ? updateEdge(edge.id, edge) : addEdge(edge);
-        const new_edge = await lastValueFrom(method).catch((_) => null);
+        const new_edge = await lastValueFrom(method).catch(() => null);
         this.loading.set('');
         this._dialog_ref.disableClose = false;
         if (!new_edge) return notifyError(i18n('ADMIN.EDGE_ERROR'));

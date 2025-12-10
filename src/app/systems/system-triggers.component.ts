@@ -236,7 +236,7 @@ export class SystemTriggersComponent {
             const search = filter.toLowerCase();
             const list = unique(temp ? [...triggers, temp] : triggers, 'id');
             return filter
-                ? list.filter((t) => t.name.toLowerCase().includes(search))
+                ? list.filter((t) => (t as any).name.toLowerCase().includes(search))
                 : list;
         }),
     );
@@ -248,7 +248,7 @@ export class SystemTriggersComponent {
         notifyInfo(i18n('SYSTEMS.COPIED_WEBHOOK'));
     };
     public readonly editTrigger = async (t) =>
-        this.temp_trigger.next((await this._service.editTrigger(t)) as any);
+        this.temp_trigger.next((await this._service.editTrigger(t)) as PlaceTrigger);
     public readonly deleteTrigger = (t) => this._service.removeTrigger(t);
     public readonly selectTrigger = async () =>
         this.temp_trigger.next((await this._service.selectTrigger()) || null);

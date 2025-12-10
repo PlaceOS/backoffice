@@ -246,7 +246,7 @@ export class DriverAboutComponent extends AsyncHandler implements OnInit {
     public ngOnInit() {
         this.subscription(
             'item',
-            this._service.item.subscribe((item) => this.item.set(item as any)),
+            this._service.item.subscribe((item) => this.item.set(item as PlaceDriver)),
         );
     }
 

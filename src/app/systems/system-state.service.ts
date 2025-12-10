@@ -50,7 +50,7 @@ import { nextValueFrom, unique } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { HashMap } from '../common/types';
+import { HashMap, Identity } from '../common/types';
 import {
     ConfirmModalData,
     openConfirmModal,
@@ -101,10 +101,10 @@ export class SystemStateService extends AsyncHandler {
             const details = await Promise.all([
                 lastValueFrom(
                     listSystemTriggers(item.id).pipe(map((d) => d.total)),
-                ).catch((_) => 0),
+                ).catch(() => 0),
                 lastValueFrom(
                     listMetadata(item.id).pipe(map((d) => d.length)),
-                ).catch((_) => 0),
+                ).catch(() => 0),
             ]);
             const [triggers, metadata] = details;
             this._loading.next({
@@ -112,8 +112,8 @@ export class SystemStateService extends AsyncHandler {
                 settings: false,
             });
             return {
-                devices: (item as any).modules.length,
-                zones: (item as any).zones.length,
+                devices: (item as PlaceSystem).modules.length,
+                zones: (item as PlaceSystem).zones.length,
                 triggers,
                 metadata,
             };
@@ -136,12 +136,12 @@ export class SystemStateService extends AsyncHandler {
                 control_system_id: item.id,
                 complete: true,
                 limit: 200,
-            } as any).pipe(
+            } as Record<string, unknown>).pipe(
                 map((i) => [item, i.data]),
                 startWith([item, []]),
             );
         }),
-        map(([item, modules]: [any, PlaceModule[]]) => {
+        map(([item, modules]: [PlaceSystem, PlaceModule[]]) => {
             modules.forEach((_) => ((_ as any).connected = undefined));
             this._loading.next({
                 ...this._loading.getValue(),
@@ -247,7 +247,7 @@ export class SystemStateService extends AsyncHandler {
     public readonly getModules = () => this._modules.getValue();
     /** Observable of the active item */
     public get active_item(): PlaceSystem {
-        return this._state.active_item || ({} as any);
+        return (this._state.active_item || {}) as PlaceSystem;
     }
 
     /**
@@ -323,13 +323,13 @@ export class SystemStateService extends AsyncHandler {
                     control_system_id: this.active_item.id,
                 }),
             )
-            .catch((_) => null);
+            .catch((_err) => null);
         if (!mod) return;
         this.joinModule(mod.id);
     }
 
     public async editModule(device: PlaceModule) {
-        await this._state.edit(device).catch((_) => null);
+        await this._state.edit(device).catch((_err) => null);
         this._change.next(Date.now());
     }
 
@@ -362,24 +362,24 @@ export class SystemStateService extends AsyncHandler {
             lastValueFrom(ref.afterClosed()),
         ]);
         if (!details || !details.reason) return ref.close();
-        const system = ref.componentInstance.item;
+        const system = ref.componentInstance.item as PlaceSystem;
         if (!system) return;
         await lastValueFrom(addSystemModule(system.id, device.id)).catch(
-            (e) => {
+            (_e) => {
                 ref.close();
                 notifyError(
                     `Error adding module to system "${
-                        system.display_name || system.name
-                    }". Error: ${JSON.stringify(e.response || e.message || e)}`,
+                        (system as any).display_name || system.name
+                    }". Error: ${JSON.stringify(_e.response || _e.message || _e)}`,
                 );
-                throw e;
+                throw _e;
             },
         );
         this._change.next(Date.now());
         ref.close();
         notifySuccess(
             `Successfully added module to system "${
-                system.display_name || system.name
+                (system as any).display_name || system.name
             }".`,
         );
     }
@@ -404,7 +404,7 @@ export class SystemStateService extends AsyncHandler {
             lastValueFrom(ref.afterClosed()),
         ]);
         if (!details || !details.reason) return ref.close();
-        const t = await this.addTrigger(ref.componentInstance.item);
+        const t = await this.addTrigger(ref.componentInstance.item as PlaceTrigger);
         ref.close();
         this._change.next(Date.now());
         return t;
@@ -417,7 +417,7 @@ export class SystemStateService extends AsyncHandler {
                 enabled: true,
                 important: false,
                 trigger_id: trigger.id,
-            } as any),
+            } as Record<string, unknown>),
         );
         this.timeout('change', () => this._change.next(Date.now()));
         return t;
@@ -514,7 +514,7 @@ export class SystemStateService extends AsyncHandler {
         details.close();
         if (resp instanceof PlaceSystem) {
             notifySuccess(`Successfully reordered system modules.`);
-            this._state.replaceItem(resp);
+            if (resp) this._state.replaceItem(resp as unknown as Identity);
         }
     }
 
@@ -542,7 +542,7 @@ export class SystemStateService extends AsyncHandler {
         });
         if (resp instanceof PlaceSystem) {
             notifySuccess(`Successfully reordered system zones.`);
-            this._state.replaceItem(resp);
+            if (resp) this._state.replaceItem(resp as unknown as Identity);
         }
         details.close();
     }
@@ -563,8 +563,7 @@ export class SystemStateService extends AsyncHandler {
         );
         this.timeout('join', async () => {
             const system = await lastValueFrom(showSystem(this.active_item.id));
-            if (!system) return;
-            this._state.replaceItem(system);
+            if (system) this._state.replaceItem(system as unknown as Identity);
             notifySuccess(`Successfully added module to system.`);
             this._change.next(Date.now());
         });
@@ -591,8 +590,7 @@ export class SystemStateService extends AsyncHandler {
             );
         });
         details.close();
-        if (!system) return;
-        this._state.replaceItem(system);
+        if (system) this._state.replaceItem(system as unknown as Identity);
         notifySuccess(`Successfully removed module from system.`);
     }
 
@@ -604,7 +602,7 @@ export class SystemStateService extends AsyncHandler {
         const zones = unique([
             ...this.active_item.zones,
             ...zone_list.map((_) => _.id),
-        ]);
+        ]) as string[];
         const system = await lastValueFrom(
             updateSystem(this.active_item.id, {
                 ...this.active_item,
@@ -617,8 +615,7 @@ export class SystemStateService extends AsyncHandler {
                 }`,
             );
         });
-        if (!system) return;
-        this._state.replaceItem(system);
+        if (system) this._state.replaceItem(system as unknown as Identity);
         notifySuccess(`Successfully added zone to system.`);
     }
 
@@ -647,8 +644,7 @@ export class SystemStateService extends AsyncHandler {
             );
         });
         details.close();
-        if (!system) return;
-        this._state.replaceItem(system);
+        if (system) this._state.replaceItem(system as unknown as Identity);
         notifySuccess(`Successfully removed zone from system.`);
     }
 
@@ -679,7 +675,7 @@ export class SystemStateService extends AsyncHandler {
     }
 
     /** View Results of the execute */
-    private viewDetails(content: any) {
+    private viewDetails(content: unknown) {
         this._dialog.open<ViewResponseModalComponent>(
             ViewResponseModalComponent,
             {

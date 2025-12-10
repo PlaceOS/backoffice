@@ -1,7 +1,7 @@
 import { HashMap } from '../../common/types';
 import { API, generateBasicHandlers } from '../common.mock';
 
-const FILTER_FN = (item: any, q: HashMap) => {
+const FILTER_FN = (item: Record<string, any>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return true;
     }
@@ -11,12 +11,12 @@ const FILTER_FN = (item: any, q: HashMap) => {
             match &&
             (item.name || '')
                 .toLowerCase()
-                .indexOf((q.q || '').toLowerCase()) >= 0;
+                .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
     }
     return match;
 };
 
-const TRIGGER_DATA = [];
+const TRIGGER_DATA: Record<string, any>[] = [];
 
 /** Add basic API handlers for systems */
 generateBasicHandlers(`${API}/triggers`, TRIGGER_DATA, FILTER_FN);

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceModule, querySystems } from '@placeos/ts-client';
@@ -110,7 +110,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         SidebarMenuComponent,
     ],
 })
-export class ModulesComponent extends AsyncHandler {
+export class ModulesComponent extends AsyncHandler implements OnInit {
     private _service = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
 
@@ -160,8 +160,8 @@ export class ModulesComponent extends AsyncHandler {
         this.subscription(
             'item',
             this._service.item.subscribe((item) => {
-                this.item.set(item as any);
-                this.loadValues(item as any);
+                this.item.set(item as PlaceModule);
+                this.loadValues(item as PlaceModule);
                 this.updateTabList();
             }),
         );
@@ -170,7 +170,7 @@ export class ModulesComponent extends AsyncHandler {
 
     protected async loadValues(item: PlaceModule) {
         if (!item) return;
-        const query: any = { offset: 0, limit: 1, module_id: item.id };
+        const query: Record<string, unknown> = { offset: 0, limit: 1, module_id: item.id };
         // Get system count
         this.system_count.set((await lastValueFrom(querySystems(query))).total);
     }

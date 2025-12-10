@@ -19,7 +19,7 @@ export function hasNewVersion() {
 export function setupCache(cache: SwUpdate, interval: number = 5 * 60 * 1000) {
     if (cache.isEnabled) {
         if (_timer) clearInterval(_timer);
-        _timer = <any>setInterval(() => {
+        _timer = setInterval(() => {
             log('CACHE', `Checking for updates...`);
             activateUpdate(cache);
         }, interval);

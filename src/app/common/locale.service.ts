@@ -11,14 +11,14 @@ export function setTranslationService(service: LocaleService) {
     _service = service;
 }
 
-export function i18n(key: string, args: Record<string, any> = {}, plural = 0) {
+export function i18n(key: string, args: Record<string, unknown> = {}, plural = 0) {
     if (!_service) return key;
     return _service.get(key, args, plural);
 }
 
 declare global {
     interface Window {
-        i18n: (string, any) => string;
+        i18n: (key: string, args: Record<string, unknown>) => string;
         clearLocaleDataStore: () => void;
     }
 }
@@ -29,7 +29,7 @@ interface LocaleStore {
     mappings: Record<string, string>;
 }
 
-function removeNesting(value: any, path = ''): Record<string, string> {
+function removeNesting(value: Record<string, any>, path = ''): Record<string, string> {
     let out_object: Record<string, string> = {};
     for (const key in value) {
         const out_key = path ? [path, key].join('.') : key;
@@ -106,7 +106,7 @@ export class LocaleService {
         }
     }
 
-    public get(key: string, args: Record<string, any> = {}, plural = 0) {
+    public get(key: string, args: Record<string, unknown> = {}, plural = 0) {
         let key_value = key;
         let value = key;
         const map = this._locale_mappings[this._current_locale] || {};
@@ -140,8 +140,8 @@ export class LocaleService {
         }
         for (const id in args) {
             value = value
-                .replace(`{{ ${id} }}`, args[id])
-                .replace(`{{ ${id} }}`, args[id]);
+                .replace(`{{ ${id} }}`, `${args[id]}`)
+                .replace(`{{ ${id} }}`, `${args[id]}`);
         }
         return value || '';
     }

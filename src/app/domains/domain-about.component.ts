@@ -131,7 +131,7 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
     public index: number;
 
     public get item(): PlaceDomain {
-        return this._service.active_item as any;
+        return this._service.active_item as PlaceDomain;
     }
 
     /** HTML string for rendering the description */
@@ -142,7 +142,7 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.item.subscribe((_) => this.loadForm()),
+            this._service.item.subscribe(() => this.loadForm()),
         );
     }
 

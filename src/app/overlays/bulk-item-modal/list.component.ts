@@ -57,7 +57,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
 })
 export class ListComponent implements OnChanges {
     /** List of bulk items to add */
-    public readonly list = model<HashMap<any>[]>([]);
+    public readonly list = model<HashMap<unknown>[]>([]);
     /** List of fields available for building new item */
     public readonly fields = input<Identity[]>([]);
     /** Emitter user want to return to next step in flow */
@@ -67,7 +67,7 @@ export class ListComponent implements OnChanges {
     /** List of column ids to show on table */
     public columns: TableColumn[] = [];
 
-    private readonly _input_tmpl = viewChild<TemplateRef<any>>('input');
+    private readonly _input_tmpl = viewChild<TemplateRef<unknown>>('input');
 
     public ngOnChanges(changes: SimpleChanges) {
         const fields = this.fields();

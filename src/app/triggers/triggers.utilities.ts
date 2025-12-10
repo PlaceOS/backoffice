@@ -81,20 +81,20 @@ export function validateCompare(control: AbstractControl) {
  * Generate form controls for creating a trigger condition
  */
 export function generateTriggerConditionForm(
-    condition: TriggerComparison | TriggerTimeCondition = {} as any,
+    condition: TriggerComparison | TriggerTimeCondition = {} as TriggerComparison | TriggerTimeCondition,
 ) {
     const type = (condition as TriggerTimeCondition).type ? 'time' : 'compare';
     const left =
         typeof (condition as TriggerComparison).left === 'object'
-            ? { ...((condition as TriggerComparison).left as any) }
+            ? { ...((condition as TriggerComparison).left as TriggerStatusVariable) }
             : (condition as TriggerComparison).left;
     const right =
         typeof (condition as TriggerComparison).right === 'object'
-            ? { ...((condition as TriggerComparison).right as any) }
+            ? { ...((condition as TriggerComparison).right as TriggerStatusVariable) }
             : (condition as TriggerComparison).right;
     const fields = {
         condition_type: new FormControl(type),
-        left: new FormControl({ ...(left || {}) }, [validateCompare]),
+        left: new FormControl(typeof left === 'object' ? { ...(left as TriggerStatusVariable) } : (left || {}), [validateCompare]),
         operator: new FormControl(
             (condition as TriggerComparison).operator ||
                 TriggerConditionOperator.EQ,
@@ -126,7 +126,7 @@ export function validateEmailList(control: AbstractControl) {
         const value: string[] = control.value;
         return value.reduce(
             (valid, email) =>
-                valid && !Validators.email({ value: email } as any),
+                valid && !Validators.email({ value: email } as AbstractControl),
             true,
         )
             ? null
@@ -139,7 +139,7 @@ export function validateEmailList(control: AbstractControl) {
  * Generate form controls for creating a trigger action
  */
 export function generateTriggerActionForm(
-    action: TriggerFunction | TriggerMailer = {} as any,
+    action: TriggerFunction | TriggerMailer = {} as TriggerFunction | TriggerMailer,
 ) {
     const type =
         action && (action as TriggerMailer)?.emails ? 'emails' : 'function';

@@ -266,7 +266,7 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
                 }),
             ),
         );
-        this.api_details.set((details as any) || []);
+        this.api_details.set((details as PlaceServiceDetails[]) || []);
         this._cdr.detectChanges();
     }
 

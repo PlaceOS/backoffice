@@ -11,9 +11,9 @@ import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
-export interface SelectItemModalData<T = any> {
+export interface SelectItemModalData<T = unknown> {
     service_name: string;
-    query_fn: (_: string) => Observable<T[]>;
+    query_fn: (query: string) => Observable<T[]>;
 }
 
 @Component({
@@ -35,7 +35,7 @@ export interface SelectItemModalData<T = any> {
             <main class="h-[65vh] w-lg max-w-[calc(100vw-2rem)] px-2 pt-2">
                 <item-search-field
                     class="block h-full"
-                    [query_fn]="query_fn"
+                    [query_fn]="$any(query_fn)"
                     [exclude]="filter_fn"
                     [(ngModel)]="item"
                     [display_list]="true"
@@ -86,13 +86,13 @@ export class SelectItemModalComponent extends AsyncHandler {
     /** Whether the item is being editing */
     public edit: boolean;
     /** Item to edit */
-    public item: any;
+    public item: unknown;
     /** Whether the item request is being processed */
     public loading: boolean;
 
     public readonly filter_fn = () => false;
 
-    public get query_fn(): (_: any) => Observable<any[]> {
+    public get query_fn(): (query: string) => Observable<unknown[]> {
         return this._data.query_fn;
     }
 

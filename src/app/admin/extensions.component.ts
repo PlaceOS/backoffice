@@ -43,7 +43,7 @@ export interface BackofficeExtension {
     /** URL to the application to embed */
     url: string;
     /** Conditions for showing the extension */
-    conditions: [string, string, any][];
+    conditions: [string, string, unknown][];
     /** Icon to display next to the name */
     icon: ApplicationIcon;
 }
@@ -237,14 +237,14 @@ export class PlaceExtensionsComponent implements OnInit {
             data: { item: item ? JSON.parse(JSON.stringify(item)) : undefined },
         });
         ref.componentInstance.event
-            .pipe(first((_) => _.reason === 'done'))
+            .pipe(first((__) => __.reason === 'done'))
             .subscribe(async (event) => {
                 ref.componentInstance.loading.set(
                     'Saving backoffice extension...',
                 );
                 let ext_list = this.extensions() || [];
                 ext_list = ext_list.filter((i) => i.name !== item?.name);
-                ext_list.push(event.metadata);
+                ext_list.push(event.metadata as BackofficeExtension);
                 await this.updateDomain(ext_list);
                 ref.componentInstance.loading.set('');
                 ref.close();
@@ -263,8 +263,8 @@ export class PlaceExtensionsComponent implements OnInit {
             },
         );
         ref.componentInstance.event
-            .pipe(first((_) => _.reason === 'done'))
-            .subscribe(async (_) => {
+            .pipe(first((__) => __.reason === 'done'))
+            .subscribe(async (__) => {
                 ref.componentInstance.loading.set('Removing extension...');
                 let ext_list = this.extensions();
                 ext_list = ext_list.filter((i) => i.name !== item.name);

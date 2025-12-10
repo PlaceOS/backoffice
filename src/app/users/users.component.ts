@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
@@ -103,7 +103,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         SidebarMenuComponent,
     ],
 })
-export class UsersComponent extends AsyncHandler {
+export class UsersComponent extends AsyncHandler implements OnInit {
     protected _service = inject(ActiveItemService);
 
     public readonly name = 'users';
@@ -150,7 +150,7 @@ export class UsersComponent extends AsyncHandler {
         this.subscription(
             'item',
             this._service.item.subscribe((item) => {
-                this.item.set(item as any);
+                this.item.set(item as unknown as PlaceUser);
                 this.updateTabList();
             }),
         );

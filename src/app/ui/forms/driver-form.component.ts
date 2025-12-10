@@ -362,17 +362,18 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
         );
     }
 
-    private _applyDriverDetails(details: any) {
+    private _applyDriverDetails(details: unknown) {
         if (details == null) {
             this.loading.set('');
             this.waiting.emit(false);
             return;
         }
         const driver = this.driver.getValue();
-        let settings = details.default_settings || '';
+        const details_any = details as any;
+        let settings = details_any.default_settings || '';
         try {
-            JSON.parse(details.default_settings);
-            const doc = yaml.load(details.default_settings);
+            JSON.parse(details_any.default_settings);
+            const doc = yaml.load(details_any.default_settings);
             settings = yaml.dump(doc);
         } catch (error) {
             console.error(
@@ -381,24 +382,24 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                 driver.default_settings,
             );
         }
-        const port_number = details.tcp_port || details.udp_port || null;
+        const port_number = details_any.tcp_port || details_any.udp_port || null;
         this.form().patchValue({
-            name: details.descriptive_name || '',
-            module_name: details.generic_name || '',
+            name: details_any.descriptive_name || '',
+            module_name: details_any.generic_name || '',
             class_name: driver.id || '',
             settings,
             default_port: port_number,
-            default_uri: details.uri_base || '',
+            default_uri: details_any.uri_base || '',
             role: port_number
                 ? port_number === 22
                     ? PlaceDriverRole.SSH
                     : PlaceDriverRole.Device
-                : details.uri_base
-                  ? details.uri_base.startsWith('ws')
+                : details_any.uri_base
+                  ? details_any.uri_base.startsWith('ws')
                       ? PlaceDriverRole.Websocket
                       : PlaceDriverRole.Service
                   : PlaceDriverRole.Logic,
-            description: details.description || '',
+            description: details_any.description || '',
         });
         this.waiting.emit(false);
         this.loading.set('');

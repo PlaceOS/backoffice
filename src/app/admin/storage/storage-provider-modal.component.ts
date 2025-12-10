@@ -278,9 +278,9 @@ export class StorageProviderModalComponent implements OnInit {
         if (this.form.invalid) return;
         this.loading.set('Saving storage provider...');
         this._dialog_ref.disableClose = true;
-        const details = this.form.value as PlaceStorage;
+        const details = this.form.value as any;
         if (details.id && !details.access_secret) {
-            delete (details as any).access_secret;
+            delete details.access_secret;
         }
         await lastValueFrom(saveStorage(details)).catch((e) => {
             notifyError(i18n('ADMIN.STORAGE_SAVE_ERROR'));

@@ -7,6 +7,7 @@ import {
     PlaceSystem,
     PlaceTrigger,
     TriggerComparison,
+    TriggerConditions,
     TriggerTimeCondition,
     TriggerTimeConditionType,
     updateTrigger,
@@ -110,7 +111,7 @@ export class TriggerConditionModalComponent extends AsyncHandler {
     /** Form fields for trigger condition */
     public form = generateTriggerConditionForm(this._data.condition);
     /** Store for updated conditions */
-    public conditions: any;
+    public conditions: TriggerConditions;
 
     /** Types of trigger conditions */
     public condition_types: Identity[] = [
@@ -137,9 +138,9 @@ export class TriggerConditionModalComponent extends AsyncHandler {
         this.form.markAllAsTouched();
         if (!this.form.valid) return;
         this.loading.set('Saving trigger condition...');
-        this.form.controls.condition_type.value === 'compare'
+        void (this.form.controls.condition_type.value === 'compare'
             ? this.updateComparisons()
-            : this.updateTimeDependents();
+            : this.updateTimeDependents());
 
         const item = await updateTrigger(this.trigger.id, {
             ...this.trigger,
@@ -217,17 +218,17 @@ export class TriggerConditionModalComponent extends AsyncHandler {
             delete new_value.cron;
             delete new_value.timezone;
         }
-        new_value.cron ? delete new_value.time : delete new_value.cron;
+        void (new_value.cron ? delete new_value.time : delete new_value.cron);
         if (this._data.condition) {
             const old_value = JSON.stringify(this._data.condition);
             const index = old_values.findIndex(
                 (time) => JSON.stringify(time) === old_value,
             );
             if (index >= 0) {
-                old_values.splice(index, 1, new_value as any);
+                old_values.splice(index, 1, new_value as TriggerTimeCondition);
             }
         } else {
-            old_values.push(new_value as any);
+            old_values.push(new_value as TriggerTimeCondition);
         }
         const updated_conditions = {
             ...this.trigger.conditions,

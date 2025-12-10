@@ -10,7 +10,7 @@ import { subMinutes } from 'date-fns';
 import { HashMap } from '../../common/types';
 import { API, generateBasicHandlers, generateID } from '../common.mock';
 
-const FILTER_FN = (item: any, q: HashMap) => {
+const FILTER_FN = (item: Record<string, any>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return true;
     }
@@ -20,7 +20,7 @@ const FILTER_FN = (item: any, q: HashMap) => {
             match &&
             (item.name || '')
                 .toLowerCase()
-                .indexOf((q.q || '').toLowerCase()) >= 0;
+                .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
     }
     return match;
 };
@@ -36,7 +36,7 @@ const REPO_DATA = [
     },
 ];
 
-const DRIVER_LIST = (DISCOVERY_DATA as any).map((driver) => driver.id);
+const DRIVER_LIST = (DISCOVERY_DATA as Record<string, unknown>[]).map((driver) => driver.id);
 
 const COMMIT_LIST = [
     {
@@ -111,8 +111,8 @@ registerMockEndpoint({
     path: `${API}/repositories/:id/commits`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
-        if (event.route_params.id) {
+    callback: (_event) => {
+        if (_event.route_params.id) {
             return COMMIT_LIST;
         }
         throw { status: 404, message: 'System not found' };

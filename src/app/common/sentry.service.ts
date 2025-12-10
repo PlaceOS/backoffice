@@ -47,7 +47,7 @@ export class SentryService implements ErrorHandler {
             this.extractError(error) || 'Handled unknown error';
 
         // Capture handled exception and send it to Sentry.
-        const eventId = Sentry.captureException(extractedError);
+        const _eventId = Sentry.captureException(extractedError);
 
         // When in development mode, log the error to console for immediate feedback.
         if (isDevMode()) {

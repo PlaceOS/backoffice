@@ -512,7 +512,7 @@ export class StaffTenantModalComponent implements OnInit {
     }
 
     public get credentials(): FormGroup {
-        return this.form?.controls.credentials as any;
+        return this.form?.controls.credentials as FormGroup;
     }
 
     public ngOnInit() {
@@ -554,7 +554,7 @@ export class StaffTenantModalComponent implements OnInit {
                 platform === 'office365' ? this.office_form : this.google_form,
             );
             if (platform === 'office365') {
-                (this.form as any).addControl(
+                (this.form as FormGroup).addControl(
                     'outlook_config',
                     new FormGroup({
                         app_id: new FormControl(''),
@@ -565,7 +565,7 @@ export class StaffTenantModalComponent implements OnInit {
                     }),
                 );
             } else {
-                (this.form as any).removeControl('outlook_config');
+                (this.form as FormGroup).removeControl('outlook_config');
             }
             handleDelegation(this.form.value.delegated);
             this.form.patchValue({ credentials });
@@ -603,17 +603,17 @@ export class StaffTenantModalComponent implements OnInit {
         if (!value.credentials.conference_type)
             delete value.credentials.conference_type;
         if (!this.show_outlook) {
-            delete (value as any).outlook_config;
+            delete (value as Record<string, unknown>).outlook_config;
         } else {
-            for (const key in (value as any).outlook_config) {
-                if ((value as any).outlook_config[key] == null) {
-                    delete (value as any).outlook_config[key];
+            for (const key in (value as Record<string, Record<string, unknown>>).outlook_config) {
+                if ((value as Record<string, Record<string, unknown>>).outlook_config[key] == null) {
+                    delete (value as Record<string, Record<string, unknown>>).outlook_config[key];
                 }
             }
         }
-        for (const key in (value as any).credentials) {
-            if ((value as any).credentials[key] == null) {
-                delete (value as any).credentials[key];
+        for (const key in (value as Record<string, Record<string, unknown>>).credentials) {
+            if ((value as Record<string, Record<string, unknown>>).credentials[key] == null) {
+                delete (value as Record<string, Record<string, unknown>>).credentials[key];
             }
         }
         if (!Object.keys(value.credentials).length) {
@@ -630,7 +630,7 @@ export class StaffTenantModalComponent implements OnInit {
         const call = this.tenant?.id
             ? put(`/api/staff/v1/tenants/${this.tenant.id}`, data)
             : post('/api/staff/v1/tenants', data);
-        const tenant = await lastValueFrom(call).catch((_) => null);
+        const tenant = await lastValueFrom(call).catch((__) => null);
         this.loading.set('');
         this._dialog_ref.disableClose = false;
         if (!tenant) return notifyError(i18n('ADMIN.TENANATS_SAVE_ERROR'));

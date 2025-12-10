@@ -286,7 +286,7 @@ export class ModuleAboutComponent {
     public readonly stopping = signal(false);
 
     public get item(): PlaceModule {
-        return this._service.active_item as any;
+        return this._service.active_item as PlaceModule;
     }
 
     public async toggleModuleState() {

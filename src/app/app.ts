@@ -29,6 +29,8 @@ import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { firstValueFrom } from 'rxjs';
+import { PlaceTenant } from './admin/staff-api.component';
 import { LocaleService, setTranslationService } from './common/locale.service';
 import { GlobalBannerComponent } from './ui/global-banner.component';
 import { GlobalLoadingComponent } from './ui/global-loading.component';
@@ -143,12 +145,12 @@ export class AppComponent extends AsyncHandler implements OnInit {
         setLoadingMessage('Loading application settings...');
         /** Wait for settings to initialise */
         await this._settings.initialised.pipe(first((_) => _)).toPromise();
-        const settings = this._settings.get('composer') || {};
+        const settings = this._settings.get('composer') || {} as any;
         settings.mock = !!this._settings.get('mock');
         settings.ignore_api_key = true;
         setLoadingMessage('Authenticating user...');
         /** Wait for authentication details to load */
-        await setupPlace(settings).catch(() => this.onInitError());
+        await setupPlace(settings as any).catch(() => this.onInitError());
         setupCache(this._cache);
         this.timeout('wait_for_user', () => this.onInitError(), 30 * 1000);
         await this._users.initialised.pipe(first((_) => _)).toPromise();
@@ -193,7 +195,9 @@ export class AppComponent extends AsyncHandler implements OnInit {
 
     private async _checkTenants() {
         if (!currentUser()?.sys_admin) return;
-        const tenant_list: any = await get('/api/staff/v1/tenants').toPromise();
+        const tenant_list: PlaceTenant[] = (
+            await firstValueFrom(get('/api/staff/v1/tenants'))
+        ).map((_) => Object.keys(_).map((i) => _[i] as PlaceTenant));
         for (const tenant of tenant_list) {
             if (!tenant.secret_expiry) continue;
             if (tenant.secret_expiry > getUnixTime(addDays(Date.now(), -30))) {
@@ -214,7 +218,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
     private _initLocale() {
         try {
             let locale = localStorage.getItem('BACKOFFICE.locale');
-            const locales = this._settings.get('app.locales') || [
+            const locales = (this._settings.get('app.locales') as any) || [
                 { id: 'en', name: 'English' },
             ];
             if (locale) {
@@ -222,9 +226,9 @@ export class AppComponent extends AsyncHandler implements OnInit {
             } else {
                 const list = navigator.languages;
                 for (const lang of list) {
-                    locale = locales.find((_) => _.id === lang);
+                    locale = (locales as any).find((_: any) => _.id === lang);
                     if (!locale)
-                        locale = locales.find((_) => lang.includes(_.id));
+                        locale = (locales as any).find((_: any) => lang.includes(_.id));
                     if (locale) {
                         this._locale?.setLocale(lang);
                         localStorage.setItem('BACKOFFICE.locale', lang);

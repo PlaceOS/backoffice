@@ -76,7 +76,7 @@ export class SettingsFieldComponent
     /** Reference to the element container the monaco editor */
     private readonly element = viewChild<ElementRef>('editor');
     /** API object for the monaco editor */
-    private editor: any;
+    private editor: monaco.editor.IStandaloneCodeEditor | undefined;
 
     constructor() {
         super();
@@ -101,7 +101,7 @@ export class SettingsFieldComponent
         this.interval(
             'theme',
             () => {
-                const theme = this._settings.get('theme');
+                const theme = this._settings.get('theme') as string;
                 if (theme !== this._theme) {
                     this._theme = theme;
                     this.editor?.updateOptions({
@@ -118,7 +118,7 @@ export class SettingsFieldComponent
             this.editor.updateOptions({ readOnly: !!this.readonly() });
         }
         if (changes.lang && this.editor) {
-            this.editor.updateOptions({ language: this.lang() || 'yaml' });
+            this.editor.updateOptions({ language: this.lang() || 'yaml' } as any);
         }
         if (changes.resize) {
             this.resizeEditor();
@@ -130,7 +130,7 @@ export class SettingsFieldComponent
         if (changes.decorations && this.editor) {
             this._active_decorators = this.editor.deltaDecorations(
                 this._active_decorators,
-                (this.decorations() || []).map((i) => ({ ...i })),
+                (this.decorations() || []).map((i) => ({ ...i })) as any,
             );
         }
     }
@@ -139,7 +139,7 @@ export class SettingsFieldComponent
         if (this.editor) {
             try {
                 this.editor.dispose();
-            } catch (_) {
+            } catch {
                 // Ignore dispose errors - editor may already be disposed
             }
             this.editor = null;
@@ -237,7 +237,7 @@ export class SettingsFieldComponent
                     this._active_decorators =
                         this.editor?.deltaDecorations(
                             this._active_decorators,
-                            (this.decorations() || []).map((i) => ({ ...i })),
+                            (this.decorations() || []).map((i) => ({ ...i })) as any,
                         ) || [];
                 },
                 50,

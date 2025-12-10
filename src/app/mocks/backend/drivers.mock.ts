@@ -7,7 +7,7 @@ import {
     registerMockEndpoint,
 } from '@placeos/ts-client';
 
-const FILTER_FN = (item: any, q: HashMap) => {
+const FILTER_FN = (item: Record<string, any>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return true;
     }
@@ -17,7 +17,7 @@ const FILTER_FN = (item: any, q: HashMap) => {
             match &&
             (item.name || '')
                 .toLowerCase()
-                .indexOf((q.q || '').toLowerCase()) >= 0;
+                .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
     }
     if (q.repository_id) {
         match = match && item.repository_id === q.repository_id;
@@ -33,7 +33,7 @@ registerMockEndpoint({
     path: `${API}/drivers/:id/compiled`,
     metadata: DRIVER_DATA,
     method: 'GET',
-    callback: (event) => true,
+    callback: (_event) => true,
 } as MockHttpRequestHandler);
 
 /** Recompile driver */
@@ -73,7 +73,7 @@ registerMockEndpoint({
     path: `${API}/drivers/:id/readme`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return '# Mock Driver\n\nThis is a mock driver README for testing purposes.\n\n## Features\n\n- Feature 1\n- Feature 2\n\n## Usage\n\nRefer to the driver documentation.';
     },
 } as MockHttpRequestHandler);
@@ -83,7 +83,7 @@ registerMockEndpoint({
     path: `${API}/drivers/:id/settings`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return [];
     },
 } as MockHttpRequestHandler);

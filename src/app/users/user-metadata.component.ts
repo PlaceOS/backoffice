@@ -17,6 +17,7 @@ export class UserMetadataComponent {
     private _service = inject(ActiveItemService);
 
     public get item(): PlaceUser {
-        return this._service.active_item as any;
+        const active_item = this._service.active_item;
+        return (active_item || { id: '' }) as PlaceUser;
     }
 }

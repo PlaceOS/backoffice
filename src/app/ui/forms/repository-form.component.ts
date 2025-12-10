@@ -184,12 +184,12 @@ import { TranslatePipe } from '../translate.pipe';
                                     "
                                     formControlName="password"
                                 />
-                                <icon
+                                <button
                                     matSuffix
                                     (click)="show_password = !show_password"
                                 >
-                                    visibility
-                                </icon>
+                                    <icon>visibility</icon>
+                                </button>
                             </mat-form-field>
                         </div>
                     }
@@ -261,6 +261,7 @@ import { TranslatePipe } from '../translate.pipe';
                                     track commit
                                 ) {
                                     <mat-option [value]="commit.hash">
+                                        <!-- eslint-disable @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
                                         <div
                                             class="flex w-[calc(100%-2.20rem)] flex-1 items-center space-x-2"
                                             [class.w-full!]="
@@ -367,13 +368,13 @@ export class RepositoryFormComponent
     /** Group of form fields used for creating the system */
     public readonly form = input<UntypedFormGroup>(undefined);
     /** List of commits available for repository */
-    public commit_list = of([] as any[]);
+    public commit_list = of([] as Record<string, string>[]);
     /** List of branches available for repository */
     public branch_list = of([] as string[]);
     /** Whether repository's commits are being loaded */
     public loading_commits: boolean;
     /** Currently selected commit for the repository */
-    public base_commit: Identity;
+    public base_commit: Identity | any;
     /** Whether to follow the latest branch commits(Auto-update) */
     public follow_latest: boolean;
     /** List of available types of repositories */
@@ -425,7 +426,7 @@ export class RepositoryFormComponent
                                     password,
                                 })
                               : of([])
-                    ).pipe(catchError((_) => of([])));
+                    ).pipe(catchError(() => of([])));
                 }),
                 tap((_) =>
                     _.length
@@ -488,7 +489,7 @@ export class RepositoryFormComponent
                                     branch,
                                 })
                               : of([])
-                    ).pipe(catchError((_) => of([])));
+                    ).pipe(catchError(() => of([])));
                 }),
                 map((l) => [
                     { hash: 'HEAD', subject: 'Latest commit on the branch' },

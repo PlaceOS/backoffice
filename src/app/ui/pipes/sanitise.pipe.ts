@@ -23,9 +23,9 @@ export class SanitizePipe implements PipeTransform {
     private sanitizer = inject(DomSanitizer);
 
     transform(
-        value: any,
+        value: unknown,
         type: 'resource' | 'url' | 'script' | 'style' | 'html' = 'html',
-    ): SafeHtml | SafeResourceUrl | SafeScript | SafeStyle {
+    ): SafeHtml | SafeResourceUrl | SafeScript | SafeStyle | string | null {
         switch (type) {
             case 'resource':
                 return this.sanitizer.sanitize(

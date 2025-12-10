@@ -175,7 +175,7 @@ export class DuplicateModalComponent {
     /** Whether request is loading */
     public loading = false;
     /** Temporary array for generating UI elements */
-    public temp: any[];
+    public temp: HashMap[] = [];
     /** Whether duplication has completed */
     public done = false;
 
@@ -189,10 +189,10 @@ export class DuplicateModalComponent {
      */
     public async duplicate() {
         this.loading = true;
-        const ItemConstructor: any = this.item.constructor;
+        const ItemConstructor = this.item.constructor as new (data: HashMap) => HashMap;
         const item = this._data.item;
         const list = [];
-        this.temp = new Array(this.times).fill(0);
+        this.temp = new Array(this.times).fill({});
         for (let i = 0; i < this.times; i++) {
             const new_item = new ItemConstructor({
                 ...item,

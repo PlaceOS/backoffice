@@ -1,6 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
+    AfterViewInit,
     Component,
     computed,
     ElementRef,
@@ -24,29 +25,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { nextValueFrom, unique } from '../../common/general';
 import { notifyInfo } from '../../common/notifications';
+import { UploadDetails } from '../../common/uploads';
 import { UploadsService } from '../../common/uploads.service';
 import { AuthenticatedImageDirective } from '../authenticated-image.directive';
 import { IconComponent } from '../icon.component';
 import { TranslatePipe } from '../translate.pipe';
-
-export interface UploadDetails {
-    /** Unique ID for the upload */
-    id: number;
-    /** Name of the file uploaded */
-    name: string;
-    /** Progress of the file upload */
-    progress: number;
-    /** Link to the uploaded file */
-    link: string;
-    /** Formatted file size */
-    formatted_size: string;
-    /** Size of the file being uploaded */
-    size: number;
-    /** Error with upload request */
-    error?: string;
-    /** Upload object associated with the file */
-    upload: Upload;
-}
 
 @Component({
     selector: 'image-list-field',
@@ -226,7 +209,10 @@ export interface UploadDetails {
         MatTooltipModule,
     ],
 })
-export class ImageListFieldComponent extends AsyncHandler {
+export class ImageListFieldComponent
+    extends AsyncHandler
+    implements AfterViewInit
+{
     private _clipboard = inject(Clipboard);
     private _uploads = inject(UploadsService);
 
@@ -299,12 +285,12 @@ export class ImageListFieldComponent extends AsyncHandler {
 
     public addImage(event: MatChipInputEvent) {
         if (!event.value) return;
-        this.setValue(unique([...this.list(), event.value]));
+        this.setValue(unique([...this.list(), event.value]) as string[]);
         event.chipInput.inputElement.value = '';
     }
 
     public addImageUrl(url: string) {
-        this.setValue(unique([...this.list(), url]));
+        this.setValue(unique([...this.list(), url]) as string[]);
     }
 
     public retryUpload(item: UploadDetails) {
@@ -314,8 +300,8 @@ export class ImageListFieldComponent extends AsyncHandler {
         }
     }
 
-    public async uploadImages(event) {
-        const element: HTMLInputElement = event.target as any;
+    public async uploadImages(event: Event) {
+        const element = event.target as HTMLInputElement;
         /* istanbul ignore else */
         if (element?.files) {
             const files: FileList = element.files;

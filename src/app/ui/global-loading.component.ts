@@ -6,7 +6,6 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { firstTruthyValueFrom } from '../common/general';
 import { getLoadingMessage } from '../common/placeos';
 import { SettingsService } from '../common/settings.service';
-import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'global-loading',
@@ -22,7 +21,7 @@ import { TranslatePipe } from './translate.pipe';
                     <p class="text-center font-mono">{{ message() }}</p>
                 </div>
                 <div
-                    class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
+                    class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-full border shadow"
                 >
                     <mat-progress-bar
                         mode="indeterminate"
@@ -47,7 +46,7 @@ import { TranslatePipe } from './translate.pipe';
             }
         `,
     ],
-    imports: [MatProgressBarModule, TranslatePipe],
+    imports: [MatProgressBarModule],
 })
 export class GlobalLoadingComponent extends AsyncHandler implements OnInit {
     private _settings = inject(SettingsService);

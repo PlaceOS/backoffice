@@ -11,14 +11,14 @@ import {
 } from '../common.mock';
 
 /** In-memory storage with session persistence */
-const API_KEYS: any[] = loadFromSession('api_keys', []);
-const BROKERS: any[] = loadFromSession('brokers', []);
-const EDGES: any[] = loadFromSession('edges', []);
-const APPLICATIONS: any[] = loadFromSession('applications', []);
-const UPLOADS: any[] = loadFromSession('uploads', []);
-const STORAGE_PROVIDERS: any[] = loadFromSession('storage_providers', []);
+const API_KEYS: Record<string, any>[] = loadFromSession('api_keys', []);
+const BROKERS: Record<string, any>[] = loadFromSession('brokers', []);
+const EDGES: Record<string, any>[] = loadFromSession('edges', []);
+const APPLICATIONS: Record<string, any>[] = loadFromSession('applications', []);
+const UPLOADS: Record<string, any>[] = loadFromSession('uploads', []);
+const STORAGE_PROVIDERS: Record<string, any>[] = loadFromSession('storage_providers', []);
 
-const createFilter = (items: any[]) => (q: HashMap) => {
+const createFilter = (items: Record<string, any>[]) => (q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return items;
     }
@@ -32,7 +32,7 @@ const createFilter = (items: any[]) => (q: HashMap) => {
                 match &&
                 (item.name || '')
                     .toLowerCase()
-                    .indexOf((q.q || '').toLowerCase()) >= 0;
+                    .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
         }
         return match;
     });
@@ -290,7 +290,7 @@ registerMockEndpoint({
     path: `${API}/edges/:id/token`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return { token: `edge_token_${generateID(32)}` };
     },
 } as MockHttpRequestHandler);
@@ -565,7 +565,7 @@ registerMockEndpoint({
     path: `${API}/cluster/details`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return {
             compiled_drivers: ['driver-1', 'driver-2'],
             available_repositories: ['repo-1'],
@@ -582,7 +582,7 @@ registerMockEndpoint({
     path: `${API}/cluster/processes`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return [];
     },
 } as MockHttpRequestHandler);
@@ -592,7 +592,7 @@ registerMockEndpoint({
     path: `${API}/cluster/core_load`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return {
             local: {
                 hostname: 'localhost',

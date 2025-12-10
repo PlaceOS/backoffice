@@ -361,7 +361,7 @@ export class TriggerConditionTimeFormComponent
 
     public timezones: string[] = [];
 
-    public pad(str: any, digits = 2) {
+    public pad(str: unknown, digits = 2) {
         return `${str}`.padStart(digits, '0');
     }
 

@@ -1,5 +1,5 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, SimpleChanges, input } from '@angular/core';
+import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { queryZones } from '@placeos/ts-client';
@@ -242,6 +242,7 @@ import { TranslatePipe } from '../translate.pipe';
                 @if (form().controls.features) {
                     <div class="field">
                         <label
+                            for="feature-list"
                             [class.error]="
                                 form().controls.features.invalid &&
                                 form().controls.features.touched
@@ -271,6 +272,7 @@ import { TranslatePipe } from '../translate.pipe';
                                 }
                             </mat-chip-grid>
                             <input
+                                id="feature-list"
                                 [placeholder]="'SYSTEMS.FEATURES' | translate"
                                 [matChipInputFor]="chipList"
                                 [matChipInputSeparatorKeyCodes]="separators"
@@ -469,7 +471,7 @@ import { TranslatePipe } from '../translate.pipe';
         MatAutocompleteModule,
     ],
 })
-export class SystemFormComponent extends AsyncHandler {
+export class SystemFormComponent extends AsyncHandler implements OnChanges {
     public timezones: string[] = [];
     public filtered_timezones: string[] = [];
     /** Group of form fields used for creating the system */
@@ -491,8 +493,11 @@ export class SystemFormComponent extends AsyncHandler {
                 'tz-change',
                 this.form().valueChanges.subscribe(
                     ({ timezone }) =>
-                        (this.filtered_timezones = this.timezones.filter((_) =>
-                            _.toLowerCase().includes(timezone.toLowerCase()),
+                        (this.filtered_timezones = this.timezones.filter(
+                            (_tz) =>
+                                _tz
+                                    .toLowerCase()
+                                    .includes(timezone.toLowerCase()),
                         )),
                 ),
             );

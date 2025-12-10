@@ -113,7 +113,7 @@ export function formatRecurrence(value: {
     if (
         !value ||
         !value.period ||
-        (value.period as any) >= RECURRENCE_PERIODS.length
+        (value.period as number) >= RECURRENCE_PERIODS.length
     ) {
         return 'No recurrence';
     }

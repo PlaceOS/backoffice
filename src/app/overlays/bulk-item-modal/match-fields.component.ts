@@ -67,13 +67,13 @@ import { TranslatePipe } from '../../ui/translate.pipe';
 })
 export class MatchFieldsComponent implements OnChanges, OnInit {
     /** List of bulk items to add */
-    public readonly list = input<HashMap<any>[]>(undefined);
+    public readonly list = input<HashMap<unknown>[]>(undefined);
     /** List of fields available for building new item */
     public readonly field_list = input<Identity[]>([]);
     /** User selected mappings for field mappings */
     public readonly mappings = model<Record<string, string>>({});
     /** Emitter for mapped changes to list */
-    public readonly mapping_done = output<HashMap<any>[]>();
+    public readonly mapping_done = output<HashMap<unknown>[]>();
     /** Emitter user want to return to previous step in flow */
     public readonly previous = output<void>();
     /** Emitter for changes to user selected field mappings */
@@ -121,7 +121,7 @@ export class MatchFieldsComponent implements OnChanges, OnInit {
     /** Generated the mapped list of items and emit them */
     public saveMapping(): void {
         const mapped_list = this.list().map((item) => {
-            const mapped_item: any = {};
+            const mapped_item: Record<string, unknown> = {};
             for (const field of this.field_list()) {
                 const id = `${field.id}`;
                 mapped_item[id] = item[this.field_mapping[id]];

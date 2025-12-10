@@ -95,7 +95,7 @@ export class SelectMethodComponent
     public readonly module = input<ModuleLike>(undefined);
 
     private _system = new BehaviorSubject('');
-    private _module = new BehaviorSubject<ModuleLike>({} as any);
+    private _module = new BehaviorSubject<ModuleLike>({} as ModuleLike);
 
     public readonly method = signal<PlaceModuleFunction>(undefined);
 
@@ -128,7 +128,7 @@ export class SelectMethodComponent
             'methods',
             this.method_list.subscribe((list) => {
                 const active = list.find(
-                    (_) => _.name === (this.method as any)?.name,
+                    (_) => _.name === (this.method as unknown as { name: string })?.name,
                 );
                 if (active) this.setValue(active);
             }),

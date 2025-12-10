@@ -19,7 +19,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -281,12 +281,12 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
 
     public readonly focusInput = () =>
         setTimeout(() => this._input_el()?.nativeElement?.focus(), 100);
-    public readonly setSearch = (s) => this.loadUsers();
+    public readonly setSearch = (term?: string) => this.loadUsers();
 
-    public readonly addScope = (e) =>
-        addChipItem(this.form.controls.scopes as any, e);
-    public readonly removeScope = (i) =>
-        removeChipItem(this.form.controls.scopes as any, i);
+    public readonly addScope = (e: MatChipInputEvent | { input: any; value: string }) =>
+        addChipItem(this.form.controls.scopes as FormControl<string[]>, e as MatChipInputEvent);
+    public readonly removeScope = (i: string) =>
+        removeChipItem(this.form.controls.scopes as FormControl<string[]>, i);
 
     public ngOnInit() {
         this.domain.set(this._domain);

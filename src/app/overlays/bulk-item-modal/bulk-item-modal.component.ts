@@ -39,10 +39,10 @@ const IGNORE_FIELDS = [
     'module_list',
 ];
 
-export interface BulkItemModalData<T = HashMap<any>> {
+export interface BulkItemModalData<T = HashMap<unknown>> {
     constr: Type<T>;
     name: string;
-    save: (item: PlaceResource) => Observable<PlaceResource>;
+    save: (item: Record<string, unknown>) => Observable<PlaceResource>;
 }
 
 @Component({
@@ -136,7 +136,7 @@ export interface BulkItemModalData<T = HashMap<any>> {
         CsvUploadComponent,
     ],
 })
-export class BulkItemModalComponent<T = HashMap<any>> {
+export class BulkItemModalComponent<T extends HashMap<unknown> = HashMap<unknown>> {
     private _dialog_ref =
         inject<MatDialogRef<BulkItemModalComponent>>(MatDialogRef);
     private _data = inject<BulkItemModalData<T>>(MAT_DIALOG_DATA);
@@ -144,13 +144,13 @@ export class BulkItemModalComponent<T = HashMap<any>> {
     /** Current step in the bulk add flow */
     public flow_step: '' | 'match-fields' | 'list' | 'status' = '';
     /** List of items to bulk add */
-    public item_list: T[] = [];
+    public item_list: HashMap<unknown>[] = [];
     /** List of raw data to use for bulk add */
-    public data_list: HashMap[] = [];
+    public data_list: HashMap<unknown>[] = [];
     /** Whether requests are being processed */
     public loading: boolean;
     /** Template data for use */
-    public template: HashMap[] = [];
+    public template: HashMap<unknown>[] = [];
     public mappings: Record<string, string> = {};
 
     public available_fields: Identity[] = [];
@@ -172,15 +172,15 @@ export class BulkItemModalComponent<T = HashMap<any>> {
      * Handle list data
      * @param data List of data to process
      */
-    public handleList(data: HashMap[], is_mapped = false): void {
+    public handleList(data: HashMap<unknown>[], is_mapped = false): void {
         if (data.length) {
             if (is_mapped) {
                 const Resource = this._data.constr;
                 this.item_list = data.map((item) => {
-                    const new_item = {};
+                    const new_item: HashMap<unknown> = {};
                     Object.keys(item).forEach((key) => {
                         try {
-                            new_item[key] = JSON.parse(item[key]);
+                            new_item[key] = JSON.parse(item[key] as string);
                         } catch {
                             new_item[key] = item[key];
                         }
@@ -205,19 +205,17 @@ export class BulkItemModalComponent<T = HashMap<any>> {
 
     private getAvailableFields(): Identity[] {
         const list: readonly string[] = Object.keys(new this._data.constr());
-        return unique(
-            list.map((i) => ({ id: i, name: i.split('_').join(' ') })),
-            'id',
-        ).filter(
+        const identity_list = list.map((i) => ({ id: i, name: i.split('_').join(' ') }));
+        return (unique(identity_list, 'id') as Identity[]).filter(
             (field) =>
-                field.id !== 'id' &&
-                field.id[0] !== '_' &&
-                !IGNORE_FIELDS.includes(field.id),
+                (field.id as string) !== 'id' &&
+                (field.id as string)[0] !== '_' &&
+                !IGNORE_FIELDS.includes(field.id as string),
         );
     }
 
-    private generateTemplate(): HashMap[] {
-        switch (this._data.constr as any) {
+    private generateTemplate(): HashMap<unknown>[] {
+        switch (this._data.constr as unknown) {
             case PlaceSystem:
                 return [new PlaceSystem(SYSTEM_TEMPLATE).toJSON()];
             case PlaceModule:
@@ -225,9 +223,9 @@ export class BulkItemModalComponent<T = HashMap<any>> {
             case PlaceDriver:
                 return [new PlaceDriver(DRIVER_TEMPLATE).toJSON()];
             case PlaceUser:
-                return [new PlaceUser(USER_TEMPLATE)];
+                return [new PlaceUser(USER_TEMPLATE).toJSON()];
             case PlaceZone:
-                return [new PlaceZone(ZONE_TEMPLATE)];
+                return [new PlaceZone(ZONE_TEMPLATE).toJSON()];
         }
     }
 }

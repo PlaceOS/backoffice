@@ -7,9 +7,10 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 })
 export class AsyncHandler implements OnDestroy {
     /** Store for named timers */
-    protected _timers: { [name: string]: number } = {};
+    protected _timers: { [name: string]: ReturnType<typeof setTimeout> } = {};
     /** Store for named intervals */
-    protected _intervals: { [name: string]: number } = {};
+    protected _intervals: { [name: string]: ReturnType<typeof setInterval> } =
+        {};
     /** Store for named subscription unsub callbacks */
     protected _subscriptions: { [name: string]: Subscription | (() => void) } =
         {};
@@ -48,7 +49,7 @@ export class AsyncHandler implements OnDestroy {
     protected timeout(name: string, fn: () => void, delay = 300) {
         if (name && fn && fn instanceof Function) {
             this.clearTimeout(name);
-            this._timers[name] = <any>setTimeout(() => {
+            this._timers[name] = setTimeout(() => {
                 fn();
                 this._timers[name] = null;
             }, delay);
@@ -81,7 +82,7 @@ export class AsyncHandler implements OnDestroy {
     protected interval(name: string, fn: () => void, delay = 300) {
         if (name && fn && fn instanceof Function) {
             this.clearInterval(name);
-            this._intervals[name] = <any>setInterval(() => fn(), delay);
+            this._intervals[name] = setInterval(() => fn(), delay);
         } else {
             throw new Error(
                 name
@@ -123,7 +124,7 @@ export class AsyncHandler implements OnDestroy {
         if ('unsubscribe' in this._subscriptions[name]) {
             (this._subscriptions[name] as Subscription).unsubscribe();
         } else {
-            (this._subscriptions[name] as any)();
+            (this._subscriptions[name] as () => void)();
         }
         this._subscriptions[name] = null;
     }

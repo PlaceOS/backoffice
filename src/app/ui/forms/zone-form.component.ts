@@ -1,10 +1,10 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, SimpleChanges, input } from '@angular/core';
-import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
+import { FormControl, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { PlaceZone, queryZones, showZone } from '@placeos/ts-client';
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { map } from 'rxjs/operators';
@@ -91,6 +91,7 @@ import { TranslatePipe } from '../translate.pipe';
                 @if (form().controls.tags) {
                     <div class="field">
                         <label
+                            for="tags"
                             [class.error]="
                                 form().controls.tags.invalid &&
                                 form().controls.tags.touched
@@ -118,6 +119,7 @@ import { TranslatePipe } from '../translate.pipe';
                                 }
                             </mat-chip-grid>
                             <input
+                                id="tags"
                                 [placeholder]="'ZONES.TAGS' | translate"
                                 [matChipInputFor]="chipList"
                                 [matChipInputSeparatorKeyCodes]="separators"
@@ -296,7 +298,7 @@ import { TranslatePipe } from '../translate.pipe';
         ItemSearchFieldComponent,
     ],
 })
-export class ZoneFormComponent extends AsyncHandler {
+export class ZoneFormComponent extends AsyncHandler implements OnChanges {
     public timezones: string[] = [];
     public filtered_timezones: string[] = [];
     /** Group of form fields used for creating the system */
@@ -305,14 +307,14 @@ export class ZoneFormComponent extends AsyncHandler {
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
     /** Query function for zones */
     public readonly query_fn = (_: string) =>
-        queryZones({ q: _ }).pipe(map((resp) => resp.data));
+        queryZones({ q: _ }).pipe(map((resp) => resp.data as any));
     /** Function to exclude zones */
-    public readonly exclude = (zone: PlaceZone) =>
+    public readonly exclude = (zone: any) =>
         zone.id === this.form().controls.id.value;
 
-    public readonly addTag = (e) =>
+    public readonly addTag = (e: any) =>
         addChipItem(this.form().controls.tags as any, e);
-    public readonly removeTag = (i) =>
+    public readonly removeTag = (i: any) =>
         removeChipItem(this.form().controls.tags as any, i);
 
     public get tag_list(): string[] {
@@ -326,8 +328,11 @@ export class ZoneFormComponent extends AsyncHandler {
                 'tz-change',
                 this.form().valueChanges.subscribe(
                     ({ timezone }) =>
-                        (this.filtered_timezones = this.timezones.filter((_) =>
-                            _.toLowerCase().includes(timezone.toLowerCase()),
+                        (this.filtered_timezones = this.timezones.filter(
+                            (_tz) =>
+                                _tz
+                                    .toLowerCase()
+                                    .includes(timezone.toLowerCase()),
                         )),
                 ),
             );
@@ -337,7 +342,7 @@ export class ZoneFormComponent extends AsyncHandler {
 
     public updateTimezoneList() {
         const timezone = this.form()?.value?.timezone || '';
-        this.timezones = TIMEZONES_IANA;
+        this.timezones = TIMEZONES_IANA as string[];
         this.filtered_timezones = this.timezones.filter((_) =>
             _.toLowerCase().includes(timezone.toLowerCase()),
         );

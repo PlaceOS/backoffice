@@ -22,6 +22,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 @Component({
     selector: 'sidebar-menu',
     template: `
+        <!-- eslint-disable @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
         <div
             sidebar-menu
             class="bg-base-200 pointer-events-none absolute inset-0 z-40 hidden h-full flex-col justify-between sm:pointer-events-auto sm:relative sm:inset-auto sm:z-10 sm:flex"
@@ -44,6 +45,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         src="assets/icon/mstile-310x310.png"
                         class="hidden h-12 w-12"
                         [class.sm:block]="compact()"
+                        alt="PlaceOS logo"
                     />
                 </a>
                 <div class="w-full flex-1 space-y-2 overflow-auto pb-2">
@@ -291,7 +293,7 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    private changeSelected(offset = 1) {
+    private changeSelected(_offset = 1) {
         // const index = this.menu_items.findIndex(
         //     (item) => this._router.url.indexOf(item.route) >= 0
         // );

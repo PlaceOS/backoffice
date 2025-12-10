@@ -10,7 +10,7 @@ import { AuthenticatedImageDirective } from './authenticated-image.directive';
                 class="flex items-center justify-center overflow-hidden rounded-full"
                 [attr.user-id]="user().id"
             >
-                @if (!user().photo && !user().image) {
+                @if (!photo_url()) {
                     <div
                         initials
                         class="text-base-content text-opacity-80 uppercase"
@@ -21,7 +21,8 @@ import { AuthenticatedImageDirective } from './authenticated-image.directive';
                     <img
                         auth
                         class="h-full w-full object-cover"
-                        [source]="user().photo || user().image"
+                        [source]="photo_url()"
+                        [alt]="'User avatar'"
                     />
                 }
             </div>
@@ -45,11 +46,15 @@ import { AuthenticatedImageDirective } from './authenticated-image.directive';
     imports: [AuthenticatedImageDirective],
 })
 export class UserAvatarComponent {
-    public readonly user = input<PlaceUser | any>(undefined);
+    public readonly user = input<(PlaceUser & { photo?: string }) | Record<string, unknown>>(undefined);
+    public readonly photo_url = computed(() => {
+        const user = this.user();
+        return (user?.photo || user?.image) as string || '';
+    });
     public readonly initials = computed(() => {
         const user = this.user();
         if (!user) return 'NA';
-        const name = user.name || '';
+        const name = (user.name || '') as string;
         const parts = name.replace(/[()[\]\-+=\\/]+/gi, '').split(' ');
         return parts.length > 1
             ? `${parts[0][0]}${parts[parts.length - 1][0]}`

@@ -45,7 +45,7 @@ const createFilter = (items: any[]) => (q: HashMap) => {
                 match &&
                 (item.name || '')
                     .toLowerCase()
-                    .indexOf((q.q || '').toLowerCase()) >= 0;
+                    .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
         }
         return match;
     });
@@ -181,7 +181,7 @@ registerMockEndpoint({
     path: `${STAFF_API}/users/current`,
     metadata: [],
     method: 'GET',
-    callback: (event) => {
+    callback: (_event) => {
         return {
             id: 'current',
             name: 'Place Admin',

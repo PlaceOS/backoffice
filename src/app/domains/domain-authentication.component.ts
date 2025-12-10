@@ -123,6 +123,6 @@ export class DomainAuthenticationComponent {
         this._service.deleteAuthSource(source);
 
     public get item(): PlaceDomain {
-        return this._service.active_item as any;
+        return this._service.active_item as PlaceDomain;
     }
 }

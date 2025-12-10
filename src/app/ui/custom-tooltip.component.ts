@@ -19,7 +19,7 @@ import {
 import { AsyncHandler } from '../common/async-handler.class';
 import { SanitizePipe } from './pipes/sanitise.pipe';
 
-export class CustomTooltipData<T = any> {
+export class CustomTooltipData<T = unknown> {
     data: T;
     close: () => void;
     constructor(d) {
@@ -55,7 +55,7 @@ export class CustomTooltipData<T = any> {
     `,
     imports: [CommonModule, PortalModule, SanitizePipe],
 })
-export class CustomTooltipComponent<T = any>
+export class CustomTooltipComponent<T = unknown>
     extends AsyncHandler
     implements OnChanges, OnDestroy
 {
@@ -72,7 +72,7 @@ export class CustomTooltipComponent<T = any>
         alias: 'yPosition',
     });
     /** Content to render in the tooltip */
-    public readonly content = input<TemplateRef<any> | Type<any> | string>(
+    public readonly content = input<TemplateRef<unknown> | Type<unknown> | string>(
         undefined,
     );
     /** Data associated with the tooltip content */
@@ -86,9 +86,9 @@ export class CustomTooltipComponent<T = any>
     /** Type of content to render */
     public type: 'template' | 'component' | 'html' = 'template';
     public readonly template = computed(
-        () => this.content() as TemplateRef<any>,
+        () => this.content() as TemplateRef<unknown>,
     );
-    public readonly component = computed(() => this.content() as Type<any>);
+    public readonly component = computed(() => this.content() as Type<unknown>);
     public readonly html = computed(() => this.content() as string);
 
     public injector: Injector;
@@ -133,7 +133,6 @@ export class CustomTooltipComponent<T = any>
                 if (this._overlay_ref) this.close();
                 const _portal = this._portal();
                 if (!_portal) return;
-                const pos = this._element.nativeElement.getBoundingClientRect();
                 const default_x = 'end';
                 const default_y = 'top';
                 const y_pos = this.y_pos();

@@ -122,7 +122,7 @@ export function addStorage(form_data: Partial<PlaceStorage>) {
  */
 export function removeStorage(
     id: string,
-    query_params: Record<string, any> = {},
+    query_params: Record<string, unknown> = {},
 ) {
     return remove({ id, query_params, path: PATH });
 }

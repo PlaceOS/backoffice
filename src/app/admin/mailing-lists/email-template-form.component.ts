@@ -1,6 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
     FormControl,
     FormGroup,
@@ -192,7 +192,7 @@ export function extractTextFromHTML(html_string: string) {
         MatSelectModule,
     ],
 })
-export class EmailTemplateFormComponent extends AsyncHandler {
+export class EmailTemplateFormComponent extends AsyncHandler implements OnInit {
     private _state = inject(EmailStateService);
     private _route = inject(ActivatedRoute);
     private _router = inject(Router);
@@ -256,7 +256,7 @@ export class EmailTemplateFormComponent extends AsyncHandler {
             ...(this.template || {}),
             ...this.form.getRawValue(),
             text: extractTextFromHTML(this.form.getRawValue().html || ''),
-        } as any);
+        } as EmailTemplate);
         this.loading = '';
         notifySuccess('Successfully saved email template');
         this._router.navigate(['/email-templates']);

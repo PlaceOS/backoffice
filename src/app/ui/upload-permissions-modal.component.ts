@@ -29,8 +29,8 @@ import { TranslatePipe } from './translate.pipe';
         </header>
         <main class="min-w-[20rem] px-4">
             <div class="flex flex-col space-y-2">
-                <label> {{ 'COMMON.FILENAME' | translate }}</label>
                 <mat-form-field appearance="outline">
+                    <mat-label>{{ 'COMMON.FILENAME' | translate }}</mat-label>
                     <input
                         matInput
                         [ngModel]="file.name"
@@ -41,8 +41,8 @@ import { TranslatePipe } from './translate.pipe';
             </div>
             @if (!is_public()) {
                 <div class="flex flex-col space-y-2">
-                    <label> {{ 'COMMON.PERMISSIONS' | translate }}</label>
                     <mat-form-field appearance="outline">
+                        <mat-label>{{ 'COMMON.PERMISSIONS' | translate }}</mat-label>
                         <mat-select [(ngModel)]="permissions">
                             <mat-option value="none">
                                 {{ 'COMMON.NONE' | translate }}</mat-option

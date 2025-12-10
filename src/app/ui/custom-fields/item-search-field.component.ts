@@ -32,9 +32,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AsyncHandler } from '../../common/async-handler.class';
-import { HashMap, Identity } from '../../common/types';
+import { HashMap } from '../../common/types';
 import { IconComponent } from '../icon.component';
 import { SanitizePipe } from '../pipes/sanitise.pipe';
+
+interface SearchItem {
+    id: string;
+    name: string;
+    driver?: { id: string; name: string };
+    email?: string;
+    notes?: string;
+    description?: string;
+}
 
 @Component({
     selector: 'item-search-field',
@@ -195,7 +204,7 @@ import { SanitizePipe } from '../pipes/sanitise.pipe';
         IconComponent,
     ],
 })
-export class ItemSearchFieldComponent<T extends Identity = any>
+export class ItemSearchFieldComponent<T extends SearchItem>
     extends AsyncHandler
     implements OnInit, OnChanges, ControlValueAccessor
 {
@@ -270,10 +279,10 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                       ? this.query_fn()(query)
                       : of([]);
             }),
-            catchError((_) => of([])),
+            catchError(() => of([])),
             map((list: T[]) => {
                 this.loading.set(false);
-                return list.filter((item: any) =>
+                return list.filter((item: T) =>
                     this.exclude()
                         ? !this.exclude()(item, this.search_str().toLowerCase())
                         : true,
@@ -376,7 +385,9 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                 } <span class="small">${detail}<span>`;
             } else {
                 map[item.id] =
-                    (item as any).custom_name || item.name || '<Unnamed>';
+                    (item as unknown as { custom_name?: string }).custom_name ||
+                    item.name ||
+                    '<Unnamed>';
             }
         }
         this.item_name = map;

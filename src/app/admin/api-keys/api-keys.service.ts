@@ -54,7 +54,7 @@ export class APIKeyService {
     public readonly available_scopes: Observable<string[]> = get(
         '/api/engine/v2/scopes',
     ).pipe(
-        map((_) => _ as any),
+        map((_) => _ as string[]),
         shareReplay(1),
     );
 
@@ -132,7 +132,7 @@ export class APIKeyService {
             notifyError(_);
             throw _;
         });
-        this._last_key.next(key as any);
+        this._last_key.next(key as PlaceAPIKeyDetails);
         this._change.next(Date.now());
         notifySuccess('Successfully created new API key.');
         ref.close();

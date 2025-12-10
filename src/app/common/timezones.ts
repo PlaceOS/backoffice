@@ -1254,6 +1254,6 @@ export const TIMEZONES = [
     },
 ];
 
-export const TIMEZONES_IANA = unique(
+export const TIMEZONES_IANA = unique<string>(
     flatten(TIMEZONES.map((_) => _.utc)),
 ).sort();

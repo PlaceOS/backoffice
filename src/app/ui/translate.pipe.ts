@@ -10,7 +10,7 @@ export class TranslatePipe implements PipeTransform {
 
     public transform(
         value: string,
-        args: Record<string, any> = {},
+        args: Record<string, unknown> = {},
         plural?: number,
     ) {
         return this._locale.get(value, args, plural);

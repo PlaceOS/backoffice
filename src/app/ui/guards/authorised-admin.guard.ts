@@ -20,8 +20,8 @@ export class AuthorisedAdminGuard {
     private _users = inject(BackofficeUsersService);
 
     public async canActivate(
-        next: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot,
+        _next: ActivatedRouteSnapshot,
+        _state: RouterStateSnapshot,
     ): Promise<boolean | UrlTree> {
         await onlineState()
             .pipe(first((_) => _))
@@ -37,8 +37,8 @@ export class AuthorisedAdminGuard {
     }
 
     public async canLoad(
-        route: Route,
-        segments: UrlSegment[],
+        _route: Route,
+        _segments: UrlSegment[],
     ): Promise<boolean> {
         await onlineState()
             .pipe(first((_) => _))

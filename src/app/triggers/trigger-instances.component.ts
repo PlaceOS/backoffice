@@ -126,6 +126,6 @@ export class TriggerInstancesComponent extends AsyncHandler implements OnInit {
     }
 
     public get item(): PlaceTrigger {
-        return this._service.active_item as any;
+        return this._service.active_item as PlaceTrigger;
     }
 }

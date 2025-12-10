@@ -44,7 +44,7 @@ import { ZonesStateService } from './zones-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!(loading | async)"
+                    [class.opacity-0]="(loading | async) === false"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-lg text-sm"
@@ -154,6 +154,6 @@ export class ZoneTriggersComponent {
     public readonly deleteTrigger = (t) => this._state.removeTrigger(t);
 
     public get item(): PlaceZone {
-        return this._state.active_item as any;
+        return this._state.active_item as PlaceZone;
     }
 }

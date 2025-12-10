@@ -72,14 +72,14 @@ import { TranslatePipe } from '../../ui/translate.pipe';
 })
 export class StatusListComponent implements OnChanges {
     /** List of bulk items to add */
-    public readonly list = input<Record<string, any>[]>([]);
+    public readonly list = input<Record<string, unknown>[]>([]);
     /** Method to save changes to items in the list */
     public readonly save =
-        input<(item: Record<string, any>) => Observable<PlaceResource>>(
+        input<(item: Record<string, unknown>) => Observable<PlaceResource>>(
             undefined,
         );
     /** Emitter for completion status of the item upload */
-    public readonly done = output<Record<string, any>[]>();
+    public readonly done = output<Record<string, unknown>[]>();
     /** Status of each of the items to be created */
     public status: Record<string, string> = {};
 

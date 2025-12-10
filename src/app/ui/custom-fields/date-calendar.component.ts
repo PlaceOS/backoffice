@@ -5,6 +5,7 @@ import {
     inject,
     input,
     OnChanges,
+    OnInit,
     SimpleChanges,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -109,7 +110,7 @@ interface DateItem {
 })
 export class DateCalendarComponent
     extends AsyncHandler
-    implements ControlValueAccessor, OnChanges
+    implements ControlValueAccessor, OnChanges, OnInit
 {
     private _settings = inject(SettingsService);
 
@@ -161,15 +162,15 @@ export class DateCalendarComponent
         this.generateDates();
     }
 
-    public readonly registerOnChange = (fn) => (this._onChange = fn);
-    public readonly registerOnTouched = (fn) => (this._onTouch = fn);
+    public readonly registerOnChange = (fn: (_: number) => void) => (this._onChange = fn);
+    public readonly registerOnTouched = (fn: (_: number) => void) => (this._onTouch = fn);
 
     public generateDates() {
         const offset =
             this._settings.get('app.week_start') || this.offset_weekday();
         const date = addMonths(this.date, this.offset);
         let start = startOfWeek(startOfMonth(date), {
-            weekStartsOn: offset as any,
+            weekStartsOn: offset as 0 | 1 | 2 | 3 | 4 | 5 | 6,
         });
         const now = startOfDay(Date.now());
         const list = [];

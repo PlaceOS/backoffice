@@ -10,9 +10,11 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
 import { Point } from '../common/types';
 
-function scale(domain, range) {
+function _scale(_domain: unknown, _range: unknown) {
+    const domain = _domain as number[];
+    const range = _range as number[];
     const m = (range[1] - range[0]) / (domain[1] - domain[0]);
-    return (num) => range[0] + m * (num - domain[0]);
+    return (num: number) => range[0] + m * (num - domain[0]);
 }
 
 const COLORS: [string, string][] = [

@@ -9,7 +9,7 @@ import {
     model,
     signal,
     SimpleChanges,
-    viewChild,
+    viewChild, OnChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -84,7 +84,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
         VirtualScrollComponent,
     ],
 })
-export class NewTerminalComponent extends AsyncHandler {
+export class NewTerminalComponent extends AsyncHandler implements OnChanges {
     private _sanitize_pipe = inject(SanitizePipe);
 
     public readonly lines = input<string[]>([]);
@@ -207,6 +207,7 @@ export class NewTerminalComponent extends AsyncHandler {
 
 function setTermColorsForLine(line: string) {
     return `<span>${line.replace(
+        // eslint-disable-next-line no-control-regex
         /\u001b?\[([0-9]*)m/g,
         '</span><span class="tc-$1">',
     )}</span>`.replace('<span></span>', '');

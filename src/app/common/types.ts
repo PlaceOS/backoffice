@@ -1,5 +1,5 @@
 /** Generic Dictionary type */
-export interface HashMap<T = any> {
+export interface HashMap<T = string> {
     [key: string]: T;
 }
 
@@ -20,15 +20,16 @@ export interface AppComponentExtension {
     /** URL to embed in the application extension */
     url: string;
     /** Conditions to allow the extension to show */
-    conditions: [string, ExtensionConditions, any][];
+    conditions: [string, ExtensionConditions, unknown][];
     /** Icon to draw of the associated tab */
     icon?: ApplicationIcon;
 }
 
 /** Generic data type with identification details */
-export interface Identity extends HashMap {
+export interface Identity {
     id: string | number;
     name: string;
+    [key: string]: unknown;
 }
 
 export type ApplicationLink =
@@ -90,7 +91,7 @@ export interface ApplicationIcon {
 }
 
 /** Generic event for dialog boxes */
-export interface DialogEvent<T = any> {
+export interface DialogEvent<T = unknown> {
     /** Reason the event was called */
     reason: 'action' | 'close' | 'reset' | 'loading' | 'done' | 'other';
     metadata?: T;

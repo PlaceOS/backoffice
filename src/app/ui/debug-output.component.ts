@@ -276,7 +276,7 @@ export class DebugOutputComponent extends AsyncHandler {
             );
             this.subscription(
                 'resize_end',
-                this._renderer.listen('window', 'mouseup', (_) => {
+                this._renderer.listen('window', 'mouseup', () => {
                     this.unsub('resize_move');
                     this.unsub('resize_end');
                     const box =
@@ -294,7 +294,7 @@ export class DebugOutputComponent extends AsyncHandler {
             );
             this.subscription(
                 'resize_end',
-                this._renderer.listen('window', 'touchend', (_) => {
+                this._renderer.listen('window', 'touchend', () => {
                     this.unsub('resize_move');
                     this.unsub('resize_end');
                     const box =

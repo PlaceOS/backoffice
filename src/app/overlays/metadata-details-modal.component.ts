@@ -6,7 +6,7 @@ import {
     FormsModule,
     ReactiveFormsModule,
 } from '@angular/forms';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import {
     MAT_DIALOG_DATA,
@@ -136,16 +136,16 @@ export class MetadataDetailsModalComponent implements OnInit {
     public form = new FormGroup({
         name: new FormControl(''),
         description: new FormControl(''),
-        editors: new FormControl(''),
+        editors: new FormControl<string[]>([]),
         schema: new FormControl(''),
     });
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
-    public readonly addEditor = (e) =>
-        addChipItem(this.form.controls.editors as any, e);
-    public readonly removeEditor = (i) =>
-        removeChipItem(this.form.controls.editors as any, i);
+    public readonly addEditor = (e: MatChipInputEvent) =>
+        addChipItem(this.form.controls.editors as FormControl<string[]>, e);
+    public readonly removeEditor = (i: string) =>
+        removeChipItem(this.form.controls.editors as FormControl<string[]>, i);
 
     public get editors() {
         return this.form?.controls.editors.value;

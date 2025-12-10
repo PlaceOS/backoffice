@@ -38,6 +38,7 @@ import {
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { Identity } from '../common/types';
 import { AuthSourceModalComponent } from '../overlays/auth-source-modal.component';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
@@ -58,7 +59,7 @@ export class DomainStateService {
 
     private _changed = new BehaviorSubject<number>(0);
 
-    public readonly item: Observable<PlaceDomain> = this._state.item as any;
+    public readonly item: Observable<PlaceDomain> = this._state.item as Observable<PlaceDomain>;
 
     public readonly loading = this._loading.asObservable();
 
@@ -66,60 +67,60 @@ export class DomainStateService {
         this._changed,
         this.item,
     ]).pipe(
-        filter(([_, item]) => item instanceof PlaceDomain),
-        switchMap(([_, item]) =>
-            queryUsers({ authority_id: item.id, limit: 1000 } as any),
+        filter(([, item]) => item instanceof PlaceDomain),
+        switchMap(([, item]) =>
+            queryUsers({ authority_id: item.id, limit: 1000 } as Record<string, unknown>),
         ),
-        map((_) => _.data.sort((a, b) => a.name.localeCompare(b.name))),
-        catchError((_) => []),
+        map((response) => response.data.sort((a, b) => a.name.localeCompare(b.name))),
+        catchError(() => []),
         shareReplay(1),
     );
 
     public readonly auth_sources: Observable<PlaceAuthSource[]> = combineLatest(
         [this._changed, this.item],
     ).pipe(
-        filter(([_, item]) => item instanceof PlaceDomain),
-        switchMap(([_, item]) => {
+        filter(([, item]) => item instanceof PlaceDomain),
+        switchMap(([, item]) => {
             const q = { authority_id: item.id };
             return combineLatest([
-                querySAMLSources(q as any).pipe(map((_) => _.data)),
-                queryOAuthSources(q as any).pipe(map((_) => _.data)),
-                queryLDAPSources(q as any).pipe(map((_) => _.data)),
+                querySAMLSources(q as Record<string, unknown>).pipe(map((response) => response.data)),
+                queryOAuthSources(q as Record<string, unknown>).pipe(map((response) => response.data)),
+                queryLDAPSources(q as Record<string, unknown>).pipe(map((response) => response.data)),
             ]);
         }),
-        map((_) => {
+        map((sources) => {
             let list = [];
-            _.forEach((array) => (list = list.concat(array)));
+            sources.forEach((array) => (list = list.concat(array)));
             return list;
         }),
-        catchError((_) => []),
+        catchError(() => []),
         shareReplay(1),
     );
 
     public readonly applications: Observable<PlaceApplication[]> =
         combineLatest([this._changed, this.item]).pipe(
-            filter(([_, item]) => item instanceof PlaceDomain),
-            switchMap(([_, item]) =>
-                queryApplications({ authority_id: item.id } as any),
+            filter(([, item]) => item instanceof PlaceDomain),
+            switchMap(([, item]) =>
+                queryApplications({ authority_id: item.id } as Record<string, unknown>),
             ),
-            map((_) => _.data.sort((a, b) => a.name.localeCompare(b.name))),
-            catchError((_) => []),
+            map((response) => response.data.sort((a, b) => a.name.localeCompare(b.name))),
+            catchError(() => []),
             shareReplay(1),
         );
 
     public readonly counts = combineLatest([this._changed, this.item]).pipe(
-        filter(([_, item]) => item instanceof PlaceDomain),
-        switchMap(async ([_, item]) => {
+        filter(([, item]) => item instanceof PlaceDomain),
+        switchMap(async ([, item]) => {
             const q = { authority_id: item?.id };
             const details = await Promise.all([
                 lastValueFrom(
-                    queryApplications(q as any).pipe(map((_) => _.total)),
+                    queryApplications(q as Record<string, unknown>).pipe(map((response) => response.total)),
                 ),
                 lastValueFrom(
                     combineLatest([
-                        querySAMLSources(q as any),
-                        queryOAuthSources(q as any),
-                        queryLDAPSources(q as any),
+                        querySAMLSources(q as Record<string, unknown>),
+                        queryOAuthSources(q as Record<string, unknown>),
+                        queryLDAPSources(q as Record<string, unknown>),
                     ]).pipe(
                         map(
                             ([saml, oauth, ldap]) =>
@@ -127,7 +128,7 @@ export class DomainStateService {
                         ),
                     ),
                 ),
-                lastValueFrom(queryUsers(q as any).pipe(map((_) => _.total))),
+                lastValueFrom(queryUsers(q as Record<string, unknown>).pipe(map((response) => response.total))),
             ]);
             const [applications, auth_sources, users] = details;
             return {
@@ -145,7 +146,7 @@ export class DomainStateService {
 
     public async update(domain: PlaceDomain) {
         const item = await updateDomain(domain.id, domain).toPromise();
-        this._state.replaceItem(item);
+        this._state.replaceItem(item as unknown as Identity);
     }
 
     public async performAzureIntegration() {

@@ -108,7 +108,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     public readonly valid = signal(true);
     public readonly module = signal<ModuleLike>(undefined);
     public readonly fn = signal<PlaceModuleFunction>(undefined);
-    public readonly arguments = signal<Record<string, any>>({});
+    public readonly arguments = signal<Record<string, unknown>>({});
 
     public loading = signal(false);
 
@@ -135,9 +135,9 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         if (!value) return;
         const parts = value.mod.split('_');
         const index = parts.pop();
-        this.module.set({ module: parts.join('_'), index: +index } as any);
-        this.fn.set({ name: value.method } as any);
-        const args = {};
+        this.module.set({ module: parts.join('_'), index: +index } as ModuleLike);
+        this.fn.set({ name: value.method } as unknown as PlaceModuleFunction);
+        const args: Record<string, string> = {};
         for (const key in value.args || {}) {
             let v = value.args[key];
             try {
@@ -150,36 +150,36 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         this.arguments.set(args);
     }
 
-    public postArguments(arg_map: Record<string, any>) {
+    public postArguments(arg_map: Record<string, unknown>) {
         if (!this.fn()?.params) return;
-        const args = {};
+        const args: Record<string, unknown> = {};
         for (const key in arg_map) {
             args[key] = arg_map[key];
             try {
-                args[key] = JSON.parse(arg_map[key]);
+                args[key] = JSON.parse(arg_map[key] as string);
             } catch {
                 // Keep original value if parse fails
             }
         }
         this.setValue({
             mod: `${this.module().module}_${this.module().index}`,
-            method: (this.fn() as any).name,
+            method: (this.fn() as unknown as { name: string }).name,
             args,
         });
-        this.arguments.set(arg_map);
+        this.arguments.set(arg_map as any);
     }
 
     /**
      * Registers a callback function that is called when the control's value changes in the UI.
      * @param fn The callback function to register
      */
-    public registerOnChange = (fn) => (this._onChange = fn);
+    public registerOnChange = (fn: (_: TriggerFunction) => void) => (this._onChange = fn);
 
     /**
      * Registers a callback function is called by the forms API on initialization to update the form model on blur.
      * @param fn The callback function to register
      */
-    public registerOnTouched = (fn) => (this._onTouch = fn);
+    public registerOnTouched = (fn: (_: TriggerFunction) => void) => (this._onTouch = fn);
 
     public clear() {
         this.module.set(null);
@@ -195,13 +195,13 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         const result = await lastValueFrom(
             method(
                 this.zone() || this.system().id,
-                (this.fn() as any).name,
+                (this.fn() as unknown as { name: string }).name,
                 this.module().module,
                 this.module().index,
                 this.fn().order.map((key) => {
-                    const fn_details: any = this.fn().params[key];
+                    const fn_details = this.fn().params[key] as unknown as Record<string, unknown>;
                     try {
-                        return JSON.parse(this.arguments()[key]);
+                        return JSON.parse(this.arguments()[key] as string);
                     } catch {
                         return (
                             (this.arguments()[key] !== ''
@@ -218,7 +218,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
                 notifyError(err);
             } else {
                 notifyError(
-                    `Executing '${(this.fn as any).name}' failed.\nView Error?`,
+                    `Executing '${(this.fn() as unknown as { name: string }).name}' failed.\nView Error?`,
                     'View',
                     () => this.viewDetails(err),
                 );
@@ -235,7 +235,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     }
 
     /** View Results of the execute */
-    private async viewDetails(details: Response | Record<string, any>) {
+    private async viewDetails(details: unknown) {
         this._dialog.open<ViewResponseModalComponent>(
             ViewResponseModalComponent,
             {

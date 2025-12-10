@@ -416,9 +416,9 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
     public readonly form = input<UntypedFormGroup>(undefined);
 
     /** List of attribute statement pairs */
-    public attribute_statement_mappings: any[] = [];
+    public attribute_statement_mappings: Record<string, unknown>[] = [];
     /** List of runtime param pairs */
-    public runtime_param_list: any[] = [];
+    public runtime_param_list: Record<string, unknown>[] = [];
 
     public ngOnChanges(changes: SimpleChanges): void {
         const form = this.form();
@@ -451,7 +451,7 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
         this.timeout(
             'mappings',
             () => {
-                const map: HashMap = {};
+                const map: HashMap<string[]> = {};
                 for (const pair of mappings) {
                     if (pair.name && pair.mappings) {
                         map[pair.name] = (pair.mappings || '').split(',');

@@ -18,9 +18,9 @@ export interface TableColumn {
     key: string;
     name: string;
     sortable?: boolean;
-    sort_fn?: (a, b) => number;
+    sort_fn?: (a: unknown, b: unknown) => number;
     filterable?: boolean;
-    content?: string | TemplateRef<any> | Component;
+    content?: string | TemplateRef<unknown> | Component;
     size?: string;
     show?: boolean;
 }
@@ -28,7 +28,7 @@ export interface TableColumn {
 @Component({
     selector: 'simple-table',
     template: `
-        <div
+        <button
             role="table"
             class="border-base-200 grid overflow-visible border"
             [style.gridTemplateColumns]="column_template()"
@@ -161,7 +161,7 @@ export interface TableColumn {
                 </div>
             }
             <!-- TODO: Add pagination -->
-        </div>
+        </button>
         <ng-template #row_template let-row="row" let-i="index">
             @if (selectable()) {
                 <div
@@ -256,7 +256,7 @@ export interface TableColumn {
     ],
     imports: [CommonModule, MatCheckboxModule, DragDropModule, IconComponent],
 })
-export class SimpleTableComponent<T = any> {
+export class SimpleTableComponent<T = Record<string, unknown>> {
     public readonly selected = model<number[]>([]);
 
     public readonly data = input<T[] | Observable<T[]>>(undefined);
@@ -340,7 +340,7 @@ export class SimpleTableComponent<T = any> {
     public readonly data_length = computed(() => this._data().length);
 
     public template(column: TableColumn) {
-        return column.content as TemplateRef<any>;
+        return column.content as TemplateRef<unknown>;
     }
 
     constructor() {
@@ -427,7 +427,7 @@ export class SimpleTableComponent<T = any> {
 
     public selectAll(state: boolean) {
         const list = this.data_view();
-        this.selected.set(state ? list.map((_, i) => i) : []);
+        this.selected.set(state ? list.map((_item, i) => i) : []);
     }
 
     public setSort(key: string) {

@@ -179,7 +179,7 @@ export class DomainApplicationsComponent {
         this._service.deleteApplication(item);
 
     public get item(): PlaceDomain {
-        return this._service.active_item as any;
+        return this._service.active_item as PlaceDomain;
     }
 
     public copySecret(item: PlaceApplication) {

@@ -19,6 +19,7 @@ export class ZoneMetadataComponent {
     private _service = inject(ActiveItemService);
 
     public get item(): PlaceZone {
-        return this._service.active_item as any;
+        const active_item = this._service.active_item;
+        return (active_item || { id: '' }) as PlaceZone;
     }
 }

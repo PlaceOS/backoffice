@@ -39,7 +39,7 @@ export class DiffViewerComponent
     /** Input language for syntax highlighting */
     public readonly lang = input('yaml');
 
-    private _editor: any;
+    private _editor: monaco.editor.IStandaloneDiffEditor | null = null;
 
     private readonly _editor_el =
         viewChild<ElementRef<HTMLDivElement>>('editor');
