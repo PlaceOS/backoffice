@@ -81,6 +81,7 @@ export interface UploadDetails {
                     <img
                         auth
                         [source]="url"
+                        alt="Image preview"
                         class="pointer-events-none absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 object-contain"
                     />
                     <div overlay class="text-base-100 absolute inset-0 z-20">
@@ -106,7 +107,7 @@ export interface UploadDetails {
                 </div>
             }
             @for (item of uploads | async; track item.id; let i = $index) {
-                <div
+                <button
                     image
                     class="border-base-content/10 /5 bg-base-200 flex h-32 w-36 shrink-0 items-center justify-center rounded-sm border bg-cover bg-center"
                     [style.transform]="'translate(-' + offset + '00%)'"
@@ -131,7 +132,7 @@ export interface UploadDetails {
                             <icon class="text-3xl opacity-0">refresh</icon>
                         </div>
                     }
-                </div>
+                </button>
             }
             @if (length() > view_space()) {
                 <button
@@ -288,7 +289,9 @@ export class ImageListFieldComponent extends AsyncHandler {
         notifyInfo('Copied image URL to clipboard');
     }
 
-    public viewImage(url: string) {}
+    public viewImage(_url: string) {
+        // TODO: Implement image viewer
+    }
 
     public removeImage(url: string) {
         this.setValue(this.list().filter((_) => _ !== url));

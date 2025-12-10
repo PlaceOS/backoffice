@@ -26,7 +26,7 @@ export class HotkeysService {
     /** List of registered hotkey combinations */
     private registered_combos: string[][] = [];
     /** Counter for the number of keydown events. Used for checking order of key presses */
-    private counter: number = 0;
+    private counter = 0;
     /** Last key code to be pressed */
     private last_down: string;
 

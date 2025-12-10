@@ -271,7 +271,7 @@ export class SystemZonesComponent {
 
     public readonly saveZoneOrder = async () => {
         const zones = await nextValueFrom(this._service.zones);
-        let zone_order = this.zone_order.getValue();
+        const zone_order = this.zone_order.getValue();
         if (zones.every(({ id }, idx) => zone_order[idx] === id)) return;
         await this._service.reorderZones(zone_order);
         this.order_changed = false;

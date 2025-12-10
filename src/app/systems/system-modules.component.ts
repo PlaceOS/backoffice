@@ -200,6 +200,7 @@ import { SystemStateService } from './system-state.service';
                         "
                         (click)="setActive(index)"
                         [matMenuTriggerFor]="context_menu"
+                        aria-label="Module connection status"
                     ></button>
                     @if (row.running && row.connected === undefined) {
                         <mat-spinner

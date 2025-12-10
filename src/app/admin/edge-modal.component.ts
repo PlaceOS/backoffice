@@ -32,11 +32,12 @@ export interface EdgeModalData {
         >
             <form [formGroup]="form">
                 <div class="flex flex-1 flex-col">
-                    <label>
+                    <label for="edge-name">
                         {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
+                            id="edge-name"
                             matInput
                             formControlName="name"
                             [placeholder]="
@@ -49,9 +50,12 @@ export interface EdgeModalData {
                     </mat-form-field>
                 </div>
                 <div class="flex flex-1 flex-col">
-                    <label>{{ 'COMMON.FIELD_DESCRIPTION' | translate }}</label>
+                    <label for="edge-description">{{
+                        'COMMON.FIELD_DESCRIPTION' | translate
+                    }}</label>
                     <mat-form-field appearance="outline">
                         <textarea
+                            id="edge-description"
                             matInput
                             formControlName="description"
                             [placeholder]="
@@ -111,9 +115,11 @@ export class EdgeModalComponent {
         this.loading.set('');
         this._dialog_ref.disableClose = false;
         if (!new_edge) return notifyError(i18n('ADMIN.EDGE_ERROR'));
-        edge.id
-            ? notifySuccess(i18n('ADMIN.EDGE_NEW_SUCCESS'))
-            : notifySuccess(i18n('ADMIN.EDGE_EDIT_SUCCESS'));
+        if (edge.id) {
+            notifySuccess(i18n('ADMIN.EDGE_NEW_SUCCESS'));
+        } else {
+            notifySuccess(i18n('ADMIN.EDGE_EDIT_SUCCESS'));
+        }
         this._dialog_ref.close(new_edge);
     }
 }

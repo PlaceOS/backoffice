@@ -139,7 +139,9 @@ export class SettingsFieldComponent
         if (this.editor) {
             try {
                 this.editor.dispose();
-            } catch {}
+            } catch (_) {
+                // Ignore dispose errors - editor may already be disposed
+            }
             this.editor = null;
         }
     }

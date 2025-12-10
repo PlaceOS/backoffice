@@ -142,7 +142,9 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
             let v = value.args[key];
             try {
                 v = JSON.parse(value.args[key]);
-            } catch {}
+            } catch {
+                // Keep original value if parse fails
+            }
             args[key] = JSON.stringify(v);
         }
         this.arguments.set(args);
@@ -155,7 +157,9 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
             args[key] = arg_map[key];
             try {
                 args[key] = JSON.parse(arg_map[key]);
-            } catch (e) {}
+            } catch {
+                // Keep original value if parse fails
+            }
         }
         this.setValue({
             mod: `${this.module().module}_${this.module().index}`,

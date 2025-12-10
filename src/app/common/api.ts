@@ -11,7 +11,7 @@ export function toQueryString(map: HashMap) {
     if (map) {
         for (const key in map) {
             if (
-                map.hasOwnProperty(key) &&
+                Object.prototype.hasOwnProperty.call(map, key) &&
                 map[key] !== undefined &&
                 map[key] !== null
             ) {
@@ -49,7 +49,7 @@ export function calculateModuleIndex(
 }
 
 export function extensionsForItem(item: PlaceResource, type: string) {
-    let authority_config = authority()?.config?.backoffice;
+    const authority_config = authority()?.config?.backoffice;
     if (!authority_config || !item) return [];
     const app_extend = authority_config.extend || {};
     const extension_list: AppComponentExtensions = app_extend[type];
@@ -68,7 +68,7 @@ export function extensionsForItem(item: PlaceResource, type: string) {
                     break;
                 case 'true':
                 case 'truthy':
-                    matches += !!item[key] ? 1 : 0;
+                    matches += item[key] ? 1 : 0;
                     break;
                 case 'false':
                 case 'falsy':

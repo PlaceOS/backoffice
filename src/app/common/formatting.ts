@@ -28,7 +28,7 @@ export function formatAttendeesWithHost(
  * @param host Owner of the list of users
  */
 export function formatAttendees(list: PlaceUser[], host?: PlaceUser) {
-    let attendee_str: string = '';
+    let attendee_str = '';
     if (list && list.length > 0) {
         const users = [...list];
         if (host) {
@@ -79,7 +79,7 @@ export function formatPeriodWithDuration(duration: number) {
  * @param timestamp Start hours and minutes of the period in the format `HH:mm`
  * @param duration Period duration in minutes
  */
-export function formatPeriod(timestamp: string, duration: number = 60) {
+export function formatPeriod(timestamp: string, duration = 60) {
     const parts = timestamp.split(':');
     const date = set(Date.now(), { hours: +parts[0], minutes: +parts[1] });
     return `${format(date, 'h:mm A')} - ${format(addMinutes(date, duration), 'h:mm A')} (${formatAsDuration({ minutes: duration })})`;

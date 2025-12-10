@@ -170,7 +170,7 @@ export class ActiveItemService extends AsyncHandler {
         this._show_options.next(!this._show_options.getValue());
     }
 
-    public create(item?: any, copy: boolean = false) {
+    public create(item?: any, copy = false) {
         if (!this._user.current().sys_admin) return;
         item = item || this._active_item.getValue();
         const actions =
@@ -215,14 +215,14 @@ export class ActiveItemService extends AsyncHandler {
         if (!this._user.current().sys_admin) return;
         item = item || (this._active_item.getValue() as any);
         if (item) {
-            return new Promise<T>(async (resolve) => {
-                const actions =
-                    Object.values(ACTIONS).find(
-                        (v) => item instanceof v.itemConstructor,
-                    ) || this.actions;
-                if (item.id) {
-                    item = await actions.show(item.id).toPromise();
-                }
+            const actions =
+                Object.values(ACTIONS).find(
+                    (v) => item instanceof v.itemConstructor,
+                ) || this.actions;
+            if (item.id) {
+                item = await actions.show(item.id).toPromise();
+            }
+            return new Promise<T>((resolve) => {
                 const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                     data: {
                         item: new actions.itemConstructor({ ...item }),

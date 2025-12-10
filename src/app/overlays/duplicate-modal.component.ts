@@ -169,15 +169,15 @@ export class DuplicateModalComponent {
     /** Emitter for user action on the modal */
     public readonly event = output<DialogEvent>();
     /** Number of times to duplicate the given item */
-    public times: number = 1;
+    public times = 1;
     /** Number of times to duplicate the given item */
     public status: HashMap<string> = {};
     /** Whether request is loading */
-    public loading: boolean = false;
+    public loading = false;
     /** Temporary array for generating UI elements */
     public temp: any[];
     /** Whether duplication has completed */
-    public done: boolean = false;
+    public done = false;
 
     /** Item selected to be duplicated */
     public get item() {

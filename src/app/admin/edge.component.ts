@@ -30,10 +30,10 @@ import { EdgeModalComponent } from './edge-modal.component';
     template: `
         @if (last_change()?.x_api_key) {
             @let item = last_change();
-            <div
-                (click)="copyKey(item.x_api_key)"
+            <button
                 matRipple
                 [matTooltip]="'Copy API Key for ' + item.name"
+                (click)="copyKey(item.x_api_key)"
                 class="border-base-200 bg-base-100 absolute top-4 right-4 flex max-w-[calc(100%-11rem)] cursor-pointer items-center overflow-hidden rounded-sm border shadow-sm"
             >
                 <div
@@ -41,10 +41,10 @@ import { EdgeModalComponent } from './edge-modal.component';
                 >
                     <code class="flex-1 truncate">{{ item.x_api_key }}</code>
                 </div>
-                <button btn icon class="rounded-none">
+                <div class="rounded-none">
                     <icon>content_copy</icon>
-                </button>
-            </div>
+                </div>
+            </button>
         }
         <div class="flex h-full w-full flex-col">
             <div class="my-4 flex items-center justify-between space-x-2 px-4">
@@ -195,7 +195,9 @@ export class PlaceEdgeComponent implements OnInit {
         const edge_data = sessionStorage.getItem('BACKOFFICE.last_edge');
         try {
             this.last_change.set(JSON.parse(edge_data) || null);
-        } catch {}
+        } catch {
+            // Ignore JSON parse errors
+        }
         this.loadEdges();
     }
 

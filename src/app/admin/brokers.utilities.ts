@@ -30,10 +30,12 @@ export function generateBrokerFormFields(broker?: PlaceMQTTBroker) {
                 fields.username.setValidators([]);
                 fields.password.setValidators([]);
                 fields.certificate.setValidators([Validators.required]);
+                break;
             case AuthType.UserPassword:
                 fields.username.setValidators([Validators.required]);
                 fields.password.setValidators([Validators.required]);
                 fields.certificate.setValidators([]);
+                break;
             default:
                 fields.username.setValidators([]);
                 fields.password.setValidators([]);

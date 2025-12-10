@@ -68,25 +68,32 @@ export interface PlaceServiceDetails {
                 {{ 'COMMON.VERSION' | translate }}
             </div>
             <div class="flex items-center space-x-2">
-                <code
-                    name="version"
-                    (click)="copy('version', backoffice_version)"
-                >
-                    {{ backoffice_version }}
-                </code>
-                <code
-                    name="tag"
+                <button matRipple (click)="copy('version', backoffice_version)">
+                    <code name="version">
+                        {{ backoffice_version }}
+                    </code>
+                </button>
+                <button
+                    matRipple
                     class="ml-2"
                     (click)="copy('tag', backoffice_tag)"
                 >
-                    {{ backoffice_tag }}
-                </code>
+                    <code name="tag">
+                        {{ backoffice_tag }}
+                    </code>
+                </button>
             </div>
             <div class="flex items-center text-sm font-medium" for="hash">
                 {{ 'COMMON.GIT_COMMIT' | translate }}
             </div>
             <div>
-                <code name="hash" (click)="copy('hash', backoffice_hash)">
+                <code
+                    name="hash"
+                    tabindex="0"
+                    role="button"
+                    (click)="copy('hash', backoffice_hash)"
+                    (keyup.enter)="copy('hash', backoffice_hash)"
+                >
                     {{ backoffice_hash }}
                 </code>
             </div>
@@ -96,7 +103,10 @@ export interface PlaceServiceDetails {
             <div
                 name="build-time"
                 class="text-sm"
+                tabindex="0"
+                role="button"
                 (click)="copy('build time', backoffice_build)"
+                (keyup.enter)="copy('build time', backoffice_build)"
             >
                 {{ backoffice_build }}
             </div>

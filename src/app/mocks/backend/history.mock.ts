@@ -7,7 +7,7 @@ import { API, generateID } from '../common.mock';
 /**
  * Generate mock history entries
  */
-function generateHistory(parent_id: string, count: number = 5): any[] {
+function generateHistory(parent_id: string, count = 5): any[] {
     const actions = ['create', 'update', 'delete'];
     const users = ['admin@place.tech', 'user@place.tech', 'system'];
 

@@ -139,7 +139,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
     private async loadMetadata(
         item: any,
         message: FrameMessage,
-        parent: boolean = false,
+        parent = false,
     ) {
         const metadata = await showMetadata(
             parent ? item.parent_id : item.id,
@@ -177,9 +177,9 @@ export class ExtensionOutletComponent extends AsyncHandler {
         const blob = await response.blob();
 
         const url = await new Promise<string>((resolve) => {
-            var a = new FileReader();
-            a.onload = (e) => resolve(e.target.result as any);
-            a.readAsDataURL(blob);
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result as any);
+            reader.readAsDataURL(blob);
         });
 
         RESOURCE_STORE.set(src, url);

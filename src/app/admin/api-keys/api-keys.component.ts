@@ -47,7 +47,7 @@ import { APIKeyService } from './api-keys.service';
                         btn
                         matRipple
                         class="w-32"
-                        [disabled]="!(domain | async)"
+                        [disabled]="(domain | async) === null"
                         (click)="newKey()"
                     >
                         {{ 'ADMIN.APP_KEYS_ADD' | translate }}
@@ -76,12 +76,13 @@ import { APIKeyService } from './api-keys.service';
                                 }}
                             </div>
                         </div>
-                        <div
-                            class="mono cursor-pointer px-4 py-3 wrap-break-word opacity-60 select-all"
+                        <button
+                            matRipple
+                            class="mono rounded px-4 py-3 wrap-break-word opacity-60 select-all"
                             (click)="copyKey()"
                         >
                             {{ (last_key | async)?.x_api_key }}
-                        </div>
+                        </button>
                     </div>
                 </div>
             }

@@ -261,7 +261,12 @@ export class SystemTriggersComponent {
         this.comparisons[id] = '';
         if (this.trigger_state[id]) {
             for (const key in this.trigger_state[id].conditions) {
-                if (this.trigger_state[id].conditions.hasOwnProperty(key)) {
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        this.trigger_state[id].conditions,
+                        key,
+                    )
+                ) {
                     if (this.comparisons[id]) {
                         this.comparisons[id] += '\n';
                     }

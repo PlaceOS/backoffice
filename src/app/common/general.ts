@@ -19,8 +19,8 @@ export function log(
     msg: string,
     args?: any,
     stream: ConsoleStream = 'debug',
-    force: boolean = false,
-    app_name: string = 'BACKOFFICE',
+    force = false,
+    app_name = 'BACKOFFICE',
 ) {
     if (window.debug || force) {
         const colors: string[] = [
@@ -91,7 +91,7 @@ export function getItemWithKeys(keys: string[], map: HashMap) {
  * @param array List of items to remove duplicates from
  * @param key Key on array objects to compare for uniqueness
  */
-export function unique(array: any[], key: string = '') {
+export function unique(array: any[], key = '') {
     return array.filter(
         (el, pos, arr) =>
             arr.indexOf(
@@ -107,7 +107,7 @@ export function unique(array: any[], key: string = '') {
  * @param ceil Biggest value to generate not inclusive
  * @param floor Smallest value to generate. Defaults to 0
  */
-export function randomInt(ceil: number, floor: number = 0) {
+export function randomInt(ceil: number, floor = 0) {
     return Math.floor(Math.random() * (ceil - floor)) + floor;
 }
 
@@ -368,15 +368,17 @@ export function flatten<T = any>(an_array: T[]) {
 const seed = xmur3('PlaceOS');
 const rand = sfc32(0x9e3779b9, 0x243f6a88, 0xb7e15162, seed());
 
-export function predictableRandomInt(ceil: number = 100, floor: number = 0) {
+export function predictableRandomInt(ceil = 100, floor = 0) {
     return Math.floor(rand() * (ceil - floor)) + floor;
 }
 
 // https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
 function xmur3(str) {
-    for (var i = 0, h = 1779033703 ^ str.length; i < str.length; i++)
-        ((h = Math.imul(h ^ str.charCodeAt(i), 3432918353)),
-            (h = (h << 13) | (h >>> 19)));
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) {
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = (h << 13) | (h >>> 19);
+    }
     return function () {
         h = Math.imul(h ^ (h >>> 16), 2246822507);
         h = Math.imul(h ^ (h >>> 13), 3266489909);
@@ -390,7 +392,7 @@ function sfc32(a, b, c, d) {
         b >>>= 0;
         c >>>= 0;
         d >>>= 0;
-        var t = (a + b) | 0;
+        let t = (a + b) | 0;
         a = b ^ (b >>> 9);
         b = (c + (c << 3)) | 0;
         c = (c << 21) | (c >>> 11);
@@ -435,7 +437,7 @@ If applicable, add screenshots to help explain your problem.
 **Built:** ${date}
 `;
 
-export function getInvalidFields(form: UntypedFormGroup, prefix: string = '') {
+export function getInvalidFields(form: UntypedFormGroup, prefix = '') {
     let invalid = [];
     for (const key in form.controls) {
         if (form.controls[key] instanceof UntypedFormGroup) {

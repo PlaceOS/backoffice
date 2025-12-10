@@ -69,8 +69,6 @@ export class CsvUploadComponent {
     /** Whether CSV data is being processed */
     public loading: boolean;
 
-    constructor() {}
-
     public loadCSVData(event) {
         this.loading = true;
         /* istanbul ignore else */

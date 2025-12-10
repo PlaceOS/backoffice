@@ -34,7 +34,7 @@ export const isValidUrl = (url) => {
 
 export const isValidDomain = (str) => {
     const domainRegex =
-        /^(?!\-)(?:[a-zA-Z0-9\-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$/;
+        /^(?!-)(?:[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$/;
     return domainRegex.test(str);
 };
 

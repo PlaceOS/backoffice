@@ -164,9 +164,11 @@ export class DriverStateService {
         const success = await reloadDriver(item.id)
             .toPromise()
             .catch(() => false);
-        success === false
-            ? notifyError('Failed to reload driver.')
-            : notifySuccess('Successfully reloaded driver.');
+        if (success === false) {
+            notifyError('Failed to reload driver.');
+        } else {
+            notifySuccess('Successfully reloaded driver.');
+        }
         details.close();
     }
 

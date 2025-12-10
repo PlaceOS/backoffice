@@ -98,11 +98,11 @@ import { BackofficeExtension } from '../extensions.component';
                 </div>
                 <div class="w-full">
                     @if (form.controls.conditions.value?.length) {
-                        <label>
+                        <span class="label">
                             {{
                                 'ADMIN.EXTENSIONS_FIELD_CONDITIONS' | translate
                             }}
-                        </label>
+                        </span>
                     }
                     @for (
                         condition of form.controls.conditions.value;

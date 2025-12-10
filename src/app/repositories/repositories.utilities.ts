@@ -15,7 +15,7 @@ export function generateRepositoryFormFields(repository?: PlaceRepository) {
         name: new FormControl(repository?.name || '', [Validators.required]),
         folder_name: new FormControl(repository?.folder_name || '', [
             Validators.required,
-            Validators.pattern(/^[a-zA-Z0-9_+\-\(\)\.]*$/),
+            Validators.pattern(/^[a-zA-Z0-9_+\-().]*$/),
         ]),
         description: new FormControl(repository?.description || ''),
         uri: new FormControl(repository?.uri || '', [Validators.required]),

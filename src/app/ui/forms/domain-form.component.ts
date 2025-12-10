@@ -152,6 +152,7 @@ import { TranslatePipe } from '../translate.pipe';
                 @if (form().controls.email_domains) {
                     <div class="field">
                         <label
+                            for="email-domains-input"
                             [class.error]="
                                 form().controls.email_domains.invalid &&
                                 form().controls.email_domains.touched
@@ -181,6 +182,7 @@ import { TranslatePipe } from '../translate.pipe';
                                 }
                             </mat-chip-grid>
                             <input
+                                id="email-domains-input"
                                 [placeholder]="
                                     'DOMAINS.EMAIL_DOMAINS' | translate
                                 "

@@ -13,7 +13,9 @@ declare let jest;
 setTimeout(() => {
     try {
         if (jest) return;
-    } catch {}
+    } catch {
+        // jest not defined, continue
+    }
     showUser('current')
         .pipe(delay(1000), retry(10))
         .subscribe((user) => _current_user.next(user));

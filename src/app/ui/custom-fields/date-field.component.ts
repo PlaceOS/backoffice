@@ -178,12 +178,16 @@ export class DateFieldComponent
 
     /** First allowed date on the calendar */
     public get from(): number {
-        return (new Date(this.from_date()) || startOfDay(new Date())).valueOf();
+        const date = new Date(this.from_date());
+        return (
+            isNaN(date.getTime()) ? startOfDay(new Date()) : date
+        ).valueOf();
     }
     /** Current date value */
     public get until(): number {
+        const date = new Date(this.to_date());
         return (
-            new Date(this.to_date()) || addYears(endOfDay(new Date()), 1)
+            isNaN(date.getTime()) ? addYears(endOfDay(new Date()), 1) : date
         ).valueOf();
     }
 

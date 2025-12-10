@@ -54,11 +54,12 @@ export interface StaffTenantModalData {
             <form [formGroup]="form" class="mb-16">
                 <div class="flex flex-wrap items-center space-x-0 sm:space-x-2">
                     <div class="flex flex-1 flex-col">
-                        <label>
+                        <label for="tenant-name">
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                         </label>
                         <mat-form-field appearance="outline">
                             <input
+                                id="tenant-name"
                                 matInput
                                 formControlName="name"
                                 [placeholder]="
@@ -71,12 +72,15 @@ export interface StaffTenantModalData {
                         </mat-form-field>
                     </div>
                     <div class="flex flex-1 flex-col">
-                        <label>
+                        <label for="tenant-platform">
                             {{ 'ADMIN.TENANTS_PLATFORM' | translate }}
                             <span>*</span>
                         </label>
                         <mat-form-field appearance="outline">
-                            <mat-select formControlName="platform">
+                            <mat-select
+                                id="tenant-platform"
+                                formControlName="platform"
+                            >
                                 <mat-option value="google">Google</mat-option>
                                 <mat-option value="office365">
                                     Office365
@@ -86,11 +90,12 @@ export interface StaffTenantModalData {
                     </div>
                 </div>
                 <div class="flex flex-1 flex-col">
-                    <label>
+                    <label for="tenant-email-domain">
                         {{ 'ADMIN.TENANTS_EMAIL_DOMAIN' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
+                            id="tenant-email-domain"
                             matInput
                             formControlName="email_domain"
                             [placeholder]="
@@ -103,11 +108,12 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
                 <div class="flex flex-col space-y-2">
-                    <label>{{
+                    <label for="tenant-early-checkin">{{
                         'ADMIN.TENANTS_EARLY_CHECKIN' | translate
                     }}</label>
                     <mat-form-field appearance="outline">
                         <mat-select
+                            id="tenant-early-checkin"
                             name="early_checkin"
                             formControlName="early_checkin"
                             placeholder="Select time"
@@ -182,13 +188,14 @@ export interface StaffTenantModalData {
                         class="flex flex-wrap items-center space-x-0 sm:space-x-2"
                     >
                         <div class="flex flex-1 flex-col">
-                            <label>
+                            <label for="tenant-service-account">
                                 {{
                                     'ADMIN.TENANTS_SERVICE_ACCOUNT' | translate
                                 }}
                             </label>
                             <mat-form-field appearance="outline">
                                 <input
+                                    id="tenant-service-account"
                                     matInput
                                     formControlName="service_account"
                                     [placeholder]="
@@ -224,7 +231,10 @@ export interface StaffTenantModalData {
                                 class="flex flex-col"
                                 [class.hidden]="item.value?.disabled"
                             >
-                                <label class="capitalize">
+                                <label
+                                    class="capitalize"
+                                    [for]="'credential-' + item.key"
+                                >
                                     {{ name_map[item.key] || item.key }}
                                     @if (
                                         item.key !== 'conference_type' &&
@@ -237,6 +247,7 @@ export interface StaffTenantModalData {
                                     @switch (item.key) {
                                         @default {
                                             <input
+                                                [id]="'credential-' + item.key"
                                                 matInput
                                                 [formControlName]="item.key"
                                                 [placeholder]="
@@ -247,6 +258,7 @@ export interface StaffTenantModalData {
                                         }
                                         @case ('signing_key') {
                                             <textarea
+                                                [id]="'credential-' + item.key"
                                                 matInput
                                                 [formControlName]="item.key"
                                                 [placeholder]="
@@ -284,12 +296,13 @@ export interface StaffTenantModalData {
                             class="flex flex-wrap items-center space-x-0 sm:space-x-2"
                         >
                             <div class="flex flex-1 flex-col">
-                                <label>
+                                <label for="outlook-app-id">
                                     {{ 'ADMIN.TENANTS_APP_ID' | translate }}
                                     <span>*</span>
                                 </label>
                                 <mat-form-field appearance="outline">
                                     <input
+                                        id="outlook-app-id"
                                         matInput
                                         formControlName="app_id"
                                         [placeholder]="
@@ -303,11 +316,12 @@ export interface StaffTenantModalData {
                                 </mat-form-field>
                             </div>
                             <div class="flex flex-1 flex-col">
-                                <label>{{
+                                <label for="outlook-app-domain">{{
                                     'ADMIN.TENANTS_APP_DOMAIN' | translate
                                 }}</label>
                                 <mat-form-field appearance="outline">
                                     <input
+                                        id="outlook-app-domain"
                                         matInput
                                         formControlName="app_domain"
                                         [placeholder]="
@@ -328,13 +342,14 @@ export interface StaffTenantModalData {
                             class="flex flex-wrap items-center space-x-0 sm:space-x-2"
                         >
                             <div class="flex flex-1 flex-col">
-                                <label>
+                                <label for="outlook-app-resource">
                                     {{
                                         'ADMIN.TENANTS_APP_RESOURCE' | translate
                                     }}
                                 </label>
                                 <mat-form-field appearance="outline">
                                     <input
+                                        id="outlook-app-resource"
                                         matInput
                                         formControlName="app_resource"
                                         [placeholder]="
@@ -351,7 +366,7 @@ export interface StaffTenantModalData {
                                 </mat-form-field>
                             </div>
                             <div class="flex flex-1 flex-col">
-                                <label>
+                                <label for="outlook-source-location">
                                     {{
                                         'ADMIN.TENANTS_SOURCE_LOCATION'
                                             | translate
@@ -359,6 +374,7 @@ export interface StaffTenantModalData {
                                 </label>
                                 <mat-form-field appearance="outline">
                                     <input
+                                        id="outlook-source-location"
                                         matInput
                                         formControlName="source_location"
                                         [placeholder]="
@@ -379,11 +395,12 @@ export interface StaffTenantModalData {
                             class="flex flex-wrap items-center space-x-0 sm:space-x-4"
                         >
                             <div class="flex flex-1 flex-col">
-                                <label>
+                                <label for="outlook-base-path">
                                     {{ 'ADMIN.TENANTS_BASE_PATH' | translate }}
                                 </label>
                                 <mat-form-field appearance="outline">
                                     <input
+                                        id="outlook-base-path"
                                         matInput
                                         formControlName="base_path"
                                         [placeholder]="
@@ -403,9 +420,9 @@ export interface StaffTenantModalData {
                     </form>
                 }
                 <div class="flex flex-col space-y-2">
-                    <label>{{
+                    <span class="label">{{
                         'ADMIN.TENANTS_BOOKING_LIMITS' | translate
-                    }}</label>
+                    }}</span>
                     <object-list-field
                         formControlName="booking_limits"
                         [fields]="['type', 'amount']"

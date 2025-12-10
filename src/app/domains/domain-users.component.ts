@@ -14,7 +14,7 @@ import { DomainStateService } from './domain-state.service';
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
-                [class.opacity-0]="!(loading | async)"
+                [class.opacity-0]="(loading | async) !== true"
             ></mat-progress-bar>
             <simple-table
                 class="block min-w-lg text-sm"

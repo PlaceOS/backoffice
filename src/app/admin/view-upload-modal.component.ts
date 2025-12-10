@@ -25,6 +25,7 @@ import { UploadInfo } from './upload-library.component';
                         class="h-full w-full object-contain object-center"
                         auth
                         [source]="resource"
+                        alt="Uploaded content preview"
                     />
                 }
                 @if (type === 'video') {

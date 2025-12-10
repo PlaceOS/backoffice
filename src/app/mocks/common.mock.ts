@@ -56,10 +56,7 @@ export type FilterFn<T> = (item: T, query: HashMap) => boolean;
  * Generate an ID with length
  * @param length Length of the ID
  */
-export function generateID(
-    length: number = 12,
-    chars: string[] = AVAILABLE_CHARS,
-) {
+export function generateID(length = 12, chars: string[] = AVAILABLE_CHARS) {
     let id = '';
     while (id.length < length) {
         id += chars[Math.floor(Math.random() * chars.length)];

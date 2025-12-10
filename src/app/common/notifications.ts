@@ -19,7 +19,7 @@ export function setNotifyOutlet(snackbar: MatSnackBar) {
 export function notify(
     type: string,
     message: string,
-    action: string = 'OK',
+    action = 'OK',
     on_action?: () => void,
     icon: ApplicationIcon = {
         type: 'icon',

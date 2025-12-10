@@ -108,7 +108,7 @@ export class SettingsService extends AsyncHandler {
             this._app_name = this.get('app').name;
         }
         this._app_name =
-            location.pathname.replace(/[\\\/]/g, '').trim() || this._app_name;
+            location.pathname.replace(/[\\/]/g, '').trim() || this._app_name;
         log('Settings', 'Successfully loaded settings');
         this._initialised.next(true);
         if (window.debug) {
@@ -166,11 +166,7 @@ export class SettingsService extends AsyncHandler {
         this.timeout('save_settings', () => this._savePendingChanges(), 5000);
     }
 
-    public overrideCssVariable(
-        key: string,
-        value: string,
-        important: boolean = false,
-    ) {
+    public overrideCssVariable(key: string, value: string, important = false) {
         let element = document.getElementById(`css-var-overrides+${key}`);
         if (!element) {
             element = document.createElement('style');
@@ -226,6 +222,7 @@ export class SettingsService extends AsyncHandler {
 
     private async _applyUserSettings(settings: HashMap) {
         if (settings.font_size) {
+            // TODO: Apply font size settings when implemented
         }
     }
 

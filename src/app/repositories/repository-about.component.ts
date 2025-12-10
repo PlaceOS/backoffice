@@ -216,7 +216,7 @@ export class RepositoryAboutComponent extends AsyncHandler implements OnInit {
             : `${location.hash}`,
     );
     public readonly repo_uri = computed(() =>
-        this.item()?.uri.replace(/\/[a-zA-Z0-9\-\.:]*@/, '/...@'),
+        this.item()?.uri.replace(/\/[a-zA-Z0-9\-.:]*@/, '/...@'),
     );
     public readonly is_interface = computed(
         () => this.item()?.type === PlaceRepositoryType.Interface,

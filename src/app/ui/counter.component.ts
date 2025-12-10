@@ -1,4 +1,4 @@
-import { Component, forwardRef, input } from '@angular/core';
+import { Component, forwardRef, HostListener, input } from '@angular/core';
 import {
     ControlValueAccessor,
     FormsModule,
@@ -10,16 +10,7 @@ import { IconComponent } from './icon.component';
 @Component({
     selector: 'a-counter',
     template: `
-        <div
-            counter
-            class="flex items-center text-base"
-            (window:keydown.shift)="shift_key = true"
-            (window:keydown.control)="ctrl_key = true"
-            (window:keydown.meta)="ctrl_key = true"
-            (window:keyup.shift)="shift_key = false"
-            (window:keyup.control)="ctrl_key = false"
-            (window:keyup.meta)="ctrl_key = false"
-        >
+        <div counter class="flex items-center text-base">
             <button
                 decrease
                 icon
@@ -94,6 +85,18 @@ export class CounterComponent implements ControlValueAccessor {
     private _onChange: (_: number) => void;
     /** Form control on touch handler */
     private _onTouch: (_: number) => void;
+
+    @HostListener('window:keydown', ['$event'])
+    public onKeyDown(event: KeyboardEvent) {
+        this.shift_key = event.shiftKey;
+        this.ctrl_key = event.ctrlKey;
+    }
+
+    @HostListener('window:keyup', ['$event'])
+    public onKeyUp(event: KeyboardEvent) {
+        this.shift_key = event.shiftKey;
+        this.ctrl_key = event.ctrlKey;
+    }
 
     /**
      * Add the `step` to the current value

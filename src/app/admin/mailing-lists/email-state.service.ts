@@ -48,8 +48,6 @@ export class EmailStateService {
         shareReplay(1),
     );
 
-    constructor() {}
-
     public setDomain(domain: PlaceDomain) {
         this._domain.next(domain);
     }

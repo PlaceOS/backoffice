@@ -4,25 +4,20 @@ import { IconComponent } from '../icon.component';
 @Component({
     selector: 'an-action-field',
     template: `
-        <div
+        <button
             class="hover:border-base-content flex items-center rounded-sm border border-gray-200 px-4 py-2.5"
-            role="button"
             [attr.disabled]="disabled()"
             form-field
-            tabindex="0"
+            (click)="performAction()"
             (keydown.enter)="performAction()"
         >
-            <div
-                placeholder
-                class="w-0 flex-1 truncate"
-                (click)="performAction()"
-            >
+            <div placeholder class="w-0 flex-1 truncate">
                 <ng-content></ng-content>
             </div>
-            <icon class="-mr-2 text-2xl" (click)="performAction()">
+            <icon class="-mr-2 text-2xl">
                 arrow_drop_{{ show_tooltip ? 'up' : 'down' }}
             </icon>
-        </div>
+        </button>
     `,
     styles: [
         `

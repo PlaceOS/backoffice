@@ -120,9 +120,11 @@ export class AsyncHandler implements OnDestroy {
         if (!(name in this._subscriptions) || !this._subscriptions[name]) {
             return;
         }
-        'unsubscribe' in this._subscriptions[name]
-            ? (this._subscriptions[name] as Subscription).unsubscribe()
-            : (this._subscriptions[name] as any)();
+        if ('unsubscribe' in this._subscriptions[name]) {
+            (this._subscriptions[name] as Subscription).unsubscribe();
+        } else {
+            (this._subscriptions[name] as any)();
+        }
         this._subscriptions[name] = null;
     }
 }

@@ -232,6 +232,8 @@ export class AppComponent extends AsyncHandler implements OnInit {
                     }
                 }
             }
-        } catch {}
+        } catch {
+            // Ignore locale parsing errors
+        }
     }
 }
