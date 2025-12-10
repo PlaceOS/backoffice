@@ -214,7 +214,7 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         { name: 'COMMON.TRIGGERS', route: '/triggers', icon: 'timer' },
         {
             name: 'COMMON.ALERTS',
-            icon: 'monitoring',
+            icon: 'notifications_active',
             show_on: () => !!this.alerts_url,
             external: () => this.alerts_url,
         },
