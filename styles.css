@@ -817,9 +817,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .w-\[80vw\] {
   width: 80vw;
 }
-#placeos .w-\[512px\] {
-  width: 512px;
-}
 #placeos .w-\[calc\(50\%-0\.75rem\)\] {
   width: calc(50% - 0.75rem);
 }
@@ -1317,6 +1314,14 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .bg-base-content {
   background-color: var(--base-content);
 }
+#placeos .bg-base-content\/5 {
+  background-color: var(--base-content);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .bg-base-content\/5 {
+    background-color: color-mix(in oklab, var(--base-content) 5%, transparent);
+  }
+}
 #placeos .bg-base-content\/10 {
   background-color: var(--base-content);
 }
@@ -1686,10 +1691,6 @@ input:where([type=button], [type=reset], [type=submit]),
   outline-style: var(--tw-outline-style);
   outline-width: 1px;
 }
-#placeos .blur {
-  --tw-blur: blur(8px);
-  filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
-}
 #placeos .\!filter {
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,) !important;
 }
@@ -1913,8 +1914,8 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (min-width: 40rem) {
-  #placeos .sm\:max-w-\[512px\] {
-    max-width: 512px;
+  #placeos .sm\:max-w-lg {
+    max-width: var(--container-lg);
   }
 }
 @media (min-width: 40rem) {

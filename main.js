@@ -1,21 +1,21 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-ZRWCOKX7.js";
+} from "./chunk-Y5ARTUOZ.js";
 import {
   getUnixTime
 } from "./chunk-MXECN6VN.js";
 import {
   MatProgressBar,
   MatProgressBarModule
-} from "./chunk-OBX2CJKT.js";
+} from "./chunk-3EHCOJYI.js";
 import {
   UploadsService
-} from "./chunk-Y4UIOVDN.js";
+} from "./chunk-4KZ5HLMJ.js";
 import {
   tr
-} from "./chunk-AX7CZQ4V.js";
-import "./chunk-AB2DELE4.js";
-import "./chunk-L4LNMNAU.js";
+} from "./chunk-G652KOVV.js";
+import "./chunk-Z7NA6H3I.js";
+import "./chunk-G5APHUZQ.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -23,21 +23,21 @@ import {
   RouterOutlet,
   provideRouter,
   withHashLocation
-} from "./chunk-BFQZUVQ3.js";
-import "./chunk-KACAXRUK.js";
-import "./chunk-R3CS2OQD.js";
+} from "./chunk-DPN7JUQC.js";
+import "./chunk-ZZFHGPV7.js";
+import "./chunk-NJACHR4P.js";
 import {
   MatTooltip,
   MatTooltipModule
-} from "./chunk-457I3P7O.js";
-import "./chunk-REQ7BP4U.js";
+} from "./chunk-HUPL3SA6.js";
+import "./chunk-ZN4X52CQ.js";
 import {
   BackofficeUsersService
-} from "./chunk-BMBEBV5N.js";
+} from "./chunk-WD35U2OV.js";
 import {
   SettingsService,
   currentUser
-} from "./chunk-CE3TRPB5.js";
+} from "./chunk-2UHXYNE6.js";
 import "./chunk-W3LP6CHX.js";
 import {
   format
@@ -49,7 +49,7 @@ import "./chunk-4CBXDUSX.js";
 import "./chunk-W3GXKXZC.js";
 import {
   MatDialog
-} from "./chunk-6DCZX4UE.js";
+} from "./chunk-H3NFP65B.js";
 import {
   BasePortalOutlet,
   CdkPortalOutlet,
@@ -60,33 +60,33 @@ import {
   TemplatePortal,
   createGlobalPositionStrategy,
   createOverlayRef
-} from "./chunk-UPZUGYHP.js";
+} from "./chunk-ALEPO5ZJ.js";
 import {
   AsyncHandler
-} from "./chunk-HZ7P5O2S.js";
-import "./chunk-WJHMIHHS.js";
+} from "./chunk-VGLA4YGG.js";
+import "./chunk-EGRPP66T.js";
 import {
   IconComponent
-} from "./chunk-RYIKAYVN.js";
+} from "./chunk-XRZ4NHWV.js";
 import {
   bootstrapApplication
-} from "./chunk-USSSLHL5.js";
+} from "./chunk-OD44YKN7.js";
 import {
   notifyInfo,
   setNotifyOutlet
-} from "./chunk-ZMPXDLFL.js";
+} from "./chunk-IQ5P3T5K.js";
 import {
   MatRippleLoader
-} from "./chunk-F2GG244F.js";
+} from "./chunk-SU4H5GJ6.js";
 import {
   MatRippleModule
-} from "./chunk-ZXSXDT5W.js";
+} from "./chunk-RXOUTXM3.js";
 import {
   LocaleService,
   TranslatePipe,
   setTranslationService
-} from "./chunk-JGQFOLKM.js";
-import "./chunk-XCUSELP4.js";
+} from "./chunk-AZPOPABS.js";
+import "./chunk-5Y26MRIB.js";
 import {
   BreakpointObserver,
   Breakpoints,
@@ -99,7 +99,7 @@ import {
   _IdGenerator,
   _StructuralStylesLoader,
   _animationsDisabled
-} from "./chunk-WRCAB6XW.js";
+} from "./chunk-26CSHF2R.js";
 import {
   ApplicationRef,
   AsyncPipe,
@@ -181,28 +181,29 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-HV66NOZY.js";
+} from "./chunk-AJKLM77M.js";
 import {
-  $s,
-  As,
+  Ho,
+  In,
+  Lo,
+  N,
   NEVER,
   Observable,
   Subject,
-  Y,
-  _n,
-  ee,
+  Tn,
+  Ut,
+  Wo,
+  X,
   filter,
   first,
-  ks,
-  kt,
+  firstValueFrom,
   map,
   of,
   switchMap,
   take,
   takeUntil,
-  xs,
-  yn
-} from "./chunk-K7VBXBIC.js";
+  zo
+} from "./chunk-ESVM3M45.js";
 import {
   __spreadValues
 } from "./chunk-VYXW4D3Z.js";
@@ -2294,7 +2295,7 @@ async function setupPlace(settings) {
   if (localStorage) {
     localStorage.setItem("mock", `${!!mock && !location.href.includes("mock=false")}`);
   }
-  return As(config);
+  return Lo(config);
 }
 
 // src/app/ui/global-banner.component.ts
@@ -2397,13 +2398,13 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
   async ngOnInit() {
     this.loading.set(true);
     await firstTruthyValueFrom(this._settings.initialised);
-    this.online.set(xs());
+    this.online.set(Ho());
     this.interval("has_token", () => {
-      this.online.set(xs());
-      if (!kt() || !Y())
+      this.online.set(Ho());
+      if (!Ut() || !X())
         return;
       this.loading.set(false);
-      this.online.set(xs());
+      this.online.set(Ho());
       this.clearInterval("has_token");
     }, 1e3);
   }
@@ -2413,7 +2414,7 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
       return (\u0275GlobalLoadingComponent_BaseFactory || (\u0275GlobalLoadingComponent_BaseFactory = \u0275\u0275getInheritedFactory(_GlobalLoadingComponent)))(__ngFactoryType__ || _GlobalLoadingComponent);
     };
   })();
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _GlobalLoadingComponent, selectors: [["global-loading"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 1, vars: 1, consts: [["loader", "", 1, "bg-base-300", "pointer-events-auto", "fixed", "inset-0", "z-9998", "flex", "items-center", "justify-center"], [1, "border-base-300", "bg-base-100", "absolute", "bottom-5", "left-1/2", "w-[24rem]", "max-w-[calc(100vw-2rem)]", "-translate-x-1/2", "rounded-lg", "border", "p-2", "text-center", "text-xs", "shadow"], [1, "text-center", "font-mono"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", 1, "scale-150", "rounded"]], template: function GlobalLoadingComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _GlobalLoadingComponent, selectors: [["global-loading"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 1, vars: 1, consts: [["loader", "", 1, "bg-base-300", "pointer-events-auto", "fixed", "inset-0", "z-9998", "flex", "items-center", "justify-center"], [1, "border-base-300", "bg-base-100", "absolute", "bottom-5", "left-1/2", "w-[24rem]", "max-w-[calc(100vw-2rem)]", "-translate-x-1/2", "rounded-lg", "border", "p-2", "text-center", "text-xs", "shadow"], [1, "text-center", "font-mono"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "max-w-[calc(100vw-2rem)]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", 1, "scale-150", "rounded"]], template: function GlobalLoadingComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275conditionalCreate(0, GlobalLoadingComponent_Conditional_0_Template, 6, 1, "div", 0);
     }
@@ -2437,7 +2438,7 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
                     <p class="text-center font-mono">{{ message() }}</p>
                 </div>
                 <div
-                    class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
+                    class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-full border shadow"
                 >
                     <mat-progress-bar
                         mode="indeterminate"
@@ -2446,11 +2447,11 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
                 </div>
             </div>
         }
-    `, imports: [MatProgressBarModule, TranslatePipe], styles: ["/* angular:styles/component:css;ac091864e9a72045d72142542da9389793ffc7a75787e2bf22145bec368d4ec3;/home/runner/work/backoffice/backoffice/src/app/ui/global-loading.component.ts */\n:host {\n  pointer-events: none;\n}\n[loader] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=global-loading.component.css.map */\n"] }]
+    `, imports: [MatProgressBarModule], styles: ["/* angular:styles/component:css;ac091864e9a72045d72142542da9389793ffc7a75787e2bf22145bec368d4ec3;/home/runner/work/backoffice/backoffice/src/app/ui/global-loading.component.ts */\n:host {\n  pointer-events: none;\n}\n[loader] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=global-loading.component.css.map */\n"] }]
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GlobalLoadingComponent, { className: "GlobalLoadingComponent", filePath: "src/app/ui/global-loading.component.ts", lineNumber: 52 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GlobalLoadingComponent, { className: "GlobalLoadingComponent", filePath: "src/app/ui/global-loading.component.ts", lineNumber: 51 });
 })();
 
 // src/app/ui/upload-list.component.ts
@@ -3015,7 +3016,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     return this._users.dark_mode;
   }
   get online() {
-    return xs();
+    return Ho();
   }
   get is_fools_day() {
     return false;
@@ -3033,7 +3034,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
         localStorage.setItem("BACKOFFICE.locale", locale);
       }
       if (params.has("x-api-key")) {
-        ks(params.get("x-api-key"));
+        zo(params.get("x-api-key"));
       }
     });
     setNotifyOutlet(this._snackbar);
@@ -3055,7 +3056,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     this.timeout("init_uploads", () => {
       tr({
         auto_start: true,
-        token: Y(),
+        token: X(),
         endpoint: "/api/engine/v2/uploads",
         worker_url: "assets/md5_worker.js"
       });
@@ -3071,16 +3072,16 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     this._initLocale();
   }
   onInitError() {
-    if (_n())
+    if (In())
       return;
     log("Init", "Failed to initialise user. Restarting application...");
-    yn();
+    Tn();
     location.reload();
   }
   async _checkTenants() {
     if (!currentUser()?.sys_admin)
       return;
-    const tenant_list = await ee("/api/staff/v1/tenants").toPromise();
+    const tenant_list = (await firstValueFrom(N("/api/staff/v1/tenants"))).map((_) => Object.keys(_).map((i) => _[i]));
     for (const tenant of tenant_list) {
       if (!tenant.secret_expiry)
         continue;
@@ -3096,17 +3097,15 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   _initLocale() {
     try {
       let locale = localStorage.getItem("BACKOFFICE.locale");
-      const locales = this._settings.get("app.locales") || [
-        { id: "en", name: "English" }
-      ];
+      const locales = this._settings.get("app.locales") || [{ id: "en", name: "English" }];
       if (locale) {
         this._locale?.setLocale(locale);
       } else {
         const list = navigator.languages;
         for (const lang of list) {
-          locale = locales.find((_) => _.id === lang);
+          locale = locales.find((_) => _.id === lang)?.id;
           if (!locale)
-            locale = locales.find((_) => lang.includes(_.id));
+            locale = locales.find((_) => lang.includes(_.id))?.id;
           if (locale) {
             this._locale?.setLocale(lang);
             localStorage.setItem("BACKOFFICE.locale", lang);
@@ -3196,15 +3195,15 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 96 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 98 });
 })();
 
 // src/app/ui/guards/authorised-user.guard.ts
 var AuthorisedUserGuard = class _AuthorisedUserGuard {
   _router = inject(Router);
   _users = inject(BackofficeUsersService);
-  async canActivate(next, state) {
-    await $s().pipe(first((_) => _)).toPromise();
+  async canActivate(_next, _state) {
+    await Wo().pipe(first((_) => _)).toPromise();
     const user = await this._users.user.pipe(first((_) => !!_)).toPromise();
     const can_activate = user && (user.sys_admin || user.support);
     if (!can_activate) {
@@ -3212,8 +3211,8 @@ var AuthorisedUserGuard = class _AuthorisedUserGuard {
     }
     return can_activate;
   }
-  async canLoad(route, segments) {
-    await $s().pipe(first((_) => _)).toPromise();
+  async canLoad(_route, _segments) {
+    await Wo().pipe(first((_) => _)).toPromise();
     const user = await this._users.user.pipe(first((_) => !!_)).toPromise();
     const can_activate = user && (user.sys_admin || user.support);
     if (!can_activate) {
@@ -3297,47 +3296,47 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-C5N2QFRT.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-N2G2RX2E.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-7PYWA4VO.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-RHGYZKFT.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-MCCPH6IR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-XRCFQMYX.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-23VUJVPG.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-MTWIRHQX.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-2GAGWOCX.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-2USNZFWJ.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-GGVE6PX5.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-GXLDVU7Z.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-FIMSTIBO.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-S6KTZRVN.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-4JMAR76Q.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-BTVOOJPI.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-3TMRIADB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-5YVDLOGQ.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -3359,7 +3358,7 @@ var appConfig = {
 var is_mock = location.href.includes("mock=true") || localStorage.getItem("mock") === "true";
 var bootstrap = async () => {
   if (is_mock) {
-    await import("./chunk-LANPPJRO.js");
+    await import("./chunk-Y5NEWI7I.js");
   }
   bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
 };

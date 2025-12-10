@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["item-selection.component.ts"],
-  "sourcesContent": ["\n            a:nth-child(2n) {\n                background-color: rgba(0, 0, 0, 0.04);\n            }\n            a:hover {\n                background-color: rgba(0, 0, 0, 0.2);\n            }\n            a.active {\n                background-color: var(--secondary);\n                color: #fff;\n            }\n        "],
-  "mappings": ";AACY,CAAA;AACI,oBAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AACJ;AACA,CAAA;AACI,oBAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AACJ;AACA,CAAA,CAAA;AACI,oBAAA,IAAA;AACA,SAAA;AACJ;",
+  "sourcesContent": ["\n            a:hover {\n                background-color: rgba(0, 0, 0, 0.2);\n            }\n            a.active {\n                background-color: var(--secondary) !important;\n                color: #fff;\n            }\n        "],
+  "mappings": ";AACY,CAAA;AACI,oBAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AACJ;AACA,CAAA,CAAA;AACI,oBAAA,IAAA;AACA,SAAA;AACJ;",
   "names": []
 }
