@@ -120,7 +120,9 @@ export class PlaceClusterDetailsComponent
             this.cluster_list().forEach((cluster) => {
                 if (!this.usage_history[cluster.id])
                     this.usage_history[cluster.id] = {};
-                const nodes = [cluster, ...cluster.edge_nodes] as Array<any>;
+                const nodes = [cluster, ...cluster.edge_nodes] as Array<
+                    PlaceCluster & { hostname?: string }
+                >;
                 node_map[cluster.id] = nodes;
                 for (const node of nodes) {
                     if (

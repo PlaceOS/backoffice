@@ -58,7 +58,7 @@ export class SettingsFieldComponent
     /** Resize */
     public readonly resize = input<boolean>(undefined);
     /** List of decorations to apply to the editor */
-    public readonly decorations = input<HashMap[]>(undefined);
+    public readonly decorations = input<any[]>(undefined);
     /** Input language for syntax highlighting and error checking */
     public readonly lang = input('yaml');
     /** Schema for input validation and key auto-completion */
@@ -118,7 +118,9 @@ export class SettingsFieldComponent
             this.editor.updateOptions({ readOnly: !!this.readonly() });
         }
         if (changes.lang && this.editor) {
-            this.editor.updateOptions({ language: this.lang() || 'yaml' } as any);
+            this.editor.updateOptions({
+                language: this.lang() || 'yaml',
+            } as any);
         }
         if (changes.resize) {
             this.resizeEditor();
@@ -130,7 +132,9 @@ export class SettingsFieldComponent
         if (changes.decorations && this.editor) {
             this._active_decorators = this.editor.deltaDecorations(
                 this._active_decorators,
-                (this.decorations() || []).map((i) => ({ ...i })) as any,
+                (this.decorations() || []).map((i) => ({
+                    ...i,
+                })),
             );
         }
     }
@@ -237,7 +241,9 @@ export class SettingsFieldComponent
                     this._active_decorators =
                         this.editor?.deltaDecorations(
                             this._active_decorators,
-                            (this.decorations() || []).map((i) => ({ ...i })) as any,
+                            (this.decorations() || []).map((i) => ({
+                                ...i,
+                            })),
                         ) || [];
                 },
                 50,

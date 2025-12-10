@@ -135,7 +135,10 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         if (!value) return;
         const parts = value.mod.split('_');
         const index = parts.pop();
-        this.module.set({ module: parts.join('_'), index: +index } as ModuleLike);
+        this.module.set({
+            module: parts.join('_'),
+            index: +index,
+        } as ModuleLike);
         this.fn.set({ name: value.method } as unknown as PlaceModuleFunction);
         const args: Record<string, string> = {};
         for (const key in value.args || {}) {
@@ -166,20 +169,22 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
             method: (this.fn() as unknown as { name: string }).name,
             args,
         });
-        this.arguments.set(arg_map as any);
+        this.arguments.set(arg_map as Record<string, unknown>);
     }
 
     /**
      * Registers a callback function that is called when the control's value changes in the UI.
      * @param fn The callback function to register
      */
-    public registerOnChange = (fn: (_: TriggerFunction) => void) => (this._onChange = fn);
+    public registerOnChange = (fn: (_: TriggerFunction) => void) =>
+        (this._onChange = fn);
 
     /**
      * Registers a callback function is called by the forms API on initialization to update the form model on blur.
      * @param fn The callback function to register
      */
-    public registerOnTouched = (fn: (_: TriggerFunction) => void) => (this._onTouch = fn);
+    public registerOnTouched = (fn: (_: TriggerFunction) => void) =>
+        (this._onTouch = fn);
 
     public clear() {
         this.module.set(null);
@@ -199,7 +204,9 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
                 this.module().module,
                 this.module().index,
                 this.fn().order.map((key) => {
-                    const fn_details = this.fn().params[key] as unknown as Record<string, unknown>;
+                    const fn_details = this.fn().params[
+                        key
+                    ] as unknown as Record<string, unknown>;
                     try {
                         return JSON.parse(this.arguments()[key] as string);
                     } catch {

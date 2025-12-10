@@ -9,12 +9,18 @@
 
 import { addMinutes, startOfMinute } from 'date-fns';
 
-const win = self as any;
+declare global {
+    interface Window {
+        systemData: Record<string, any>;
+        control: Record<string, Record<string, any>>;
+        backend: any;
+    }
+}
 
-win.systemData = win.systemData || {};
-win.control = win.control || {};
-win.control.systems = win.control.systems || {};
-win.control.systems['sys-B0'] = {
+window.systemData = window.systemData || {};
+window.control = window.control || {};
+window.control.systems = window.control.systems || {};
+window.control.systems['sys-B0'] = {
     System: [
         {
             name: 'Demo System',
@@ -54,12 +60,12 @@ win.control.systems['sys-B0'] = {
 setTimeout(() => initMessages(), 500);
 
 function initMessages() {
-    if (win.backend && win.backend.model.user) {
+    if (window.backend && window.backend.model.user) {
         const messages = [
             'Testing',
             'Response to Testing',
-            `Hello I'm ${win.backend.model.user.name}`,
-            `Hello ${win.backend.model.user.name}, this is the concierge`,
+            `Hello I'm ${window.backend.model.user.name}`,
+            `Hello ${window.backend.model.user.name}, this is the concierge`,
             'Can I book a room for tomorrow at 9:30am?',
             'Sure, how does Activity Space 31.04 sound?',
             "That's exactly what I'm looking for, thanks",
@@ -68,9 +74,9 @@ function initMessages() {
         let time = startOfMinute(addMinutes(Date.now(), -messages.length * 30));
         let index = 0;
         for (const msg of messages) {
-            win.control.systems['sys-B0'].Slack[0].threads.local.push({
+            window.control.systems['sys-B0'].Slack[0].threads.local.push({
                 text: msg,
-                username: index % 2 === 0 ? win.backend.model.user.name : '',
+                username: index % 2 === 0 ? window.backend.model.user.name : '',
                 ts: time.valueOf(),
             });
             index++;
@@ -81,4 +87,4 @@ function initMessages() {
     }
 }
 
-win.systemData['sys-B0'] = win.control.systems['sys-B0'];
+window.systemData['sys-B0'] = window.control.systems['sys-B0'];

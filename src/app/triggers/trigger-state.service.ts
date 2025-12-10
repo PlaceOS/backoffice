@@ -38,7 +38,8 @@ export class TriggerStateService {
 
     private _change = new BehaviorSubject(0);
     private _loading = new BehaviorSubject<boolean>(false);
-    public readonly item: Observable<PlaceTrigger> = this._service.item as Observable<PlaceTrigger>;
+    public readonly item: Observable<PlaceTrigger> = this._service
+        .item as Observable<PlaceTrigger>;
 
     public readonly loading = this._loading.asObservable();
 
@@ -81,14 +82,17 @@ export class TriggerStateService {
                 system: template,
             },
         });
-        const result: DialogEvent<{ trigger: PlaceTrigger }> | null = (await Promise.race([
-            ref.componentInstance.event
-                .pipe(first((event) => event.reason === 'done'))
-                .toPromise(),
-            ref.afterClosed().toPromise(),
-        ])) as DialogEvent<{ trigger: PlaceTrigger }> | null;
+        const result: DialogEvent<{ trigger: PlaceTrigger }> | null =
+            (await Promise.race([
+                ref.componentInstance.event
+                    .pipe(first((event) => event.reason === 'done'))
+                    .toPromise(),
+                ref.afterClosed().toPromise(),
+            ])) as DialogEvent<{ trigger: PlaceTrigger }> | null;
         if (!result?.reason || !result.metadata?.trigger) return;
-        this._service.replaceItem(result.metadata.trigger as unknown as Identity);
+        this._service.replaceItem(
+            result.metadata.trigger as unknown as Identity,
+        );
     }
 
     /**
@@ -110,14 +114,17 @@ export class TriggerStateService {
                 system: template,
             },
         });
-        const result: DialogEvent<{ trigger: PlaceTrigger }> | null = (await Promise.race([
-            ref.componentInstance.event
-                .pipe(first((event) => event.reason === 'done'))
-                .toPromise(),
-            ref.afterClosed().toPromise(),
-        ])) as DialogEvent<{ trigger: PlaceTrigger }> | null;
+        const result: DialogEvent<{ trigger: PlaceTrigger }> | null =
+            (await Promise.race([
+                ref.componentInstance.event
+                    .pipe(first((event) => event.reason === 'done'))
+                    .toPromise(),
+                ref.afterClosed().toPromise(),
+            ])) as DialogEvent<{ trigger: PlaceTrigger }> | null;
         if (!result?.reason || !result.metadata?.trigger) return;
-        this._service.replaceItem(result.metadata.trigger as unknown as Identity);
+        this._service.replaceItem(
+            result.metadata.trigger as unknown as Identity,
+        );
     }
 
     /**
@@ -145,11 +152,18 @@ export class TriggerStateService {
                 : this.active_item.actions.mailers),
         ];
         moveItemInArray(list, fst, snd);
-        const actions: { functions: TriggerFunction[], mailers: TriggerMailer[] } = {
+        const actions: {
+            functions: TriggerFunction[];
+            mailers: TriggerMailer[];
+        } = {
             functions:
-                type === 'function' ? (list as TriggerFunction[]) : this.active_item.actions.functions,
+                type === 'function'
+                    ? (list as TriggerFunction[])
+                    : this.active_item.actions.functions,
             mailers:
-                type === 'function' ? this.active_item.actions.mailers : (list as TriggerMailer[]),
+                type === 'function'
+                    ? this.active_item.actions.mailers
+                    : (list as TriggerMailer[]),
         };
         details.loading(i18n('TRIGGERS.REORDER_CONFIRM_LOADING'));
         const resp = await updateTrigger(this.active_item.id, {
@@ -159,7 +173,7 @@ export class TriggerStateService {
             .toPromise()
             .catch((_) => _);
         if (!(resp instanceof PlaceTrigger)) {
-            const error = resp as { response?: string, message?: string };
+            const error = resp as { response?: string; message?: string };
             return notifyError(
                 i18n('TRIGGERS.REORDER_CONFIRM_ERROR', {
                     error: JSON.stringify(
@@ -205,7 +219,7 @@ export class TriggerStateService {
             .catch((err) => err);
         details.close();
         if (!(resp instanceof PlaceTrigger)) {
-            const error = resp as { response?: string, message?: string };
+            const error = resp as { response?: string; message?: string };
             return notifyError(
                 i18n('TRIGGERS.REMOVE_CONDITION_ERROR', {
                     error: JSON.stringify(
@@ -248,7 +262,7 @@ export class TriggerStateService {
             .catch((err) => err);
         details.close();
         if (!(resp instanceof PlaceTrigger)) {
-            const error = resp as { response?: string, message?: string };
+            const error = resp as { response?: string; message?: string };
             return notifyError(
                 i18n('TRIGGERS.REMOVE_ACTION_ERROR', {
                     error: JSON.stringify(
@@ -292,7 +306,10 @@ export class TriggerStateService {
             return notifyError(
                 i18n('TRIGGERS.REMOVE_INSTANCE_ERROR', {
                     type,
-                    error: (err as Record<string, unknown>).responseText || (err as Record<string, unknown>).message || err,
+                    error:
+                        (err as Record<string, unknown>).responseText ||
+                        (err as Record<string, unknown>).message ||
+                        err,
                 }),
             );
         }

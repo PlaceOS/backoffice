@@ -29,9 +29,12 @@ const DEFAULT_TENANTS = [
 ];
 
 /** In-memory storage with session persistence */
-const TENANTS: any[] = loadFromSession('tenants', DEFAULT_TENANTS);
+const TENANTS: Record<string, unknown>[] = loadFromSession(
+    'tenants',
+    DEFAULT_TENANTS,
+);
 
-const createFilter = (items: any[]) => (q: HashMap) => {
+const createFilter = (items: Record<string, unknown>[]) => (q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return items;
     }
@@ -43,7 +46,7 @@ const createFilter = (items: any[]) => (q: HashMap) => {
         if (q.q) {
             match =
                 match &&
-                (item.name || '')
+                `${item.name || ''}`
                     .toLowerCase()
                     .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
         }

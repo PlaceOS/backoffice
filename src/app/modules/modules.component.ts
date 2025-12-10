@@ -170,7 +170,11 @@ export class ModulesComponent extends AsyncHandler implements OnInit {
 
     protected async loadValues(item: PlaceModule) {
         if (!item) return;
-        const query: Record<string, unknown> = { offset: 0, limit: 1, module_id: item.id };
+        const query: Record<string, unknown> = {
+            offset: 0,
+            limit: 1,
+            module_id: item.id,
+        };
         // Get system count
         this.system_count.set((await lastValueFrom(querySystems(query))).total);
     }

@@ -80,7 +80,7 @@ export enum TimezoneDiffRange {
             <div class="bg-base-100 relative w-[18rem] rounded-sm px-2 py-4">
                 <date-calendar
                     [ngModel]="date || now"
-                    [from]="from"
+                    [from]="fromDate"
                     [to]="until"
                     [offset_weekday]="week_start()"
                     (ngModelChange)="setValue($event)"
@@ -112,12 +112,9 @@ export class DateFieldComponent
     private _injector = inject(Injector);
 
     /** Earliest date available the user is allowed to pick */
-    public readonly from_date = input<number>(
-        startOfDay(Date.now()).valueOf(),
-        { alias: 'from' },
-    );
+    public readonly from = input<number>(startOfDay(Date.now()).valueOf());
     /** Latest date available the user is allowed to pick */
-    public readonly to_date = input<number>(undefined, { alias: 'to' });
+    public readonly to = input<number>(undefined);
     /** Index of the day to start the week on when displaying the calendar */
     public readonly week_start = input(0);
     public readonly use_24hr = input(false);
@@ -177,15 +174,15 @@ export class DateFieldComponent
     private readonly _tooltip = viewChild(CustomTooltipComponent);
 
     /** First allowed date on the calendar */
-    public get from(): number {
-        const date = new Date(this.from_date());
+    public get fromDate(): number {
+        const date = new Date(this.from());
         return (
             isNaN(date.getTime()) ? startOfDay(new Date()) : date
         ).valueOf();
     }
     /** Current date value */
     public get until(): number {
-        const date = new Date(this.to_date());
+        const date = new Date(this.to());
         return (
             isNaN(date.getTime()) ? addYears(endOfDay(new Date()), 1) : date
         ).valueOf();
@@ -208,8 +205,8 @@ export class DateFieldComponent
             minutes: old_date.getMinutes(),
         }).valueOf();
         // Check that new date is before from
-        if (new_date < this.from.valueOf()) {
-            new_date = this.from.valueOf();
+        if (new_date < this.fromDate.valueOf()) {
+            new_date = this.fromDate.valueOf();
         }
         this.date = new_date;
         if (this._onChange) {

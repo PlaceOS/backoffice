@@ -36,8 +36,8 @@ import { IconComponent } from './icon.component';
                 class="bg-base-100 bg-opacity-0 w-24 flex-1 border-none outline-hidden"
                 [ngModel]="filter()"
                 (ngModelChange)="filter.set($event); post()"
-                (focus)="focused.set(true); focus.emit()"
-                (blur)="focused.set(false); blur.emit()"
+                (focus)="focused.set(true); inputFocus.emit()"
+                (blur)="focused.set(false); inputBlur.emit()"
                 [placeholder]="placeholder()"
             />
             @if (has_speech() && dictation() && (focused() || dictate())) {
@@ -90,8 +90,8 @@ export class SearchbarComponent extends AsyncHandler implements OnInit {
     public readonly dictation = input(true);
     public readonly clearable = input(true);
     public readonly placeholder = input('Search...');
-    public readonly focus = output();
-    public readonly blur = output();
+    public readonly inputFocus = output();
+    public readonly inputBlur = output();
     public readonly focused = signal(false);
     public readonly has_speech = signal(false);
     public readonly dictate = signal(false);
@@ -134,17 +134,24 @@ export class SearchbarComponent extends AsyncHandler implements OnInit {
             this.recognition.set(sr);
             this.dictate.set(true);
 
-            (sr as unknown as Record<string, unknown>).onresult = (_e: unknown) => {
+            (sr as unknown as Record<string, unknown>).onresult = (
+                _e: unknown,
+            ) => {
                 // Update search field with dictation result
-                this._input_el().nativeElement.value =
-                    (_e as Record<string, unknown>).results[0][0].transcript;
-                this.filter.set((_e as Record<string, unknown>).results[0][0].transcript);
+                this._input_el().nativeElement.value = (
+                    _e as Record<string, unknown>
+                ).results[0][0].transcript;
+                this.filter.set(
+                    (_e as Record<string, unknown>).results[0][0].transcript,
+                );
                 (sr as unknown as { stop: () => void }).stop();
                 this.post();
                 this.dictate.set(false);
             };
 
-            (sr as unknown as Record<string, unknown>).onerror = (_e: unknown) => {
+            (sr as unknown as Record<string, unknown>).onerror = (
+                _e: unknown,
+            ) => {
                 (sr as unknown as { stop: () => void }).stop();
                 this.dictate.set(false);
             };
@@ -159,7 +166,7 @@ export class SearchbarComponent extends AsyncHandler implements OnInit {
                 const inputValue = this._input_el();
                 if (inputValue && inputValue.nativeElement) {
                     inputValue.nativeElement.focus();
-                    this.focus.emit();
+                    this.inputFocus.emit();
                 }
             },
             50,

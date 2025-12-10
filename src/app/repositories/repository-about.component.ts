@@ -233,7 +233,9 @@ export class RepositoryAboutComponent extends AsyncHandler implements OnInit {
         );
         this.subscription(
             'item',
-            this._service.item.subscribe((item) => this.item.set(item as unknown as PlaceRepository)),
+            this._service.item.subscribe((item) =>
+                this.item.set(item as unknown as PlaceRepository),
+            ),
         );
     }
 

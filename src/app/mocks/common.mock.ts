@@ -11,7 +11,9 @@ export const DOMAIN = 'place.tech';
 /** Endpoint where the staff API is located */
 export const API = '/api/engine/v2';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ENDPOINT_SUBJECTS: HashMap<BehaviorSubject<any[]>> = {};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ENDPOINT_OBSERVABLES: HashMap<Observable<any[]>> = {};
 
 /** Session storage key prefix for mock data */
@@ -68,6 +70,7 @@ export function generateID(length = 12, chars: string[] = AVAILABLE_CHARS) {
  * Get obsevable for changes to data on endpoint
  * @param endpoint Endpoint to listen to
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function listenToHandlerChanges(endpoint: string): Observable<any> {
     return ENDPOINT_OBSERVABLES[endpoint];
 }
@@ -76,6 +79,7 @@ export function listenToHandlerChanges(endpoint: string): Observable<any> {
  * Get list of data from endpoint
  * @param endpoint Endpoint to grab data for
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function endpointData(endpoint: string): any[] {
     return (
         (ENDPOINT_SUBJECTS[endpoint]

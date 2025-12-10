@@ -374,7 +374,7 @@ export class RepositoryFormComponent
     /** Whether repository's commits are being loaded */
     public loading_commits: boolean;
     /** Currently selected commit for the repository */
-    public base_commit: Identity | any;
+    public base_commit: Identity | Record<string, string>;
     /** Whether to follow the latest branch commits(Auto-update) */
     public follow_latest: boolean;
     /** List of available types of repositories */

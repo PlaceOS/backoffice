@@ -162,8 +162,10 @@ export class DateCalendarComponent
         this.generateDates();
     }
 
-    public readonly registerOnChange = (fn: (_: number) => void) => (this._onChange = fn);
-    public readonly registerOnTouched = (fn: (_: number) => void) => (this._onTouch = fn);
+    public readonly registerOnChange = (fn: (_: number) => void) =>
+        (this._onChange = fn);
+    public readonly registerOnTouched = (fn: (_: number) => void) =>
+        (this._onTouch = fn);
 
     public generateDates() {
         const offset =

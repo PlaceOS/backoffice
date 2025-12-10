@@ -107,7 +107,9 @@ export class ModuleStateService {
                 this.active_item.running ? 'stopped' : 'started'
             }`,
         );
-        (this.active_item as any).running = !this.active_item.running;
+        (
+            this.active_item as PlaceModule & { running: boolean }
+        ).running = !this.active_item.running;
     }
 
     /** View Results of the execute */

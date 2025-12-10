@@ -133,7 +133,10 @@ import { TranslatePipe } from '../translate.pipe';
         MatInputModule,
     ],
 })
-export class ApplicationFormComponent extends AsyncHandler implements OnChanges {
+export class ApplicationFormComponent
+    extends AsyncHandler
+    implements OnChanges
+{
     /** Group of form fields used for creating the system */
     public readonly form = input<UntypedFormGroup>(undefined);
 

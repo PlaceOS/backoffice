@@ -19,10 +19,7 @@ import {
     ConfirmModalComponent,
     ConfirmModalData,
 } from '../overlays/confirm-modal.component';
-import {
-    DuplicateModalComponent,
-    DuplicateModalData,
-} from '../overlays/duplicate-modal.component';
+import { DuplicateModalComponent } from '../overlays/duplicate-modal.component';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
 import { ACTIONS, ItemActions } from './actions';
@@ -61,7 +58,9 @@ export class ActiveItemService extends AsyncHandler {
     /** Currently active item */
     private _active_item = new BehaviorSubject<PlaceResource>(null);
     /** Currently active item */
-    private _next_query = new BehaviorSubject<() => QueryResponse<unknown>>(null);
+    private _next_query = new BehaviorSubject<() => QueryResponse<unknown>>(
+        null,
+    );
     /** List of items for the current type */
     private _list = new BehaviorSubject<unknown[]>([]);
     /** Whether item list is loading */
@@ -220,7 +219,7 @@ export class ActiveItemService extends AsyncHandler {
                     (v) => item instanceof v.itemConstructor,
                 ) || this.actions;
             if (item.id) {
-                item = await actions.show(item.id).toPromise() as T;
+                item = (await actions.show(item.id).toPromise()) as T;
             }
             return new Promise<T>((resolve) => {
                 const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
@@ -235,7 +234,9 @@ export class ActiveItemService extends AsyncHandler {
                     .pipe(filter((e) => e.reason === 'done'))
                     .subscribe((event: DialogEvent<{ item: T }>) => {
                         resolve(event.metadata.item);
-                        this.replaceItem(event.metadata.item as unknown as Identity);
+                        this.replaceItem(
+                            event.metadata.item as unknown as Identity,
+                        );
                         if (
                             event.metadata.item instanceof
                             this.actions.itemConstructor
@@ -263,7 +264,9 @@ export class ActiveItemService extends AsyncHandler {
                 data: {
                     title: i18n(`${this.actions.name}.DELETE`),
                     content: i18n(`${this.actions.name}.DELETE_MSG`, {
-                        name: (item as PlaceResource & { display_name?: string }).display_name || item.name,
+                        name:
+                            (item as PlaceResource & { display_name?: string })
+                                .display_name || item.name,
                     }),
                     extra: this.actions.delete_extra
                         ? await this.actions.delete_extra(item)
@@ -313,7 +316,10 @@ export class ActiveItemService extends AsyncHandler {
         const item = this._active_item.getValue();
         if (item) {
             const ref = this._dialog.open(DuplicateModalComponent, {
-                data: { item: item as any, save: this.actions.save } as any,
+                data: {
+                    item: item as PlaceResource,
+                    save: this.actions.save,
+                },
             });
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
@@ -330,9 +336,13 @@ export class ActiveItemService extends AsyncHandler {
             (!this.active_item || this.active_item.id === item.id)
         ) {
             this._active_item.next(item as PlaceResource);
-            const list = this._list.getValue().filter((i) => (i as Identity).id !== item.id);
+            const list = this._list
+                .getValue()
+                .filter((i) => (i as Identity).id !== item.id);
             list.push(item);
-            list.sort((a, b) => (a as Identity).name?.localeCompare((b as Identity).name));
+            list.sort((a, b) =>
+                (a as Identity).name?.localeCompare((b as Identity).name),
+            );
             this.updateSettings();
             this._list.next(list);
         }
@@ -340,8 +350,12 @@ export class ActiveItemService extends AsyncHandler {
 
     public removeItem(item: unknown) {
         if ((item as Identity).id) {
-            const list = this._list.getValue().filter((i) => (i as Identity).id !== (item as Identity).id);
-            list.sort((a, b) => (a as Identity).name?.localeCompare((b as Identity).name));
+            const list = this._list
+                .getValue()
+                .filter((i) => (i as Identity).id !== (item as Identity).id);
+            list.sort((a, b) =>
+                (a as Identity).name?.localeCompare((b as Identity).name),
+            );
             this._count.next(this._count.getValue() - 1);
             this._list.next(list);
         }
@@ -398,10 +412,19 @@ export class ActiveItemService extends AsyncHandler {
                     const list = this._list
                         .getValue()
                         .filter(
-                            (i) => !resp.data.find((item) => (item as Identity).id === (i as Identity).id),
+                            (i) =>
+                                !resp.data.find(
+                                    (item) =>
+                                        (item as Identity).id ===
+                                        (i as Identity).id,
+                                ),
                         );
                     const new_list = list.concat(resp.data);
-                    new_list.sort((a, b) => (a as Identity).name?.localeCompare((b as Identity).name));
+                    new_list.sort((a, b) =>
+                        (a as Identity).name?.localeCompare(
+                            (b as Identity).name,
+                        ),
+                    );
                     this._list.next(new_list);
                     this._loading_list.next(false);
                 }
@@ -430,7 +453,10 @@ export class ActiveItemService extends AsyncHandler {
             settings.sort((a, b) => a.encryption_level - b.encryption_level);
             if (this.actions?.itemConstructor) {
                 this._active_item.next(
-                    new this.actions.itemConstructor({ ...item, settings }) as PlaceResource,
+                    new this.actions.itemConstructor({
+                        ...item,
+                        settings,
+                    }) as PlaceResource,
                 );
             }
         }

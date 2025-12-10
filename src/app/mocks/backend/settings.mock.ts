@@ -8,7 +8,7 @@ import {
 
 import { EncryptionLevel } from '@placeos/ts-client';
 
-const FILTER_FN = (item: Record<string, any>, q: HashMap) => {
+const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return true;
     }
@@ -16,7 +16,7 @@ const FILTER_FN = (item: Record<string, any>, q: HashMap) => {
     if (q.q) {
         match =
             match &&
-            (item.name || '')
+            `${item.name || ''}`
                 .toLowerCase()
                 .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
     }
@@ -26,9 +26,9 @@ const FILTER_FN = (item: Record<string, any>, q: HashMap) => {
     return match;
 };
 
-const SETTINGS_DATA: Record<string, any>[] = [];
+const SETTINGS_DATA: Record<string, unknown>[] = [];
 
-const handle_items_fn = (list: Record<string, any>[]) => {
+const handle_items_fn = (list: Record<string, unknown>[]) => {
     list.forEach((item) => {
         if (
             item.settings &&

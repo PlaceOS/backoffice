@@ -32,6 +32,14 @@ export default [
     rules: {
       '@angular-eslint/directive-selector': 'off',
       '@angular-eslint/component-selector': 'off',
+      '@typescript-eslint/triple-slash-reference': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
     },
   },
   {

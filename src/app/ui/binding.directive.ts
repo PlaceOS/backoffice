@@ -39,7 +39,7 @@ export class BindingDirective<T = unknown>
     /** Method to execute */
     public readonly delay = input(100);
     /** Event to listen for on the parent */
-    public readonly on_event = input('', { alias: 'onEvent' });
+    public readonly onEvent = input('');
     /** ID of the system to bind to */
     public readonly params = input<unknown[] | null>(null);
     public readonly ignore = input(false);
@@ -66,10 +66,10 @@ export class BindingDirective<T = unknown>
             this._old_model = model;
             this.execute();
         }
-        const on_event = this.on_event();
-        if (changes.on_event && on_event) {
+        const on_event = this.onEvent();
+        if (changes.onEvent && on_event) {
             this.subscription(
-                'on_event',
+                'onEvent',
                 this._renderer.listen(
                     this._element.nativeElement,
                     on_event,

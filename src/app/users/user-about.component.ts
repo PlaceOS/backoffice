@@ -178,7 +178,10 @@ export class UserAboutComponent {
     public readonly domain = this._service.item.pipe(
         distinctUntilChanged(),
         debounceTime(300),
-        filter((_): _ is PlaceUser => !!_ && typeof (_ as PlaceUser).authority_id === 'string'),
+        filter(
+            (_): _ is PlaceUser =>
+                !!_ && typeof (_ as PlaceUser).authority_id === 'string',
+        ),
         switchMap((i) => showDomain(i.authority_id)),
         shareReplay(1),
     );

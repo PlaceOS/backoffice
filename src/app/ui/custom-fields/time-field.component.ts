@@ -258,7 +258,9 @@ export class TimeFieldComponent
         } else if (isAfter(date, now)) {
             date = now;
         }
-        date = roundToNearestMinutes(date, { nearestTo: step as 1 | 5 | 10 | 15 | 30 });
+        date = roundToNearestMinutes(date, {
+            nearestTo: step as 1 | 5 | 10 | 15 | 30,
+        });
         const end = endOfDay(date);
         // Add options for the rest of the day
         while (isAfter(end, date)) {

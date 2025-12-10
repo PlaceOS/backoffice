@@ -252,7 +252,9 @@ export class SystemAboutComponent extends AsyncHandler implements OnInit {
     public ngOnInit() {
         this.subscription(
             'item',
-            this._service.item.subscribe((item) => this.item.set(item as PlaceSystem)),
+            this._service.item.subscribe((item) =>
+                this.item.set(item as PlaceSystem),
+            ),
         );
     }
 }

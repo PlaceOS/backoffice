@@ -1,6 +1,10 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
-import { FormControl, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import {
+    FormControl,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
 import { PlaceZone, queryZones, showZone } from '@placeos/ts-client';
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -307,15 +311,15 @@ export class ZoneFormComponent extends AsyncHandler implements OnChanges {
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
     /** Query function for zones */
     public readonly query_fn = (_: string) =>
-        queryZones({ q: _ }).pipe(map((resp) => resp.data as any));
+        queryZones({ q: _ }).pipe(map((resp) => resp.data as PlaceZone[]));
     /** Function to exclude zones */
-    public readonly exclude = (zone: any) =>
+    public readonly exclude = (zone: PlaceZone) =>
         zone.id === this.form().controls.id.value;
 
-    public readonly addTag = (e: any) =>
-        addChipItem(this.form().controls.tags as any, e);
-    public readonly removeTag = (i: any) =>
-        removeChipItem(this.form().controls.tags as any, i);
+    public readonly addTag = (e: MatChipInputEvent) =>
+        addChipItem(this.form().controls.tags as FormControl<string[]>, e);
+    public readonly removeTag = (i: string) =>
+        removeChipItem(this.form().controls.tags as FormControl<string[]>, i);
 
     public get tag_list(): string[] {
         return this.form().controls.tags.value;

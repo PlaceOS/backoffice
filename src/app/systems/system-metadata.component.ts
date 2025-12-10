@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { PlaceSystem } from '@placeos/ts-client';
+import { PlaceResource } from '@placeos/ts-client';
 import { ActiveItemService } from '../common/item.service';
 import { MetadataDisplayComponent } from '../ui/metadata-display.component';
 
@@ -18,7 +18,7 @@ import { MetadataDisplayComponent } from '../ui/metadata-display.component';
 export class SystemMetadataComponent {
     private _service = inject(ActiveItemService);
 
-    public get item(): any {
+    public get item(): PlaceResource | null {
         return this._service.active_item;
     }
 }

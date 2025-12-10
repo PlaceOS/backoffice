@@ -64,17 +64,13 @@ export class CustomTooltipComponent<T = unknown>
     private _injector = inject(Injector);
 
     /** Horizontal position of the rendered overlay */
-    public readonly x_pos = input<'start' | 'center' | 'end'>('end', {
-        alias: 'xPosition',
-    });
+    public readonly xPosition = input<'start' | 'center' | 'end'>('end');
     /** Vertical position of the rendered overlay */
-    public readonly y_pos = input<'top' | 'center' | 'bottom'>('top', {
-        alias: 'yPosition',
-    });
+    public readonly yPosition = input<'top' | 'center' | 'bottom'>('top');
     /** Content to render in the tooltip */
-    public readonly content = input<TemplateRef<unknown> | Type<unknown> | string>(
-        undefined,
-    );
+    public readonly content = input<
+        TemplateRef<unknown> | Type<unknown> | string
+    >(undefined);
     /** Data associated with the tooltip content */
     public readonly data = input<T>(undefined);
     /** Whether tooltip has a backdrop */
@@ -108,7 +104,7 @@ export class CustomTooltipComponent<T = unknown>
         this._updateInjector();
         if (
             this._overlay_ref &&
-            (changes.x_pos || changes.y_pos || changes.content)
+            (changes.xPosition || changes.yPosition || changes.content)
         ) {
             this.open();
         }
@@ -135,7 +131,7 @@ export class CustomTooltipComponent<T = unknown>
                 if (!_portal) return;
                 const default_x = 'end';
                 const default_y = 'top';
-                const y_pos = this.y_pos();
+                const y_position = this.yPosition();
                 this._overlay_ref = this._overlay.create({
                     hasBackdrop: !!this.backdrop() && !hover,
                     positionStrategy: this._overlay
@@ -143,15 +139,15 @@ export class CustomTooltipComponent<T = unknown>
                         .flexibleConnectedTo(this._element)
                         .withPositions([
                             {
-                                originX: this.x_pos() || default_x,
+                                originX: this.xPosition() || default_x,
                                 originY:
-                                    (y_pos === 'top'
+                                    (y_position === 'top'
                                         ? 'bottom'
-                                        : y_pos == 'bottom'
+                                        : y_position == 'bottom'
                                           ? 'top'
-                                          : y_pos) || default_y,
-                                overlayX: this.x_pos() || default_x,
-                                overlayY: this.y_pos() || default_y,
+                                          : y_position) || default_y,
+                                overlayX: this.xPosition() || default_x,
+                                overlayY: this.yPosition() || default_y,
                             },
                         ]),
                 });

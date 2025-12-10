@@ -243,7 +243,16 @@ export class ItemSidebarComponent
     public selected_filters: string[] = [];
     /** List of items for the active route */
     public readonly items = this._service.list.pipe(
-        map((l) => this._processItems(l as ({ id?: string; name?: string; display_name?: string; custom_name?: string } & Record<string, unknown>)[])),
+        map((l) =>
+            this._processItems(
+                l as ({
+                    id?: string;
+                    name?: string;
+                    display_name?: string;
+                    custom_name?: string;
+                } & Record<string, unknown>)[],
+            ),
+        ),
     );
     /** Whether list of items for the active route are loading */
     public readonly loading = this._service.loading_list;
@@ -325,7 +334,14 @@ export class ItemSidebarComponent
         ); // 150ms debounce for smooth feel
     }
 
-    private _processItems(list: ({ id?: string; name?: string; display_name?: string; custom_name?: string } & Record<string, unknown>)[]) {
+    private _processItems(
+        list: ({
+            id?: string;
+            name?: string;
+            display_name?: string;
+            custom_name?: string;
+        } & Record<string, unknown>)[],
+    ) {
         for (const item of list) {
             if (item instanceof PlaceModule) {
                 const name = item.system?.display_name || item.system?.name;
@@ -341,7 +357,8 @@ export class ItemSidebarComponent
                     item.custom_name || item.name || '<Unnamed>';
                 (item as Record<string, unknown>).extra = detail;
             } else if (item instanceof PlaceRepository) {
-                (item as Record<string, unknown>).display_name = item.name || '<Unnamed>';
+                (item as Record<string, unknown>).display_name =
+                    item.name || '<Unnamed>';
                 (item as Record<string, unknown>).extra = item.repo_type;
             } else if (item instanceof PlaceSystem) {
                 (item as Record<string, unknown>).display_name =

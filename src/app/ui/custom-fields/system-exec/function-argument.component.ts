@@ -147,7 +147,10 @@ export class FunctionArgumentComponent
         if (!method && !method.order.length) return;
         const form_controls = {};
         for (const prop in method.params) {
-            const prop_details = method.params[prop] as unknown as Record<string, unknown>;
+            const prop_details = method.params[prop] as unknown as Record<
+                string,
+                unknown
+            >;
             const optional = 'default' in prop_details;
             this.required[prop] = !optional;
             form_controls[prop] = new UntypedFormControl(

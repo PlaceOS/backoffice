@@ -108,7 +108,9 @@ export class RepositoriesComponent extends AsyncHandler implements OnInit {
 
     public readonly item = signal<PlaceRepository | null>(null);
     public readonly loading = signal(false);
-    public readonly tab_list = signal<any[]>([]);
+    public readonly tab_list = signal<
+        { id: string; name: string; count?: number; icon: { content: string } }[]
+    >([]);
     public readonly scroll = signal(0);
 
     public get extensions() {
@@ -156,7 +158,9 @@ export class RepositoriesComponent extends AsyncHandler implements OnInit {
         );
         this.subscription(
             'item',
-            this._service.item.subscribe((item) => this.item.set(item as unknown as PlaceRepository)),
+            this._service.item.subscribe((item) =>
+                this.item.set(item as unknown as PlaceRepository),
+            ),
         );
         this.updateTabList();
     }

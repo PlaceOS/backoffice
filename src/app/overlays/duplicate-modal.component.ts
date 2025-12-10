@@ -189,7 +189,9 @@ export class DuplicateModalComponent {
      */
     public async duplicate() {
         this.loading = true;
-        const ItemConstructor = this.item.constructor as new (data: HashMap) => HashMap;
+        const ItemConstructor = this.item.constructor as new (
+            data: HashMap,
+        ) => HashMap;
         const item = this._data.item;
         const list = [];
         this.temp = new Array(this.times).fill({});

@@ -469,11 +469,14 @@ export class SystemModulesComponent extends AsyncHandler {
                     resp.data.map((mod: PlaceModule) => ({
                         ...mod,
                         extra: mod.driver?.name,
-                    })) as any[],
+                    })) as (PlaceModule & { extra?: string })[],
             ),
         );
     /** Function for excluding modules already within this system */
-    public readonly exclude_fn = (item: any, __: string) =>
+    public readonly exclude_fn = (
+        item: PlaceModule & { control_system_id?: string; role?: number },
+        __: string,
+    ) =>
         item.control_system_id === this.item.id ||
         item.role === PlaceDriverRole.Logic;
 

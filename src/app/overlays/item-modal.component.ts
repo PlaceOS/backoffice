@@ -27,7 +27,7 @@ import { getInvalidFields } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { DialogEvent, HashMap, Identity } from '../common/types';
+import { DialogEvent, Identity } from '../common/types';
 import { generateApplicationFormFields } from '../domains/applications.utilities';
 import { generateDomainFormFields } from '../domains/domains.utilities';
 import { generateDriverFormFields } from '../drivers/drivers.utilities';
@@ -107,7 +107,7 @@ export interface CreateEditModalData<T extends Identity = Identity> {
                 @case ('driver') {
                     <driver-form
                         [form]="form"
-                        (waiting)="can_submit = !$event"
+                        (waitingChange)="can_submit = !$event"
                     />
                 }
                 @case ('zone') {
@@ -261,7 +261,9 @@ export class ItemCreateUpdateModalComponent
         }
         this.loading = i18n(`${this.name}.SAVING`);
         this._dialog_ref.disableClose = true;
-        const item_json = (this.item as PlaceResource).toJSON ? (this.item as PlaceResource).toJSON() : this.item;
+        const item_json = (this.item as PlaceResource).toJSON
+            ? (this.item as PlaceResource).toJSON()
+            : this.item;
         const item = this.item.id
             ? cleanObject(
                   { ...item_json, ...this.form.value },
@@ -324,7 +326,8 @@ export class ItemCreateUpdateModalComponent
                     )}`,
                 );
             });
-        (item as Record<string, unknown>).settings[EncryptionLevel.None] = settings;
+        (item as Record<string, unknown>).settings[EncryptionLevel.None] =
+            settings;
     }
 
     /**

@@ -236,7 +236,13 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     }
 
     public onEnter(e: unknown) {
-        this.show_overlay.set(((e as Record<string, unknown>)?.dataTransfer as { types: string[] })?.types.includes('Files'));
+        this.show_overlay.set(
+            (
+                (e as Record<string, unknown>)?.dataTransfer as {
+                    types: string[];
+                }
+            )?.types.includes('Files'),
+        );
     }
 
     public hideOverlay() {
@@ -252,7 +258,8 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
         this.clearTimeout('hide_overlay');
         this.timeout('file_event', () => {
             this.show_overlay.set(false);
-            const element: HTMLInputElement = (event as Record<string, unknown>).target as HTMLInputElement;
+            const element: HTMLInputElement = (event as Record<string, unknown>)
+                .target as HTMLInputElement;
             /* istanbul ignore else */
             if (element?.files) {
                 const files: FileList = element.files;

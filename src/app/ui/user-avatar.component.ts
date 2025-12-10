@@ -46,10 +46,12 @@ import { AuthenticatedImageDirective } from './authenticated-image.directive';
     imports: [AuthenticatedImageDirective],
 })
 export class UserAvatarComponent {
-    public readonly user = input<(PlaceUser & { photo?: string }) | Record<string, unknown>>(undefined);
+    public readonly user = input<
+        (PlaceUser & { photo?: string }) | Record<string, unknown>
+    >(undefined);
     public readonly photo_url = computed(() => {
         const user = this.user();
-        return (user?.photo || user?.image) as string || '';
+        return ((user?.photo || user?.image) as string) || '';
     });
     public readonly initials = computed(() => {
         const user = this.user();

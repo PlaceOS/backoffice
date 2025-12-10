@@ -97,6 +97,7 @@ import { APIKeyService } from './api-keys.service';
                                 </mat-chip>
                             }
                             <input
+                                #chip_input
                                 matInput
                                 placeholder="Scopes..."
                                 [matChipInputFor]="chipList"
@@ -113,7 +114,10 @@ import { APIKeyService } from './api-keys.service';
                             @for (option of scopes | async; track option) {
                                 <mat-option
                                     (click)="
-                                        addScope({ input: {}, value: option })
+                                        addScope({
+                                            input: chip_input,
+                                            value: option,
+                                        })
                                     "
                                 >
                                     {{ option }}
@@ -149,7 +153,7 @@ import { APIKeyService } from './api-keys.service';
                                 matInput
                                 #input
                                 [(ngModel)]="search_term"
-                                (ngModelChange)="setSearch($event)"
+                                (ngModelChange)="setSearch()"
                                 [ngModelOptions]="{ standalone: true }"
                                 [placeholder]="'USERS.SEARCH' | translate"
                             />
@@ -163,7 +167,7 @@ import { APIKeyService } from './api-keys.service';
                                         user: item,
                                         user_id: item.id,
                                     });
-                                    setSearch('')
+                                    setSearch()
                                 "
                                 [class.text-secondary]="
                                     form.value.user?.id === item.id
@@ -281,10 +285,15 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
 
     public readonly focusInput = () =>
         setTimeout(() => this._input_el()?.nativeElement?.focus(), 100);
-    public readonly setSearch = (term?: string) => this.loadUsers();
+    public readonly setSearch = () => this.loadUsers();
 
-    public readonly addScope = (e: MatChipInputEvent | { input: any; value: string }) =>
-        addChipItem(this.form.controls.scopes as FormControl<string[]>, e as MatChipInputEvent);
+    public readonly addScope = (
+        e: MatChipInputEvent | { input: HTMLInputElement; value: string },
+    ) =>
+        addChipItem(
+            this.form.controls.scopes as FormControl<string[]>,
+            e as MatChipInputEvent,
+        );
     public readonly removeScope = (i: string) =>
         removeChipItem(this.form.controls.scopes as FormControl<string[]>, i);
 

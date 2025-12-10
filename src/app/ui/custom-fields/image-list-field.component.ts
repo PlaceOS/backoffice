@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { Upload } from '@placeos/cloud-uploads';
 
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';

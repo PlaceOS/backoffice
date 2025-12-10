@@ -32,7 +32,11 @@ function getMetadata(parent_id: string): Record<string, unknown>[] {
 /**
  * Add or update metadata
  */
-function setMetadata(parent_id: string, name: string, data: Record<string, unknown>): Record<string, unknown> {
+function setMetadata(
+    parent_id: string,
+    name: string,
+    data: Record<string, unknown>,
+): Record<string, unknown> {
     if (!METADATA_STORE[parent_id]) {
         METADATA_STORE[parent_id] = {};
     }

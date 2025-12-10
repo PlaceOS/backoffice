@@ -7,9 +7,10 @@ import {
     inject,
     input,
     model,
+    OnChanges,
     signal,
     SimpleChanges,
-    viewChild, OnChanges,
+    viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AsyncHandler } from '../common/async-handler.class';

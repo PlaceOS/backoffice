@@ -19,6 +19,7 @@ import {
     listRepositoryCommits,
     listRepositoryDriverDetails,
     listRepositoryDrivers,
+    PlaceDriverDetails,
     PlaceDriverRole,
     PlaceRepositoryType,
     queryRepositories,
@@ -229,7 +230,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
     /** Group of form fields used for creating the system */
     public readonly form = input<UntypedFormGroup>(new FormGroup({}));
     public readonly is_editing = computed(() => !!this.form().value.id);
-    public readonly waiting = output<boolean>();
+    public readonly waitingChange = output<boolean>();
     public readonly loading = signal('');
     public readonly loading_type = signal([]);
     public readonly role_types = [
@@ -329,7 +330,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
         const driver = this.driver.getValue();
         if (!driver.id) return;
         this.loading.set('DRIVERS.DETAILS_LOADING');
-        this.waiting.emit(true);
+        this.waitingChange.emit(true);
         this.form().patchValue({
             repository_id: repo.id,
             file_name: driver.id,
@@ -346,7 +347,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                         this.form().patchValue({ commit: old_commit.id });
                         this.commit.next(old_commit);
                         this.loading.set('');
-                        this.waiting.emit(false);
+                        this.waitingChange.emit(false);
                         notifyError(
                             `Failed to get driver details for commit "${commit.id}"`,
                         );
@@ -354,7 +355,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                     }
                     if (this.form().value.id) {
                         this.loading.set('');
-                        this.waiting.emit(false);
+                        this.waitingChange.emit(false);
                         return;
                     }
                     this._applyDriverDetails(details);
@@ -362,14 +363,14 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
         );
     }
 
-    private _applyDriverDetails(details: unknown) {
+    private _applyDriverDetails(details: PlaceDriverDetails) {
         if (details == null) {
             this.loading.set('');
-            this.waiting.emit(false);
+            this.waitingChange.emit(false);
             return;
         }
         const driver = this.driver.getValue();
-        const details_any = details as any;
+        const details_any = details;
         let settings = details_any.default_settings || '';
         try {
             JSON.parse(details_any.default_settings);
@@ -382,7 +383,8 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                 driver.default_settings,
             );
         }
-        const port_number = details_any.tcp_port || details_any.udp_port || null;
+        const port_number =
+            details_any.tcp_port || details_any.udp_port || null;
         this.form().patchValue({
             name: details_any.descriptive_name || '',
             module_name: details_any.generic_name || '',
@@ -401,7 +403,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                   : PlaceDriverRole.Logic,
             description: details_any.description || '',
         });
-        this.waiting.emit(false);
+        this.waitingChange.emit(false);
         this.loading.set('');
     }
 

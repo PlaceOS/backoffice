@@ -165,13 +165,20 @@ export class ZonesStateService {
             lastValueFrom(ref.afterClosed()),
         ]);
         if (!details || !details.reason) return ref.close();
-        const zone = await this.addTrigger(ref.componentInstance.item as PlaceTrigger);
+        const zone = await this.addTrigger(
+            ref.componentInstance.item as PlaceTrigger,
+        );
         ref.close();
         if (zone) this._service.replaceItem(zone as unknown as Identity);
     }
 
-    public async addTrigger(trigger: PlaceTrigger): Promise<PlaceZone | undefined> {
-        const triggers_list = unique([...this.active_item.triggers, trigger.id]) as string[];
+    public async addTrigger(
+        trigger: PlaceTrigger,
+    ): Promise<PlaceZone | undefined> {
+        const triggers_list = unique([
+            ...this.active_item.triggers,
+            trigger.id,
+        ]) as string[];
         return updateZone(this.active_item.id, {
             ...this.active_item,
             triggers: triggers_list,

@@ -229,7 +229,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
             (v.description || '').toLowerCase().indexOf(search) < 0,
     );
     /** Minimum number of characters needed to start a server query */
-    public readonly min_length = input(0, { alias: 'minLength' });
+    public readonly minLength = input(0);
     /** Whether item list is loading */
     public readonly loading = model<boolean>(false);
     /** Service used for searching items */
@@ -272,7 +272,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
             switchMap(([query]) => {
                 this.loading.set(true);
                 const options = this.options();
-                const min_length = this.min_length();
+                const min_length = this.minLength();
                 return options && options.length > 0
                     ? of(options)
                     : !min_length || query.length >= min_length

@@ -149,11 +149,11 @@ const systems: ItemActions<PlaceSystem> = {
         item.id
             ? updateSystem(item.id, {
                   ...item,
-                  support_url: processURL(item as any, item.support_url),
+                  support_url: processURL(item, item.support_url),
               })
             : addSystem({
                   ...item,
-                  support_url: processURL(item as any, item.support_url),
+                  support_url: processURL(item, item.support_url),
               }),
     remove: (item) => removeSystem(item.id),
     itemConstructor: PlaceSystem,
@@ -161,7 +161,7 @@ const systems: ItemActions<PlaceSystem> = {
     name: 'SYSTEMS',
 };
 
-function processURL(system: Record<string, any>, url: string) {
+function processURL(system: PlaceSystem, url: string) {
     for (const key in system) {
         url = url.replace(new RegExp(`{{${key}}}`, 'g'), `${system[key]}`);
     }

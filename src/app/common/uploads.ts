@@ -47,37 +47,43 @@ export function uploadFile(
 ): Observable<UploadDetails> {
     return new Observable((observer) => {
         const fileReader = new FileReader();
-        fileReader.addEventListener('loadend', async (e: ProgressEvent<FileReader>) => {
-            const arrayBuffer = e.target.result;
-            const _blob = blobUtil.arrayBufferToBlob(arrayBuffer as ArrayBuffer, file.type);
-            const upload = await uploadNewFile(file, {
-                permissions,
-                public: is_public,
-            } as Record<string, unknown>);
-            const upload_details: UploadDetails = {
-                id: randomInt(9999_9999_9999),
-                name: file.name,
-                progress: 0,
-                link: uploadURL(upload.id),
-                formatted_size: humanReadableByteCount(file.size),
-                size: file.size,
-                upload: upload,
-            };
-            upload.state
-                .pipe(takeWhile((_) => _.status !== 'COMPLETED', true))
-                .subscribe((state) => {
-                    upload_details.progress = state.progress;
-                    upload_details.link = uploadURL(upload.id);
-                    observer.next(upload_details);
-                    if (state.status === 'FAILED')
-                        observer.error({
-                            ...upload_details,
-                            error: 'Upload failed',
-                        });
-                    if (state.status === 'COMPLETED') observer.complete();
-                });
-            observer.next(upload_details);
-        });
+        fileReader.addEventListener(
+            'loadend',
+            async (e: ProgressEvent<FileReader>) => {
+                const arrayBuffer = e.target.result;
+                const _blob = blobUtil.arrayBufferToBlob(
+                    arrayBuffer as ArrayBuffer,
+                    file.type,
+                );
+                const upload = await uploadNewFile(file, {
+                    permissions,
+                    public: is_public,
+                } as Record<string, unknown>);
+                const upload_details: UploadDetails = {
+                    id: randomInt(9999_9999_9999),
+                    name: file.name,
+                    progress: 0,
+                    link: uploadURL(upload.id),
+                    formatted_size: humanReadableByteCount(file.size),
+                    size: file.size,
+                    upload: upload,
+                };
+                upload.state
+                    .pipe(takeWhile((_) => _.status !== 'COMPLETED', true))
+                    .subscribe((state) => {
+                        upload_details.progress = state.progress;
+                        upload_details.link = uploadURL(upload.id);
+                        observer.next(upload_details);
+                        if (state.status === 'FAILED')
+                            observer.error({
+                                ...upload_details,
+                                error: 'Upload failed',
+                            });
+                        if (state.status === 'COMPLETED') observer.complete();
+                    });
+                observer.next(upload_details);
+            },
+        );
         fileReader.readAsArrayBuffer(file);
     });
 }

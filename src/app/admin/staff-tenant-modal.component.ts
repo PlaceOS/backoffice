@@ -605,15 +605,26 @@ export class StaffTenantModalComponent implements OnInit {
         if (!this.show_outlook) {
             delete (value as Record<string, unknown>).outlook_config;
         } else {
-            for (const key in (value as Record<string, Record<string, unknown>>).outlook_config) {
-                if ((value as Record<string, Record<string, unknown>>).outlook_config[key] == null) {
-                    delete (value as Record<string, Record<string, unknown>>).outlook_config[key];
+            for (const key in (value as Record<string, Record<string, unknown>>)
+                .outlook_config) {
+                if (
+                    (value as Record<string, Record<string, unknown>>)
+                        .outlook_config[key] == null
+                ) {
+                    delete (value as Record<string, Record<string, unknown>>)
+                        .outlook_config[key];
                 }
             }
         }
-        for (const key in (value as Record<string, Record<string, unknown>>).credentials) {
-            if ((value as Record<string, Record<string, unknown>>).credentials[key] == null) {
-                delete (value as Record<string, Record<string, unknown>>).credentials[key];
+        for (const key in (value as Record<string, Record<string, unknown>>)
+            .credentials) {
+            if (
+                (value as Record<string, Record<string, unknown>>).credentials[
+                    key
+                ] == null
+            ) {
+                delete (value as Record<string, Record<string, unknown>>)
+                    .credentials[key];
             }
         }
         if (!Object.keys(value.credentials).length) {

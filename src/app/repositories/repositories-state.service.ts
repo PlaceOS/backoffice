@@ -26,10 +26,7 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
 import { Identity } from '../common/types';
-import {
-    CreateEditModalData,
-    ItemCreateUpdateModalComponent,
-} from '../overlays/item-modal.component';
+import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 
 @Injectable({
     providedIn: 'root',
@@ -65,7 +62,10 @@ export class RepositoriesStateService {
     public readonly commit = this._state.active_item$.pipe(
         filter((i) => i instanceof PlaceRepository),
         switchMap((item) =>
-            listRepositoryCommits(item.id, { count: 1 } as Record<string, unknown>),
+            listRepositoryCommits(item.id, { count: 1 } as Record<
+                string,
+                unknown
+            >),
         ),
         catchError(() => []),
         map((details) => details[0]?.commit || 'HEAD'),
@@ -104,7 +104,7 @@ export class RepositoriesStateService {
                     file_name: driver,
                 }),
                 name: 'DRIVERS.NEW',
-                save: (item: any) => addDriver(item),
+                save: (item: PlaceDriver) => addDriver(item),
             },
         });
     }

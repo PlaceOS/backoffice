@@ -142,7 +142,11 @@ export class SystemStateService extends AsyncHandler {
             );
         }),
         map(([item, modules]: [PlaceSystem, PlaceModule[]]) => {
-            modules.forEach((_) => ((_ as any).connected = undefined));
+            modules.forEach(
+                (_) =>
+                    ((_ as PlaceModule & { connected?: boolean }).connected =
+                        undefined),
+            );
             this._loading.next({
                 ...this._loading.getValue(),
                 modules: false,
@@ -369,7 +373,8 @@ export class SystemStateService extends AsyncHandler {
                 ref.close();
                 notifyError(
                     `Error adding module to system "${
-                        (system as any).display_name || system.name
+                        (system as PlaceSystem & { display_name?: string })
+                            .display_name || system.name
                     }". Error: ${JSON.stringify(_e.response || _e.message || _e)}`,
                 );
                 throw _e;
@@ -379,7 +384,8 @@ export class SystemStateService extends AsyncHandler {
         ref.close();
         notifySuccess(
             `Successfully added module to system "${
-                (system as any).display_name || system.name
+                (system as PlaceSystem & { display_name?: string })
+                    .display_name || system.name
             }".`,
         );
     }
@@ -404,7 +410,9 @@ export class SystemStateService extends AsyncHandler {
             lastValueFrom(ref.afterClosed()),
         ]);
         if (!details || !details.reason) return ref.close();
-        const t = await this.addTrigger(ref.componentInstance.item as PlaceTrigger);
+        const t = await this.addTrigger(
+            ref.componentInstance.item as PlaceTrigger,
+        );
         ref.close();
         this._change.next(Date.now());
         return t;
@@ -671,7 +679,7 @@ export class SystemStateService extends AsyncHandler {
         notifySuccess(
             `Module successfully ${device.running ? 'stopped' : 'started'}`,
         );
-        (device as any).running = !device.running;
+        (device as PlaceModule & { running: boolean }).running = !device.running;
     }
 
     /** View Results of the execute */

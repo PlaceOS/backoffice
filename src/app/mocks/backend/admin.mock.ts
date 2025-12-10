@@ -11,13 +11,23 @@ import {
 } from '../common.mock';
 
 /** In-memory storage with session persistence */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const API_KEYS: Record<string, any>[] = loadFromSession('api_keys', []);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BROKERS: Record<string, any>[] = loadFromSession('brokers', []);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EDGES: Record<string, any>[] = loadFromSession('edges', []);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const APPLICATIONS: Record<string, any>[] = loadFromSession('applications', []);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const UPLOADS: Record<string, any>[] = loadFromSession('uploads', []);
-const STORAGE_PROVIDERS: Record<string, any>[] = loadFromSession('storage_providers', []);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const STORAGE_PROVIDERS: Record<string, any>[] = loadFromSession(
+    'storage_providers',
+    [],
+);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createFilter = (items: Record<string, any>[]) => (q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return items;

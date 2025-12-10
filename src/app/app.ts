@@ -23,7 +23,7 @@ import { setupCache } from './common/application';
 import { AsyncHandler } from './common/async-handler.class';
 import { detectIE, log } from './common/general';
 import { setNotifyOutlet } from './common/notifications';
-import { setLoadingMessage, setupPlace } from './common/placeos';
+import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
 import { SettingsService } from './common/settings.service';
 import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
@@ -145,12 +145,13 @@ export class AppComponent extends AsyncHandler implements OnInit {
         setLoadingMessage('Loading application settings...');
         /** Wait for settings to initialise */
         await this._settings.initialised.pipe(first((_) => _)).toPromise();
-        const settings = this._settings.get('composer') || {} as any;
+        const settings = (this._settings.get('composer') ||
+            {}) as PlaceSettings;
         settings.mock = !!this._settings.get('mock');
         settings.ignore_api_key = true;
         setLoadingMessage('Authenticating user...');
         /** Wait for authentication details to load */
-        await setupPlace(settings as any).catch(() => this.onInitError());
+        await setupPlace(settings).catch(() => this.onInitError());
         setupCache(this._cache);
         this.timeout('wait_for_user', () => this.onInitError(), 30 * 1000);
         await this._users.initialised.pipe(first((_) => _)).toPromise();
@@ -218,17 +219,18 @@ export class AppComponent extends AsyncHandler implements OnInit {
     private _initLocale() {
         try {
             let locale = localStorage.getItem('BACKOFFICE.locale');
-            const locales = (this._settings.get('app.locales') as any) || [
-                { id: 'en', name: 'English' },
-            ];
+            const locales = (this._settings.get('app.locales') as {
+                id: string;
+                name: string;
+            }[]) || [{ id: 'en', name: 'English' }];
             if (locale) {
                 this._locale?.setLocale(locale);
             } else {
                 const list = navigator.languages;
                 for (const lang of list) {
-                    locale = (locales as any).find((_: any) => _.id === lang);
+                    locale = locales.find((_) => _.id === lang)?.id;
                     if (!locale)
-                        locale = (locales as any).find((_: any) => lang.includes(_.id));
+                        locale = locales.find((_) => lang.includes(_.id))?.id;
                     if (locale) {
                         this._locale?.setLocale(lang);
                         localStorage.setItem('BACKOFFICE.locale', lang);

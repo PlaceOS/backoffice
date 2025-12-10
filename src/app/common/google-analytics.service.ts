@@ -89,7 +89,13 @@ export class GoogleAnalyticsService {
                 `user|${id}`,
                 () => {
                     log('Analytics', 'Service', `Set user ID: ${id}`);
-                    (this.service as any)('set', 'userId', id);
+                    (
+                        this.service as (
+                            cmd: string,
+                            field: string,
+                            val: string,
+                        ) => void
+                    )('set', 'userId', id);
                     this.event('authentication', 'user-id available');
                 },
                 100,

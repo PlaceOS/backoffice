@@ -8,7 +8,6 @@ import {
     TriggerTimeCondition,
     querySystems,
 } from '@placeos/ts-client';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { CommonModule } from '@angular/common';
@@ -314,17 +313,23 @@ export class TriggerAboutComponent extends AsyncHandler implements OnInit {
     public mailers: TriggerMailer[] = [];
     /** Query function for systems */
     public readonly query_fn = (q: string) =>
-        querySystems({ q }).pipe(map((resp) => resp.data as any));
+        querySystems({ q }).pipe(map((resp) => resp.data as PlaceSystem[]));
 
-    public readonly editCondition = (c?: TriggerComparison | TriggerTimeCondition) =>
-        this._service.editCondition(c, this.template_system);
-    public readonly removeCondition = (c: TriggerComparison | TriggerTimeCondition) => this._service.removeCondition(c);
+    public readonly editCondition = (
+        c?: TriggerComparison | TriggerTimeCondition,
+    ) => this._service.editCondition(c, this.template_system);
+    public readonly removeCondition = (
+        c: TriggerComparison | TriggerTimeCondition,
+    ) => this._service.removeCondition(c);
     public readonly editAction = (a?: TriggerFunction | TriggerMailer) =>
         this._service.editAction(a, this.template_system);
-    public readonly removeAction = (a: TriggerFunction | TriggerMailer) => this._service.removeAction(a);
+    public readonly removeAction = (a: TriggerFunction | TriggerMailer) =>
+        this._service.removeAction(a);
 
     public get item(): PlaceTrigger {
-        return (this._service.active_item as PlaceTrigger) || ({} as PlaceTrigger);
+        return (
+            (this._service.active_item as PlaceTrigger) || ({} as PlaceTrigger)
+        );
     }
 
     /** HTML string for rendering the description */

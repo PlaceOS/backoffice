@@ -136,7 +136,9 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
         CsvUploadComponent,
     ],
 })
-export class BulkItemModalComponent<T extends HashMap<unknown> = HashMap<unknown>> {
+export class BulkItemModalComponent<
+    T extends HashMap<unknown> = HashMap<unknown>,
+> {
     private _dialog_ref =
         inject<MatDialogRef<BulkItemModalComponent>>(MatDialogRef);
     private _data = inject<BulkItemModalData<T>>(MAT_DIALOG_DATA);
@@ -205,7 +207,10 @@ export class BulkItemModalComponent<T extends HashMap<unknown> = HashMap<unknown
 
     private getAvailableFields(): Identity[] {
         const list: readonly string[] = Object.keys(new this._data.constr());
-        const identity_list = list.map((i) => ({ id: i, name: i.split('_').join(' ') }));
+        const identity_list = list.map((i) => ({
+            id: i,
+            name: i.split('_').join(' '),
+        }));
         return (unique(identity_list, 'id') as Identity[]).filter(
             (field) =>
                 (field.id as string) !== 'id' &&

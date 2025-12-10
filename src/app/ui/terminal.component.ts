@@ -76,7 +76,9 @@ export class TerminalComponent
 
     public ngOnDestroy(): void {
         (this.terminal as { clear: () => void; dispose: () => void })?.clear();
-        (this.terminal as { clear: () => void; dispose: () => void })?.dispose();
+        (
+            this.terminal as { clear: () => void; dispose: () => void }
+        )?.dispose();
     }
 
     /**
@@ -85,7 +87,10 @@ export class TerminalComponent
     public resizeTerminal(): void {
         const container_el = this.container_el();
         if (!this.terminal || !container_el) return;
-        const term = this.terminal as { options: { fontSize: number; lineHeight: number }; resize: (w: number, h: number) => void };
+        const term = this.terminal as {
+            options: { fontSize: number; lineHeight: number };
+            resize: (w: number, h: number) => void;
+        };
         const font_size = term.options.fontSize;
         const line_height = term.options.lineHeight;
         const box = container_el.nativeElement.getBoundingClientRect();
@@ -102,7 +107,12 @@ export class TerminalComponent
      */
     private updateTerminalContents(new_content: string) {
         if (!this.terminal) return;
-        const term = this.terminal as { selectAll: () => void; clearSelection: () => void; write: (s: string) => void; writeln: (s: string) => void };
+        const term = this.terminal as {
+            selectAll: () => void;
+            clearSelection: () => void;
+            write: (s: string) => void;
+            writeln: (s: string) => void;
+        };
         term.selectAll();
         term.clearSelection();
         term.write('\x1b[H\x1b[2J');

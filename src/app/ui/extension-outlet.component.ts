@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import {
     apiKey,
     onlineState,
+    PlaceResource,
     showMetadata,
     token,
     updateMetadata,
@@ -24,7 +25,7 @@ import { SafePipe } from './pipes/safe.pipe';
 
 const RESOURCE_STORE = new Map<string, string>();
 
-export interface FrameMessage<T = any> {
+export interface FrameMessage<T = unknown> {
     id: string;
     type: 'backoffice';
     action: 'update' | 'load' | 'metadata' | 'resource' | 'result';
@@ -88,16 +89,16 @@ export class ExtensionOutletComponent extends AsyncHandler implements OnInit {
             if (message.type === 'backoffice' && item) {
                 if (message.action === 'update') {
                     // Handle update to item model
-                    this.updateItem(item as any, message);
+                    this.updateItem(item, message);
                 } else if (message.action === 'metadata' && message.name) {
                     // Handle updating metadata
-                    this.updateMetadata(item as any, message);
+                    this.updateMetadata(item, message);
                 } else if (message.action === 'load' && message.name) {
                     // Handle updating metadata
-                    this.loadMetadata(item as any, message, message.parent);
+                    this.loadMetadata(item, message, message.parent);
                 } else if (message.action === 'resource' && message.name) {
                     // Handle updating metadata
-                    const url = await this.loadResource(item as any, message);
+                    const url = await this.loadResource(item, message);
                     this._postMessage({
                         id: message.id,
                         type: 'backoffice',
@@ -110,10 +111,7 @@ export class ExtensionOutletComponent extends AsyncHandler implements OnInit {
         });
     }
 
-    private async updateItem(
-        item: { id: string } & Record<string, string>,
-        message: FrameMessage,
-    ) {
+    private async updateItem(item: PlaceResource, message: FrameMessage) {
         const updated_item = await this._service.actions
             .save({
                 ...item,
@@ -134,13 +132,10 @@ export class ExtensionOutletComponent extends AsyncHandler implements OnInit {
         }
     }
 
-    private async updateMetadata(
-        item: { id: string; parent_id?: string } & Record<string, string>,
-        message: FrameMessage,
-    ) {
-        await showMetadata(item.id as string, message.name).toPromise();
-        await updateMetadata(item.id as string, {
-            id: item.id as string,
+    private async updateMetadata(item: PlaceResource, message: FrameMessage) {
+        await showMetadata(item.id, message.name).toPromise();
+        await updateMetadata(item.id, {
+            id: item.id,
             name: message.name,
             description: `Metadata from ${this.url}`,
             details: typeof message.content === 'object' ? message.content : {},
@@ -154,12 +149,12 @@ export class ExtensionOutletComponent extends AsyncHandler implements OnInit {
     }
 
     private async loadMetadata(
-        item: { id: string; parent_id?: string } & Record<string, string>,
+        item: PlaceResource,
         message: FrameMessage,
         parent = false,
     ) {
         const metadata = await showMetadata(
-            (parent ? item.parent_id : item.id) as string,
+            (parent ? (item as any).parent_id : item.id) as string,
             message.name,
         ).toPromise();
         if (metadata) {
@@ -172,10 +167,7 @@ export class ExtensionOutletComponent extends AsyncHandler implements OnInit {
         }
     }
 
-    private async loadResource(
-        item: Record<string, string | number>,
-        message: FrameMessage,
-    ) {
+    private async loadResource(item: PlaceResource, message: FrameMessage) {
         const src = message.name;
         // If not an API call, just load the image
         if (!src.includes('/api/engine/v2/uploads')) return src;

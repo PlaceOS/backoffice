@@ -667,7 +667,9 @@ export class SettingsFormComponent
                 type,
             );
         }
-        return Object.keys(decorations).map((i) => decorations[i] as any);
+        return Object.keys(decorations).map(
+            (i) => decorations[i] as unknown as HashMap,
+        );
     }
 
     private _decorationsForObject(

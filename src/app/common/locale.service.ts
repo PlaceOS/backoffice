@@ -11,7 +11,11 @@ export function setTranslationService(service: LocaleService) {
     _service = service;
 }
 
-export function i18n(key: string, args: Record<string, unknown> = {}, plural = 0) {
+export function i18n(
+    key: string,
+    args: Record<string, unknown> = {},
+    plural = 0,
+) {
     if (!_service) return key;
     return _service.get(key, args, plural);
 }
@@ -29,14 +33,20 @@ interface LocaleStore {
     mappings: Record<string, string>;
 }
 
-function removeNesting(value: Record<string, any>, path = ''): Record<string, string> {
+function removeNesting(
+    value: Record<string, unknown>,
+    path = '',
+): Record<string, string> {
     let out_object: Record<string, string> = {};
     for (const key in value) {
         const out_key = path ? [path, key].join('.') : key;
         if (value[key] instanceof Object) {
             out_object = {
                 ...out_object,
-                ...removeNesting(value[key], out_key),
+                ...removeNesting(
+                    value[key] as Record<string, unknown>,
+                    out_key,
+                ),
             };
         } else {
             out_object[out_key] = `${value[key]}`;
@@ -191,7 +201,7 @@ export class LocaleService {
                 : { details: {} };
             const base_locale_values = removeNesting(locale_data);
             const override_locale_values = removeNesting(
-                locale_override_data.details,
+                locale_override_data.details as Record<string, unknown>,
             );
             this._locale_mappings[locale] = {
                 ...base_locale_values,

@@ -70,7 +70,7 @@ export class SettingsService extends AsyncHandler {
     public value<T = unknown>(name: string): T {
         return !this._observables[name]
             ? null
-            : this._subjects[name].getValue() as T;
+            : (this._subjects[name].getValue() as T);
     }
 
     /** Page title */
@@ -104,7 +104,7 @@ export class SettingsService extends AsyncHandler {
     public async init() {
         this._applyTheme();
         if (this.get('debug')) window.debug = true;
-        const app = this.get('app') as any;
+        const app = this.get('app') as { name?: string } | undefined;
         if (app?.name) {
             this._app_name = app.name;
         }
@@ -144,11 +144,12 @@ export class SettingsService extends AsyncHandler {
     public get<T = unknown>(key: string): T {
         const keys = key.split('.');
         if (keys[0] !== 'app') {
-            return (
-                getItemWithKeys(keys, this._pending_settings) ??
+            return (getItemWithKeys(keys, this._pending_settings) ??
                 getItemWithKeys(keys, this._user_settings.getValue()) ??
-                getItemWithKeys(keys, DEFAULT_SETTINGS as HashMap<unknown>)
-            ) as T;
+                getItemWithKeys(
+                    keys,
+                    DEFAULT_SETTINGS as HashMap<unknown>,
+                )) as T;
         }
         const override_settings = [...this._overrides.getValue()];
         for (const override of override_settings) {
@@ -188,7 +189,10 @@ export class SettingsService extends AsyncHandler {
     }
 
     private _applyCssVariables() {
-        const variable_map = (this.get('app.css_variables') || {}) as Record<string, string>;
+        const variable_map = (this.get('app.css_variables') || {}) as Record<
+            string,
+            string
+        >;
         let css_string = 'body { ';
         for (const key in variable_map) {
             css_string += `--${key}: ${variable_map[key]}; `;

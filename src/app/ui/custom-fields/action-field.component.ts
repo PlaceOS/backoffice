@@ -34,7 +34,7 @@ export class ActionFieldComponent {
     /** Whether form field is disabled */
     public readonly disabled = input<boolean>(undefined);
     /** Emitter for user interaction events */
-    public readonly on_action = output({ alias: 'onAction' });
+    public readonly performedAction = output();
     /** Whether to show tooltip */
     public show_tooltip = false;
 
@@ -43,6 +43,6 @@ export class ActionFieldComponent {
      */
     public performAction() {
         this.show_tooltip = !this.show_tooltip;
-        this.on_action.emit();
+        this.performedAction.emit();
     }
 }

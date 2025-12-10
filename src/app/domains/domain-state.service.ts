@@ -59,7 +59,8 @@ export class DomainStateService {
 
     private _changed = new BehaviorSubject<number>(0);
 
-    public readonly item: Observable<PlaceDomain> = this._state.item as Observable<PlaceDomain>;
+    public readonly item: Observable<PlaceDomain> = this._state
+        .item as Observable<PlaceDomain>;
 
     public readonly loading = this._loading.asObservable();
 
@@ -69,9 +70,14 @@ export class DomainStateService {
     ]).pipe(
         filter(([, item]) => item instanceof PlaceDomain),
         switchMap(([, item]) =>
-            queryUsers({ authority_id: item.id, limit: 1000 } as Record<string, unknown>),
+            queryUsers({ authority_id: item.id, limit: 1000 } as Record<
+                string,
+                unknown
+            >),
         ),
-        map((response) => response.data.sort((a, b) => a.name.localeCompare(b.name))),
+        map((response) =>
+            response.data.sort((a, b) => a.name.localeCompare(b.name)),
+        ),
         catchError(() => []),
         shareReplay(1),
     );
@@ -83,9 +89,15 @@ export class DomainStateService {
         switchMap(([, item]) => {
             const q = { authority_id: item.id };
             return combineLatest([
-                querySAMLSources(q as Record<string, unknown>).pipe(map((response) => response.data)),
-                queryOAuthSources(q as Record<string, unknown>).pipe(map((response) => response.data)),
-                queryLDAPSources(q as Record<string, unknown>).pipe(map((response) => response.data)),
+                querySAMLSources(q as Record<string, unknown>).pipe(
+                    map((response) => response.data),
+                ),
+                queryOAuthSources(q as Record<string, unknown>).pipe(
+                    map((response) => response.data),
+                ),
+                queryLDAPSources(q as Record<string, unknown>).pipe(
+                    map((response) => response.data),
+                ),
             ]);
         }),
         map((sources) => {
@@ -101,9 +113,14 @@ export class DomainStateService {
         combineLatest([this._changed, this.item]).pipe(
             filter(([, item]) => item instanceof PlaceDomain),
             switchMap(([, item]) =>
-                queryApplications({ authority_id: item.id } as Record<string, unknown>),
+                queryApplications({ authority_id: item.id } as Record<
+                    string,
+                    unknown
+                >),
             ),
-            map((response) => response.data.sort((a, b) => a.name.localeCompare(b.name))),
+            map((response) =>
+                response.data.sort((a, b) => a.name.localeCompare(b.name)),
+            ),
             catchError(() => []),
             shareReplay(1),
         );
@@ -114,7 +131,9 @@ export class DomainStateService {
             const q = { authority_id: item?.id };
             const details = await Promise.all([
                 lastValueFrom(
-                    queryApplications(q as Record<string, unknown>).pipe(map((response) => response.total)),
+                    queryApplications(q as Record<string, unknown>).pipe(
+                        map((response) => response.total),
+                    ),
                 ),
                 lastValueFrom(
                     combineLatest([
@@ -128,7 +147,11 @@ export class DomainStateService {
                         ),
                     ),
                 ),
-                lastValueFrom(queryUsers(q as Record<string, unknown>).pipe(map((response) => response.total))),
+                lastValueFrom(
+                    queryUsers(q as Record<string, unknown>).pipe(
+                        map((response) => response.total),
+                    ),
+                ),
             ]);
             const [applications, auth_sources, users] = details;
             return {

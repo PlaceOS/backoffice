@@ -76,11 +76,17 @@ export function detectIE(): number {
  * @param keys List of sub-keys to search for
  * @param map Object to search
  */
-export function getItemWithKeys(keys: string[], map: HashMap<unknown>): unknown {
+export function getItemWithKeys(
+    keys: string[],
+    map: HashMap<unknown>,
+): unknown {
     const key = keys[0];
     if (map && key in map) {
         return keys.length > 1
-            ? getItemWithKeys(keys.slice(1), (map[key] || {}) as HashMap<unknown>)
+            ? getItemWithKeys(
+                  keys.slice(1),
+                  (map[key] || {}) as HashMap<unknown>,
+              )
             : map[key];
     }
     return null;

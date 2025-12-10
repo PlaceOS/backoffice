@@ -42,7 +42,9 @@ import { TranslatePipe } from './translate.pipe';
             @if (!is_public()) {
                 <div class="flex flex-col space-y-2">
                     <mat-form-field appearance="outline">
-                        <mat-label>{{ 'COMMON.PERMISSIONS' | translate }}</mat-label>
+                        <mat-label>{{
+                            'COMMON.PERMISSIONS' | translate
+                        }}</mat-label>
                         <mat-select [(ngModel)]="permissions">
                             <mat-option value="none">
                                 {{ 'COMMON.NONE' | translate }}</mat-option

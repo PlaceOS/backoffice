@@ -7,7 +7,7 @@ import {
     registerMockEndpoint,
 } from '@placeos/ts-client';
 
-const FILTER_FN = (item: Record<string, any>, q: HashMap) => {
+const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return true;
     }
@@ -15,7 +15,7 @@ const FILTER_FN = (item: Record<string, any>, q: HashMap) => {
     if (q.q) {
         match =
             match &&
-            (item.name || '')
+            `${item.name || ''}`
                 .toLowerCase()
                 .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
     }
