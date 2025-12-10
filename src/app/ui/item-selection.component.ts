@@ -1,7 +1,3 @@
-import {
-    CdkVirtualScrollViewport,
-    ScrollingModule,
-} from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
@@ -34,6 +30,7 @@ import { SettingsService } from '../common/settings.service';
 import { BackofficeUsersService } from '../users/users.service';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
+import { VirtualScrollComponent } from './virtual-scroll.component';
 
 @Component({
     selector: 'item-selection',
@@ -87,25 +84,33 @@ import { TranslatePipe } from './translate.pipe';
                             ></mat-spinner>
                         }
                     </div>
-                    <p class="w-full px-4 text-sm opacity-60">
+                    <p class="w-full px-4 text-sm opacity-60 text-left">
                         {{
                             'COMMON.TOTAL_ITEMS'
-                                | translate: { count: (total | async) }
+                                | translate: { count: (total | async) }:(total | async)
                         }}
                     </p>
                     <div class="border-base-300 flex h-1/2 flex-1 flex-col">
                         @if ((items | async)?.length) {
-                            <cdk-virtual-scroll-viewport
-                                itemSize="48"
-                                (scroll)="is_scrolled.set(true)"
-                                (scrolledIndexChange)="atBottom()"
+                            <virtual-scroll
+                                [item_size]="72"
+                                [items]="items | async"
+                                [item_template]="item_display"
+                                (scrolled)="atBottom($event)"
                                 class="h-[768px] max-h-[75vh]"
                             >
+                                <div
+                                    class="bg-base-200 p-2 text-center text-sm opacity-30"
+                                >
+                                    {{ 'COMMON.END_OF_LIST' | translate }}
+                                </div>
+                            </virtual-scroll>
+                            <ng-template
+                                #item_display
+                                let-item="item"
+                                let-idx="index"
+                            >
                                 <a
-                                    *cdkVirtualFor="
-                                        let item of items | async;
-                                        trackBy: trackByFn
-                                    "
                                     [routerLink]="
                                         subroute()
                                             ? [
@@ -117,6 +122,7 @@ import { TranslatePipe } from './translate.pipe';
                                             : ['/', route(), item.id]
                                     "
                                     routerLinkActive="active"
+                                    [class.bg-base-content/5]="idx % 2 === 1"
                                     class="m-2 block max-w-[calc(100vw-2rem)] rounded-sm p-2 text-left"
                                     (click)="show.set(false)"
                                 >
@@ -136,12 +142,7 @@ import { TranslatePipe } from './translate.pipe';
                                         </div>
                                     }
                                 </a>
-                                <div
-                                    class="bg-base-200 p-2 text-center text-sm opacity-30"
-                                >
-                                    {{ 'COMMON.END_OF_LIST' | translate }}
-                                </div>
-                            </cdk-virtual-scroll-viewport>
+                            </ng-template>
                         } @else {
                             <div
                                 class="flex flex-col items-center justify-center p-8 opacity-30"
@@ -163,14 +164,11 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [
         `
-            a:nth-child(2n) {
-                background-color: rgba(0, 0, 0, 0.04);
-            }
             a:hover {
                 background-color: rgba(0, 0, 0, 0.2);
             }
             a.active {
-                background-color: var(--secondary);
+                background-color: var(--secondary) !important;
                 color: #fff;
             }
         `,
@@ -179,7 +177,7 @@ import { TranslatePipe } from './translate.pipe';
         CommonModule,
         TranslatePipe,
         IconComponent,
-        ScrollingModule,
+        VirtualScrollComponent,
         RouterModule,
         MatProgressSpinnerModule,
         FormsModule,
@@ -199,7 +197,6 @@ export class ItemSelectionComponent
     public readonly title = input(undefined);
     public readonly route = input('systems');
     public readonly subroute = signal('');
-    public readonly is_scrolled = signal(false);
 
     public last_total = 0;
     public last_check = 0;
@@ -215,9 +212,6 @@ export class ItemSelectionComponent
     public readonly loading = this._service.loading_list;
     /** Total number of items in the last request */
     public total = this._service.count;
-
-    /** Virtual scrolling viewport */
-    private readonly viewport = viewChild(CdkVirtualScrollViewport);
 
     private readonly _input =
         viewChild<ElementRef<HTMLInputElement>>('search_input');
@@ -265,7 +259,7 @@ export class ItemSelectionComponent
 
     public ngAfterViewInit() {
         this.focusInput();
-        this.atBottom();
+        this.atBottom([0, 0]);
     }
 
     public open() {
@@ -281,13 +275,6 @@ export class ItemSelectionComponent
         this._service.setSearch(str);
     }
 
-    public trackByFn(
-        index: number,
-        item: { id?: string } & Record<string, unknown>,
-    ) {
-        return item.id || index;
-    }
-
     /** Whether to update the list of items */
     public get is_stale() {
         const now = Date.now();
@@ -301,22 +288,23 @@ export class ItemSelectionComponent
     /**
      * Check if user has scrolled to the bottom of the sidebar and emit an event to get next page of items
      */
-    public async atBottom() {
-        const loading = await nextValueFrom(this.loading);
-        if (loading || !this.is_stale) return;
-        const viewport = this.viewport();
-        if (!viewport) {
-            return this.timeout('atBottom', () => this.atBottom());
-        }
-        const end = viewport.getRenderedRange().end;
-        const total = viewport.getDataLength();
-        if (end >= total - 1) {
-            this.last_total = total;
-            this.last_check = Date.now();
-            if (this.last_total !== this._service.total) {
-                this._service.moreItems();
-            }
-        }
+    public async atBottom([_start, end]: [number, number]) {
+        this.timeout(
+            'load_more',
+            async () => {
+                const loading = await nextValueFrom(this.loading);
+                const items = await nextValueFrom(this.items);
+                if (loading || !this.is_stale) return;
+                if (end >= items.length) {
+                    this.last_total = items.length;
+                    this.last_check = Date.now();
+                    if (this.last_total !== this._service.total) {
+                        this._service.moreItems();
+                    }
+                }
+            },
+            150,
+        );
     }
 
     private _processItems(
