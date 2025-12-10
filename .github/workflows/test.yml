@@ -106,10 +106,10 @@ jobs:
               run: npm run postinstall
 
             - name: Install Playwright browsers
-              run: npx playwright install --with-deps chromium
+              run: npx playwright install --with-deps
 
             - name: Run E2E tests
-              run: npx nx e2e e2e --project=chromium
+              run: npx nx e2e e2e
 
             - name: Upload Playwright report
               uses: actions/upload-artifact@v4
