@@ -6,6 +6,7 @@ import {
     MockedDirective,
     MockInstance,
 } from 'ng-mocks';
+import { vi } from 'vitest';
 
 interface PropDecoratorFactory {
     type?: { prototype: { ngMetadataName?: string } };
@@ -87,7 +88,7 @@ export const createQuerySignalMock = (): Signal<undefined> => {
     const theSignal = signal(undefined);
     const signalSymbol = Object.getOwnPropertySymbols(theSignal)[0];
     if (signalSymbol) {
-        (theSignal as any)[signalSymbol]._dirtyCounter = { update: jest.fn() }; // Mock the update method to avoid errors in tests;
+        (theSignal as any)[signalSymbol]._dirtyCounter = { update: vi.fn() }; // Mock the update method to avoid errors in tests;
     }
     return theSignal;
 };
