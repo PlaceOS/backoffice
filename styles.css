@@ -282,6 +282,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .relative {
   position: relative;
 }
+#placeos .static {
+  position: static;
+}
 #placeos .sticky {
   position: sticky;
 }
@@ -564,6 +567,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .hidden {
   display: none;
+}
+#placeos .inline {
+  display: inline;
 }
 #placeos .inline-block {
   display: inline-block;
