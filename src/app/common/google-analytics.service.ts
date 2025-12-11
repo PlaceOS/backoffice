@@ -29,7 +29,7 @@ export class GoogleAnalyticsService {
     /** Last route posted to the API */
     private last_route: string;
     /** Store for timer ids */
-    private timers: { [name: string]: number } = {};
+    private timers: { [name: string]: ReturnType<typeof setTimeout> } = {};
 
     public init(tracking_id = '') {
         if (!window.gtag) {

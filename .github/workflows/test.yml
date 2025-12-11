@@ -112,7 +112,7 @@ jobs:
               run: npx playwright install --with-deps
 
             - name: Run E2E tests
-              run: npx nx e2e e2e ${{ (github.base_ref == 'develop' || github.ref == 'refs/heads/develop') && '--project=chromium --project=mobile-chrome' || '' }}
+              run: npx nx e2e e2e ${{ (github.base_ref == 'develop' || github.ref == 'refs/heads/develop') && '-- --project=chromium --project=mobile-chrome' || '' }}
 
             - name: Upload Playwright report
               uses: actions/upload-artifact@v4

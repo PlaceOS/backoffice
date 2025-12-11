@@ -3,7 +3,7 @@ import { SwUpdate } from '@angular/service-worker';
 import { log } from './general';
 import { notifyInfo } from './notifications';
 
-let _timer: number;
+let _timer: ReturnType<typeof setInterval>;
 let _new_version = false;
 
 export function hasNewVersion() {
