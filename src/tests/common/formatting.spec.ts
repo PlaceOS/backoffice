@@ -93,60 +93,81 @@ describe('formatting.ts utilities', () => {
     });
 
     describe('formatDate', () => {
-        // NOTE: The source code uses 'YYYY' format which throws in date-fns v3+
-        // These tests verify the function signature, but may throw due to invalid format tokens
-        it('should attempt to format date', () => {
+        it('should format date correctly', () => {
             // January 15, 2024
             const date = new Date(2024, 0, 15).getTime();
-            // formatDate throws because of invalid 'YYYY' token in date-fns v3
-            expect(() => formatDate(date)).toThrow();
+            const result = formatDate(date);
+            expect(result).toBe('15 January 2024');
         });
 
-        it('should throw for different months due to invalid format token', () => {
+        it('should format different months correctly', () => {
             // December 25, 2023
             const date = new Date(2023, 11, 25).getTime();
-            expect(() => formatDate(date)).toThrow();
+            const result = formatDate(date);
+            expect(result).toBe('25 December 2023');
+        });
+
+        it('should format first day of month', () => {
+            const date = new Date(2024, 5, 1).getTime();
+            const result = formatDate(date);
+            expect(result).toBe('01 June 2024');
+        });
+
+        it('should format last day of month', () => {
+            const date = new Date(2024, 1, 29).getTime();
+            const result = formatDate(date);
+            expect(result).toBe('29 February 2024');
         });
     });
 
     describe('formatTime', () => {
-        // NOTE: The source code uses 'A' format which is invalid in date-fns v3+
-        // It should use 'a' for am/pm. These tests verify the function throws.
-        it('should throw due to invalid A format token', () => {
+        it('should format afternoon time correctly', () => {
             // 2:30 PM
             const date = new Date(2024, 0, 15, 14, 30).getTime();
-            expect(() => formatTime(date)).toThrow();
+            const result = formatTime(date);
+            expect(result).toBe('2:30 PM');
         });
 
-        it('should throw for morning time due to invalid format token', () => {
+        it('should format morning time correctly', () => {
             // 9:15 AM
             const date = new Date(2024, 0, 15, 9, 15).getTime();
-            expect(() => formatTime(date)).toThrow();
+            const result = formatTime(date);
+            expect(result).toBe('9:15 AM');
         });
 
-        it('should throw for midnight due to invalid format token', () => {
+        it('should format midnight correctly', () => {
             const date = new Date(2024, 0, 15, 0, 0).getTime();
-            expect(() => formatTime(date)).toThrow();
+            const result = formatTime(date);
+            expect(result).toBe('12:00 AM');
         });
 
-        it('should throw for noon due to invalid format token', () => {
+        it('should format noon correctly', () => {
             const date = new Date(2024, 0, 15, 12, 0).getTime();
-            expect(() => formatTime(date)).toThrow();
+            const result = formatTime(date);
+            expect(result).toBe('12:00 PM');
         });
     });
 
     describe('formatPeriod', () => {
-        // NOTE: formatPeriod uses 'A' format token which throws in date-fns v3+
-        it('should throw due to invalid A format token', () => {
-            expect(() => formatPeriod('09:00')).toThrow();
+        it('should format period with default 60 minute duration', () => {
+            const result = formatPeriod('09:00');
+            expect(result).toContain('9:00 AM');
+            expect(result).toContain('10:00 AM');
+            expect(result).toContain('60 minutes');
         });
 
-        it('should throw with custom duration due to invalid format token', () => {
-            expect(() => formatPeriod('14:00', 30)).toThrow();
+        it('should format period with custom duration', () => {
+            const result = formatPeriod('14:00', 30);
+            expect(result).toContain('2:00 PM');
+            expect(result).toContain('2:30 PM');
+            expect(result).toContain('30 minutes');
         });
 
-        it('should throw for period spanning AM to PM due to invalid format token', () => {
-            expect(() => formatPeriod('11:30', 60)).toThrow();
+        it('should format period spanning AM to PM', () => {
+            const result = formatPeriod('11:30', 60);
+            expect(result).toContain('11:30 AM');
+            expect(result).toContain('12:30 PM');
+            expect(result).toContain('60 minutes');
         });
     });
 
@@ -156,9 +177,12 @@ describe('formatting.ts utilities', () => {
             expect(typeof formatter).toBe('function');
         });
 
-        it('should throw when curried function is called due to invalid format token', () => {
+        it('should format period when curried function is called', () => {
             const formatter = formatPeriodWithDuration(45);
-            expect(() => formatter('10:00')).toThrow();
+            const result = formatter('10:00');
+            expect(result).toContain('10:00 AM');
+            expect(result).toContain('10:45 AM');
+            expect(result).toContain('45 minutes');
         });
     });
 
@@ -222,12 +246,11 @@ describe('formatting.ts utilities', () => {
             );
         });
 
-        it('should throw for daily recurrence with end date due to invalid YYYY format token', () => {
+        it('should format daily recurrence with end date', () => {
             const end_date = new Date(2024, 0, 31).getTime(); // January 31, 2024
-            // formatRecurrence uses 'YYYY' which throws in date-fns v3+
-            expect(() =>
-                formatRecurrence({ period: 1, end: end_date }),
-            ).toThrow();
+            const result = formatRecurrence({ period: 1, end: end_date });
+            expect(result).toContain('Daily');
+            expect(result).toContain('until 31 Jan 2024');
         });
 
         it('should format weekly recurrence forever', () => {

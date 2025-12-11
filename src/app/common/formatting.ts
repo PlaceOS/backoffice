@@ -55,7 +55,7 @@ export function formatAttendees(list: PlaceUser[], host?: PlaceUser) {
  * @param date Date to format
  */
 export function formatDate(date: number) {
-    return format(date, 'dd MMMM YYYY');
+    return format(date, 'dd MMMM yyyy');
 }
 
 /**
@@ -63,7 +63,7 @@ export function formatDate(date: number) {
  * @param date Date to format
  */
 export function formatTime(date: number) {
-    return format(date, 'h:mm A');
+    return format(date, 'h:mm a');
 }
 
 /**
@@ -82,7 +82,7 @@ export function formatPeriodWithDuration(duration: number) {
 export function formatPeriod(timestamp: string, duration = 60) {
     const parts = timestamp.split(':');
     const date = set(Date.now(), { hours: +parts[0], minutes: +parts[1] });
-    return `${format(date, 'h:mm A')} - ${format(addMinutes(date, duration), 'h:mm A')} (${formatAsDuration({ minutes: duration })})`;
+    return `${format(date, 'h:mm a')} - ${format(addMinutes(date, duration), 'h:mm a')} (${formatAsDuration({ minutes: duration })})`;
 }
 
 /**
@@ -122,7 +122,7 @@ export function formatRecurrence(value: {
             ? value.period
             : RECURRENCE_PERIODS[value.period];
     const end = value.end
-        ? `until ${format(value.end, 'dd MMM YYYY')}`
+        ? `until ${format(value.end, 'dd MMM yyyy')}`
         : 'forever';
     return `${period} ${end}`;
 }
