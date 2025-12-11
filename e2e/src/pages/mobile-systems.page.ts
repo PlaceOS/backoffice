@@ -42,9 +42,7 @@ export class MobileSystemsPage extends MobileBasePage {
         await this.openItemSelection();
         await expect(
             this.page
-                .locator(
-                    `item-selection cdk-virtual-scroll-viewport a:has-text("${name}")`,
-                )
+                .locator(`item-selection virtual-scroll a:has-text("${name}")`)
                 .first(),
         ).toBeVisible({ timeout: 10000 });
     }

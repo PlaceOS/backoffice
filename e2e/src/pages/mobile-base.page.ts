@@ -70,9 +70,7 @@ export abstract class MobileBasePage extends BasePage {
      * Get items in the item selection list
      */
     get itemSelectionItems(): Locator {
-        return this.page.locator(
-            'item-selection cdk-virtual-scroll-viewport a',
-        );
+        return this.page.locator('item-selection virtual-scroll a');
     }
 
     /**
@@ -140,15 +138,13 @@ export abstract class MobileBasePage extends BasePage {
 
         // Wait for items to load
         await this.page.waitForSelector(
-            'item-selection cdk-virtual-scroll-viewport a',
+            'item-selection virtual-scroll a',
             { timeout: 10000 },
         );
 
         // Click on the item
         await this.page
-            .locator(
-                `item-selection cdk-virtual-scroll-viewport a:has-text("${name}")`,
-            )
+            .locator(`item-selection virtual-scroll a:has-text("${name}")`)
             .first()
             .click();
         await this.page.waitForTimeout(500);
@@ -166,7 +162,7 @@ export abstract class MobileBasePage extends BasePage {
 
         // Wait for items to load
         await this.page.waitForSelector(
-            'item-selection cdk-virtual-scroll-viewport a',
+            'item-selection virtual-scroll a',
             { timeout: 10000 },
         );
 
