@@ -32,10 +32,10 @@ import {
 describe('general.ts utilities', () => {
     describe('log', () => {
         beforeEach(() => {
-            vi.spyOn(console, 'debug').mockImplementation(() => {});
-            vi.spyOn(console, 'log').mockImplementation(() => {});
-            vi.spyOn(console, 'warn').mockImplementation(() => {});
-            vi.spyOn(console, 'error').mockImplementation(() => {});
+            vi.spyOn(console, 'debug').mockImplementation(() => null);
+            vi.spyOn(console, 'log').mockImplementation(() => null);
+            vi.spyOn(console, 'warn').mockImplementation(() => null);
+            vi.spyOn(console, 'error').mockImplementation(() => null);
         });
 
         afterEach(() => {

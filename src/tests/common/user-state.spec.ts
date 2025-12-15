@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { of } from 'rxjs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock @placeos/ts-client - must use inline class to avoid hoisting issues
 vi.mock('@placeos/ts-client', () => ({
@@ -20,8 +20,8 @@ vi.mock('@placeos/ts-client', () => ({
     ),
 }));
 
-import { current_user, currentUser } from '../../app/common/user-state';
 import { showUser } from '@placeos/ts-client';
+import { current_user, currentUser } from '../../app/common/user-state';
 
 describe('user-state.ts', () => {
     beforeEach(() => {
@@ -39,8 +39,7 @@ describe('user-state.ts', () => {
 
         it('should emit values when subscribed', async () => {
             const value = await new Promise((resolve) => {
-                let sub: any;
-                sub = current_user.subscribe((user) => {
+                const sub = current_user.subscribe((user) => {
                     resolve(user);
                     // Use setTimeout to ensure sub is assigned before unsubscribe
                     setTimeout(() => sub?.unsubscribe(), 0);

@@ -35,10 +35,10 @@ describe('notifications.ts', () => {
 
         setNotifyOutlet(mock_snackbar as any);
 
-        vi.spyOn(console, 'debug').mockImplementation(() => {});
-        vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.spyOn(console, 'warn').mockImplementation(() => {});
-        vi.spyOn(console, 'info').mockImplementation(() => {});
+        vi.spyOn(console, 'debug').mockImplementation(() => null);
+        vi.spyOn(console, 'error').mockImplementation(() => null);
+        vi.spyOn(console, 'warn').mockImplementation(() => null);
+        vi.spyOn(console, 'info').mockImplementation(() => null);
     });
 
     afterEach(() => {
