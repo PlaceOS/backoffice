@@ -14,6 +14,11 @@ vi.mock('@placeos/ts-client', () => {
             }
         }
     }
+    // Mock observable that does nothing (prevents actual API calls)
+    const mock_observable = {
+        pipe: () => mock_observable,
+        subscribe: () => ({ unsubscribe: () => {} }),
+    };
     return {
         authority: vi.fn(() => ({
             config: {
@@ -26,6 +31,7 @@ vi.mock('@placeos/ts-client', () => {
         PlaceUser: MockPlaceUser,
         apiKey: vi.fn(() => ''),
         token: vi.fn(() => ''),
+        showUser: vi.fn(() => mock_observable),
     };
 });
 
