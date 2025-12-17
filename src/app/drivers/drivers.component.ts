@@ -9,7 +9,6 @@ import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
-import { nextValueFrom } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { DebugOutputComponent } from '../ui/debug-output.component';
@@ -149,18 +148,13 @@ export class DriversComponent extends AsyncHandler implements OnInit {
         return extensionsForItem(this._service.active_item, this.name);
     }
 
-    public async updateTabList() {
+    public updateTabList() {
         this.tab_list.set(
             [
                 {
                     id: 'about',
                     name: i18n('DRIVERS.TAB_ABOUT'),
                     icon: { content: 'info' },
-                },
-                {
-                    id: 'docs',
-                    name: i18n('DRIVERS.TAB_DOCS'),
-                    icon: { content: 'docs' },
                 },
                 {
                     id: 'modules',
@@ -175,9 +169,26 @@ export class DriversComponent extends AsyncHandler implements OnInit {
                 },
             ].concat(this.extensions),
         );
-        const docs = await nextValueFrom(this._drivers.docs);
-        if (!docs)
-            this.tab_list.update((l) => l.filter((_) => _.id !== 'docs'));
+    }
+
+    private updateDocsTab(has_docs: boolean) {
+        const tabs = this.tab_list();
+        const has_docs_tab = tabs.some((t) => t.id === 'docs');
+        if (has_docs && !has_docs_tab) {
+            const about_idx = tabs.findIndex((t) => t.id === 'about');
+            const docs_tab = {
+                id: 'docs',
+                name: i18n('DRIVERS.TAB_DOCS'),
+                icon: { content: 'docs' },
+            };
+            this.tab_list.update((list) => [
+                ...list.slice(0, about_idx + 1),
+                docs_tab,
+                ...list.slice(about_idx + 1),
+            ]);
+        } else if (!has_docs && has_docs_tab) {
+            this.tab_list.update((l) => l.filter((t) => t.id !== 'docs'));
+        }
     }
 
     public ngOnInit(): void {
@@ -193,6 +204,10 @@ export class DriversComponent extends AsyncHandler implements OnInit {
                 this.updateTabList();
                 this.loadValues(item as PlaceDriver);
             }),
+        );
+        this.subscription(
+            'docs',
+            this._drivers.docs.subscribe((docs) => this.updateDocsTab(!!docs)),
         );
     }
 
