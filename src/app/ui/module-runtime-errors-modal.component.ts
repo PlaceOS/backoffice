@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -8,6 +9,7 @@ import {
     showModule,
 } from '@placeos/ts-client';
 import { firstValueFrom } from 'rxjs';
+import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 
@@ -30,19 +32,18 @@ import { TranslatePipe } from './translate.pipe';
             }
         </header>
         @if (!loading()) {
-            <main class="max-h-[65vh] overflow-auto p-4">
+            <main
+                class="flex h-160 max-h-[70vh] w-[80vw] flex-col space-y-2 overflow-auto p-4"
+            >
                 @if (errors().length) {
-                    <code>
-                        {{
-                            errors().join(
-                                '
-'
-                            )
-                        }}
-                    </code>
+                    <settings-form-field
+                        [ngModel]="formatted_errors()"
+                        [readonly]="true"
+                        lang="json"
+                    ></settings-form-field>
                 } @else {
                     <div
-                        class="flex h-64 w-md flex-col items-center justify-center space-y-2 opacity-30"
+                        class="flex h-64 flex-col items-center justify-center space-y-2 opacity-30"
                     >
                         {{ 'MODULES.RUNTIME_ERRORS_NO' | translate }}
                     </div>
@@ -50,7 +51,7 @@ import { TranslatePipe } from './translate.pipe';
             </main>
         } @else {
             <main
-                class="flex h-64 w-[24rem] flex-col items-center justify-center space-y-2"
+                class="flex h-[70vh] w-[80vw] flex-col items-center justify-center"
             >
                 <mat-spinner diameter="32"></mat-spinner>
                 <div class="opacity-30">
@@ -66,6 +67,8 @@ import { TranslatePipe } from './translate.pipe';
         IconComponent,
         MatDialogModule,
         MatRippleModule,
+        FormsModule,
+        SettingsFieldComponent,
     ],
 })
 export class ModuleRuntimeErrorsModalComponent {
@@ -74,6 +77,18 @@ export class ModuleRuntimeErrorsModalComponent {
     public readonly loading = signal(true);
     public readonly module = signal<PlaceModule | null>(null);
     public readonly errors = signal<string[]>([]);
+
+    public readonly formatted_errors = computed(() => {
+        const errors = this.errors();
+        const parsed_errors = errors.map((error) => {
+            try {
+                return JSON.parse(error);
+            } catch {
+                return error;
+            }
+        });
+        return JSON.stringify(parsed_errors, undefined, 4);
+    });
 
     constructor() {
         this._loadData();
