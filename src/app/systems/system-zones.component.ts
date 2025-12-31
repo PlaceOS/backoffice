@@ -111,7 +111,7 @@ import { SystemStateService } from './system-state.service';
                         class="flex w-full flex-col items-start px-4 py-2 leading-snug"
                     >
                         <a
-                            class="w-full truncate underline"
+                            class="truncate text-left underline"
                             [routerLink]="['/zones', row.id]"
                         >
                             {{ row.name }}
@@ -123,7 +123,7 @@ import { SystemStateService } from './system-state.service';
                 </ng-template>
                 <ng-template #description_template let-data="data">
                     <div
-                        class="w-full overflow-hidden px-4 py-2 text-xs select-text"
+                        class="w-full overflow-hidden px-4 py-2 text-left text-xs select-text"
                     >
                         {{ data }}
                         @if (!data) {
