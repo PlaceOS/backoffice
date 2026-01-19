@@ -275,7 +275,10 @@ export class SystemStateService extends AsyncHandler {
                 );
                 return err;
             });
-            if (!resp) notifySuccess(`Successfully started system`);
+            if (!resp) {
+                notifySuccess(`Successfully started system`);
+                this._change.next(Date.now());
+            }
             details.close();
         }
     }
@@ -301,7 +304,10 @@ export class SystemStateService extends AsyncHandler {
                 return err;
             },
         );
-        if (!resp) notifySuccess(`Successfully stopped system`);
+        if (!resp) {
+            notifySuccess(`Successfully stopped system`);
+            this._change.next(Date.now());
+        }
         details.close();
     }
 
