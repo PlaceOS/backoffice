@@ -275,9 +275,9 @@ export class SystemStateService extends AsyncHandler {
                 );
                 return err;
             });
-            if (!resp) {
+            if (resp) {
                 notifySuccess(`Successfully started system`);
-                this._change.next(Date.now());
+                this.timeout('change', () => this._change.next(Date.now()));
             }
             details.close();
         }
@@ -304,9 +304,10 @@ export class SystemStateService extends AsyncHandler {
                 return err;
             },
         );
-        if (!resp) {
+        console.log('RESP:', resp);
+        if (resp) {
             notifySuccess(`Successfully stopped system`);
-            this._change.next(Date.now());
+            this.timeout('change', () => this._change.next(Date.now()));
         }
         details.close();
     }
@@ -685,7 +686,8 @@ export class SystemStateService extends AsyncHandler {
         notifySuccess(
             `Module successfully ${device.running ? 'stopped' : 'started'}`,
         );
-        (device as PlaceModule & { running: boolean }).running = !device.running;
+        (device as PlaceModule & { running: boolean }).running =
+            !device.running;
     }
 
     /** View Results of the execute */
