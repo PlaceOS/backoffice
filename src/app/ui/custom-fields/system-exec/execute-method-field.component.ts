@@ -29,6 +29,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
             <div [class.pointer-events-none]="loading()">
                 <select-system-module
                     [system]="system()"
+                    [refresh]="refresh()"
                     [(ngModel)]="module"
                     (ngModelChange)="fn.set(null)"
                 ></select-system-module>
@@ -104,6 +105,8 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     public readonly system = input<PlaceSystem>(undefined);
     /** Whether component is allowed to execute methods on the system */
     public readonly can_execute = input(true);
+    /** Trigger to refresh modules list */
+    public readonly refresh = input<number>(0);
 
     public readonly valid = signal(true);
     public readonly module = signal<ModuleLike>(undefined);

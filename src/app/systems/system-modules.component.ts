@@ -50,6 +50,7 @@ import { SystemStateService } from './system-state.service';
                     </h3>
                     <execute-method-field
                         [system]="item$ | async"
+                        [refresh]="modules_refresh$ | async"
                     ></execute-method-field>
                 </section>
             }
@@ -372,6 +373,7 @@ export class SystemModulesComponent extends AsyncHandler {
     );
     public readonly loading = this._service.loading;
     public readonly modules = this._service.modules;
+    public readonly modules_refresh$ = this.modules.pipe(map(() => Date.now()));
     public readonly debugging = this._service.debug_state;
     public readonly bindings = this._service.module_bindings;
 

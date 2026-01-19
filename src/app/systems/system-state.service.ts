@@ -688,6 +688,7 @@ export class SystemStateService extends AsyncHandler {
         );
         (device as PlaceModule & { running: boolean }).running =
             !device.running;
+        this._change.next(Date.now());
     }
 
     /** View Results of the execute */

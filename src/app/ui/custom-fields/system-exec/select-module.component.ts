@@ -84,6 +84,8 @@ export class SelectModuleComponent
 {
     /** ID of the system to select the module from */
     public readonly system = input<PlaceSystem>(undefined);
+    /** Trigger to refresh modules list */
+    public readonly refresh = input<number>(0);
 
     private _system = new BehaviorSubject('');
     private _change = new BehaviorSubject(0);
@@ -149,6 +151,9 @@ export class SelectModuleComponent
             const system = this.system();
             this._system.next(system.id);
             this._change.next(system.updated_at);
+        }
+        if (changes.refresh && !changes.refresh.firstChange) {
+            this._change.next(Date.now());
         }
     }
 
