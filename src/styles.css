@@ -993,7 +993,14 @@ a[icon] {
     }
 }
 
-mat-chip {
+#placeos mat-chip {
+    &.mat-mdc-chip {
+        background-color: var(--base-200);
+    }
+    .mdc-evolution-chip__text-label,
+    .mat-mdc-chip-remove {
+        color: var(--base-content);
+    }
     &[color='internal'] {
         color: var(--primary-content);
         background-color: var(--primary);

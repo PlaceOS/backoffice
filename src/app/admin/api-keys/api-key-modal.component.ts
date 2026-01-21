@@ -36,6 +36,7 @@ import { notifyError } from '../../common/notifications';
 import { DialogEvent } from '../../common/types';
 import { ActionFieldComponent } from '../../ui/custom-fields/action-field.component';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
+import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { APIKeyService } from './api-keys.service';
 
@@ -133,14 +134,17 @@ import { APIKeyService } from './api-keys.service';
                     <an-action-field
                         [matMenuTriggerFor]="menu"
                         yPosition="below"
-                        class="mb-8"
+                        class="mb-8 w-full"
                         (click)="focusInput()"
                     >
                         <div [class.opacity-30]="!form.value.user?.id">
                             {{ form.value.user?.name || 'Select user' }}
                         </div>
                     </an-action-field>
-                    <mat-menu #menu="matMenu">
+                    <mat-menu
+                        #menu="matMenu"
+                        class="min-w-80 overflow-x-hidden"
+                    >
                         <mat-form-field
                             appearance="outline"
                             class="no-subscript w-full px-2"
@@ -161,7 +165,7 @@ import { APIKeyService } from './api-keys.service';
                         @for (item of users() | slice: 0 : 10; track item) {
                             <button
                                 mat-menu-item
-                                class="min-w-[24rem]"
+                                class="min-w-80 overflow-hidden"
                                 (click)="
                                     form.patchValue({
                                         user: item,
@@ -244,6 +248,7 @@ import { APIKeyService } from './api-keys.service';
         MatInputModule,
         MatChipsModule,
         ActionFieldComponent,
+        IconComponent,
     ],
 })
 export class APIKeyModalComponent extends AsyncHandler implements OnInit {

@@ -5,13 +5,13 @@ import { IconComponent } from '../icon.component';
     selector: 'an-action-field',
     template: `
         <button
-            class="hover:border-base-content flex items-center rounded-sm border border-gray-200 px-4 py-2.5"
+            class="hover:border-base-content flex w-full items-center rounded-sm border border-gray-200 px-4 py-2.5"
             [attr.disabled]="disabled()"
             form-field
             (click)="performAction()"
             (keydown.enter)="performAction()"
         >
-            <div placeholder class="w-0 flex-1 truncate">
+            <div placeholder class="w-0 flex-1 truncate text-left">
                 <ng-content></ng-content>
             </div>
             <icon class="-mr-2 text-2xl">
