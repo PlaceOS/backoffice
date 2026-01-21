@@ -967,6 +967,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .min-w-64 {
   min-width: calc(var(--spacing) * 64);
 }
+#placeos .min-w-80 {
+  min-width: calc(var(--spacing) * 80);
+}
 #placeos .min-w-88 {
   min-width: calc(var(--spacing) * 88);
 }
@@ -993,9 +996,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .min-w-\[20rem\] {
   min-width: 20rem;
-}
-#placeos .min-w-\[24rem\] {
-  min-width: 24rem;
 }
 #placeos .min-w-\[40\%\] {
   min-width: 40%;
@@ -1167,6 +1167,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .overflow-visible {
   overflow: visible;
+}
+#placeos .overflow-x-hidden {
+  overflow-x: hidden;
 }
 #placeos .overflow-y-auto {
   overflow-y: auto;
@@ -2851,11 +2854,18 @@ a[icon][disabled] {
 .mdc-chip.mdc-standard-chip.mdc-accent {
   background-color: var(--warn);
 }
-mat-chip[color=internal] {
+#placeos mat-chip.mat-mdc-chip {
+  background-color: var(--base-200);
+}
+#placeos mat-chip .mdc-evolution-chip__text-label,
+#placeos mat-chip .mat-mdc-chip-remove {
+  color: var(--base-content);
+}
+#placeos mat-chip[color=internal] {
   color: var(--primary-content);
   background-color: var(--primary);
 }
-mat-chip[color=external] {
+#placeos mat-chip[color=external] {
   color: var(--warn-content);
   background-color: var(--warn);
 }
