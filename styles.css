@@ -2280,6 +2280,9 @@ span.highlight {
   -webkit-user-select: text;
   user-select: text;
 }
+#placeos .mdc-list-item__primary-text {
+  width: 100%;
+}
 .text-mono {
   font-family: monospace;
 }
