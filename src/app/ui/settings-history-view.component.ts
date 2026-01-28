@@ -1,13 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
     PlaceSettings,
     querySettings,
     settingsHistory,
 } from '@placeos/ts-client';
-import { BehaviorSubject, of } from 'rxjs';
-import { map, shareReplay, switchMap } from 'rxjs/operators';
+import { debounceTime, of, switchMap } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -25,18 +26,15 @@ import { TranslatePipe } from './translate.pipe';
                     class="h-13 w-1/2 max-w-lg flex-1"
                 >
                     <mat-select
-                        ngModel
-                        (ngModelChange)="old_setting.next($event)"
-                        [disabled]="
-                            (active_setting | async) !== undefined ||
-                            !(history$ | async)?.length
-                        "
+                        [ngModel]="old_setting()"
+                        (ngModelChange)="old_setting.set($event)"
+                        [disabled]="!active_setting() || !history()?.length"
                         [placeholder]="'COMMON.SELECT_OLD_SETTING' | translate"
                     >
                         <mat-select-trigger>
-                            @let value = old_setting.getValue();
+                            @let value = old_setting();
                             <div
-                                class="flex items-center justify-between space-x-4"
+                                class="flex items-center justify-between gap-4"
                             >
                                 <div>{{ types[value?.encryption_level] }}</div>
                                 <div
@@ -52,10 +50,10 @@ import { TranslatePipe } from './translate.pipe';
                                 </div>
                             </div>
                         </mat-select-trigger>
-                        @for (option of history$ | async; track option) {
+                        @for (option of history(); track option) {
                             <mat-option [value]="option">
                                 <div
-                                    class="flex items-center justify-between space-x-4"
+                                    class="flex w-full items-center justify-between gap-4"
                                 >
                                     <div>
                                         {{ types[option.encryption_level] }}
@@ -79,12 +77,12 @@ import { TranslatePipe } from './translate.pipe';
                     class="h-13 w-1/2 max-w-lg flex-1"
                 >
                     <mat-select
-                        ngModel
-                        (ngModelChange)="active_setting.next($event)"
+                        [ngModel]="active_setting()"
+                        (ngModelChange)="active_setting.set($event)"
                         [placeholder]="'COMMON.SELECT_NEW_SETTING' | translate"
                     >
                         <mat-select-trigger>
-                            @let a_value = active_setting.getValue();
+                            @let a_value = active_setting();
                             <div
                                 class="flex items-center justify-between space-x-4"
                             >
@@ -104,10 +102,10 @@ import { TranslatePipe } from './translate.pipe';
                                 </div>
                             </div>
                         </mat-select-trigger>
-                        @for (option of settings$ | async; track option) {
+                        @for (option of settings(); track option) {
                             <mat-option [value]="option">
                                 <div
-                                    class="flex items-center justify-between space-x-4"
+                                    class="flex w-full items-center justify-between gap-4"
                                 >
                                     <div>
                                         {{ types[option.encryption_level] }}
@@ -127,15 +125,15 @@ import { TranslatePipe } from './translate.pipe';
                     </mat-select>
                 </mat-form-field>
             </div>
-            @if ((active_setting | async) && (old_setting | async)) {
+            @if (active_setting() && old_setting()) {
                 <div class="w-full p-4">
                     <diff-viewer
-                        [modified]="(active_setting | async)?.settings_string"
-                        [original]="(old_setting | async)?.settings_string"
+                        [modified]="active_setting()?.settings_string"
+                        [original]="old_setting()?.settings_string"
                     ></diff-viewer>
                 </div>
             } @else {
-                @if ((history$ | async)?.length) {
+                @if (history()?.length) {
                     <div class="w-full p-16 text-center opacity-30">
                         {{ 'COMMON.SETTINGS_COMPARE_SELECT_MSG' | translate }}
                     </div>
@@ -149,7 +147,7 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [``],
     imports: [
-        CommonModule,
+        DatePipe,
         TranslatePipe,
         DiffViewerComponent,
         MatFormFieldModule,
@@ -160,18 +158,25 @@ import { TranslatePipe } from './translate.pipe';
 export class SettingsHistoryViewComponent {
     private _service = inject(ActiveItemService);
 
-    public readonly active_setting = new BehaviorSubject<PlaceSettings>(null);
-    public readonly old_setting = new BehaviorSubject<PlaceSettings>(null);
+    public readonly active_setting = signal<PlaceSettings | null>(null);
+    public readonly old_setting = signal<PlaceSettings | null>(null);
     public readonly types = ['UNENCRYPTED', 'SUPPORT', 'ADMIN', 'ENCRYPTED'];
 
-    public readonly settings$ = this._service.item.pipe(
-        switchMap((i) =>
-            !i ? of({ data: [] }) : querySettings({ parent_id: i.id }),
+    public readonly settings = toSignal(
+        this._service.item.pipe(
+            switchMap((i) =>
+                !i ? of({ data: [] }) : querySettings({ parent_id: i.id }),
+            ),
+            map((_) => _.data),
         ),
-        map((_) => _.data),
-        shareReplay(1),
+        { initialValue: [] as PlaceSettings[] },
     );
-    public readonly history$ = this.active_setting.pipe(
-        switchMap((_) => (!_ ? of([]) : settingsHistory(_.id))),
+
+    public readonly history = toSignal(
+        toObservable(this.active_setting).pipe(
+            debounceTime(300),
+            switchMap((_) => (!_ ? of([]) : settingsHistory(_.id))),
+        ),
+        { initialValue: [] as PlaceSettings[] },
     );
 }
