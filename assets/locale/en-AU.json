@@ -272,6 +272,8 @@
         "MODULE_FIELD_ADDRESS": "Address",
         "MODULE_FIELD_DEBUG": "Debug",
         "MODULE_LIST_EMPTY": "No modules for the selected system",
+        "SORT_BY_CLASS": "Sort by Class",
+        "SORT_MODULES_BY_CLASS_TOOLTIP": "Group modules with the same class name together",
         "DEBUG_ENABLE": "Enable debugging",
         "DEBUG_DISABLE": "Disable debugging",
         "VIEW_ORIGINAL": "View Original",
