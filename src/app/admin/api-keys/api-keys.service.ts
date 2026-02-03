@@ -9,6 +9,7 @@ import {
     queryDomains,
     queryUsers,
     remove,
+    update,
 } from '@placeos/ts-client';
 import {
     BehaviorSubject,
@@ -104,7 +105,7 @@ export class APIKeyService {
 
     public async newKey() {
         const ref = this._dialog.open(APIKeyModalComponent, {
-            data: this._domain.getValue(),
+            data: { domain: this._domain.getValue() },
         });
         const details = await Promise.race([
             lastValueFrom(
@@ -135,6 +136,43 @@ export class APIKeyService {
         this._last_key.next(key as PlaceAPIKeyDetails);
         this._change.next(Date.now());
         notifySuccess('Successfully created new API key.');
+        ref.close();
+    }
+
+    public async editKey(key: PlaceAPIKeyDetails) {
+        const ref = this._dialog.open(APIKeyModalComponent, {
+            data: { domain: this._domain.getValue(), key },
+        });
+        const details = await Promise.race([
+            lastValueFrom(
+                ref.componentInstance.event.pipe(
+                    first((_) => _.reason === 'done'),
+                ),
+            ),
+            lastValueFrom(ref.afterClosed()),
+        ]);
+        if (details?.reason !== 'done') return;
+        ref.componentInstance.loading.set('Updating API key...');
+        const domain = this._domain.getValue();
+        const updated_key = await lastValueFrom(
+            update({
+                id: key.id,
+                query_params: {},
+                fn: (d) => new PlaceAPIKeyDetails(d),
+                path: 'api_keys',
+                method: 'patch',
+                form_data: {
+                    ...details.metadata,
+                    authority_id: domain.id,
+                },
+            }),
+        ).catch((_) => {
+            ref.close();
+            notifyError(_);
+            throw _;
+        });
+        this._change.next(Date.now());
+        notifySuccess('Successfully updated API key.');
         ref.close();
     }
 

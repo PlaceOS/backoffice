@@ -908,6 +908,7 @@
         "APP_KEYS_HEADER": "PlaceOS Application Keys",
         "APP_KEYS_ADD": "Add App Key",
         "APP_KEYS_NEW": "New Application Key",
+        "APP_KEYS_EDIT": "Edit Application Key",
         "APP_KEYS_REMOVE": "Remove Application Key",
         "APP_KEYS_LAST_DETAILS": "Last App Key Details",
         "APP_KEYS_FIELD_SCOPES": "Scopes",

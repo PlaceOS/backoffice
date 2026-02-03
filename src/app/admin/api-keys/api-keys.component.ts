@@ -124,7 +124,7 @@ import { APIKeyService } from './api-keys.service';
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
-                            size: '3.5rem',
+                            size: '6rem',
                             sortable: false,
                         },
                     ]"
@@ -173,6 +173,14 @@ import { APIKeyService } from './api-keys.service';
                 <button
                     icon
                     matRipple
+                    [matTooltip]="'COMMON.EDIT' | translate"
+                    (click)="editKey(row)"
+                >
+                    <icon>edit</icon>
+                </button>
+                <button
+                    icon
+                    matRipple
                     [matTooltip]="'ADMIN.APP_KEYS_REMOVE' | translate"
                     (click)="deleteKey(row)"
                 >
@@ -209,6 +217,7 @@ export class AdminAPIKeysComponent implements OnInit {
 
     public readonly setDomain = (d) => this._service.setDomain(d);
     public readonly newKey = () => this._service.newKey();
+    public readonly editKey = (k) => this._service.editKey(k);
     public readonly deleteKey = (k) => this._service.removeKey(k);
 
     public async ngOnInit() {

@@ -89,6 +89,29 @@ registerMockEndpoint({
     },
 } as MockHttpRequestHandler);
 
+/** PATCH update API key */
+registerMockEndpoint({
+    path: `${API}/api_keys/:id`,
+    metadata: [],
+    method: 'PATCH',
+    callback: (event) => {
+        const index = API_KEYS.findIndex(
+            (k) => k.id === event.route_params.id,
+        );
+        if (index >= 0) {
+            const updated_key = {
+                ...API_KEYS[index],
+                ...event.body,
+                updated_at: Date.now() / 1000,
+            };
+            API_KEYS[index] = updated_key;
+            saveToSession('api_keys', API_KEYS);
+            return updated_key;
+        }
+        throw { status: 404, message: 'API key not found' };
+    },
+} as MockHttpRequestHandler);
+
 /** DELETE API key */
 registerMockEndpoint({
     path: `${API}/api_keys/:id`,

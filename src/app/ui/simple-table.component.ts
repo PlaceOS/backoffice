@@ -30,7 +30,7 @@ export interface TableColumn {
     template: `
         <button
             role="table"
-            class="border-base-200 grid overflow-visible border"
+            class="border-base-200 grid overflow-visible border text-left"
             [style.gridTemplateColumns]="column_template()"
             (click)="onclick.emit(0)"
             cdkDropList

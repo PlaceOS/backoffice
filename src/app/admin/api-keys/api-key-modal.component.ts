@@ -38,13 +38,22 @@ import { ActionFieldComponent } from '../../ui/custom-fields/action-field.compon
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
+import { PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyService } from './api-keys.service';
+
+export interface APIKeyModalData {
+    domain: PlaceDomain;
+    key?: PlaceAPIKeyDetails;
+}
 
 @Component({
     selector: 'api-key-modal',
     template: `
         <fullscreen-modal-shell
-            [heading]="'ADMIN.APP_KEYS_NEW' | translate"
+            [heading]="
+                (editing ? 'ADMIN.APP_KEYS_EDIT' : 'ADMIN.APP_KEYS_NEW')
+                    | translate
+            "
             [loading]="loading()"
             (save)="save()"
         >
@@ -253,12 +262,15 @@ import { APIKeyService } from './api-keys.service';
 })
 export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     private _service = inject(APIKeyService);
-    private _domain: PlaceDomain = inject(MAT_DIALOG_DATA);
+    private _data: APIKeyModalData = inject(MAT_DIALOG_DATA);
 
     @Output() public event = new EventEmitter<DialogEvent>();
     public readonly scopes = this._service.available_scopes;
 
+    public readonly editing = !!this._data.key?.id;
+
     public form = new FormGroup({
+        id: new FormControl(''),
         name: new FormControl('', [Validators.required]),
         user: new FormControl(null),
         user_id: new FormControl('', [Validators.required]),
@@ -303,18 +315,31 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         removeChipItem(this.form.controls.scopes as FormControl<string[]>, i);
 
     public ngOnInit() {
-        this.domain.set(this._domain);
+        this.domain.set(this._data.domain);
         this.subscription(
             'changes',
             this.form.controls.permissions.valueChanges.subscribe((v) =>
                 this.permissions.set(v),
             ),
         );
-        this.timeout(
-            'reset_perms',
-            () => this.form.patchValue({ permissions: null }),
-            100,
-        );
+        if (this.editing) {
+            const key = this._data.key;
+            this.form.patchValue({
+                id: key.id,
+                name: key.name,
+                description: key.description,
+                scopes: key.scopes || [],
+                user_id: key.user_id,
+                permissions: key.permissions,
+            });
+            this.permissions.set(key.permissions);
+        } else {
+            this.timeout(
+                'reset_perms',
+                () => this.form.patchValue({ permissions: null }),
+                100,
+            );
+        }
         this.loadUsers();
     }
 
@@ -331,8 +356,6 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                 }),
             );
         }
-        const data = { ...this.form.value };
-        delete data.user;
         this.event.emit({ reason: 'done', metadata: this.form.value });
     }
 
@@ -347,6 +370,14 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                     : of([] as PlaceUser[]),
             );
             this.user_list.set(users);
+            if (this.editing && !this.form.value.user && this._data.key.user_id) {
+                const user = users.find(
+                    (u) => u.id === this._data.key.user_id,
+                );
+                if (user) {
+                    this.form.patchValue({ user });
+                }
+            }
         });
     }
 }
