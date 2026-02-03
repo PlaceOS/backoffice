@@ -533,6 +533,56 @@ export class SystemStateService extends AsyncHandler {
         }
     }
 
+    public async sortModulesByType() {
+        const modules = this._modules.getValue();
+        if (modules.length < 2) return;
+
+        const details = await this.confirm({
+            title: 'Sort modules by class?',
+            content: `Are you sure you want to sort modules by class?<br>Modules with the same class name will be grouped together.`,
+            icon: { type: 'icon', content: 'sort' },
+        });
+        if (!details || !details.reason) return;
+        details.loading('Sorting modules by class...');
+
+        const sorted_modules = [...modules].sort((a, b) => {
+            const class_a = (
+                a.custom_name ||
+                a.name ||
+                a.driver?.class_name ||
+                ''
+            ).toLowerCase();
+            const class_b = (
+                b.custom_name ||
+                b.name ||
+                b.driver?.class_name ||
+                ''
+            ).toLowerCase();
+            return class_a.localeCompare(class_b);
+        });
+
+        const sorted_ids = sorted_modules.map((m) => m.id);
+
+        const resp = await lastValueFrom(
+            updateSystem(this.active_item.id, {
+                ...this.active_item,
+                modules: sorted_ids,
+            }),
+        ).catch((err) => {
+            notifyError(
+                `Failed to sort system modules: ${JSON.stringify(
+                    err.response || err.message || err,
+                )}`,
+            );
+            return err;
+        });
+        details.close();
+        if (resp instanceof PlaceSystem) {
+            notifySuccess(`Successfully sorted system modules by class.`);
+            if (resp) this._state.replaceItem(resp as unknown as Identity);
+        }
+    }
+
     public async reorderZones(order: string[]) {
         if (order.length !== this.active_item.zones.length) return;
         const details = await this.confirm({

@@ -180,8 +180,9 @@ import { SystemStateService } from './system-state.service';
                             'SYSTEMS.MODULE_LIST_EMPTY' | translate
                         "
                     />
-                    <div class="h-32 w-4 min-w-4"></div>
+                    <div class="h-4 w-4 min-w-4"></div>
                 </div>
+                <div class="h-16 w-full"></div>
                 <ng-template #state_template let-row="row" let-index="index">
                     <button
                         dot
@@ -302,6 +303,18 @@ import { SystemStateService } from './system-state.service';
                         </button>
                     </div>
                 </ng-template>
+                <button
+                    fab
+                    matRipple
+                    class="bg-secondary text-secondary-content fixed right-4 bottom-4 z-50 flex h-12 w-12 items-center justify-center rounded-lg shadow-lg"
+                    [matTooltip]="
+                        'SYSTEMS.SORT_MODULES_BY_CLASS_TOOLTIP' | translate
+                    "
+                    matTooltipPosition="left"
+                    (click)="sortByType()"
+                >
+                    <icon class="text-2xl">sort</icon>
+                </button>
             </section>
         }
     `,
@@ -489,6 +502,7 @@ export class SystemModulesComponent extends AsyncHandler {
     public readonly toggleDebug = (d) => this._service.toggleModuleDebug(d);
     public readonly power = (d) => this._service.toggleModulePower(d);
     public readonly addToSystem = (d) => this._service.addModuleToSystem(d);
+    public readonly sortByType = () => this._service.sortModulesByType();
 
     public driver_type(role: PlaceDriverRole): string {
         if (!role && role != 0) return '';
