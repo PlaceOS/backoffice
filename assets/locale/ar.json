@@ -888,6 +888,7 @@
         "APP_KEYS_HEADER": "مفاتيح تطبيقات PlaceOS",
         "APP_KEYS_ADD": "إضافة مفتاح تطبيق",
         "APP_KEYS_NEW": "مفتاح تطبيق جديد",
+        "APP_KEYS_EDIT": "تعديل مفتاح التطبيق",
         "APP_KEYS_REMOVE": "إزالة مفتاح تطبيق",
         "APP_KEYS_LAST_DETAILS": "آخر تفاصيل مفتاح تطبيق",
         "APP_KEYS_FIELD_SCOPES": "نطاقات",

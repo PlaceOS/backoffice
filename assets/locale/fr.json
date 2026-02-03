@@ -888,6 +888,7 @@
         "APP_KEYS_HEADER": "Clés d'application PlaceOS",
         "APP_KEYS_ADD": "Ajouter une clé d'application",
         "APP_KEYS_NEW": "Nouvelle clé d'application",
+        "APP_KEYS_EDIT": "Modifier la clé d'application",
         "APP_KEYS_REMOVE": "Retirer la clé d'application",
         "APP_KEYS_LAST_DETAILS": "Détails de la dernière clé d'application",
         "APP_KEYS_FIELD_SCOPES": "Périmètres",

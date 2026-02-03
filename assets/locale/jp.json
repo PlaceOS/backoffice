@@ -905,6 +905,7 @@
         "APP_KEYS_HEADER": "PlaceOSアプリケーションキー",
         "APP_KEYS_ADD": "アプリケーションキーを追加",
         "APP_KEYS_NEW": "新規アプリケーションキー",
+        "APP_KEYS_EDIT": "アプリケーションキーを編集",
         "APP_KEYS_REMOVE": "アプリケーションキーを削除",
         "APP_KEYS_LAST_DETAILS": "最後のアプリケーションキー詳細",
         "APP_KEYS_FIELD_SCOPES": "スコープ",
