@@ -533,7 +533,7 @@ export class SystemStateService extends AsyncHandler {
         }
     }
 
-    public async sortModulesByType() {
+    public async sortModulesByType(alphabetical: boolean = false) {
         const modules = this._modules.getValue();
         if (modules.length < 2) return;
 
@@ -544,23 +544,49 @@ export class SystemStateService extends AsyncHandler {
         });
         if (!details || !details.reason) return;
         details.loading('Sorting modules by class...');
-
-        const sorted_modules = [...modules].sort((a, b) => {
-            const class_a = (
-                a.custom_name ||
-                a.name ||
-                a.driver?.class_name ||
-                ''
-            ).toLowerCase();
-            const class_b = (
-                b.custom_name ||
-                b.name ||
-                b.driver?.class_name ||
-                ''
-            ).toLowerCase();
-            return class_a.localeCompare(class_b);
-        });
-
+        let sorted_modules = [];
+        if (alphabetical) {
+            sorted_modules = [...modules].sort((a, b) => {
+                const class_a = (
+                    a.custom_name ||
+                    a.name ||
+                    a.driver?.class_name ||
+                    ''
+                ).toLowerCase();
+                const class_b = (
+                    b.custom_name ||
+                    b.name ||
+                    b.driver?.class_name ||
+                    ''
+                ).toLowerCase();
+                return class_a.localeCompare(class_b);
+            });
+        } else {
+            const processed = new Set<PlaceModule>();
+            for (const mod_a of modules) {
+                if (processed.has(mod_a)) continue;
+                const mod_class =
+                    mod_a.custom_name ||
+                    mod_a.name ||
+                    mod_a.driver?.class_name ||
+                    '';
+                sorted_modules.push(mod_a);
+                processed.add(mod_a);
+                // Find all other modules with the same class that come after this one
+                for (const mod_b of modules) {
+                    if (processed.has(mod_b)) continue;
+                    const mod_b_class =
+                        mod_b.custom_name ||
+                        mod_b.name ||
+                        mod_b.driver?.class_name ||
+                        '';
+                    if (mod_class === mod_b_class) {
+                        sorted_modules.push(mod_b);
+                        processed.add(mod_b);
+                    }
+                }
+            }
+        }
         const sorted_ids = sorted_modules.map((m) => m.id);
 
         const resp = await lastValueFrom(
