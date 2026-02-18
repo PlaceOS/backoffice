@@ -15,6 +15,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import {
     PlaceRepositoryType,
@@ -25,10 +26,12 @@ import {
     listRepositoryCommits,
     listRepositoryDefaultBranch,
 } from '@placeos/ts-client';
-import { combineLatest, merge, of, timer } from 'rxjs';
+import { Subject, combineLatest, merge, of, timer } from 'rxjs';
 import {
     catchError,
     debounceTime,
+    distinctUntilChanged,
+    filter,
     map,
     shareReplay,
     switchMap,
@@ -143,6 +146,7 @@ import { TranslatePipe } from '../translate.pipe';
                                 name="uri"
                                 [placeholder]="'REPOS.URI' | translate"
                                 formControlName="uri"
+                                (blur)="credentials_blur$.next()"
                                 required
                             />
                             <mat-error>{{
@@ -164,6 +168,7 @@ import { TranslatePipe } from '../translate.pipe';
                                     autocomplete="off"
                                     [placeholder]="'REPOS.USERNAME' | translate"
                                     formControlName="username"
+                                    (blur)="credentials_blur$.next()"
                                 />
                             </mat-form-field>
                         </div>
@@ -183,6 +188,7 @@ import { TranslatePipe } from '../translate.pipe';
                                         'COMMON.PASSWORD' | translate
                                     "
                                     formControlName="password"
+                                    (blur)="credentials_blur$.next()"
                                 />
                                 <button
                                     matSuffix
@@ -210,7 +216,10 @@ import { TranslatePipe } from '../translate.pipe';
                                 name="type"
                                 formControlName="branch"
                                 [placeholder]="'Select Branch'"
-                                [disabled]="!(branch_list | async)?.length"
+                                [disabled]="
+                                    loading_branches() ||
+                                    !(branch_list | async)?.length
+                                "
                             >
                                 @for (
                                     branch of branch_list | async;
@@ -221,6 +230,11 @@ import { TranslatePipe } from '../translate.pipe';
                                     </mat-option>
                                 }
                             </mat-select>
+                            @if (loading_branches()) {
+                                <div class="suffix ml-2" matSuffix>
+                                    <mat-spinner diameter="24"></mat-spinner>
+                                </div>
+                            }
                             <mat-error>{{
                                 'REPOS.BRANCH_REQUIRED' | translate
                             }}</mat-error>
@@ -236,7 +250,10 @@ import { TranslatePipe } from '../translate.pipe';
                             <mat-select
                                 formControlName="commit_hash"
                                 placeholder="Select commit"
-                                [disabled]="!(commit_list | async)?.length"
+                                [disabled]="
+                                    loading_commits() ||
+                                    !(commit_list | async)?.length
+                                "
                             >
                                 <mat-select-trigger>
                                     <div class="flex items-center space-x-4">
@@ -301,6 +318,11 @@ import { TranslatePipe } from '../translate.pipe';
                                     </mat-option>
                                 }
                             </mat-select>
+                            @if (loading_commits()) {
+                                <div class="suffix ml-2" matSuffix>
+                                    <mat-spinner diameter="24"></mat-spinner>
+                                </div>
+                            }
                         </mat-form-field>
                     </div>
                     <div class="field">
@@ -352,6 +374,7 @@ import { TranslatePipe } from '../translate.pipe';
     imports: [
         MatFormFieldModule,
         MatInputModule,
+        MatProgressSpinnerModule,
         ReactiveFormsModule,
         TranslatePipe,
         FormsModule,
@@ -371,8 +394,10 @@ export class RepositoryFormComponent
     public commit_list = of([] as Record<string, string>[]);
     /** List of branches available for repository */
     public branch_list = of([] as string[]);
+    /** Whether repository's branches are being loaded */
+    public readonly loading_branches = signal(false);
     /** Whether repository's commits are being loaded */
-    public loading_commits: boolean;
+    public readonly loading_commits = signal(false);
     /** Currently selected commit for the repository */
     public base_commit: Identity | Record<string, string>;
     /** Whether to follow the latest branch commits(Auto-update) */
@@ -382,6 +407,8 @@ export class RepositoryFormComponent
     public show_password = false;
     public date_pipe = new DateFromPipe();
     public readonly is_editing = signal(false);
+    /** Emits when URI, username, or password fields lose focus */
+    public credentials_blur$ = new Subject<void>();
 
     public get hide_uri() {
         return !this.is_interface && this.form().value.id;
@@ -407,13 +434,23 @@ export class RepositoryFormComponent
         const form = this.form();
         if (changes.form && form) {
             form.get('branch').disable();
-            this.branch_list = merge(
+            // Auto-trigger 1s after URI becomes a valid URL
+            const uri_valid$ = form.get('uri').valueChanges.pipe(
+                debounceTime(1000),
+                filter(
+                    (uri: string) => isValidUrl(uri) && uri.startsWith('http'),
+                ),
+                distinctUntilChanged(),
+            );
+            // Trigger branch fetch on blur or valid URL after 1s
+            const credentials_trigger$ = merge(
                 timer(300),
-                form.get('uri').valueChanges,
-                form.get('username').valueChanges,
-                form.get('password').valueChanges,
-            ).pipe(
+                this.credentials_blur$,
+                uri_valid$,
+            );
+            this.branch_list = credentials_trigger$.pipe(
                 debounceTime(300),
+                tap(() => this.loading_branches.set(true)),
                 switchMap(() => {
                     const { id, uri, username, password } = this.form().value;
                     return (
@@ -428,11 +465,12 @@ export class RepositoryFormComponent
                               : of([])
                     ).pipe(catchError(() => of([])));
                 }),
-                tap((_) =>
+                tap((_) => {
+                    this.loading_branches.set(false);
                     _.length
                         ? this.form().get('branch').enable()
-                        : this.form().get('branch').disable(),
-                ),
+                        : this.form().get('branch').disable();
+                }),
                 shareReplay(1),
             );
             const default_branch = this.branch_list.pipe(
@@ -467,12 +505,12 @@ export class RepositoryFormComponent
             );
             this.commit_list = merge(
                 timer(300),
-                form.get('uri').valueChanges,
+                this.credentials_blur$,
+                uri_valid$,
                 form.get('branch').valueChanges,
-                form.get('username').valueChanges,
-                form.get('password').valueChanges,
             ).pipe(
                 debounceTime(300),
+                tap(() => this.loading_commits.set(true)),
                 switchMap(() => {
                     const { id, uri, branch, username, password } =
                         this.form().value;
@@ -496,6 +534,7 @@ export class RepositoryFormComponent
                     ...l,
                 ]),
                 tap((l) => {
+                    this.loading_commits.set(false);
                     const commit =
                         l.find(
                             (c) => c.hash === this.form().value.commit_hash,
