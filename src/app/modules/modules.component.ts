@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceModule, querySystems } from '@placeos/ts-client';
@@ -120,7 +120,6 @@ export class ModulesComponent extends AsyncHandler implements OnInit {
     /** Number of systems for the active device */
     public readonly system_count = signal(undefined);
     public readonly open_menu = signal(false);
-    public readonly tab_list = signal([]);
     public readonly scroll = signal(0);
     public readonly debug_position = this._debug.position;
     public readonly newItem = () => this._service.create();
@@ -129,28 +128,26 @@ export class ModulesComponent extends AsyncHandler implements OnInit {
         return extensionsForItem(this._service.active_item, this.name);
     }
 
-    public updateTabList() {
-        this.tab_list.set(
-            [
-                {
-                    id: 'about',
-                    name: i18n('MODULES.TAB_ABOUT'),
-                    icon: { content: 'info' },
-                },
-                {
-                    id: 'systems',
-                    name: i18n('MODULES.TAB_SYSTEMS'),
-                    count: this.system_count(),
-                    icon: { content: 'meeting_room' },
-                },
-                {
-                    id: 'history',
-                    name: i18n('MODULES.TAB_SETTINGS_HISTORY'),
-                    icon: { content: 'schedule' },
-                },
-            ].concat(this.extensions),
-        );
-    }
+    public readonly tab_list = computed(() =>
+        [
+            {
+                id: 'about',
+                name: i18n('MODULES.TAB_ABOUT'),
+                icon: { content: 'info' },
+            },
+            {
+                id: 'systems',
+                name: i18n('MODULES.TAB_SYSTEMS'),
+                count: this.system_count(),
+                icon: { content: 'meeting_room' },
+            },
+            {
+                id: 'history',
+                name: i18n('MODULES.TAB_SETTINGS_HISTORY'),
+                icon: { content: 'schedule' },
+            },
+        ].concat(this.extensions),
+    );
 
     public ngOnInit(): void {
         this.subscription(
@@ -161,11 +158,10 @@ export class ModulesComponent extends AsyncHandler implements OnInit {
             'item',
             this._service.item.subscribe((item) => {
                 this.item.set(item as PlaceModule);
+                this.system_count.set(undefined);
                 this.loadValues(item as PlaceModule);
-                this.updateTabList();
             }),
         );
-        this.updateTabList();
     }
 
     protected async loadValues(item: PlaceModule) {
