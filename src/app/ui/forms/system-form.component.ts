@@ -1,6 +1,10 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
-import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import {
+    FormControl,
+    ReactiveFormsModule,
+    UntypedFormGroup,
+} from '@angular/forms';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { queryZones } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
@@ -9,6 +13,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { addChipItem, removeChipItem } from '../../common/forms';
 import { TIMEZONES_IANA } from '../../common/timezones';
 import { CounterComponent } from '../counter.component';
 import { ImageListFieldComponent } from '../custom-fields/image-list-field.component';
@@ -388,29 +393,61 @@ import { TranslatePipe } from '../translate.pipe';
                         </mat-form-field>
                     </div>
                 }
-                @if (form().controls.camera_snapshot_url) {
+                @if (form().controls.camera_snapshot_urls) {
                     <div class="field">
                         <label
                             for="camera-snap-url"
                             [class.error]="
-                                form().controls.camera_snapshot_url.invalid &&
-                                form().controls.camera_snapshot_url.touched
+                                form().controls.camera_snapshot_urls.invalid &&
+                                form().controls.camera_snapshot_urls.touched
                             "
                         >
                             {{ 'SYSTEMS.CAMERA_SNAPSHOT_URL' | translate }}
                         </label>
-                        <mat-form-field appearance="outline">
+                        <mat-form-field appearance="outline" class="w-full">
+                            <mat-chip-grid
+                                #cameraSnapshotChipList
+                                aria-label="Camera Snapshot URL List"
+                            >
+                                @for (
+                                    item of camera_snapshot_url_list;
+                                    track item
+                                ) {
+                                    <mat-chip-row
+                                        (removed)="removeCameraSnapshotUrl(item)"
+                                    >
+                                        <div class="max-w-md truncate">
+                                            {{ item }}
+                                        </div>
+                                        <button
+                                            matChipRemove
+                                            [attr.aria-label]="
+                                                'SYSTEMS.REMOVE_ITEM'
+                                                    | translate: { item: item }
+                                            "
+                                        >
+                                            <icon>cancel</icon>
+                                        </button>
+                                    </mat-chip-row>
+                                }
+                            </mat-chip-grid>
                             <input
-                                matInput
-                                name="camera-snap-url"
+                                id="camera-snap-url"
                                 [placeholder]="
                                     'SYSTEMS.CAMERA_SNAPSHOT_URL' | translate
                                 "
-                                formControlName="camera_snapshot_url"
+                                [matChipInputFor]="cameraSnapshotChipList"
+                                [matChipInputSeparatorKeyCodes]="separators"
+                                [matChipInputAddOnBlur]="true"
+                                (matChipInputTokenEnd)="
+                                    addCameraSnapshotUrl($event)
+                                "
                             />
-                            <mat-error>
-                                {{ 'SYSTEMS.URL_VALID' | translate }}
-                            </mat-error>
+                            @if (form().controls.camera_snapshot_urls.invalid) {
+                                <mat-error>
+                                    {{ 'SYSTEMS.URL_VALID' | translate }}
+                                </mat-error>
+                            }
                         </mat-form-field>
                     </div>
                 }
@@ -486,6 +523,14 @@ export class SystemFormComponent extends AsyncHandler implements OnChanges {
         return this.form().controls.features.value;
     }
 
+    public get camera_snapshot_url_list(): string[] {
+        return this.cameraSnapshotUrlsControl.value;
+    }
+
+    private get cameraSnapshotUrlsControl(): FormControl<string[]> {
+        return this.form().controls.camera_snapshot_urls as FormControl<string[]>;
+    }
+
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.form) {
             this.updateTimezoneList();
@@ -539,6 +584,14 @@ export class SystemFormComponent extends AsyncHandler implements OnChanges {
             feature_list.splice(index, 1);
             form.controls.features.setValue(feature_list);
         }
+    }
+
+    public addCameraSnapshotUrl(event: MatChipInputEvent): void {
+        addChipItem(this.cameraSnapshotUrlsControl, event);
+    }
+
+    public removeCameraSnapshotUrl(url: string): void {
+        removeChipItem(this.cameraSnapshotUrlsControl, url);
     }
 
     public updateTimezoneList() {

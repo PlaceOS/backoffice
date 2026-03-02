@@ -119,9 +119,9 @@ describe('systems.utilities', () => {
                 expect(form.get('camera_url')).toBeTruthy();
             });
 
-            it('should have camera_snapshot_url control', () => {
+            it('should have camera_snapshot_urls control', () => {
                 const form = generateSystemsFormFields(min_system);
-                expect(form.get('camera_snapshot_url')).toBeTruthy();
+                expect(form.get('camera_snapshot_urls')).toBeTruthy();
             });
 
             it('should have room_booking_url control', () => {
@@ -219,6 +219,11 @@ describe('systems.utilities', () => {
                 expect(form.get('room_booking_url')?.value).toBe('');
             });
 
+            it('should have empty camera snapshot URLs by default', () => {
+                const form = generateSystemsFormFields(min_system);
+                expect(form.get('camera_snapshot_urls')?.value).toEqual([]);
+            });
+
             it('should have 0 for installed_ui_devices by default', () => {
                 const form = generateSystemsFormFields(min_system);
                 expect(form.get('installed_ui_devices')?.value).toBe(0);
@@ -262,7 +267,10 @@ describe('systems.utilities', () => {
                 support_url: 'https://support.example.com',
                 timetable_url: 'https://calendar.example.com',
                 camera_url: 'https://camera.example.com',
-                camera_snapshot_url: 'https://camera.example.com/snapshot',
+                camera_snapshot_urls: [
+                    'https://camera.example.com/snapshot',
+                    'https://camera.example.com/snapshot-2',
+                ],
                 room_booking_url: 'https://booking.example.com',
                 installed_ui_devices: 3,
                 features: ['video', 'audio', 'screen'],
@@ -305,6 +313,10 @@ describe('systems.utilities', () => {
                 expect(form.get('camera_url')?.value).toBe(
                     'https://camera.example.com',
                 );
+                expect(form.get('camera_snapshot_urls')?.value).toEqual([
+                    'https://camera.example.com/snapshot',
+                    'https://camera.example.com/snapshot-2',
+                ]);
             });
 
             it('should populate installed_ui_devices', () => {
@@ -362,6 +374,67 @@ describe('systems.utilities', () => {
                 const system = { features: ['a', 'b'] } as any;
                 const form = generateSystemsFormFields(system);
                 expect(form.get('features')?.value).toEqual(['a', 'b']);
+            });
+        });
+
+        describe('camera snapshot URL normalisation', () => {
+            const start_of_today = Math.floor(
+                new Date(new Date().setHours(0, 0, 0, 0)).getTime() / 1000,
+            );
+
+            it('should convert legacy camera snapshot URL to array', () => {
+                const system = {
+                    camera_snapshot_url: 'https://camera.example.com/snapshot',
+                } as any;
+                const form = generateSystemsFormFields(system);
+                expect(form.get('camera_snapshot_urls')?.value).toEqual([
+                    'https://camera.example.com/snapshot',
+                ]);
+            });
+
+            it('should combine legacy and array camera snapshot URLs', () => {
+                const system = {
+                    updated_at: start_of_today - 1,
+                    camera_snapshot_url: 'https://camera.example.com/snapshot',
+                    camera_snapshot_urls: [
+                        'https://camera.example.com/snapshot-2',
+                    ],
+                } as any;
+                const form = generateSystemsFormFields(system);
+                expect(form.get('camera_snapshot_urls')?.value).toEqual([
+                    'https://camera.example.com/snapshot-2',
+                    'https://camera.example.com/snapshot',
+                ]);
+            });
+
+            it('should de-duplicate combined camera snapshot URLs', () => {
+                const system = {
+                    updated_at: start_of_today - 1,
+                    camera_snapshot_url: 'https://camera.example.com/snapshot',
+                    camera_snapshot_urls: [
+                        'https://camera.example.com/snapshot',
+                        'https://camera.example.com/snapshot-2',
+                    ],
+                } as any;
+                const form = generateSystemsFormFields(system);
+                expect(form.get('camera_snapshot_urls')?.value).toEqual([
+                    'https://camera.example.com/snapshot',
+                    'https://camera.example.com/snapshot-2',
+                ]);
+            });
+
+            it('should not add legacy camera snapshot URL for systems updated today', () => {
+                const system = {
+                    updated_at: start_of_today,
+                    camera_snapshot_url: 'https://camera.example.com/snapshot',
+                    camera_snapshot_urls: [
+                        'https://camera.example.com/snapshot-2',
+                    ],
+                } as any;
+                const form = generateSystemsFormFields(system);
+                expect(form.get('camera_snapshot_urls')?.value).toEqual([
+                    'https://camera.example.com/snapshot-2',
+                ]);
             });
         });
 
@@ -424,6 +497,25 @@ describe('systems.utilities', () => {
                 const form = generateSystemsFormFields(min_system);
                 expect(form.get('support_url')?.valid).toBe(true);
                 expect(form.get('camera_url')?.valid).toBe(true);
+                expect(form.get('camera_snapshot_urls')?.valid).toBe(true);
+            });
+
+            it('should validate camera snapshot URL arrays', () => {
+                const form = generateSystemsFormFields(min_system);
+                form.get('camera_snapshot_urls')?.setValue([
+                    'https://example.com/snapshot',
+                    'not-a-url',
+                ]);
+                expect(form.get('camera_snapshot_urls')?.valid).toBe(false);
+            });
+
+            it('should accept valid camera snapshot URL arrays', () => {
+                const form = generateSystemsFormFields(min_system);
+                form.get('camera_snapshot_urls')?.setValue([
+                    'https://example.com/snapshot',
+                    'https://example.com/snapshot-2',
+                ]);
+                expect(form.get('camera_snapshot_urls')?.valid).toBe(true);
             });
 
             it('should require zone for new system', () => {

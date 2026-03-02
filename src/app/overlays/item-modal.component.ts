@@ -33,7 +33,11 @@ import { generateDomainFormFields } from '../domains/domains.utilities';
 import { generateDriverFormFields } from '../drivers/drivers.utilities';
 import { generateModuleFormFields } from '../modules/modules.utilities';
 import { generateRepositoryFormFields } from '../repositories/repositories.utilities';
-import { generateSystemsFormFields } from '../systems/systems.utilities';
+import {
+    CameraSnapshotUrlFields,
+    generateSystemsFormFields,
+    normaliseCameraSnapshotUrls,
+} from '../systems/systems.utilities';
 import {
     generateTriggerFormFields,
     generateTriggerSettingsFormFields,
@@ -264,14 +268,17 @@ export class ItemCreateUpdateModalComponent
         const item_json = (this.item as PlaceResource).toJSON
             ? (this.item as PlaceResource).toJSON()
             : this.item;
-        const item = this.item.id
-            ? cleanObject(
-                  { ...item_json, ...this.form.value },
-                  this.item_type === 'user'
-                      ? [undefined, null, '']
-                      : [undefined, null],
-              )
-            : { ...item_json, ...this.form.value };
+        const form_item = (
+            this.item.id
+                ? cleanObject(
+                      { ...item_json, ...this.form.value },
+                      this.item_type === 'user'
+                          ? [undefined, null, '']
+                          : [undefined, null],
+                  )
+                : { ...item_json, ...this.form.value }
+        ) as Identity;
+        const item = this.normaliseItemPayload(form_item);
         if (this._data.external_save) {
             this.event.emit({ reason: 'action', metadata: item });
             return;
@@ -308,6 +315,25 @@ export class ItemCreateUpdateModalComponent
     /**
      * Save initial settings for resources
      */
+    private normaliseItemPayload<T extends Identity>(item: T): T {
+        if (this.item_type !== 'system') {
+            return item;
+        }
+        const {
+            camera_snapshot_url,
+            camera_snapshot_urls,
+            ...system_item
+        } = item as T & CameraSnapshotUrlFields;
+        return {
+            ...system_item,
+            camera_snapshot_urls: normaliseCameraSnapshotUrls({
+                ...system_item,
+                camera_snapshot_url,
+                camera_snapshot_urls,
+            }),
+        } as unknown as T;
+    }
+
     private async newSettings(item: Identity, settings_string: string) {
         const new_settings = new PlaceSettings({
             parent_id: item.id as string,

@@ -15,6 +15,12 @@ export interface FormDetails {
     subscriptions: Subscription[];
 }
 
+export interface CameraSnapshotUrlFields {
+    updated_at?: number;
+    camera_snapshot_url?: string;
+    camera_snapshot_urls?: string[];
+}
+
 export function validateYAML(control: AbstractControl) {
     const value = control.value || '';
     let message = '';
@@ -25,6 +31,44 @@ export function validateYAML(control: AbstractControl) {
         message = e.message;
     }
     return message ? { yaml: message } : null;
+}
+
+function startOfTodayUnixSeconds() {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return Math.floor(date.getTime() / 1000);
+}
+
+function includeLegacyCameraSnapshotUrl(updated_at?: number) {
+    return !updated_at || updated_at < startOfTodayUnixSeconds();
+}
+
+function uniqueUrls(urls: string[]) {
+    return [...new Set(urls)];
+}
+
+export function normaliseCameraSnapshotUrls(
+    system?: CameraSnapshotUrlFields,
+): string[] {
+    const snapshot_urls = Array.isArray(system?.camera_snapshot_urls)
+        ? system.camera_snapshot_urls
+        : [];
+    const legacy_snapshot_urls =
+        includeLegacyCameraSnapshotUrl(system?.updated_at) &&
+        system?.camera_snapshot_url
+            ? [system.camera_snapshot_url]
+            : [];
+    return uniqueUrls([...snapshot_urls, ...legacy_snapshot_urls]);
+}
+
+function validateURLArray(control: AbstractControl) {
+    const value = control.value;
+    if (!value || !Array.isArray(value) || !value.length) {
+        return null;
+    }
+    return value.every((url) => !validateURL({ value: url } as AbstractControl))
+        ? null
+        : { url: 'invalid' };
 }
 
 export function generateSystemsFormFields(system?: PlaceSystem) {
@@ -38,9 +82,10 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
             validateURL,
         ]),
         camera_url: new FormControl(system.camera_url || '', [validateURL]),
-        camera_snapshot_url: new FormControl(system.camera_snapshot_url || '', [
-            validateURL,
-        ]),
+        camera_snapshot_urls: new FormControl(
+            normaliseCameraSnapshotUrls(system),
+            [validateURLArray],
+        ),
         room_booking_url: new FormControl(system.room_booking_url || '', [
             validateURL,
         ]),
