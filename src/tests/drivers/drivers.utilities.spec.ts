@@ -85,6 +85,11 @@ describe('drivers.utilities', () => {
                 expect(form.get('default_port')).toBeTruthy();
             });
 
+            it('should have alert_level control', () => {
+                const form = generateDriverFormFields(empty_driver);
+                expect(form.get('alert_level')).toBeTruthy();
+            });
+
             it('should have class_name control for new driver', () => {
                 const form = generateDriverFormFields(empty_driver);
                 expect(form.get('class_name')).toBeTruthy();
@@ -137,6 +142,11 @@ describe('drivers.utilities', () => {
                 expect(form.get('default_port')?.value).toBe(1);
             });
 
+            it('should have medium alert_level by default', () => {
+                const form = generateDriverFormFields(empty_driver);
+                expect(form.get('alert_level')?.value).toBe('medium');
+            });
+
             it('should have empty class_name by default', () => {
                 const form = generateDriverFormFields(empty_driver);
                 expect(form.get('class_name')?.value).toBe('');
@@ -169,6 +179,7 @@ describe('drivers.utilities', () => {
                 module_name: 'TestModule',
                 default_uri: 'localhost',
                 default_port: 8080,
+                alert_level: 'high',
                 class_name: 'TestDriver',
                 description: 'A test driver',
                 ignore_connected: true,
@@ -212,6 +223,11 @@ describe('drivers.utilities', () => {
             it('should populate default_port', () => {
                 const form = generateDriverFormFields(mock_driver);
                 expect(form.get('default_port')?.value).toBe(8080);
+            });
+
+            it('should populate alert_level', () => {
+                const form = generateDriverFormFields(mock_driver);
+                expect(form.get('alert_level')?.value).toBe('high');
             });
 
             it('should populate class_name for new driver', () => {

@@ -28,6 +28,7 @@ export function generateDriverFormFields(driver?: PlaceDriver) {
             Validators.min(1),
             Validators.max(65535),
         ]),
+        alert_level: new FormControl(driver?.alert_level || 'medium'),
         class_name: new FormControl(driver?.class_name || ''),
         description: new FormControl(driver?.description || ''),
         ignore_connected: new FormControl(driver?.ignore_connected || false),

@@ -22,6 +22,7 @@ export function generateModuleFormFields(mod?: PlaceModule) {
         udp: new FormControl(mod?.udp || false),
         makebreak: new FormControl(mod?.makebreak || false),
         ignore_connected: new FormControl(mod?.ignore_connected || false),
+        alert_level: new FormControl(mod?.alert_level || 'medium'),
         uri: new FormControl(mod?.uri || '', [validateURI]),
         notes: new FormControl(mod?.notes || ''),
         name: new FormControl(mod?.name || ''),
@@ -52,6 +53,7 @@ export function generateModuleFormFields(mod?: PlaceModule) {
             fields.name.setValue(value.name || value.module_name);
             fields.uri.setValue(value.default_uri);
             fields.port.setValue(value.default_port || 1);
+            fields.alert_level.setValue(value.alert_level || 'medium');
             fields.role.setValue(value.role || PlaceDriverRole.Logic);
             resetModuleFormValidators(fields);
             switch (value.role) {

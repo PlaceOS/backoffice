@@ -9,6 +9,7 @@ import {
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { map } from 'rxjs/operators';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { ItemSearchFieldComponent } from '../custom-fields/item-search-field.component';
@@ -228,6 +229,25 @@ import { TranslatePipe } from '../translate.pipe';
                             ></settings-toggle>
                         }
                     </div>
+                    @if (form().controls.alert_level) {
+                        <div class="field">
+                            <label for="alert-level">
+                                {{ 'COMMON.ALERT_LEVEL' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <mat-select
+                                    name="alert-level"
+                                    formControlName="alert_level"
+                                >
+                                    @for (level of alert_levels; track level.id) {
+                                        <mat-option [value]="level.id">
+                                            {{ level.name | translate }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    }
                     @if (form().controls.notes) {
                         <div class="field">
                             <label for="notes">{{
@@ -283,6 +303,7 @@ import { TranslatePipe } from '../translate.pipe';
         ReactiveFormsModule,
         MatFormFieldModule,
         MatInputModule,
+        MatSelectModule,
         SettingsToggleComponent,
     ],
 })
@@ -291,6 +312,12 @@ export class ModuleFormComponent extends AsyncHandler implements OnDestroy {
     public readonly form = input<UntypedFormGroup>(undefined);
     /** Whether system is readonly */
     public readonly readonly = input<boolean>(undefined);
+    public readonly alert_levels = [
+        { id: 'low', name: 'COMMON.ALERT_LOW' },
+        { id: 'medium', name: 'COMMON.ALERT_MEDIUM' },
+        { id: 'high', name: 'COMMON.ALERT_HIGH' },
+        { id: 'critical', name: 'COMMON.ALERT_CRITICAL' },
+    ];
 
     public readonly driver_query_fn = (_: string) =>
         queryDrivers({ q: _ } as Record<string, unknown>).pipe(

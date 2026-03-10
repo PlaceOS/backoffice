@@ -199,6 +199,21 @@ import { TranslatePipe } from '../translate.pipe';
                         ></settings-toggle>
                     </div>
                 </div>
+                <label for="alert-level">
+                    {{ 'COMMON.ALERT_LEVEL' | translate }}
+                </label>
+                <mat-form-field appearance="outline">
+                    <mat-select
+                        name="alert-level"
+                        formControlName="alert_level"
+                    >
+                        @for (level of alert_levels; track level.id) {
+                            <mat-option [value]="level.id">
+                                {{ level.name | translate }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
             </div>
         }
         <!-- Form fields go here -->
@@ -239,6 +254,12 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
         { id: PlaceDriverRole.Service, name: 'DRIVERS.SERVICE' },
         { id: PlaceDriverRole.Websocket, name: 'DRIVERS.WEBSOCKET' },
         { id: PlaceDriverRole.Logic, name: 'DRIVERS.LOGIC' },
+    ];
+    public readonly alert_levels = [
+        { id: 'low', name: 'COMMON.ALERT_LOW' },
+        { id: 'medium', name: 'COMMON.ALERT_MEDIUM' },
+        { id: 'high', name: 'COMMON.ALERT_HIGH' },
+        { id: 'critical', name: 'COMMON.ALERT_CRITICAL' },
     ];
 
     public readonly repo = new BehaviorSubject(null);

@@ -997,7 +997,8 @@ a[icon] {
     }
 }
 
-#placeos mat-chip {
+#placeos mat-chip,
+#placeos mat-chip-row {
     &.mat-mdc-chip {
         background-color: var(--base-200);
     }

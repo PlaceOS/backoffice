@@ -86,6 +86,11 @@ describe('modules.utilities', () => {
                 expect(form.get('ignore_connected')).toBeTruthy();
             });
 
+            it('should have alert_level control', () => {
+                const form = generateModuleFormFields(empty_module);
+                expect(form.get('alert_level')).toBeTruthy();
+            });
+
             it('should have uri control', () => {
                 const form = generateModuleFormFields(empty_module);
                 expect(form.get('uri')).toBeTruthy();
@@ -166,6 +171,11 @@ describe('modules.utilities', () => {
                 expect(form.get('ignore_connected')?.value).toBe(false);
             });
 
+            it('should have medium alert_level by default', () => {
+                const form = generateModuleFormFields(empty_module);
+                expect(form.get('alert_level')?.value).toBe('medium');
+            });
+
             it('should have empty uri by default', () => {
                 const form = generateModuleFormFields(empty_module);
                 expect(form.get('uri')?.value).toBe('');
@@ -196,6 +206,7 @@ describe('modules.utilities', () => {
                 udp: true,
                 makebreak: true,
                 ignore_connected: true,
+                alert_level: 'critical',
                 uri: 'https://api.example.com',
                 notes: 'Test notes',
                 name: 'Test Module',
@@ -222,6 +233,11 @@ describe('modules.utilities', () => {
                 expect(form.get('udp')?.value).toBe(true);
                 expect(form.get('makebreak')?.value).toBe(true);
                 expect(form.get('ignore_connected')?.value).toBe(true);
+            });
+
+            it('should populate alert_level', () => {
+                const form = generateModuleFormFields(mock_module);
+                expect(form.get('alert_level')?.value).toBe('critical');
             });
 
             it('should populate uri', () => {
