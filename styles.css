@@ -2873,18 +2873,23 @@ a[icon][disabled] {
 .mdc-chip.mdc-standard-chip.mdc-accent {
   background-color: var(--warn);
 }
-#placeos mat-chip.mat-mdc-chip {
+#placeos mat-chip.mat-mdc-chip,
+#placeos mat-chip-row.mat-mdc-chip {
   background-color: var(--base-200);
 }
 #placeos mat-chip .mdc-evolution-chip__text-label,
-#placeos mat-chip .mat-mdc-chip-remove {
+#placeos mat-chip .mat-mdc-chip-remove,
+#placeos mat-chip-row .mdc-evolution-chip__text-label,
+#placeos mat-chip-row .mat-mdc-chip-remove {
   color: var(--base-content);
 }
-#placeos mat-chip[color=internal] {
+#placeos mat-chip[color=internal],
+#placeos mat-chip-row[color=internal] {
   color: var(--primary-content);
   background-color: var(--primary);
 }
-#placeos mat-chip[color=external] {
+#placeos mat-chip[color=external],
+#placeos mat-chip-row[color=external] {
   color: var(--warn-content);
   background-color: var(--warn);
 }
