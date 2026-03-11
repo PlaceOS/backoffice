@@ -934,6 +934,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .max-w-md {
   max-width: var(--container-md);
 }
+#placeos .min-w-0 {
+  min-width: calc(var(--spacing) * 0);
+}
 #placeos .min-w-2xl {
   min-width: var(--container-2xl);
 }
@@ -1601,6 +1604,14 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .text-base-content {
   color: var(--base-content);
+}
+#placeos .text-base-content\/40 {
+  color: var(--base-content);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .text-base-content\/40 {
+    color: color-mix(in oklab, var(--base-content) 40%, transparent);
+  }
 }
 #placeos .text-error {
   color: var(--error);
