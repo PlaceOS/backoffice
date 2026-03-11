@@ -91,7 +91,7 @@ function replaceDescTag(inputString, newContent) {
                                 </h3>
                                 @if (descriptions()[item.name]) {
                                     <p
-                                        class="text-base-content/40 truncate text-[0.625rem]"
+                                        class="text-base-content/60 truncate text-[0.625rem]"
                                     >
                                         {{ descriptions()[item.name] }}
                                     </p>
