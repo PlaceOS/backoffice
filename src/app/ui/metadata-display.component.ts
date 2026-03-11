@@ -85,9 +85,18 @@ function replaceDescTag(inputString, newContent) {
                             class="bg-base-200 flex w-full items-center space-x-2 px-2 py-1"
                             (click)="toggleView(item)"
                         >
-                            <h3 class="truncate px-2 font-mono text-sm">
-                                {{ names()[item.name] }}
-                            </h3>
+                            <div class="min-w-0 px-2 text-left">
+                                <h3 class="truncate font-mono text-sm">
+                                    {{ names()[item.name] }}
+                                </h3>
+                                @if (descriptions()[item.name]) {
+                                    <p
+                                        class="text-base-content/40 truncate text-[0.625rem]"
+                                    >
+                                        {{ descriptions()[item.name] }}
+                                    </p>
+                                }
+                            </div>
                             <div class="flex-1"></div>
                             <div
                                 class="border-base-300 rounded-sm border px-2 py-1 font-mono text-[0.625rem] whitespace-nowrap"
@@ -229,6 +238,15 @@ export class MetadataDisplayComponent
             name_map[key] = this.form_map()[key].value.name;
         }
         return name_map;
+    });
+    public readonly descriptions = computed(() => {
+        this.change();
+        const desc_map = {};
+        for (const key in this.form_map()) {
+            const desc = this.form_map()[key].value.description || '';
+            desc_map[key] = desc; //.replace(/^\[.*?\]\s*/, '');
+        }
+        return desc_map;
     });
 
     private validateName(name_list: string[]) {
