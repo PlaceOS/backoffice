@@ -1605,12 +1605,12 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .text-base-content {
   color: var(--base-content);
 }
-#placeos .text-base-content\/40 {
+#placeos .text-base-content\/60 {
   color: var(--base-content);
 }
 @supports (color: color-mix(in lab, red, red)) {
-  #placeos .text-base-content\/40 {
-    color: color-mix(in oklab, var(--base-content) 40%, transparent);
+  #placeos .text-base-content\/60 {
+    color: color-mix(in oklab, var(--base-content) 60%, transparent);
   }
 }
 #placeos .text-error {
