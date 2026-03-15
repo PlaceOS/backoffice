@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
     Component,
     computed,
@@ -41,6 +42,7 @@ import { MetadataHistoryModalComponent } from '../overlays/metadata-history-moda
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { IconComponent } from './icon.component';
 import { DateFromPipe } from './pipes/date-from.pipe';
+import { UserPipe } from './pipes/user.pipe';
 import { TranslatePipe } from './translate.pipe';
 
 interface Metadata extends PlaceMetadata {
@@ -100,6 +102,10 @@ function replaceDescTag(inputString, newContent) {
                             <div class="flex-1"></div>
                             <div
                                 class="border-base-300 rounded-sm border px-2 py-1 font-mono text-[0.625rem] whitespace-nowrap"
+                                [matTooltip]="
+                                    (item.modified_by_id | user | async)?.name
+                                "
+                                matTooltipPosition="left"
                             >
                                 {{ item.updated_at | dateFrom }}
                             </div>
@@ -197,6 +203,7 @@ function replaceDescTag(inputString, newContent) {
         `,
     ],
     imports: [
+        CommonModule,
         MatProgressSpinnerModule,
         TranslatePipe,
         IconComponent,
@@ -207,6 +214,7 @@ function replaceDescTag(inputString, newContent) {
         MatFormFieldModule,
         MatInputModule,
         DateFromPipe,
+        UserPipe,
     ],
 })
 export class MetadataDisplayComponent
