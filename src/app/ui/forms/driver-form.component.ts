@@ -77,7 +77,9 @@ import { TranslatePipe } from '../translate.pipe';
             }
         }
         @if (driver | async) {
-            <label for="commit">{{ 'DRIVERS.COMMIT' | translate }}</label>
+            <label for="commit" [class.error]="commit_error()">
+                {{ 'DRIVERS.COMMIT' | translate }}
+            </label>
             <item-search-field
                 [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
                 [options]="commit_list | async"
@@ -85,6 +87,12 @@ import { TranslatePipe } from '../translate.pipe';
                 [ngModel]="commit.getValue()"
                 (ngModelChange)="commit.next($event); applyDriverCommit($event)"
             />
+            @if (commit_error()) {
+                <div class="text-error text-xs">
+                    {{ 'DRIVERS.DETAILS_ERROR_1' | translate }}
+                    {{ 'DRIVERS.DETAILS_ERROR_2' | translate }}
+                </div>
+            }
         }
         @if ((commit | async) && !loading() && form().controls.id) {
             <div class="flex flex-col" [formGroup]="form()">
@@ -248,6 +256,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
     public readonly waitingChange = output<boolean>();
     public readonly loading = signal('');
     public readonly loading_type = signal([]);
+    public readonly commit_error = signal(false);
     public readonly role_types = [
         { id: PlaceDriverRole.SSH, name: 'DRIVERS.SSH' },
         { id: PlaceDriverRole.Device, name: 'DRIVERS.DEVICE' },
@@ -347,6 +356,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
         const old_commit = this.commit.getValue();
         this.form().patchValue({ commit: commit.id });
         this.commit.next(commit);
+        this.commit_error.set(false);
         const repo = this.repo.getValue();
         const driver = this.driver.getValue();
         if (!driver.id) return;
@@ -369,6 +379,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                         this.commit.next(old_commit);
                         this.loading.set('');
                         this.waitingChange.emit(false);
+                        this.commit_error.set(true);
                         notifyError(
                             `Failed to get driver details for commit "${commit.id}"`,
                         );
