@@ -19,12 +19,15 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                 (dragenter)="dragging = true"
                 (dragleave)="dragging = false"
                 (dragend)="dragging = false"
+                (dragover)="onDragOver($event)"
+                (drop)="onDrop($event)"
             >
                 <icon class="text-6xl">cloud_upload</icon>
                 <div class="text">{{ 'COMMON.BULK_DROP_MSG' | translate }}</div>
                 <input
                     class="absolute inset-0 opacity-0"
                     type="file"
+                    accept=".csv,.tsv"
                     (change)="loadCSVData($event)"
                 />
             </button>
@@ -69,29 +72,48 @@ export class CsvUploadComponent {
     /** Whether CSV data is being processed */
     public loading: boolean;
 
+    public onDragOver(event: DragEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    public onDrop(event: DragEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.dragging = false;
+        const file = event.dataTransfer?.files?.[0];
+        if (file) {
+            this.loadFile(file);
+        }
+    }
+
     public loadCSVData(event) {
-        this.loading = true;
         /* istanbul ignore else */
         if (event.target) {
             const element = event.target as HTMLInputElement;
             const file = element.files[0];
             /* istanbul ignore else */
             if (file) {
-                const reader = new FileReader();
-                reader.readAsText(file, 'UTF-8');
-                reader.addEventListener('load', (evt) => {
-                    this.processCSVData(
-                        (evt.target as FileReader).result as string,
-                        file.name.endsWith('.csv') ? ',' : '\t',
-                    );
-                    element.value = '';
-                });
-                reader.addEventListener('error', (_) => {
-                    this.loading = false;
-                    notifyError('Error reading file.');
-                });
+                this.loadFile(file);
+                element.value = '';
             }
         }
+    }
+
+    private loadFile(file: File) {
+        this.loading = true;
+        const reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+        reader.addEventListener('load', (evt) => {
+            this.processCSVData(
+                (evt.target as FileReader).result as string,
+                file.name.endsWith('.csv') ? ',' : '\t',
+            );
+        });
+        reader.addEventListener('error', (_) => {
+            this.loading = false;
+            notifyError('Error reading file.');
+        });
     }
 
     public downloadTemplateCSV() {
@@ -112,7 +134,11 @@ export class CsvUploadComponent {
             this.loading = false;
             this.list.emit(list);
         } catch (e) {
+            this.loading = false;
             console.error(e);
+            notifyError(
+                'Error parsing CSV data. Please check the file format.',
+            );
         }
     }
 }

@@ -48,17 +48,17 @@ export const DRIVER_TEMPLATE: Record<string, unknown> = {
 };
 
 export const USER_TEMPLATE: Record<string, unknown> = {
-    name: 'A User',
-    authority_id: "On who's authority",
-    email: 'jon@place.tech',
+    name: 'Jane Smith',
+    authority_id: 'authority-abc123',
+    email: 'jane.smith@place.tech',
     phone: '+612000000000',
     country: 'Australia',
     image: '',
-    metadata: 'there be none',
-    login_name: 'elitedarklord',
+    metadata: '',
+    login_name: 'jane.smith',
     staff_id: 'PERSON_12345',
-    first_name: 'Bob',
-    last_name: 'Marley',
+    first_name: 'Jane',
+    last_name: 'Smith',
     card_number: '1234567890',
 };
 
