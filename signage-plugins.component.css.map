@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["signage-plugins.component.ts"],
+  "sourcesContent": ["\n            :host {\n            }\n        "],
+  "mappings": ";AACY;AACA;",
+  "names": []
+}

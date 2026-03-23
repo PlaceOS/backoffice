@@ -448,6 +448,9 @@ input:where([type=button], [type=reset], [type=submit]),
     max-width: 96rem;
   }
 }
+#placeos .m-0\! {
+  margin: calc(var(--spacing) * 0) !important;
+}
 #placeos .m-1 {
   margin: calc(var(--spacing) * 1);
 }
@@ -498,6 +501,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .-mt-2 {
   margin-top: calc(var(--spacing) * -2);
+}
+#placeos .mt-0 {
+  margin-top: calc(var(--spacing) * 0);
 }
 #placeos .mt-1 {
   margin-top: calc(var(--spacing) * 1);
@@ -1350,6 +1356,14 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .bg-error {
   background-color: var(--error);
+}
+#placeos .bg-error\/10 {
+  background-color: var(--error);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .bg-error\/10 {
+    background-color: color-mix(in oklab, var(--error) 10%, transparent);
+  }
 }
 #placeos .bg-info {
   background-color: var(--info);
