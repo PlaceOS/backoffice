@@ -142,6 +142,13 @@ export const ROUTES: Routes = [
                 ],
             },
             {
+                path: 'signage-plugins',
+                loadComponent: () =>
+                    import('./signage-plugins/signage-plugins.component').then(
+                        (m) => m.AdminSignagePluginsComponent,
+                    ),
+            },
+            {
                 path: 'build-jobs',
                 loadComponent: () =>
                     import('./build-list.component').then(
