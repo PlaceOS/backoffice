@@ -270,7 +270,7 @@ export class ItemCreateUpdateModalComponent
                       { ...item_json, ...this.form.value },
                       this.item_type === 'user'
                           ? [undefined, null, '']
-                          : [undefined, null],
+                          : [undefined],
                   )
                 : { ...item_json, ...this.form.value }
         ) as Identity;
