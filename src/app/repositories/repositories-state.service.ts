@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
-    addDriver,
     listRepositoryCommits,
     listRepositoryDrivers,
     PlaceDriver,
@@ -26,7 +25,7 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
 import { Identity } from '../common/types';
-import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
+import { DriverFormComponent } from '../drivers/driver-form.component';
 
 @Injectable({
     providedIn: 'root',
@@ -95,7 +94,7 @@ export class RepositoriesStateService {
     }
 
     public async newDriver(driver: string) {
-        this._dialog.open(ItemCreateUpdateModalComponent, {
+        this._dialog.open(DriverFormComponent, {
             data: {
                 item: new PlaceDriver({
                     name: '',
@@ -103,8 +102,6 @@ export class RepositoriesStateService {
                     repository_id: this.active_item.id,
                     file_name: driver,
                 }),
-                name: 'DRIVERS.NEW',
-                save: (item: PlaceDriver) => addDriver(item),
             },
         });
     }

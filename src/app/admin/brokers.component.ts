@@ -17,11 +17,12 @@ import { map } from 'rxjs/operators';
 
 import { AsyncHandler } from '../common/async-handler.class';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { FormModalComponent } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
-import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
+import { BrokerFormComponent } from './broker-form.component';
 
 @Component({
     selector: 'app-brokers',
@@ -200,7 +201,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
     }
 
     public newBroker(): void {
-        const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+        const ref = this._dialog.open(BrokerFormComponent, {
             data: {
                 item: new PlaceMQTTBroker(),
                 name: 'ADMIN.BROKERS',
@@ -209,7 +210,9 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
         });
         this.subscription(
             'modal_events',
-            ref.componentInstance.event.subscribe((event) => {
+            (
+                ref.componentInstance as unknown as FormModalComponent
+            ).event.subscribe((event) => {
                 if (event.reason !== 'done') return;
                 this.loadBrokers();
             }),
@@ -217,7 +220,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
     }
 
     public editBroker(item: PlaceMQTTBroker): void {
-        const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+        const ref = this._dialog.open(BrokerFormComponent, {
             data: {
                 item,
                 name: 'ADMIN.BROKERS',
@@ -226,7 +229,9 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
         });
         this.subscription(
             'modal_events',
-            ref.componentInstance.event.subscribe((event) => {
+            (
+                ref.componentInstance as unknown as FormModalComponent
+            ).event.subscribe((event) => {
                 if (event.reason !== 'done') return;
                 this.loadBrokers();
             }),

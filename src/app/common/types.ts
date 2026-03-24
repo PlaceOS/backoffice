@@ -1,3 +1,5 @@
+import { EventEmitter } from '@angular/core';
+
 /** Generic Dictionary type */
 export interface HashMap<T = string> {
     [key: string]: T;
@@ -15,6 +17,19 @@ export type ExtensionConditions =
     | 'falsy'
     | 'includes'
     | 'none';
+
+/** Shared interface for form modal components opened via MatDialog */
+export interface FormModalComponent {
+    event: EventEmitter<DialogEvent>;
+    loading?: string;
+}
+
+export interface CreateEditModalData<T extends Identity = Identity> {
+    /** Item being worked on */
+    item: T;
+    /** Whether parts of the form are readonly */
+    readonly?: string;
+}
 
 export interface AppComponentExtension {
     /** URL to embed in the application extension */

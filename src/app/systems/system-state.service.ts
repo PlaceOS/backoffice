@@ -50,17 +50,17 @@ import { nextValueFrom, unique } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { HashMap, Identity } from '../common/types';
+import { FormModalComponent, HashMap, Identity } from '../common/types';
 import {
     ConfirmModalData,
     openConfirmModal,
 } from '../overlays/confirm-modal.component';
-import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 import {
     SelectItemModalComponent,
     SelectItemModalData,
 } from '../overlays/select-item-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
+import { SystemTriggerFormComponent } from './system-trigger-form.component';
 
 @Injectable({
     providedIn: 'root',
@@ -440,7 +440,7 @@ export class SystemStateService extends AsyncHandler {
 
     public async editTrigger(trigger: PlaceTrigger) {
         if (this.item && trigger) {
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            const ref = this._dialog.open(SystemTriggerFormComponent, {
                 data: {
                     item: trigger,
                     name: 'Trigger',
@@ -448,16 +448,16 @@ export class SystemStateService extends AsyncHandler {
                     external_save: true,
                 },
             });
+            const instance =
+                ref.componentInstance as unknown as FormModalComponent;
             const details = await Promise.race([
                 lastValueFrom(
-                    ref.componentInstance.event.pipe(
-                        first((_) => _.reason === 'action'),
-                    ),
+                    instance.event.pipe(first((_) => _.reason === 'action')),
                 ),
                 lastValueFrom(ref.afterClosed()),
             ]);
             if (!details || !details.reason) return;
-            ref.componentInstance.loading = 'Saving trigger settings...';
+            instance.loading = 'Saving trigger settings...';
 
             const url = `${apiEndpoint()}/systems/${
                 this.active_item.id

@@ -52,6 +52,14 @@ import {
 } from '@placeos/ts-client';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { DomainFormComponent } from '../domains/domain-form.component';
+import { DriverFormComponent } from '../drivers/driver-form.component';
+import { ModuleFormComponent } from '../modules/module-form.component';
+import { RepositoryFormComponent } from '../repositories/repository-form.component';
+import { SystemFormComponent } from '../systems/system-form.component';
+import { TriggerFormComponent } from '../triggers/trigger-form.component';
+import { UserFormComponent } from '../users/user-form.component';
+import { ZoneFormComponent } from '../zones/zone-form.component';
 
 export interface ItemActions<T> {
     query: (_?: string) => QueryResponse<T>;
@@ -59,6 +67,7 @@ export interface ItemActions<T> {
     save: (_: T) => Observable<T>;
     remove: (_: T) => Observable<unknown>;
     itemConstructor: Type<T>;
+    modalComponent: Type<unknown>;
     delete_message: string;
     delete_extra?: (_: T) => Promise<[string, string]>;
     name: string;
@@ -74,6 +83,7 @@ const domains: ItemActions<PlaceDomain> = {
     save: (item) => (item.id ? updateDomain(item.id, item) : addDomain(item)),
     remove: (item) => removeDomain(item.id),
     itemConstructor: PlaceDomain,
+    modalComponent: DomainFormComponent,
     delete_message: ``,
     name: 'DOMAINS',
 };
@@ -88,6 +98,7 @@ const drivers: ItemActions<PlaceDriver> = {
     save: (item) => (item.id ? updateDriver(item.id, item) : addDriver(item)),
     remove: (item) => removeDriver(item.id),
     itemConstructor: PlaceDriver,
+    modalComponent: DriverFormComponent,
     delete_message: ``,
     delete_extra: async (_) => {
         const query: Record<string, string | number> = {
@@ -119,6 +130,7 @@ const modules: ItemActions<PlaceModule> = {
     save: (item) => (item.id ? updateModule(item.id, item) : addModule(item)),
     remove: (item) => removeModule(item.id),
     itemConstructor: PlaceModule,
+    modalComponent: ModuleFormComponent,
     delete_message: ``,
     name: 'MODULES',
 };
@@ -134,6 +146,7 @@ const repositories: ItemActions<PlaceRepository> = {
         item.id ? updateRepository(item.id, item) : addRepository(item),
     remove: (item) => removeRepository(item.id),
     itemConstructor: PlaceRepository,
+    modalComponent: RepositoryFormComponent,
     delete_message: `'`,
     name: 'REPOS',
 };
@@ -157,6 +170,7 @@ const systems: ItemActions<PlaceSystem> = {
               }),
     remove: (item) => removeSystem(item.id),
     itemConstructor: PlaceSystem,
+    modalComponent: SystemFormComponent,
     delete_message: ``,
     name: 'SYSTEMS',
 };
@@ -181,6 +195,7 @@ const triggers: ItemActions<PlaceTrigger> = {
     save: (item) => (item.id ? updateTrigger(item.id, item) : addTrigger(item)),
     remove: (item) => removeTrigger(item.id),
     itemConstructor: PlaceTrigger,
+    modalComponent: TriggerFormComponent,
     delete_message: ``,
     name: 'TRIGGERS',
 };
@@ -195,6 +210,7 @@ const users: ItemActions<PlaceUser> = {
     save: (item) => (item.id ? updateUser(item.id, item) : addUser(item)),
     remove: (item) => removeUser(item.id),
     itemConstructor: PlaceUser,
+    modalComponent: UserFormComponent,
     delete_message: ``,
     name: 'USERS',
 };
@@ -209,6 +225,7 @@ const zones: ItemActions<PlaceZone> = {
     save: (item) => (item.id ? updateZone(item.id, item) : addZone(item)),
     remove: (item) => removeZone(item.id),
     itemConstructor: PlaceZone,
+    modalComponent: ZoneFormComponent,
     delete_message: ``,
     name: 'ZONES',
 };

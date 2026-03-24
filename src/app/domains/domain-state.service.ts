@@ -38,10 +38,10 @@ import {
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { Identity } from '../common/types';
+import { FormModalComponent, Identity } from '../common/types';
 import { AuthSourceModalComponent } from '../overlays/auth-source-modal.component';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
-import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
+import { ApplicationFormComponent } from './application-form.component';
 
 export type PlaceAuthSource =
     | PlaceOAuthSource
@@ -191,7 +191,7 @@ export class DomainStateService {
      */
     public async editApplication(item?: PlaceApplication) {
         item = item || new PlaceApplication({ owner_id: this.active_item.id });
-        const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+        const ref = this._dialog.open(ApplicationFormComponent, {
             data: {
                 item,
                 name: 'DOMAINS.APPLICATION',
@@ -203,10 +203,9 @@ export class DomainStateService {
                 },
             },
         });
+        const instance = ref.componentInstance as unknown as FormModalComponent;
         const details = await Promise.race([
-            ref.componentInstance.event
-                .pipe(first((_) => _.reason === 'done'))
-                .toPromise(),
+            instance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
             ref.afterClosed().toPromise(),
         ]);
         if (!details) return;

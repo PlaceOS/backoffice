@@ -12,7 +12,12 @@ import {
 } from '@placeos/ts-client';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
-import { DialogEvent, HashMap, Identity } from '../common/types';
+import {
+    DialogEvent,
+    FormModalComponent,
+    HashMap,
+    Identity,
+} from '../common/types';
 import { BulkItemModalComponent } from '../overlays/bulk-item-modal/bulk-item-modal.component';
 import {
     CONFIRM_METADATA,
@@ -20,7 +25,6 @@ import {
     ConfirmModalData,
 } from '../overlays/confirm-modal.component';
 import { DuplicateModalComponent } from '../overlays/duplicate-modal.component';
-import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
 import { ACTIONS, ItemActions } from './actions';
 import { AsyncHandler } from './async-handler.class';
@@ -222,16 +226,14 @@ export class ActiveItemService extends AsyncHandler {
                 item = (await actions.show(item.id).toPromise()) as T;
             }
             return new Promise<T>((resolve) => {
-                const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+                const ref = this._dialog.open(actions.modalComponent, {
                     data: {
                         item: new actions.itemConstructor({ ...item }),
-                        name: actions.name,
-                        save: actions.save,
                         ...options,
                     },
                 });
-                ref.componentInstance.event
-                    .pipe(filter((e) => e.reason === 'done'))
+                (ref.componentInstance as unknown as FormModalComponent).event
+                    .pipe(filter((e: DialogEvent) => e.reason === 'done'))
                     .subscribe((event: DialogEvent<{ item: T }>) => {
                         resolve(event.metadata.item);
                         this.replaceItem(
