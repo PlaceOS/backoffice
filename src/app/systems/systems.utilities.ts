@@ -82,6 +82,9 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
             validateURL,
         ]),
         camera_url: new FormControl(system.camera_url || '', [validateURL]),
+        camera_snapshot_url: new FormControl(
+            system.camera_snapshot_url || system.camera_snapshot_urls[0] || '',
+        ),
         camera_snapshot_urls: new FormControl(
             normaliseCameraSnapshotUrls(system),
             [validateURLArray],
