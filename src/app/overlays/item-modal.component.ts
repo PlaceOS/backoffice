@@ -33,11 +33,7 @@ import { generateDomainFormFields } from '../domains/domains.utilities';
 import { generateDriverFormFields } from '../drivers/drivers.utilities';
 import { generateModuleFormFields } from '../modules/modules.utilities';
 import { generateRepositoryFormFields } from '../repositories/repositories.utilities';
-import {
-    CameraSnapshotUrlFields,
-    generateSystemsFormFields,
-    normaliseCameraSnapshotUrls,
-} from '../systems/systems.utilities';
+import { generateSystemsFormFields } from '../systems/systems.utilities';
 import {
     generateTriggerFormFields,
     generateTriggerSettingsFormFields,
@@ -278,12 +274,11 @@ export class ItemCreateUpdateModalComponent
                   )
                 : { ...item_json, ...this.form.value }
         ) as Identity;
-        const item = this.normaliseItemPayload(form_item);
         if (this._data.external_save) {
-            this.event.emit({ reason: 'action', metadata: item });
+            this.event.emit({ reason: 'action', metadata: form_item });
             return;
         }
-        this._data.save(item).subscribe(
+        this._data.save(form_item).subscribe(
             (_item) => {
                 this.result = _item;
                 this._dialog_ref.disableClose = false;
@@ -310,28 +305,6 @@ export class ItemCreateUpdateModalComponent
                 );
             },
         );
-    }
-
-    /**
-     * Save initial settings for resources
-     */
-    private normaliseItemPayload<T extends Identity>(item: T): T {
-        if (this.item_type !== 'system') {
-            return item;
-        }
-        const {
-            camera_snapshot_url,
-            camera_snapshot_urls,
-            ...system_item
-        } = item as T & CameraSnapshotUrlFields;
-        return {
-            ...system_item,
-            camera_snapshot_urls: normaliseCameraSnapshotUrls({
-                ...system_item,
-                camera_snapshot_url,
-                camera_snapshot_urls,
-            }),
-        } as unknown as T;
     }
 
     private async newSettings(item: Identity, settings_string: string) {
