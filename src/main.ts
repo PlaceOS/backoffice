@@ -5,7 +5,7 @@ import { appConfig } from './app/app.config';
 // Check if mock mode is enabled via URL or localStorage
 const is_mock =
     location.href.includes('mock=true') ||
-    localStorage.getItem('mock') === 'true';
+    localStorage.getItem('BACKOFFICE.mock') === 'true';
 
 // Conditionally load mocks before bootstrapping
 const bootstrap = async () => {

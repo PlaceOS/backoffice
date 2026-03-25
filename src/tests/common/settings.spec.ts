@@ -1,10 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { BehaviorSubject, of } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Create mock_user at module level BEFORE vi.mock calls
-const mock_user_subject = new BehaviorSubject<any>({ id: 'user-123', name: 'Test User' });
+const mock_user_subject = new BehaviorSubject<any>({
+    id: 'user-123',
+    name: 'Test User',
+});
 
 // Mock @placeos/ts-client
 vi.mock('@placeos/ts-client', () => ({
@@ -71,7 +74,7 @@ describe('DEFAULT_SETTINGS', () => {
         });
 
         it('should have mock property', () => {
-            expect(DEFAULT_SETTINGS).toHaveProperty('mock');
+            expect(DEFAULT_SETTINGS).toHaveProperty('BACKOFFICE.mock');
             expect(typeof DEFAULT_SETTINGS.mock).toBe('boolean');
         });
 
@@ -361,10 +364,7 @@ describe('SettingsService', () => {
         });
 
         it('should accept multiple overrides', () => {
-            service.overrides = [
-                { first: 'override' },
-                { second: 'override' },
-            ];
+            service.overrides = [{ first: 'override' }, { second: 'override' }];
             expect(true).toBe(true);
         });
     });

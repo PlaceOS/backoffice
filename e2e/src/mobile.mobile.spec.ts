@@ -85,7 +85,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -102,7 +102,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -123,7 +123,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -153,7 +153,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -181,7 +181,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -196,7 +196,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -216,7 +216,7 @@ test.describe('Mobile', () => {
 
         test('should display items in selection list', async ({ page }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -229,7 +229,7 @@ test.describe('Mobile', () => {
 
         test('should search and filter items', async ({ page }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -247,7 +247,7 @@ test.describe('Mobile', () => {
 
         test('should select an item and show details', async ({ page }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -259,7 +259,10 @@ test.describe('Mobile', () => {
             });
 
             // Select first item
-            await page.locator('item-selection virtual-scroll a').first().click();
+            await page
+                .locator('item-selection virtual-scroll a')
+                .first()
+                .click();
             await page.waitForTimeout(500);
 
             // Item details should be visible
@@ -273,7 +276,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -283,7 +286,10 @@ test.describe('Mobile', () => {
             await page.waitForSelector('item-selection virtual-scroll a', {
                 timeout: 10000,
             });
-            await page.locator('item-selection virtual-scroll a').first().click();
+            await page
+                .locator('item-selection virtual-scroll a')
+                .first()
+                .click();
             await page.waitForTimeout(500);
 
             // Open selection again using the trigger button (has rounded-lg class)
@@ -307,7 +313,7 @@ test.describe('Mobile', () => {
 
         test.beforeEach(async ({ page }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
             systems_page = new MobileSystemsPage(page);
         });
@@ -412,7 +418,7 @@ test.describe('Mobile', () => {
     test.describe('Responsive Layout', () => {
         test('should hide desktop sidebar on mobile', async ({ page }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -425,7 +431,7 @@ test.describe('Mobile', () => {
 
         test('should show add button on mobile', async ({ page }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -442,7 +448,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -469,7 +475,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -494,7 +500,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -521,7 +527,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -548,7 +554,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -575,7 +581,7 @@ test.describe('Mobile', () => {
     test.describe('Form Interactions on Mobile', () => {
         test('should fill form fields in modal on mobile', async ({ page }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -610,7 +616,7 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -648,7 +654,7 @@ test.describe('Mobile', () => {
     test.describe('Touch Interactions', () => {
         test('should support tap on items', async ({ page }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));
@@ -671,7 +677,7 @@ test.describe('Mobile', () => {
 
         test('should support tap on hamburger menu', async ({ page }) => {
             await page.addInitScript(() => {
-                localStorage.setItem('mock', 'true');
+                localStorage.setItem('BACKOFFICE.mock', 'true');
             });
 
             await page.goto(buildAppUrl('/#/systems'));

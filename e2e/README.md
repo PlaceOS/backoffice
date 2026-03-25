@@ -193,7 +193,7 @@ When running in mock mode (default), tests use the `@placeos/ts-client` mock mec
 2. **WebSocket Mocking**: Real-time updates are simulated
 3. **Mock Data**: Pre-defined data from `src/app/mocks/data/`
 
-The mock mode is enabled by setting `localStorage.setItem('mock', 'true')` before page load, which the application checks during initialization.
+The mock mode is enabled by setting `localStorage.setItem('BACKOFFICE.mock', 'true')` before page load, which the application checks during initialization.
 
 ## Writing New Tests
 
@@ -206,7 +206,7 @@ import { SystemsPage } from './pages';
 test('should create a new system', async ({ page }) => {
     // Set mock mode
     await page.addInitScript(() => {
-        localStorage.setItem('mock', 'true');
+        localStorage.setItem('BACKOFFICE.mock', 'true');
     });
 
     const systemsPage = new SystemsPage(page);
@@ -230,7 +230,7 @@ import { UsersPage } from './pages';
 
 test('should create a new user', async ({ page }) => {
     await page.addInitScript(() => {
-        localStorage.setItem('mock', 'true');
+        localStorage.setItem('BACKOFFICE.mock', 'true');
     });
 
     const usersPage = new UsersPage(page);

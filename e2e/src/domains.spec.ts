@@ -13,7 +13,7 @@ test.describe('Domains', () => {
     test.beforeEach(async ({ page }) => {
         // Set mock mode in localStorage
         await page.addInitScript(() => {
-            localStorage.setItem('mock', 'true');
+            localStorage.setItem('BACKOFFICE.mock', 'true');
         });
         domainsPage = new DomainsPage(page);
     });

@@ -13,7 +13,7 @@ test.describe('Admin', () => {
     test.beforeEach(async ({ page }) => {
         // Set mock mode in localStorage
         await page.addInitScript(() => {
-            localStorage.setItem('mock', 'true');
+            localStorage.setItem('BACKOFFICE.mock', 'true');
         });
         adminPage = new AdminPage(page);
     });

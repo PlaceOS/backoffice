@@ -51,7 +51,7 @@ async function setupAuth(page: Page): Promise<void> {
     if (config.use_mock) {
         // Set mock mode in localStorage before navigating
         await page.addInitScript(() => {
-            localStorage.setItem('mock', 'true');
+            localStorage.setItem('BACKOFFICE.mock', 'true');
         });
     } else {
         // For live environment, handle OAuth authentication

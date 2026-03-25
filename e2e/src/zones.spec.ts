@@ -13,7 +13,7 @@ test.describe('Zones', () => {
     test.beforeEach(async ({ page }) => {
         // Set mock mode in localStorage
         await page.addInitScript(() => {
-            localStorage.setItem('mock', 'true');
+            localStorage.setItem('BACKOFFICE.mock', 'true');
         });
         zonesPage = new ZonesPage(page);
     });

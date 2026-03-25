@@ -46,7 +46,7 @@ export async function setupPlace(settings: PlaceSettings): Promise<void> {
     const mock =
         settings.mock ||
         location.href.includes('mock=true') ||
-        localStorage.getItem('mock') === 'true';
+        localStorage.getItem('BACKOFFICE.mock') === 'true';
     // Generate configuration object
     const config: PlaceAuthOptions = {
         auth_type: 'auth_code',
@@ -63,7 +63,7 @@ export async function setupPlace(settings: PlaceSettings): Promise<void> {
     };
     if (localStorage) {
         localStorage.setItem(
-            'mock',
+            'BACKOFFICE.mock',
             `${!!mock && !location.href.includes('mock=false')}`,
         );
     }
