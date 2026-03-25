@@ -499,9 +499,16 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         this.saving = i18n(`${this._name}.SAVING`);
         this._dialog_ref.disableClose = true;
         const item_json = item.toJSON ? item.toJSON() : item;
+        const form_value = { ...this.form.value };
+        if (form_value.root_path) {
+            form_value.root_path = form_value.root_path.replace(
+                /^\/+|\/+$/g,
+                '',
+            );
+        }
         const form_item: PlaceRepository = item.id
-            ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
-            : { ...item_json, ...this.form.value };
+            ? cleanObject({ ...item_json, ...form_value }, [undefined])
+            : { ...item_json, ...form_value };
         (form_item.id
             ? updateRepository(
                   form_item.id,
