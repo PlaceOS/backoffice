@@ -1,6 +1,6 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-QJSOIJFT.js";
+} from "./chunk-TJRSZVYI.js";
 import {
   getUnixTime
 } from "./chunk-MXECN6VN.js";
@@ -33,12 +33,12 @@ import {
 import "./chunk-3DWKKPWQ.js";
 import {
   BackofficeUsersService
-} from "./chunk-VHPJFPHN.js";
+} from "./chunk-QB6OEDH5.js";
 import {
   SettingsService,
   currentUser,
   format
-} from "./chunk-25QENLMC.js";
+} from "./chunk-LKDLAZB6.js";
 import {
   addDays
 } from "./chunk-LYW23EPM.js";
@@ -2275,7 +2275,7 @@ async function setupPlace(settings) {
   const port = settings.port || location.port;
   const url = settings.use_domain ? `${protocol}//${host}:${port}` : location.origin;
   const route = host.includes("localhost") && port === "4200" ? "" : settings.route || "";
-  const mock = settings.mock || location.href.includes("mock=true") || localStorage.getItem("mock") === "true";
+  const mock = settings.mock || location.href.includes("mock=true") || localStorage.getItem("BACKOFFICE.mock") === "true";
   const config = {
     auth_type: "auth_code",
     scope: "public",
@@ -2290,7 +2290,7 @@ async function setupPlace(settings) {
     mock
   };
   if (localStorage) {
-    localStorage.setItem("mock", `${!!mock && !location.href.includes("mock=false")}`);
+    localStorage.setItem("BACKOFFICE.mock", `${!!mock && !location.href.includes("mock=false")}`);
   }
   return Jo(config);
 }
@@ -3293,47 +3293,47 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-FGQS53AE.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-KQEMZPYC.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-HMNYB4UA.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YTTTBPKR.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-K37Q52V5.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-GBWBNBDZ.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-BFSRAT4Z.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-2RQIQ222.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-R25MPURD.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-ZDRXT56S.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-O5IJYICZ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IBO5ZNIU.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-E76LWOYI.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-EFUKZXGO.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-B3AFCNB5.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-HNV63NRW.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-DLG4IZUW.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IYFB5OIU.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -3352,7 +3352,7 @@ var appConfig = {
 };
 
 // src/main.ts
-var is_mock = location.href.includes("mock=true") || localStorage.getItem("mock") === "true";
+var is_mock = location.href.includes("mock=true") || localStorage.getItem("BACKOFFICE.mock") === "true";
 var bootstrap = async () => {
   if (is_mock) {
     await import("./chunk-XTEDAS27.js");
