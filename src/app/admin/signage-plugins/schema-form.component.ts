@@ -18,8 +18,8 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subscription } from 'rxjs';
+import { SettingsToggleComponent } from '../../ui/settings-toggle.component';
 
 /** A loosely-typed record for JSON Schema objects. */
 type JsonSchema = Record<string, unknown>;
@@ -97,12 +97,9 @@ export function buildFormFromFields(
                 @for (field of fields(); track field.key) {
                     @switch (field.type) {
                         @case ('boolean') {
-                            <mat-slide-toggle
-                                [formControlName]="field.key"
-                                class="py-2"
-                            >
+                            <settings-toggle [formControlName]="field.key">
                                 {{ field.label }}
-                            </mat-slide-toggle>
+                            </settings-toggle>
                             @if (field.description) {
                                 <p class="mt-0 text-xs opacity-60">
                                     {{ field.description }}
@@ -122,7 +119,10 @@ export function buildFormFromFields(
                                         {{ field.description }}
                                     </p>
                                 }
-                                <mat-form-field appearance="outline">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="no-subscript w-full"
+                                >
                                     <mat-select [formControlName]="field.key">
                                         @for (
                                             opt of field.options;
@@ -149,7 +149,10 @@ export function buildFormFromFields(
                                         {{ field.description }}
                                     </p>
                                 }
-                                <mat-form-field appearance="outline">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="no-subscript w-full"
+                                >
                                     <input
                                         matInput
                                         type="number"
@@ -173,7 +176,10 @@ export function buildFormFromFields(
                                         {{ field.description }}
                                     </p>
                                 }
-                                <mat-form-field appearance="outline">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="no-subscript w-full"
+                                >
                                     <input
                                         matInput
                                         [formControlName]="field.key"
@@ -201,7 +207,7 @@ export function buildFormFromFields(
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
-        MatSlideToggleModule,
+        SettingsToggleComponent,
     ],
 })
 export class SchemaFormComponent implements ControlValueAccessor, OnDestroy {

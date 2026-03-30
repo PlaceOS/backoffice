@@ -181,11 +181,13 @@ export interface SignagePluginModalData {
                             </div>
                         }
                         @if (schema()) {
-                            <schema-form
-                                #schema_form_el
-                                [schema]="schema()"
-                                formControlName="defaults"
-                            />
+                            <div class="bg-base-200/50 mb-2 rounded-sm p-2">
+                                <schema-form
+                                    #schema_form_el
+                                    [schema]="schema()"
+                                    formControlName="defaults"
+                                />
+                            </div>
                         }
                         @if (
                             !schema_loading() && !schema() && !schema_error()

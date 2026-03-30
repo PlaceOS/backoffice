@@ -21,6 +21,7 @@ import { IconComponent } from '../../ui/icon.component';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { SignagePluginModalComponent } from './signage-plugin-modal.component';
+import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.component';
 
 @Component({
     selector: 'admin-signage-plugins',
@@ -84,7 +85,7 @@ import { SignagePluginModalComponent } from './signage-plugin-modal.component';
                         {
                             key: 'actions',
                             name: ' ',
-                            size: '6rem',
+                            size: '8rem',
                             content: actions_template,
                             sortable: false,
                         },
@@ -130,6 +131,14 @@ import { SignagePluginModalComponent } from './signage-plugin-modal.component';
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2">
+                <button
+                    icon
+                    matRipple
+                    [matTooltip]="'ADMIN.SIGNAGE_PLUGINS_TEST' | translate"
+                    (click)="testPlugin(row)"
+                >
+                    <icon>play_circle</icon>
+                </button>
                 <button
                     icon
                     matRipple
@@ -192,6 +201,12 @@ export class AdminSignagePluginsComponent
                 this.loadPlugins();
             }),
         );
+    }
+
+    public testPlugin(item: SignagePlugin): void {
+        this._dialog.open(SignagePluginTestModalComponent, {
+            data: { item },
+        });
     }
 
     public editPlugin(item: SignagePlugin): void {
