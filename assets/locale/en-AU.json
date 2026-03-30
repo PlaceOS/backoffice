@@ -224,7 +224,8 @@
         "DATE_FROM_IN_YEARS_N": "In {{ years }} years",
         "DATE_FROM_YEARS_AGO_1": "{{ years }} year ago",
         "DATE_FROM_YEARS_AGO_N": "{{ years }} years ago",
-        "CRON_CUSTOM": "Custom"
+        "CRON_CUSTOM": "Custom",
+        "CONFIG": "Configuration"
     },
     "SYSTEMS": {
         "SINGULAR": "System",
@@ -1054,6 +1055,12 @@
         "SIGNAGE_PLUGINS_SCHEMA_LOADING": "Loading plugin schema...",
         "SIGNAGE_PLUGINS_SCHEMA_ERROR": "Failed to load schema from plugin. You can still edit defaults manually.",
         "SIGNAGE_PLUGINS_SCHEMA_EMPTY": "Enter a plugin URI to load the configuration schema.",
+        "SIGNAGE_PLUGINS_TEST": "Test Plugin",
+        "SIGNAGE_PLUGINS_TEST_HEADING": "Test Signage Plugin",
+        "SIGNAGE_PLUGINS_TEST_CONFIG": "Configuration",
+        "SIGNAGE_PLUGINS_TEST_NO_SCHEMA": "This plugin does not provide a configuration schema.",
+        "SIGNAGE_PLUGINS_TEST_SEND": "Send Config",
+        "SIGNAGE_PLUGINS_TEST_PLAY": "Play",
 
         "BUILD_LIST_HEADER": "Build Service Jobs",
         "BUILD_LIST_EMPTY": "No build jobs available to monitor",

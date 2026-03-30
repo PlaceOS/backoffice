@@ -297,6 +297,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .inset-0 {
   inset: calc(var(--spacing) * 0);
 }
+#placeos .inset-4 {
+  inset: calc(var(--spacing) * 4);
+}
 #placeos .inset-x-0 {
   inset-inline: calc(var(--spacing) * 0);
 }
@@ -804,6 +807,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .w-92 {
   width: calc(var(--spacing) * 92);
+}
+#placeos .w-96 {
+  width: calc(var(--spacing) * 96);
 }
 #placeos .w-156 {
   width: calc(var(--spacing) * 156);
@@ -1326,6 +1332,14 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .bg-base-200 {
   background-color: var(--base-200);
 }
+#placeos .bg-base-200\/50 {
+  background-color: var(--base-200);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .bg-base-200\/50 {
+    background-color: color-mix(in oklab, var(--base-200) 50%, transparent);
+  }
+}
 #placeos .bg-base-300 {
   background-color: var(--base-300);
 }
@@ -1415,6 +1429,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .p-4 {
   padding: calc(var(--spacing) * 4);
+}
+#placeos .p-6 {
+  padding: calc(var(--spacing) * 6);
 }
 #placeos .p-8 {
   padding: calc(var(--spacing) * 8);
@@ -1714,6 +1731,15 @@ input:where([type=button], [type=reset], [type=submit]),
     var(--tw-ring-shadow),
     var(--tw-shadow);
 }
+#placeos .shadow-md {
+  --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+  box-shadow:
+    var(--tw-inset-shadow),
+    var(--tw-inset-ring-shadow),
+    var(--tw-ring-offset-shadow),
+    var(--tw-ring-shadow),
+    var(--tw-shadow);
+}
 #placeos .shadow-sm {
   --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
   box-shadow:
@@ -1774,6 +1800,20 @@ input:where([type=button], [type=reset], [type=submit]),
     pointer-events;
   transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
+}
+#placeos .transition-\[left\] {
+  transition-property: left;
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+  transition-duration: var(--tw-duration, var(--default-transition-duration));
+}
+#placeos .transition-\[width\] {
+  transition-property: width;
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+  transition-duration: var(--tw-duration, var(--default-transition-duration));
+}
+#placeos .duration-200 {
+  --tw-duration: 200ms;
+  transition-duration: 200ms;
 }
 #placeos .select-all {
   -webkit-user-select: all;
@@ -2062,6 +2102,19 @@ input:where([type=button], [type=reset], [type=submit]),
   #placeos .print\:hidden {
     display: none;
   }
+}
+#placeos .\[\&\>iframe\]\:h-full > iframe {
+  height: 100%;
+}
+#placeos .\[\&\>iframe\]\:w-full > iframe {
+  width: 100%;
+}
+#placeos .\[\&\>iframe\]\:rounded-lg > iframe {
+  border-radius: var(--radius-lg);
+}
+#placeos .\[\&\>iframe\]\:border-0 > iframe {
+  border-style: var(--tw-border-style);
+  border-width: 0px;
 }
 @layer theme {
   *,
@@ -3248,6 +3301,7 @@ nav .mdc-tab-link {
 @property --tw-drop-shadow-color { syntax: "*"; inherits: false; }
 @property --tw-drop-shadow-alpha { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
 @property --tw-drop-shadow-size { syntax: "*"; inherits: false; }
+@property --tw-duration { syntax: "*"; inherits: false; }
 @keyframes pulse {
   50% {
     opacity: 0.5;
@@ -3315,6 +3369,7 @@ nav .mdc-tab-link {
       --tw-drop-shadow-color: initial;
       --tw-drop-shadow-alpha: 100%;
       --tw-drop-shadow-size: initial;
+      --tw-duration: initial;
     }
   }
 }
