@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, model } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceZone } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -29,8 +28,7 @@ import { ZonesStateService } from './zones-state.service';
                         </icon>
                     </div>
                     <input
-                        [ngModel]="''"
-                        (ngModelChange)="filter$.next($event)"
+                        [(ngModel)]="filter"
                         matInput
                         [placeholder]="'TRIGGERS.SEARCH' | translate"
                         class="rounded-none"
@@ -44,11 +42,11 @@ import { ZonesStateService } from './zones-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="(loading | async) === false"
+                    [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-lg text-sm"
-                    [data]="triggers"
+                    [data]="triggers()"
                     [columns]="[
                         {
                             key: 'name',
@@ -131,24 +129,21 @@ import { ZonesStateService } from './zones-state.service';
 export class ZoneTriggersComponent {
     private _state = inject(ZonesStateService);
 
-    public readonly filter$ = new BehaviorSubject<string>('');
+    public readonly filter = model('');
+    public readonly loading = toSignal(this._state.loading, {
+        initialValue: false,
+    });
+    private readonly _triggers = toSignal(this._state.triggers, {
+        initialValue: [],
+    });
     /** List of triggers associated with the zone */
-    public readonly triggers = combineLatest([
-        this.filter$,
-        this._state.triggers,
-    ]).pipe(
-        map((details) => {
-            const [filter, systems] = details;
-            const search = filter.toLowerCase();
-            return !filter
-                ? systems
-                : systems.filter((sys) =>
-                      sys.name.toLowerCase().includes(search),
-                  );
-        }),
-    );
-
-    public readonly loading = this._state.loading;
+    public readonly triggers = computed(() => {
+        const filter = this.filter().toLowerCase();
+        const triggers = this._triggers();
+        return !filter
+            ? triggers
+            : triggers.filter((sys) => sys.name.toLowerCase().includes(filter));
+    });
 
     public readonly selectTrigger = () => this._state.selectTrigger();
     public readonly deleteTrigger = (t) => this._state.removeTrigger(t);

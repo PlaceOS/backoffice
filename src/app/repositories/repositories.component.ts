@@ -1,10 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceRepository } from '@placeos/ts-client';
+import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { IconComponent } from '../ui/icon.component';
@@ -39,7 +40,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         icon
                         matRipple
                         class="mr-2 sm:hidden"
-                        (click)="open_menu = true"
+                        (click)="open_menu.set(true)"
                     >
                         <icon>menu</icon>
                     </button>
@@ -95,73 +96,63 @@ import { RepositoriesStateService } from './repositories-state.service';
         ItemSidebarComponent,
     ],
 })
-export class RepositoriesComponent extends AsyncHandler implements OnInit {
+export class RepositoriesComponent {
     protected _service = inject(RepositoriesStateService);
     protected _item = inject(ActiveItemService);
 
     public readonly name = 'repositories';
 
-    public open_menu = false;
-    public driver_count = 0;
+    public readonly open_menu = signal(false);
 
     public readonly newItem = () => this._item.create();
 
-    public readonly item = signal<PlaceRepository | null>(null);
-    public readonly loading = signal(false);
-    public readonly tab_list = signal<
-        { id: string; name: string; count?: number; icon: { content: string } }[]
-    >([]);
+    public readonly item = toSignal(
+        this._service.item.pipe(map((item) => item as PlaceRepository)),
+        { initialValue: null as PlaceRepository | null },
+    );
+    public readonly loading = toSignal(this._item.loading, {
+        initialValue: false,
+    });
+    public readonly driver_list = toSignal(this._service.driver_list, {
+        initialValue: null as string[] | null,
+    });
+    public readonly driver_count = computed(() => {
+        const list = this.driver_list();
+        return list ? list.length : -1;
+    });
+    public readonly extensions = computed(() =>
+        extensionsForItem(this.item(), this.name),
+    );
+    public readonly tab_list = computed<
+        {
+            id: string;
+            name: string;
+            count?: number;
+            icon: { content: string };
+        }[]
+    >(() =>
+        (this.driver_count() < 0 || !this.driver_count()
+            ? [
+                  {
+                      id: 'about',
+                      name: i18n('REPOS.TAB_ABOUT'),
+                      icon: { content: 'info' },
+                  },
+              ]
+            : [
+                  {
+                      id: 'about',
+                      name: i18n('REPOS.TAB_ABOUT'),
+                      icon: { content: 'info' },
+                  },
+                  {
+                      id: 'drivers',
+                      name: i18n('REPOS.TAB_DRIVERS'),
+                      count: this.driver_count(),
+                      icon: { content: 'meeting_room' },
+                  },
+              ]
+        ).concat(this.extensions()),
+    );
     public readonly scroll = signal(0);
-
-    public get extensions() {
-        return extensionsForItem(this._service.active_item, this.name);
-    }
-
-    public updateTabList() {
-        this.tab_list.set(
-            (this.driver_count < 0 || !this.driver_count
-                ? [
-                      {
-                          id: 'about',
-                          name: i18n('REPOS.TAB_ABOUT'),
-                          icon: { content: 'info' },
-                      },
-                  ]
-                : [
-                      {
-                          id: 'about',
-                          name: i18n('REPOS.TAB_ABOUT'),
-                          icon: { content: 'info' },
-                      },
-                      {
-                          id: 'drivers',
-                          name: i18n('REPOS.TAB_DRIVERS'),
-                          count: this.driver_count,
-                          icon: { content: 'meeting_room' },
-                      },
-                  ]
-            ).concat(this.extensions),
-        );
-    }
-
-    public async ngOnInit() {
-        this.subscription(
-            'loading',
-            this._item.loading.subscribe((l) => this.loading.set(l)),
-        );
-        this.subscription(
-            'list',
-            this._service.driver_list.subscribe((list) => {
-                this.driver_count = list ? list.length : -1;
-                this.updateTabList();
-            }),
-        );
-        this.subscription(
-            'item',
-            this._service.item.subscribe((item) =>
-                this.item.set(item as unknown as PlaceRepository),
-            ),
-        );
-        this.updateTabList();
-    }
 }

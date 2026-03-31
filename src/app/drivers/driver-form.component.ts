@@ -8,6 +8,7 @@ import {
     inject,
     signal,
 } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -34,7 +35,7 @@ import {
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { format, isAfter, subMinutes } from 'date-fns';
-import { BehaviorSubject, combineLatest, lastValueFrom, of } from 'rxjs';
+import { combineLatest, lastValueFrom, of } from 'rxjs';
 import {
     catchError,
     distinctUntilChanged,
@@ -78,23 +79,23 @@ import { generateDriverFormFields } from './drivers.utilities';
                     [placeholder]="'REPOS.SEARCH' | translate"
                     [options]="repo_list | async"
                     [loading]="loading_type().includes('repository')"
-                    [ngModel]="repo.getValue()"
+                    [ngModel]="repo()"
                     (ngModelChange)="
-                        repo.next($event); driver.next(null); commit.next(null)
+                        repo.set($event); driver.set(null); commit.set(null)
                     "
                 />
-                @if (repo | async) {
+                @if (repo()) {
                     <label for="driver">{{ 'DRIVERS.BASE' | translate }}</label>
                     <item-search-field
                         [placeholder]="'DRIVERS.SEARCH' | translate"
                         [options]="driver_list | async"
                         [loading]="loading_type().includes('drivers')"
-                        [ngModel]="driver.getValue()"
-                        (ngModelChange)="driver.next($event); commit.next(null)"
+                        [ngModel]="driver()"
+                        (ngModelChange)="driver.set($event); commit.set(null)"
                     />
                 }
             }
-            @if (driver | async) {
+            @if (driver()) {
                 <label for="commit" [class.error]="commit_error()">
                     {{ 'DRIVERS.COMMIT' | translate }}
                 </label>
@@ -102,9 +103,9 @@ import { generateDriverFormFields } from './drivers.utilities';
                     [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
                     [options]="commit_list | async"
                     [loading]="loading_type().includes('commits')"
-                    [ngModel]="commit.getValue()"
+                    [ngModel]="commit()"
                     (ngModelChange)="
-                        commit.next($event); applyDriverCommit($event)
+                        commit.set($event); applyDriverCommit($event)
                     "
                 />
                 @if (commit_error()) {
@@ -114,7 +115,7 @@ import { generateDriverFormFields } from './drivers.utilities';
                     </div>
                 }
             }
-            @if ((commit | async) && !loading() && form.controls.id) {
+            @if (commit() && !loading() && form.controls.id) {
                 <div class="flex flex-col" [formGroup]="form">
                     <label
                         for="driver-name"
@@ -301,6 +302,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
     public readonly loading = signal('');
     public readonly loading_type = signal([]);
     public readonly commit_error = signal(false);
+    private readonly _details_request = signal(0);
     public readonly role_types = [
         { id: PlaceDriverRole.SSH, name: 'DRIVERS.SSH' },
         { id: PlaceDriverRole.Device, name: 'DRIVERS.DEVICE' },
@@ -315,9 +317,9 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         { id: 'critical', name: 'COMMON.ALERT_CRITICAL' },
     ];
 
-    public readonly repo = new BehaviorSubject(null);
-    public readonly driver = new BehaviorSubject(null);
-    public readonly commit = new BehaviorSubject(null);
+    public readonly repo = signal<any>(null);
+    public readonly driver = signal<any>(null);
+    public readonly commit = signal<any>(null);
 
     public readonly repo_list = queryRepositories({ limit: 1000 }).pipe(
         map(({ data }) =>
@@ -326,7 +328,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         shareReplay(1),
     );
 
-    public readonly driver_list = this.repo.pipe(
+    public readonly driver_list = toObservable(this.repo).pipe(
         filter((item) => !!item?.id),
         distinctUntilKeyChanged('id'),
         tap(() => this.loading_type.update((types) => [...types, 'drivers'])),
@@ -349,7 +351,10 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         shareReplay(1),
     );
 
-    public readonly commit_list = combineLatest([this.repo, this.driver]).pipe(
+    public readonly commit_list = combineLatest([
+        toObservable(this.repo),
+        toObservable(this.driver),
+    ]).pipe(
         filter(([repo, driver]) => !!repo?.id && !!driver?.id),
         distinctUntilChanged(
             ([prev_repo, prev_driver], [curr_repo, curr_driver]) =>
@@ -404,43 +409,42 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         name: string;
         extra: string;
     }) {
-        const old_commit = this.commit.getValue();
+        const request_id = this._details_request() + 1;
+        this._details_request.set(request_id);
+        const old_commit = this.commit();
         this.form.patchValue({ commit: commit.id });
-        this.commit.next(commit);
+        this.commit.set(commit);
         this.commit_error.set(false);
-        const repo = this.repo.getValue();
-        const driver = this.driver.getValue();
-        if (!driver.id) return;
+        const repo = this.repo();
+        const driver = this.driver();
+        if (!driver?.id) return;
         this.loading.set('DRIVERS.DETAILS_LOADING');
         this.form.patchValue({
             repository_id: repo.id,
             file_name: driver.id,
         });
-        this.subscription(
-            'driver_details',
+        const details = await lastValueFrom(
             listRepositoryDriverDetails(repo.id, {
                 driver: `${driver.id}`,
                 commit: `${commit.id}`,
-            })
-                .pipe(catchError(() => of(null)))
-                .subscribe((details) => {
-                    if (!details) {
-                        this.form.patchValue({ commit: old_commit.id });
-                        this.commit.next(old_commit);
-                        this.loading.set('');
-                        this.commit_error.set(true);
-                        notifyError(
-                            `Failed to get driver details for commit "${commit.id}"`,
-                        );
-                        return;
-                    }
-                    if (this.form.value.id) {
-                        this.loading.set('');
-                        return;
-                    }
-                    this._applyDriverDetails(details);
-                }),
+            }).pipe(catchError(() => of(null))),
         );
+        if (request_id !== this._details_request()) return;
+        if (!details) {
+            this.form.patchValue({ commit: old_commit?.id || null });
+            this.commit.set(old_commit);
+            this.loading.set('');
+            this.commit_error.set(true);
+            notifyError(
+                `Failed to get driver details for commit "${commit.id}"`,
+            );
+            return;
+        }
+        if (this.form.value.id) {
+            this.loading.set('');
+            return;
+        }
+        this._applyDriverDetails(details);
     }
 
     public submit(): void {
@@ -503,7 +507,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
             this.loading.set('');
             return;
         }
-        const driver = this.driver.getValue();
+        const driver = this.driver();
         const details_any = details;
         let settings = details_any.default_settings || '';
         try {
@@ -549,11 +553,11 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
             id: file_name,
             name: file_name.replace(/\//g, ' > '),
         };
-        this.repo.next(repo);
-        this.driver.next(driver);
+        this.repo.set(repo);
+        this.driver.set(driver);
         const commit_list = await nextValueFrom(this.commit_list);
         const active_commit = commit_list.find((c) => c.id === commit);
-        if (active_commit) this.commit.next(active_commit);
+        if (active_commit) this.commit.set(active_commit);
         this.loading.set('');
     }
 

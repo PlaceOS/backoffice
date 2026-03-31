@@ -1,6 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Component, computed, inject, model } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,8 +25,7 @@ import { ModuleStateService } from './module-state.service';
                         </icon>
                     </div>
                     <input
-                        [ngModel]="''"
-                        (ngModelChange)="filter$.next($event)"
+                        [(ngModel)]="filter"
                         matInput
                         [placeholder]="'SYSTEMS.SEARCH' | translate"
                         class="rounded-none"
@@ -42,7 +40,7 @@ import { ModuleStateService } from './module-state.service';
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-lg text-sm"
-                    [data]="system_list"
+                    [data]="system_list()"
                     [columns]="[
                         {
                             key: 'name',
@@ -115,22 +113,18 @@ export class ModuleSystemsComponent {
     private _service = inject(ModuleStateService);
 
     /** Subject holding the value of the search */
-    public readonly filter$ = new BehaviorSubject<string>('');
+    public readonly filter = model('');
     /** Whether systems are being loaded */
     public readonly loading = this._service.loading;
+    public readonly systems = toSignal(this._service.system_list, {
+        initialValue: [],
+    });
 
-    public readonly system_list = combineLatest([
-        this.filter$,
-        this._service.system_list,
-    ]).pipe(
-        map((details) => {
-            const [filter, systems] = details;
-            const search = filter.toLowerCase();
-            return filter
-                ? systems.filter((sys) =>
-                      sys.name.toLowerCase().includes(search),
-                  )
-                : systems;
-        }),
-    );
+    public readonly system_list = computed(() => {
+        const filter = this.filter().toLowerCase();
+        const systems = this.systems();
+        return filter
+            ? systems.filter((sys) => sys.name.toLowerCase().includes(filter))
+            : systems;
+    });
 }

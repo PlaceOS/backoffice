@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import {
     Component,
+    effect,
     forwardRef,
     input,
     OnChanges,
-    OnInit,
     signal,
     SimpleChanges,
 } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
     ControlValueAccessor,
     FormsModule,
@@ -17,7 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { PlaceSystem, queryModules } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, of } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import {
     catchError,
     distinctUntilChanged,
@@ -47,7 +48,7 @@ export interface ModuleLike {
                     [(ngModel)]="module"
                     (ngModelChange)="setValue($event)"
                 >
-                    @for (mod of modules | async; track mod) {
+                    @for (mod of modules(); track mod) {
                         <mat-option [disabled]="!mod.running" [value]="mod">
                             {{ mod.module }} {{ mod.index }}
                         </mat-option>
@@ -80,80 +81,90 @@ export interface ModuleLike {
 })
 export class SelectModuleComponent
     extends AsyncHandler
-    implements OnInit, OnChanges, ControlValueAccessor
+    implements OnChanges, ControlValueAccessor
 {
     /** ID of the system to select the module from */
     public readonly system = input<PlaceSystem>(undefined);
     /** Trigger to refresh modules list */
     public readonly refresh = input<number>(0);
 
-    private _system = new BehaviorSubject('');
-    private _change = new BehaviorSubject(0);
+    private _system = signal('');
+    private _change = signal(0);
 
     public readonly module = signal<ModuleLike | undefined>(undefined);
 
     public readonly loading = signal(false);
 
-    public modules = combineLatest([this._system, this._change]).pipe(
-        distinctUntilChanged(
-            ([id1, time1], [id2, time2]) => id1 === id2 && time1 === time2,
+    private readonly _modules = toSignal(
+        combineLatest([
+            toObservable(this._system),
+            toObservable(this._change),
+        ]).pipe(
+            distinctUntilChanged(
+                ([id1, time1], [id2, time2]) => id1 === id2 && time1 === time2,
+            ),
+            tap(() => this.loading.set(true)),
+            switchMap(([id]) =>
+                id
+                    ? queryModules({
+                          control_system_id: id,
+                          limit: 500,
+                          complete: true,
+                      } as Record<string, unknown>).pipe(
+                          map(({ data }) => data),
+                      )
+                    : of([]),
+            ),
+            catchError(() => of([])),
+            map((mod_list) => {
+                mod_list.sort(
+                    (a, b) =>
+                        this.system().modules.indexOf(a.id) -
+                        this.system().modules.indexOf(b.id),
+                );
+                return mod_list.map((mod) => ({
+                    id: mod.id,
+                    name: mod.name,
+                    running: mod.running,
+                    module: mod.custom_name || mod.name,
+                    index: calculateModuleIndex(mod_list, mod),
+                }));
+            }),
+            tap(() => this.loading.set(false)),
+            shareReplay(1),
         ),
-        tap(() => this.loading.set(true)),
-        switchMap(([id]) =>
-            id
-                ? queryModules({
-                      control_system_id: id,
-                      limit: 500,
-                      complete: true,
-                  } as Record<string, unknown>).pipe(map(({ data }) => data))
-                : of([]),
-        ),
-        catchError(() => of([])),
-        map((mod_list) => {
-            mod_list.sort(
-                (a, b) =>
-                    this.system().modules.indexOf(a.id) -
-                    this.system().modules.indexOf(b.id),
-            );
-            return mod_list.map((mod) => ({
-                id: mod.id,
-                name: mod.name,
-                running: mod.running,
-                module: mod.custom_name || mod.name,
-                index: calculateModuleIndex(mod_list, mod),
-            }));
-        }),
-        tap(() => this.loading.set(false)),
-        shareReplay(1),
+        { initialValue: [] as (ModuleLike & { running: boolean })[] },
     );
+
+    public readonly modules = this._modules;
 
     /** Form control on change handler */
     private _onChange: (_: ModuleLike) => void;
     /** Form control on touch handler */
     private _onTouch: (_: ModuleLike) => void;
 
-    public ngOnInit() {
-        this.subscription(
-            'modules',
-            this.modules.subscribe((list) => {
-                const active = list.find(
-                    (_) =>
-                        _.module === this.module()?.module &&
-                        _.index === this.module()?.index,
-                );
-                if (active) this.setValue(active);
-            }),
-        );
+    constructor() {
+        super();
+        effect(() => {
+            const list = this.modules();
+            const selected = this.module();
+            const active = list.find(
+                (_) =>
+                    _.module === selected?.module &&
+                    _.index === selected?.index,
+            );
+            if (active) this.setValue(active);
+        });
     }
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.system) {
             const system = this.system();
-            this._system.next(system.id);
-            this._change.next(system.updated_at);
+            this._system.set(system?.id || '');
+            this._change.set(system?.updated_at || 0);
         }
         if (changes.refresh && !changes.refresh.firstChange) {
-            this._change.next(Date.now());
+            this._change.set(Date.now());
         }
     }
 
@@ -162,7 +173,6 @@ export class SelectModuleComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: ModuleLike): void {
-        console.log('setValue', new_value);
         this.module.set(new_value);
         if (this._onChange && !this.loading()) {
             this._onChange(new_value);

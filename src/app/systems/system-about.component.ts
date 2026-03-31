@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceSystem } from '@placeos/ts-client';
 import { marked } from 'marked';
-import { AsyncHandler } from '../common/async-handler.class';
+import { map } from 'rxjs/operators';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
@@ -234,7 +235,7 @@ import { SystemStateService } from './system-state.service';
         MatTooltipModule,
     ],
 })
-export class SystemAboutComponent extends AsyncHandler implements OnInit {
+export class SystemAboutComponent {
     private _service = inject(SystemStateService);
 
     /** List of settings for associated modules, drivers and zones */
@@ -243,18 +244,14 @@ export class SystemAboutComponent extends AsyncHandler implements OnInit {
     public readonly start = () => this._service.startSystem();
     public readonly stop = () => this._service.stopSystem();
 
-    public readonly item = signal<PlaceSystem | undefined>(undefined);
+    public readonly item = toSignal(
+        this._service.item.pipe(map((item) => item as PlaceSystem)),
+        {
+            initialValue: undefined as PlaceSystem | undefined,
+        },
+    );
     /** HTML string for rendering the description */
     public readonly description = computed(() =>
-        marked(this.item().description || '', { async: false }),
+        marked(this.item()?.description || '', { async: false }),
     );
-
-    public ngOnInit() {
-        this.subscription(
-            'item',
-            this._service.item.subscribe((item) =>
-                this.item.set(item as PlaceSystem),
-            ),
-        );
-    }
 }

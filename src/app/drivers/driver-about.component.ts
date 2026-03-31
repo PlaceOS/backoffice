@@ -1,13 +1,14 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceDriver } from '@placeos/ts-client';
 import { marked } from 'marked';
-import { AsyncHandler } from '../common/async-handler.class';
+import { map } from 'rxjs/operators';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
@@ -228,7 +229,7 @@ import { DriverStateService } from './driver-state.service';
         MatProgressSpinnerModule,
     ],
 })
-export class DriverAboutComponent extends AsyncHandler implements OnInit {
+export class DriverAboutComponent {
     private _service = inject(DriverStateService);
     private _clipboard = inject(Clipboard);
 
@@ -237,23 +238,19 @@ export class DriverAboutComponent extends AsyncHandler implements OnInit {
     public readonly reload = () => this._service.reloadDriver();
     public readonly viewErrors = () => this._service.viewError();
 
-    public readonly item = signal<PlaceDriver | undefined>(undefined);
+    public readonly item = toSignal(
+        this._service.item.pipe(map((item) => item as PlaceDriver)),
+        {
+            initialValue: undefined as PlaceDriver | undefined,
+        },
+    );
     /** HTML string for rendering the description */
     public readonly description = computed(() =>
-        marked(this.item().description || '', { async: false }),
+        marked(this.item()?.description || '', { async: false }),
     );
 
-    public ngOnInit() {
-        this.subscription(
-            'item',
-            this._service.item.subscribe((item) =>
-                this.item.set(item as PlaceDriver),
-            ),
-        );
-    }
-
     public copyCommit(): void {
-        this._clipboard.copy(this.item().commit);
+        this._clipboard.copy(this.item()?.commit || '');
         notifyInfo(i18n('COMMON.COMMIT_HASH_COPIED'));
     }
 }

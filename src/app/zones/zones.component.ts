@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -34,7 +35,7 @@ import { ZonesStateService } from './zones-state.service';
                         class="hidden sm:block"
                         [route]="name"
                         [title]="'ZONES.PLURAL' | translate"
-                        [filter_options]="zone_tags | async"
+                        [filter_options]="zone_tags()"
                     ></item-sidebar>
                     <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
                         <item-selection
@@ -124,87 +125,74 @@ import { ZonesStateService } from './zones-state.service';
         ItemSelectionComponent,
     ],
 })
-export class ZonesComponent extends AsyncHandler implements OnInit {
+export class ZonesComponent extends AsyncHandler {
     protected _service = inject(ZonesStateService);
     protected _item = inject(ActiveItemService);
     protected _route = inject(ActivatedRoute);
     protected _router = inject(Router);
     private _debug = inject(PlaceDebugService);
 
-    public readonly item = signal<PlaceZone>(null);
-    public readonly loading = signal(false);
+    public readonly item = toSignal(this._item.active_item$, {
+        initialValue: null as PlaceZone | null,
+    });
+    public readonly loading = toSignal(this._item.loading, {
+        initialValue: false,
+    });
     public readonly name = 'zones';
     public readonly open_menu = signal(false);
     public readonly scroll = signal(0);
     public readonly debug_position = this._debug.position;
-    public readonly tab_list = signal([]);
+    public readonly counts = toSignal(this._service.counts, {
+        initialValue: {
+            systems: 0,
+            triggers: 0,
+            metadata: 0,
+            children: 0,
+        },
+    });
+    public readonly tab_list = computed(() => {
+        const details = this.counts();
+        return [
+            {
+                id: 'about',
+                name: i18n('ZONES.TAB_ABOUT'),
+                icon: { content: 'info' },
+            },
+            {
+                id: 'systems',
+                name: i18n('ZONES.TAB_SYSTEMS'),
+                count: details.systems ?? '?',
+                icon: { content: 'meeting_room' },
+            },
+            {
+                id: 'triggers',
+                name: i18n('ZONES.TAB_TRIGGERS'),
+                count: details.triggers ?? '?',
+                icon: { content: 'timer' },
+            },
+            {
+                id: 'metadata',
+                name: i18n('ZONES.TAB_METADATA'),
+                count: details.metadata ?? '?',
+                icon: { content: 'code_blocks' },
+            },
+            {
+                id: 'children',
+                name: i18n('ZONES.TAB_CHILDREN'),
+                count: details.children ?? '?',
+                icon: { content: 'account_tree' },
+            },
+            {
+                id: 'history',
+                name: i18n('ZONES.TAB_SETTINGS_HISTORY'),
+                icon: { content: 'schedule' },
+            },
+        ].concat(extensionsForItem(this.item(), this.name)) as any[];
+    });
 
     public readonly newItem = () => this._item.create();
     public readonly bulkAdd = () => this._item.bulkAdd();
-    public readonly zone_tags = listZoneTags().pipe(shareReplay(1));
-
-    public get extensions() {
-        return extensionsForItem(this._service.active_item, this.name);
-    }
-
-    public updateTabList(details: Record<string, number>) {
-        this.tab_list.set(
-            [
-                {
-                    id: 'about',
-                    name: i18n('ZONES.TAB_ABOUT'),
-                    icon: { content: 'info' },
-                },
-                {
-                    id: 'systems',
-                    name: i18n('ZONES.TAB_SYSTEMS'),
-                    count: details.systems ?? '?',
-                    icon: { content: 'meeting_room' },
-                },
-                {
-                    id: 'triggers',
-                    name: i18n('ZONES.TAB_TRIGGERS'),
-                    count: details.triggers ?? '?',
-                    icon: { content: 'timer' },
-                },
-                {
-                    id: 'metadata',
-                    name: i18n('ZONES.TAB_METADATA'),
-                    count: details.metadata ?? '?',
-                    icon: { content: 'code_blocks' },
-                },
-                {
-                    id: 'children',
-                    name: i18n('ZONES.TAB_CHILDREN'),
-                    count: details.children ?? '?',
-                    icon: { content: 'account_tree' },
-                },
-                {
-                    id: 'history',
-                    name: i18n('ZONES.TAB_SETTINGS_HISTORY'),
-                    icon: { content: 'schedule' },
-                },
-            ].concat(this.extensions),
-        );
-    }
-
-    public ngOnInit(): void {
-        this.subscription(
-            'loading',
-            this._item.loading.subscribe((l) => this.loading.set(l)),
-        );
-        this.subscription(
-            'item-change',
-            this._item.active_item$.subscribe((i) => {
-                this.item.set(i as unknown as PlaceZone);
-                this.updateTabList({});
-            }),
-        );
-        this.subscription(
-            'item',
-            this._service.counts.subscribe((details) =>
-                this.updateTabList(details),
-            ),
-        );
-    }
+    public readonly zone_tags = toSignal(listZoneTags().pipe(shareReplay(1)), {
+        initialValue: [],
+    });
 }

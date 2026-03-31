@@ -1,10 +1,11 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceModule, querySystems } from '@placeos/ts-client';
 import { lastValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -110,23 +111,27 @@ import { TranslatePipe } from '../ui/translate.pipe';
         SidebarMenuComponent,
     ],
 })
-export class ModulesComponent extends AsyncHandler implements OnInit {
+export class ModulesComponent {
     private _service = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
 
     public readonly name = 'modules';
-    public readonly item = signal<PlaceModule>(null);
-    public readonly loading = signal(false);
+    public readonly item = toSignal(
+        this._service.item.pipe(map((item) => item as PlaceModule)),
+        { initialValue: null as PlaceModule | null },
+    );
+    public readonly loading = toSignal(this._service.loading, {
+        initialValue: false,
+    });
     /** Number of systems for the active device */
     public readonly system_count = signal(undefined);
     public readonly open_menu = signal(false);
     public readonly scroll = signal(0);
     public readonly debug_position = this._debug.position;
     public readonly newItem = () => this._service.create();
-
-    public get extensions() {
-        return extensionsForItem(this._service.active_item, this.name);
-    }
+    public readonly extensions = computed(() =>
+        extensionsForItem(this.item(), this.name),
+    );
 
     public readonly tab_list = computed(() =>
         [
@@ -146,22 +151,15 @@ export class ModulesComponent extends AsyncHandler implements OnInit {
                 name: i18n('MODULES.TAB_SETTINGS_HISTORY'),
                 icon: { content: 'schedule' },
             },
-        ].concat(this.extensions),
+        ].concat(this.extensions()),
     );
 
-    public ngOnInit(): void {
-        this.subscription(
-            'loading',
-            this._service.loading.subscribe((l) => this.loading.set(l)),
-        );
-        this.subscription(
-            'item',
-            this._service.item.subscribe((item) => {
-                this.item.set(item as PlaceModule);
-                this.system_count.set(undefined);
-                this.loadValues(item as PlaceModule);
-            }),
-        );
+    constructor() {
+        effect(() => {
+            const item = this.item();
+            this.system_count.set(undefined);
+            this.loadValues(item);
+        });
     }
 
     protected async loadValues(item: PlaceModule) {

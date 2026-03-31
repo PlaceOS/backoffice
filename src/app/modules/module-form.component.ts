@@ -1,4 +1,14 @@
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    Signal,
+    computed,
+    inject,
+    signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import {
     EncryptionLevel,
@@ -69,7 +79,7 @@ import { generateModuleFormFields } from './modules.utilities';
                         </div>
                     }
                     @if (!form.controls.driver || form.controls.driver.value) {
-                        @if (form.controls.system && role === 'logic') {
+                        @if (form.controls.system && role() === 'logic') {
                             <div class="field">
                                 <label
                                     for="system"
@@ -79,7 +89,7 @@ import { generateModuleFormFields } from './modules.utilities';
                                     "
                                 >
                                     {{ 'MODULES.CONTROL_SYSTEM' | translate }}
-                                    @if (role === 'logic') {
+                                    @if (role() === 'logic') {
                                         <span>*</span>
                                     }
                                 </label>
@@ -112,7 +122,7 @@ import { generateModuleFormFields } from './modules.utilities';
                         }
                         @if (
                             form.controls.uri &&
-                            (role === 'service' || role === 'websocket')
+                            (role() === 'service' || role() === 'websocket')
                         ) {
                             <div class="field">
                                 <label
@@ -143,7 +153,10 @@ import { generateModuleFormFields } from './modules.utilities';
                         <div class="fieldset">
                             @if (
                                 form.controls.ip &&
-                                !(role === 'service' || role === 'websocket')
+                                !(
+                                    role() === 'service' ||
+                                    role() === 'websocket'
+                                )
                             ) {
                                 <div class="field">
                                     <label
@@ -155,7 +168,8 @@ import { generateModuleFormFields } from './modules.utilities';
                                     >
                                         {{ 'MODULES.FIELD_IP' | translate }}
                                         @if (
-                                            role === 'ssh' || role === 'device'
+                                            role() === 'ssh' ||
+                                            role() === 'device'
                                         ) {
                                             <span> * </span>
                                         }
@@ -180,7 +194,10 @@ import { generateModuleFormFields } from './modules.utilities';
                             }
                             @if (
                                 form.controls.port &&
-                                !(role === 'service' || role === 'websocket')
+                                !(
+                                    role() === 'service' ||
+                                    role() === 'websocket'
+                                )
                             ) {
                                 <div class="field">
                                     <label
@@ -192,7 +209,8 @@ import { generateModuleFormFields } from './modules.utilities';
                                     >
                                         {{ 'MODULES.PORT_NUMBER' | translate }}
                                         @if (
-                                            role === 'ssh' || role === 'device'
+                                            role() === 'ssh' ||
+                                            role() === 'device'
                                         ) {
                                             <span> * </span>
                                         }
@@ -223,7 +241,10 @@ import { generateModuleFormFields } from './modules.utilities';
                         <div class="-mx-2 mb-4 flex flex-wrap items-center">
                             @if (
                                 form.controls.tls &&
-                                !(role === 'service' || role === 'websocket')
+                                !(
+                                    role() === 'service' ||
+                                    role() === 'websocket'
+                                )
                             ) {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
@@ -233,7 +254,10 @@ import { generateModuleFormFields } from './modules.utilities';
                             }
                             @if (
                                 form.controls.udp &&
-                                !(role === 'service' || role === 'websocket')
+                                !(
+                                    role() === 'service' ||
+                                    role() === 'websocket'
+                                )
                             ) {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
@@ -241,7 +265,9 @@ import { generateModuleFormFields } from './modules.utilities';
                                     formControlName="udp"
                                 ></settings-toggle>
                             }
-                            @if (form.controls.makebreak && role !== 'logic') {
+                            @if (
+                                form.controls.makebreak && role() !== 'logic'
+                            ) {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
                                     [name]="'MODULES.MAKEBREAK' | translate"
@@ -250,7 +276,7 @@ import { generateModuleFormFields } from './modules.utilities';
                             }
                             @if (
                                 form.controls.ignore_connected &&
-                                role !== 'logic'
+                                role() !== 'logic'
                             ) {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
@@ -359,10 +385,24 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup;
+    public form: UntypedFormGroup = generateModuleFormFields(this._data.item);
     public loading: string;
-    public heading: string;
-    public is_readonly: boolean;
+    public heading = i18n(
+        `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
+    );
+    public is_readonly = !!this._data.readonly;
+    private _driver: Signal<{ role?: PlaceDriverRole } | null> = this.form
+        .controls.driver
+        ? toSignal(this.form.controls.driver.valueChanges, {
+              initialValue: this.form.controls.driver.value || null,
+          })
+        : signal(null);
+    private _module_role: Signal<PlaceDriverRole | null> = toSignal(
+        this.form.controls.role.valueChanges,
+        {
+            initialValue: this.form.controls.role.value || null,
+        },
+    );
 
     public readonly alert_levels = [
         { id: 'low', name: 'COMMON.ALERT_LOW' },
@@ -383,10 +423,8 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
         queryEdges({ q: _ }).pipe(map((resp) => resp.data));
 
     /** Role of the selected driver */
-    public get role(): string {
-        const role =
-            this.form.controls.driver?.value.role ||
-            this.form.controls.role.value;
+    public role: Signal<string> = computed(() => {
+        const role = this._driver()?.role || this._module_role();
         switch (role) {
             case PlaceDriverRole.SSH:
                 return 'ssh';
@@ -398,14 +436,9 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
                 return 'websocket';
         }
         return 'logic';
-    }
+    });
 
     public ngOnInit(): void {
-        const item = this._data.item;
-        const edit = !!item.id;
-        this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
-        this.is_readonly = !!this._data.readonly;
-        this.form = generateModuleFormFields(item);
         this.subscription(
             'save_item_key',
             this._hotkey.listen(['KeyS'], () => this.submit()),

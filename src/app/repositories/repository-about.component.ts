@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
 import { marked } from 'marked';
-import { AsyncHandler } from '../common/async-handler.class';
+import { map } from 'rxjs/operators';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SafePipe } from '../ui/pipes/safe.pipe';
 import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
@@ -202,13 +203,20 @@ import { RepositoriesStateService } from './repositories-state.service';
         DateFromPipe,
     ],
 })
-export class RepositoryAboutComponent extends AsyncHandler implements OnInit {
+export class RepositoryAboutComponent {
     private _service = inject(RepositoriesStateService);
 
     /** Whether the latest commit is being pulled on the server */
     public readonly pulling = signal(false);
-    public readonly commit = signal('');
-    public readonly item = signal<PlaceRepository | undefined>(undefined);
+    public readonly commit = toSignal(this._service.commit, {
+        initialValue: '',
+    });
+    public readonly item = toSignal(
+        this._service.item.pipe(map((item) => item as PlaceRepository)),
+        {
+            initialValue: undefined as PlaceRepository | undefined,
+        },
+    );
 
     public readonly local_url = computed(() =>
         this.item()?.type === PlaceRepositoryType.Interface
@@ -222,22 +230,8 @@ export class RepositoryAboutComponent extends AsyncHandler implements OnInit {
         () => this.item()?.type === PlaceRepositoryType.Interface,
     );
     public readonly description = computed(() =>
-        marked(this.item().description || '', { async: false }),
+        marked(this.item()?.description || '', { async: false }),
     );
-
-    public ngOnInit(): void {
-        this.commit.set('');
-        this.subscription(
-            'commit',
-            this._service.commit.subscribe((_) => this.commit.set(_)),
-        );
-        this.subscription(
-            'item',
-            this._service.item.subscribe((item) =>
-                this.item.set(item as unknown as PlaceRepository),
-            ),
-        );
-    }
 
     /**
      * Send request to server to pull the latest commit for the active repository

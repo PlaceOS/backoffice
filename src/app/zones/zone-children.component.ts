@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, model } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceZone } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,8 +26,7 @@ import { ZonesStateService } from './zones-state.service';
                     </div>
                     <input
                         matInput
-                        [ngModel]="''"
-                        (ngModelChange)="filter$.next($event)"
+                        [(ngModel)]="filter"
                         name="search-filter"
                         [placeholder]="'ZONES.SEARCH' | translate"
                     />
@@ -37,11 +35,11 @@ import { ZonesStateService } from './zones-state.service';
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
-                [class.opacity-0]="(loading | async) === false"
+                [class.opacity-0]="!loading()"
             />
             <simple-table
                 class="block min-w-lg text-sm"
-                [data]="children"
+                [data]="children()"
                 [columns]="[
                     {
                         key: 'name',
@@ -107,24 +105,21 @@ import { ZonesStateService } from './zones-state.service';
 export class ZoneChildrenComponent {
     private _state = inject(ZonesStateService);
 
-    public readonly filter$ = new BehaviorSubject<string>('');
+    public readonly filter = model('');
+    public readonly loading = toSignal(this._state.loading, {
+        initialValue: false,
+    });
+    private readonly _children = toSignal(this._state.children, {
+        initialValue: [],
+    });
     /** List of triggers associated with the zone */
-    public readonly children = combineLatest([
-        this.filter$,
-        this._state.children,
-    ]).pipe(
-        map((details) => {
-            const [filter, zones] = details;
-            const search = filter.toLowerCase();
-            return !filter
-                ? zones
-                : zones.filter((sys) =>
-                      sys.name.toLowerCase().includes(search),
-                  );
-        }),
-    );
-
-    public readonly loading = this._state.loading;
+    public readonly children = computed(() => {
+        const filter = this.filter().toLowerCase();
+        const zones = this._children();
+        return !filter
+            ? zones
+            : zones.filter((sys) => sys.name.toLowerCase().includes(filter));
+    });
 
     public get item(): PlaceZone {
         return this._state.active_item as PlaceZone;

@@ -2,19 +2,20 @@ import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
     Component,
+    effect,
     ElementRef,
     inject,
     input,
-    OnInit,
     signal,
     viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import {
     PlaceDriverRole,
     PlaceModule,
@@ -23,7 +24,7 @@ import {
     PlaceZone,
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { nextValueFrom } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
@@ -227,10 +228,14 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
 })
 export class ItemSidebarComponent
     extends AsyncHandler
-    implements OnInit, AfterViewInit
+    implements AfterViewInit
 {
     private _router = inject(Router);
     private _service = inject(ActiveItemService);
+    private readonly _route_change = toSignal(
+        this._router.events.pipe(startWith(null)),
+        { initialValue: null },
+    );
 
     public readonly title = input('Systems');
     public readonly route = input('systems');
@@ -264,15 +269,12 @@ export class ItemSidebarComponent
 
     public readonly subroute = signal('');
 
-    public ngOnInit(): void {
-        this.subscription(
-            'route_change',
-            this._router.events.subscribe((e) => {
-                if (e instanceof NavigationEnd) {
-                    this.subroute.set(this._router.url.split('/')[3] || '');
-                }
-            }),
-        );
+    constructor() {
+        super();
+        effect(() => {
+            this._route_change();
+            this.subroute.set(this._router.url.split('/')[3] || '');
+        });
     }
 
     public ngAfterViewInit() {

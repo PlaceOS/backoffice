@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
@@ -59,7 +60,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 ></item-details>
                                 <item-tablist
                                     [base]="name"
-                                    [tabs]="tab_list"
+                                    [tabs]="tab_list()"
                                     [scrolled]="scroll() > 0"
                                     class="z-10"
                                 ></item-tablist>
@@ -111,27 +112,25 @@ import { TranslatePipe } from '../ui/translate.pipe';
         SidebarMenuComponent,
     ],
 })
-export class TriggersComponent extends AsyncHandler implements OnInit {
+export class TriggersComponent extends AsyncHandler {
     protected _service = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
 
     public readonly name = 'triggers';
 
     public open_menu = false;
-    public instance_count = 0;
-    public tab_list = [];
-    public readonly loading = signal(false);
+    public readonly instance_count = signal(0);
+    public readonly loading = toSignal(this._service.loading, {
+        initialValue: false,
+    });
     public readonly debug_position = this._debug.position;
-    public readonly item = signal<PlaceTrigger>(null);
+    public readonly item = toSignal(this._service.item, {
+        initialValue: null as PlaceTrigger | null,
+    });
     public readonly newItem = () => this._service.create();
     public readonly scroll = signal(0);
-
-    public get extensions() {
-        return extensionsForItem(this._service.active_item, this.name);
-    }
-
-    public updateTabList() {
-        this.tab_list = [
+    public readonly tab_list = computed(() =>
+        [
             {
                 id: 'about',
                 name: i18n('TRIGGERS.TAB_ABOUT'),
@@ -140,33 +139,27 @@ export class TriggersComponent extends AsyncHandler implements OnInit {
             {
                 id: 'instances',
                 name: i18n('TRIGGERS.TAB_INSTANCES'),
-                count: this.instance_count,
+                count: this.instance_count(),
                 icon: { content: 'meeting_room' },
             },
-        ].concat(this.extensions);
+        ].concat(extensionsForItem(this.item(), this.name)),
+    );
+
+    constructor() {
+        super();
+        effect(() => {
+            void this.loadValues(this.item() as PlaceTrigger | null);
+        });
     }
 
-    public ngOnInit(): void {
-        this.subscription(
-            'loading',
-            this._service.loading.subscribe((l) => this.loading.set(l)),
-        );
-        this.subscription(
-            'item',
-            this._service.item.subscribe((item) => {
-                this.item.set(item as PlaceTrigger);
-                this.loadValues(item as PlaceTrigger);
-            }),
-        );
-        this.updateTabList();
-    }
-
-    protected async loadValues(item: PlaceTrigger) {
-        if (!item) return;
+    protected async loadValues(item: PlaceTrigger | null) {
+        if (!item) {
+            this.instance_count.set(0);
+            return;
+        }
         // Get trigger count
-        this.instance_count = (
-            await lastValueFrom(listTriggerInstances(item.id))
-        ).length;
-        this.updateTabList();
+        this.instance_count.set(
+            (await lastValueFrom(listTriggerInstances(item.id))).length,
+        );
     }
 }

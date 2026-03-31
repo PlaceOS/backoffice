@@ -3,9 +3,11 @@ import {
     EventEmitter,
     OnInit,
     Output,
+    computed,
     inject,
     signal,
 } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -34,7 +36,7 @@ import {
     listRepositoryDefaultBranch,
     updateRepository,
 } from '@placeos/ts-client';
-import { Subject, combineLatest, merge, of, timer } from 'rxjs';
+import { combineLatest, merge, of, timer } from 'rxjs';
 import {
     catchError,
     debounceTime,
@@ -42,6 +44,7 @@ import {
     filter,
     map,
     shareReplay,
+    skip,
     switchMap,
     tap,
 } from 'rxjs/operators';
@@ -167,7 +170,7 @@ import { generateRepositoryFormFields } from './repositories.utilities';
                                     name="uri"
                                     [placeholder]="'REPOS.URI' | translate"
                                     formControlName="uri"
-                                    (blur)="credentials_blur$.next()"
+                                    (blur)="markCredentialsBlur()"
                                     required
                                 />
                                 <mat-error>{{
@@ -191,7 +194,7 @@ import { generateRepositoryFormFields } from './repositories.utilities';
                                             'REPOS.USERNAME' | translate
                                         "
                                         formControlName="username"
-                                        (blur)="credentials_blur$.next()"
+                                        (blur)="markCredentialsBlur()"
                                     />
                                 </mat-form-field>
                             </div>
@@ -207,17 +210,19 @@ import { generateRepositoryFormFields } from './repositories.utilities';
                                         name="repo-pwd"
                                         autocomplete="new-password"
                                         [type]="
-                                            show_password ? 'text' : 'password'
+                                            show_password()
+                                                ? 'text'
+                                                : 'password'
                                         "
                                         [placeholder]="
                                             'COMMON.PASSWORD' | translate
                                         "
                                         formControlName="password"
-                                        (blur)="credentials_blur$.next()"
+                                        (blur)="markCredentialsBlur()"
                                     />
                                     <button
                                         matSuffix
-                                        (click)="show_password = !show_password"
+                                        (click)="togglePassword()"
                                     >
                                         <icon>visibility</icon>
                                     </button>
@@ -268,7 +273,7 @@ import { generateRepositoryFormFields } from './repositories.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (is_interface) {
+                    @if (is_interface()) {
                         <div class="field commit">
                             <label for="commit">
                                 {{ 'REPOS.COMMIT' | translate }}</label
@@ -363,7 +368,7 @@ import { generateRepositoryFormFields } from './repositories.utilities';
                             <settings-toggle
                                 name="Follow latest commit"
                                 class="mb-4"
-                                [ngModel]="follow_latest"
+                                [ngModel]="follow_latest()"
                                 [ngModelOptions]="{ standalone: true }"
                                 (ngModelChange)="setFollow($event)"
                             />
@@ -448,21 +453,21 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     /** Currently selected commit for the repository */
     public base_commit: Identity | Record<string, string>;
     /** Whether to follow the latest branch commits(Auto-update) */
-    public follow_latest: boolean;
+    public readonly follow_latest = signal(false);
     /** List of available types of repositories */
     public repo_types: Identity[] = [];
-    public show_password = false;
+    public readonly show_password = signal(false);
     public date_pipe = new DateFromPipe();
     public readonly is_editing = signal(false);
     /** Emits when URI, username, or password fields lose focus */
-    public credentials_blur$ = new Subject<void>();
+    public readonly credentials_blur = signal(0);
+
+    public readonly is_interface = computed(
+        () => this.form?.value?.repo_type === PlaceRepositoryType.Interface,
+    );
 
     public get hide_uri() {
-        return !this.is_interface && this.form.value.id;
-    }
-
-    public get is_interface() {
-        return this.form?.value?.repo_type === PlaceRepositoryType.Interface;
+        return !this.is_interface() && this.form.value.id;
     }
 
     public ngOnInit(): void {
@@ -477,7 +482,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
                 name: i18n('REPOS.TYPE_INTERFACE'),
             },
         ];
-        this.follow_latest = this.form?.value.commit_hash === 'HEAD';
+        this.follow_latest.set(this.form?.value.commit_hash === 'HEAD');
         this.is_editing.set(!!this.form?.value.id);
         this._setupBranchAndCommitStreams();
         this.subscription(
@@ -544,12 +549,20 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     }
 
     public setFollow(value: boolean) {
-        this.follow_latest = value;
+        this.follow_latest.set(value);
         if (value) {
             this.form.controls.commit_hash.setValue('HEAD');
         } else if (this.form.controls.commit_hash.value === 'HEAD') {
             this.form.controls.commit_hash.setValue(this.commit_list[1].id);
         }
+    }
+
+    public markCredentialsBlur() {
+        this.credentials_blur.update((value) => value + 1);
+    }
+
+    public togglePassword() {
+        this.show_password.update((value) => !value);
     }
 
     private _setupBranchAndCommitStreams() {
@@ -563,7 +576,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         // Trigger branch fetch on blur or valid URL after 1s
         const credentials_trigger$ = merge(
             timer(300),
-            this.credentials_blur$,
+            toObservable(this.credentials_blur).pipe(skip(1)),
             uri_valid$,
         );
         this.branch_list = credentials_trigger$.pipe(
@@ -585,9 +598,8 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
             }),
             tap((_) => {
                 this.loading_branches.set(false);
-                _.length
-                    ? this.form.get('branch').enable()
-                    : this.form.get('branch').disable();
+                if (_.length) this.form.get('branch').enable();
+                else this.form.get('branch').disable();
             }),
             shareReplay(1),
         );
@@ -622,7 +634,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         );
         this.commit_list = merge(
             timer(300),
-            this.credentials_blur$,
+            toObservable(this.credentials_blur).pipe(skip(1)),
             uri_valid$,
             this.form.get('branch').valueChanges,
         ).pipe(

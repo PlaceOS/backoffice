@@ -1,5 +1,15 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    Signal,
+    computed,
+    inject,
+    signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     ReactiveFormsModule,
@@ -212,7 +222,7 @@ import { generateUserFormFields } from './users.utilities';
                         }
                     </div>
                     <div class="fieldset">
-                        @if (form.controls.staff_id && !hide_password) {
+                        @if (form.controls.staff_id && !hide_password()) {
                             <div class="field">
                                 <label
                                     for="new-password"
@@ -229,7 +239,9 @@ import { generateUserFormFields } from './users.utilities';
                                         name="new-password"
                                         autocomplete="new-password"
                                         [type]="
-                                            show_password ? 'text' : 'password'
+                                            show_password()
+                                                ? 'text'
+                                                : 'password'
                                         "
                                         [placeholder]="
                                             'COMMON.PASSWORD' | translate
@@ -238,7 +250,9 @@ import { generateUserFormFields } from './users.utilities';
                                     />
                                     <icon
                                         matSuffix
-                                        (click)="show_password = !show_password"
+                                        (click)="
+                                            show_password.set(!show_password())
+                                        "
                                     >
                                         visibility
                                     </icon>
@@ -248,7 +262,9 @@ import { generateUserFormFields } from './users.utilities';
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.confirm_password && !hide_password) {
+                        @if (
+                            form.controls.confirm_password && !hide_password()
+                        ) {
                             <div class="field">
                                 <label
                                     for="confirm-password"
@@ -265,7 +281,7 @@ import { generateUserFormFields } from './users.utilities';
                                     <input
                                         matInput
                                         [type]="
-                                            show_confirm ? 'text' : 'password'
+                                            show_confirm() ? 'text' : 'password'
                                         "
                                         name="confirm-password"
                                         [placeholder]="
@@ -276,7 +292,9 @@ import { generateUserFormFields } from './users.utilities';
                                     />
                                     <icon
                                         matSuffix
-                                        (click)="show_confirm = !show_confirm"
+                                        (click)="
+                                            show_confirm.set(!show_confirm())
+                                        "
                                     >
                                         visibility
                                     </icon>
@@ -303,7 +321,7 @@ import { generateUserFormFields } from './users.utilities';
                                     #chipList
                                     aria-label="Image List"
                                 >
-                                    @for (item of group_list; track item) {
+                                    @for (item of group_list(); track item) {
                                         <mat-chip-row
                                             (removed)="removeGroup(item)"
                                         >
@@ -394,13 +412,15 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup;
+    public form: UntypedFormGroup = generateUserFormFields(this._data.item);
     public loading: string;
-    public heading: string;
+    public heading = i18n(
+        `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
+    );
     /** Whether password should be visible in plaintext */
-    public show_password: boolean;
+    public readonly show_password = signal(false);
     /** Whether password confirm should be visible in plaintext */
-    public show_confirm: boolean;
+    public readonly show_confirm = signal(false);
     /** List of available domains */
     public readonly domain_list = queryDomains().pipe(
         map(({ data }) => data),
@@ -408,28 +428,31 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
     );
     /** List of separator characters for groups */
     public readonly separators: number[] = [ENTER, COMMA];
+    private _email: Signal<string> = toSignal(
+        this.form.controls.email.valueChanges,
+        {
+            initialValue: this.form.controls.email.value || '',
+        },
+    );
+    public group_list: Signal<string[]> = toSignal(
+        this.form.controls.groups.valueChanges,
+        {
+            initialValue: this.form.controls.groups.value || [],
+        },
+    );
 
-    public get hide_password() {
-        return (
-            this.form.value.email.toLowerCase().startsWith('lynner') &&
-            !localStorage.getItem('PlaceOS.show_password')
-        );
-    }
+    public readonly hide_password = computed(
+        () =>
+            this._email().toLowerCase().startsWith('lynner') &&
+            !localStorage.getItem('PlaceOS.show_password'),
+    );
 
     public readonly addGroup = (e: MatChipInputEvent) =>
         addChipItem(this.form.controls.groups as FormControl<string[]>, e);
     public readonly removeGroup = (i: string) =>
         removeChipItem(this.form.controls.groups as FormControl<string[]>, i);
 
-    public get group_list(): string[] {
-        return this.form.controls.groups.value;
-    }
-
     public async ngOnInit() {
-        const item = this._data.item;
-        const edit = !!item.id;
-        this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
-        this.form = generateUserFormFields(item);
         if (!this.form.controls.authority_id.value) {
             this.form.controls.authority_id.setValue(this.domain_list[0]?.id);
         }

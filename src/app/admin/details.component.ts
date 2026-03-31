@@ -1,10 +1,4 @@
-import {
-    ChangeDetectorRef,
-    Component,
-    OnInit,
-    inject,
-    signal,
-} from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { apiEndpoint, get } from '@placeos/ts-client';
 
@@ -206,7 +200,6 @@ export interface PlaceServiceDetails {
 export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     private _users = inject(BackofficeUsersService);
     private _dialog = inject(MatDialog);
-    private _cdr = inject(ChangeDetectorRef);
 
     /** Current details about the API */
     public readonly api_details = signal([] as PlaceServiceDetails[]);
@@ -267,7 +260,6 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
             ),
         );
         this.api_details.set((details as PlaceServiceDetails[]) || []);
-        this._cdr.detectChanges();
     }
 
     public async loadPlatformDetails() {

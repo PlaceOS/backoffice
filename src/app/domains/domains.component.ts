@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRipple } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
@@ -56,7 +57,7 @@ import { DomainStateService } from './domain-state.service';
                         ></item-details>
                         <item-tablist
                             [base]="name"
-                            [tabs]="tab_list"
+                            [tabs]="tab_list()"
                             [scrolled]="scroll() > 0"
                             class="z-10"
                         ></item-tablist>
@@ -96,53 +97,37 @@ import { DomainStateService } from './domain-state.service';
         SidebarMenuComponent,
     ],
 })
-export class DomainsComponent extends AsyncHandler implements OnInit {
+export class DomainsComponent extends AsyncHandler {
     private _service = inject(DomainStateService);
     protected _item = inject(ActiveItemService);
 
     public readonly name = 'domains';
 
     public open_menu = false;
-    public tab_list = [];
-    public extra_actions = [];
     public readonly scroll = signal(0);
-    public readonly loading = signal(false);
-
-    public readonly newItem = () => this._item.create();
-
-    public readonly item = signal<PlaceDomain>(null);
-
-    public get extensions() {
-        return extensionsForItem(this._service.active_item, this.name);
-    }
-
-    public ngOnInit(): void {
-        this.extra_actions = [
-            {
-                label: 'DOMAINS.AZURE_INTEGRATION',
-                icon: 'integration_instructions',
-                action: () => this._service.performAzureIntegration(),
-            },
-        ];
-        this.updateTabList({});
-        this.subscription(
-            'loading',
-            this._item.loading.subscribe((l) => this.loading.set(l)),
-        );
-        this.subscription(
-            'counts',
-            this._service.counts.subscribe((c) => {
-                this.updateTabList(c as Record<string, number>);
-            }),
-        );
-        this.subscription(
-            'items',
-            this._service.item.subscribe((item) => this.item.set(item)),
-        );
-    }
-
-    public updateTabList(count: Record<string, number>) {
-        this.tab_list = [
+    public readonly loading = toSignal(this._item.loading, {
+        initialValue: false,
+    });
+    public readonly counts = toSignal(this._service.counts, {
+        initialValue: {
+            applications: 0,
+            auth_sources: 0,
+            users: 0,
+        },
+    });
+    public readonly item = toSignal(this._service.item, {
+        initialValue: null as PlaceDomain | null,
+    });
+    public readonly extra_actions = [
+        {
+            label: 'DOMAINS.AZURE_INTEGRATION',
+            icon: 'integration_instructions',
+            action: () => this._service.performAzureIntegration(),
+        },
+    ];
+    public readonly tab_list = computed(() => {
+        const count = this.counts();
+        return [
             {
                 id: 'about',
                 name: i18n('DOMAINS.TAB_ABOUT'),
@@ -166,6 +151,8 @@ export class DomainsComponent extends AsyncHandler implements OnInit {
                 count: count.users || 0,
                 icon: { content: 'group' },
             },
-        ].concat(this.extensions);
-    }
+        ].concat(extensionsForItem(this.item(), this.name));
+    });
+
+    public readonly newItem = () => this._item.create();
 }

@@ -1,7 +1,15 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+    Component,
+    computed,
+    inject,
+    model,
+    OnInit,
+    signal,
+} from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -19,7 +27,7 @@ import {
     remove,
     token,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import {
     catchError,
     debounceTime,
@@ -111,14 +119,10 @@ export interface UploadInfo {
                     >
                         <mat-select
                             name="type"
-                            [ngModel]="domain | async"
-                            (ngModelChange)="domain.next($event)"
+                            [(ngModel)]="domain"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            @for (
-                                domain of domain_list | async;
-                                track domain.id
-                            ) {
+                            @for (domain of domain_list(); track domain.id) {
                                 <mat-option [value]="domain">
                                     {{ domain.name }}
                                 </mat-option>
@@ -147,8 +151,7 @@ export interface UploadInfo {
                     <input
                         matInput
                         placeholder="Search for file..."
-                        [ngModel]="search_term.getValue()"
-                        (ngModelChange)="search_term.next($event)"
+                        [(ngModel)]="search_term"
                     />
                 </mat-form-field>
             </div>
@@ -370,11 +373,11 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     private _clipboard = inject(Clipboard);
     private _uploads = inject(UploadsService);
 
-    public readonly search_term = new BehaviorSubject<string>('');
-    public readonly domain = new BehaviorSubject<PlaceDomain>(null);
+    public readonly search_term = model('');
+    public readonly domain = model<PlaceDomain>(null);
+    public readonly refresh = signal(0);
     public readonly loading = signal(false);
     public readonly sorted_by = signal<[string, boolean]>(['', false]);
-    public readonly uploads_list = signal<UploadInfo[]>([]);
     public readonly sorted_uploads = computed(() => {
         const [field, asc] = this.sorted_by();
         if (!field) return this.uploads_list();
@@ -390,14 +393,18 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         });
     });
 
-    public readonly domain_list = queryDomains({ limit: 100 }).pipe(
-        map((r) => r.data),
-        shareReplay(1),
+    public readonly domain_list = toSignal(
+        queryDomains({ limit: 100 }).pipe(
+            map((r) => r.data),
+            shareReplay(1),
+        ),
+        { initialValue: [] },
     );
 
     private _uploads_list: Observable<UploadInfo[]> = combineLatest([
-        this.domain,
-        this.search_term,
+        toObservable(this.domain),
+        toObservable(this.search_term),
+        toObservable(this.refresh),
     ]).pipe(
         filter(([domain]) => !!domain),
         debounceTime(300),
@@ -420,16 +427,18 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         shareReplay(1),
     );
 
+    public readonly uploads_list = toSignal(this._uploads_list, {
+        initialValue: [],
+    });
+
     public async ngOnInit() {
         const domain = authority();
-        const domain_list = await nextValueFrom(this.domain_list);
+        const domain_list = await nextValueFrom(
+            queryDomains({ limit: 100 }).pipe(map((r) => r.data)),
+        );
         if (!domain_list?.length) return;
         const match = domain_list.find((d) => d.id === domain.id);
-        if (match) this.domain.next(match);
-        this.subscription(
-            'uploads',
-            this._uploads_list.subscribe((_) => this.uploads_list.set(_)),
-        );
+        if (match) this.domain.set(match);
     }
 
     public sizeOf(bytes: number) {
@@ -559,6 +568,6 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
             path: 'uploads',
         }).toPromise();
         result.close();
-        this.domain.next(this.domain.getValue());
+        this.refresh.update((value) => value + 1);
     }
 }

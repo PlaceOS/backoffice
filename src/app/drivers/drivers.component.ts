@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
@@ -7,7 +8,6 @@ import { PlaceDriver, queryModules } from '@placeos/ts-client';
 import { lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -126,36 +126,43 @@ import { DriverStateService } from './driver-state.service';
         RouterModule,
     ],
 })
-export class DriversComponent extends AsyncHandler implements OnInit {
+export class DriversComponent {
     protected _service = inject(ActiveItemService);
     private _drivers = inject(DriverStateService);
     private _debug = inject(PlaceDebugService);
 
     public readonly name = 'drivers';
-    public readonly item = signal<PlaceDriver>(null);
-    public readonly loading = signal(false);
+    public readonly item = toSignal(
+        this._service.item.pipe(map((item) => item as PlaceDriver)),
+        { initialValue: null as PlaceDriver | null },
+    );
+    public readonly loading = toSignal(this._service.loading, {
+        initialValue: false,
+    });
     public readonly scroll = signal(0);
     public readonly open_menu = signal(false);
     public readonly device_count = signal(0);
-    public readonly tab_list = signal([]);
-    public readonly updates_available = this._drivers.updates_available;
-    public readonly debug_position = this._debug.position;
-
-    public readonly showUpdateList = () => this._drivers.showUpdateList();
-    public readonly newItem = () => this._service.create();
-
-    public get extensions() {
-        return extensionsForItem(this._service.active_item, this.name);
-    }
-
-    public updateTabList() {
-        this.tab_list.set(
+    public readonly docs = toSignal(this._drivers.docs, { initialValue: null });
+    public readonly extensions = computed(() =>
+        extensionsForItem(this.item(), this.name),
+    );
+    public readonly tab_list = computed(
+        () =>
             [
                 {
                     id: 'about',
                     name: i18n('DRIVERS.TAB_ABOUT'),
                     icon: { content: 'info' },
                 },
+                ...(this.docs()
+                    ? [
+                          {
+                              id: 'docs',
+                              name: i18n('DRIVERS.TAB_DOCS'),
+                              icon: { content: 'docs' },
+                          },
+                      ]
+                    : []),
                 {
                     id: 'modules',
                     name: i18n('DRIVERS.TAB_MODULES'),
@@ -167,48 +174,20 @@ export class DriversComponent extends AsyncHandler implements OnInit {
                     name: i18n('DRIVERS.TAB_SETTINGS_HISTORY'),
                     icon: { content: 'schedule' },
                 },
-            ].concat(this.extensions),
-        );
-    }
+            ].concat(this.extensions()) as any[],
+    );
+    public readonly updates_available = this._drivers.updates_available;
+    public readonly debug_position = this._debug.position;
 
-    private updateDocsTab(has_docs: boolean) {
-        const tabs = this.tab_list();
-        const has_docs_tab = tabs.some((t) => t.id === 'docs');
-        if (has_docs && !has_docs_tab) {
-            const about_idx = tabs.findIndex((t) => t.id === 'about');
-            const docs_tab = {
-                id: 'docs',
-                name: i18n('DRIVERS.TAB_DOCS'),
-                icon: { content: 'docs' },
-            };
-            this.tab_list.update((list) => [
-                ...list.slice(0, about_idx + 1),
-                docs_tab,
-                ...list.slice(about_idx + 1),
-            ]);
-        } else if (!has_docs && has_docs_tab) {
-            this.tab_list.update((l) => l.filter((t) => t.id !== 'docs'));
-        }
-    }
+    public readonly showUpdateList = () => this._drivers.showUpdateList();
+    public readonly newItem = () => this._service.create();
 
-    public ngOnInit(): void {
-        this.subscription(
-            'loading',
-            this._service.loading.subscribe((l) => this.loading.set(l)),
-        );
-        this.subscription(
-            'item',
-            this._service.item.subscribe((item) => {
-                this.device_count.set(undefined);
-                this.item.set(item as PlaceDriver);
-                this.updateTabList();
-                this.loadValues(item as PlaceDriver);
-            }),
-        );
-        this.subscription(
-            'docs',
-            this._drivers.docs.subscribe((docs) => this.updateDocsTab(!!docs)),
-        );
+    constructor() {
+        effect(() => {
+            const item = this.item();
+            this.device_count.set(undefined);
+            this.loadValues(item);
+        });
     }
 
     protected async loadValues(item: PlaceDriver) {
@@ -223,6 +202,5 @@ export class DriversComponent extends AsyncHandler implements OnInit {
                 queryModules(query).pipe(map(({ total }) => total)),
             ).catch(() => 0),
         );
-        this.updateTabList();
     }
 }

@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
@@ -54,7 +55,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         ></item-details>
                         <item-tablist
                             [base]="name"
-                            [tabs]="tab_list"
+                            [tabs]="tab_list()"
                             [scrolled]="scroll() > 0"
                             class="z-10"
                         ></item-tablist>
@@ -103,26 +104,23 @@ import { TranslatePipe } from '../ui/translate.pipe';
         SidebarMenuComponent,
     ],
 })
-export class UsersComponent extends AsyncHandler implements OnInit {
+export class UsersComponent extends AsyncHandler {
     protected _service = inject(ActiveItemService);
 
     public readonly name = 'users';
     public open_menu = false;
-    public tab_list = [];
     public readonly scroll = signal(0);
-    public readonly loading = signal(false);
+    public readonly loading = toSignal(this._service.loading, {
+        initialValue: false,
+    });
+    public readonly item = toSignal(this._service.item, {
+        initialValue: null as PlaceUser | null,
+    });
 
     public readonly newItem = () => this._service.create();
     public readonly bulkAdd = () => this._service.bulkAdd();
-
-    public readonly item = signal<PlaceUser>(null);
-
-    public get extensions() {
-        return extensionsForItem(this._service.active_item, this.name);
-    }
-
-    public updateTabList(details?: Record<string, number>) {
-        this.tab_list = [
+    public readonly tab_list = computed(() =>
+        [
             {
                 id: 'about',
                 name: i18n('USERS.TAB_ABOUT'),
@@ -131,7 +129,6 @@ export class UsersComponent extends AsyncHandler implements OnInit {
             {
                 id: 'metadata',
                 name: i18n('USERS.TAB_METADATA'),
-                count: details?.metadata,
                 icon: { content: 'code_blocks' },
             },
             {
@@ -139,21 +136,6 @@ export class UsersComponent extends AsyncHandler implements OnInit {
                 name: i18n('USERS.TAB_HISTORY'),
                 icon: { content: 'history' },
             },
-        ].concat(this.extensions);
-    }
-
-    public ngOnInit() {
-        this.subscription(
-            'loading',
-            this._service.loading.subscribe((l) => this.loading.set(l)),
-        );
-        this.subscription(
-            'item',
-            this._service.item.subscribe((item) => {
-                this.item.set(item as unknown as PlaceUser);
-                this.updateTabList();
-            }),
-        );
-        this.updateTabList();
-    }
+        ].concat(extensionsForItem(this.item(), this.name)),
+    );
 }

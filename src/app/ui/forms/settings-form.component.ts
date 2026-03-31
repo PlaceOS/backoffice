@@ -1,13 +1,12 @@
 import {
     Component,
     computed,
+    effect,
     inject,
     input,
     model,
-    OnChanges,
     OnInit,
     signal,
-    SimpleChanges,
 } from '@angular/core';
 import {
     FormControl,
@@ -96,7 +95,7 @@ type SettingsArray = [
         @if (form() && used_settings() && used_settings().length) {
             <form [formGroup]="form()">
                 <mat-tab-group
-                    [selectedIndex]="level_index"
+                    [selectedIndex]="level_index()"
                     (selectedIndexChange)="
                         encryption_level.set(+levels()[$event].id)
                     "
@@ -250,10 +249,7 @@ type SettingsArray = [
         UserPipe,
     ],
 })
-export class SettingsFormComponent
-    extends AsyncHandler
-    implements OnChanges, OnInit
-{
+export class SettingsFormComponent extends AsyncHandler implements OnInit {
     private _hotkey = inject(HotkeysService);
     private _users = inject(BackofficeUsersService);
 
@@ -289,7 +285,13 @@ export class SettingsFormComponent
     /** Settings available to display on the UI */
     public readonly used_settings = signal<PlaceSettings[]>([]);
     /** Index of the active settings tab */
-    public level_index = signal<number>(0);
+    public readonly level_index = computed(() => {
+        const current_level = this.encryption_level();
+        const index = this.levels().findIndex(
+            (item) => item.id === current_level,
+        );
+        return index >= 0 ? index : 0;
+    });
     /** List of decorations to apply to the merge settings */
     public merge_decorations: HashMap[] = [];
 
@@ -374,6 +376,27 @@ export class SettingsFormComponent
         return levels;
     });
 
+    constructor() {
+        super();
+        effect(() => {
+            this.encryption_level.set(
+                this.merge()
+                    ? EncryptionLevel.NeverDisplay + 1
+                    : EncryptionLevel.None,
+            );
+        });
+        effect(() => {
+            if (this.merge_settings() !== undefined) {
+                this.timeout('update_merge', () => this.clearChanges(), 50);
+            }
+        });
+        effect(() => {
+            if (this.settings()) {
+                this.clearChanges();
+            }
+        });
+    }
+
     public type(level: EncryptionLevel) {
         switch (level) {
             case EncryptionLevel.None:
@@ -395,22 +418,6 @@ export class SettingsFormComponent
             'clear_all',
             this._hotkey.listen(['KeyC'], () => this.clearChanges()),
         );
-    }
-
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.merge) {
-            this.encryption_level.set(
-                this.merge()
-                    ? EncryptionLevel.NeverDisplay + 1
-                    : EncryptionLevel.None,
-            );
-        }
-        if (changes.merge_settings) {
-            this.timeout('update_merge', () => this.clearChanges(), 50);
-        }
-        if (changes.settings) {
-            this.clearChanges();
-        }
     }
 
     /** Save changes to the given setting level */

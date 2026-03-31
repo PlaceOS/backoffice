@@ -1,5 +1,14 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    Signal,
+    inject,
+    signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -172,7 +181,7 @@ import { generateBrokerFormFields } from './brokers.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.auth_type.value === 2) {
+                    @if (auth_type() === 2) {
                         <div class="fieldset">
                             @if (form.controls.name) {
                                 <div class="field">
@@ -225,7 +234,7 @@ import { generateBrokerFormFields } from './brokers.utilities';
                                             name="new-password"
                                             autocomplete="new-password"
                                             [type]="
-                                                show_password
+                                                show_password()
                                                     ? 'text'
                                                     : 'password'
                                             "
@@ -237,13 +246,17 @@ import { generateBrokerFormFields } from './brokers.utilities';
                                         />
                                         <icon
                                             matSuffix
-                                            (mousedown)="show_password = true"
-                                            (window:mouseup)="
-                                                show_password = false
+                                            (mousedown)="
+                                                show_password.set(true)
                                             "
-                                            (touchstart)="show_password = true"
+                                            (window:mouseup)="
+                                                show_password.set(false)
+                                            "
+                                            (touchstart)="
+                                                show_password.set(true)
+                                            "
                                             (window:touchend)="
-                                                show_password = false
+                                                show_password.set(false)
                                             "
                                         >
                                             visibility
@@ -257,7 +270,7 @@ import { generateBrokerFormFields } from './brokers.utilities';
                             }
                         </div>
                     }
-                    @if (form.controls.auth_type.value === 0) {
+                    @if (auth_type() === 0) {
                         @if (form.controls.certificate) {
                             <div class="field">
                                 <label for="cert">
@@ -290,7 +303,7 @@ import { generateBrokerFormFields } from './brokers.utilities';
                                     #chipGrid
                                     aria-label="Enter fruits"
                                 >
-                                    @for (filter of filters; track filter) {
+                                    @for (filter of filters(); track filter) {
                                         <mat-chip-row
                                             (removed)="removeFilter(filter)"
                                             [aria-description]="
@@ -364,39 +377,44 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup;
+    public form: UntypedFormGroup = generateBrokerFormFields(this._data.item);
     public loading: string;
-    public heading: string;
+    public heading = i18n(
+        `${this._name}_${this._data.item.id ? 'EDIT' : 'NEW'}`,
+    );
     /** List of available authentication types */
-    public auth_types = [];
+    public auth_types = [
+        {
+            id: AuthType.Certificate,
+            name: i18n('ADMIN.BROKERS_AUTH_TYPE_CERT'),
+        },
+        {
+            id: AuthType.NoAuth,
+            name: i18n('ADMIN.BROKERS_AUTH_TYPE_NONE'),
+        },
+        {
+            id: AuthType.UserPassword,
+            name: i18n('ADMIN.BROKERS_AUTH_TYPE_PASS'),
+        },
+    ];
     /** List of separator characters for filters */
     public readonly separators = [ENTER, COMMA] as const;
     /** Whether to show password field value */
-    public show_password: boolean;
-
-    public get filters(): string[] {
-        return this.form.controls.filters.value;
-    }
+    public readonly show_password = signal(false);
+    public auth_type: Signal<number> = toSignal(
+        this.form.controls.auth_type.valueChanges,
+        {
+            initialValue: this.form.controls.auth_type.value,
+        },
+    );
+    public filters: Signal<string[]> = toSignal(
+        this.form.controls.filters.valueChanges,
+        {
+            initialValue: this.form.controls.filters.value || [],
+        },
+    );
 
     public ngOnInit(): void {
-        const item = this._data.item;
-        const edit = !!item.id;
-        this.heading = i18n(`${this._name}_${edit ? 'EDIT' : 'NEW'}`);
-        this.form = generateBrokerFormFields(item);
-        this.auth_types = [
-            {
-                id: AuthType.Certificate,
-                name: i18n('ADMIN.BROKERS_AUTH_TYPE_CERT'),
-            },
-            {
-                id: AuthType.NoAuth,
-                name: i18n('ADMIN.BROKERS_AUTH_TYPE_NONE'),
-            },
-            {
-                id: AuthType.UserPassword,
-                name: i18n('ADMIN.BROKERS_AUTH_TYPE_PASS'),
-            },
-        ];
         this.subscription(
             'save_item_key',
             this._hotkey.listen(['KeyS'], () => this.submit()),
@@ -455,7 +473,7 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
     public addFilter(event: MatChipInputEvent): void {
         const value = (event.value || '').trim();
         if (value) {
-            const filter_list = this.filters;
+            const filter_list = this.filters();
             this.form.patchValue({
                 filters: unique([...filter_list, value]),
             });
@@ -468,8 +486,8 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
      * @param existing_filter Filter to remove
      */
     public removeFilter(existing_filter: string): void {
-        if (!this.filters?.length) return;
-        const filter_list = this.filters;
+        if (!this.filters().length) return;
+        const filter_list = [...this.filters()];
         const index = filter_list.indexOf(existing_filter);
 
         if (index >= 0) {

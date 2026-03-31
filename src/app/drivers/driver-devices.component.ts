@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, model } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,10 +10,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { AsyncHandler } from '../common/async-handler.class';
 import { BindingDirective } from '../ui/binding.directive';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -31,8 +30,7 @@ import { DriverStateService } from './driver-state.service';
                         </icon>
                     </div>
                     <input
-                        [ngModel]="''"
-                        (ngModelChange)="filter$.next($event)"
+                        [(ngModel)]="filter"
                         matInput
                         [placeholder]="'MODULES.SEARCH' | translate"
                         class="rounded-none"
@@ -47,7 +45,7 @@ import { DriverStateService } from './driver-state.service';
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-lg text-sm"
-                    [data]="modules"
+                    [data]="modules()"
                     [columns]="[
                         {
                             key: 'state',
@@ -204,45 +202,38 @@ import { DriverStateService } from './driver-state.service';
         BindingDirective,
     ],
 })
-export class DriverModulesComponent extends AsyncHandler implements OnInit {
+export class DriverModulesComponent {
     private _service = inject(DriverStateService);
 
     public loading_systems = false;
     /** Subject holding the value of the search */
-    public readonly filter$ = new BehaviorSubject<string>('');
+    public readonly filter = model('');
     /** Whether systems are being loaded */
-    public readonly loading = signal(false);
+    public readonly loading = toSignal(this._service.loading, {
+        initialValue: false,
+    });
     /** Currently active driver */
     public readonly item = this._service.item;
     /** List of systems associated with modules */
     public readonly systems: Record<string, PlaceSystem[]> = {};
     /** Whether systems are being loaded */
     /** List of modules */
-    public readonly modules = combineLatest([
-        this.filter$,
-        this._service.modules,
-    ]).pipe(
-        map((details) => {
-            const [filters, modules] = details;
-            const search = filters.toLowerCase();
-            return filters
-                ? modules.filter(
-                      (mod) =>
-                          mod.name.toLowerCase().includes(search) ||
-                          mod.custom_name.toLowerCase().includes(search),
-                  )
-                : modules;
-        }),
-    );
+    public readonly module_list = toSignal(this._service.modules, {
+        initialValue: [] as PlaceModule[],
+    });
+    public readonly modules = computed(() => {
+        const filter = this.filter().toLowerCase();
+        const modules = this.module_list();
+        return filter
+            ? modules.filter(
+                  (mod) =>
+                      mod.name.toLowerCase().includes(filter) ||
+                      mod.custom_name.toLowerCase().includes(filter),
+              )
+            : modules;
+    });
 
     public readonly removeModule = (d) => this._service.removeModule(d);
-
-    public ngOnInit() {
-        this.subscription(
-            'loading',
-            this._service.loading.subscribe((l) => this.loading.set(l)),
-        );
-    }
 
     public async loadSystems(mod: PlaceModule) {
         this.loading_systems = true;

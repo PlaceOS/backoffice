@@ -117,7 +117,7 @@ function replaceDescTag(inputString, newContent) {
                                     icon
                                     matRipple
                                     (click)="saveMetadata(item)"
-                                    [disabled]="!edited[item.name]"
+                                    [disabled]="!edited()[item.name]"
                                     [matTooltip]="'COMMON.SAVE' | translate"
                                 >
                                     <icon class="text-xl">save</icon>
@@ -356,10 +356,7 @@ export class MetadataDisplayComponent
                 `JSON for property "${form.controls.name.value}" is invalid`,
             );
         const value = form.value;
-        this.loading.update((m) => {
-            m[field.name] = true;
-            return m;
-        });
+        this.loading.update((m) => ({ ...m, [field.name]: true }));
         const desc = value.description;
         const new_desc = replaceDescTag(desc, `${VERSION.hash}|B`);
         const data = JSON.parse(value.details);
@@ -383,11 +380,11 @@ export class MetadataDisplayComponent
             details: data,
         }).subscribe({
             next: (item: PlaceMetadata) => {
-                this.loading[field.name] = false;
+                this.loading.update((m) => ({ ...m, [field.name]: false }));
                 const index = this.metadata().findIndex(
                     (i) => i.name === field.name,
                 );
-                this.edited[field.name] = false;
+                this.edited.update((m) => ({ ...m, [field.name]: false }));
                 console.log('Field:', field.name, value.name, item);
                 if (field.name !== value.name) {
                     lastValueFrom(
@@ -415,7 +412,7 @@ export class MetadataDisplayComponent
                 this.generateForms();
             },
             error: (err) => {
-                this.loading[field.name] = false;
+                this.loading.update((m) => ({ ...m, [field.name]: false }));
                 notifyError(
                     `Error saving "${
                         value.name
@@ -429,6 +426,7 @@ export class MetadataDisplayComponent
 
     private generateForms() {
         this.form_map.set({});
+        this.edited.set({});
         this.metadata().forEach((group) => {
             const details =
                 typeof group.details === 'string'
@@ -456,8 +454,11 @@ export class MetadataDisplayComponent
             });
             this.subscription(
                 `${group.name}_changes`,
-                this.form_map()[group.name].valueChanges.subscribe(
-                    () => (this.edited[group.name] = true),
+                this.form_map()[group.name].valueChanges.subscribe(() =>
+                    this.edited.update((m) => ({
+                        ...m,
+                        [group.name]: true,
+                    })),
                 ),
             );
             // this.subscription(

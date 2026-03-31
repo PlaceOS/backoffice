@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceTrigger } from '@placeos/ts-client';
 
 import { HashMap } from '../common/types';
@@ -106,24 +107,19 @@ import { TriggerStateService } from './trigger-state.service';
         DateFromPipe,
     ],
 })
-export class TriggerInstancesComponent extends AsyncHandler implements OnInit {
+export class TriggerInstancesComponent extends AsyncHandler {
     private _service = inject(TriggerStateService);
 
     /** List of systems associated with the trigger */
     public readonly instances = this._service.instances;
-    public readonly loading = signal(false);
+    public readonly loading = toSignal(this._service.loading, {
+        initialValue: false,
+    });
     /** Map of systems ids to connected status */
     public connected: HashMap<boolean> = {};
 
     public readonly deleteTrigger = (s) =>
         this._service.removeTriggerFromParent(s);
-
-    public ngOnInit() {
-        this.subscription(
-            'loading',
-            this._service.loading.subscribe((l) => this.loading.set(l)),
-        );
-    }
 
     public get item(): PlaceTrigger {
         return this._service.active_item as PlaceTrigger;

@@ -1,6 +1,8 @@
-import { Component, OnInit, inject, input, model } from '@angular/core';
+import { Component, OnInit, effect, inject, input, model } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ApplicationIcon } from '../common/types';
@@ -59,21 +61,25 @@ export interface ItemTab {
 export class ItemTablistComponent extends AsyncHandler implements OnInit {
     private _router = inject(Router);
     private _hotkey = inject(HotkeysService);
+    private readonly _route_change = toSignal(
+        this._router.events.pipe(startWith(null)),
+        { initialValue: null },
+    );
 
     public readonly base = input<string>('systems');
     public readonly item_id = model<string>('-');
     public readonly tabs = input<ItemTab[]>([]);
     public readonly scrolled = input(false);
 
+    constructor() {
+        super();
+        effect(() => {
+            this._route_change();
+            this._updateID();
+        });
+    }
+
     public ngOnInit() {
-        this.subscription(
-            'route.params',
-            this._router.events.subscribe((event) => {
-                if (event instanceof NavigationEnd) {
-                    this._updateID();
-                }
-            }),
-        );
         this.subscription(
             'right',
             this._hotkey.listen(['ArrowRight'], () => this._changeTab(1)),
@@ -82,7 +88,6 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
             'left',
             this._hotkey.listen(['ArrowLeft'], () => this._changeTab(-1)),
         );
-        this._updateID();
     }
 
     private _changeTab(direction: 1 | -1) {

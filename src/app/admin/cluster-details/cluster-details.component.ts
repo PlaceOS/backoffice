@@ -1,4 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     catchError,
     filter,
@@ -89,10 +90,7 @@ import { AdminClusterNodeComponent } from './cluster-node.component';
         RouterModule,
     ],
 })
-export class PlaceClusterDetailsComponent
-    extends AsyncHandler
-    implements OnInit
-{
+export class PlaceClusterDetailsComponent extends AsyncHandler {
     /** List of available clusters on this instance of engine */
     public cluster_list = signal<PlaceCluster[]>([]);
     public cluster_nodes = signal({});
@@ -149,8 +147,7 @@ export class PlaceClusterDetailsComponent
         }),
         tap(() => this.loading.set(false)),
     );
-
-    public ngOnInit(): void {
-        this.subscription('load_cluster', this.clusters$.subscribe());
-    }
+    private readonly _cluster_refresh = toSignal(this.clusters$, {
+        initialValue: undefined,
+    });
 }

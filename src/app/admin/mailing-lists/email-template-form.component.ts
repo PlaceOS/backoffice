@@ -1,6 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     FormGroup,
@@ -15,8 +16,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../../common/async-handler.class';
-import { nextValueFrom } from '../../common/general';
 import { notifySuccess } from '../../common/notifications';
 import { RichTextInputComponent } from '../../ui/custom-fields/rich-text-input.component';
 import { EmailStateService, EmailTemplate } from './email-state.service';
@@ -37,7 +38,7 @@ export function extractTextFromHTML(html_string: string) {
             >
                 <div class="mb-8 flex items-center space-x-2">
                     <h2 class="text-2xl font-medium">
-                        {{ template?.id ? 'Edit' : 'New' }} Email Template
+                        {{ template()?.id ? 'Edit' : 'New' }} Email Template
                     </h2>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -51,7 +52,7 @@ export function extractTextFromHTML(html_string: string) {
                             >
                                 <mat-option value="">None</mat-option>
                                 @for (
-                                    template of definitions | async;
+                                    template of definition_list();
                                     track template
                                 ) {
                                     <mat-option [value]="template.id">
@@ -84,7 +85,7 @@ export function extractTextFromHTML(html_string: string) {
                     </button>
                     <mat-menu #tracking_menu="matMenu" class="max-h-96">
                         @for (
-                            field of active_trigger?.fields || [];
+                            field of active_trigger()?.fields || [];
                             track field
                         ) {
                             <button
@@ -101,7 +102,7 @@ export function extractTextFromHTML(html_string: string) {
                                 </div>
                             </button>
                         }
-                        @if (!(active_trigger?.fields || []).length) {
+                        @if (!(active_trigger()?.fields || []).length) {
                             <button mat-menu-item [disabled]="true">
                                 No placeholders available
                             </button>
@@ -172,7 +173,7 @@ export function extractTextFromHTML(html_string: string) {
                     class="flex h-full w-full flex-col items-center justify-center space-y-2"
                 >
                     <mat-spinner [diameter]="32"></mat-spinner>
-                    <p>{{ loading }}</p>
+                    <p>{{ loading() }}</p>
                 </div>
             </div>
         </ng-template>
@@ -192,15 +193,18 @@ export function extractTextFromHTML(html_string: string) {
         MatSelectModule,
     ],
 })
-export class EmailTemplateFormComponent extends AsyncHandler implements OnInit {
+export class EmailTemplateFormComponent extends AsyncHandler {
     private _state = inject(EmailStateService);
     private _route = inject(ActivatedRoute);
     private _router = inject(Router);
     private _clipboard = inject(Clipboard);
 
-    public loading = '';
-    public template: EmailTemplate;
+    public readonly loading = signal('');
+    public readonly template = signal<EmailTemplate>(null);
     public readonly definitions = this._state.template_definitions;
+    public readonly definition_list = toSignal(this.definitions, {
+        initialValue: [],
+    });
     public readonly form = new FormGroup({
         id: new FormControl(''),
         reply_to: new FormControl(''),
@@ -211,38 +215,28 @@ export class EmailTemplateFormComponent extends AsyncHandler implements OnInit {
         html: new FormControl('', [Validators.required]),
         zone_id: new FormControl(''),
     });
-    public active_trigger = null;
+    public readonly active_trigger_id = toSignal(
+        this.form.controls.trigger.valueChanges.pipe(
+            startWith(this.form.controls.trigger.value),
+        ),
+        { initialValue: this.form.controls.trigger.value },
+    );
+    public readonly active_trigger = computed(() =>
+        this.definition_list().find((_) => _.id === this.active_trigger_id()),
+    );
+    private readonly _template_id = toSignal(
+        this._route.paramMap.pipe(map((params) => params.get('id'))),
+        { initialValue: null },
+    );
 
-    public ngOnInit() {
-        this.subscription(
-            'route.params',
-            this._route.paramMap.subscribe(async (params) => {
-                if (params.has('id')) {
-                    this.loading = 'Loading email template...';
-                    this.template = await this._state.loadTemplate(
-                        params.get('id'),
-                    );
-                    this.loading = '';
-                    console.log('Template:', this.template);
-                    if (!this.template) {
-                        this._router.navigate(['/email-templates', 'manage']);
-                    } else {
-                        this.form.patchValue(this.template);
-                    }
-                }
-            }),
-        );
-        this.subscription(
-            'trigger',
-            this.form.valueChanges.subscribe(async (value) => {
-                if (value.trigger) {
-                    const trigger_list = await nextValueFrom(this.definitions);
-                    this.active_trigger = trigger_list.find(
-                        (_) => _.id === value.trigger,
-                    );
-                }
-            }),
-        );
+    constructor() {
+        super();
+        effect(() => {
+            const template_id = this._template_id();
+            if (template_id) {
+                void this.loadTemplate(template_id);
+            }
+        });
     }
 
     public copyField(field: string) {
@@ -251,14 +245,27 @@ export class EmailTemplateFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async save() {
-        this.loading = 'Saving email template...';
+        this.loading.set('Saving email template...');
         await this._state.saveTemplate({
-            ...(this.template || {}),
+            ...(this.template() || {}),
             ...this.form.getRawValue(),
             text: extractTextFromHTML(this.form.getRawValue().html || ''),
         } as EmailTemplate);
-        this.loading = '';
+        this.loading.set('');
         notifySuccess('Successfully saved email template');
         this._router.navigate(['/email-templates']);
+    }
+
+    private async loadTemplate(template_id: string) {
+        this.loading.set('Loading email template...');
+        const template = await this._state.loadTemplate(template_id);
+        this.template.set(template);
+        this.loading.set('');
+        console.log('Template:', template);
+        if (!template) {
+            this._router.navigate(['/email-templates', 'manage']);
+        } else {
+            this.form.patchValue(template);
+        }
     }
 }

@@ -1,5 +1,13 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    computed,
+    inject,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     ReactiveFormsModule,
@@ -22,7 +30,7 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { addChipItem, removeChipItem } from '../common/forms';
 import { getInvalidFields } from '../common/general';
@@ -215,7 +223,7 @@ import { generateZoneFormFields } from './zones.utilites';
                                 />
                             </mat-form-field>
                             <mat-autocomplete #auto="matAutocomplete">
-                                @for (tz of filtered_timezones; track tz) {
+                                @for (tz of filtered_timezones(); track tz) {
                                     <mat-option [value]="tz">{{
                                         tz
                                     }}</mat-option>
@@ -347,11 +355,29 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public timezones: string[] = [];
-    public filtered_timezones: string[] = [];
-    public form: UntypedFormGroup;
+    public readonly form: UntypedFormGroup = generateZoneFormFields(
+        this._data.item,
+    );
+    public readonly timezones = TIMEZONES_IANA as string[];
+    public readonly timezone = toSignal(
+        this.form.valueChanges.pipe(
+            startWith(this.form.getRawValue()),
+            map(({ timezone }) => `${timezone || ''}`),
+        ),
+        {
+            initialValue: `${this.form.value.timezone || ''}`,
+        },
+    );
+    public readonly filtered_timezones = computed(() => {
+        const search = this.timezone().toLowerCase();
+        return this.timezones.filter((_tz) =>
+            _tz.toLowerCase().includes(search),
+        );
+    });
     public loading: string;
-    public heading: string;
+    public readonly heading = i18n(
+        `${this._name}.${this._data.item?.id ? 'EDIT' : 'NEW'}`,
+    );
 
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
@@ -372,20 +398,6 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
     }
 
     public ngOnInit(): void {
-        const item = this._data.item;
-        const edit = !!item.id;
-        this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
-        this.form = generateZoneFormFields(item);
-        this.updateTimezoneList();
-        this.subscription(
-            'tz-change',
-            this.form.valueChanges.subscribe(
-                ({ timezone }) =>
-                    (this.filtered_timezones = this.timezones.filter((_tz) =>
-                        _tz.toLowerCase().includes(timezone.toLowerCase()),
-                    )),
-            ),
-        );
         this.updateZone();
         this.subscription(
             'save_item_key',
@@ -442,14 +454,6 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
                     }),
                 );
             },
-        );
-    }
-
-    public updateTimezoneList() {
-        const timezone = this.form?.value?.timezone || '';
-        this.timezones = TIMEZONES_IANA as string[];
-        this.filtered_timezones = this.timezones.filter((_) =>
-            _.toLowerCase().includes(timezone.toLowerCase()),
         );
     }
 

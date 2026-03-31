@@ -1,5 +1,13 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    Signal,
+    inject,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     ReactiveFormsModule,
@@ -61,18 +69,20 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                     <div
                                         class="rounded-full px-4 py-2 text-sm"
                                         [class.bg-success]="
-                                            form.value.triggered
+                                            trigger_state().triggered
                                         "
                                         [class.text-success-content]="
-                                            form.value.triggered
+                                            trigger_state().triggered
                                         "
-                                        [class.bg-error]="!form.value.triggered"
+                                        [class.bg-error]="
+                                            !trigger_state().triggered
+                                        "
                                         [class.text-error-content]="
-                                            !form.value.triggered
+                                            !trigger_state().triggered
                                         "
                                     >
                                         {{
-                                            (form.value.triggered
+                                            (trigger_state().triggered
                                                 ? 'COMMON.TRUE'
                                                 : 'COMMON.FALSE'
                                             ) | translate
@@ -90,8 +100,8 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             <mat-form-field appearance="outline">
                                 <mat-chip-grid #chipList aria-label="Playlists">
                                     @for (
-                                        item of form.value.playlists;
-                                        track item.id
+                                        item of trigger_state().playlists;
+                                        track item
                                     ) {
                                         <mat-chip
                                             [removable]="true"
@@ -162,9 +172,17 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup;
+    public form: UntypedFormGroup = generateTriggerSettingsFormFields(
+        this._data.item,
+    );
     public loading: string;
-    public heading: string;
+    public heading = i18n(`Trigger.${this._data.item.id ? 'EDIT' : 'NEW'}`);
+    public trigger_state: Signal<{
+        triggered?: boolean;
+        playlists?: string[];
+    }> = toSignal(this.form.valueChanges, {
+        initialValue: this.form.getRawValue(),
+    });
 
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
@@ -177,10 +195,6 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
         );
 
     public ngOnInit(): void {
-        const item = this._data.item;
-        const edit = !!item.id;
-        this.heading = i18n(`Trigger.${edit ? 'EDIT' : 'NEW'}`);
-        this.form = generateTriggerSettingsFormFields(item);
         this.subscription(
             'save_item_key',
             this._hotkey.listen(['KeyS'], () => this.submit()),

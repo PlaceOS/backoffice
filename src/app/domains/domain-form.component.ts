@@ -1,5 +1,14 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    Signal,
+    inject,
+    signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     ReactiveFormsModule,
@@ -203,7 +212,7 @@ import { generateDomainFormFields } from './domains.utilities';
                                     aria-label="Image List"
                                 >
                                     @for (
-                                        item of email_domain_list;
+                                        item of email_domain_list();
                                         track item
                                     ) {
                                         <mat-chip-row
@@ -279,9 +288,11 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup;
+    public form: UntypedFormGroup = generateDomainFormFields(this._data.item);
     public loading: string;
-    public heading: string;
+    public heading = i18n(
+        `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
+    );
 
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
@@ -301,15 +312,14 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
             i,
         );
 
-    public get email_domain_list(): string[] {
-        return this.form.controls.email_domains.value;
-    }
+    public email_domain_list: Signal<string[]> = this.form.controls
+        .email_domains
+        ? toSignal(this.form.controls.email_domains.valueChanges, {
+              initialValue: this.form.controls.email_domains.value || [],
+          })
+        : signal([]);
 
     public ngOnInit(): void {
-        const item = this._data.item;
-        const edit = !!item.id;
-        this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
-        this.form = generateDomainFormFields(item);
         this.subscription(
             'save_item_key',
             this._hotkey.listen(['KeyS'], () => this.submit()),

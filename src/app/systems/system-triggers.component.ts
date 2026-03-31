@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, model, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceTrigger } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { copyToClipboard, unique } from '../common/general';
 import { notifyInfo } from '../common/notifications';
 
@@ -42,8 +41,7 @@ export interface TriggerInstanceState {
                         </icon>
                     </div>
                     <input
-                        [ngModel]="''"
-                        (ngModelChange)="filter$.next($event)"
+                        [(ngModel)]="filter"
                         matInput
                         [placeholder]="'SYSTEMS.TRIGGER_SEARCH' | translate"
                         class="rounded-none"
@@ -61,7 +59,7 @@ export interface TriggerInstanceState {
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-2xl text-sm"
-                    [data]="triggers"
+                    [data]="triggers()"
                     [columns]="[
                         {
                             key: 'status',
@@ -217,33 +215,33 @@ export interface TriggerInstanceState {
 export class SystemTriggersComponent {
     private _service = inject(SystemStateService);
 
-    public readonly filter$ = new BehaviorSubject<string>('');
+    public readonly filter = model('');
 
     public readonly loading = this._service.loading;
+
+    public readonly service_triggers = toSignal(this._service.triggers, {
+        initialValue: [] as (PlaceTrigger & { name: string })[],
+    });
 
     public readonly trigger_state: HashMap<TriggerInstanceState> = {};
 
     public readonly comparisons: HashMap<string> = {};
 
-    public readonly temp_trigger = new BehaviorSubject<PlaceTrigger>(null);
+    public readonly temp_trigger = signal<PlaceTrigger | null>(null);
 
-    public readonly triggers = combineLatest([
-        this.filter$,
-        this._service.triggers,
-        this.temp_trigger,
-    ]).pipe(
-        map(([filter, triggers, temp]) => {
-            const search = filter.toLowerCase();
-            const list = unique(temp ? [...triggers, temp] : triggers, 'id');
-            return filter
-                ? list.filter((t) =>
-                      (t as PlaceTrigger & { name: string }).name
-                          .toLowerCase()
-                          .includes(search),
-                  )
-                : list;
-        }),
-    );
+    public readonly triggers = computed(() => {
+        const filter = this.filter().toLowerCase();
+        const temp = this.temp_trigger();
+        const triggers = this.service_triggers();
+        const list = unique(temp ? [...triggers, temp] : triggers, 'id');
+        return filter
+            ? list.filter((t) =>
+                  (t as PlaceTrigger & { name: string }).name
+                      .toLowerCase()
+                      .includes(filter),
+              )
+            : list;
+    });
 
     public readonly copyWebhookURL = (t) => {
         copyToClipboard(
@@ -252,12 +250,12 @@ export class SystemTriggersComponent {
         notifyInfo(i18n('SYSTEMS.COPIED_WEBHOOK'));
     };
     public readonly editTrigger = async (t) =>
-        this.temp_trigger.next(
+        this.temp_trigger.set(
             (await this._service.editTrigger(t)) as PlaceTrigger,
         );
     public readonly deleteTrigger = (t) => this._service.removeTrigger(t);
     public readonly selectTrigger = async () =>
-        this.temp_trigger.next((await this._service.selectTrigger()) || null);
+        this.temp_trigger.set((await this._service.selectTrigger()) || null);
 
     public get item() {
         return this._service.active_item;

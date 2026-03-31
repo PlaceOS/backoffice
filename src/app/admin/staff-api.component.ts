@@ -15,8 +15,7 @@ import {
     queryDomains,
 } from '@placeos/ts-client';
 import { addDays, getUnixTime, startOfDay } from 'date-fns';
-import { BehaviorSubject } from 'rxjs';
-import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -55,11 +54,11 @@ export interface PlaceTenant {
                     >
                         <mat-select
                             name="type"
-                            [ngModel]="domain | async"
-                            (ngModelChange)="domain.next($event)"
+                            [ngModel]="domain()"
+                            (ngModelChange)="setDomain($event)"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            @for (domain of domain_list; track domain.id) {
+                            @for (domain of domain_list(); track domain.id) {
                                 <mat-option [value]="domain">
                                     {{ domain.name }}
                                 </mat-option>
@@ -84,7 +83,7 @@ export interface PlaceTenant {
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-3xl text-sm"
-                    [data]="tenants"
+                    [data]="tenants()"
                     [columns]="[
                         { key: 'name', name: 'COMMON.FIELD_NAME' | translate },
                         {
@@ -195,24 +194,10 @@ export class PlaceStaffAPIComponent implements OnInit {
     /** Loading state */
     public readonly loading = signal('');
     /** List of available domains */
-    public domain_list: PlaceDomain[];
+    public readonly domain_list = signal<PlaceDomain[]>([]);
     /** Currently active domain */
-    public readonly domain = new BehaviorSubject<PlaceDomain>(null);
-
-    public readonly tenants = this.domain.pipe(
-        switchMap(() => {
-            this.loading.set('Loading tenants for domain...');
-            return get('/api/staff/v1/tenants');
-        }),
-        catchError((__) => []),
-        map((tenants) => {
-            this.loading.set('');
-            return tenants.filter(
-                (t) => t.domain === this.domain.getValue()?.domain,
-            );
-        }),
-        shareReplay(),
-    );
+    public readonly domain = signal<PlaceDomain>(null);
+    public readonly tenants = signal<PlaceTenant[]>([]);
 
     public expiring(tenant: PlaceTenant): boolean {
         const expiry = tenant.secret_expiry;
@@ -228,32 +213,40 @@ export class PlaceStaffAPIComponent implements OnInit {
 
     public async ngOnInit() {
         this.loading.set('Loading domains...');
-        this.domain_list = await queryDomains()
+        const domain_list = await queryDomains()
             .pipe(map((r) => r.data))
             .toPromise();
+        this.domain_list.set(domain_list || []);
         const domain = authority();
-        if (!this.domain_list?.length) return;
-        const match = this.domain_list.find((d) => d.id === domain.id);
-        if (match) this.domain.next(match);
+        if (!domain_list?.length) {
+            this.loading.set('');
+            return;
+        }
+        const match = domain_list.find((d) => d.id === domain.id);
+        if (match) {
+            this.domain.set(match);
+            await this.loadTenants();
+        }
         this.loading.set('');
+    }
+
+    public async setDomain(domain: PlaceDomain) {
+        this.domain.set(domain);
+        await this.loadTenants();
     }
 
     public editTenant(tenant?: PlaceTenant) {
         const ref = this._dialog.open(StaffTenantModalComponent, {
-            data: { tenant, domain: this.domain.getValue() },
+            data: { tenant, domain: this.domain() },
         });
-        ref.afterClosed().subscribe((__) =>
-            this.domain.next(this.domain.getValue()),
-        );
+        ref.afterClosed().subscribe((__) => this.loadTenants());
     }
 
     public editLimits(tenant: PlaceTenant) {
         const ref = this._dialog.open(BookingLimitsModalComponent, {
-            data: { tenant, domain: this.domain.getValue() },
+            data: { tenant, domain: this.domain() },
         });
-        ref.afterClosed().subscribe((__) =>
-            this.domain.next(this.domain.getValue()),
-        );
+        ref.afterClosed().subscribe((__) => this.loadTenants());
     }
 
     public async removeTenant(tenant: PlaceTenant) {
@@ -288,6 +281,21 @@ export class PlaceStaffAPIComponent implements OnInit {
         details.close();
         if (system) return;
         notifySuccess(`Successfully removed tenant from domain.`);
-        this.domain.next(this.domain.getValue());
+        await this.loadTenants();
+    }
+
+    private async loadTenants() {
+        if (!this.domain()) {
+            this.tenants.set([]);
+            return;
+        }
+        this.loading.set('Loading tenants for domain...');
+        const tenants = await get('/api/staff/v1/tenants')
+            .toPromise()
+            .catch(() => []);
+        this.tenants.set(
+            (tenants || []).filter((t) => t.domain === this.domain()?.domain),
+        );
+        this.loading.set('');
     }
 }

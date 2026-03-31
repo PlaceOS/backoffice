@@ -1,4 +1,14 @@
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Injector,
+    OnInit,
+    Output,
+    effect,
+    inject,
+    signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -11,7 +21,7 @@ import {
     cleanObject,
     updateApplication,
 } from '@placeos/ts-client';
-import { BehaviorSubject } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 
 import { CommonModule } from '@angular/common';
@@ -131,7 +141,7 @@ import { generateApplicationFormFields } from './applications.utilities';
                                             | translate
                                     "
                                     [disabled]="true"
-                                    [ngModel]="client_id | async"
+                                    [ngModel]="client_id()"
                                     [ngModelOptions]="{ standalone: true }"
                                 />
                             </mat-form-field>
@@ -167,6 +177,7 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
     );
     private readonly _name = 'DOMAINS.APPLICATION';
     private _hotkey = inject(HotkeysService);
+    private _injector = inject(Injector);
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
@@ -174,40 +185,52 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
     public loading: string;
     public heading: string;
     public default_redirect_uri: string;
-    public readonly client_id = new BehaviorSubject('');
+    public readonly client_id = signal('');
 
     public ngOnInit(): void {
         const item = this._data.item;
         const edit = !!item.id;
         this.heading = i18n(`DOMAINS.APPLICATION_${edit ? 'EDIT' : 'NEW'}`);
         this.form = generateApplicationFormFields(item);
-        const { client_id, redirect_uri } = this.form.value;
+        const { redirect_uri } = this.form.value;
         this.default_redirect_uri = redirect_uri || '';
-        this.client_id.next(
-            client_id || redirect_uri ? Md5.hashStr(redirect_uri || '') : '',
-        );
-        this.subscription(
-            'form.redirect_uri',
+        const redirect_uri_signal = toSignal(
             this.form
                 .get('redirect_uri')
-                .valueChanges.subscribe((value: string) => {
-                    if (this.form.value.preserve_client_id) return;
-                    this.client_id.next(value ? Md5.hashStr(value) : '');
-                    this.form.patchValue(
-                        { redirect_uri: value?.trim() },
-                        { emitEvent: false },
-                    );
-                }),
+                .valueChanges.pipe(startWith(redirect_uri || '')),
+            {
+                initialValue: redirect_uri || '',
+                injector: this._injector,
+            },
         );
-        this.subscription(
-            'form.preserve_client_id',
+        const preserve_client_id_signal = toSignal(
             this.form
                 .get('preserve_client_id')
-                .valueChanges.subscribe((preserve: boolean) => {
-                    const value = this.form.value.redirect_uri;
-                    const uri = preserve ? this.default_redirect_uri : value;
-                    this.client_id.next(uri ? Md5.hashStr(uri) : '');
-                }),
+                .valueChanges.pipe(
+                    startWith(!!this.form.value.preserve_client_id),
+                ),
+            {
+                initialValue: !!this.form.value.preserve_client_id,
+                injector: this._injector,
+            },
+        );
+        effect(
+            () => {
+                const preserve = preserve_client_id_signal();
+                const redirect_value = `${redirect_uri_signal() || ''}`;
+                const trimmed_value = redirect_value.trim();
+                if (redirect_value !== trimmed_value) {
+                    this.form.patchValue(
+                        { redirect_uri: trimmed_value },
+                        { emitEvent: false },
+                    );
+                }
+                const uri = preserve
+                    ? this.default_redirect_uri
+                    : trimmed_value;
+                this.client_id.set(uri ? Md5.hashStr(uri) : '');
+            },
+            { injector: this._injector },
         );
         this.subscription(
             'save_item_key',

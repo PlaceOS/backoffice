@@ -1,10 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceSystem } from '@placeos/ts-client';
+import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -118,24 +119,29 @@ import { SystemStateService } from './system-state.service';
         RouterModule,
     ],
 })
-export class SystemsComponent extends AsyncHandler implements OnInit {
+export class SystemsComponent {
     protected _service = inject(SystemStateService);
     private _item = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
 
-    public readonly item = signal<PlaceSystem>(null);
-    public readonly loading = signal(false);
+    public readonly item = toSignal(
+        this._item.active_item$.pipe(map((item) => item as PlaceSystem)),
+        { initialValue: null as PlaceSystem | null },
+    );
+    public readonly loading = toSignal(this._item.loading, {
+        initialValue: false,
+    });
     public readonly open_menu = signal(false);
     public readonly name = 'systems';
     public readonly scroll = signal(0);
-    public readonly tab_list = signal([]);
-    public readonly extensions = signal([]);
-    public readonly debug_position = this._debug.position;
-    public readonly newItem = () => this._item.create();
-    public readonly bulkAdd = () => this._item.bulkAdd();
-
-    public updateTabList(counts?: Record<string, number>) {
-        this.tab_list.set(
+    public readonly counts = toSignal(this._service.counts, {
+        initialValue: {} as Record<string, number>,
+    });
+    public readonly extensions = computed(() =>
+        extensionsForItem(this.item(), this.name),
+    );
+    public readonly tab_list = computed(
+        () =>
             [
                 {
                     id: 'about',
@@ -145,25 +151,25 @@ export class SystemsComponent extends AsyncHandler implements OnInit {
                 {
                     id: 'modules',
                     name: i18n('SYSTEMS.TAB_MODULES'),
-                    count: counts?.devices ?? '?',
+                    count: this.counts()?.devices ?? '?',
                     icon: { content: 'tablet' },
                 },
                 {
                     id: 'zones',
                     name: i18n('SYSTEMS.TAB_ZONES'),
-                    count: counts?.zones ?? '?',
+                    count: this.counts()?.zones ?? '?',
                     icon: { content: 'layers' },
                 },
                 {
                     id: 'triggers',
                     name: i18n('SYSTEMS.TAB_TRIGGERS'),
-                    count: counts?.triggers ?? '?',
+                    count: this.counts()?.triggers ?? '?',
                     icon: { content: 'timer' },
                 },
                 {
                     id: 'metadata',
                     name: i18n('SYSTEMS.TAB_METADATA'),
-                    count: counts?.metadata ?? '?',
+                    count: this.counts()?.metadata ?? '?',
                     icon: { content: 'code_blocks' },
                 },
                 {
@@ -171,28 +177,9 @@ export class SystemsComponent extends AsyncHandler implements OnInit {
                     name: i18n('SYSTEMS.TAB_SETTINGS_HISTORY'),
                     icon: { content: 'schedule' },
                 },
-            ].concat(this.extensions()),
-        );
-    }
-
-    public ngOnInit(): void {
-        this.subscription(
-            'loading',
-            this._item.loading.subscribe((l) => this.loading.set(l)),
-        );
-        this.subscription(
-            'item-change',
-            this._item.active_item$.subscribe((i) => {
-                this.item.set(i as PlaceSystem);
-                this.extensions.set(extensionsForItem(i, this.name));
-                this.updateTabList({});
-            }),
-        );
-        this.subscription(
-            'counts',
-            this._service.counts.subscribe((counts) =>
-                this.updateTabList(counts),
-            ),
-        );
-    }
+            ].concat(this.extensions()) as any[],
+    );
+    public readonly debug_position = this._debug.position;
+    public readonly newItem = () => this._item.create();
+    public readonly bulkAdd = () => this._item.bulkAdd();
 }

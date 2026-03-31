@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, output, signal } from '@angular/core';
+import {
+    Component,
+    effect,
+    inject,
+    model,
+    OnInit,
+    output,
+    signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     FormGroup,
@@ -13,6 +22,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
 import { lastValueFrom } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 import { getInvalidFields } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -290,7 +300,7 @@ export interface StaffTenantModalData {
                         </settings-toggle>
                     </div>
                 }
-                @if (show_outlook && form.get('outlook_config')) {
+                @if (show_outlook() && form.get('outlook_config')) {
                     <form formGroupName="outlook_config">
                         <div
                             class="flex flex-wrap items-center space-x-0 sm:space-x-2"
@@ -464,7 +474,7 @@ export class StaffTenantModalComponent implements OnInit {
     public readonly domain = this._data.domain;
     public readonly loading = signal('');
 
-    public show_outlook = false;
+    public readonly show_outlook = model(false);
 
     public form = new FormGroup({
         id: new FormControl(this.tenant?.id || ''),
@@ -489,6 +499,49 @@ export class StaffTenantModalComponent implements OnInit {
     });
 
     public readonly name_map = FIELD_NAME_MAPPING;
+    private readonly _platform = toSignal(
+        this.form.controls.platform.valueChanges.pipe(
+            startWith(this.form.controls.platform.value),
+        ),
+        { initialValue: this.form.controls.platform.value },
+    );
+    private readonly _delegated = toSignal(
+        this.form.controls.delegated.valueChanges.pipe(
+            startWith(this.form.controls.delegated.value),
+        ),
+        { initialValue: this.form.controls.delegated.value },
+    );
+
+    constructor() {
+        effect(() => {
+            const platform = this._platform();
+            const credentials = this.form.getRawValue().credentials;
+            this.form.removeControl('credentials');
+            this.form.addControl(
+                'credentials',
+                platform === 'office365' ? this.office_form : this.google_form,
+            );
+            if (platform === 'office365') {
+                if (!this.form.get('outlook_config')) {
+                    (this.form as FormGroup).addControl(
+                        'outlook_config',
+                        new FormGroup({
+                            app_id: new FormControl(''),
+                            app_domain: new FormControl(''),
+                            app_resource: new FormControl(''),
+                            source_location: new FormControl(''),
+                            base_path: new FormControl(''),
+                        }),
+                    );
+                }
+            } else {
+                (this.form as FormGroup).removeControl('outlook_config');
+            }
+            this._handleDelegation(!!this._delegated());
+            this.form.patchValue({ credentials });
+        });
+        effect(() => this._handleDelegation(!!this._delegated()));
+    }
 
     public get office_form() {
         return new FormGroup({
@@ -517,61 +570,6 @@ export class StaffTenantModalComponent implements OnInit {
 
     public ngOnInit() {
         const limits = this.tenant?.booking_limits || {};
-        const fields = [
-            'tenant',
-            'client_id',
-            'client_secret',
-            'issuer',
-            'signing_key',
-            'scopes',
-            'sub',
-            'domain',
-            'user_agent',
-        ];
-        const handleDelegation = (delegated) => {
-            if (delegated) {
-                for (const field of fields) {
-                    this.form.get('credentials')?.get(field)?.disable();
-                    this.form.get('credentials')?.get(field)?.setValidators([]);
-                }
-            } else {
-                const id = this.form.value.id;
-                for (const field of fields) {
-                    this.form.get('credentials')?.get(field)?.enable();
-                    this.form
-                        .get('credentials')
-                        ?.get(field)
-                        ?.setValidators(id ? [] : [Validators.required]);
-                }
-            }
-            this.form.updateValueAndValidity();
-        };
-        this.form.controls.platform.valueChanges.subscribe((platform) => {
-            const credentials = this.form.value.credentials;
-            this.form.removeControl('credentials');
-            this.form.addControl(
-                'credentials',
-                platform === 'office365' ? this.office_form : this.google_form,
-            );
-            if (platform === 'office365') {
-                (this.form as FormGroup).addControl(
-                    'outlook_config',
-                    new FormGroup({
-                        app_id: new FormControl(''),
-                        app_domain: new FormControl(''),
-                        app_resource: new FormControl(''),
-                        source_location: new FormControl(''),
-                        base_path: new FormControl(''),
-                    }),
-                );
-            } else {
-                (this.form as FormGroup).removeControl('outlook_config');
-            }
-            handleDelegation(this.form.value.delegated);
-            this.form.patchValue({ credentials });
-        });
-        handleDelegation(this.form.value.delegated);
-        this.form.controls.delegated.valueChanges.subscribe(handleDelegation);
         this.form.patchValue({
             ...(this.tenant || {}),
             domain: this.tenant?.domain || this._data.domain?.domain,
@@ -602,7 +600,7 @@ export class StaffTenantModalComponent implements OnInit {
         const value = this.form.value;
         if (!value.credentials.conference_type)
             delete value.credentials.conference_type;
-        if (!this.show_outlook) {
+        if (!this.show_outlook()) {
             delete (value as Record<string, unknown>).outlook_config;
         } else {
             for (const key in (value as Record<string, Record<string, unknown>>)
@@ -647,5 +645,35 @@ export class StaffTenantModalComponent implements OnInit {
         if (!tenant) return notifyError(i18n('ADMIN.TENANATS_SAVE_ERROR'));
         notifySuccess(i18n('ADMIN.TENANATS_SAVE_SUCCESS'));
         this._dialog_ref.close();
+    }
+
+    private _handleDelegation(delegated: boolean) {
+        const fields = [
+            'tenant',
+            'client_id',
+            'client_secret',
+            'issuer',
+            'signing_key',
+            'scopes',
+            'sub',
+            'domain',
+            'user_agent',
+        ];
+        if (delegated) {
+            for (const field of fields) {
+                this.form.get('credentials')?.get(field)?.disable();
+                this.form.get('credentials')?.get(field)?.setValidators([]);
+            }
+        } else {
+            const id = this.form.value.id;
+            for (const field of fields) {
+                this.form.get('credentials')?.get(field)?.enable();
+                this.form
+                    .get('credentials')
+                    ?.get(field)
+                    ?.setValidators(id ? [] : [Validators.required]);
+            }
+        }
+        this.form.updateValueAndValidity();
     }
 }

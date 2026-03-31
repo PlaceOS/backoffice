@@ -4,6 +4,7 @@ import {
     AfterViewInit,
     Component,
     computed,
+    effect,
     ElementRef,
     forwardRef,
     inject,
@@ -12,9 +13,6 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { CommonModule } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
@@ -88,7 +86,7 @@ import { TranslatePipe } from '../translate.pipe';
                     </div>
                 </div>
             }
-            @for (item of uploads | async; track item.id; let i = $index) {
+            @for (item of uploads(); track item.id; let i = $index) {
                 <button
                     image
                     class="border-base-content/10 /5 bg-base-200 flex h-32 w-36 shrink-0 items-center justify-center rounded-sm border bg-cover bg-center"
@@ -218,20 +216,20 @@ export class ImageListFieldComponent
     /** List of images */
     public list = signal<string[]>([]);
     /** List of images */
-    public upload_ids = new BehaviorSubject<number[]>([]);
-    private _upload_list = new BehaviorSubject<UploadDetails[]>([]);
-    public readonly upload_list = this._upload_list.asObservable();
+    public readonly upload_ids = signal<number[]>([]);
+    private readonly _upload_list = signal<UploadDetails[]>([]);
+    public readonly upload_list = this._upload_list;
     public readonly offset = signal(0);
     public readonly view_space = signal(0);
     public readonly separators = [COMMA, ENTER];
     public readonly length = computed(
-        () => this.list().length + this._upload_list.getValue().length + 1,
+        () => this.list().length + this.upload_list().length + 1,
     );
 
-    public readonly uploads = combineLatest([
-        this.upload_list,
-        this.upload_ids,
-    ]).pipe(map(([list, ids]) => list.filter((i) => ids.includes(i.id))));
+    public readonly uploads = computed(() => {
+        const ids = this.upload_ids();
+        return this.upload_list().filter((i) => ids.includes(i.id));
+    });
 
     private readonly _list_el =
         viewChild<ElementRef<HTMLDivElement>>('image_list');
@@ -241,24 +239,26 @@ export class ImageListFieldComponent
     /** Form control on touch handler */
     private _onTouch: (_: string[]) => void;
 
+    constructor() {
+        super();
+        effect(() => {
+            const list = this.upload_list();
+            const id_list = this.upload_ids();
+            for (const id of id_list) {
+                const item = list.find((_) => _.id === id);
+                if (item && item.progress >= 100) {
+                    this.addImageUrl(item.link);
+                    this.upload_ids.update((ids) =>
+                        ids.filter((_) => _ !== id),
+                    );
+                }
+            }
+        });
+    }
+
     public ngAfterViewInit() {
         const box = this._list_el().nativeElement.getBoundingClientRect();
         this.view_space.set(Math.floor(box.width / 152));
-        this.subscription(
-            'upload_changes',
-            this.upload_list.subscribe((list) => {
-                const id_list = this.upload_ids.getValue();
-                for (const id of id_list) {
-                    const item = list.find((_) => _.id === id);
-                    if (item && item.progress >= 100) {
-                        this.addImageUrl(item.link);
-                        this.upload_ids.next(
-                            this.upload_ids.getValue().filter((_) => _ !== id),
-                        );
-                    }
-                }
-            }),
-        );
     }
 
     public increment() {
@@ -313,7 +313,7 @@ export class ImageListFieldComponent
                     const id = await this._uploads.uploadFileWithPermissions(
                         files[i],
                     );
-                    this.upload_ids.next([...this.upload_ids.getValue(), id]);
+                    this.upload_ids.update((list) => [...list, id]);
                 }
             }
         }
@@ -338,14 +338,14 @@ export class ImageListFieldComponent
         (this._onTouch = fn);
 
     private async _updateUploadHistory() {
-        const list = this.upload_ids.getValue();
+        const list = this.upload_ids();
         if (list.length === 0) return;
         const global_list = await nextValueFrom(this._uploads.upload_list);
         const new_list = global_list.filter((_) =>
             list.find((i) => i === _.id),
         );
         const done_list = new_list.filter((file) => file.progress >= 100);
-        this._upload_list.next(new_list);
+        this._upload_list.set(new_list);
         done_list.forEach((i) => delete i.upload);
         if (done_list.length >= list.length)
             this.clearInterval('update_status');

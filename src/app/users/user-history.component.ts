@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceUser } from '@placeos/ts-client';
 
 import { CommonModule } from '@angular/common';
@@ -61,20 +62,20 @@ interface UserLogEntry {
     ],
     imports: [TranslatePipe, CommonModule, SimpleTableComponent],
 })
-export class UserHistoryComponent extends AsyncHandler implements OnInit {
+export class UserHistoryComponent extends AsyncHandler {
     private _service = inject(ActiveItemService);
 
     public readonly logs = signal<UserLogEntry[]>([]);
 
-    public get item(): PlaceUser {
-        return this._service.active_item as PlaceUser;
-    }
+    public readonly item = toSignal(this._service.item, {
+        initialValue: null as PlaceUser | null,
+    });
 
-    public ngOnInit(): void {
-        this.subscription(
-            'item',
-            this._service.item.subscribe(() => this.loadUserLogs()),
-        );
+    constructor() {
+        super();
+        effect(() => {
+            if (this.item()) this.loadUserLogs();
+        });
     }
 
     public loadUserLogs(_offset = 0) {

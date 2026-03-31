@@ -1,11 +1,13 @@
 import { Location } from '@angular/common';
 import {
     Component,
+    effect,
     ElementRef,
     inject,
-    OnInit,
+    signal,
     viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import {
     apiKey,
@@ -15,7 +17,7 @@ import {
     token,
     updateMetadata,
 } from '@placeos/ts-client';
-import { first } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -38,23 +40,33 @@ export interface FrameMessage<T = unknown> {
 @Component({
     selector: 'app-extension-outlet',
     template: `
-        @if (url && app_loaded) {
+        @if (url() && app_loaded()) {
             <iframe
                 #frame
                 class="absolute inset-0 h-full w-full border-none"
-                [src]="url | safe: 'resource'"
+                [src]="url() | safe: 'resource'"
             ></iframe>
         }
     `,
     imports: [SafePipe],
 })
-export class ExtensionOutletComponent extends AsyncHandler implements OnInit {
+export class ExtensionOutletComponent extends AsyncHandler {
     private _route = inject(ActivatedRoute);
     private _location = inject(Location);
     private _service = inject(ActiveItemService);
 
-    public url = '';
-    public app_loaded = false;
+    private readonly _online = toSignal(onlineState().pipe(startWith(false)), {
+        initialValue: false,
+    });
+    private readonly _embed = toSignal(
+        this._route.queryParamMap.pipe(
+            map((params) => (params.has('embed') ? params.get('embed') : null)),
+        ),
+        { initialValue: undefined },
+    );
+
+    public readonly url = signal('');
+    public readonly app_loaded = signal(false);
 
     public readonly onMessage = (m) => {
         if (typeof m.data !== 'string') return;
@@ -64,20 +76,30 @@ export class ExtensionOutletComponent extends AsyncHandler implements OnInit {
     private readonly _frame_el =
         viewChild<ElementRef<HTMLIFrameElement>>('frame');
 
-    public ngOnInit(): void {
-        onlineState()
-            .pipe(first((_) => _))
-            .subscribe(() =>
-                this.timeout('init', () => (this.app_loaded = true)),
-            );
-        this._route.queryParamMap.subscribe((params) => {
-            if (params.has('embed')) this.url = params.get('embed');
-            else this._location.back();
+    constructor() {
+        super();
+        effect(() => {
+            if (this._online()) {
+                this.timeout('init', () => this.app_loaded.set(true));
+            }
         });
-        window.addEventListener('message', this.onMessage);
-        this.subscription('message', () =>
-            window.removeEventListener('message', this.onMessage),
-        );
+        effect(() => {
+            const embed = this._embed();
+            if (embed === undefined) {
+                return;
+            }
+            if (embed) {
+                this.url.set(embed);
+            } else {
+                this._location.back();
+            }
+        });
+        effect((onCleanup) => {
+            window.addEventListener('message', this.onMessage);
+            onCleanup(() =>
+                window.removeEventListener('message', this.onMessage),
+            );
+        });
     }
 
     private async handleMessage(message: FrameMessage) {
@@ -137,7 +159,7 @@ export class ExtensionOutletComponent extends AsyncHandler implements OnInit {
         await updateMetadata(item.id, {
             id: item.id,
             name: message.name,
-            description: `Metadata from ${this.url}`,
+            description: `Metadata from ${this.url()}`,
             details: typeof message.content === 'object' ? message.content : {},
         }).toPromise();
         notifySuccess(i18n('COMMON.METADTA_SAVE'));

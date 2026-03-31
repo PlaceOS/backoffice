@@ -4,10 +4,9 @@ import {
     moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { BehaviorSubject } from 'rxjs';
 import { IconComponent } from './icon.component';
 
 export interface ReorderItemsOptions {
@@ -32,7 +31,7 @@ export interface ReorderItemsOptions {
                 class="divide-base-200 border-base-200 flex w-full flex-col divide-y rounded-sm border"
                 (cdkDropListDropped)="drop($event)"
             >
-                @for (item of items | async; track item; let i = $index) {
+                @for (item of items(); track item; let i = $index) {
                     <div class="flex items-center space-x-2 p-2" cdkDrag>
                         <div
                             class="bg-base-200 flex h-8 min-w-8 items-center justify-center rounded-full text-sm font-medium"
@@ -74,24 +73,21 @@ export interface ReorderItemsOptions {
         IconComponent,
     ],
 })
-export class ReorderItemsModalComponent implements OnInit {
+export class ReorderItemsModalComponent {
     private _data = inject<ReorderItemsOptions>(MAT_DIALOG_DATA);
 
-    public readonly items = new BehaviorSubject([]);
+    public readonly items = signal<{ id: string; name: string }[]>(
+        this._data.items,
+    );
     public type: string = this._data.type;
     public changed: string[] = [];
-    public order: string[] = [];
-
-    public ngOnInit() {
-        this.items.next(this._data.items);
-        this.order = this._data.items.map((i) => i.id);
-    }
+    public order: string[] = this._data.items.map((i) => i.id);
 
     public drop(event: CdkDragDrop<string[]>) {
-        const list = [...this.items.getValue()];
+        const list = [...this.items()];
         moveItemInArray(list, event.previousIndex, event.currentIndex);
         this.changed.push(list[event.currentIndex].id);
         this.order = list.map((i) => i.id);
-        this.items.next(list);
+        this.items.set(list);
     }
 }

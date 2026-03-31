@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import {
     Component,
+    effect,
     forwardRef,
     input,
     OnChanges,
-    OnInit,
     signal,
     SimpleChanges,
 } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
     ControlValueAccessor,
     FormsModule,
@@ -21,7 +22,7 @@ import {
     PlaceModuleFunction,
     PlaceSystem,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, of } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import {
     catchError,
     distinctUntilChanged,
@@ -34,11 +35,15 @@ import { AsyncHandler } from '../../../common/async-handler.class';
 import { TranslatePipe } from '../../translate.pipe';
 import { ModuleLike } from './select-module.component';
 
+interface MethodOption extends PlaceModuleFunction {
+    name: string;
+}
+
 @Component({
     selector: 'select-module-method',
     template: `
         @if (!loading()) {
-            @if ((method_list | async)?.length) {
+            @if (method_list().length) {
                 <mat-form-field class="h-14 w-full" appearance="outline">
                     <mat-select
                         [placeholder]="
@@ -47,7 +52,7 @@ import { ModuleLike } from './select-module.component';
                         [(ngModel)]="method"
                         (ngModelChange)="setValue($event)"
                     >
-                        @for (method of method_list | async; track method) {
+                        @for (method of method_list(); track method) {
                             <mat-option [value]="method">
                                 {{ method.name }}
                             </mat-option>
@@ -87,62 +92,66 @@ import { ModuleLike } from './select-module.component';
 })
 export class SelectMethodComponent
     extends AsyncHandler
-    implements OnInit, OnChanges, ControlValueAccessor
+    implements OnChanges, ControlValueAccessor
 {
     /** ID of the system to select the module from */
     public readonly system = input<PlaceSystem>(undefined);
     /** ID of the system to select the module from */
     public readonly module = input<ModuleLike>(undefined);
 
-    private _system = new BehaviorSubject('');
-    private _module = new BehaviorSubject<ModuleLike>({} as ModuleLike);
+    private _system = signal('');
+    private _module = signal<ModuleLike>({} as ModuleLike);
 
     public readonly method = signal<PlaceModuleFunction>(undefined);
 
     public readonly loading = signal(false);
 
-    public method_list = combineLatest([this._system, this._module]).pipe(
-        distinctUntilChanged(),
-        tap(() => this.loading.set(true)),
-        switchMap(([id, { module, index }]) =>
-            !!id && !!module ? functionList(id, module, index) : of({}),
+    private readonly _method_list = toSignal(
+        combineLatest([
+            toObservable(this._system),
+            toObservable(this._module),
+        ]).pipe(
+            distinctUntilChanged(),
+            tap(() => this.loading.set(true)),
+            switchMap(([id, { module, index }]) =>
+                !!id && !!module ? functionList(id, module, index) : of({}),
+            ),
+            catchError(() => of({})),
+            map((fn_mapping) =>
+                Object.keys(fn_mapping || {}).map((i) => ({
+                    name: i,
+                    ...fn_mapping[i],
+                })),
+            ),
+            tap(() => this.loading.set(false)),
+            shareReplay(1),
         ),
-        catchError(() => of({})),
-        map((fn_mapping) =>
-            Object.keys(fn_mapping || {}).map((i) => ({
-                name: i,
-                ...fn_mapping[i],
-            })),
-        ),
-        tap(() => this.loading.set(false)),
-        shareReplay(1),
+        { initialValue: [] as MethodOption[] },
     );
+
+    public readonly method_list = this._method_list;
 
     /** Form control on change handler */
     private _onChange: (_: PlaceModuleFunction) => void;
     /** Form control on touch handler */
     private _onTouch: (_: PlaceModuleFunction) => void;
 
-    public ngOnInit() {
-        this.subscription(
-            'methods',
-            this.method_list.subscribe((list) => {
-                const active = list.find(
-                    (_) =>
-                        _.name ===
-                        (this.method as unknown as { name: string })?.name,
-                );
-                if (active) this.setValue(active);
-            }),
-        );
+    constructor() {
+        super();
+        effect(() => {
+            const list = this.method_list();
+            const selected = this.method() as { name?: string } | undefined;
+            const active = list.find((_) => _.name === selected?.name);
+            if (active) this.setValue(active);
+        });
     }
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.system) {
-            this._system.next(this.system().id);
+            this._system.set(this.system()?.id || '');
         }
         if (changes.module) {
-            this._module.next(this.module());
+            this._module.set(this.module());
         }
     }
 

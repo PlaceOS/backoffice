@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { PlaceDomain } from '@placeos/ts-client';
@@ -30,12 +31,12 @@ import { DomainStateService } from './domain-state.service';
                 </h3>
                 <div
                     class="markdown w-full overflow-auto p-4 text-sm"
-                    [innerHTML]="description | sanitize"
+                    [innerHTML]="description() | sanitize"
                 ></div>
             </div>
             <hr class="text-base-300 my-4" />
         }
-        @if (item.email_domains?.length) {
+        @if (item?.email_domains?.length) {
             <div
                 class="border-base-200 relative my-2 flex w-1/2 min-w-[20rem] flex-col rounded-sm border p-4"
             >
@@ -44,7 +45,7 @@ import { DomainStateService } from './domain-state.service';
                 >
                     {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
                 </div>
-                @for (domain of item.email_domains; track domain) {
+                @for (domain of item?.email_domains; track domain) {
                     <button
                         matRipple
                         class="mono hover:bg-base-200 rounded-sm p-2 text-left text-sm"
@@ -118,7 +119,7 @@ import { DomainStateService } from './domain-state.service';
         SanitizePipe,
     ],
 })
-export class DomainAboutComponent extends AsyncHandler implements OnInit {
+export class DomainAboutComponent extends AsyncHandler {
     private _service = inject(DomainStateService);
     private _clipboard = inject(Clipboard);
 
@@ -130,20 +131,23 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
     /** Index of the active tab */
     public index: number;
 
-    public get item(): PlaceDomain {
-        return this._service.active_item as PlaceDomain;
+    private readonly _item = toSignal(this._service.item, {
+        initialValue: null as PlaceDomain | null,
+    });
+    public get item(): PlaceDomain | null {
+        return this._item();
     }
 
     /** HTML string for rendering the description */
-    public get description(): string {
-        return marked(this.item.description || '', { async: false }) as string;
-    }
+    public readonly description = computed(
+        () => marked(this.item?.description || '', { async: false }) as string,
+    );
 
-    public ngOnInit(): void {
-        this.subscription(
-            'item',
-            this._service.item.subscribe(() => this.loadForm()),
-        );
+    constructor() {
+        super();
+        effect(() => {
+            if (this._item()) this.loadForm();
+        });
     }
 
     public copyEmailDomain(domain: string) {
@@ -166,10 +170,11 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
 
     /** Load form fields for active item */
     private loadForm(): void {
-        if (!this.item) return;
+        const item = this.item;
+        if (!item) return;
         this.form.patchValue({
-            internals: JSON.stringify(this.item.internals, undefined, 4),
-            config: JSON.stringify(this.item.config, undefined, 4),
+            internals: JSON.stringify(item.internals, undefined, 4),
+            config: JSON.stringify(item.config, undefined, 4),
         });
     }
 }

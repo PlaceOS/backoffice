@@ -2,16 +2,19 @@ import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
     Component,
+    computed,
+    effect,
     ElementRef,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
     inject,
     input,
     model,
+    OnChanges,
+    OnInit,
     signal,
+    SimpleChanges,
     viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterModule } from '@angular/router';
@@ -22,6 +25,7 @@ import {
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
 import { Observable } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { nextValueFrom } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
@@ -50,7 +54,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                 <span class="keycap mr-2 text-xs">K</span>
             </button>
         </div>
-        @if (show_view) {
+        @if (show_view()) {
             <button
                 class="bg-base-100/80 absolute inset-0"
                 (click)="show.set(false)"
@@ -192,6 +196,10 @@ export class ItemSelectionComponent
     private _settings = inject(SettingsService);
     private _hotkeys = inject(HotkeysService);
     private _service = inject(ActiveItemService);
+    private readonly _route_change = toSignal(
+        this._router.events.pipe(startWith(null)),
+        { initialValue: null },
+    );
 
     public readonly show = model(true);
     public readonly title = input(undefined);
@@ -216,8 +224,16 @@ export class ItemSelectionComponent
     private readonly _input =
         viewChild<ElementRef<HTMLInputElement>>('search_input');
 
-    public get show_view() {
+    public readonly show_view = computed(() => {
         return this.show() || !this._service.active_item;
+    });
+
+    constructor() {
+        super();
+        effect(() => {
+            this._route_change();
+            this.subroute.set(this._router.url.split('/')[3] || '');
+        });
     }
 
     public ngOnInit() {
@@ -243,11 +259,6 @@ export class ItemSelectionComponent
         this.subscription(
             'hotkey',
             this._hotkeys.listen(['KeyK'], () => this.open()),
-        );
-        this.subscription('route.events', () =>
-            this._router.events.subscribe(() => {
-                this.subroute.set(this._router.url.split('/')[3] || '');
-            }),
         );
     }
 

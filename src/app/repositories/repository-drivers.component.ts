@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceRepository } from '@placeos/ts-client';
 
 import { MatRippleModule } from '@angular/material/core';
@@ -21,7 +22,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         <mat-progress-bar
             mode="indeterminate"
             class="w-full"
-            [class.opacity-0]="!loading"
+            [class.opacity-0]="!loading()"
         />
         <simple-table
             class="block min-w-lg text-sm"
@@ -87,7 +88,9 @@ export class RepositoryDriversComponent extends AsyncHandler implements OnInit {
     private _router = inject(Router);
 
     /** Whether driver list is loading */
-    public loading: boolean;
+    public readonly loading = toSignal(this._service.loading, {
+        initialValue: false,
+    });
     /** List of drivers available in the repository */
     public readonly driver_list = this._service.driver_list;
 

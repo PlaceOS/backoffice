@@ -1,5 +1,15 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    Signal,
+    computed,
+    inject,
+    signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     ReactiveFormsModule,
@@ -287,7 +297,7 @@ import { generateSystemsFormFields } from './systems.utilities';
                                     #chipList
                                     aria-label="Image List"
                                 >
-                                    @for (item of feature_list; track item) {
+                                    @for (item of feature_list(); track item) {
                                         <mat-chip-row
                                             (removed)="removeFeature(item)"
                                         >
@@ -353,12 +363,12 @@ import { generateSystemsFormFields } from './systems.utilities';
                             />
                         </mat-form-field>
                         <mat-autocomplete #auto="matAutocomplete">
-                            @for (tz of filtered_timezones; track tz) {
+                            @for (tz of filtered_timezones(); track tz) {
                                 <mat-option [value]="tz">
                                     {{ tz }}
                                 </mat-option>
                             }
-                            @if (!timezones.length) {
+                            @if (!filtered_timezones().length) {
                                 <mat-option [disabled]="true">
                                     {{ 'COMMON.TIMEZONE_EMPTY' | translate }}
                                 </mat-option>
@@ -446,7 +456,7 @@ import { generateSystemsFormFields } from './systems.utilities';
                                     aria-label="Camera Snapshot URL List"
                                 >
                                     @for (
-                                        item of camera_snapshot_url_list;
+                                        item of camera_snapshot_url_list();
                                         track item
                                     ) {
                                         <mat-chip-row
@@ -563,11 +573,23 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public timezones: string[] = [];
-    public filtered_timezones: string[] = [];
-    public form: UntypedFormGroup;
+    public readonly timezones = TIMEZONES_IANA;
+    public form: UntypedFormGroup = generateSystemsFormFields(this._data.item);
     public loading: string;
-    public heading: string;
+    public heading = i18n(
+        `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
+    );
+    public feature_list: Signal<string[]> = this.form.controls.features
+        ? toSignal(this.form.controls.features.valueChanges, {
+              initialValue: this.form.controls.features.value || [],
+          })
+        : signal([]);
+    public camera_snapshot_url_list: Signal<string[]> = this.form.controls
+        .camera_snapshot_urls
+        ? toSignal(this.cameraSnapshotUrlsControl.valueChanges, {
+              initialValue: this.cameraSnapshotUrlsControl.value || [],
+          })
+        : signal([]);
 
     /** Function for querying zones */
     public readonly query_fn = (_: string) =>
@@ -575,33 +597,23 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     /** List of separator characters for features */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
-    public get feature_list(): string[] {
-        return this.form.controls.features.value;
-    }
-
-    public get camera_snapshot_url_list(): string[] {
-        return this.cameraSnapshotUrlsControl.value;
-    }
+    private _timezone: Signal<string> = toSignal(
+        this.form.controls.timezone.valueChanges,
+        {
+            initialValue: this.form.controls.timezone.value || '',
+        },
+    );
+    public filtered_timezones: Signal<string[]> = computed(() =>
+        this.timezones.filter((_tz) =>
+            _tz.toLowerCase().includes(this._timezone().toLowerCase()),
+        ),
+    );
 
     private get cameraSnapshotUrlsControl(): FormControl<string[]> {
         return this.form.controls.camera_snapshot_urls as FormControl<string[]>;
     }
 
     public ngOnInit(): void {
-        const item = this._data.item;
-        const edit = !!item.id;
-        this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
-        this.form = generateSystemsFormFields(item);
-        this.updateTimezoneList();
-        this.subscription(
-            'tz-change',
-            this.form.valueChanges.subscribe(
-                ({ timezone }) =>
-                    (this.filtered_timezones = this.timezones.filter((_tz) =>
-                        _tz.toLowerCase().includes(timezone.toLowerCase()),
-                    )),
-            ),
-        );
         this.subscription(
             'save_item_key',
             this._hotkey.listen(['KeyS'], () => this.submit()),
@@ -695,7 +707,7 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
         if (!this.form || !this.form.controls.features) return;
         const input = event.input;
         const value = event.value;
-        const feature_list = this.feature_list;
+        const feature_list = [...this.feature_list()];
         if ((value || '').trim()) {
             feature_list.push(value);
             this.form.controls.features.setValue(feature_list);
@@ -713,7 +725,7 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
      */
     public removeFeature(existing_feature: string): void {
         if (!this.form || !this.form.controls.features) return;
-        const feature_list = this.feature_list;
+        const feature_list = [...this.feature_list()];
         const index = feature_list.indexOf(existing_feature);
 
         if (index >= 0) {
@@ -728,14 +740,6 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
 
     public removeCameraSnapshotUrl(url: string): void {
         removeChipItem(this.cameraSnapshotUrlsControl, url);
-    }
-
-    public updateTimezoneList() {
-        const timezone = this.form?.value?.timezone || '';
-        this.timezones = TIMEZONES_IANA;
-        this.filtered_timezones = this.timezones.filter((_) =>
-            _.toLowerCase().includes(timezone.toLowerCase()),
-        );
     }
 
     private processURL(system: PlaceSystem, url: string): string {

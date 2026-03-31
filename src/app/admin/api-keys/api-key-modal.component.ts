@@ -11,6 +11,7 @@ import {
     signal,
     viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     FormGroup,
@@ -27,7 +28,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { PlaceDomain, PlaceUser, queryUsers } from '@placeos/ts-client';
 import { lastValueFrom, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { getInvalidFields } from '../../common/general';
@@ -285,8 +286,13 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     public readonly loading = signal('');
     public readonly search_term = signal('');
     public readonly domain = signal<PlaceDomain>(null);
-    public readonly permissions = signal('');
     public readonly user_list = signal<PlaceUser[]>([]);
+    public readonly permissions = toSignal(
+        this.form.controls.permissions.valueChanges.pipe(
+            startWith(this.form.controls.permissions.value),
+        ),
+        { initialValue: this.form.controls.permissions.value },
+    );
     public readonly users = computed(() => {
         if (this.permissions() === 'admin')
             return this.user_list().filter((_) => _.sys_admin);
@@ -316,12 +322,6 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
 
     public ngOnInit() {
         this.domain.set(this._data.domain);
-        this.subscription(
-            'changes',
-            this.form.controls.permissions.valueChanges.subscribe((v) =>
-                this.permissions.set(v),
-            ),
-        );
         if (this.editing) {
             const key = this._data.key;
             this.form.patchValue({
@@ -332,7 +332,6 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                 user_id: key.user_id,
                 permissions: key.permissions,
             });
-            this.permissions.set(key.permissions);
         } else {
             this.timeout(
                 'reset_perms',
@@ -370,10 +369,12 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                     : of([] as PlaceUser[]),
             );
             this.user_list.set(users);
-            if (this.editing && !this.form.value.user && this._data.key.user_id) {
-                const user = users.find(
-                    (u) => u.id === this._data.key.user_id,
-                );
+            if (
+                this.editing &&
+                !this.form.value.user &&
+                this._data.key.user_id
+            ) {
+                const user = users.find((u) => u.id === this._data.key.user_id);
                 if (user) {
                     this.form.patchValue({ user });
                 }

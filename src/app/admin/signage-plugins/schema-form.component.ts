@@ -4,7 +4,6 @@ import {
     effect,
     forwardRef,
     input,
-    OnDestroy,
     signal,
 } from '@angular/core';
 import {
@@ -18,7 +17,6 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Subscription } from 'rxjs';
 import { SettingsToggleComponent } from '../../ui/settings-toggle.component';
 
 /** A loosely-typed record for JSON Schema objects. */
@@ -210,7 +208,7 @@ export function buildFormFromFields(
         SettingsToggleComponent,
     ],
 })
-export class SchemaFormComponent implements ControlValueAccessor, OnDestroy {
+export class SchemaFormComponent implements ControlValueAccessor {
     public readonly schema = input<JsonSchema>(null);
 
     public readonly fields = computed(() => {
@@ -222,24 +220,22 @@ export class SchemaFormComponent implements ControlValueAccessor, OnDestroy {
 
     private _on_change: (value: Record<string, unknown>) => void;
     private _on_touch: () => void;
-    private _form_sub: Subscription;
     private _value: Record<string, unknown> = {};
 
     constructor() {
-        effect(() => {
+        effect((onCleanup) => {
             const schema_fields = this.fields();
             if (!schema_fields.length) {
-                this._teardown();
                 this.defaults_form.set(null);
                 return;
             }
-            this._teardown();
             const form = buildFormFromFields(schema_fields, this._value);
             this.defaults_form.set(form);
-            this._form_sub = form.valueChanges.subscribe((val) => {
+            const subscription = form.valueChanges.subscribe((val) => {
                 this._value = val;
                 this._on_change?.(val);
             });
+            onCleanup(() => subscription.unsubscribe());
         });
     }
 
@@ -261,20 +257,11 @@ export class SchemaFormComponent implements ControlValueAccessor, OnDestroy {
         this._on_touch = fn;
     }
 
-    public ngOnDestroy(): void {
-        this._teardown();
-    }
-
     /** Returns true if the generated defaults form is valid. */
     public isValid(): boolean {
         const form = this.defaults_form();
         if (!form) return true;
         form.markAllAsTouched();
         return form.valid;
-    }
-
-    private _teardown(): void {
-        this._form_sub?.unsubscribe();
-        this._form_sub = null;
     }
 }

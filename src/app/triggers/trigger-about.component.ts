@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
     PlaceSystem,
     PlaceTrigger,
@@ -75,7 +76,7 @@ import { TriggerStateService } from './trigger-state.service';
                 </h3>
                 <div
                     class="markdown w-full overflow-auto p-4 text-sm"
-                    [innerHTML]="description | sanitize"
+                    [innerHTML]="description() | sanitize"
                 ></div>
             </div>
         }
@@ -103,7 +104,7 @@ import { TriggerStateService } from './trigger-state.service';
                 btn
                 matRipple
                 class="w-48"
-                [disabled]="!template_system"
+                [disabled]="!template_system()"
                 (click)="editCondition()"
             >
                 <icon class="text-2xl">add</icon>
@@ -115,7 +116,7 @@ import { TriggerStateService } from './trigger-state.service';
         <section>
             <simple-table
                 class="mb-4 block w-full min-w-lg text-sm"
-                [data]="comparisons || []"
+                [data]="comparisons()"
                 [columns]="[
                     {
                         key: 'operator',
@@ -135,7 +136,7 @@ import { TriggerStateService } from './trigger-state.service';
             ></simple-table>
             <simple-table
                 class="block w-full min-w-lg text-sm"
-                [data]="time_dependents || []"
+                [data]="time_dependents()"
                 [columns]="[
                     {
                         key: 'time',
@@ -173,7 +174,7 @@ import { TriggerStateService } from './trigger-state.service';
                     <button
                         icon
                         matRipple
-                        [disabled]="!template_system"
+                        [disabled]="!template_system()"
                         (click)="editCondition(row)"
                     >
                         <icon>edit</icon>
@@ -192,7 +193,7 @@ import { TriggerStateService } from './trigger-state.service';
                 btn
                 matRipple
                 class="w-48"
-                [disabled]="!template_system"
+                [disabled]="!template_system()"
                 (click)="editAction()"
             >
                 <icon class="text-2xl">add</icon>
@@ -204,7 +205,7 @@ import { TriggerStateService } from './trigger-state.service';
         <section>
             <simple-table
                 class="mb-4 block w-full min-w-lg text-sm"
-                [data]="functions || []"
+                [data]="functions()"
                 [columns]="[
                     {
                         key: 'time',
@@ -225,7 +226,7 @@ import { TriggerStateService } from './trigger-state.service';
             ></simple-table>
             <simple-table
                 class="mb-4 block w-full min-w-lg text-sm"
-                [data]="mailers || []"
+                [data]="mailers()"
                 [columns]="[
                     {
                         key: 'time',
@@ -264,7 +265,7 @@ import { TriggerStateService } from './trigger-state.service';
                     <button
                         icon
                         matRipple
-                        [disabled]="!template_system"
+                        [disabled]="!template_system()"
                         (click)="editAction(row)"
                     >
                         <icon>edit</icon>
@@ -298,59 +299,56 @@ import { TriggerStateService } from './trigger-state.service';
         SanitizePipe,
     ],
 })
-export class TriggerAboutComponent extends AsyncHandler implements OnInit {
+export class TriggerAboutComponent extends AsyncHandler {
     private _service = inject(TriggerStateService);
 
     /** System to use for conditions with systen variables and functions */
-    public template_system: PlaceSystem;
+    public readonly template_system = signal<PlaceSystem | undefined>(
+        undefined,
+    );
+    private readonly _item = toSignal(this._service.item, {
+        initialValue: {} as PlaceTrigger,
+    });
+    public get item(): PlaceTrigger {
+        return this._item();
+    }
     /** List of variable comparison trigger conditions */
-    public comparisons: TriggerComparison[] = [];
+    public readonly comparisons = computed(
+        () => this.item.conditions?.comparisons || ([] as TriggerComparison[]),
+    );
     /** List of time dependent trigger conditions */
-    public time_dependents: TriggerTimeCondition[] = [];
+    public readonly time_dependents = computed(
+        () =>
+            this.item.conditions?.time_dependents ||
+            ([] as TriggerTimeCondition[]),
+    );
     /** List of function call trigger actions */
-    public functions: TriggerFunction[] = [];
+    public readonly functions = computed(
+        () => this.item.actions?.functions || ([] as TriggerFunction[]),
+    );
     /** List of email trigger actions */
-    public mailers: TriggerMailer[] = [];
+    public readonly mailers = computed(
+        () => this.item.actions?.mailers || ([] as TriggerMailer[]),
+    );
     /** Query function for systems */
     public readonly query_fn = (q: string) =>
         querySystems({ q }).pipe(map((resp) => resp.data as PlaceSystem[]));
 
     public readonly editCondition = (
         c?: TriggerComparison | TriggerTimeCondition,
-    ) => this._service.editCondition(c, this.template_system);
+    ) => this._service.editCondition(c, this.template_system());
     public readonly removeCondition = (
         c: TriggerComparison | TriggerTimeCondition,
     ) => this._service.removeCondition(c);
     public readonly editAction = (a?: TriggerFunction | TriggerMailer) =>
-        this._service.editAction(a, this.template_system);
+        this._service.editAction(a, this.template_system());
     public readonly removeAction = (a: TriggerFunction | TriggerMailer) =>
         this._service.removeAction(a);
 
-    public get item(): PlaceTrigger {
-        return (
-            (this._service.active_item as PlaceTrigger) || ({} as PlaceTrigger)
-        );
-    }
-
     /** HTML string for rendering the description */
-    public get description(): string {
-        return marked(this.item.description || '', { async: false }) as string;
-    }
-
-    public ngOnInit(): void {
-        this.subscription(
-            'item',
-            this._service.item.subscribe((item) => {
-                if (item) {
-                    this.comparisons = item.conditions?.comparisons || [];
-                    this.time_dependents =
-                        item.conditions?.time_dependents || [];
-                    this.functions = item.actions?.functions || [];
-                    this.mailers = item.actions?.mailers || [];
-                }
-            }),
-        );
-    }
+    public readonly description = computed(
+        () => marked(this.item.description || '', { async: false }) as string,
+    );
     /**
      * Open confirmation modal for re-ordering action for active trigger
      * @param type Type of action to reorder

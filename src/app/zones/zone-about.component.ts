@@ -1,4 +1,5 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceSystem, PlaceZone, showZone } from '@placeos/ts-client';
 
 import { ZonesStateService } from './zones-state.service';
@@ -11,7 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { marked } from 'marked';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
@@ -261,14 +262,19 @@ import { TranslatePipe } from '../ui/translate.pipe';
         RouterModule,
     ],
 })
-export class ZoneAboutComponent extends AsyncHandler implements OnInit {
+export class ZoneAboutComponent extends AsyncHandler {
     private _service = inject(ZonesStateService);
 
     /** List of associated systems */
     public readonly systems = this._service.systems;
     /** Selected system */
     public readonly active_system = signal<PlaceSystem | undefined>(undefined);
-    public readonly item = signal<PlaceZone | undefined>(undefined);
+    public readonly item = toSignal(
+        this._service.item as Observable<PlaceZone>,
+        {
+            initialValue: undefined as PlaceZone | undefined,
+        },
+    );
     public readonly parent = signal<PlaceZone | undefined>(undefined);
     public readonly description = computed(() =>
         this.item() ? marked(this.item()?.description) : '',
@@ -277,27 +283,27 @@ export class ZoneAboutComponent extends AsyncHandler implements OnInit {
         this.item() ? this.item()?.tags : [],
     );
     public readonly requires_parent = computed(() => {
+        const item = this.item();
+        if (!item?.tags?.length) return false;
         return (
-            (this.item().tags.includes('level') ||
-                this.item().tags.includes('building') ||
-                this.item().tags.includes('region')) &&
-            !this.item().parent_id
+            (item.tags.includes('level') ||
+                item.tags.includes('building') ||
+                item.tags.includes('region')) &&
+            !item.parent_id
         );
     });
 
-    public ngOnInit() {
-        this.subscription(
-            'item',
-            this._service.item.subscribe(async (item) => {
-                this.parent.set(undefined);
-                this.item.set(item as unknown as PlaceZone);
-                if ((item as unknown as PlaceZone)?.parent_id) {
-                    const zone = await lastValueFrom(
-                        showZone((item as unknown as PlaceZone)?.parent_id),
-                    );
-                    if (zone) this.parent.set(zone);
-                }
-            }),
-        );
+    constructor() {
+        super();
+        effect(() => {
+            const item = this.item();
+            this.parent.set(undefined);
+            if (item?.parent_id) void this.loadParent(item.parent_id);
+        });
+    }
+
+    private async loadParent(parent_id: string) {
+        const zone = await lastValueFrom(showZone(parent_id));
+        if (this.item()?.parent_id === parent_id && zone) this.parent.set(zone);
     }
 }

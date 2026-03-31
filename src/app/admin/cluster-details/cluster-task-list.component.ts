@@ -1,4 +1,12 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+    Component,
+    computed,
+    effect,
+    inject,
+    OnInit,
+    signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceCluster,
@@ -185,6 +193,10 @@ export class PlaceClusterTaskListComponent
 
     public readonly process_list = signal([]);
     public readonly filter = signal('');
+    private readonly _cluster_id = toSignal(
+        this._route.paramMap.pipe(map((params) => params.get('id'))),
+        { initialValue: null },
+    );
 
     public readonly filtered_list = computed(() =>
         this.process_list().filter((item) =>
@@ -213,16 +225,17 @@ export class PlaceClusterTaskListComponent
         return task_details[id];
     }
 
+    constructor() {
+        super();
+        effect(() => {
+            const cluster_id = this._cluster_id();
+            if (cluster_id) {
+                void this.loadCluster(cluster_id);
+            }
+        });
+    }
+
     public ngOnInit() {
-        this.subscription(
-            'route.params',
-            this._route.paramMap.subscribe((params) => {
-                if (params.has('id')) {
-                    const id = params.get('id');
-                    this.loadCluster(id);
-                }
-            }),
-        );
         this.interval('poll', () => this.updateProcessList(), 15 * 1000);
         this.updateProcessList();
     }
