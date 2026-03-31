@@ -12,13 +12,14 @@ import { of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { IconComponent } from '../ui/icon.component';
+import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
     selector: 'driver-update-list-modal',
     template: `
         <header
-            class="border-base-100 bg-base-200 z-10 mx-auto my-2 w-[calc(100%-1rem)] rounded-sm border px-4 py-2"
+            class="border-base-100 bg-base-200 z-10 mx-auto my-2 flex w-[calc(100%-1rem)] justify-between rounded-sm border px-4 py-2"
         >
             <h2 class="flex items-center space-x-4 text-xl font-medium">
                 <div>{{ 'DRIVERS.UPDATE' | translate }}</div>
@@ -89,12 +90,20 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                         </td>
                                         <td>
                                             <code
-                                                [matTooltip]="driver.commit"
+                                                [matTooltip]="
+                                                    driver.update_info.commit
+                                                "
                                                 >{{
                                                     driver.update_info.commit
                                                         | slice: 0 : 9
                                                 }}</code
                                             >
+                                            <div class="text-xs opacity-60">
+                                                {{
+                                                    driver.update_info.date
+                                                        | dateFrom
+                                                }}
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -151,6 +160,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         MatCheckboxModule,
         MatTooltipModule,
         FormsModule,
+        DateFromPipe,
     ],
 })
 export class DriverUpdateListModalComponent {
