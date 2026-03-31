@@ -196,8 +196,8 @@ export class AdminSignagePluginsComponent
         });
         this.subscription(
             'modal_events',
-            ref.componentInstance.event.subscribe((event) => {
-                if (event.reason !== 'done') return;
+            ref.afterClosed().subscribe((event) => {
+                if (event?.reason !== 'done') return;
                 this.loadPlugins();
             }),
         );
@@ -219,8 +219,8 @@ export class AdminSignagePluginsComponent
         });
         this.subscription(
             'modal_events',
-            ref.componentInstance.event.subscribe((event) => {
-                if (event.reason !== 'done') return;
+            ref.afterClosed().subscribe((event) => {
+                if (event?.reason !== 'done') return;
                 this.loadPlugins();
             }),
         );

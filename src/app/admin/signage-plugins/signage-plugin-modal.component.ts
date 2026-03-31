@@ -1,9 +1,10 @@
 import {
     Component,
+    computed,
     EventEmitter,
+    inject,
     OnInit,
     Output,
-    inject,
     signal,
     viewChild,
 } from '@angular/core';
@@ -12,7 +13,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { SignagePlugin } from '@placeos/ts-client';
 import { Observable } from 'rxjs';
 
@@ -28,6 +28,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
 import { SchemaFormComponent } from './schema-form.component';
 import {
     PluginErrorPayload,
+    PluginLoadedPayload,
     SignagePluginEmbedComponent,
 } from './signage-plugin-embed.component';
 import { generateSignagePluginFormFields } from './signage-plugins.utilities';
@@ -126,16 +127,13 @@ export interface SignagePluginModalData {
                             }}
                         </label>
                         <mat-form-field appearance="outline">
-                            <mat-select
+                            <input
+                                id="playback-type"
+                                matInput
                                 name="playback-type"
-                                formControlName="playback_type"
-                            >
-                                @for (type of playback_types; track type.id) {
-                                    <mat-option [value]="type.id">
-                                        {{ type.name }}
-                                    </mat-option>
-                                }
-                            </mat-select>
+                                [value]="playback_type_name()"
+                                readonly
+                            />
                         </mat-form-field>
                     </div>
                     <div class="field mb-4">
@@ -150,12 +148,12 @@ export interface SignagePluginModalData {
                     </div>
                     <!-- Schema / Defaults section -->
                     <div class="field">
-                        <label>
+                        <div class="mb-2">
                             {{
                                 'ADMIN.SIGNAGE_PLUGINS_FIELD_DEFAULTS'
                                     | translate
                             }}
-                        </label>
+                        </div>
                         @if (schema_loading()) {
                             <div
                                 class="flex items-center space-x-2 py-2 text-sm opacity-60"
@@ -209,6 +207,7 @@ export interface SignagePluginModalData {
                 <div class="hidden">
                     <signage-plugin-embed
                         [plugin]="embed_plugin()"
+                        (detailsChange)="onPluginLoaded($event)"
                         (schemaChange)="onSchemaLoaded($event)"
                         (plugin_error)="onPluginError($event)"
                     />
@@ -223,7 +222,6 @@ export interface SignagePluginModalData {
         MatFormFieldModule,
         MatInputModule,
         MatProgressBarModule,
-        MatSelectModule,
         SchemaFormComponent,
         SettingsToggleComponent,
         SignagePluginEmbedComponent,
@@ -252,25 +250,25 @@ export class SignagePluginModalComponent
     public readonly schema = signal<Record<string, unknown>>(null);
     public readonly schema_loading = signal(false);
     public readonly schema_error = signal(false);
-
-    public readonly playback_types = [
-        {
-            id: 'static',
-            name: i18n('ADMIN.SIGNAGE_PLUGINS_PLAYBACK_STATIC'),
-        },
-        {
-            id: 'interactive',
-            name: i18n('ADMIN.SIGNAGE_PLUGINS_PLAYBACK_INTERACTIVE'),
-        },
-        {
-            id: 'playsthrough',
-            name: i18n('ADMIN.SIGNAGE_PLUGINS_PLAYBACK_PLAYSTHROUGH'),
-        },
-    ];
+    public readonly playback_type = signal('static');
+    public readonly playback_type_name = computed(() => {
+        const playback_type = this.playback_type();
+        switch (playback_type) {
+            case 'interactive':
+                return i18n('ADMIN.SIGNAGE_PLUGINS_PLAYBACK_INTERACTIVE');
+            case 'playsthrough':
+                return i18n('ADMIN.SIGNAGE_PLUGINS_PLAYBACK_PLAYSTHROUGH');
+            default:
+                return i18n('ADMIN.SIGNAGE_PLUGINS_PLAYBACK_STATIC');
+        }
+    });
 
     public ngOnInit(): void {
         this.edit = !!this._data.item?.id;
         this.form = generateSignagePluginFormFields(this._data.item);
+        this.playback_type.set(
+            this.form.controls.playback_type.value || 'static',
+        );
 
         // If editing and we already have a URI, load the plugin to get schema
         if (this._data.item?.uri) {
@@ -291,6 +289,11 @@ export class SignagePluginModalComponent
                             this.schema.set(null);
                             this.schema_loading.set(false);
                             this.schema_error.set(false);
+                            this.playback_type.set('static');
+                            this.form.patchValue(
+                                { playback_type: 'static' },
+                                { emitEvent: false },
+                            );
                         }
                     },
                     800,
@@ -312,6 +315,13 @@ export class SignagePluginModalComponent
         } else {
             this.schema.set(null);
         }
+    }
+
+    public onPluginLoaded(details: PluginLoadedPayload): void {
+        const playback_type = this._resolvePlaybackType(details);
+        if (!playback_type) return;
+        this.playback_type.set(playback_type);
+        this.form.patchValue({ playback_type }, { emitEvent: false });
     }
 
     public onPluginError(_error: PluginErrorPayload): void {
@@ -348,7 +358,10 @@ export class SignagePluginModalComponent
                     metadata: { item: result },
                 });
                 notifySuccess(i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_SUCCESS'));
-                this._dialog_ref.close();
+                this._dialog_ref.close({
+                    reason: 'done',
+                    metadata: { item: result },
+                });
             },
             error: async (err) => {
                 this.loading = null;
@@ -380,5 +393,13 @@ export class SignagePluginModalComponent
             },
             10000,
         );
+    }
+
+    private _resolvePlaybackType(details: PluginLoadedPayload) {
+        const capabilities = details?.capabilities;
+        if (!capabilities) return null;
+        if (capabilities.static_media) return 'static';
+        if (capabilities.can_finish) return 'playsthrough';
+        return 'interactive';
     }
 }
