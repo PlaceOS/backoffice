@@ -248,7 +248,7 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
             );
         }
         const item = this._data.item as unknown as PlaceResource;
-        this.loading = i18n(`${this._name}.SAVING`);
+        this.loading = i18n(`${this._name}_SAVING`);
         this._dialog_ref.disableClose = true;
         const item_json = item.toJSON ? item.toJSON() : item;
         const form_item = (
@@ -256,7 +256,7 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
                 ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
                 : { ...item_json, ...this.form.value }
         ) as Identity;
-        const save_item = { ...form_item };
+        const save_item = { ...form_item, uid: this.client_id() };
         delete (save_item as any).client_id;
         (save_item.id
             ? updateApplication(
@@ -268,14 +268,14 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
             (_item) => {
                 this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+                notifySuccess(i18n(`${this._name}_SAVE_SUCCESS`));
                 this._dialog_ref.close();
             },
             async (err) => {
                 this.loading = null;
                 this._dialog_ref.disableClose = false;
                 notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
+                    i18n(`${this._name}_SAVE_ERROR`, {
                         error: JSON.stringify(
                             (await err.text?.()) || err.message || err,
                         ),

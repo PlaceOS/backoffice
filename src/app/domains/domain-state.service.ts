@@ -205,8 +205,10 @@ export class DomainStateService {
         });
         const instance = ref.componentInstance as unknown as FormModalComponent;
         const details = await Promise.race([
-            instance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
-            ref.afterClosed().toPromise(),
+            lastValueFrom(
+                instance.event.pipe(first((_) => _.reason === 'done')),
+            ),
+            lastValueFrom(ref.afterClosed()),
         ]);
         if (!details) return;
         this._changed.next(new Date().valueOf());
