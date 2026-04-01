@@ -140,12 +140,18 @@ export class DriverStateService {
         );
         if (!details || !details.reason) return details.close();
         details.loading('Recompiling driver... This may take a while.');
-        const success = await recompileDriver(item.id)
+        await recompileDriver(item.id)
             .toPromise()
-            .catch(() => false);
-        if (success === false) {
-            notifyError('Failed to recompile driver.');
-        }
+            .catch(async (e) => {
+                console.log('Error:', e);
+                const content = e instanceof Response ? await e.text() : e;
+                notifyError('Failed to recompile driver.', 'View Error', () =>
+                    this._dialog.open<ViewResponseModalComponent>(
+                        ViewResponseModalComponent,
+                        { data: { content } },
+                    ),
+                );
+            });
         details.close();
     }
 
@@ -165,7 +171,9 @@ export class DriverStateService {
             .toPromise()
             .catch(() => false);
         if (success === false) {
-            notifyError('Failed to reload driver.');
+            notifyError(
+                'Failed to reload driver. Driver may not be compiled. Try recompiling first.',
+            );
         } else {
             notifySuccess('Successfully reloaded driver.');
         }

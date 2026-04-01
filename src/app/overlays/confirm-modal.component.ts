@@ -94,7 +94,7 @@ export async function openConfirmModal(
         } @else {
             <main loading>
                 <div
-                    class="flex h-48 w-full flex-col items-center justify-center space-y-4"
+                    class="flex h-48 w-full flex-col items-center justify-center space-y-4 p-12"
                 >
                     <mat-spinner diameter="32"></mat-spinner>
                     <p>{{ loading() }}</p>
