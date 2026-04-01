@@ -461,6 +461,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     public readonly is_editing = signal(false);
     /** Emits when URI, username, or password fields lose focus */
     public readonly credentials_blur = signal(0);
+    private _cred_blur = toObservable(this.credentials_blur);
 
     public readonly is_interface = computed(
         () => this.form?.value?.repo_type === PlaceRepositoryType.Interface,
@@ -576,7 +577,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         // Trigger branch fetch on blur or valid URL after 1s
         const credentials_trigger$ = merge(
             timer(300),
-            toObservable(this.credentials_blur).pipe(skip(1)),
+            this._cred_blur.pipe(skip(1)),
             uri_valid$,
         );
         this.branch_list = credentials_trigger$.pipe(
@@ -634,7 +635,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         );
         this.commit_list = merge(
             timer(300),
-            toObservable(this.credentials_blur).pipe(skip(1)),
+            this._cred_blur.pipe(skip(1)),
             uri_valid$,
             this.form.get('branch').valueChanges,
         ).pipe(
