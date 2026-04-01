@@ -1,0 +1,107 @@
+import {
+  MetadataDisplayComponent
+} from "./chunk-TYS4QOHH.js";
+import "./chunk-I7DZVPA4.js";
+import "./chunk-TZBTVV4K.js";
+import "./chunk-TGQTXF2F.js";
+import {
+  ActiveItemService
+} from "./chunk-HEK3ZJHO.js";
+import "./chunk-J533RESC.js";
+import "./chunk-746AOIKH.js";
+import "./chunk-GDO2G3FK.js";
+import "./chunk-H3YHW52A.js";
+import "./chunk-Q3URFPAM.js";
+import "./chunk-L6DCBZLR.js";
+import "./chunk-YC3GB3RC.js";
+import "./chunk-C4UNQ5W7.js";
+import "./chunk-2NBDLQNY.js";
+import "./chunk-XGNXBQYI.js";
+import "./chunk-E2L3SP5U.js";
+import "./chunk-IV4O2CJ5.js";
+import "./chunk-3JUEKOAR.js";
+import "./chunk-OVM667NW.js";
+import "./chunk-YJMQ5OMK.js";
+import "./chunk-W3ZPEK3R.js";
+import "./chunk-K33FZYPE.js";
+import "./chunk-UQKRVE72.js";
+import "./chunk-HRGU4UAV.js";
+import "./chunk-XA66LDVX.js";
+import "./chunk-RBWTFXTK.js";
+import "./chunk-ULBWJZXU.js";
+import "./chunk-TQ4AGRWP.js";
+import "./chunk-LYW23EPM.js";
+import "./chunk-4CBXDUSX.js";
+import "./chunk-W3GXKXZC.js";
+import "./chunk-WIRQ5XQH.js";
+import "./chunk-6ACE75MC.js";
+import "./chunk-4LE2PDCO.js";
+import "./chunk-VTQCDJGL.js";
+import "./chunk-3SG4KASH.js";
+import "./chunk-E6OTVR3E.js";
+import "./chunk-IQ5P3T5K.js";
+import "./chunk-IOTEGI4H.js";
+import "./chunk-BXUDL7Q7.js";
+import "./chunk-S7TGCPIQ.js";
+import "./chunk-K6WIXX3Q.js";
+import "./chunk-ECV3GDTS.js";
+import {
+  Component,
+  inject,
+  setClassMetadata,
+  ɵsetClassDebugInfo,
+  ɵɵconditional,
+  ɵɵconditionalCreate,
+  ɵɵdefineComponent,
+  ɵɵelement,
+  ɵɵnextContext,
+  ɵɵproperty
+} from "./chunk-SMUOHSRV.js";
+import "./chunk-U265RLGW.js";
+import "./chunk-VYXW4D3Z.js";
+
+// src/app/users/user-metadata.component.ts
+function UserMetadataComponent_Conditional_0_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "metadata-display", 0);
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext();
+    \u0275\u0275property("item", ctx_r0.item);
+  }
+}
+var UserMetadataComponent = class _UserMetadataComponent {
+  _service = inject(ActiveItemService);
+  get item() {
+    const active_item = this._service.active_item;
+    return active_item || { id: "" };
+  }
+  static \u0275fac = function UserMetadataComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _UserMetadataComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _UserMetadataComponent, selectors: [["user-metadata"]], decls: 1, vars: 1, consts: [[3, "item"]], template: function UserMetadataComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275conditionalCreate(0, UserMetadataComponent_Conditional_0_Template, 1, 1, "metadata-display", 0);
+    }
+    if (rf & 2) {
+      \u0275\u0275conditional(ctx.item ? 0 : -1);
+    }
+  }, dependencies: [MetadataDisplayComponent], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(UserMetadataComponent, [{
+    type: Component,
+    args: [{ selector: "user-metadata", template: `
+        @if (item) {
+            <metadata-display [item]="item" />
+        }
+    `, imports: [MetadataDisplayComponent] }]
+  }], null, null);
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(UserMetadataComponent, { className: "UserMetadataComponent", filePath: "src/app/users/user-metadata.component.ts", lineNumber: 16 });
+})();
+export {
+  UserMetadataComponent
+};
+//# sourceMappingURL=chunk-25XM47FA.js.map
