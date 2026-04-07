@@ -79,10 +79,8 @@ import { generateDriverFormFields } from './drivers.utilities';
                     [placeholder]="'REPOS.SEARCH' | translate"
                     [options]="repo_list | async"
                     [loading]="loading_type().includes('repository')"
-                    [ngModel]="repo()"
-                    (ngModelChange)="
-                        repo.set($event); driver.set(null); commit.set(null)
-                    "
+                    [(ngModel)]="repo"
+                    (ngModelChange)="driver.set(null); commit.set(null)"
                 />
                 @if (repo()) {
                     <label for="driver">{{ 'DRIVERS.BASE' | translate }}</label>
@@ -90,8 +88,8 @@ import { generateDriverFormFields } from './drivers.utilities';
                         [placeholder]="'DRIVERS.SEARCH' | translate"
                         [options]="driver_list | async"
                         [loading]="loading_type().includes('drivers')"
-                        [ngModel]="driver()"
-                        (ngModelChange)="driver.set($event); commit.set(null)"
+                        [(ngModel)]="driver"
+                        (ngModelChange)="commit.set(null)"
                     />
                 }
             }

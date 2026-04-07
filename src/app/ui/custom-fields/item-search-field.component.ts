@@ -65,7 +65,7 @@ interface SearchItem {
                     "
                     [matAutocomplete]="auto"
                     [matAutocompleteDisabled]="display_list()"
-                    (focus)="search_str.set(' ')"
+                    (focus)="search_str.set('')"
                     (blur)="resetSearchString()"
                 />
                 <div class="prefix" matPrefix>
@@ -244,7 +244,8 @@ export class ItemSearchFieldComponent<T extends SearchItem>
             toObservable(this._changed),
         ]).pipe(
             debounceTime(400),
-            switchMap(([query]) => {
+            switchMap(([q]) => {
+                const query = q.trim();
                 this.loading.set(true);
                 const options = this.options();
                 const min_length = this.minLength();
@@ -256,11 +257,10 @@ export class ItemSearchFieldComponent<T extends SearchItem>
             }),
             catchError(() => of([])),
             map((list: T[]) => {
+                const query = this.search_str().toLowerCase().trim();
                 this.loading.set(false);
                 return list.filter((item: T) =>
-                    this.exclude()
-                        ? !this.exclude()(item, this.search_str().toLowerCase())
-                        : true,
+                    this.exclude() ? !this.exclude()(item, query) : true,
                 );
             }),
         ),
@@ -313,7 +313,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
                     this.search_str.set('');
                 } else if (this.active_item()) {
                     this.search_str.set(
-                        this.active_item().name || this.search_str(),
+                        (this.active_item().name || this.search_str()).trim(),
                     );
                 }
                 if (this._input_el()?.nativeElement)
