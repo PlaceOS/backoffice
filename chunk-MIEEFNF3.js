@@ -1,0 +1,115 @@
+import {
+  MetadataDisplayComponent
+} from "./chunk-LWONEYW6.js";
+import "./chunk-EGA3DIXW.js";
+import "./chunk-DTDVAUDI.js";
+import "./chunk-AQ5JKP7M.js";
+import {
+  ActiveItemService
+} from "./chunk-XLTJ4T7V.js";
+import "./chunk-J533RESC.js";
+import "./chunk-XOD6WJGY.js";
+import "./chunk-AIHAF754.js";
+import "./chunk-ND6UXKI3.js";
+import "./chunk-OWJOYUIE.js";
+import "./chunk-BFHNQYWR.js";
+import "./chunk-RKP6PC35.js";
+import "./chunk-IF34OMLM.js";
+import "./chunk-JIQ6FGOU.js";
+import "./chunk-WHWJVSMC.js";
+import "./chunk-E3PNC77F.js";
+import "./chunk-YBTJMEJ7.js";
+import "./chunk-44XOPICB.js";
+import "./chunk-4NCGIIWF.js";
+import "./chunk-TOOU46W3.js";
+import "./chunk-V3YN7DYB.js";
+import "./chunk-DCE2RQNA.js";
+import "./chunk-3JWNFX4R.js";
+import "./chunk-VJXF7KZU.js";
+import "./chunk-7C6AG3JT.js";
+import "./chunk-LT47WTVV.js";
+import "./chunk-RCORFESO.js";
+import "./chunk-DOZGI6ZZ.js";
+import "./chunk-LYW23EPM.js";
+import "./chunk-4CBXDUSX.js";
+import "./chunk-W3GXKXZC.js";
+import "./chunk-HSU73SXZ.js";
+import "./chunk-NYRBL7ZZ.js";
+import "./chunk-WOXAUFUX.js";
+import "./chunk-57N53QWS.js";
+import "./chunk-NCFVLWM3.js";
+import "./chunk-BYMT2HZ7.js";
+import "./chunk-IQ5P3T5K.js";
+import "./chunk-5FUDJCQW.js";
+import "./chunk-VR6A7KSI.js";
+import "./chunk-WUSBQZCM.js";
+import "./chunk-CAQMKDI5.js";
+import "./chunk-2XVJ4BI6.js";
+import {
+  Component,
+  inject,
+  setClassMetadata,
+  ɵsetClassDebugInfo,
+  ɵɵadvance,
+  ɵɵconditional,
+  ɵɵconditionalCreate,
+  ɵɵdefineComponent,
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵnextContext,
+  ɵɵproperty
+} from "./chunk-BCGHR3SD.js";
+import "./chunk-XPRAFMHR.js";
+import "./chunk-VYXW4D3Z.js";
+
+// src/app/zones/zone-metadata.component.ts
+function ZoneMetadataComponent_Conditional_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "metadata-display", 1);
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext();
+    \u0275\u0275property("item", ctx_r0.item);
+  }
+}
+var ZoneMetadataComponent = class _ZoneMetadataComponent {
+  _service = inject(ActiveItemService);
+  get item() {
+    const active_item = this._service.active_item;
+    return active_item || { id: "" };
+  }
+  static \u0275fac = function ZoneMetadataComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _ZoneMetadataComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ZoneMetadataComponent, selectors: [["zone-metadata"]], decls: 2, vars: 1, consts: [[1, "p-4"], [3, "item"]], template: function ZoneMetadataComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "div", 0);
+      \u0275\u0275conditionalCreate(1, ZoneMetadataComponent_Conditional_1_Template, 1, 1, "metadata-display", 1);
+      \u0275\u0275elementEnd();
+    }
+    if (rf & 2) {
+      \u0275\u0275advance();
+      \u0275\u0275conditional(ctx.item ? 1 : -1);
+    }
+  }, dependencies: [MetadataDisplayComponent], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ZoneMetadataComponent, [{
+    type: Component,
+    args: [{ selector: "zone-metadata", template: `
+        <div class="p-4">
+            @if (item) {
+                <metadata-display [item]="item" />
+            }
+        </div>
+    `, imports: [MetadataDisplayComponent] }]
+  }], null, null);
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ZoneMetadataComponent, { className: "ZoneMetadataComponent", filePath: "src/app/zones/zone-metadata.component.ts", lineNumber: 18 });
+})();
+export {
+  ZoneMetadataComponent
+};
+//# sourceMappingURL=chunk-MIEEFNF3.js.map
