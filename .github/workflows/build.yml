@@ -18,11 +18,11 @@ jobs:
             deploy_branch: ${{ steps.build_ext.outputs.deploy_branch }}
             is_production: ${{ steps.build_ext.outputs.is_production }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Cache node modules
               id: cache
-              uses: actions/cache@v4
+              uses: actions/cache@v5
               with:
                   path: node_modules
                   key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
@@ -30,17 +30,17 @@ jobs:
                       ${{ runner.os }}-build-
 
             - name: Setup Node.js environment
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
-                  node-version: '20'
+                  node-version: '24'
 
-            - name: NPM install
+            - name: Install dependencies
               if: steps.cache.outputs.cache-hit != 'true'
-              run: npm install --force
+              run: npm ci
 
             - name: Cache nx build cache
               id: cache-nx
-              uses: actions/cache@v4
+              uses: actions/cache@v5
               with:
                   path: node_modules/.cache/nx
                   key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}
@@ -99,7 +99,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 3
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Download build artifact
               uses: actions/download-artifact@v4
@@ -131,7 +131,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 3
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Download build artifact
               uses: actions/download-artifact@v4
