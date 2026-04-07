@@ -5,7 +5,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { listZoneTags, PlaceZone } from '@placeos/ts-client';
-import { shareReplay } from 'rxjs';
+import { catchError, of, shareReplay } from 'rxjs';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
@@ -192,7 +192,12 @@ export class ZonesComponent extends AsyncHandler {
 
     public readonly newItem = () => this._item.create();
     public readonly bulkAdd = () => this._item.bulkAdd();
-    public readonly zone_tags = toSignal(listZoneTags().pipe(shareReplay(1)), {
-        initialValue: [],
-    });
+    public readonly zone_tags = toSignal(
+        listZoneTags()
+            .pipe(catchError(() => of([])))
+            .pipe(shareReplay(1)),
+        {
+            initialValue: [],
+        },
+    );
 }
