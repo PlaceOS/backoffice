@@ -152,6 +152,7 @@ export class DriverStateService {
                     ),
                 );
             });
+        notifySuccess('Successfully recompiled the driver.');
         details.close();
     }
 
