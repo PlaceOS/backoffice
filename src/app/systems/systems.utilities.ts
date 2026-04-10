@@ -37,7 +37,26 @@ function validateURLArray(control: AbstractControl) {
         : { url: 'invalid' };
 }
 
+function normaliseCameraSnapshotUrls(system?: PlaceSystem): string[] {
+    const snapshot_urls = Array.isArray(system?.camera_snapshot_urls)
+        ? system.camera_snapshot_urls.filter(Boolean)
+        : [];
+    const legacy_snapshot_url = system?.camera_snapshot_url;
+    if (!legacy_snapshot_url) return snapshot_urls;
+    if (!snapshot_urls.length) return [legacy_snapshot_url];
+
+    const start_of_today = Math.floor(
+        new Date(new Date().setHours(0, 0, 0, 0)).getTime() / 1000,
+    );
+    const should_merge_legacy_url =
+        !system?.updated_at || system.updated_at < start_of_today;
+    return should_merge_legacy_url
+        ? Array.from(new Set([...snapshot_urls, legacy_snapshot_url]))
+        : snapshot_urls;
+}
+
 export function generateSystemsFormFields(system?: PlaceSystem) {
+    system ||= {} as PlaceSystem;
     const fields = {
         name: new FormControl(system.name || '', [Validators.required]),
         display_name: new FormControl(system.display_name || ''),
@@ -50,9 +69,7 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
         camera_url: new FormControl(system.camera_url || '', [validateURL]),
         camera_snapshot_url: new FormControl(null),
         camera_snapshot_urls: new FormControl(
-            system.camera_snapshot_urls
-                ? system.camera_snapshot_urls
-                : [system.camera_snapshot_url].filter(Boolean),
+            normaliseCameraSnapshotUrls(system),
             [validateURLArray],
         ),
         room_booking_url: new FormControl(system.room_booking_url || '', [

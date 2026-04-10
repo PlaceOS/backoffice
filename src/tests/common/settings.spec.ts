@@ -74,7 +74,7 @@ describe('DEFAULT_SETTINGS', () => {
         });
 
         it('should have mock property', () => {
-            expect(DEFAULT_SETTINGS).toHaveProperty('BACKOFFICE.mock');
+            expect(DEFAULT_SETTINGS).toHaveProperty('mock');
             expect(typeof DEFAULT_SETTINGS.mock).toBe('boolean');
         });
 

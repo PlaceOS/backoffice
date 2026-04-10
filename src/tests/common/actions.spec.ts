@@ -1,6 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { of } from 'rxjs';
 
+// Mock form components to avoid loading heavy Angular dependencies
+vi.mock('../../app/domains/domain-form.component', () => ({
+    DomainFormComponent: class {},
+}));
+vi.mock('../../app/drivers/driver-form.component', () => ({
+    DriverFormComponent: class {},
+}));
+vi.mock('../../app/modules/module-form.component', () => ({
+    ModuleFormComponent: class {},
+}));
+vi.mock('../../app/repositories/repository-form.component', () => ({
+    RepositoryFormComponent: class {},
+}));
+vi.mock('../../app/systems/system-form.component', () => ({
+    SystemFormComponent: class {},
+}));
+vi.mock('../../app/triggers/trigger-form.component', () => ({
+    TriggerFormComponent: class {},
+}));
+vi.mock('../../app/users/user-form.component', () => ({
+    UserFormComponent: class {},
+}));
+vi.mock('../../app/zones/zone-form.component', () => ({
+    ZoneFormComponent: class {},
+}));
+
 // Mock @placeos/ts-client
 vi.mock('@placeos/ts-client', () => ({
     PlaceDomain: class {},
