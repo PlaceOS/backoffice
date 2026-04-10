@@ -20,35 +20,37 @@ jobs:
         steps:
             - uses: actions/checkout@v6
 
-            - name: Cache node modules
+            - name: Cache Bun dependencies
               id: cache
               uses: actions/cache@v5
               with:
-                  path: node_modules
-                  key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+                  path: |
+                      node_modules
+                      ~/.bun/install/cache
+                  key: ${{ runner.os }}-build-${{ hashFiles('**/bun.lock') }}
                   restore-keys: |
                       ${{ runner.os }}-build-
 
-            - name: Setup Node.js environment
-              uses: actions/setup-node@v6
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
               with:
-                  node-version: '24'
+                  bun-version: '1.3.11'
 
             - name: Install dependencies
               if: steps.cache.outputs.cache-hit != 'true'
-              run: npm ci
+              run: bun install --frozen-lockfile
 
             - name: Cache nx build cache
               id: cache-nx
               uses: actions/cache@v5
               with:
                   path: node_modules/.cache/nx
-                  key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}
+                  key: ${{ runner.os }}-nx-${{ hashFiles('**/bun.lock') }}
                   restore-keys: |
                       ${{ runner.os }}-nx-
 
             - name: Setup version
-              run: npm run postinstall
+              run: bun run postinstall
 
             - name: Extract branch name
               id: branch_name
@@ -83,7 +85,7 @@ jobs:
                   data: '{ "chat_url": "${{ secrets.CHAT_URL }}", "name": "${{ github.repository }}", "commit": "${{ github.sha }}", "pipeline_name": "backoffice", "branch": "${{ github.ref }}", "status": "processing", "url": "https://github.com/${{ github.repository }}/runs/${{ github.run_id }}" }'
 
             - name: Build application
-              run: npx nx build backoffice --verbose --configuration=${{ steps.build_ext.outputs.configuration }}
+              run: bun run build -- --verbose --configuration=${{ steps.build_ext.outputs.configuration }}
 
             - name: Upload build artifact
               uses: actions/upload-artifact@v4

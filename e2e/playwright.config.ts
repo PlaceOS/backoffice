@@ -14,13 +14,13 @@ import { defineConfig, devices } from '@playwright/test';
  *
  * Usage:
  *   # Run tests with mock data (default)
- *   npx nx e2e backoffice
+ *   bun run e2e
  *
  *   # Run tests against live environment
- *   USE_MOCK=false API_DOMAIN=placeos-dev.aca.im npx nx e2e backoffice
+ *   USE_MOCK=false API_DOMAIN=placeos-dev.aca.im bunx nx e2e backoffice
  *
  *   # Run specific test file
- *   npx nx e2e backoffice --grep "Systems"
+ *   bunx nx e2e backoffice --grep "Systems"
  */
 
 // Load environment variables from .env file if present
@@ -71,7 +71,7 @@ export default defineConfig({
 
     /* Run your local dev server before starting the tests */
     webServer: {
-        command: 'npx nx run backoffice:serve',
+        command: 'bunx nx run backoffice:serve',
         url: 'http://localhost:4200',
         reuseExistingServer: true,
         cwd: workspaceRoot,

@@ -17,13 +17,13 @@ An Angular 20 admin UI for managing PlaceOS building automation systems. Built w
 
 ## Setup
 
-1. Install [Node.js](https://nodejs.org/en/download/current/)
-2. Run `npm install` in the root folder
+1. Install [Bun](https://bun.sh/)
+2. Run `bun install` in the root folder
 
 ## Development
 
 ```bash
-npm start                    # Dev server at localhost:4200
+bun run start               # Dev server at localhost:4200
 ```
 
 The dev server proxies requests to the configured PlaceOS backend (see `config/proxy.conf.js`).
@@ -31,7 +31,7 @@ The dev server proxies requests to the configured PlaceOS backend (see `config/p
 ## Build
 
 ```bash
-npm run build                # Production build
+bun run build               # Production build
 ```
 
 Production builds output to `dist/backoffice/browser`.
@@ -39,14 +39,16 @@ Production builds output to `dist/backoffice/browser`.
 ## Testing
 
 ```bash
-npm test                     # Unit tests (Vitest)
-npx nx e2e backoffice        # E2E tests (Playwright)
+bun run test                # Unit tests (Vitest)
+bun run test:ci             # Unit tests in CI mode
+bunx playwright install --with-deps
+bun run e2e                 # E2E tests (Playwright)
 ```
 
 ## Linting
 
 ```bash
-npx nx lint backoffice       # ESLint
+bun run lint                # ESLint
 ```
 
 ## Project Structure

@@ -148,7 +148,7 @@ ${commits.join('\n')}`
     await exec(
         `echo "${releaseNotes}"\n$(cat ./CHANGELOG.md) > ./CHANGELOG.md`
     );
-    await exec(`npm --no-git-tag-version version ${nextVersion}`);
+    await exec(`bun pm pkg set version=${nextVersion}`);
 
     await exec(`git config user.name ${gitCommitterName}`);
     await exec(`git config user.email ${gitCommitterEmail}`);

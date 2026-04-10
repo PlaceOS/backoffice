@@ -10,16 +10,17 @@ PlaceOS Backoffice is an Angular 20 admin UI for managing PlaceOS building autom
 
 ```bash
 # Development
-npm start                              # Dev server at localhost:4200 with proxy to placeos-dev.aca.im
-npm run build                          # Production build
+bun run start                          # Dev server at localhost:4200 with proxy to placeos-dev.aca.im
+bun run build                          # Production build
 
 # Testing
-npm test                               # Unit tests (Vitest)
-npx nx test backoffice --runInBand     # Tests sequentially (CI mode)
-npx nx e2e backoffice                  # Playwright E2E tests
+bun run test                           # Unit tests (Vitest)
+bun run test:ci                        # Tests sequentially (CI mode)
+bunx playwright install --with-deps
+bun run e2e                            # Playwright E2E tests
 
 # Linting
-npx nx lint backoffice                 # ESLint
+bun run lint                           # ESLint
 ```
 
 ## Tech Stack

@@ -2,11 +2,15 @@
     "name": "@backoffice/source",
     "version": "0.0.0",
     "license": "MIT",
+    "packageManager": "bun@1.3.11",
     "scripts": {
-        "postinstall": "node ./config/version.js",
+        "postinstall": "bun ./config/version.js",
         "start": "nx serve",
         "build": "nx build",
-        "test": "nx test"
+        "test": "nx test",
+        "test:ci": "nx test backoffice --runInBand",
+        "lint": "nx lint backoffice",
+        "e2e": "nx e2e backoffice"
     },
     "private": true,
     "dependencies": {

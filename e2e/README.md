@@ -21,9 +21,8 @@ Tests cover 5 main feature areas: Systems, Users, Zones, Domains, and Admin.
 
 ## Prerequisites
 
-- Node.js 18+
-- npm or yarn
-- Playwright browsers installed (`npx playwright install`)
+- Bun 1.3+
+- Playwright browsers installed (`bunx playwright install`)
 
 ## Running Tests
 
@@ -31,31 +30,31 @@ Tests cover 5 main feature areas: Systems, Users, Zones, Domains, and Admin.
 
 ```bash
 # Run all E2E tests with mock data
-npx nx e2e backoffice
+bun run e2e
 # or
-npx nx e2e e2e
+bunx nx e2e e2e
 
 # Run tests in specific browser
-npx nx e2e backoffice --project=chromium
+bunx nx e2e backoffice --project=chromium
 
 # Run specific test file
-npx nx e2e backoffice --grep "Systems"
+bunx nx e2e backoffice --grep "Systems"
 
 # Run tests in headed mode (visible browser)
-npx nx e2e backoffice --headed
+bunx nx e2e backoffice --headed
 
 # Run tests with UI mode
-npx nx e2e backoffice --ui
+bunx nx e2e backoffice --ui
 
 # Run with debug output
-DEBUG=pw:api npx nx e2e backoffice
+DEBUG=pw:api bunx nx e2e backoffice
 ```
 
 ### Running Against Live Environment
 
 ```bash
 # Set environment variables for live testing
-USE_MOCK=false API_DOMAIN=placeos-dev.aca.im npx nx e2e backoffice
+USE_MOCK=false API_DOMAIN=placeos-dev.aca.im bunx nx e2e backoffice
 
 # Or create an .env file in the e2e directory
 cp .env.example .env
