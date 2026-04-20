@@ -3,12 +3,14 @@ import { Router, RouterModule } from '@angular/router';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { authority } from '@placeos/ts-client';
+import { authority, queryApplications } from '@placeos/ts-client';
+import { lastValueFrom } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
 import { ApplicationIcon } from '../common/types';
 import { BackofficeUsersService } from '../users/users.service';
+import { ApplicationPickerTooltipComponent } from './application-picker-tooltip.component';
 import {
     CustomTooltipComponent,
     CustomTooltipData,
@@ -121,6 +123,32 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     </button>
                 </div>
             </div>
+            @if (show_application_picker()) {
+                <button
+                    btn
+                    link
+                    matRipple
+                    customTooltip
+                    class="clear hover:bg-base-100 mx-auto mb-2 w-[calc(100%-1rem)] text-left"
+                    [content]="application_picker"
+                    [matTooltip]="compact() ? 'Applications' : ''"
+                    matTooltipPosition="right"
+                    yPosition="bottom"
+                >
+                    <div
+                        class="flex w-full items-center space-x-2"
+                        [class.sm:justify-center]="compact()"
+                    >
+                        <icon
+                            class="text-xl"
+                            [class.sm:text-2xl]="compact()"
+                            [class.sm:mx-auto]="compact()"
+                            >apps</icon
+                        >
+                        <p [class.sm:hidden]="compact()">Applications</p>
+                    </div>
+                </button>
+            }
             <debug-info [compact]="compact()" />
             <button
                 matRipple
@@ -204,6 +232,8 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
 
     public readonly open = model(true);
     public readonly compact = signal(false);
+    public readonly show_application_picker = signal(false);
+    public readonly application_picker = ApplicationPickerTooltipComponent;
     public readonly user_controls = UserMenuTooltipComponent;
     public readonly links = [
         { name: 'COMMON.SYSTEMS', route: '/systems', icon: 'meeting_room' },
@@ -275,7 +305,7 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         localStorage.setItem('BACKOFFICE.SIDEBAR_COMPACT', `${this.compact()}`);
     }
 
-    public ngOnInit() {
+    public async ngOnInit() {
         this.subscription(
             'up',
             this._hotkey.listen(['Control', 'Shift', 'ArrowUp'], () =>
@@ -291,6 +321,19 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         this.compact.set(
             localStorage.getItem('BACKOFFICE.SIDEBAR_COMPACT') === 'true',
         );
+        const active_authority = authority();
+        if (!active_authority?.id) return;
+        const response = await lastValueFrom(
+            queryApplications({ authority_id: active_authority.id } as Record<
+                string,
+                unknown
+            >),
+        ).catch(() => null);
+        this.show_application_picker.set(
+            !!(response?.data || []).find((app) =>
+                this.isSupportedRedirectUri(app?.redirect_uri),
+            ),
+        );
     }
 
     private changeSelected(_offset = 1) {
@@ -301,5 +344,15 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         // if (this.menu_items[new_index]) {
         //     this._router.navigate([this.menu_items[new_index].route]);
         // }
+    }
+
+    private isSupportedRedirectUri(uri: string) {
+        if (!uri) return false;
+        try {
+            const protocol = new URL(uri, location.origin).protocol;
+            return protocol === 'http:' || protocol === 'https:';
+        } catch {
+            return false;
+        }
     }
 }
