@@ -54,6 +54,7 @@
   --text-8xl--line-height: 1;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --leading-tight: 1.25;
   --leading-snug: 1.375;
   --radius-sm: 0.25rem;
@@ -514,6 +515,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .mt-2 {
   margin-top: calc(var(--spacing) * 2);
 }
+#placeos .mt-3 {
+  margin-top: calc(var(--spacing) * 3);
+}
 #placeos .mt-4 {
   margin-top: calc(var(--spacing) * 4);
 }
@@ -540,6 +544,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .mb-2 {
   margin-bottom: calc(var(--spacing) * 2);
+}
+#placeos .mb-3 {
+  margin-bottom: calc(var(--spacing) * 3);
 }
 #placeos .mb-4 {
   margin-bottom: calc(var(--spacing) * 4);
@@ -709,6 +716,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .min-h-16 {
   min-height: calc(var(--spacing) * 16);
 }
+#placeos .min-h-28 {
+  min-height: calc(var(--spacing) * 28);
+}
 #placeos .min-h-48 {
   min-height: calc(var(--spacing) * 48);
 }
@@ -774,6 +784,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .w-12 {
   width: calc(var(--spacing) * 12);
+}
+#placeos .w-14 {
+  width: calc(var(--spacing) * 14);
 }
 #placeos .w-16 {
   width: calc(var(--spacing) * 16);
@@ -1079,6 +1092,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .list-disc {
   list-style-type: disc;
 }
+#placeos .grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 #placeos .grid-cols-5 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
@@ -1108,6 +1124,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .justify-end {
   justify-content: flex-end;
+}
+#placeos .justify-start {
+  justify-content: flex-start;
 }
 #placeos .gap-2 {
   gap: calc(var(--spacing) * 2);
@@ -1346,6 +1365,14 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .bg-base-300\! {
   background-color: var(--base-300) !important;
 }
+#placeos .bg-base-300\/50 {
+  background-color: var(--base-300);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .bg-base-300\/50 {
+    background-color: color-mix(in oklab, var(--base-300) 50%, transparent);
+  }
+}
 #placeos .bg-base-content {
   background-color: var(--base-content);
 }
@@ -1477,6 +1504,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .py-4 {
   padding-block: calc(var(--spacing) * 4);
+}
+#placeos .py-6 {
+  padding-block: calc(var(--spacing) * 6);
 }
 #placeos .py-16 {
   padding-block: calc(var(--spacing) * 16);
@@ -1618,6 +1648,10 @@ input:where([type=button], [type=reset], [type=submit]),
   --tw-font-weight: var(--font-weight-normal);
   font-weight: var(--font-weight-normal);
 }
+#placeos .font-semibold {
+  --tw-font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-semibold);
+}
 #placeos .wrap-break-word {
   overflow-wrap: break-word;
 }
@@ -1742,6 +1776,15 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .shadow-sm {
   --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+  box-shadow:
+    var(--tw-inset-shadow),
+    var(--tw-inset-ring-shadow),
+    var(--tw-ring-offset-shadow),
+    var(--tw-ring-shadow),
+    var(--tw-shadow);
+}
+#placeos .shadow-xl {
+  --tw-shadow: 0 20px 25px -5px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 8px 10px -6px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
   box-shadow:
     var(--tw-inset-shadow),
     var(--tw-inset-ring-shadow),
