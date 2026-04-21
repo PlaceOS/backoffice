@@ -45,7 +45,7 @@ const PAGE_SIZE = 9;
                             <a
                                 matRipple
                                 class="hover:bg-base-200 flex min-h-28 flex-col items-center justify-start rounded-2xl px-2 py-3 text-center"
-                                [href]="app.redirect_uri"
+                                [href]="uri(app.redirect_uri)"
                                 (click)="close()"
                             >
                                 <div
@@ -162,6 +162,10 @@ export class ApplicationPickerTooltipComponent implements OnInit {
 
     public currentIcon(item: SidebarApplication) {
         return item.icon_urls[item.icon_index] || '';
+    }
+
+    public uri(uri: string) {
+        return uri.replace('oauth-resp.html', '');
     }
 
     public appInitial(name: string) {
