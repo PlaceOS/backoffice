@@ -2,6 +2,7 @@ import { Type } from '@angular/core';
 import {
     addDomain,
     addDriver,
+    addGroup,
     addModule,
     addRepository,
     addSystem,
@@ -10,6 +11,7 @@ import {
     addZone,
     PlaceDomain,
     PlaceDriver,
+    PlaceGroup,
     PlaceModule,
     PlaceRepository,
     PlaceSystem,
@@ -18,6 +20,7 @@ import {
     PlaceZone,
     queryDomains,
     queryDrivers,
+    queryGroups,
     queryModules,
     queryRepositories,
     QueryResponse,
@@ -27,6 +30,7 @@ import {
     queryZones,
     removeDomain,
     removeDriver,
+    removeGroup,
     removeModule,
     removeRepository,
     removeSystem,
@@ -35,6 +39,7 @@ import {
     removeZone,
     showDomain,
     showDriver,
+    showGroup,
     showModule,
     showRepository,
     showSystem,
@@ -43,6 +48,7 @@ import {
     showZone,
     updateDomain,
     updateDriver,
+    updateGroup,
     updateModule,
     updateRepository,
     updateSystem,
@@ -54,6 +60,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DomainFormComponent } from '../domains/domain-form.component';
 import { DriverFormComponent } from '../drivers/driver-form.component';
+import { GroupFormComponent } from '../groups/group-form.component';
 import { ModuleFormComponent } from '../modules/module-form.component';
 import { RepositoryFormComponent } from '../repositories/repository-form.component';
 import { SystemFormComponent } from '../systems/system-form.component';
@@ -118,6 +125,21 @@ const drivers: ItemActions<PlaceDriver> = {
             : null;
     },
     name: 'DRIVERS',
+};
+
+const groups: ItemActions<PlaceGroup> = {
+    query: (_) =>
+        queryGroups({
+            q: _,
+            fields: ['id', 'name', 'description', 'authority_id'].join(','),
+        }),
+    show: (_) => showGroup(_),
+    save: (item) => (item.id ? updateGroup(item.id, item) : addGroup(item)),
+    remove: (item) => removeGroup(item.id),
+    itemConstructor: PlaceGroup,
+    modalComponent: GroupFormComponent,
+    delete_message: `` ,
+    name: 'GROUPS',
 };
 
 const modules: ItemActions<PlaceModule> = {
@@ -233,6 +255,7 @@ const zones: ItemActions<PlaceZone> = {
 export const ACTIONS = {
     domains,
     drivers,
+    groups,
     modules,
     repositories,
     systems,

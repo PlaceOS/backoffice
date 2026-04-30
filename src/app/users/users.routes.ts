@@ -21,6 +21,13 @@ export const ROUTES: Routes = [
                     ),
             },
             {
+                path: 'groups',
+                loadComponent: () =>
+                    import('./user-groups.component').then(
+                        (m) => m.UserGroupsComponent,
+                    ),
+            },
+            {
                 path: 'history',
                 loadComponent: () =>
                     import('./user-history.component').then(

@@ -35,6 +35,7 @@ import { notifyError, notifySuccess } from './notifications';
 export type ResourceType =
     | 'domains'
     | 'drivers'
+    | 'groups'
     | 'modules'
     | 'repositories'
     | 'systems'

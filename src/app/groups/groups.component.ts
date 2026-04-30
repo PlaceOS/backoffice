@@ -1,10 +1,9 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatRippleModule } from '@angular/material/core';
+import { MatRipple } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { PlaceUser } from '@placeos/ts-client';
-import { extensionsForItem } from '../common/api';
+import { PlaceGroup } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -16,10 +15,10 @@ import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { UsersStateService } from './users-state.service';
+import { GroupStateService } from './group-state.service';
 
 @Component({
-    selector: 'new-users-view',
+    selector: 'new-groups-view',
     template: `
         <div
             class="divide-base-200 bg-base-100 absolute inset-0 flex items-center divide-y sm:divide-x sm:divide-y-0"
@@ -28,13 +27,13 @@ import { UsersStateService } from './users-state.service';
             <item-sidebar
                 class="hidden sm:block"
                 [route]="name"
-                [title]="'USERS.PLURAL' | translate"
+                [title]="'GROUPS.PLURAL' | translate"
             ></item-sidebar>
             <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
                 <item-selection
                     class="z-20 sm:hidden"
                     [route]="name"
-                    [title]="'USERS.PLURAL' | translate"
+                    [title]="'GROUPS.PLURAL' | translate"
                 >
                     <button
                         btn
@@ -51,8 +50,8 @@ import { UsersStateService } from './users-state.service';
                     } @else if (item()?.id) {
                         <item-details
                             [can_edit]="true"
-                            [item]="item()"
-                            [type]="'USERS.SINGULAR' | translate"
+                            [item]="display_item()"
+                            [type]="'GROUPS.SINGULAR' | translate"
                         ></item-details>
                         <item-tablist
                             [base]="name"
@@ -71,21 +70,12 @@ import { UsersStateService } from './users-state.service';
                 </div>
                 <button
                     class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm sm:-left-9"
-                    [matTooltip]="'USERS.NEW' | translate"
+                    [matTooltip]="'GROUPS.NEW' | translate"
                     matTooltipPosition="right"
                     matRipple
                     (click)="newItem()"
                 >
                     <icon class="text-3xl">add</icon>
-                </button>
-                <button
-                    class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm sm:-left-8"
-                    [matTooltip]="'USERS.BULK' | translate"
-                    matTooltipPosition="right"
-                    matRipple
-                    (click)="bulkAdd()"
-                >
-                    <icon class="text-2xl">playlist_add</icon>
                 </button>
             </div>
         </div>
@@ -93,60 +83,61 @@ import { UsersStateService } from './users-state.service';
     styles: [``],
     imports: [
         IconComponent,
-        MatRippleModule,
         MatTooltipModule,
+        MatRipple,
         TranslatePipe,
         RouterModule,
         ItemTablistComponent,
-        ItemSidebarComponent,
         ItemDetailsComponent,
         ItemDetailsSkeletonComponent,
         ItemSelectionComponent,
+        ItemSidebarComponent,
         SidebarMenuComponent,
     ],
 })
-export class UsersComponent extends AsyncHandler {
-    protected _service = inject(ActiveItemService);
-    private _state = inject(UsersStateService);
+export class GroupsComponent extends AsyncHandler {
+    private _service = inject(GroupStateService);
+    protected _item = inject(ActiveItemService);
 
-    public readonly name = 'users';
+    public readonly name = 'groups';
     public open_menu = false;
     public readonly scroll = signal(0);
-    public readonly loading = toSignal(this._service.loading, {
+    public readonly loading = toSignal(this._item.loading, {
         initialValue: false,
     });
     public readonly item = toSignal(this._service.item, {
-        initialValue: null as PlaceUser | null,
+        initialValue: null as PlaceGroup | null,
     });
-    public readonly counts = toSignal(this._state.counts, {
-        initialValue: {} as { metadata?: number; groups?: number },
+    public readonly display_item = computed(() => {
+        const item = this.item();
+        if (!item) return null;
+        return { ...item, toJSON: () => ({ ...item }) } as any;
     });
-
-    public readonly newItem = () => this._service.create();
-    public readonly bulkAdd = () => this._service.bulkAdd();
-    public readonly tab_list = computed(() =>
-        [
+    public readonly counts = toSignal(this._service.counts, {
+        initialValue: { users: 0, zones: 0 },
+    });
+    public readonly tab_list = computed(() => {
+        const count = this.counts();
+        return [
             {
                 id: 'about',
-                name: i18n('USERS.TAB_ABOUT'),
+                name: i18n('GROUPS.TAB_ABOUT'),
                 icon: { content: 'info' },
             },
             {
-                id: 'metadata',
-                name: i18n('USERS.TAB_METADATA'),
-                icon: { content: 'code_blocks' },
+                id: 'users',
+                name: i18n('GROUPS.TAB_USERS'),
+                count: count.users || 0,
+                icon: { content: 'group' },
             },
             {
-                id: 'groups',
-                name: i18n('USERS.TAB_GROUPS'),
-                icon: { content: 'groups' },
-                count: this.counts()?.groups || 0,
+                id: 'zones',
+                name: i18n('GROUPS.TAB_ZONES'),
+                count: count.zones || 0,
+                icon: { content: 'meeting_room' },
             },
-            {
-                id: 'history',
-                name: i18n('USERS.TAB_HISTORY'),
-                icon: { content: 'history' },
-            },
-        ].concat(extensionsForItem(this.item(), this.name)),
-    );
+        ];
+    });
+
+    public readonly newItem = () => this._item.create();
 }

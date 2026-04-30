@@ -17,40 +17,42 @@ interface UserLogEntry {
 @Component({
     selector: 'user-history',
     template: `
-        <simple-table
-            class="block min-w-5xl text-sm"
-            [data]="logs()"
-            [columns]="[
-                {
-                    key: 'start',
-                    name: 'USERS.FIELD_SESSION_START' | translate,
-                    content: date_template,
-                },
-                {
-                    key: 'end',
-                    name: 'USERS.FIELD_SESSION_END' | translate,
-                    content: date_template,
-                },
-                {
-                    key: 'systems',
-                    name: 'USERS.FIELD_SYSTEMS_ACCESSED' | translate,
-                    content: sys_template,
-                },
-            ]"
-            [sortable]="true"
-            [empty_message]="'USERS.LOGS_EMPTY' | translate"
-        />
-        <ng-template #date_template let-date="data">
-            <div class="p-4">
-                {{ date | date: 'MMM d, y, h:mm a' }}
-            </div>
-        </ng-template>
-        <ng-template #sys_template let-systems="data">
-            <div class="p-4">
-                <div>{{ systems.length }}</div>
-                <div>{{ 'USERS.VIEW_LOGS' | translate }}</div>
-            </div>
-        </ng-template>
+        <div class="p-4">
+            <simple-table
+                class="block min-w-5xl text-sm"
+                [data]="logs()"
+                [columns]="[
+                    {
+                        key: 'start',
+                        name: 'USERS.FIELD_SESSION_START' | translate,
+                        content: date_template,
+                    },
+                    {
+                        key: 'end',
+                        name: 'USERS.FIELD_SESSION_END' | translate,
+                        content: date_template,
+                    },
+                    {
+                        key: 'systems',
+                        name: 'USERS.FIELD_SYSTEMS_ACCESSED' | translate,
+                        content: sys_template,
+                    },
+                ]"
+                [sortable]="true"
+                [empty_message]="'USERS.LOGS_EMPTY' | translate"
+            />
+            <ng-template #date_template let-date="data">
+                <div class="p-4">
+                    {{ date | date: 'MMM d, y, h:mm a' }}
+                </div>
+            </ng-template>
+            <ng-template #sys_template let-systems="data">
+                <div class="p-4">
+                    <div>{{ systems.length }}</div>
+                    <div>{{ 'USERS.VIEW_LOGS' | translate }}</div>
+                </div>
+            </ng-template>
+        </div>
     `,
     styles: [
         `

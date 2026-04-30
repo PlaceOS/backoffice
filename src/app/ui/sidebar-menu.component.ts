@@ -261,6 +261,12 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
             show_on: () => this.is_support || this.is_admin,
         },
         {
+            name: 'COMMON.GROUPS',
+            route: '/groups',
+            icon: 'groups',
+            show_on: () => this.is_admin,
+        },
+        {
             name: 'COMMON.DOMAINS',
             route: '/domains',
             icon: 'domain',

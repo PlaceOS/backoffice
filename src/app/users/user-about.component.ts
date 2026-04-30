@@ -22,7 +22,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 @Component({
     selector: 'user-about',
     template: `
-        <section class="mb-4 flex items-center space-x-2">
+        <section class="mb-4 flex items-center space-x-2 px-4 py-4">
             <div
                 class="border-base-300 flex items-center space-x-2 rounded-3xl border p-2"
             >
@@ -62,7 +62,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 </div>
             </div>
         </section>
-        <section class="mb-4 flex space-x-2">
+        <section class="mb-4 flex space-x-2 px-4">
             <div
                 class="border-base-200 grid w-1/3 flex-1 gap-2 rounded-sm border p-4"
                 [style.gridTemplateColumns]="'5.5rem auto'"

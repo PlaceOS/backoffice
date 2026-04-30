@@ -42,6 +42,13 @@ export const ROUTES: Routes = [
                     ),
             },
             {
+                path: 'groups',
+                loadComponent: () =>
+                    import('./zone-groups.component').then(
+                        (m) => m.ZoneGroupsComponent,
+                    ),
+            },
+            {
                 path: 'extend/:id',
                 loadComponent: () =>
                     import('../ui/extension-outlet.component').then(

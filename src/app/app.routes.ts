@@ -24,6 +24,12 @@ export const appRoutes: Route[] = [
             import('./drivers/drivers.routes').then((m) => m.ROUTES),
     },
     {
+        path: 'groups',
+        canActivate: [AuthorisedAdminGuard],
+        loadChildren: () =>
+            import('./groups/groups.routes').then((m) => m.ROUTES),
+    },
+    {
         path: 'systems',
         canActivate: [AuthorisedUserGuard],
         loadChildren: () =>

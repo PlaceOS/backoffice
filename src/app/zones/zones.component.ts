@@ -148,6 +148,7 @@ export class ZonesComponent extends AsyncHandler {
             triggers: 0,
             metadata: 0,
             children: 0,
+            groups: 0,
         },
     });
     public readonly tab_list = computed(() => {
@@ -175,6 +176,12 @@ export class ZonesComponent extends AsyncHandler {
                 name: i18n('ZONES.TAB_METADATA'),
                 count: details.metadata ?? '?',
                 icon: { content: 'code_blocks' },
+            },
+            {
+                id: 'groups',
+                name: i18n('ZONES.TAB_GROUPS'),
+                count: details.groups ?? '?',
+                icon: { content: 'groups' },
             },
             {
                 id: 'children',
