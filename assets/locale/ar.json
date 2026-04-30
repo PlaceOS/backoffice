@@ -734,6 +734,7 @@
         "APP_CLIENT_ID": "معرف العميل",
         "APP_CLIENT_PLACEHOLDER": "تجزئة MD5 لعنوان إعادة التوجيه URI",
         "APP_SCOPES": "نطاقات الوصول",
+        "APP_SUBSYSTEMS": "Subsystems",
         "APP_REDIRECT_URL": "عنوان إعادة التوجيه URL",
         "APP_REDIRECT_URL_REQUIRED": "مطلوب عنوان URL صالح"
     },
