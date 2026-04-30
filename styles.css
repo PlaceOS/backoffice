@@ -298,6 +298,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .inset-0 {
   inset: calc(var(--spacing) * 0);
 }
+#placeos .inset-1 {
+  inset: calc(var(--spacing) * 1);
+}
 #placeos .inset-4 {
   inset: calc(var(--spacing) * 4);
 }
@@ -685,6 +688,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .h-\[768px\] {
   height: 768px;
+}
+#placeos .h-auto {
+  height: auto;
 }
 #placeos .h-full {
   height: 100%;
@@ -1085,6 +1091,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .cursor-pointer {
   cursor: pointer;
+}
+#placeos .cursor-text {
+  cursor: text;
 }
 #placeos .resize {
   resize: both;
@@ -1919,8 +1928,21 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (hover: hover) {
+  #placeos .hover\:bg-transparent\!:hover {
+    background-color: transparent !important;
+  }
+}
+@media (hover: hover) {
   #placeos .hover\:bg-white\/10:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+#placeos .focus\:bg-base-200\/30:focus {
+  background-color: var(--base-200);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .focus\:bg-base-200\/30:focus {
+    background-color: color-mix(in oklab, var(--base-200) 30%, transparent);
   }
 }
 #placeos .focus\:opacity-100:focus {
