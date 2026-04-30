@@ -596,6 +596,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .inline-block {
   display: inline-block;
 }
+#placeos .inline-flex {
+  display: inline-flex;
+}
 #placeos .inline-grid {
   display: inline-grid;
 }
@@ -704,6 +707,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .max-h-96 {
   max-height: calc(var(--spacing) * 96);
 }
+#placeos .max-h-\[45vh\] {
+  max-height: 45vh;
+}
 #placeos .max-h-\[65vh\] {
   max-height: 65vh;
 }
@@ -716,6 +722,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .max-h-full {
   max-height: 100%;
 }
+#placeos .min-h-0 {
+  min-height: calc(var(--spacing) * 0);
+}
 #placeos .min-h-12 {
   min-height: calc(var(--spacing) * 12);
 }
@@ -724,6 +733,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .min-h-28 {
   min-height: calc(var(--spacing) * 28);
+}
+#placeos .min-h-40 {
+  min-height: calc(var(--spacing) * 40);
 }
 #placeos .min-h-48 {
   min-height: calc(var(--spacing) * 48);
@@ -1037,8 +1049,20 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .min-w-\[20rem\] {
   min-width: 20rem;
 }
+#placeos .min-w-\[22rem\] {
+  min-width: 22rem;
+}
+#placeos .min-w-\[24rem\] {
+  min-width: 24rem;
+}
 #placeos .min-w-\[40\%\] {
   min-width: 40%;
+}
+#placeos .min-w-\[56rem\] {
+  min-width: 56rem;
+}
+#placeos .min-w-\[64rem\] {
+  min-width: 64rem;
 }
 #placeos .min-w-full {
   min-width: 100%;
@@ -1104,6 +1128,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .list-disc {
   list-style-type: disc;
 }
+#placeos .grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 #placeos .grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -1140,8 +1167,14 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .justify-start {
   justify-content: flex-start;
 }
+#placeos .gap-1 {
+  gap: calc(var(--spacing) * 1);
+}
 #placeos .gap-2 {
   gap: calc(var(--spacing) * 2);
+}
+#placeos .gap-3 {
+  gap: calc(var(--spacing) * 3);
 }
 #placeos .gap-4 {
   gap: calc(var(--spacing) * 4);
@@ -1166,6 +1199,9 @@ input:where([type=button], [type=reset], [type=submit]),
   margin-block-start: calc(calc(var(--spacing) * 8) * var(--tw-space-y-reverse));
   margin-block-end: calc(calc(var(--spacing) * 8) * calc(1 - var(--tw-space-y-reverse)));
 }
+#placeos .gap-x-4 {
+  column-gap: calc(var(--spacing) * 4);
+}
 :where(#placeos .space-x-0 > :not(:last-child)) {
   --tw-space-x-reverse: 0;
   margin-inline-start: calc(calc(var(--spacing) * 0) * var(--tw-space-x-reverse));
@@ -1180,6 +1216,9 @@ input:where([type=button], [type=reset], [type=submit]),
   --tw-space-x-reverse: 0;
   margin-inline-start: calc(calc(var(--spacing) * 4) * var(--tw-space-x-reverse));
   margin-inline-end: calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-x-reverse)));
+}
+#placeos .gap-y-2 {
+  row-gap: calc(var(--spacing) * 2);
 }
 :where(#placeos .divide-x > :not(:last-child)) {
   --tw-divide-x-reverse: 0;
@@ -1753,6 +1792,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .opacity-40 {
   opacity: 40%;
 }
+#placeos .opacity-50 {
+  opacity: 50%;
+}
 #placeos .opacity-60 {
   opacity: 60%;
 }
@@ -1881,6 +1923,10 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .select-text {
   -webkit-user-select: text;
   user-select: text;
+}
+#placeos .last\:border-b-0:last-child {
+  border-bottom-style: var(--tw-border-style);
+  border-bottom-width: 0px;
 }
 #placeos .focus-within\:z-20:focus-within {
   z-index: 20;
@@ -2164,6 +2210,11 @@ input:where([type=button], [type=reset], [type=submit]),
   #placeos .sm\:text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+}
+@media (min-width: 48rem) {
+  #placeos .md\:flex-row {
+    flex-direction: row;
   }
 }
 @media print {
