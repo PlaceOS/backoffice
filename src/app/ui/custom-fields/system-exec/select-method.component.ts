@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
 import {
     Component,
+    computed,
     effect,
+    ElementRef,
     forwardRef,
     input,
     OnChanges,
     signal,
     SimpleChanges,
+    viewChild,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -15,6 +18,7 @@ import {
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import {
@@ -51,8 +55,26 @@ interface MethodOption extends PlaceModuleFunction {
                         "
                         [(ngModel)]="method"
                         (ngModelChange)="setValue($event)"
+                        (openedChange)="setOpen($event)"
                     >
-                        @for (method of method_list(); track method) {
+                        <mat-option class="relative hover:bg-transparent!">
+                            <input
+                                #method_search
+                                matInput
+                                name="method-search"
+                                [ngModel]="method_filter()"
+                                (ngModelChange)="method_filter.set($event)"
+                                (mousedown)="$event.stopPropagation()"
+                                (click)="$event.stopPropagation()"
+                                (keydown)="$event.stopPropagation()"
+                                class="method-search-input pointer-event-auto focus:bg-base-200/30 absolute inset-1 h-auto w-[calc(100%-0.5rem)] cursor-text rounded-sm p-4"
+                                [placeholder]="
+                                    'COMMON.SEARCH_FOR'
+                                        | translate: { name: 'methods' }
+                                "
+                            />
+                        </mat-option>
+                        @for (method of filtered_method_list(); track method) {
                             <mat-option [value]="method">
                                 {{ method.name }}
                             </mat-option>
@@ -73,7 +95,19 @@ interface MethodOption extends PlaceModuleFunction {
             </div>
         }
     `,
-    styles: [``],
+    styles: [
+        `
+            .method-search-input {
+                width: 100%;
+                outline: none;
+            }
+
+            .method-search-input::placeholder {
+                color: var(--base-400, currentColor);
+                opacity: 0.65;
+            }
+        `,
+    ],
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
@@ -85,6 +119,7 @@ interface MethodOption extends PlaceModuleFunction {
         MatProgressSpinnerModule,
         TranslatePipe,
         MatFormFieldModule,
+        MatInputModule,
         MatSelectModule,
         FormsModule,
         CommonModule,
@@ -103,6 +138,7 @@ export class SelectMethodComponent
     private _module = signal<ModuleLike>({} as ModuleLike);
 
     public readonly method = signal<PlaceModuleFunction>(undefined);
+    public readonly method_filter = signal('');
 
     public readonly loading = signal(false);
 
@@ -118,10 +154,12 @@ export class SelectMethodComponent
             ),
             catchError(() => of({})),
             map((fn_mapping) =>
-                Object.keys(fn_mapping || {}).map((i) => ({
-                    name: i,
-                    ...fn_mapping[i],
-                })),
+                Object.keys(fn_mapping || {})
+                    .map((i) => ({
+                        name: i,
+                        ...fn_mapping[i],
+                    }))
+                    .sort((a, b) => a.name.localeCompare(b.name)),
             ),
             tap(() => this.loading.set(false)),
             shareReplay(1),
@@ -130,6 +168,16 @@ export class SelectMethodComponent
     );
 
     public readonly method_list = this._method_list;
+    public readonly filtered_method_list = computed(() => {
+        const search = this.method_filter().trim().toLowerCase();
+        if (!search) return this.method_list();
+        return this.method_list().filter((method) =>
+            method.name.toLowerCase().includes(search),
+        );
+    });
+
+    private readonly _search_el =
+        viewChild<ElementRef<HTMLInputElement>>('method_search');
 
     /** Form control on change handler */
     private _onChange: (_: PlaceModuleFunction) => void;
@@ -164,6 +212,15 @@ export class SelectMethodComponent
         if (this._onChange && !this.loading()) {
             this._onChange(new_value);
         }
+    }
+
+    /** Handle dropdown opening to reset and focus method search. */
+    public setOpen(open: boolean): void {
+        if (!open) return;
+        this.method_filter.set('');
+        this.timeout('focus_search', () =>
+            this._search_el()?.nativeElement.focus(),
+        );
     }
 
     /**
