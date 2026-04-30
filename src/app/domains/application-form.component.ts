@@ -1,19 +1,23 @@
+import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
     EventEmitter,
     Injector,
     OnInit,
     Output,
+    Signal,
     effect,
     inject,
     signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
+    FormControl,
     FormsModule,
     ReactiveFormsModule,
     UntypedFormGroup,
 } from '@angular/forms';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import {
     PlaceApplication,
     PlaceResource,
@@ -29,12 +33,14 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Md5 } from 'ts-md5';
+import { addChipItem, removeChipItem } from '../common/forms';
 import { getInvalidFields } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
+import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { generateApplicationFormFields } from './applications.utilities';
@@ -96,6 +102,56 @@ import { generateApplicationFormFields } from './applications.utilities';
                             </div>
                         }
                     </div>
+                    @if (form.controls.subsystems) {
+                        <div class="field">
+                            <label for="subsystems-input"
+                                >{{
+                                    'DOMAINS.APP_SUBSYSTEMS' | translate
+                                }}:</label
+                            >
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-chip-grid
+                                    #chipList
+                                    aria-label="Subsystem List"
+                                >
+                                    @for (
+                                        item of subsystem_list();
+                                        track item
+                                    ) {
+                                        <mat-chip-row
+                                            (removed)="removeSubsystem(item)"
+                                        >
+                                            <div class="max-w-md truncate">
+                                                {{ item }}
+                                            </div>
+                                            <button
+                                                matChipRemove
+                                                [attr.aria-label]="
+                                                    'COMMON.ITEM_REMOVE'
+                                                        | translate
+                                                            : { item: item }
+                                                "
+                                            >
+                                                <icon>cancel</icon>
+                                            </button>
+                                        </mat-chip-row>
+                                    }
+                                </mat-chip-grid>
+                                <input
+                                    id="subsystems-input"
+                                    [placeholder]="
+                                        'DOMAINS.APP_SUBSYSTEMS' | translate
+                                    "
+                                    [matChipInputFor]="chipList"
+                                    [matChipInputSeparatorKeyCodes]="separators"
+                                    [matChipInputAddOnBlur]="true"
+                                    (matChipInputTokenEnd)="
+                                        addSubsystem($event)
+                                    "
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
                     @if (form.controls.redirect_uri) {
                         <div class="field">
                             <label for="redirect-uri"
@@ -160,12 +216,14 @@ import { generateApplicationFormFields } from './applications.utilities';
     ],
     imports: [
         MatFormFieldModule,
+        MatChipsModule,
         FormsModule,
         CommonModule,
         TranslatePipe,
         SettingsToggleComponent,
         ReactiveFormsModule,
         MatInputModule,
+        IconComponent,
         FullscreenModalShellComponent,
     ],
 })
@@ -186,12 +244,29 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
     public heading: string;
     public default_redirect_uri: string;
     public readonly client_id = signal('');
+    public readonly separators: number[] = [ENTER, COMMA, SPACE];
+    public subsystem_list: Signal<string[]> = signal([]);
+
+    public readonly addSubsystem = (e: MatChipInputEvent) =>
+        addChipItem(this.form.controls.subsystems as FormControl<string[]>, e);
+    public readonly removeSubsystem = (i: string) =>
+        removeChipItem(
+            this.form.controls.subsystems as FormControl<string[]>,
+            i,
+        );
 
     public ngOnInit(): void {
         const item = this._data.item;
         const edit = !!item.id;
         this.heading = i18n(`DOMAINS.APPLICATION_${edit ? 'EDIT' : 'NEW'}`);
         this.form = generateApplicationFormFields(item);
+        this.subsystem_list = toSignal(
+            this.form.controls.subsystems.valueChanges,
+            {
+                initialValue: this.form.controls.subsystems.value || [],
+                injector: this._injector,
+            },
+        );
         const { redirect_uri } = this.form.value;
         this.default_redirect_uri = redirect_uri || '';
         const redirect_uri_signal = toSignal(

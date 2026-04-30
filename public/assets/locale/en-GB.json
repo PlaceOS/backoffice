@@ -746,6 +746,7 @@
         "APP_CLIENT_ID": "Client ID",
         "APP_CLIENT_PLACEHOLDER": "MD5 Hash of the Redirect URI",
         "APP_SCOPES": "Access Scopes",
+        "APP_SUBSYSTEMS": "Subsystems",
         "APP_REDIRECT_URL": "Redirect URL",
         "APP_REDIRECT_URL_REQUIRED": "A valid URL is required"
     },

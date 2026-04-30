@@ -734,6 +734,7 @@
         "APP_CLIENT_ID": "ID client",
         "APP_CLIENT_PLACEHOLDER": "Hachage MD5 de l'URI de redirection",
         "APP_SCOPES": "Périmètres d'accès",
+        "APP_SUBSYSTEMS": "Sous-systèmes",
         "APP_REDIRECT_URL": "URL de redirection",
         "APP_REDIRECT_URL_REQUIRED": "Une URL valide est requise"
     },

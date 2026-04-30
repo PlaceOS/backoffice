@@ -743,6 +743,7 @@
         "APP_CLIENT_ID": "クライアントID",
         "APP_CLIENT_PLACEHOLDER": "リダイレクトURIのMD5ハッシュ",
         "APP_SCOPES": "アクセススコープ",
+        "APP_SUBSYSTEMS": "サブシステム",
         "APP_REDIRECT_URL": "リダイレクトURL",
         "APP_REDIRECT_URL_REQUIRED": "有効なURLが必要です"
     },

@@ -4,9 +4,11 @@ import { PlaceApplication } from '@placeos/ts-client';
 import { validateURL } from '../common/validation';
 
 export function generateApplicationFormFields(app?: PlaceApplication) {
+    const application = app as PlaceApplication & { subsystems?: string[] };
     const fields = {
         name: new FormControl(app?.name || '', [Validators.required]),
         scopes: new FormControl(app?.scopes || ''),
+        subsystems: new FormControl(application?.subsystems || []),
         skip_authorization: new FormControl(!!app?.skip_authorization),
         redirect_uri: new FormControl(app?.redirect_uri || '', validateURL),
         client_id: new FormControl(app?.uid || ''),

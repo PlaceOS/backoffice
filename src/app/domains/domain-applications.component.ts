@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { PlaceApplication, PlaceDomain } from '@placeos/ts-client';
 
 import { CommonModule } from '@angular/common';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -34,7 +35,7 @@ import { DomainStateService } from './domain-state.service';
                     [class.opacity-0]="(loading | async) !== true"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-336 text-sm"
+                    class="block min-w-360 text-sm"
                     [data]="applications"
                     [columns]="[
                         { key: 'name', name: 'Name', content: name_template },
@@ -55,7 +56,16 @@ import { DomainStateService } from './domain-state.service';
                             name: 'DOMAINS.FIELD_CLIENT_SECRET' | translate,
                             content: secret_template,
                         },
-                        { key: 'scopes', name: 'Scopes' },
+                        {
+                            key: 'scopes',
+                            name: 'Scopes',
+                            content: scopes_template,
+                        },
+                        {
+                            key: 'subsystems',
+                            name: 'DOMAINS.APP_SUBSYSTEMS' | translate,
+                            content: subsystems_template,
+                        },
                         {
                             key: 'actions',
                             name: ' ',
@@ -119,6 +129,20 @@ import { DomainStateService } from './domain-state.service';
                 </div>
             </div>
         </ng-template>
+        <ng-template #subsystems_template let-row="row">
+            <mat-chip-set class="block max-w-80 p-2" aria-label="Subsystems">
+                @for (subsystem of row.subsystems || []; track subsystem) {
+                    <mat-chip>{{ subsystem }}</mat-chip>
+                }
+            </mat-chip-set>
+        </ng-template>
+        <ng-template #scopes_template let-row="row">
+            <mat-chip-set class="block max-w-80 p-2" aria-label="Scopes">
+                @for (scope of scopeList(row); track scope) {
+                    <mat-chip>{{ scope }}</mat-chip>
+                }
+            </mat-chip-set>
+        </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
@@ -156,6 +180,7 @@ import { DomainStateService } from './domain-state.service';
     imports: [
         SimpleTableComponent,
         IconComponent,
+        MatChipsModule,
         MatRippleModule,
         MatTooltipModule,
         CommonModule,
@@ -177,6 +202,9 @@ export class DomainApplicationsComponent {
         this._service.editApplication(item);
     public readonly removeApplication = (item) =>
         this._service.deleteApplication(item);
+
+    public readonly scopeList = (item: PlaceApplication): string[] =>
+        `${item.scopes || ''}`.split(/\s+/).filter((_) => !!_);
 
     public get item(): PlaceDomain {
         return this._service.active_item as PlaceDomain;
