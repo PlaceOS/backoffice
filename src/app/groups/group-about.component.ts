@@ -19,7 +19,7 @@ import { GroupStateService } from './group-state.service';
 @Component({
     selector: 'group-about',
     template: `
-        <section class="mb-4 flex flex-col gap-4 md:flex-row">
+        <section class="mb-4 flex flex-col gap-4 p-4 md:flex-row">
             <div class="w-full">
                 <div
                     class="border-base-200 grid gap-2 rounded-sm border p-4"

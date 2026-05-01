@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
     Component,
+    computed,
     effect,
     ElementRef,
     inject,
@@ -11,6 +12,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
@@ -18,19 +20,27 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule } from '@angular/router';
 import {
     PlaceDriverRole,
+    PlaceGroup,
     PlaceModule,
     PlaceRepository,
     PlaceSystem,
     PlaceZone,
+    queryGroups,
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
-import { map, startWith } from 'rxjs/operators';
+import { lastValueFrom, of } from 'rxjs';
+import { catchError, map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { nextValueFrom } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 import { VirtualScrollComponent } from './virtual-scroll.component';
+
+interface GroupTreeItem {
+    group: PlaceGroup;
+    depth: number;
+}
 
 @Component({
     selector: 'item-sidebar',
@@ -105,7 +115,115 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                 {{ 'COMMON.TOTAL_ITEMS' | translate: { count: t } : t }}
             </p>
             <div class="border-base-200 flex h-1/2 flex-1 flex-col border-t">
-                @if ((items | async)?.length) {
+                @if (route() === 'groups' && !search.trim()) {
+                    @if (group_tree_items().length) {
+                        <div class="h-full overflow-auto py-1">
+                            @for (
+                                node of group_tree_items();
+                                track node.group.id
+                            ) {
+                                <div
+                                    class="border-base-100 hover:border-info relative m-1 flex min-h-16 max-w-[calc(100%-0.5rem)] items-center rounded-sm border py-1 pr-2"
+                                    [class.bg-base-200]="
+                                        $index % 2 === 1 &&
+                                        selected_id() !== node.group.id
+                                    "
+                                    [class.active]="
+                                        selected_id() === node.group.id
+                                    "
+                                    [style.margin-left.rem]="
+                                        0.25 + node.depth * 0.5
+                                    "
+                                >
+                                    @if (childCount(node.group) > 0) {
+                                        <button
+                                            type="button"
+                                            icon
+                                            matRipple
+                                            class="h-8 min-h-8 w-8 min-w-8"
+                                            [attr.aria-label]="
+                                                (isGroupExpanded(node.group.id)
+                                                    ? 'Collapse group '
+                                                    : 'Expand group ') +
+                                                displayName(node.group)
+                                            "
+                                            (click)="
+                                                toggleGroup(node.group.id);
+                                                $event.stopPropagation()
+                                            "
+                                        >
+                                            <icon class="text-xl">
+                                                {{
+                                                    isGroupExpanded(
+                                                        node.group.id
+                                                    )
+                                                        ? 'expand_more'
+                                                        : 'chevron_right'
+                                                }}
+                                            </icon>
+                                        </button>
+                                    } @else {
+                                        <span
+                                            class="mr-1 h-8 w-8 shrink-0"
+                                        ></span>
+                                    }
+                                    <a
+                                        class="flex min-w-0 flex-1 flex-col justify-center rounded-sm px-2 py-1 no-underline"
+                                        [routerLink]="
+                                            subroute()
+                                                ? [
+                                                      '/',
+                                                      route(),
+                                                      node.group.id,
+                                                      subroute(),
+                                                  ]
+                                                : ['/', route(), node.group.id]
+                                        "
+                                        (click)="show.set(false)"
+                                    >
+                                        <div
+                                            class="flex min-w-0 items-center gap-1"
+                                        >
+                                            <p class="min-w-0 flex-1 truncate">
+                                                {{ displayName(node.group) }}
+                                            </p>
+                                            @if (childCount(node.group) > 0) {
+                                                <span
+                                                    class="bg-base-200 -mr-2 rounded-full px-2 py-0.5 text-xs"
+                                                >
+                                                    {{ childCount(node.group) }}
+                                                </span>
+                                            }
+                                        </div>
+                                        @if (node.group.description) {
+                                            <p
+                                                class="w-full truncate text-xs opacity-60"
+                                            >
+                                                {{ node.group.description }}
+                                            </p>
+                                        }
+                                    </a>
+                                </div>
+                            }
+                            <div
+                                class="bg-base-200 p-2 text-center text-sm opacity-30"
+                            >
+                                {{ 'COMMON.END_OF_LIST' | translate }}
+                            </div>
+                        </div>
+                    } @else {
+                        <div
+                            class="flex flex-col items-center justify-center p-8 opacity-30"
+                        >
+                            <p>
+                                {{
+                                    'COMMON.LIST_EMPTY'
+                                        | translate: { name: title() }
+                                }}
+                            </p>
+                        </div>
+                    }
+                } @else if ((items | async)?.length) {
                     <virtual-scroll
                         [item_size]="72"
                         [items]="items | async"
@@ -207,7 +325,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
             scroll-item:nth-child(2n) > a {
                 background-color: var(--base-200);
             }
-            a.active {
+            .active {
                 background-color: var(--secondary) !important;
                 color: var(--secondary-content);
             }
@@ -224,6 +342,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
         MatFormFieldModule,
         MatSelectModule,
         VirtualScrollComponent,
+        MatRippleModule,
     ],
 })
 export class ItemSidebarComponent
@@ -241,6 +360,8 @@ export class ItemSidebarComponent
     public readonly route = input('systems');
     public readonly filter_options = input<string[]>([]);
     public readonly show = signal(true);
+    public readonly group_hierarchy = signal<PlaceGroup[]>([]);
+    public readonly expanded_groups = signal<Record<string, boolean>>({});
 
     public last_total = 0;
     public last_check = 0;
@@ -268,12 +389,54 @@ export class ItemSidebarComponent
         viewChild<ElementRef<HTMLInputElement>>('search_input');
 
     public readonly subroute = signal('');
+    public readonly selected_id = computed(() => {
+        this._route_change();
+        return this._router.url.split('/')[2] || '';
+    });
+    public readonly group_children_lookup = computed(() => {
+        const lookup: Record<string, PlaceGroup[]> = {};
+        for (const group of this.group_hierarchy()) {
+            if (!group.parent_id) continue;
+            lookup[group.parent_id] ||= [];
+            lookup[group.parent_id].push(group);
+        }
+        return lookup;
+    });
+    public readonly group_child_count_lookup = computed(() => {
+        const lookup: Record<string, number> = {};
+        for (const group of this.group_hierarchy()) {
+            if (!group.parent_id) continue;
+            lookup[group.parent_id] = (lookup[group.parent_id] || 0) + 1;
+        }
+        return lookup;
+    });
+    public readonly group_tree_items = computed(() => {
+        const groups = this.group_hierarchy();
+        const children = this.group_children_lookup();
+        const roots = groups.filter(({ parent_id }) => !parent_id);
+        const items: GroupTreeItem[] = [];
+        const addGroup = (group: PlaceGroup, depth: number) => {
+            items.push({ group, depth });
+            if (!this.isGroupExpanded(group.id)) return;
+            for (const child of children[group.id] || [])
+                addGroup(child, depth + 1);
+        };
+        for (const group of roots) addGroup(group, 0);
+        return items;
+    });
 
     constructor() {
         super();
         effect(() => {
             this._route_change();
             this.subroute.set(this._router.url.split('/')[3] || '');
+            if (this.route() === 'groups') void this.loadGroupHierarchy();
+        });
+        effect(() => {
+            const selected_id = this.selected_id();
+            this.group_hierarchy();
+            if (this.route() !== 'groups' || !selected_id) return;
+            this.expandGroupPath(selected_id);
         });
     }
 
@@ -304,6 +467,29 @@ export class ItemSidebarComponent
 
     public trackByFn(item: Record<string, unknown>, index: number) {
         return item.id || index;
+    }
+
+    public displayName(item: { display_name?: string; name?: string }) {
+        return item.display_name || item.name || '<Unnamed>';
+    }
+
+    public childCount(group: PlaceGroup) {
+        return (
+            this.group_child_count_lookup()[group.id] ||
+            group.children_count ||
+            0
+        );
+    }
+
+    public isGroupExpanded(group_id: string) {
+        return !!this.expanded_groups()[group_id];
+    }
+
+    public toggleGroup(group_id: string) {
+        this.expanded_groups.update((state) => ({
+            ...state,
+            [group_id]: !state[group_id],
+        }));
     }
 
     /** Whether to update the list of items */
@@ -389,5 +575,48 @@ export class ItemSidebarComponent
             }
         }
         return list;
+    }
+
+    private async loadGroupHierarchy() {
+        const response = await lastValueFrom(
+            queryGroups({
+                limit: 2500,
+                fields: [
+                    'id',
+                    'name',
+                    'description',
+                    'authority_id',
+                    'parent_id',
+                    'children_count',
+                ].join(','),
+            }).pipe(catchError(() => of({ data: [] }))),
+        );
+        const groups = response.data.sort((a, b) =>
+            this.displayName(a).localeCompare(this.displayName(b)),
+        );
+        this.group_hierarchy.set(groups);
+    }
+
+    private expandGroupPath(group_id: string) {
+        const path: string[] = [];
+        let group = this.findGroup(group_id);
+        while (group?.parent_id) {
+            path.unshift(group.parent_id);
+            group = this.findGroup(group.parent_id);
+        }
+        if (!path.length) return;
+        const state = this.expanded_groups();
+        let changed = false;
+        const next_state = { ...state };
+        for (const id of path) {
+            if (next_state[id]) continue;
+            next_state[id] = true;
+            changed = true;
+        }
+        if (changed) this.expanded_groups.set(next_state);
+    }
+
+    private findGroup(group_id: string) {
+        return this.group_hierarchy().find(({ id }) => id === group_id);
     }
 }
