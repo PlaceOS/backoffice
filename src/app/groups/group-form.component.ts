@@ -220,9 +220,18 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    public setParentGroup(group: PlaceGroup) {
+    public setParentGroup(group: PlaceGroup | null) {
         this.parent_group.set(group);
         this.form.controls.parent_id.setValue(group?.id || '');
+        if (!group?.subsystems?.length) return;
+        this.form.controls.subsystems.setValue(
+            Array.from(
+                new Set([
+                    ...(this.form.controls.subsystems.value || []),
+                    ...group.subsystems,
+                ]),
+            ),
+        );
     }
 
     public readonly addSubsystem = (event: MatChipInputEvent) =>

@@ -1,9 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PlaceGroup } from '@placeos/ts-client';
+import { RouterModule } from '@angular/router';
+import {
+    PlaceDomain,
+    PlaceGroup,
+    showDomain,
+    showGroup,
+} from '@placeos/ts-client';
 import { marked } from 'marked';
+import { lastValueFrom } from 'rxjs';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -22,15 +29,31 @@ import { GroupStateService } from './group-state.service';
                         <div class="flex items-center text-sm font-medium">
                             {{ 'GROUPS.AUTHORITY_ID' | translate }}
                         </div>
-                        <div class="mono text-sm">
-                            {{ item()?.authority_id }}
-                        </div>
+                        <a
+                            class="text-sm underline"
+                            [routerLink]="[
+                                '/domains',
+                                item()?.authority_id,
+                                'about',
+                            ]"
+                        >
+                            {{ authority()?.name || item()?.authority_id }}
+                        </a>
                     }
                     @if (item()?.parent_id) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'GROUPS.PARENT_ID' | translate }}
                         </div>
-                        <div class="mono text-sm">{{ item()?.parent_id }}</div>
+                        <a
+                            class="text-sm underline"
+                            [routerLink]="[
+                                '/groups',
+                                item()?.parent_id,
+                                'about',
+                            ]"
+                        >
+                            {{ parent()?.name || item()?.parent_id }}
+                        </a>
                     }
                     <div class="flex items-center text-sm font-medium">
                         {{ 'GROUPS.SUBSYSTEMS' | translate }}
@@ -61,7 +84,7 @@ import { GroupStateService } from './group-state.service';
                     </div>
                     <div class="flex items-center">
                         <span [matTooltip]="item()?.created_at">
-                            {{ created_at() | dateFrom }}
+                            {{ created_at() * 1000 | dateFrom }}
                         </span>
                     </div>
                     <div class="flex items-center text-sm font-medium">
@@ -69,7 +92,7 @@ import { GroupStateService } from './group-state.service';
                     </div>
                     <div class="flex items-center">
                         <span [matTooltip]="item()?.updated_at">
-                            {{ updated_at() | dateFrom }}
+                            {{ updated_at() * 1000 | dateFrom }}
                         </span>
                     </div>
                 </div>
@@ -103,6 +126,7 @@ import { GroupStateService } from './group-state.service';
         TranslatePipe,
         DateFromPipe,
         SanitizePipe,
+        RouterModule,
     ],
 })
 export class GroupAboutComponent {
@@ -111,14 +135,45 @@ export class GroupAboutComponent {
     public readonly item = toSignal(this._service.item, {
         initialValue: null as PlaceGroup | null,
     });
-    public readonly created_at = computed(() =>
-        Date.parse(this.item()?.created_at || '') / 1000,
+    public readonly parent = signal<PlaceGroup | null>(null);
+    public readonly authority = signal<PlaceDomain | null>(null);
+    public readonly created_at = computed(
+        () => Date.parse(this.item()?.created_at || '') / 1000,
     );
-    public readonly updated_at = computed(() =>
-        Date.parse(this.item()?.updated_at || '') / 1000,
+    public readonly updated_at = computed(
+        () => Date.parse(this.item()?.updated_at || '') / 1000,
     );
     public readonly description = computed(
         () =>
             marked(this.item()?.description || '', { async: false }) as string,
     );
+
+    constructor() {
+        effect(() => {
+            const authority_id = this.item()?.authority_id;
+            this.authority.set(null);
+            if (authority_id) void this.loadAuthority(authority_id);
+        });
+        effect(() => {
+            const parent_id = this.item()?.parent_id;
+            this.parent.set(null);
+            if (parent_id) void this.loadParent(parent_id);
+        });
+    }
+
+    private async loadAuthority(authority_id: string) {
+        const authority = await lastValueFrom(showDomain(authority_id)).catch(
+            () => null,
+        );
+        if (this.item()?.authority_id === authority_id) {
+            this.authority.set(authority);
+        }
+    }
+
+    private async loadParent(parent_id: string) {
+        const parent = await lastValueFrom(showGroup(parent_id)).catch(
+            () => null,
+        );
+        if (this.item()?.parent_id === parent_id) this.parent.set(parent);
+    }
 }
