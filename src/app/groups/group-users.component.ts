@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { PlaceGroupUser, PlaceUser, queryUsers } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
@@ -73,7 +74,12 @@ import { GroupStateService } from './group-state.service';
         </div>
         <ng-template #user_template let-row="row">
             <div class="flex flex-col px-4 py-2">
-                <div class="text-sm">{{ row.user?.name || row.user_id }}</div>
+                <a
+                    class="text-sm underline"
+                    [routerLink]="['/users', row.user_id, 'about']"
+                >
+                    {{ row.user?.name || row.user_id }}
+                </a>
                 <div class="text-xs opacity-30">{{ row.user?.email }}</div>
             </div>
         </ng-template>
@@ -128,6 +134,7 @@ import { GroupStateService } from './group-state.service';
         MatProgressBarModule,
         MatRippleModule,
         MatTooltipModule,
+        RouterModule,
         SimpleTableComponent,
         TranslatePipe,
     ],

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { PlaceGroup, PlaceGroupUser, queryGroups } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 import { groupPermissionLabels } from '../groups/group-permissions';
@@ -73,7 +74,12 @@ import { UsersStateService } from './users-state.service';
         </div>
         <ng-template #group_template let-row="row">
             <div class="flex flex-col px-4 py-2">
-                <div class="text-sm">{{ row.group?.name || row.group_id }}</div>
+                <a
+                    class="text-sm underline"
+                    [routerLink]="['/groups', row.group_id, 'about']"
+                >
+                    {{ row.group?.name || row.group_id }}
+                </a>
                 <div class="text-xs opacity-30">{{ row.group_id }}</div>
             </div>
         </ng-template>
@@ -128,6 +134,7 @@ import { UsersStateService } from './users-state.service';
         MatProgressBarModule,
         MatRippleModule,
         MatTooltipModule,
+        RouterModule,
         SimpleTableComponent,
         TranslatePipe,
     ],

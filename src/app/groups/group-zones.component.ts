@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { PlaceGroupZone, PlaceZone, queryZones } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
@@ -79,7 +80,12 @@ import { GroupStateService } from './group-state.service';
         </div>
         <ng-template #zone_template let-row="row">
             <div class="flex flex-col px-4 py-2">
-                <div class="text-sm">{{ row.zone?.name || row.zone_id }}</div>
+                <a
+                    class="text-sm underline"
+                    [routerLink]="['/zones', row.zone_id, 'about']"
+                >
+                    {{ row.zone?.name || row.zone_id }}
+                </a>
                 <div class="text-xs opacity-30">{{ row.zone_id }}</div>
             </div>
         </ng-template>
@@ -149,6 +155,7 @@ import { GroupStateService } from './group-state.service';
         MatProgressBarModule,
         MatRippleModule,
         MatTooltipModule,
+        RouterModule,
         SimpleTableComponent,
         TranslatePipe,
     ],
