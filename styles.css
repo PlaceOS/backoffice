@@ -533,6 +533,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .-mr-2 {
   margin-right: calc(var(--spacing) * -2);
 }
+#placeos .mr-1 {
+  margin-right: calc(var(--spacing) * 1);
+}
 #placeos .mr-2 {
   margin-right: calc(var(--spacing) * 2);
 }
@@ -724,6 +727,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .min-h-0 {
   min-height: calc(var(--spacing) * 0);
+}
+#placeos .min-h-8 {
+  min-height: calc(var(--spacing) * 8);
 }
 #placeos .min-h-12 {
   min-height: calc(var(--spacing) * 12);
@@ -1541,6 +1547,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .px-8 {
   padding-inline: calc(var(--spacing) * 8);
 }
+#placeos .py-0\.5 {
+  padding-block: calc(var(--spacing) * 0.5);
+}
 #placeos .py-1 {
   padding-block: calc(var(--spacing) * 1);
 }
@@ -1773,6 +1782,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .italic {
   font-style: italic;
+}
+#placeos .no-underline {
+  text-decoration-line: none;
 }
 #placeos .underline {
   text-decoration-line: underline;
