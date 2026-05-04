@@ -74,6 +74,7 @@ vi.mock('@placeos/ts-client', () => ({
     showTrigger: vi.fn(() => of({})),
     showUser: vi.fn(() => of({})),
     showZone: vi.fn(() => of({})),
+    startSystem: vi.fn(() => of({})),
     updateDomain: vi.fn(() => of({})),
     updateDriver: vi.fn(() => of({})),
     updateModule: vi.fn(() => of({})),
@@ -357,6 +358,26 @@ describe('actions.ts', () => {
                     role: client.PlaceDriverRole.Logic,
                 }),
             );
+        });
+
+        it('should start systems after bulk add when requested', async () => {
+            vi.mocked(client.addSystem).mockReturnValueOnce(
+                of({ id: 'sys-new' } as any),
+            );
+
+            await firstValueFrom(
+                ACTIONS.systems.save({
+                    name: 'New System',
+                    support_url: '',
+                    modules: ['mod-123'],
+                    start_modules: true,
+                } as any),
+            );
+
+            expect(client.addSystem).toHaveBeenCalledWith(
+                expect.not.objectContaining({ start_modules: true }),
+            );
+            expect(client.startSystem).toHaveBeenCalledWith('sys-new');
         });
 
         it('should call updateSystem for existing item', () => {

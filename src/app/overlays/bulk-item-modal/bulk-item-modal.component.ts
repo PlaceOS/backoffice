@@ -74,6 +74,7 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
                     <bulk-item-list
                         [(list)]="item_list"
                         [fields]="available_fields"
+                        [show_start_modules]="is_system"
                         (next)="showStatus()"
                         (previous)="flow_step = 'match-fields'"
                     ></bulk-item-list>
@@ -167,6 +168,10 @@ export class BulkItemModalComponent<
 
     public get save() {
         return this._data.save;
+    }
+
+    public get is_system(): boolean {
+        return this._data.constr === (PlaceSystem as unknown);
     }
 
     constructor() {

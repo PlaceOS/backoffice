@@ -47,6 +47,7 @@ import {
     showTrigger,
     showUser,
     showZone,
+    startSystem,
     updateDomain,
     updateDriver,
     updateGroup,
@@ -189,11 +190,20 @@ const systems: ItemActions<PlaceSystem> = {
     name: 'SYSTEMS',
 };
 
+type BulkSystemItem = Omit<PlaceSystem, 'modules'> & {
+    modules?: readonly string[] | string;
+    start_modules?: boolean;
+};
+
 function saveSystem(item: PlaceSystem): Observable<PlaceSystem> {
-    const modules = (item as { modules?: readonly string[] | string }).modules;
+    const {
+        modules,
+        start_modules,
+        ...system_data
+    } = item as BulkSystemItem;
     const { module_ids, driver_ids } = splitModuleIds(modules);
     const form_data = {
-        ...item,
+        ...system_data,
         support_url: processURL(item, item.support_url || ''),
     } as Partial<PlaceSystem>;
     if (modules !== undefined) {
@@ -202,11 +212,24 @@ function saveSystem(item: PlaceSystem): Observable<PlaceSystem> {
     if (item.id) return updateSystem(item.id, form_data);
     return addSystem(form_data).pipe(
         switchMap((system) =>
-            from(addLogicDriverModules(system, driver_ids)).pipe(
-                map(() => system),
-            ),
+            from(
+                finishSystemBulkAdd(
+                    system,
+                    driver_ids,
+                    !!start_modules,
+                ),
+            ).pipe(map(() => system)),
         ),
     );
+}
+
+async function finishSystemBulkAdd(
+    system: PlaceSystem,
+    driver_ids: string[],
+    start_modules: boolean,
+) {
+    await addLogicDriverModules(system, driver_ids);
+    if (start_modules) await lastValueFrom(startSystem(system.id));
 }
 
 async function addLogicDriverModules(system: PlaceSystem, driver_ids: string[]) {
