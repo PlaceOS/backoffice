@@ -1,6 +1,6 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-HWWIWLAE.js";
+} from "./chunk-L7WSPF6O.js";
 import {
   getUnixTime
 } from "./chunk-MXECN6VN.js";
@@ -25,7 +25,7 @@ import "./chunk-HIIV2XZN.js";
 import "./chunk-QQS43L4S.js";
 import {
   BackofficeUsersService
-} from "./chunk-V3H2UKTQ.js";
+} from "./chunk-KZF6VR3U.js";
 import {
   addDays
 } from "./chunk-LYW23EPM.js";
@@ -63,7 +63,7 @@ import {
   SettingsService,
   currentUser,
   format
-} from "./chunk-TZJIJZXE.js";
+} from "./chunk-WQLIN7ET.js";
 import "./chunk-4CBXDUSX.js";
 import "./chunk-W3GXKXZC.js";
 import {
@@ -2694,10 +2694,17 @@ var UploadListComponent = class _UploadListComponent extends AsyncHandler {
   show = signal(false, ...ngDevMode ? [{ debugName: "show" }] : []);
   /** Whether drop details overlay should be shown */
   show_overlay = signal(false, ...ngDevMode ? [{ debugName: "show_overlay" }] : []);
+  /** Whether normal cloud uploads should ignore file drag/drop events */
+  disabled = signal(false, ...ngDevMode ? [{ debugName: "disabled" }] : []);
   /** List of uploads */
   uploads = this._uploads.upload_list;
   ngOnInit() {
     this.subscription("show", this._settings.listen("show_upload_manager").subscribe((show) => this.show.set(show)));
+    this.subscription("disable_uploads", this._settings.listen("disable_uploads").subscribe((disabled) => {
+      this.disabled.set(!!disabled);
+      if (disabled)
+        this.show_overlay.set(false);
+    }));
     this.subscription("on_dialog_open", this._dialog.afterOpened.subscribe(() => {
       this._settings.post("disable_uploads", true);
     }));
@@ -2706,6 +2713,10 @@ var UploadListComponent = class _UploadListComponent extends AsyncHandler {
     }));
   }
   onEnter(e) {
+    if (this.disabled()) {
+      this.show_overlay.set(false);
+      return;
+    }
     this.show_overlay.set(e?.dataTransfer?.types.includes("Files"));
   }
   hideOverlay() {
@@ -2716,6 +2727,10 @@ var UploadListComponent = class _UploadListComponent extends AsyncHandler {
   }
   /** Upload the image to the cloud */
   handleFileEvent(event) {
+    if (this.disabled()) {
+      this.show_overlay.set(false);
+      return;
+    }
     this.clearTimeout("hide_overlay");
     this.timeout("file_event", () => {
       this.show_overlay.set(false);
@@ -3293,52 +3308,52 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-M3XT6SNK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-744S5MPX.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-NZAPAXI3.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-UPIQLIMZ.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-TDUGPERJ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-XVIBXKSE.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-YG3JYIHG.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-A2CPOXGO.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-3WJWCNT3.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-WSVRVUKN.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-5EENBBRS.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-N73SGUV7.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-R3KOHBEZ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-WCG4KH4G.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-U4BAFZL7.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-4XZTGZTS.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-6TROC6QU.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-S5WAOKTS.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-FRR7REZY.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-SJCKIQX2.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];

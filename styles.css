@@ -55,6 +55,7 @@
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
+  --tracking-wide: 0.025em;
   --leading-tight: 1.25;
   --leading-snug: 1.375;
   --radius-sm: 0.25rem;
@@ -506,9 +507,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .-mt-1 {
   margin-top: calc(var(--spacing) * -1);
 }
-#placeos .-mt-2 {
-  margin-top: calc(var(--spacing) * -2);
-}
 #placeos .mt-0 {
   margin-top: calc(var(--spacing) * 0);
 }
@@ -746,6 +744,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .min-h-48 {
   min-height: calc(var(--spacing) * 48);
 }
+#placeos .min-h-80 {
+  min-height: calc(var(--spacing) * 80);
+}
 #placeos .min-h-\[calc\(100vh-13\.25rem\)\] {
   min-height: calc(100vh - 13.25rem);
 }
@@ -793,6 +794,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .w-4\/5 {
   width: calc(4/5 * 100%);
+}
+#placeos .w-5 {
+  width: calc(var(--spacing) * 5);
 }
 #placeos .w-6 {
   width: calc(var(--spacing) * 6);
@@ -847,6 +851,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .w-96 {
   width: calc(var(--spacing) * 96);
+}
+#placeos .w-132 {
+  width: calc(var(--spacing) * 132);
 }
 #placeos .w-156 {
   width: calc(var(--spacing) * 156);
@@ -1052,6 +1059,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .min-w-\[14\%\] {
   min-width: 14%;
 }
+#placeos .min-w-\[18rem\] {
+  min-width: 18rem;
+}
 #placeos .min-w-\[20rem\] {
   min-width: 20rem;
 }
@@ -1139,6 +1149,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+#placeos .grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 #placeos .grid-cols-5 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -1379,6 +1392,14 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .border-error {
   border-color: var(--error);
 }
+#placeos .border-error\/40 {
+  border-color: var(--error);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .border-error\/40 {
+    border-color: color-mix(in oklab, var(--error) 40%, transparent);
+  }
+}
 #placeos .border-info {
   border-color: var(--info);
 }
@@ -1387,6 +1408,17 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .border-secondary {
   border-color: var(--secondary);
+}
+#placeos .border-transparent {
+  border-color: transparent;
+}
+#placeos .border-warning\/40 {
+  border-color: var(--warn);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .border-warning\/40 {
+    border-color: color-mix(in oklab, var(--warn) 40%, transparent);
+  }
 }
 #placeos .bg-\[hsl\(0\,0\%\,15\%\)\] {
   background-color: hsl(0, 0%, 15%);
@@ -1483,6 +1515,14 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .bg-warning {
   background-color: var(--warn);
+}
+#placeos .bg-warning\/10 {
+  background-color: var(--warn);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .bg-warning\/10 {
+    background-color: color-mix(in oklab, var(--warn) 10%, transparent);
+  }
 }
 #placeos .bg-none {
   background-image: none;
@@ -1604,6 +1644,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .pb-8 {
   padding-bottom: calc(var(--spacing) * 8);
 }
+#placeos .pb-24 {
+  padding-bottom: calc(var(--spacing) * 24);
+}
 #placeos .pl-1\.5 {
   padding-left: calc(var(--spacing) * 1.5);
 }
@@ -1686,6 +1729,9 @@ input:where([type=button], [type=reset], [type=submit]),
   font-size: var(--text-xs) !important;
   line-height: var(--tw-leading, var(--text-xs--line-height)) !important;
 }
+#placeos .text-\[0\.7rem\] {
+  font-size: 0.7rem;
+}
 #placeos .text-\[0\.625rem\] {
   font-size: 0.625rem;
 }
@@ -1711,6 +1757,10 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .font-semibold {
   --tw-font-weight: var(--font-weight-semibold);
   font-weight: var(--font-weight-semibold);
+}
+#placeos .tracking-wide {
+  --tw-tracking: var(--tracking-wide);
+  letter-spacing: var(--tracking-wide);
 }
 #placeos .wrap-break-word {
   overflow-wrap: break-word;
@@ -1762,11 +1812,17 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .text-secondary-content {
   color: var(--secondary-content);
 }
+#placeos .text-success {
+  color: var(--success);
+}
 #placeos .text-success-content {
   color: var(--success-content);
 }
 #placeos .text-success-content\! {
   color: var(--success-content) !important;
+}
+#placeos .text-warning {
+  color: var(--warn);
 }
 #placeos .text-warning-content {
   color: var(--warn-content);
@@ -1920,9 +1976,18 @@ input:where([type=button], [type=reset], [type=submit]),
   transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
+#placeos .transition-all {
+  transition-property: all;
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+  transition-duration: var(--tw-duration, var(--default-transition-duration));
+}
 #placeos .duration-200 {
   --tw-duration: 200ms;
   transition-duration: 200ms;
+}
+#placeos .outline-none {
+  --tw-outline-style: none;
+  outline-style: none;
 }
 #placeos .select-all {
   -webkit-user-select: all;
@@ -2222,6 +2287,16 @@ input:where([type=button], [type=reset], [type=submit]),
   #placeos .sm\:text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+}
+@media (min-width: 48rem) {
+  #placeos .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 48rem) {
+  #placeos .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 @media (min-width: 48rem) {
@@ -3404,6 +3479,7 @@ nav .mdc-tab-link {
 @property --tw-divide-y-reverse { syntax: "*"; inherits: false; initial-value: 0; }
 @property --tw-leading { syntax: "*"; inherits: false; }
 @property --tw-font-weight { syntax: "*"; inherits: false; }
+@property --tw-tracking { syntax: "*"; inherits: false; }
 @property --tw-shadow { syntax: "*"; inherits: false; initial-value: 0 0 #0000; }
 @property --tw-shadow-color { syntax: "*"; inherits: false; }
 @property --tw-shadow-alpha { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
@@ -3472,6 +3548,7 @@ nav .mdc-tab-link {
       --tw-divide-y-reverse: 0;
       --tw-leading: initial;
       --tw-font-weight: initial;
+      --tw-tracking: initial;
       --tw-shadow: 0 0 #0000;
       --tw-shadow-color: initial;
       --tw-shadow-alpha: 100%;

@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["bulk-item-modal.component.ts"],
-  "sourcesContent": ["\n            .body {\n                display: flex;\n                align-items: center;\n                flex-direction: column;\n                padding: 1em;\n            }\n\n            .icon {\n                height: 1.2em;\n                width: 1.2em;\n                display: flex;\n                align-items: center;\n                justify-content: center;\n                font-size: 2em;\n            }\n\n            .content {\n                width: 16rem;\n                text-align: center;\n                font-size: 0.8em;\n            }\n\n            mat-dialog-actions button {\n                min-width: 8em;\n            }\n        "],
-  "mappings": ";AACY,CAAA;AACI,WAAA;AACA,eAAA;AACA,kBAAA;AACA,WAAA;AACJ;AAEA,CAAA;AACI,UAAA;AACA,SAAA;AACA,WAAA;AACA,eAAA;AACA,mBAAA;AACA,aAAA;AACJ;AAEA,CAAA;AACI,SAAA;AACA,cAAA;AACA,aAAA;AACJ;AAEA,mBAAA;AACI,aAAA;AACJ;",
+  "sourcesContent": ["\n            :host {\n                display: flex;\n                flex-direction: column;\n            }\n\n            :host.fullscreen {\n                height: 100%;\n            }\n        "],
+  "mappings": ";AACY;AACI,WAAA;AACA,kBAAA;AACJ;AAEA,KAAA,CAAA;AACI,UAAA;AACJ;",
   "names": []
 }
