@@ -19,19 +19,50 @@ import { TranslatePipe } from '../../ui/translate.pipe';
     selector: 'bulk-item-match-fields',
     template: `
         <div
-            class="-mt-2 flex max-h-[65vh] max-w-[80vw] flex-wrap overflow-auto px-2"
+            class="bg-base-100 border-base-200 mb-4 grid gap-3 rounded-sm border p-4 text-sm md:grid-cols-3"
         >
+            <div>
+                <div class="text-base-content/60 tracking-wide uppercase">
+                    Rows found
+                </div>
+                <div class="text-lg font-medium">{{ list()?.length || 0 }}</div>
+            </div>
+            <div>
+                <div class="text-base-content/60 tracking-wide uppercase">
+                    Source columns
+                </div>
+                <div class="text-lg font-medium">
+                    {{ source_fields.length }}
+                </div>
+            </div>
+            <div>
+                <div class="text-base-content/60 tracking-wide uppercase">
+                    Matched fields
+                </div>
+                <div class="text-lg font-medium">
+                    {{ mappedFieldCount() }} / {{ field_list().length }}
+                </div>
+            </div>
+        </div>
+        <div class="-mx-2 flex max-w-full flex-wrap px-2">
             @for (field of field_list(); track field.id) {
-                <div class="m-2 flex min-w-[40%] flex-1 flex-col">
-                    <label class="uppercase" [for]="field.id">{{
-                        field.id
-                    }}</label>
+                <div class="m-2 flex min-w-[18rem] flex-1 flex-col">
+                    <label
+                        class="mb-1 flex items-center justify-between text-xs tracking-wide uppercase"
+                        [for]="field.id"
+                    >
+                        <span>{{ field.id }}</span>
+                        @if (isRequired(field.id)) {
+                            <span class="text-error">Required</span>
+                        }
+                    </label>
                     <mat-form-field appearance="outline" class="no-subscript">
                         <mat-select
                             [name]="'' + field.id"
                             [(ngModel)]="field_mapping[field.id]"
-                            placeholder="Select field"
+                            placeholder="Skip field"
                         >
+                            <mat-option value="">Skip field</mat-option>
                             @for (type of source_fields; track type.id) {
                                 <mat-option [value]="type.id">
                                     {{ type.name }}
@@ -42,7 +73,12 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                 </div>
             }
         </div>
-        <div class="flex items-center justify-end space-x-4 p-4">
+        <div class="text-base-content/60 px-2 pt-2 text-xs">
+            Required fields can be mapped here or filled in during review.
+        </div>
+        <div
+            class="bg-base-100 border-base-200 fixed right-0 bottom-0 left-0 z-20 flex items-center justify-end space-x-4 border-t px-4 py-4 shadow-lg"
+        >
             <button
                 btn
                 matRipple
@@ -70,6 +106,8 @@ export class MatchFieldsComponent implements OnChanges, OnInit {
     public readonly list = input<HashMap<unknown>[]>(undefined);
     /** List of fields available for building new item */
     public readonly field_list = input<Identity[]>([]);
+    /** Fields required before items can be created */
+    public readonly required_fields = input<string[]>([]);
     /** User selected mappings for field mappings */
     public readonly mappings = model<Record<string, string>>({});
     /** Emitter for mapped changes to list */
@@ -98,12 +136,13 @@ export class MatchFieldsComponent implements OnChanges, OnInit {
         const list = this.list();
         if (changes.list && list && list.length) {
             this.source_fields = Object.keys(list[0]).map((i) => ({
-                id: i.toLowerCase().split(' ').join('_'),
+                id: i,
                 name: i.split('_').join(' '),
             }));
             this.source_fields.forEach((field) => {
-                if (this.field_list().find((i) => i.id === field.id)) {
-                    this.field_mapping[`${field.id}`] = `${field.id}`;
+                const field_id = this.normaliseFieldId(field.id);
+                if (this.field_list().find((i) => i.id === field_id)) {
+                    this.field_mapping[field_id] = `${field.id}`;
                 }
             });
             if (mappings) {
@@ -131,5 +170,19 @@ export class MatchFieldsComponent implements OnChanges, OnInit {
         this.mappings.set({ ...this.field_mapping });
         this.new_mappings.emit(this.mappings());
         this.mapping_done.emit(mapped_list);
+    }
+
+    public mappedFieldCount(): number {
+        return this.field_list().filter(
+            (field) => !!this.field_mapping[field.id],
+        ).length;
+    }
+
+    public isRequired(field: unknown): boolean {
+        return this.required_fields().includes(`${field}`);
+    }
+
+    private normaliseFieldId(field: unknown): string {
+        return `${field}`.toLowerCase().split(' ').join('_');
     }
 }

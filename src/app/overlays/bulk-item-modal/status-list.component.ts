@@ -6,6 +6,7 @@ import {
     output,
     signal,
 } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceResource } from '@placeos/ts-client';
@@ -19,66 +20,95 @@ const BATCH_SIZE = 5;
 @Component({
     selector: 'bulk-item-status-list',
     template: `
-        <div class="flex flex-col items-center px-4 pb-4">
+        <div class="flex w-full flex-col items-center pb-4">
             @if (!is_done()) {
-                <div class="info">
+                <div class="info font-medium">
                     {{ 'COMMON.BULK_UPLOADING' | translate }}
                 </div>
                 <div class="text-base-content/60 mb-2 text-sm">
-                    {{ completed_count() }} / {{ list().length }} completed
+                    {{ processed_count() }} / {{ list().length }} processed
                     @if (error_count() > 0) {
                         ({{ error_count() }} failed)
                     }
                 </div>
             } @else {
-                <div class="mb-2 text-sm">
+                <div class="mb-2 text-sm font-medium">
                     {{ completed_count() }} succeeded, {{ error_count() }}
                     failed
                 </div>
             }
-            @for (item of list(); track item.id; let i = $index) {
+            <div
+                class="bg-base-200 mb-4 h-2 w-full overflow-hidden rounded-full"
+            >
                 <div
-                    class="border-base-200 flex w-[24rem] items-center rounded-sm border p-2"
+                    class="bg-info h-full rounded-full transition-all"
+                    [class.bg-success]="is_done() && error_count() === 0"
+                    [class.bg-warning]="is_done() && error_count() > 0"
+                    [style.width.%]="progress()"
+                ></div>
+            </div>
+            <div class="flex w-full flex-col">
+                @for (item of list(); track $index; let i = $index) {
+                    <div
+                        class="border-base-200 flex w-full items-center rounded-sm border p-2"
+                    >
+                        <div class="flex flex-1 flex-col justify-center px-2">
+                            <div class="name flex-1">{{ item.name }}</div>
+                            @if (status[i] && status[i] !== 'done') {
+                                <div class="text-error text-xs">
+                                    {{ status[i] }}
+                                </div>
+                            }
+                        </div>
+                        <div class="status">
+                            @if (status[i] && status[i] !== 'loading') {
+                                <div
+                                    class="flex h-8 w-8 items-center justify-center rounded-full text-2xl shadow-sm"
+                                    [class.bg-error]="status[i] !== 'done'"
+                                    [class.text-error-content]="
+                                        status[i] !== 'done'
+                                    "
+                                    [class.bg-success]="status[i] === 'done'"
+                                    [class.text-success-content]="
+                                        status[i] === 'done'
+                                    "
+                                    [matTooltip]="status[i]"
+                                >
+                                    <icon>
+                                        {{
+                                            status[i] === 'done'
+                                                ? 'done'
+                                                : 'close'
+                                        }}
+                                    </icon>
+                                </div>
+                            }
+                            @if (status[i] === 'loading') {
+                                <mat-spinner diameter="24"></mat-spinner>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+            @if (is_done()) {
+                <div
+                    class="bg-base-100 border-base-200 fixed right-0 bottom-0 left-0 z-20 flex justify-end border-t px-4 py-4 shadow-lg"
                 >
-                    <div class="flex flex-1 flex-col justify-center px-2">
-                        <div class="name flex-1">{{ item.name }}</div>
-                        @if (status[i] && status[i] !== 'done') {
-                            <div class="text-error text-xs">
-                                {{ status[i] }}
-                            </div>
-                        }
-                    </div>
-                    <div class="status">
-                        @if (status[i] && status[i] !== 'loading') {
-                            <div
-                                class="flex h-8 w-8 items-center justify-center rounded-full text-2xl shadow-sm"
-                                [class.bg-error]="status[i] !== 'done'"
-                                [class.text-error-content]="
-                                    status[i] !== 'done'
-                                "
-                                [class.bg-success]="status[i] === 'done'"
-                                [class.text-success-content]="
-                                    status[i] === 'done'
-                                "
-                                [matTooltip]="status[i]"
-                            >
-                                <icon>
-                                    {{
-                                        status[i] === 'done' ? 'done' : 'close'
-                                    }}
-                                </icon>
-                            </div>
-                        }
-                        @if (status[i] === 'loading') {
-                            <mat-spinner diameter="24"></mat-spinner>
-                        }
-                    </div>
+                    <button
+                        btn
+                        matRipple
+                        class="w-36"
+                        (click)="close_modal.emit()"
+                    >
+                        Close
+                    </button>
                 </div>
             }
         </div>
     `,
     styles: [``],
     imports: [
+        MatRippleModule,
         MatProgressSpinnerModule,
         IconComponent,
         MatTooltipModule,
@@ -95,6 +125,8 @@ export class StatusListComponent implements OnChanges {
         );
     /** Emitter for completion status of the item upload */
     public readonly done = output<Record<string, unknown>[]>();
+    /** Emitter to close the modal once the user has reviewed results */
+    public readonly close_modal = output<void>();
     /** Status of each of the items to be created */
     public status: Record<string, string> = {};
     /** Whether all items have been processed */
@@ -103,6 +135,15 @@ export class StatusListComponent implements OnChanges {
     public readonly completed_count = signal(0);
     /** Count of failed items */
     public readonly error_count = signal(0);
+
+    public processed_count(): number {
+        return this.completed_count() + this.error_count();
+    }
+
+    public progress(): number {
+        const total = this.list().length || 1;
+        return Math.round((this.processed_count() / total) * 100);
+    }
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.list && this.list()) {
@@ -146,11 +187,7 @@ export class StatusListComponent implements OnChanges {
 
             this.is_done.set(true);
             const clean_list = results.filter((item) => !!item);
-            if (clean_list.length > 0) {
-                this.done.emit(
-                    clean_list as unknown as Record<string, unknown>[],
-                );
-            }
+            this.done.emit(clean_list as unknown as Record<string, unknown>[]);
         } catch (e) {
             console.error(e);
         }

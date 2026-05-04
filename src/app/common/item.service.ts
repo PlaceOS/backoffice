@@ -199,8 +199,8 @@ export class ActiveItemService extends AsyncHandler {
         const ref = this._dialog.open(BulkItemModalComponent, {
             height: 'auto',
             width: 'auto',
-            maxHeight: 'calc(100vh - 2em)',
-            maxWidth: 'calc(100vw - 2em)',
+            maxHeight: '100vh',
+            maxWidth: '100vw',
             data: {
                 constr: actions.itemConstructor,
                 name: this.type,

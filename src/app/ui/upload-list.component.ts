@@ -211,6 +211,8 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     public readonly show = signal(false);
     /** Whether drop details overlay should be shown */
     public readonly show_overlay = signal(false);
+    /** Whether normal cloud uploads should ignore file drag/drop events */
+    public readonly disabled = signal(false);
     /** List of uploads */
     public readonly uploads = this._uploads.upload_list;
 
@@ -220,6 +222,13 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
             this._settings
                 .listen('show_upload_manager')
                 .subscribe((show) => this.show.set(show as boolean)),
+        );
+        this.subscription(
+            'disable_uploads',
+            this._settings.listen('disable_uploads').subscribe((disabled) => {
+                this.disabled.set(!!disabled);
+                if (disabled) this.show_overlay.set(false);
+            }),
         );
         this.subscription(
             'on_dialog_open',
@@ -236,6 +245,10 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     }
 
     public onEnter(e: unknown) {
+        if (this.disabled()) {
+            this.show_overlay.set(false);
+            return;
+        }
         this.show_overlay.set(
             (
                 (e as Record<string, unknown>)?.dataTransfer as {
@@ -255,6 +268,10 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
 
     /** Upload the image to the cloud */
     public handleFileEvent(event: unknown) {
+        if (this.disabled()) {
+            this.show_overlay.set(false);
+            return;
+        }
         this.clearTimeout('hide_overlay');
         this.timeout('file_event', () => {
             this.show_overlay.set(false);

@@ -3,7 +3,7 @@ import { MatRippleModule } from '@angular/material/core';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { csvToJson, downloadFile, jsonToCsv } from '../../common/general';
-import { notifyError } from '../../common/notifications';
+import { notifyError, notifyWarn } from '../../common/notifications';
 import { HashMap } from '../../common/types';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -12,45 +12,62 @@ import { TranslatePipe } from '../../ui/translate.pipe';
     selector: 'bulk-item-csv-upload',
     template: `
         @if (!loading) {
-            <button
-                matRipple
-                class="border-base-300 hover:bg-base-200 relative mx-4 flex h-96 w-[24rem] flex-col items-center justify-center space-y-4 rounded-xl border-4 border-dashed"
-                [class.hover]="dragging"
-                (dragenter)="dragging = true"
-                (dragleave)="dragging = false"
-                (dragend)="dragging = false"
-                (dragover)="onDragOver($event)"
-                (drop)="onDrop($event)"
-            >
-                <icon class="text-6xl">cloud_upload</icon>
-                <div class="text">{{ 'COMMON.BULK_DROP_MSG' | translate }}</div>
-                <input
-                    class="absolute inset-0 opacity-0"
-                    type="file"
-                    accept=".csv,.tsv"
-                    (change)="loadCSVData($event)"
-                />
-            </button>
+            <section class="flex w-132 max-w-full flex-col gap-4">
+                <label
+                    matRipple
+                    class="border-base-300 bg-base-100 hover:bg-base-200 relative flex min-h-80 cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-4 border-dashed p-8 text-center transition"
+                    [class.border-info]="dragging"
+                    [class.bg-info]="dragging"
+                    [class.text-info-content]="dragging"
+                    (dragenter)="dragging = true"
+                    (dragleave)="dragging = false"
+                    (dragend)="dragging = false"
+                    (dragover)="onDragOver($event)"
+                    (drop)="onDrop($event)"
+                >
+                    <icon class="text-6xl">cloud_upload</icon>
+                    <div>
+                        <div class="text-lg font-medium">
+                            {{ 'COMMON.BULK_DROP_MSG' | translate }}
+                        </div>
+                        <div class="text-base-content/60 mt-2 text-sm">
+                            CSV and TSV files are supported. Download the
+                            template first if you need the expected column
+                            names.
+                        </div>
+                    </div>
+                    <input
+                        class="absolute inset-0 cursor-pointer opacity-0"
+                        type="file"
+                        accept=".csv,.tsv"
+                        aria-label="Upload CSV or TSV file"
+                        (change)="loadCSVData($event)"
+                    />
+                </label>
+                @if (template()) {
+                    <button
+                        btn
+                        matRipple
+                        class="inverse w-full"
+                        (click)="downloadTemplateCSV()"
+                    >
+                        {{ 'COMMON.BULK_DOWNLOAD' | translate }}
+                    </button>
+                }
+            </section>
         } @else {
             <div
-                class="flex h-96 w-[24rem] flex-col items-center justify-center space-y-4"
+                class="flex h-96 w-132 max-w-full flex-col items-center justify-center space-y-4"
             >
                 <mat-spinner diameter="32"></mat-spinner>
-                <div class="text">
+                <div class="text-center">
                     {{ 'COMMON.BULK_DROP_LOADING' | translate }}
+                    @if (file_name) {
+                        <div class="text-base-content/60 mt-2 text-sm">
+                            {{ file_name }}
+                        </div>
+                    }
                 </div>
-            </div>
-        }
-        @if (template()) {
-            <div class="p-4">
-                <button
-                    btn
-                    matRipple
-                    class="w-full"
-                    (click)="downloadTemplateCSV()"
-                >
-                    {{ 'COMMON.BULK_DOWNLOAD' | translate }}
-                </button>
             </div>
         }
     `,
@@ -71,6 +88,8 @@ export class CsvUploadComponent {
     public dragging: boolean;
     /** Whether CSV data is being processed */
     public loading: boolean;
+    /** Name of the file currently being processed */
+    public file_name = '';
 
     public onDragOver(event: DragEvent) {
         event.preventDefault();
@@ -101,13 +120,19 @@ export class CsvUploadComponent {
     }
 
     private loadFile(file: File) {
+        const file_name = file.name.toLowerCase();
+        if (!file_name.endsWith('.csv') && !file_name.endsWith('.tsv')) {
+            notifyError('Upload a CSV or TSV file.');
+            return;
+        }
+        this.file_name = file.name;
         this.loading = true;
         const reader = new FileReader();
         reader.readAsText(file, 'UTF-8');
         reader.addEventListener('load', (evt) => {
             this.processCSVData(
                 (evt.target as FileReader).result as string,
-                file.name.endsWith('.csv') ? ',' : '\t',
+                file_name.endsWith('.csv') ? ',' : '\t',
             );
         });
         reader.addEventListener('error', (_) => {
@@ -132,6 +157,10 @@ export class CsvUploadComponent {
         try {
             const list = csvToJson(data, seperator) || [];
             this.loading = false;
+            if (!list.length) {
+                notifyWarn('No rows were found in the uploaded file.');
+                return;
+            }
             this.list.emit(list);
         } catch (e) {
             this.loading = false;
