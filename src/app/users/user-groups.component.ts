@@ -154,10 +154,19 @@ export class UserGroupsComponent {
     public readonly editPermissions = (row: PlaceGroupUser) =>
         this._service.editGroupPermissions(row);
     public readonly query_fn = (_: string) =>
-        queryGroups({ q: _, limit: 20 }).pipe(map((resp) => resp.data));
-    public readonly exclude_fn = (group: PlaceGroup, __: string) =>
-        !!this._service.active_item &&
-        !!this._current_groups.find((_) => _.group_id === group.id);
+        queryGroups({
+            q: _,
+            limit: 20,
+            authority_id: this._service.active_item?.authority_id,
+        } as Record<string, unknown>).pipe(map((resp) => resp.data));
+    public readonly exclude_fn = (group: PlaceGroup, __: string) => {
+        const authority_id = this._service.active_item?.authority_id;
+        return (
+            !!this._service.active_item &&
+            (!!this._current_groups.find((_) => _.group_id === group.id) ||
+                (!!authority_id && group.authority_id !== authority_id))
+        );
+    };
 
     private _current_groups: PlaceGroupUser[] = [];
 

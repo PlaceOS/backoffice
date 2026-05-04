@@ -128,11 +128,21 @@ export class GroupStateService {
                         placeholder: 'GROUPS.USER_SEARCH',
                         empty_message: 'GROUPS.USERS_BULK_EMPTY',
                         query_fn: (query: string) =>
-                            queryUsers({ q: query, limit: 20 }).pipe(
-                                map((response) => response.data),
-                            ),
-                        exclude: (user: PlaceUser) =>
-                            !!existing_users.find((_) => _.user_id === user.id),
+                            queryUsers({
+                                q: query,
+                                limit: 20,
+                                authority_id: this.active_item?.authority_id,
+                            }).pipe(map((response) => response.data)),
+                        exclude: (user: PlaceUser) => {
+                            const authority_id = this.active_item?.authority_id;
+                            return (
+                                !!existing_users.find(
+                                    (_) => _.user_id === user.id,
+                                ) ||
+                                (!!authority_id &&
+                                    user.authority_id !== authority_id)
+                            );
+                        },
                     },
                     height: 'auto',
                     width: 'auto',
@@ -174,11 +184,27 @@ export class GroupStateService {
                         placeholder: 'GROUPS.ZONE_SEARCH',
                         empty_message: 'GROUPS.ZONES_BULK_EMPTY',
                         query_fn: (query: string) =>
-                            queryZones({ q: query, limit: 20 }).pipe(
+                            queryZones({
+                                q: query,
+                                limit: 20,
+                                authority_id: this.active_item?.authority_id,
+                            } as Record<string, unknown>).pipe(
                                 map((response) => response.data),
                             ),
-                        exclude: (zone: PlaceZone) =>
-                            !!existing_zones.find((_) => _.zone_id === zone.id),
+                        exclude: (zone: PlaceZone) => {
+                            const authority_id = this.active_item?.authority_id;
+                            const zone_authority_id = (
+                                zone as PlaceZone & { authority_id?: string }
+                            ).authority_id;
+                            return (
+                                !!existing_zones.find(
+                                    (_) => _.zone_id === zone.id,
+                                ) ||
+                                (!!authority_id &&
+                                    !!zone_authority_id &&
+                                    zone_authority_id !== authority_id)
+                            );
+                        },
                     },
                     height: 'auto',
                     width: 'auto',

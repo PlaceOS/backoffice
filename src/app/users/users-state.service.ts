@@ -127,13 +127,23 @@ export class UsersStateService {
                         placeholder: 'GROUPS.SEARCH',
                         empty_message: 'USERS.GROUPS_BULK_EMPTY',
                         query_fn: (query: string) =>
-                            queryGroups({ q: query, limit: 20 }).pipe(
+                            queryGroups({
+                                q: query,
+                                limit: 20,
+                                authority_id: this.active_item?.authority_id,
+                            } as Record<string, unknown>).pipe(
                                 map((response) => response.data),
                             ),
-                        exclude: (group: PlaceGroup) =>
-                            !!existing_groups.find(
-                                (_) => _.group_id === group.id,
-                            ),
+                        exclude: (group: PlaceGroup) => {
+                            const authority_id = this.active_item?.authority_id;
+                            return (
+                                !!existing_groups.find(
+                                    (_) => _.group_id === group.id,
+                                ) ||
+                                (!!authority_id &&
+                                    group.authority_id !== authority_id)
+                            );
+                        },
                     },
                     height: 'auto',
                     width: 'auto',

@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addGroupZone,
+    authority,
     listMetadata,
     listZoneTriggers,
     PlaceGroup,
@@ -179,6 +180,15 @@ export class ZonesStateService {
         return this._service.active_item as unknown as PlaceZone;
     }
 
+    private get authority_id() {
+        return (
+            (this.active_item as PlaceZone & { authority_id?: string })
+                ?.authority_id ||
+            authority()?.id ||
+            undefined
+        );
+    }
+
     constructor() {
         setTimeout(() => this._change.next(!this._change.getValue()), 1000);
     }
@@ -275,13 +285,23 @@ export class ZonesStateService {
                         placeholder: 'GROUPS.SEARCH',
                         empty_message: 'ZONES.GROUPS_BULK_EMPTY',
                         query_fn: (query: string) =>
-                            queryGroups({ q: query, limit: 20 }).pipe(
+                            queryGroups({
+                                q: query,
+                                limit: 20,
+                                authority_id: this.authority_id,
+                            } as Record<string, unknown>).pipe(
                                 map((response) => response.data),
                             ),
-                        exclude: (group: PlaceGroup) =>
-                            !!existing_groups.find(
-                                (_) => _.group_id === group.id,
-                            ),
+                        exclude: (group: PlaceGroup) => {
+                            const authority_id = this.authority_id;
+                            return (
+                                !!existing_groups.find(
+                                    (_) => _.group_id === group.id,
+                                ) ||
+                                (!!authority_id &&
+                                    group.authority_id !== authority_id)
+                            );
+                        },
                     },
                     height: 'auto',
                     width: 'auto',

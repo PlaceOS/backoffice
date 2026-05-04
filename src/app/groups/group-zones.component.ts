@@ -174,10 +174,22 @@ export class GroupZonesComponent {
     public readonly editPermissions = (row: PlaceGroupZone) =>
         this._service.editZonePermissions(row);
     public readonly query_fn = (_: string) =>
-        queryZones({ q: _ }).pipe(map((resp) => resp.data));
-    public readonly exclude_fn = (zone: PlaceZone, __: string) =>
-        !!this._service.active_item &&
-        !!this._current_zones.find((_) => _.zone_id === zone.id);
+        queryZones({
+            q: _,
+            authority_id: this._service.active_item?.authority_id,
+        } as Record<string, unknown>).pipe(map((resp) => resp.data));
+    public readonly exclude_fn = (zone: PlaceZone, __: string) => {
+        const authority_id = this._service.active_item?.authority_id;
+        const zone_authority_id = (zone as PlaceZone & { authority_id?: string })
+            .authority_id;
+        return (
+            !!this._service.active_item &&
+            (!!this._current_zones.find((_) => _.zone_id === zone.id) ||
+                (!!authority_id &&
+                    !!zone_authority_id &&
+                    zone_authority_id !== authority_id))
+        );
+    };
 
     private _current_zones: PlaceGroupZone[] = [];
 

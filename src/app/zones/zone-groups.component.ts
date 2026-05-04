@@ -5,7 +5,12 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { PlaceGroup, PlaceGroupZone, queryGroups } from '@placeos/ts-client';
+import {
+    authority,
+    PlaceGroup,
+    PlaceGroupZone,
+    queryGroups,
+} from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 import { groupPermissionLabels } from '../groups/group-permissions';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
@@ -173,10 +178,28 @@ export class ZoneGroupsComponent {
     public readonly editPermissions = (row: PlaceGroupZone) =>
         this._service.editGroupPermissions(row);
     public readonly query_fn = (_: string) =>
-        queryGroups({ q: _, limit: 20 }).pipe(map((resp) => resp.data));
-    public readonly exclude_fn = (group: PlaceGroup, __: string) =>
-        !!this._service.active_item &&
-        !!this._current_groups.find((_) => _.group_id === group.id);
+        queryGroups({
+            q: _,
+            limit: 20,
+            authority_id: this.authority_id,
+        } as Record<string, unknown>).pipe(map((resp) => resp.data));
+    public readonly exclude_fn = (group: PlaceGroup, __: string) => {
+        const authority_id = this.authority_id;
+        return (
+            !!this._service.active_item &&
+            (!!this._current_groups.find((_) => _.group_id === group.id) ||
+                (!!authority_id && group.authority_id !== authority_id))
+        );
+    };
+
+    private get authority_id() {
+        return (
+            (this._service.active_item as { authority_id?: string })
+                ?.authority_id ||
+            authority()?.id ||
+            undefined
+        );
+    }
 
     private _current_groups: PlaceGroupZone[] = [];
 
