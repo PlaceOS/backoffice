@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { of } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 
 // Mock form components to avoid loading heavy Angular dependencies
 vi.mock('../../app/domains/domain-form.component', () => ({
@@ -31,12 +31,17 @@ vi.mock('../../app/zones/zone-form.component', () => ({
 vi.mock('@placeos/ts-client', () => ({
     PlaceDomain: class {},
     PlaceDriver: class {},
+    PlaceGroup: class {},
     PlaceModule: class {},
     PlaceRepository: class {},
     PlaceSystem: class {},
     PlaceTrigger: class {},
     PlaceUser: class {},
     PlaceZone: class {},
+    PlaceDriverRole: {
+        Device: 1,
+        Logic: 3,
+    },
     addDomain: vi.fn(() => of({})),
     addDriver: vi.fn(() => of({})),
     addModule: vi.fn(() => of({})),
@@ -309,6 +314,49 @@ describe('actions.ts', () => {
             const item = { name: 'New System', support_url: '' } as any;
             ACTIONS.systems.save(item);
             expect(client.addSystem).toHaveBeenCalled();
+        });
+
+        it('should create modules for logic driver ids when adding systems', async () => {
+            vi.mocked(client.addSystem).mockReturnValueOnce(
+                of({ id: 'sys-new' } as any),
+            );
+            vi.mocked(client.showDriver).mockImplementation((id: string) =>
+                of({
+                    id,
+                    name: `${id} name`,
+                    module_name: `${id} module`,
+                    role:
+                        id === 'driver-logic'
+                            ? client.PlaceDriverRole.Logic
+                            : client.PlaceDriverRole.Device,
+                    default_uri: '',
+                    default_port: 1,
+                    alert_level: 'medium',
+                    ignore_connected: false,
+                } as any),
+            );
+
+            await firstValueFrom(
+                ACTIONS.systems.save({
+                    name: 'New System',
+                    support_url: '',
+                    modules: ['mod-123', 'driver-logic', 'driver-device'],
+                } as any),
+            );
+
+            expect(client.addSystem).toHaveBeenCalledWith(
+                expect.objectContaining({ modules: ['mod-123'] }),
+            );
+            expect(client.showDriver).toHaveBeenCalledWith('driver-logic');
+            expect(client.showDriver).toHaveBeenCalledWith('driver-device');
+            expect(client.addModule).toHaveBeenCalledTimes(1);
+            expect(client.addModule).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    driver_id: 'driver-logic',
+                    control_system_id: 'sys-new',
+                    role: client.PlaceDriverRole.Logic,
+                }),
+            );
         });
 
         it('should call updateSystem for existing item', () => {

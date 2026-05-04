@@ -11,6 +11,7 @@ import {
     addZone,
     PlaceDomain,
     PlaceDriver,
+    PlaceDriverRole,
     PlaceGroup,
     PlaceModule,
     PlaceRepository,
@@ -56,8 +57,8 @@ import {
     updateUser,
     updateZone,
 } from '@placeos/ts-client';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { from, lastValueFrom, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { DomainFormComponent } from '../domains/domain-form.component';
 import { DriverFormComponent } from '../drivers/driver-form.component';
 import { GroupFormComponent } from '../groups/group-form.component';
@@ -180,22 +181,82 @@ const systems: ItemActions<PlaceSystem> = {
             fields: ['id', 'name', 'display_name'].join(','),
         }),
     show: (_) => showSystem(_),
-    save: (item) =>
-        item.id
-            ? updateSystem(item.id, {
-                  ...item,
-                  support_url: processURL(item, item.support_url),
-              })
-            : addSystem({
-                  ...item,
-                  support_url: processURL(item, item.support_url),
-              }),
+    save: (item) => saveSystem(item),
     remove: (item) => removeSystem(item.id),
     itemConstructor: PlaceSystem,
     modalComponent: SystemFormComponent,
     delete_message: ``,
     name: 'SYSTEMS',
 };
+
+function saveSystem(item: PlaceSystem): Observable<PlaceSystem> {
+    const modules = (item as { modules?: readonly string[] | string }).modules;
+    const { module_ids, driver_ids } = splitModuleIds(modules);
+    const form_data = {
+        ...item,
+        support_url: processURL(item, item.support_url || ''),
+    } as Partial<PlaceSystem>;
+    if (modules !== undefined) {
+        (form_data as { modules?: readonly string[] }).modules = module_ids;
+    }
+    if (item.id) return updateSystem(item.id, form_data);
+    return addSystem(form_data).pipe(
+        switchMap((system) =>
+            from(addLogicDriverModules(system, driver_ids)).pipe(
+                map(() => system),
+            ),
+        ),
+    );
+}
+
+async function addLogicDriverModules(system: PlaceSystem, driver_ids: string[]) {
+    if (!driver_ids.length) return;
+    await Promise.all(
+        [...new Set(driver_ids)].map(async (driver_id) => {
+            const driver = await lastValueFrom(showDriver(driver_id));
+            if (driver.role !== PlaceDriverRole.Logic) return;
+            await lastValueFrom(
+                addModule({
+                    driver_id: driver.id,
+                    control_system_id: system.id,
+                    name: driver.name || driver.module_name,
+                    uri: driver.default_uri,
+                    port: driver.default_port || 1,
+                    role: driver.role,
+                    alert_level: driver.alert_level,
+                    ignore_connected: driver.ignore_connected,
+                } as Partial<PlaceModule>),
+            );
+        }),
+    );
+}
+
+function splitModuleIds(modules: readonly string[] | string | undefined) {
+    const ids = parseIdList(modules);
+    return {
+        module_ids: ids.filter((id) => !id.startsWith('driver-')),
+        driver_ids: ids.filter((id) => id.startsWith('driver-')),
+    };
+}
+
+function parseIdList(value: readonly string[] | string | undefined): string[] {
+    if (Array.isArray(value)) return value.filter((id) => !!id);
+    if (typeof value !== 'string') return [];
+    const trimmed = value.trim();
+    if (!trimmed) return [];
+    try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parseIdList(parsed);
+    } catch (_) {
+        // Continue with delimited text parsing for non-JSON cells.
+    }
+    return trimmed
+        .replace(/^\[/, '')
+        .replace(/\]$/, '')
+        .split(/[\s,]+/)
+        .map((id) => id.replace(/^['"]|['"]$/g, ''))
+        .filter((id) => !!id);
+}
 
 function processURL(system: PlaceSystem, url: string) {
     for (const key in system) {
