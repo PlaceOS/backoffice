@@ -252,6 +252,7 @@
         "ROOM_BOOKING_URL": "Room Booking URL",
         "BOOKABLE": "Bookable Room",
         "FEATURES": "Features",
+        "SECURITY_GROUPS": "Security Groups",
         "SIGNAGE": "Signage",
         "PUBLIC": "Public",
         "CODE": "Code",

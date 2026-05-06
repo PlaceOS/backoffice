@@ -84,6 +84,7 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
                 ? (system.features as string).split(' ')
                 : system.features) || [],
         ),
+        security_groups: new FormControl([...(system.security_groups || [])]),
         capacity: new FormControl(system.capacity || 0, [
             Validators.pattern('[0-9]*'),
         ]),

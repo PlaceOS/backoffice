@@ -77,6 +77,23 @@ import { SystemStateService } from './system-state.service';
                             </div>
                             <div>{{ item()?.code }}</div>
                         }
+                        @if (item()?.security_groups?.length) {
+                            <div class="flex items-center text-sm font-medium">
+                                {{ 'SYSTEMS.SECURITY_GROUPS' | translate }}
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                                @for (
+                                    group of item()?.security_groups;
+                                    track group
+                                ) {
+                                    <span
+                                        class="bg-base-200 rounded px-2 py-1 text-xs font-medium"
+                                    >
+                                        {{ group }}
+                                    </span>
+                                }
+                            </div>
+                        }
                         @if (item()?.email) {
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'SYSTEMS.EMAIL' | translate }}

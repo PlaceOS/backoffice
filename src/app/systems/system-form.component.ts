@@ -330,6 +330,60 @@ import { generateSystemsFormFields } from './systems.utilities';
                             </mat-form-field>
                         </div>
                     }
+                    @if (form.controls.security_groups) {
+                        <div class="field">
+                            <label
+                                for="security-group-list"
+                                [class.error]="
+                                    form.controls.security_groups.invalid &&
+                                    form.controls.security_groups.touched
+                                "
+                            >
+                                {{ 'SYSTEMS.SECURITY_GROUPS' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-chip-grid
+                                    #securityGroupChipList
+                                    aria-label="Security Group List"
+                                >
+                                    @for (
+                                        item of security_group_list();
+                                        track item
+                                    ) {
+                                        <mat-chip-row
+                                            (removed)="removeSecurityGroup(item)"
+                                        >
+                                            <div class="max-w-md truncate">
+                                                {{ item }}
+                                            </div>
+                                            <button
+                                                matChipRemove
+                                                [attr.aria-label]="
+                                                    'SYSTEMS.REMOVE_ITEM'
+                                                        | translate
+                                                            : { item: item }
+                                                "
+                                            >
+                                                <icon>cancel</icon>
+                                            </button>
+                                        </mat-chip-row>
+                                    }
+                                </mat-chip-grid>
+                                <input
+                                    id="security-group-list"
+                                    [placeholder]="
+                                        'SYSTEMS.SECURITY_GROUPS' | translate
+                                    "
+                                    [matChipInputFor]="securityGroupChipList"
+                                    [matChipInputSeparatorKeyCodes]="separators"
+                                    [matChipInputAddOnBlur]="true"
+                                    (matChipInputTokenEnd)="
+                                        addSecurityGroup($event)
+                                    "
+                                />
+                            </mat-form-field>
+                        </div>
+                    }
                     @if (form.controls.map_id) {
                         <div class="field">
                             <label for="map_id">{{
@@ -590,6 +644,12 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
               initialValue: this.cameraSnapshotUrlsControl.value || [],
           })
         : signal([]);
+    public security_group_list: Signal<string[]> = this.form.controls
+        .security_groups
+        ? toSignal(this.securityGroupsControl.valueChanges, {
+              initialValue: this.securityGroupsControl.value || [],
+          })
+        : signal([]);
 
     /** Function for querying zones */
     public readonly query_fn = (_: string) =>
@@ -611,6 +671,10 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
 
     private get cameraSnapshotUrlsControl(): FormControl<string[]> {
         return this.form.controls.camera_snapshot_urls as FormControl<string[]>;
+    }
+
+    private get securityGroupsControl(): FormControl<string[]> {
+        return this.form.controls.security_groups as FormControl<string[]>;
     }
 
     public ngOnInit(): void {
@@ -740,6 +804,14 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
 
     public removeCameraSnapshotUrl(url: string): void {
         removeChipItem(this.cameraSnapshotUrlsControl, url);
+    }
+
+    public addSecurityGroup(event: MatChipInputEvent): void {
+        addChipItem(this.securityGroupsControl, event);
+    }
+
+    public removeSecurityGroup(group: string): void {
+        removeChipItem(this.securityGroupsControl, group);
     }
 
     private processURL(system: PlaceSystem, url: string): string {
