@@ -18,7 +18,7 @@ import { UsersStateService } from './users-state.service';
     selector: 'user-groups',
     template: `
         <div class="flex h-full min-w-0 flex-col">
-            <section class="flex items-center gap-2 px-4 pt-4">
+            <section class="flex gap-2 px-4 pt-4">
                 <item-search-field
                     [placeholder]="'GROUPS.SEARCH' | translate"
                     class="flex-1"

@@ -23,7 +23,7 @@ import { ZonesStateService } from './zones-state.service';
     selector: 'zone-groups',
     template: `
         <div class="flex h-full min-w-0 flex-col">
-            <section class="flex items-center gap-2 px-4 pt-4">
+            <section class="flex gap-2 px-4 pt-4">
                 <item-search-field
                     [placeholder]="'GROUPS.SEARCH' | translate"
                     class="flex-1"
@@ -117,7 +117,9 @@ import { ZonesStateService } from './zones-state.service';
                     [class.bg-success]="!row.deny"
                     [class.text-success-content]="!row.deny"
                 >
-                    {{ (row.deny ? 'COMMON.TRUE' : 'COMMON.FALSE') | translate }}
+                    {{
+                        (row.deny ? 'COMMON.TRUE' : 'COMMON.FALSE') | translate
+                    }}
                 </span>
             </div>
         </ng-template>
