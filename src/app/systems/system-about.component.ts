@@ -1,15 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceSystem } from '@placeos/ts-client';
-import { marked } from 'marked';
 import { map } from 'rxjs/operators';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
-import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
+import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { SystemStateService } from './system-state.service';
 
@@ -207,7 +206,7 @@ import { SystemStateService } from './system-state.service';
                     </h3>
                     <div
                         class="markdown w-full overflow-auto p-4 text-sm"
-                        [innerHTML]="description() | sanitize"
+                        [innerHTML]="item()?.description | markdown | async"
                     ></div>
                 </div>
             }
@@ -245,9 +244,9 @@ import { SystemStateService } from './system-state.service';
         CommonModule,
         TranslatePipe,
         DateFromPipe,
+        MarkdownPipe,
         MatProgressSpinnerModule,
         SettingsFormComponent,
-        SanitizePipe,
         MatRippleModule,
         MatTooltipModule,
     ],
@@ -266,9 +265,5 @@ export class SystemAboutComponent {
         {
             initialValue: undefined as PlaceSystem | undefined,
         },
-    );
-    /** HTML string for rendering the description */
-    public readonly description = computed(() =>
-        marked(this.item()?.description || '', { async: false }),
     );
 }

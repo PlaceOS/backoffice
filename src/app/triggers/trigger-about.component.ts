@@ -15,13 +15,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { marked } from 'marked';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { FormatListPipe } from '../ui/pipes/format-list.pipe';
-import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
+import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { TriggerStateService } from './trigger-state.service';
@@ -76,7 +75,7 @@ import { TriggerStateService } from './trigger-state.service';
                 </h3>
                 <div
                     class="markdown w-full overflow-auto p-4 text-sm"
-                    [innerHTML]="description() | sanitize"
+                    [innerHTML]="item.description | markdown | async"
                 ></div>
             </div>
         }
@@ -296,7 +295,7 @@ import { TriggerStateService } from './trigger-state.service';
         ItemSearchFieldComponent,
         FormsModule,
         DateFromPipe,
-        SanitizePipe,
+        MarkdownPipe,
     ],
 })
 export class TriggerAboutComponent extends AsyncHandler {
@@ -345,10 +344,6 @@ export class TriggerAboutComponent extends AsyncHandler {
     public readonly removeAction = (a: TriggerFunction | TriggerMailer) =>
         this._service.removeAction(a);
 
-    /** HTML string for rendering the description */
-    public readonly description = computed(
-        () => marked(this.item.description || '', { async: false }) as string,
-    );
     /**
      * Open confirmation modal for re-ordering action for active trigger
      * @param type Type of action to reorder

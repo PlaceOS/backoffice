@@ -315,11 +315,13 @@ span.highlight {
         color: var(--base-content);
         border-radius: 4px;
         margin-bottom: 1rem;
+        font-size: 0.8em;
     }
 
     code {
         font-family: 'Fira Code', monospace;
         white-space: inherit; /* ensures consistency */
+        font-size: 0.8em;
     }
 }
 
@@ -756,6 +758,15 @@ table:not([role='grid']) {
     border-radius: 4px;
     font-size: 0.75rem;
     @apply truncate;
+}
+
+#placeos .markdown pre code {
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    font-size: inherit;
+    overflow: visible;
+    text-overflow: clip;
 }
 
 /*=============================================================*\

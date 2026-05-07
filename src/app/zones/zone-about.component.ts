@@ -11,13 +11,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { marked } from 'marked';
 import { lastValueFrom, Observable } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
-import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
+import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
@@ -218,7 +217,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     </h3>
                     <div
                         class="markdown w-full overflow-auto p-4 text-sm"
-                        [innerHTML]="description() | sanitize"
+                        [innerHTML]="item()?.description | markdown | async"
                     ></div>
                 </div>
             }
@@ -251,10 +250,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
         CommonModule,
         MatProgressSpinnerModule,
         SettingsFormComponent,
-        SanitizePipe,
         TranslatePipe,
         MatTooltipModule,
         DateFromPipe,
+        MarkdownPipe,
         ExecuteMethodFieldComponent,
         MatFormFieldModule,
         MatSelectModule,
@@ -276,9 +275,6 @@ export class ZoneAboutComponent extends AsyncHandler {
         },
     );
     public readonly parent = signal<PlaceZone | undefined>(undefined);
-    public readonly description = computed(() =>
-        this.item() ? marked(this.item()?.description) : '',
-    );
     public readonly tag_list = computed(() =>
         this.item() ? this.item()?.tags : [],
     );

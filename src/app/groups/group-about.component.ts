@@ -9,10 +9,9 @@ import {
     showDomain,
     showGroup,
 } from '@placeos/ts-client';
-import { marked } from 'marked';
 import { lastValueFrom } from 'rxjs';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
-import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
+import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { GroupStateService } from './group-state.service';
 
@@ -107,7 +106,7 @@ import { GroupStateService } from './group-state.service';
                 </h3>
                 <div
                     class="markdown w-full overflow-auto p-4 text-sm"
-                    [innerHTML]="description() | sanitize"
+                    [innerHTML]="item()?.description | markdown | async"
                 ></div>
             </div>
         }
@@ -125,7 +124,7 @@ import { GroupStateService } from './group-state.service';
         MatTooltipModule,
         TranslatePipe,
         DateFromPipe,
-        SanitizePipe,
+        MarkdownPipe,
         RouterModule,
     ],
 })
@@ -143,11 +142,6 @@ export class GroupAboutComponent {
     public readonly updated_at = computed(
         () => Date.parse(this.item()?.updated_at || '') / 1000,
     );
-    public readonly description = computed(
-        () =>
-            marked(this.item()?.description || '', { async: false }) as string,
-    );
-
     constructor() {
         effect(() => {
             const authority_id = this.item()?.authority_id;

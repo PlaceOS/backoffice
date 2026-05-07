@@ -1,12 +1,12 @@
+import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { AsyncHandler } from '../common/async-handler.class';
 
-import { marked } from 'marked';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
-import { SafePipe } from '../ui/pipes/safe.pipe';
+import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ChangelogModalData {
@@ -23,7 +23,7 @@ export interface ChangelogModalData {
             @if (changelog) {
                 <div
                     class="markdown changelog items-start"
-                    [innerHTML]="changelog | safe: 'html'"
+                    [innerHTML]="changelog | markdown | async"
                 ></div>
             } @else {
                 <div
@@ -40,7 +40,8 @@ export interface ChangelogModalData {
     styles: [``],
     imports: [
         FullscreenModalShellComponent,
-        SafePipe,
+        AsyncPipe,
+        MarkdownPipe,
         TranslatePipe,
         IconComponent,
     ],
@@ -50,11 +51,5 @@ export class ChangelogModalComponent extends AsyncHandler {
 
     /** Whether the changelog is loading */
     public loading: boolean;
-    /** Changelog Markdown */
-    public item: string;
-
-    /** HTML string for rendering the change log */
-    public get changelog(): string {
-        return marked(this._data.changelog || '', { async: false }) as string;
-    }
+    public readonly changelog = this._data.changelog;
 }

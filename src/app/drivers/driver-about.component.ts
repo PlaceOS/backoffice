@@ -1,21 +1,20 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceDriver } from '@placeos/ts-client';
-import { marked } from 'marked';
 import { map } from 'rxjs/operators';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { SafePipe } from '../ui/pipes/safe.pipe';
-import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
 
@@ -182,7 +181,7 @@ import { DriverStateService } from './driver-state.service';
                     </h3>
                     <div
                         class="markdown w-full overflow-auto p-4 text-sm"
-                        [innerHTML]="description() | sanitize"
+                        [innerHTML]="item()?.description | markdown | async"
                     ></div>
                 </div>
             }
@@ -220,10 +219,10 @@ import { DriverStateService } from './driver-state.service';
         TranslatePipe,
         MatRippleModule,
         SettingsFormComponent,
-        SanitizePipe,
         MatTooltipModule,
         CommonModule,
         DateFromPipe,
+        MarkdownPipe,
         RouterModule,
         SafePipe,
         MatProgressSpinnerModule,
@@ -244,11 +243,6 @@ export class DriverAboutComponent {
             initialValue: undefined as PlaceDriver | undefined,
         },
     );
-    /** HTML string for rendering the description */
-    public readonly description = computed(() =>
-        marked(this.item()?.description || '', { async: false }),
-    );
-
     public copyCommit(): void {
         this._clipboard.copy(this.item()?.commit || '');
         notifyInfo(i18n('COMMON.COMMIT_HASH_COPIED'));

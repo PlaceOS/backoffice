@@ -1,4 +1,5 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { Component, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
@@ -8,14 +9,13 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { marked } from 'marked';
 import { AsyncHandler } from '../common/async-handler.class';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { validateJSONString } from '../common/validation';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { IconComponent } from '../ui/icon.component';
-import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
+import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DomainStateService } from './domain-state.service';
 
@@ -31,7 +31,7 @@ import { DomainStateService } from './domain-state.service';
                 </h3>
                 <div
                     class="markdown w-full overflow-auto p-4 text-sm"
-                    [innerHTML]="description() | sanitize"
+                    [innerHTML]="item?.description | markdown | async"
                 ></div>
             </div>
             <hr class="text-base-300 my-4" />
@@ -116,7 +116,8 @@ import { DomainStateService } from './domain-state.service';
         IconComponent,
         MatTooltipModule,
         TranslatePipe,
-        SanitizePipe,
+        AsyncPipe,
+        MarkdownPipe,
     ],
 })
 export class DomainAboutComponent extends AsyncHandler {
@@ -137,11 +138,6 @@ export class DomainAboutComponent extends AsyncHandler {
     public get item(): PlaceDomain | null {
         return this._item();
     }
-
-    /** HTML string for rendering the description */
-    public readonly description = computed(
-        () => marked(this.item?.description || '', { async: false }) as string,
-    );
 
     constructor() {
         super();

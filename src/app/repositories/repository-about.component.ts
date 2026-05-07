@@ -5,11 +5,10 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
-import { marked } from 'marked';
 import { map } from 'rxjs/operators';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { SafePipe } from '../ui/pipes/safe.pipe';
-import { SanitizePipe } from '../ui/pipes/sanitise.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { RepositoriesStateService } from './repositories-state.service';
 
@@ -170,7 +169,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </h3>
                 <div
                     class="markdown w-full overflow-auto p-4 text-sm"
-                    [innerHTML]="description() | sanitize"
+                    [innerHTML]="item()?.description | markdown | async"
                 ></div>
             </div>
         }
@@ -194,7 +193,7 @@ import { RepositoriesStateService } from './repositories-state.service';
     ],
     imports: [
         CommonModule,
-        SanitizePipe,
+        MarkdownPipe,
         TranslatePipe,
         MatProgressSpinnerModule,
         MatRippleModule,
@@ -229,10 +228,6 @@ export class RepositoryAboutComponent {
     public readonly is_interface = computed(
         () => this.item()?.type === PlaceRepositoryType.Interface,
     );
-    public readonly description = computed(() =>
-        marked(this.item()?.description || '', { async: false }),
-    );
-
     /**
      * Send request to server to pull the latest commit for the active repository
      */
