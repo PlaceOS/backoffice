@@ -2563,10 +2563,12 @@ span.highlight {
   color: var(--base-content);
   border-radius: 4px;
   margin-bottom: 1rem;
+  font-size: 0.8em;
 }
 #placeos .markdown code {
   font-family: "Fira Code", monospace;
   white-space: inherit;
+  font-size: 0.8em;
 }
 #placeos .selectable {
   -webkit-user-select: auto;
@@ -2950,6 +2952,14 @@ table:not([role=grid]) td.small {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+#placeos .markdown pre code {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  font-size: inherit;
+  overflow: visible;
+  text-overflow: clip;
 }
 .font-heading {
   font-family:
