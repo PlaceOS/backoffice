@@ -660,9 +660,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .h-48 {
   height: calc(var(--spacing) * 48);
 }
-#placeos .h-64 {
-  height: calc(var(--spacing) * 64);
-}
 #placeos .h-96 {
   height: calc(var(--spacing) * 96);
 }
@@ -671,9 +668,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .h-130 {
   height: calc(var(--spacing) * 130);
-}
-#placeos .h-160 {
-  height: calc(var(--spacing) * 160);
 }
 #placeos .h-\[1\.25em\] {
   height: 1.25em;
@@ -687,11 +681,11 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .h-\[65vh\] {
   height: 65vh;
 }
-#placeos .h-\[70vh\] {
-  height: 70vh;
-}
 #placeos .h-\[768px\] {
   height: 768px;
+}
+#placeos .h-\[calc\(100vh-6rem\)\] {
+  height: calc(100vh - 6rem);
 }
 #placeos .h-auto {
   height: auto;
@@ -714,9 +708,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .max-h-\[65vh\] {
   max-height: 65vh;
 }
-#placeos .max-h-\[70vh\] {
-  max-height: 70vh;
-}
 #placeos .max-h-\[75vh\] {
   max-height: 75vh;
 }
@@ -725,6 +716,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .min-h-0 {
   min-height: calc(var(--spacing) * 0);
+}
+#placeos .min-h-1\/2 {
+  min-height: calc(1/2 * 100%);
 }
 #placeos .min-h-8 {
   min-height: calc(var(--spacing) * 8);
