@@ -30,7 +30,9 @@ import { TranslatePipe } from './translate.pipe';
                 class="z-0 mx-auto flex min-h-1/2 w-156 max-w-full flex-1 flex-col space-y-8 p-2"
             >
                 <ng-content></ng-content>
-                <div class="h-10 w-full"></div>
+                @if (!loading() && !hide_confirm()) {
+                    <div class="min-h-10 w-full"></div>
+                }
             </main>
             @if (!loading() && !hide_confirm()) {
                 <footer
