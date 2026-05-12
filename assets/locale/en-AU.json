@@ -15,6 +15,7 @@
         "ALERT_MEDIUM": "Medium",
         "ALERT_HIGH": "High",
         "ALERT_CRITICAL": "Critical",
+        "DEFAULT": "Default",
         "EDGE": "Edge",
         "ALERTS": "Alerts",
         "EDGE_SEARCH": "Search for edges...",
