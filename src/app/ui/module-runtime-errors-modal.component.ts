@@ -33,17 +33,19 @@ import { TranslatePipe } from './translate.pipe';
         </header>
         @if (!loading()) {
             <main
-                class="flex h-160 max-h-[70vh] w-[80vw] flex-col space-y-2 overflow-auto p-4"
+                class="flex h-[calc(100vh-6rem)] w-[80vw] flex-col space-y-2 overflow-auto p-4"
             >
                 @if (errors().length) {
                     <settings-form-field
+                        class="min-h-0 flex-1"
                         [ngModel]="formatted_errors()"
                         [readonly]="true"
+                        [fill]="true"
                         lang="json"
                     ></settings-form-field>
                 } @else {
                     <div
-                        class="flex h-64 flex-col items-center justify-center space-y-2 opacity-30"
+                        class="flex flex-1 flex-col items-center justify-center space-y-2 opacity-30"
                     >
                         {{ 'MODULES.RUNTIME_ERRORS_NO' | translate }}
                     </div>
@@ -51,7 +53,7 @@ import { TranslatePipe } from './translate.pipe';
             </main>
         } @else {
             <main
-                class="flex h-[70vh] w-[80vw] flex-col items-center justify-center"
+                class="flex h-[calc(100vh-6rem)] w-[80vw] flex-col items-center justify-center"
             >
                 <mat-spinner diameter="32"></mat-spinner>
                 <div class="opacity-30">

@@ -44,7 +44,7 @@ export interface ModuleStateModalData {
         </div>
         @if (!loading()) {
             <main
-                class="flex h-160 max-h-[70vh] w-[80vw] flex-col space-y-2 overflow-auto p-4"
+                class="flex h-[calc(100vh-6rem)] w-[80vw] flex-col space-y-2 overflow-auto p-4"
             >
                 <div class="mb-2 flex items-center space-x-2">
                     <div
@@ -87,16 +87,18 @@ export interface ModuleStateModalData {
                         </button>
                     </div>
                 </div>
-                <div class="pb-4">
+                <div class="flex min-h-0 flex-1">
                     <settings-form-field
+                        class="min-h-0 flex-1"
                         [ngModel]="state"
                         [readonly]="true"
+                        [fill]="true"
                     ></settings-form-field>
                 </div>
             </main>
         } @else {
             <main
-                class="flex h-[70vh] w-[80vw] flex-col items-center justify-center"
+                class="flex h-[calc(100vh-6rem)] w-[80vw] flex-col items-center justify-center"
             >
                 <mat-spinner diameter="32"></mat-spinner>
                 <div>

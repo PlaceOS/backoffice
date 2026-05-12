@@ -24,7 +24,10 @@ let MODEL: HashMap<monaco.editor.ITextModel> = {};
     selector: 'settings-form-field,[settings-field]',
     template: `
         <div
-            class="border-base-300 relative h-128 w-full border"
+            class="border-base-300 relative w-full border"
+            [class.h-128]="!fill()"
+            [class.h-full]="fill()"
+            [class.min-h-0]="fill()"
             editor
             (window:resize)="resizeEditor()"
             #editor
@@ -57,6 +60,8 @@ export class SettingsFieldComponent
     public readonly readonly = input(true);
     /** Resize */
     public readonly resize = input<boolean>(undefined);
+    /** Whether the field should fill the available height */
+    public readonly fill = input(false);
     /** List of decorations to apply to the editor */
     public readonly decorations = input<any[]>(undefined);
     /** Input language for syntax highlighting and error checking */
@@ -222,6 +227,7 @@ export class SettingsFieldComponent
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
                 readOnly: this.readonly(),
+                automaticLayout: true,
                 theme:
                     this._settings.get('theme') !== 'dark' ? 'vs' : 'vs-dark',
             });
