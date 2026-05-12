@@ -723,6 +723,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .min-h-8 {
   min-height: calc(var(--spacing) * 8);
 }
+#placeos .min-h-10 {
+  min-height: calc(var(--spacing) * 10);
+}
 #placeos .min-h-12 {
   min-height: calc(var(--spacing) * 12);
 }
