@@ -98,7 +98,7 @@ import { GroupStateService } from './group-state.service';
                 }
                 @if (!permissionLabels(row.permissions).length) {
                     <span class="opacity-30">{{
-                        'COMMON.NONE' | translate
+                        'COMMON.DEFAULT' | translate
                     }}</span>
                 }
             </div>
@@ -180,8 +180,9 @@ export class GroupZonesComponent {
         } as Record<string, unknown>).pipe(map((resp) => resp.data));
     public readonly exclude_fn = (zone: PlaceZone, __: string) => {
         const authority_id = this._service.active_item?.authority_id;
-        const zone_authority_id = (zone as PlaceZone & { authority_id?: string })
-            .authority_id;
+        const zone_authority_id = (
+            zone as PlaceZone & { authority_id?: string }
+        ).authority_id;
         return (
             !!this._service.active_item &&
             (!!this._current_zones.find((_) => _.zone_id === zone.id) ||
