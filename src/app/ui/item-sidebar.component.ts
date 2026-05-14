@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { CdkTreeModule } from '@angular/cdk/tree';
 import {
     AfterViewInit,
     Component,
@@ -117,30 +118,34 @@ interface GroupTreeItem {
             <div class="border-base-200 flex h-1/2 flex-1 flex-col border-t">
                 @if (route() === 'groups' && !search.trim()) {
                     @if (group_tree_items().length) {
-                        <div class="h-full overflow-auto py-1">
-                            @for (
-                                node of group_tree_items();
-                                track node.group.id
-                            ) {
-                                <div
-                                    class="border-base-100 hover:border-info relative m-1 flex min-h-16 max-w-[calc(100%-0.5rem)] items-center rounded-sm border py-1 pr-2"
-                                    [class.bg-base-200]="
-                                        $index % 2 === 1 &&
-                                        selected_id() !== node.group.id
-                                    "
+                        <div class="h-full overflow-auto">
+                            <cdk-tree
+                                class="group-tree"
+                                [dataSource]="group_tree_items()"
+                                [levelAccessor]="groupLevelAccessor"
+                                [trackBy]="trackByGroupNode"
+                            >
+                                <cdk-tree-node
+                                    *cdkTreeNodeDef="let node"
+                                    cdkTreeNodePadding
+                                    [cdkTreeNodePadding]="node.depth"
+                                    [cdkTreeNodePaddingIndent]="8"
+                                    class="border-base-200 bg-base-100 hover:bg-base-200 relative flex min-h-16 items-center gap-2 border-b pr-2 transition-colors"
                                     [class.active]="
                                         selected_id() === node.group.id
                                     "
-                                    [style.margin-left.rem]="
-                                        0.25 + node.depth * 0.5
-                                    "
                                 >
+                                    <div
+                                        class="bg-base-content absolute inset-y-1 left-1 rounded-sm"
+                                        [style.width]="
+                                            0.25 * node.depth + 'rem'
+                                        "
+                                        [style.opacity]="0.1 * node.depth"
+                                    ></div>
                                     @if (childCount(node.group) > 0) {
                                         <button
                                             type="button"
-                                            icon
-                                            matRipple
-                                            class="h-8 min-h-8 w-8 min-w-8"
+                                            class="hover:bg-base-content/20 ml-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors"
                                             [attr.aria-label]="
                                                 (isGroupExpanded(node.group.id)
                                                     ? 'Collapse group '
@@ -163,12 +168,10 @@ interface GroupTreeItem {
                                             </icon>
                                         </button>
                                     } @else {
-                                        <span
-                                            class="mr-1 h-8 w-8 shrink-0"
-                                        ></span>
+                                        <div class="min-w-8"></div>
                                     }
                                     <a
-                                        class="flex min-w-0 flex-1 flex-col justify-center rounded-sm px-2 py-1 no-underline"
+                                        class="flex min-w-0 flex-1 flex-col justify-center rounded-md py-3 text-left no-underline"
                                         [routerLink]="
                                             subroute()
                                                 ? [
@@ -182,14 +185,16 @@ interface GroupTreeItem {
                                         (click)="show.set(false)"
                                     >
                                         <div
-                                            class="flex min-w-0 items-center gap-1"
+                                            class="flex min-w-0 items-center gap-2"
                                         >
-                                            <p class="min-w-0 flex-1 truncate">
+                                            <p
+                                                class="min-w-0 flex-1 truncate font-medium"
+                                            >
                                                 {{ displayName(node.group) }}
                                             </p>
                                             @if (childCount(node.group) > 0) {
                                                 <span
-                                                    class="bg-base-200 -mr-2 rounded-full px-2 py-0.5 text-xs"
+                                                    class="bg-base-200/70 rounded-full px-2 py-0.5 text-xs"
                                                 >
                                                     {{ childCount(node.group) }}
                                                 </span>
@@ -197,14 +202,14 @@ interface GroupTreeItem {
                                         </div>
                                         @if (node.group.description) {
                                             <p
-                                                class="w-full truncate text-xs opacity-60"
+                                                class="mt-0.5 w-full truncate text-xs opacity-70"
                                             >
                                                 {{ node.group.description }}
                                             </p>
                                         }
                                     </a>
-                                </div>
-                            }
+                                </cdk-tree-node>
+                            </cdk-tree>
                             <div
                                 class="bg-base-200 p-2 text-center text-sm opacity-30"
                             >
@@ -329,10 +334,14 @@ interface GroupTreeItem {
                 background-color: var(--secondary) !important;
                 color: var(--secondary-content);
             }
+            .group-tree {
+                background: transparent;
+            }
         `,
     ],
     imports: [
         CommonModule,
+        CdkTreeModule,
         TranslatePipe,
         MatTooltipModule,
         IconComponent,
@@ -424,6 +433,9 @@ export class ItemSidebarComponent
         for (const group of roots) addGroup(group, 0);
         return items;
     });
+    public readonly groupLevelAccessor = (node: GroupTreeItem) => node.depth;
+    public readonly trackByGroupNode = (_: number, node: GroupTreeItem) =>
+        node.group.id;
 
     constructor() {
         super();
