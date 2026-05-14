@@ -59,6 +59,7 @@
   --leading-tight: 1.25;
   --leading-snug: 1.375;
   --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
@@ -311,6 +312,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .inset-x-2 {
   inset-inline: calc(var(--spacing) * 2);
 }
+#placeos .inset-y-1 {
+  inset-block: calc(var(--spacing) * 1);
+}
 #placeos .-top-1 {
   top: calc(var(--spacing) * -1);
 }
@@ -510,6 +514,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .mt-0 {
   margin-top: calc(var(--spacing) * 0);
 }
+#placeos .mt-0\.5 {
+  margin-top: calc(var(--spacing) * 0.5);
+}
 #placeos .mt-1 {
   margin-top: calc(var(--spacing) * 1);
 }
@@ -530,9 +537,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .-mr-2 {
   margin-right: calc(var(--spacing) * -2);
-}
-#placeos .mr-1 {
-  margin-right: calc(var(--spacing) * 1);
 }
 #placeos .mr-2 {
   margin-right: calc(var(--spacing) * 2);
@@ -563,6 +567,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .mb-16 {
   margin-bottom: calc(var(--spacing) * 16);
+}
+#placeos .ml-1 {
+  margin-left: calc(var(--spacing) * 1);
 }
 #placeos .ml-2 {
   margin-left: calc(var(--spacing) * 2);
@@ -626,6 +633,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .h-6 {
   height: calc(var(--spacing) * 6);
+}
+#placeos .h-7 {
+  height: calc(var(--spacing) * 7);
 }
 #placeos .h-8 {
   height: calc(var(--spacing) * 8);
@@ -720,9 +730,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .min-h-1\/2 {
   min-height: calc(1/2 * 100%);
 }
-#placeos .min-h-8 {
-  min-height: calc(var(--spacing) * 8);
-}
 #placeos .min-h-10 {
   min-height: calc(var(--spacing) * 10);
 }
@@ -797,6 +804,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .w-6 {
   width: calc(var(--spacing) * 6);
+}
+#placeos .w-7 {
+  width: calc(var(--spacing) * 7);
 }
 #placeos .w-8 {
   width: calc(var(--spacing) * 8);
@@ -1293,6 +1303,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .rounded-lg {
   border-radius: var(--radius-lg);
 }
+#placeos .rounded-md {
+  border-radius: var(--radius-md);
+}
 #placeos .rounded-none {
   border-radius: 0;
 }
@@ -1443,6 +1456,14 @@ input:where([type=button], [type=reset], [type=submit]),
 @supports (color: color-mix(in lab, red, red)) {
   #placeos .bg-base-200\/50 {
     background-color: color-mix(in oklab, var(--base-200) 50%, transparent);
+  }
+}
+#placeos .bg-base-200\/70 {
+  background-color: var(--base-200);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .bg-base-200\/70 {
+    background-color: color-mix(in oklab, var(--base-200) 70%, transparent);
   }
 }
 #placeos .bg-base-300 {
@@ -1978,6 +1999,21 @@ input:where([type=button], [type=reset], [type=submit]),
   transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
+#placeos .transition-colors {
+  transition-property:
+    color,
+    background-color,
+    border-color,
+    outline-color,
+    text-decoration-color,
+    fill,
+    stroke,
+    --tw-gradient-from,
+    --tw-gradient-via,
+    --tw-gradient-to;
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+  transition-duration: var(--tw-duration, var(--default-transition-duration));
+}
 #placeos .duration-200 {
   --tw-duration: 200ms;
   transition-duration: 200ms;
@@ -2047,6 +2083,16 @@ input:where([type=button], [type=reset], [type=submit]),
   @supports (color: color-mix(in lab, red, red)) {
     #placeos .hover\:bg-base-content\/10:hover {
       background-color: color-mix(in oklab, var(--base-content) 10%, transparent);
+    }
+  }
+}
+@media (hover: hover) {
+  #placeos .hover\:bg-base-content\/20:hover {
+    background-color: var(--base-content);
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    #placeos .hover\:bg-base-content\/20:hover {
+      background-color: color-mix(in oklab, var(--base-content) 20%, transparent);
     }
   }
 }
