@@ -64,6 +64,7 @@
   --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
   --radius-3xl: 1.5rem;
+  --animate-spin: spin 1s linear infinite;
   --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-bounce: bounce 1s infinite;
   --default-transition-duration: 150ms;
@@ -579,6 +580,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .ml-16 {
   margin-left: calc(var(--spacing) * 16);
+}
+#placeos .ml-auto {
+  margin-left: auto;
 }
 #placeos .\!flex {
   display: flex !important;
@@ -1139,6 +1143,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .animate-pulse {
   animation: var(--animate-pulse);
 }
+#placeos .animate-spin {
+  animation: var(--animate-spin);
+}
 #placeos .cursor-pointer {
   cursor: pointer;
 }
@@ -1399,6 +1406,14 @@ input:where([type=button], [type=reset], [type=submit]),
     border-color: color-mix(in oklab, var(--base-content) 10%, transparent);
   }
 }
+#placeos .border-current\/30 {
+  border-color: currentcolor;
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .border-current\/30 {
+    border-color: color-mix(in oklab, currentcolor 30%, transparent);
+  }
+}
 #placeos .border-error {
   border-color: var(--error);
 }
@@ -1429,6 +1444,9 @@ input:where([type=button], [type=reset], [type=submit]),
   #placeos .border-warning\/40 {
     border-color: color-mix(in oklab, var(--warn) 40%, transparent);
   }
+}
+#placeos .border-t-current {
+  border-top-color: currentcolor;
 }
 #placeos .bg-\[hsl\(0\,0\%\,15\%\)\] {
   background-color: hsl(0, 0%, 15%);
@@ -2123,6 +2141,11 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (min-width: 40rem) {
+  #placeos .sm\:absolute {
+    position: absolute;
+  }
+}
+@media (min-width: 40rem) {
   #placeos .sm\:relative {
     position: relative;
   }
@@ -2135,6 +2158,11 @@ input:where([type=button], [type=reset], [type=submit]),
 @media (min-width: 40rem) {
   #placeos .sm\:top-auto {
     top: auto;
+  }
+}
+@media (min-width: 40rem) {
+  #placeos .sm\:right-3 {
+    right: calc(var(--spacing) * 3);
   }
 }
 @media (min-width: 40rem) {
@@ -3562,6 +3590,11 @@ nav .mdc-tab-link {
 @property --tw-drop-shadow-alpha { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
 @property --tw-drop-shadow-size { syntax: "*"; inherits: false; }
 @property --tw-duration { syntax: "*"; inherits: false; }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 @keyframes pulse {
   50% {
     opacity: 0.5;
