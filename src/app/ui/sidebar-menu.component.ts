@@ -1,5 +1,13 @@
 import { Component, inject, model, OnInit, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import {
+    NavigationCancel,
+    NavigationEnd,
+    NavigationError,
+    RouteConfigLoadEnd,
+    RouteConfigLoadStart,
+    Router,
+    RouterModule,
+} from '@angular/router';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -87,7 +95,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                     btn
                                     link
                                     matRipple
-                                    class="clear hover:bg-base-100 mx-auto w-[calc(100%-1rem)] text-left"
+                                    class="clear hover:bg-base-100 relative mx-auto w-[calc(100%-1rem)] text-left"
                                     [routerLink]="[link.route]"
                                     routerLinkActive="bg-secondary! text-secondary-content"
                                     [matTooltip]="
@@ -108,6 +116,13 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                         <p [class.sm:hidden]="compact()">
                                             {{ link.name | translate }}
                                         </p>
+                                        @if (isRouteLoading(link.route)) {
+                                            <span
+                                                role="status"
+                                                aria-label="Loading page"
+                                                class="ml-auto h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current sm:absolute sm:right-3 sm:ml-0"
+                                            ></span>
+                                        }
                                     </div>
                                 </a>
                             }
@@ -232,6 +247,7 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
 
     public readonly open = model(true);
     public readonly compact = signal(false);
+    public readonly loading_route = signal('');
     public readonly show_application_picker = signal(false);
     public readonly application_picker = ApplicationPickerTooltipComponent;
     public readonly user_controls = UserMenuTooltipComponent;
@@ -311,7 +327,29 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         localStorage.setItem('BACKOFFICE.SIDEBAR_COMPACT', `${this.compact()}`);
     }
 
+    public isRouteLoading(route: string) {
+        return this.loading_route() === route;
+    }
+
     public async ngOnInit() {
+        this.subscription(
+            'route_load',
+            this._router.events.subscribe((event) => {
+                if (event instanceof RouteConfigLoadStart) {
+                    this.loading_route.set(`/${event.route.path || ''}`);
+                }
+                if (event instanceof RouteConfigLoadEnd) {
+                    this.loading_route.set('');
+                }
+                if (
+                    event instanceof NavigationCancel ||
+                    event instanceof NavigationEnd ||
+                    event instanceof NavigationError
+                ) {
+                    this.loading_route.set('');
+                }
+            }),
+        );
         this.subscription(
             'up',
             this._hotkey.listen(['Control', 'Shift', 'ArrowUp'], () =>
