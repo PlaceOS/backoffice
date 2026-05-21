@@ -108,9 +108,13 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                         [class.sm:justify-center]="compact()"
                                     >
                                         <icon
-                                            class="text-xl"
+                                            class="text-xl transition-opacity"
                                             [class.sm:text-2xl]="compact()"
                                             [class.sm:mx-auto]="compact()"
+                                            [class.sm:opacity-25]="
+                                                compact() &&
+                                                isRouteLoading(link.route)
+                                            "
                                             >{{ link.icon }}</icon
                                         >
                                         <p [class.sm:hidden]="compact()">
@@ -120,7 +124,13 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                             <span
                                                 role="status"
                                                 aria-label="Loading page"
-                                                class="ml-auto h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current sm:absolute sm:right-3 sm:ml-0"
+                                                class="ml-auto h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current sm:absolute sm:top-1/2 sm:ml-0 sm:-translate-y-1/2"
+                                                [class.sm:left-1/2]="compact()"
+                                                [class.sm:right-3]="!compact()"
+                                                [class.sm:right-auto]="compact()"
+                                                [class.sm:-translate-x-1/2]="
+                                                    compact()
+                                                "
                                             ></span>
                                         }
                                     </div>
