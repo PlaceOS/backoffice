@@ -1,7 +1,23 @@
-import { Component, OnInit, effect, inject, input, model } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    effect,
+    inject,
+    input,
+    model,
+    signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
-import { Router, RouterModule } from '@angular/router';
+import {
+    NavigationCancel,
+    NavigationEnd,
+    NavigationError,
+    RouteConfigLoadEnd,
+    RouteConfigLoadStart,
+    Router,
+    RouterModule,
+} from '@angular/router';
 import { startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
@@ -12,7 +28,7 @@ export interface ItemTab {
     id: string;
     name: string;
     icon: ApplicationIcon;
-    count?: number;
+    count?: number | string;
     query?: Record<string, string>;
 }
 
@@ -45,7 +61,15 @@ export interface ItemTab {
                                 <div
                                     class="mono bg-base-200 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[0.625rem]"
                                 >
-                                    {{ link.count || '0' }}
+                                    @if (isRouteLoading(link.id)) {
+                                        <span
+                                            role="status"
+                                            aria-label="Loading tab"
+                                            class="h-3 w-3 animate-spin rounded-full border-2 border-current/30 border-t-current"
+                                        ></span>
+                                    } @else {
+                                        {{ link.count || '0' }}
+                                    }
                                 </div>
                             }
                         </a>
@@ -70,6 +94,7 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
     public readonly item_id = model<string>('-');
     public readonly tabs = input<ItemTab[]>([]);
     public readonly scrolled = input(false);
+    public readonly loading_route = signal('');
 
     constructor() {
         super();
@@ -81,6 +106,24 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
 
     public ngOnInit() {
         this.subscription(
+            'route_load',
+            this._router.events.subscribe((event) => {
+                if (event instanceof RouteConfigLoadStart) {
+                    this.loading_route.set(event.route.path || '');
+                }
+                if (event instanceof RouteConfigLoadEnd) {
+                    this.loading_route.set('');
+                }
+                if (
+                    event instanceof NavigationCancel ||
+                    event instanceof NavigationEnd ||
+                    event instanceof NavigationError
+                ) {
+                    this.loading_route.set('');
+                }
+            }),
+        );
+        this.subscription(
             'right',
             this._hotkey.listen(['ArrowRight'], () => this._changeTab(1)),
         );
@@ -88,6 +131,10 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
             'left',
             this._hotkey.listen(['ArrowLeft'], () => this._changeTab(-1)),
         );
+    }
+
+    public isRouteLoading(tab_id: string) {
+        return this.loading_route().split('/')[0] === tab_id.split('/')[0];
     }
 
     private _changeTab(direction: 1 | -1) {
