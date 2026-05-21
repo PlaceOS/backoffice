@@ -71,7 +71,11 @@ function replaceDescTag(inputString, newContent) {
                 />
             </mat-form-field>
         </div>
-        @if (metadata()?.length > 0) {
+        @if (loading_list()) {
+            <div class="flex w-full items-center justify-center p-16">
+                <mat-spinner diameter="32" />
+            </div>
+        } @else if (metadata()?.length > 0) {
             <div class="mt-4 space-y-2">
                 @for (item of metadata(); track item.name) {
                     <div
@@ -191,9 +195,6 @@ function replaceDescTag(inputString, newContent) {
                 <div>{{ 'COMMON.METADATA_EMPTY' | translate }}</div>
             </div>
         }
-        <ng-template #load_state>
-            <mat-spinner diameter="32" />
-        </ng-template>
     `,
     styles: [
         `
@@ -232,6 +233,8 @@ export class MetadataDisplayComponent
     public readonly edited = signal<HashMap<boolean>>({});
     /** Map of metadata properties to whether they are saving */
     public readonly loading = signal<HashMap<boolean>>({});
+    /** Whether the metadata list is loading */
+    public readonly loading_list = signal(false);
     /** Map of metadata schemas to the associated metadata */
     public readonly schema_map = signal<HashMap<HashMap | string>>({});
     /** Metadata contents to view */
@@ -481,14 +484,26 @@ export class MetadataDisplayComponent
     }
 
     private loadMetadata() {
-        listMetadata(this.item().id).subscribe((map) => {
-            this.metadata.set(
-                Object.keys(map)
-                    .map((key) => map[key])
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .filter((m) => !!m),
-            );
-            this.generateForms();
+        this.loading_list.set(true);
+        listMetadata(this.item().id).subscribe({
+            next: (map) => {
+                this.metadata.set(
+                    Object.keys(map)
+                        .map((key) => map[key])
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .filter((m) => !!m),
+                );
+                this.generateForms();
+            },
+            error: (err) => {
+                notifyError(
+                    `Error loading metadata. Error: ${
+                        err.response || err.message || err
+                    }`,
+                );
+                this.loading_list.set(false);
+            },
+            complete: () => this.loading_list.set(false),
         });
     }
 
