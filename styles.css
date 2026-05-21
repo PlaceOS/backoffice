@@ -2032,6 +2032,11 @@ input:where([type=button], [type=reset], [type=submit]),
   transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
 }
+#placeos .transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+  transition-duration: var(--tw-duration, var(--default-transition-duration));
+}
 #placeos .duration-200 {
   --tw-duration: 200ms;
   transition-duration: 200ms;
@@ -2156,6 +2161,11 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (min-width: 40rem) {
+  #placeos .sm\:top-1\/2 {
+    top: calc(1/2 * 100%);
+  }
+}
+@media (min-width: 40rem) {
   #placeos .sm\:top-auto {
     top: auto;
   }
@@ -2178,6 +2188,11 @@ input:where([type=button], [type=reset], [type=submit]),
 @media (min-width: 40rem) {
   #placeos .sm\:-left-9 {
     left: calc(var(--spacing) * -9);
+  }
+}
+@media (min-width: 40rem) {
+  #placeos .sm\:left-1\/2 {
+    left: calc(1/2 * 100%);
   }
 }
 @media (min-width: 40rem) {
@@ -2286,6 +2301,18 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (min-width: 40rem) {
+  #placeos .sm\:-translate-x-1\/2 {
+    --tw-translate-x: calc(calc(1/2 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+}
+@media (min-width: 40rem) {
+  #placeos .sm\:-translate-y-1\/2 {
+    --tw-translate-y: calc(calc(1/2 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+}
+@media (min-width: 40rem) {
   #placeos .sm\:flex-row {
     flex-direction: row;
   }
@@ -2358,6 +2385,11 @@ input:where([type=button], [type=reset], [type=submit]),
   #placeos .sm\:text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+}
+@media (min-width: 40rem) {
+  #placeos .sm\:opacity-25 {
+    opacity: 25%;
   }
 }
 @media (min-width: 48rem) {
