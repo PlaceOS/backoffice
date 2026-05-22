@@ -701,6 +701,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .h-\[calc\(100vh-6rem\)\] {
   height: calc(100vh - 6rem);
 }
+#placeos .h-\[calc\(100vh-7rem\)\] {
+  height: calc(100vh - 7rem);
+}
 #placeos .h-auto {
   height: auto;
 }
@@ -947,6 +950,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .max-w-64 {
   max-width: calc(var(--spacing) * 64);
 }
+#placeos .max-w-72 {
+  max-width: calc(var(--spacing) * 72);
+}
 #placeos .max-w-80 {
   max-width: calc(var(--spacing) * 80);
 }
@@ -1157,6 +1163,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .list-disc {
   list-style-type: disc;
+}
+#placeos .grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 #placeos .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2405,6 +2414,11 @@ input:where([type=button], [type=reset], [type=submit]),
 @media (min-width: 48rem) {
   #placeos .md\:flex-row {
     flex-direction: row;
+  }
+}
+@media (min-width: 64rem) {
+  #placeos .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media print {
