@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatMenuModule } from '@angular/material/menu';
@@ -27,11 +27,11 @@ import { TranslatePipe } from './translate.pipe';
                 [routerLink]="['/users', 'current', 'about']"
                 class="space-x-2"
             >
-                <icon>person</icon>
+                <icon class="text-2xl">person</icon>
                 {{ 'COMMON.PROFILE' | translate }}
             </a>
-            <div dark-mode class="flex w-[16rem] items-center p-4">
-                <icon>dark_mode</icon>
+            <div dark-mode class="flex w-[16rem] items-center p-3">
+                <icon class="text-2xl">dark_mode</icon>
                 <p class="w-1/2 flex-1">
                     {{ 'COMMON.DARK_MODE' | translate }}
                 </p>
@@ -44,7 +44,7 @@ import { TranslatePipe } from './translate.pipe';
                 class="space-x-2"
                 (click)="logout()"
             >
-                <icon>logout</icon>
+                <icon class="text-2xl">logout</icon>
                 {{ 'COMMON.LOGOUT' | translate }}
             </button>
             <button
@@ -54,12 +54,12 @@ import { TranslatePipe } from './translate.pipe';
                 uploads
                 (click)="showUploadHistory()"
             >
-                <icon>schedule</icon>
+                <icon class="text-2xl">schedule</icon>
                 {{ 'COMMON.UPLOAD_HISTORY' | translate }}
             </button>
             @if (languages.length > 1) {
                 <button matRipple type="button" [matMenuTriggerFor]="lang_menu">
-                    <icon>language</icon>
+                    <icon class="text-2xl">language</icon>
                     <div class="flex-1 text-left">
                         {{ 'COMMON.LANGUAGE' | translate }}
                     </div>
@@ -93,10 +93,14 @@ import { TranslatePipe } from './translate.pipe';
                 ref="noopener noreferer"
                 report
                 [href]="github_link | safe: 'url'"
-                class="space-x-2"
+                class="gap-2"
             >
-                <icon [className]="'backoffice-github'"></icon>
-                {{ 'COMMON.REPORT_ISSUE' | translate }}
+                <img
+                    alt="Github Icon"
+                    [src]="github_icon() | safe: 'resource'"
+                    class="m-1 flex h-5 max-w-5 items-center justify-center overflow-hidden text-xs"
+                />
+                <div>{{ 'COMMON.REPORT_ISSUE' | translate }}</div>
             </a>
         </div>
     `,
@@ -105,12 +109,12 @@ import { TranslatePipe } from './translate.pipe';
             [type='button'] {
                 display: flex;
                 align-items: center;
-                padding: 1rem;
+                padding: 0.75rem;
                 width: 16rem;
             }
 
             [type='button']:hover {
-                background-color: rgba(0, 0, 0, 0.2);
+                background-color: rgba(0, 0, 0, 0.1);
             }
 
             icon {
@@ -133,12 +137,20 @@ export class UserMenuTooltipComponent implements OnInit {
     private _settings = inject(SettingsService);
     private _locale = inject(LocaleService);
 
+    public readonly github_icon = signal('');
+
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
         return this._settings.get('theme') === 'dark';
     }
     public set dark_mode(state: boolean) {
-        this._settings.setTheme(state ? 'dark' : 'light');
+        const theme = state ? 'dark' : 'light';
+        this._settings.setTheme(theme);
+        this.github_icon.set(
+            theme === 'dark'
+                ? 'assets/img/Github_dark.svg'
+                : 'assets/img/GitHub_light.svg',
+        );
     }
 
     public lang = 'en';
@@ -173,6 +185,11 @@ export class UserMenuTooltipComponent implements OnInit {
             { id: 'es', name: i18n('COMMON.LANG_SPANISH'), flag: '🇪🇸' },
             { id: 'ar', name: i18n('COMMON.LANG_ARABIC'), flag: '' },
         ];
+        this.github_icon.set(
+            this._settings.get('theme') === 'dark'
+                ? 'assets/img/Github_dark.svg'
+                : 'assets/img/GitHub_light.svg',
+        );
     }
 
     public setLanguage(lang: string) {
