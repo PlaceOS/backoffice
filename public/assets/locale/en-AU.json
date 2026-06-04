@@ -17,6 +17,7 @@
         "ALERT_CRITICAL": "Critical",
         "DEFAULT": "Default",
         "EDGE": "Edge",
+        "EDIT": "Edit",
         "ALERTS": "Alerts",
         "EDGE_SEARCH": "Search for edges...",
         "MANAGE": "Manage Instance",
