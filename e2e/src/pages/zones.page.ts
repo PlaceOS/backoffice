@@ -57,7 +57,7 @@ export class ZonesPage extends BasePage {
     get metadataTab(): Locator {
         return this.page
             .locator(
-                'item-tablist a:has-text("Metadata"), [role="tab"]:has-text("Metadata")',
+                'item-tablist a[href*="/metadata"]:has-text("Metadata"), a[role="tab"][href*="/metadata"]:has-text("Metadata")',
             )
             .first();
     }
@@ -96,6 +96,13 @@ export class ZonesPage extends BasePage {
         return this.page
             .locator('[class*="count"], :text("Systems") ~ *')
             .first();
+    }
+
+    /**
+     * Get metadata list loading spinner
+     */
+    get metadataLoadingSpinner(): Locator {
+        return this.page.locator('metadata-display mat-spinner').first();
     }
 
     /**

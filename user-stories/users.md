@@ -256,17 +256,22 @@ The Users section allows administrators to manage platform users, their roles, p
 - When I navigate to the "Metadata" tab
 - Then I should see any existing metadata entries
 
-**AC-USR-009-2: Add Metadata Entry**
+**AC-USR-009-2: Metadata Loading State**
+- Given I have opened the user metadata tab
+- When the metadata list is still loading
+- Then I should see a loading spinner instead of an empty metadata state
+
+**AC-USR-009-3: Add Metadata Entry**
 - Given I am viewing user metadata
 - When I add a new metadata entry with a key and value
 - Then the metadata should be saved to the user
 
-**AC-USR-009-3: Edit Metadata Entry**
+**AC-USR-009-4: Edit Metadata Entry**
 - Given I am viewing user metadata
 - When I edit an existing metadata entry
 - Then the updated value should be persisted
 
-**AC-USR-009-4: Delete Metadata Entry**
+**AC-USR-009-5: Delete Metadata Entry**
 - Given I am viewing user metadata
 - When I delete a metadata entry and confirm
 - Then the entry should be removed from the user

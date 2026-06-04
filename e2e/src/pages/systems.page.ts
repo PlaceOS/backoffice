@@ -57,7 +57,7 @@ export class SystemsPage extends BasePage {
     get metadataTab(): Locator {
         return this.page
             .locator(
-                'item-tablist a:has-text("Metadata"), [role="tab"]:has-text("Metadata")',
+                'item-tablist a[href*="/metadata"]:has-text("Metadata"), a[role="tab"][href*="/metadata"]:has-text("Metadata")',
             )
             .first();
     }
@@ -96,6 +96,27 @@ export class SystemsPage extends BasePage {
                 'button:has-text("Add Module"), button[mattooltip*="module"]',
             )
             .first();
+    }
+
+    /**
+     * Get the module selector used by execute method controls
+     */
+    get executeModuleSelect(): Locator {
+        return this.page.locator('select-system-module mat-select').first();
+    }
+
+    /**
+     * Get the module search input inside the open module selector overlay
+     */
+    get executeModuleSearchInput(): Locator {
+        return this.page.locator('input[name="module-search"]').first();
+    }
+
+    /**
+     * Get metadata list loading spinner
+     */
+    get metadataLoadingSpinner(): Locator {
+        return this.page.locator('metadata-display mat-spinner').first();
     }
 
     /**
@@ -238,8 +259,29 @@ export class SystemsPage extends BasePage {
      * View system metadata
      */
     async viewMetadata(): Promise<void> {
-        await this.metadataTab.click();
-        await this.page.waitForTimeout(500);
+        const url = new URL(this.page.url());
+        const match = url.hash.match(/^#\/systems\/([^/]+)/);
+        if (match?.[1]) {
+            url.hash = `#/systems/${match[1]}/metadata`;
+            await this.page.goto(url.toString());
+            await this.waitForLoad();
+        } else {
+            await this.metadataTab.click();
+            await this.page.waitForTimeout(500);
+        }
+    }
+
+    /**
+     * Open the execute module selector and filter available modules
+     */
+    async searchExecuteModules(query: string): Promise<void> {
+        await expect(this.executeModuleSelect).toBeVisible({ timeout: 10000 });
+        await this.executeModuleSelect.click();
+        await expect(this.executeModuleSearchInput).toBeVisible({
+            timeout: 5000,
+        });
+        await this.executeModuleSearchInput.fill(query);
+        await this.page.waitForTimeout(300);
     }
 
     /**

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { Page, expect, test } from '@playwright/test';
 import { AdminPage } from './pages';
 
 /**
@@ -6,6 +6,37 @@ import { AdminPage } from './pages';
  *
  * Tests for user stories US-ADM-001 through US-ADM-016
  */
+
+async function seedAdminApiKeyData(page: Page): Promise<void> {
+    await page.addInitScript(() => {
+        sessionStorage.setItem(
+            'PLACEOS.mocks.api_engine_v2_domains',
+            JSON.stringify([
+                {
+                    id: 'place.tech',
+                    name: 'Place Technology',
+                    domain: 'place.tech',
+                },
+            ]),
+        );
+        sessionStorage.setItem(
+            'PLACEOS.mocks.api_keys',
+            JSON.stringify([
+                {
+                    id: 'api_key-e2e',
+                    name: 'E2E App Key',
+                    description: 'Existing e2e API key',
+                    authority_id: 'place.tech',
+                    scopes: ['public'],
+                    permissions: 'user',
+                    user_id: 'current',
+                    created_at: Date.now() / 1000,
+                    updated_at: Date.now() / 1000,
+                },
+            ]),
+        );
+    });
+}
 
 test.describe('Admin', () => {
     let adminPage: AdminPage;
@@ -49,6 +80,46 @@ test.describe('Admin', () => {
 
             // Verify content is displayed
             await expect(adminPage.mainContent).toBeVisible();
+        });
+    });
+
+    /**
+     * US-ADM-004: View Database Status
+     */
+    test.describe('US-ADM-004: View Database Status', () => {
+        test('AC-ADM-004-4: Export Zone Tree - should open parent zone selection modal', async ({
+            page,
+        }) => {
+            await adminPage.goto();
+
+            await adminPage.viewDatabase();
+
+            await expect(adminPage.exportZoneTreeButton).toBeVisible();
+            await adminPage.openZoneTreeExportModal();
+
+            await expect(
+                adminPage.dialog.locator('h3:has-text("Export Zone Tree")'),
+            ).toBeVisible();
+            await expect(
+                adminPage.dialog.locator('item-search-field'),
+            ).toBeVisible();
+            await expect(
+                adminPage.dialog.locator('button:has-text("Export Selected")'),
+            ).toBeDisabled();
+        });
+
+        test('AC-ADM-004-5: Import Zone Tree - should expose CSV or TSV import input', async ({
+            page,
+        }) => {
+            await adminPage.goto();
+
+            await adminPage.viewDatabase();
+
+            await expect(adminPage.importZoneTreeButton).toBeVisible();
+            await expect(adminPage.zoneTreeImportInput).toHaveAttribute(
+                'accept',
+                /text\/csv|\.csv/,
+            );
         });
     });
 
@@ -110,10 +181,12 @@ test.describe('Admin', () => {
         test('AC-ADM-011-1: View API Keys - should show API keys section', async ({
             page,
         }) => {
+            await seedAdminApiKeyData(page);
             await adminPage.goto();
 
             // Navigate to API keys section
             await adminPage.viewApiKeys();
+            await adminPage.selectApiKeyDomain();
 
             // Verify content is displayed
             await expect(adminPage.mainContent).toBeVisible();
@@ -122,23 +195,80 @@ test.describe('Admin', () => {
         test('AC-ADM-011-2: Generate New Key - should open key generation dialog', async ({
             page,
         }) => {
+            await seedAdminApiKeyData(page);
             await adminPage.goto();
 
             // Navigate to API keys section
             await adminPage.viewApiKeys();
+            await adminPage.selectApiKeyDomain();
 
             // Click add/generate button
-            const addButton = page
-                .locator(
-                    'button:has-text("Add"), button:has-text("Generate"), button:has(mat-icon:text("add"))',
-                )
-                .first();
-            await addButton.click().catch(() => {
-                // Button might not be visible
+            await expect(adminPage.apiKeyAddButton).toBeEnabled({
+                timeout: 10000,
             });
+            await adminPage.apiKeyAddButton.click();
 
-            // Wait a moment for dialog
-            await page.waitForTimeout(500);
+            await expect(adminPage.dialog).toBeVisible();
+        });
+
+        test('AC-ADM-011-4: Assign to User - should search and select a user with identity details', async ({
+            page,
+        }) => {
+            await seedAdminApiKeyData(page);
+            await adminPage.goto();
+            await adminPage.viewApiKeys();
+            await adminPage.selectApiKeyDomain();
+
+            await expect(adminPage.apiKeyAddButton).toBeEnabled({
+                timeout: 10000,
+            });
+            await adminPage.apiKeyAddButton.click();
+            await expect(adminPage.dialog).toBeVisible();
+
+            await adminPage.searchApiKeyUser('Alex');
+
+            const userOption = page
+                .locator('mat-option:has-text("Alex")')
+                .first();
+            await expect(userOption).toBeVisible({ timeout: 10000 });
+            await expect(userOption.locator('a-user-avatar')).toBeVisible();
+            await expect(
+                userOption.locator('text=/@place\\.tech/i'),
+            ).toBeVisible();
+
+            await userOption.click();
+
+            await expect(adminPage.apiKeyUserSearchInput).toHaveValue(/Alex/);
+            await expect(
+                adminPage.dialog.locator('a-user-avatar').first(),
+            ).toBeVisible();
+            await expect(
+                adminPage.dialog
+                    .locator('main button:has(icon:has-text("close"))')
+                    .first(),
+            ).toBeVisible();
+        });
+
+        test('AC-ADM-011-6: Search All Domain Users - should not filter user search by permission role', async ({
+            page,
+        }) => {
+            await seedAdminApiKeyData(page);
+            await adminPage.goto();
+            await adminPage.viewApiKeys();
+            await adminPage.selectApiKeyDomain();
+
+            await expect(adminPage.apiKeyAddButton).toBeEnabled({
+                timeout: 10000,
+            });
+            await adminPage.apiKeyAddButton.click();
+            await expect(adminPage.dialog).toBeVisible();
+
+            await adminPage.selectApiKeyPermissions('admin');
+            await adminPage.searchApiKeyUser('Jeremy');
+
+            await expect(
+                page.locator('mat-option:has-text("Jeremy West")'),
+            ).toBeVisible({ timeout: 10000 });
         });
     });
 

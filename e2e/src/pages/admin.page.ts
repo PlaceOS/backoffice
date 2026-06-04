@@ -176,6 +176,45 @@ export class AdminPage extends BasePage {
         await this.page.waitForTimeout(500);
     }
 
+    // Database Management
+
+    /**
+     * View database details
+     */
+    async viewDatabase(): Promise<void> {
+        await this.databaseLink.click();
+        await this.page.waitForTimeout(500);
+    }
+
+    /**
+     * Get the zone tree export button
+     */
+    get exportZoneTreeButton(): Locator {
+        return this.page.locator('button:has-text("Export Zone Tree")').first();
+    }
+
+    /**
+     * Get the zone tree import button
+     */
+    get importZoneTreeButton(): Locator {
+        return this.page.locator('button:has-text("Import Zone Tree")').first();
+    }
+
+    /**
+     * Get the zone tree file input
+     */
+    get zoneTreeImportInput(): Locator {
+        return this.page.locator('input[type="file"][accept*=".csv"]').first();
+    }
+
+    /**
+     * Open the zone tree export modal
+     */
+    async openZoneTreeExportModal(): Promise<void> {
+        await this.exportZoneTreeButton.click();
+        await this.dialog.waitFor({ timeout: 5000 });
+    }
+
     /**
      * Get version info
      */
@@ -220,6 +259,62 @@ export class AdminPage extends BasePage {
      */
     get apiKeysList(): Locator {
         return this.mainContent.locator('[class*="api-key"], table tr');
+    }
+
+    /**
+     * Get the API key add button
+     */
+    get apiKeyAddButton(): Locator {
+        return this.page.locator('button:has-text("Add App Key")').first();
+    }
+
+    /**
+     * Select the active domain for API keys
+     */
+    async selectApiKeyDomain(domain = 'Place Technology'): Promise<void> {
+        await this.page
+            .locator('admin-api-keys mat-select[name="type"]')
+            .click();
+        await this.page
+            .locator(`mat-option:has-text("${domain}")`)
+            .first()
+            .click();
+        await this.page.waitForTimeout(500);
+    }
+
+    /**
+     * Get the API key user search input in the modal
+     */
+    get apiKeyUserSearchInput(): Locator {
+        return this.dialog.locator('input#user').first();
+    }
+
+    /**
+     * Get the API key permissions dropdown in the modal
+     */
+    get apiKeyPermissionsSelect(): Locator {
+        return this.dialog.locator('mat-select[name="permissions"]').first();
+    }
+
+    /**
+     * Search for a user while editing an API key
+     */
+    async searchApiKeyUser(query: string): Promise<void> {
+        await this.apiKeyUserSearchInput.click();
+        await this.apiKeyUserSearchInput.fill(query);
+        await this.page.waitForTimeout(500);
+    }
+
+    /**
+     * Select API key permissions
+     */
+    async selectApiKeyPermissions(permission: string): Promise<void> {
+        await this.apiKeyPermissionsSelect.click();
+        await this.page
+            .locator(`mat-option[value="${permission}"]`)
+            .first()
+            .click();
+        await this.page.waitForTimeout(300);
     }
 
     // Extensions Management

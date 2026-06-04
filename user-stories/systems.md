@@ -175,6 +175,12 @@ The Systems section allows users to manage building automation systems, includin
 - When I select a module and choose "Execute Method"
 - Then I should be able to select and execute available methods on the module
 
+**AC-SYS-006-5: Search Modules for Execution**
+- Given I am choosing a module to execute a method on
+- When I enter a search term in the module selector
+- Then the selector should filter available modules to matching results
+- And the selected module should remain visible while I continue configuring the execution
+
 ---
 
 ## US-SYS-007: View System Zones
@@ -235,17 +241,22 @@ The Systems section allows users to manage building automation systems, includin
 - When I navigate to the "Metadata" tab
 - Then I should see any existing metadata entries
 
-**AC-SYS-009-2: Add Metadata Entry**
+**AC-SYS-009-2: Metadata Loading State**
+- Given I have opened the system metadata tab
+- When the metadata list is still loading
+- Then I should see a loading spinner instead of an empty metadata state
+
+**AC-SYS-009-3: Add Metadata Entry**
 - Given I am viewing system metadata
 - When I add a new metadata entry with a key and value
 - Then the metadata should be saved to the system
 
-**AC-SYS-009-3: Edit Metadata Entry**
+**AC-SYS-009-4: Edit Metadata Entry**
 - Given I am viewing system metadata
 - When I edit an existing metadata entry
 - Then the updated value should be persisted
 
-**AC-SYS-009-4: Delete Metadata Entry**
+**AC-SYS-009-5: Delete Metadata Entry**
 - Given I am viewing system metadata
 - When I delete a metadata entry and confirm
 - Then the entry should be removed from the system

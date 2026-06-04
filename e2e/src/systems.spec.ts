@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { buildAppUrl } from './config/test-env';
 import { SystemsPage } from './pages';
 
 /**
@@ -271,6 +272,29 @@ test.describe('Systems', () => {
             // Verify modules tab content is visible
             await expect(systemsPage.mainContent).toBeVisible();
         });
+
+        test('AC-SYS-006-5: Search Modules for Execution - should filter the execute module selector', async ({
+            page,
+        }) => {
+            await systemsPage.goto();
+
+            await systemsPage.search('2.30.08');
+            await systemsPage.systemsList.first().click();
+            await page.waitForTimeout(500);
+
+            await systemsPage.viewModules();
+            await systemsPage.searchExecuteModules('Lighting');
+
+            const visibleOptions = page
+                .locator('.cdk-overlay-pane mat-option')
+                .filter({ hasText: /Lighting/i });
+            await expect(visibleOptions.first()).toBeVisible({
+                timeout: 10000,
+            });
+            await expect(
+                page.locator('input[name="module-search"]'),
+            ).toHaveValue('Lighting');
+        });
     });
 
     /**
@@ -333,6 +357,25 @@ test.describe('Systems', () => {
 
             // Verify metadata tab content is visible
             await expect(systemsPage.mainContent).toBeVisible();
+        });
+
+        test('AC-SYS-009-2: Metadata Loading State - should render the shared metadata view after loading', async ({
+            page,
+        }) => {
+            await page.addInitScript(() => {
+                sessionStorage.setItem('PLACEOS.mocks.metadata_delay', '3000');
+            });
+            await page.goto(buildAppUrl('/#/systems/sys-QjJvCH7_dA/metadata'));
+            await systemsPage.waitForLoad();
+            await expect(page.locator('metadata-display')).toBeAttached({
+                timeout: 5000,
+            });
+            await expect(
+                page.locator('metadata-display input[placeholder*="metadata"]'),
+            ).toBeVisible();
+            await expect(
+                page.locator('text=/Error loading metadata/i'),
+            ).toHaveCount(0);
         });
     });
 

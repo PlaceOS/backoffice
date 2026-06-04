@@ -324,6 +324,30 @@ test.describe('Zones', () => {
             // Verify metadata tab content is visible
             await expect(zonesPage.mainContent).toBeVisible();
         });
+
+        test('AC-ZON-009-2: Metadata Loading State - should show spinner while metadata is loading', async ({
+            page,
+        }) => {
+            await page.addInitScript(() => {
+                sessionStorage.setItem('PLACEOS.mocks.metadata_delay', '1000');
+            });
+            await zonesPage.goto();
+
+            await zonesPage.zonesList.first().click();
+            await page.waitForTimeout(500);
+
+            await zonesPage.metadataTab.click();
+            await expect(page.locator('metadata-display')).toBeAttached({
+                timeout: 5000,
+            });
+
+            await expect(zonesPage.metadataLoadingSpinner).toBeVisible({
+                timeout: 5000,
+            });
+            await expect(zonesPage.metadataLoadingSpinner).not.toBeVisible({
+                timeout: 10000,
+            });
+        });
     });
 
     /**

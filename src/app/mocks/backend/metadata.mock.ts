@@ -67,6 +67,24 @@ function deleteMetadata(parent_id: string, name: string): void {
 // Parent types that support metadata
 const PARENT_TYPES = ['systems', 'zones', 'drivers', 'users'];
 
+function delayedMetadata(parent_id: string) {
+    const delay = Number(
+        sessionStorage.getItem('PLACEOS.mocks.metadata_delay') || 0,
+    );
+    if (!delay) return getMetadata(parent_id);
+    return new Promise((resolve) =>
+        setTimeout(() => resolve(getMetadata(parent_id)), delay),
+    );
+}
+
+/** GET metadata list for parent */
+registerMockEndpoint({
+    path: `${API}/metadata/:id`,
+    metadata: [],
+    method: 'GET',
+    callback: (event) => delayedMetadata(event.route_params.id),
+} as MockHttpRequestHandler);
+
 // Register metadata endpoints for each parent type
 PARENT_TYPES.forEach((parent_type) => {
     /** GET metadata list for parent */
@@ -76,7 +94,7 @@ PARENT_TYPES.forEach((parent_type) => {
         method: 'GET',
         callback: (event) => {
             const parent_id = event.route_params.id;
-            return getMetadata(parent_id);
+            return delayedMetadata(parent_id);
         },
     } as MockHttpRequestHandler);
 

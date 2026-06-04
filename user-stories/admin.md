@@ -109,6 +109,23 @@ The Admin section provides comprehensive system administration capabilities incl
 - When the information is displayed
 - Then I should see version and sizing information
 
+**AC-ADM-004-4: Export Zone Tree**
+- Given I am viewing database details
+- When I choose to export a zone tree
+- Then I should be able to search for and select one or more parent zones
+- And the exported CSV should include each selected zone followed by its child zones recursively
+
+**AC-ADM-004-5: Import Zone Tree**
+- Given I have a CSV or TSV zone tree export
+- When I import the file from the database details page
+- Then the zones should be recreated with new IDs
+- And child zones should be linked to the newly created parent zone IDs automatically
+
+**AC-ADM-004-6: Zone Tree Import Export Status**
+- Given a zone tree import or export is running
+- When I view the database details page
+- Then I should see loading feedback and the related import or export action should be disabled until it completes
+
 ---
 
 # Network & Interfaces
@@ -353,12 +370,33 @@ The Admin section provides comprehensive system administration capabilities incl
 - When I select a domain
 - Then the key should be scoped to that domain
 
-**AC-ADM-011-4: View Key Value**
+**AC-ADM-011-4: Assign to User**
+- Given I am generating or editing an API key
+- When I search for a user in the selected domain
+- Then matching users should be displayed with their avatar, name, email, and admin or support indicator where applicable
+- And I should be able to select or clear the associated user
+
+**AC-ADM-011-5: Preserve Assigned User When Editing**
+- Given I am editing an existing API key with an assigned user
+- When the edit form opens
+- Then the assigned user should be loaded and displayed even if they are not in the initial search results
+
+**AC-ADM-011-6: Search All Domain Users**
+- Given I am assigning a user to an API key
+- When I search users for any API key permission level
+- Then the search should include all users in the selected domain rather than filtering by admin or support role
+
+**AC-ADM-011-7: User Search Loading State**
+- Given I am typing in the API key user search field
+- When the user list is loading
+- Then I should see loading feedback until the search results are available
+
+**AC-ADM-011-8: View Key Value**
 - Given I have generated a new key
 - When the key is created
 - Then I should see the key value (shown only once)
 
-**AC-ADM-011-5: Delete Key**
+**AC-ADM-011-9: Delete Key**
 - Given I have an API key
 - When I delete it and confirm
 - Then the key should be revoked
