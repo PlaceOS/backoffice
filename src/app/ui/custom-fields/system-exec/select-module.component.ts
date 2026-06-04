@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
 import {
     Component,
+    computed,
     effect,
+    ElementRef,
     forwardRef,
     input,
     OnChanges,
     signal,
     SimpleChanges,
+    viewChild,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -15,6 +18,7 @@ import {
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { PlaceSystem, queryModules } from '@placeos/ts-client';
@@ -47,8 +51,26 @@ export interface ModuleLike {
                     [placeholder]="'COMMON.EXECUTE_MODULE_SELECT' | translate"
                     [(ngModel)]="module"
                     (ngModelChange)="setValue($event)"
+                    (openedChange)="setOpen($event)"
                 >
-                    @for (mod of modules(); track mod) {
+                    <mat-option class="relative hover:bg-transparent!">
+                        <input
+                            #module_search
+                            matInput
+                            name="module-search"
+                            [ngModel]="module_filter()"
+                            (ngModelChange)="module_filter.set($event)"
+                            (mousedown)="$event.stopPropagation()"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                            class="module-search-input pointer-event-auto focus:bg-base-200/30 absolute inset-1 h-auto w-[calc(100%-0.5rem)] cursor-text rounded-sm p-4"
+                            [placeholder]="
+                                'COMMON.SEARCH_FOR'
+                                    | translate: { name: 'modules' }
+                            "
+                        />
+                    </mat-option>
+                    @for (mod of filtered_modules(); track mod) {
                         <mat-option [disabled]="!mod.running" [value]="mod">
                             {{ mod.module }} {{ mod.index }}
                         </mat-option>
@@ -62,7 +84,19 @@ export interface ModuleLike {
             </div>
         }
     `,
-    styles: [``],
+    styles: [
+        `
+            .module-search-input {
+                width: 100%;
+                outline: none;
+            }
+
+            .module-search-input::placeholder {
+                color: var(--base-400, currentColor);
+                opacity: 0.65;
+            }
+        `,
+    ],
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
@@ -73,6 +107,7 @@ export interface ModuleLike {
     imports: [
         MatProgressSpinnerModule,
         MatFormFieldModule,
+        MatInputModule,
         MatSelectModule,
         TranslatePipe,
         FormsModule,
@@ -92,6 +127,7 @@ export class SelectModuleComponent
     private _change = signal(0);
 
     public readonly module = signal<ModuleLike | undefined>(undefined);
+    public readonly module_filter = signal('');
 
     public readonly loading = signal(false);
 
@@ -137,6 +173,18 @@ export class SelectModuleComponent
     );
 
     public readonly modules = this._modules;
+    public readonly filtered_modules = computed(() => {
+        const search = this.module_filter().trim().toLowerCase();
+        if (!search) return this.modules();
+        return this.modules().filter((mod) =>
+            `${mod.module} ${mod.name} ${mod.index}`
+                .toLowerCase()
+                .includes(search),
+        );
+    });
+
+    private readonly _search_el =
+        viewChild<ElementRef<HTMLInputElement>>('module_search');
 
     /** Form control on change handler */
     private _onChange: (_: ModuleLike) => void;
@@ -177,6 +225,15 @@ export class SelectModuleComponent
         if (this._onChange && !this.loading()) {
             this._onChange(new_value);
         }
+    }
+
+    /** Handle dropdown opening to reset and focus module search. */
+    public setOpen(open: boolean): void {
+        if (!open) return;
+        this.module_filter.set('');
+        this.timeout('focus_search', () =>
+            this._search_el()?.nativeElement.focus(),
+        );
     }
 
     /**
