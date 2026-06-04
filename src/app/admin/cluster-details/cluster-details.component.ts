@@ -55,7 +55,7 @@ import { AdminClusterNodeComponent } from './cluster-node.component';
                             <a
                                 btn
                                 matRipple
-                                class="w-full"
+                                class="mt-2 w-full"
                                 [routerLink]="[
                                     '/admin',
                                     'clusters',

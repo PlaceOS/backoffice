@@ -53,29 +53,30 @@ type SettingsArray = [
     selector: 'a-settings-form',
     template: `
         <header
-            class="bg-base-200 mb-2 flex h-16 w-full items-center justify-between rounded-sm px-2 text-lg font-medium"
+            class="bg-base-200 mb-2 flex h-14 w-full items-center justify-between rounded-sm p-2 text-lg font-medium"
         >
             <h3 class="px-2">{{ 'COMMON.SETTINGS' | translate }}</h3>
             @if (active_edited()) {
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2 text-base">
                     <button
                         icon
+                        default
+                        error
                         matRipple
-                        class="border-secondary bg-base-100 text-secondary rounded-sm border"
                         [disabled]="edited_count() <= 0"
                         [matTooltip]="'COMMON.CLEAR' | translate"
                         (click)="clearChanges()"
                     >
                         @if (!saving()[shown_option().id]) {
-                            <icon class="text-2xl">delete_sweep</icon>
+                            <icon>delete_sweep</icon>
                         } @else {
                             <mat-spinner diameter="32"></mat-spinner>
                         }
                     </button>
                     <button
                         icon
+                        default
                         matRipple
-                        class="bg-secondary text-secondary-content rounded-sm"
                         [disabled]="
                             !active_edited() ||
                             (has_errors() && !saving()[shown_option().id])
@@ -84,7 +85,7 @@ type SettingsArray = [
                         (click)="save(+shown_option().id)"
                     >
                         @if (!saving()[shown_option().id]) {
-                            <icon class="text-2xl">save</icon>
+                            <icon>save</icon>
                         } @else {
                             <mat-spinner diameter="32"></mat-spinner>
                         }
@@ -209,24 +210,6 @@ type SettingsArray = [
                 box-shadow:
                     0 1px 3px 0 rgb(0 0 0 / 0.1),
                     0 1px 2px -1px rgb(0 0 0 / 0.1);
-            }
-
-            .actions {
-                display: flex;
-                align-items: center;
-                justify-content: end;
-                padding: 0.5em 0;
-                margin-top: -2em;
-                height: 3em;
-                @media screen and (max-width: 640px) {
-                    margin-left: 4.5em;
-                }
-
-                button {
-                    @media screen and (max-width: 640px) {
-                        font-size: 0.8em;
-                    }
-                }
             }
 
             .off-screen {

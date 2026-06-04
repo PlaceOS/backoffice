@@ -101,7 +101,7 @@ export interface DisplayItem {
                     }
                 </div>
             </div>
-            <button icon matRipple [matMenuTriggerFor]="action_menu">
+            <button icon default matRipple [matMenuTriggerFor]="action_menu">
                 <icon>more_vert</icon>
             </button>
         </div>

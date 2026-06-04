@@ -142,30 +142,30 @@ import { DriverStateService } from './driver-state.service';
                         >
                             <button
                                 icon
+                                default
                                 matRipple
                                 [matTooltip]="'COMMON.UPDATE' | translate"
                                 (click)="updateDriver()"
-                                class="bg-secondary text-secondary-content h-12 w-12 rounded-sm"
                             >
-                                <icon class="text-2xl">update</icon>
+                                <icon>update</icon>
                             </button>
                             <button
                                 icon
+                                default
                                 matRipple
                                 [matTooltip]="'DRIVERS.RECOMPILE' | translate"
                                 (click)="recompile()"
-                                class="bg-secondary text-secondary-content h-12 w-12 rounded-sm"
                             >
-                                <icon class="text-2xl">build</icon>
+                                <icon>build</icon>
                             </button>
                             <button
                                 icon
+                                default
                                 matRipple
                                 [matTooltip]="'DRIVERS.RELOAD' | translate"
                                 (click)="reload()"
-                                class="bg-secondary text-secondary-content h-12 w-12 rounded-sm"
                             >
-                                <icon class="text-2xl">refresh</icon>
+                                <icon>refresh</icon>
                             </button>
                         </div>
                     </div>
