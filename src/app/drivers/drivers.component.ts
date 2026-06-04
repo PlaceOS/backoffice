@@ -17,7 +17,7 @@ import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.compon
 import { ItemDetailsComponent } from '../ui/item-details.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
-import { ItemTablistComponent } from '../ui/item-tablist.component';
+import { ItemTab, ItemTablistComponent } from '../ui/item-tablist.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
@@ -148,7 +148,7 @@ export class DriversComponent {
     );
     public readonly tab_list = computed(
         () =>
-            [
+            ([
                 {
                     id: 'about',
                     name: i18n('DRIVERS.TAB_ABOUT'),
@@ -174,7 +174,7 @@ export class DriversComponent {
                     name: i18n('DRIVERS.TAB_SETTINGS_HISTORY'),
                     icon: { content: 'schedule' },
                 },
-            ].concat(this.extensions()) as any[],
+            ] as ItemTab[]).concat(this.extensions()),
     );
     public readonly updates_available = this._drivers.updates_available;
     public readonly debug_position = this._debug.position;

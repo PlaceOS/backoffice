@@ -332,7 +332,7 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
                 : { ...item_json, ...this.form.value }
         ) as Identity;
         const save_item = { ...form_item, uid: this.client_id() };
-        delete (save_item as any).client_id;
+        delete (save_item as Identity & { client_id?: unknown }).client_id;
         (save_item.id
             ? updateApplication(
                   save_item.id as string,

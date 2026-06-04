@@ -17,7 +17,7 @@ import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.compon
 import { ItemDetailsComponent } from '../ui/item-details.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
-import { ItemTablistComponent } from '../ui/item-tablist.component';
+import { ItemTab, ItemTablistComponent } from '../ui/item-tablist.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { ZonesStateService } from './zones-state.service';
@@ -153,7 +153,7 @@ export class ZonesComponent extends AsyncHandler {
     });
     public readonly tab_list = computed(() => {
         const details = this.counts();
-        return [
+        return ([
             {
                 id: 'about',
                 name: i18n('ZONES.TAB_ABOUT'),
@@ -194,7 +194,7 @@ export class ZonesComponent extends AsyncHandler {
                 name: i18n('ZONES.TAB_SETTINGS_HISTORY'),
                 icon: { content: 'schedule' },
             },
-        ].concat(extensionsForItem(this.item(), this.name)) as any[];
+        ] as ItemTab[]).concat(extensionsForItem(this.item(), this.name));
     });
 
     public readonly newItem = () => this._item.create();

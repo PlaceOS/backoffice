@@ -88,7 +88,7 @@ export class SignagePluginEmbedComponent
     public readonly config = input<PluginConfigPayload>(null);
     public readonly play = input<number>(0);
     public readonly details = model<PluginLoadedPayload>(null);
-    public readonly schema = model<Record<string, any>>({});
+    public readonly schema = model<Record<string, unknown>>({});
     public readonly status = model<SignagePluginMessageType | 'unknown'>(
         'unknown',
     );

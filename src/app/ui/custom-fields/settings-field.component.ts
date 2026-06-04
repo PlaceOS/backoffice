@@ -63,7 +63,7 @@ export class SettingsFieldComponent
     /** Whether the field should fill the available height */
     public readonly fill = input(false);
     /** List of decorations to apply to the editor */
-    public readonly decorations = input<any[]>(undefined);
+    public readonly decorations = input<HashMap[]>(undefined);
     /** Input language for syntax highlighting and error checking */
     public readonly lang = input('yaml');
     /** Schema for input validation and key auto-completion */
@@ -125,7 +125,7 @@ export class SettingsFieldComponent
         if (changes.lang && this.editor) {
             this.editor.updateOptions({
                 language: this.lang() || 'yaml',
-            } as any);
+            } as unknown as monaco.editor.IEditorOptions);
         }
         if (changes.resize) {
             this.resizeEditor();
@@ -139,7 +139,7 @@ export class SettingsFieldComponent
                 this._active_decorators,
                 (this.decorations() || []).map((i) => ({
                     ...i,
-                })),
+                })) as unknown as monaco.editor.IModelDeltaDecoration[],
             );
         }
     }
@@ -249,7 +249,7 @@ export class SettingsFieldComponent
                             this._active_decorators,
                             (this.decorations() || []).map((i) => ({
                                 ...i,
-                            })),
+                            })) as unknown as monaco.editor.IModelDeltaDecoration[],
                         ) || [];
                 },
                 50,

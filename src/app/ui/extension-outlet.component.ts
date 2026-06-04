@@ -176,7 +176,9 @@ export class ExtensionOutletComponent extends AsyncHandler {
         parent = false,
     ) {
         const metadata = await showMetadata(
-            (parent ? (item as any).parent_id : item.id) as string,
+            (parent
+                ? (item as PlaceResource & { parent_id?: string }).parent_id
+                : item.id) as string,
             message.name,
         ).toPromise();
         if (metadata) {

@@ -219,7 +219,7 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
                 if (!this.form.value.id && this.form.controls.settings) {
                     this.newSettings(
-                        _item as any,
+                        _item as unknown as Identity,
                         this.form.controls.settings.value,
                     ).then(() => this._dialog_ref.close());
                 } else {

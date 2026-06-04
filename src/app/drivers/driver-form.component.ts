@@ -20,6 +20,7 @@ import {
     PlaceDriver,
     PlaceDriverDetails,
     PlaceDriverRole,
+    PlaceRepository,
     PlaceRepositoryType,
     PlaceSettings,
     addDriver,
@@ -315,9 +316,17 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         { id: 'critical', name: 'COMMON.ALERT_CRITICAL' },
     ];
 
-    public readonly repo = signal<any>(null);
-    public readonly driver = signal<any>(null);
-    public readonly commit = signal<any>(null);
+    public readonly repo = signal<PlaceRepository | null>(null);
+    public readonly driver = signal<{
+        id: string;
+        name: string;
+        default_settings?: unknown;
+    } | null>(null);
+    public readonly commit = signal<{
+        id: string;
+        name: string;
+        extra: string | null;
+    } | null>(null);
 
     public readonly repo_list = queryRepositories({ limit: 1000 }).pipe(
         map(({ data }) =>

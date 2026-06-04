@@ -9,7 +9,7 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
-import { ItemDetailsComponent } from '../ui/item-details.component';
+import { DisplayItem, ItemDetailsComponent } from '../ui/item-details.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
@@ -111,7 +111,7 @@ export class GroupsComponent extends AsyncHandler {
     public readonly display_item = computed(() => {
         const item = this.item();
         if (!item) return null;
-        return { ...item, toJSON: () => ({ ...item }) } as any;
+        return { ...item, toJSON: () => ({ ...item }) } as DisplayItem;
     });
     public readonly counts = toSignal(this._service.counts, {
         initialValue: { users: 0, zones: 0 },

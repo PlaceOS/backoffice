@@ -154,7 +154,7 @@ export class APIKeyService {
         if (details?.reason !== 'done') return;
         ref.componentInstance.loading.set('Updating API key...');
         const domain = this._domain.getValue();
-        const updated_key = await lastValueFrom(
+        await lastValueFrom(
             update({
                 id: key.id,
                 query_params: {},

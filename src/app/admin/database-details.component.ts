@@ -298,7 +298,11 @@ export class PlaceDatabaseDetailsComponent {
         } catch (err) {
             notifyError(
                 `Error importing zone tree. Error: ${JSON.stringify(
-                    (err as any).response || (err as any).message || err,
+                    (err as { response?: unknown; message?: unknown })
+                        .response ||
+                        (err as { response?: unknown; message?: unknown })
+                            .message ||
+                        err,
                 )}`,
             );
         }
@@ -321,7 +325,11 @@ export class PlaceDatabaseDetailsComponent {
         } catch (err) {
             notifyError(
                 `Error exporting zone tree. Error: ${JSON.stringify(
-                    (err as any).response || (err as any).message || err,
+                    (err as { response?: unknown; message?: unknown })
+                        .response ||
+                        (err as { response?: unknown; message?: unknown })
+                            .message ||
+                        err,
                 )}`,
             );
         }

@@ -706,7 +706,8 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
             ...form_item,
             support_url: this.processURL(
                 form_item as unknown as PlaceSystem,
-                (form_item as any).support_url || '',
+                (form_item as Identity & { support_url?: string }).support_url ||
+                    '',
             ),
         };
         (processed_item.id
@@ -818,7 +819,7 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
         for (const key in system) {
             url = url.replace(
                 new RegExp(`{{${key}}}`, 'g'),
-                `${(system as any)[key]}`,
+                `${(system as unknown as Record<string, unknown>)[key]}`,
             );
         }
         url = url.replace(new RegExp(`{{origin}}`, 'g'), location.origin);

@@ -533,7 +533,7 @@ export class SystemStateService extends AsyncHandler {
         }
     }
 
-    public async sortModulesByType(alphabetical: boolean = false) {
+    public async sortModulesByType(alphabetical = false) {
         const modules = this._modules.getValue();
         if (modules.length < 2) return;
 

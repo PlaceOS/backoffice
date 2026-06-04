@@ -9,11 +9,32 @@
 
 import { addMinutes, startOfMinute } from 'date-fns';
 
+interface MockBackend {
+    model?: {
+        user?: {
+            name: string;
+        };
+    };
+}
+
+interface MockControlSystem {
+    [key: string]: unknown;
+    Slack?: Array<{
+        threads: {
+            local: Array<{
+                text: string;
+                username: string;
+                ts: number;
+            }>;
+        };
+    }>;
+}
+
 declare global {
     interface Window {
-        systemData: Record<string, any>;
-        control: Record<string, Record<string, any>>;
-        backend: any;
+        systemData: Record<string, unknown>;
+        control: Record<string, Record<string, MockControlSystem>>;
+        backend: MockBackend;
     }
 }
 
@@ -60,12 +81,13 @@ window.control.systems['sys-B0'] = {
 setTimeout(() => initMessages(), 500);
 
 function initMessages() {
-    if (window.backend && window.backend.model.user) {
+    const user = window.backend?.model?.user;
+    if (user) {
         const messages = [
             'Testing',
             'Response to Testing',
-            `Hello I'm ${window.backend.model.user.name}`,
-            `Hello ${window.backend.model.user.name}, this is the concierge`,
+            `Hello I'm ${user.name}`,
+            `Hello ${user.name}, this is the concierge`,
             'Can I book a room for tomorrow at 9:30am?',
             'Sure, how does Activity Space 31.04 sound?',
             "That's exactly what I'm looking for, thanks",
@@ -74,9 +96,9 @@ function initMessages() {
         let time = startOfMinute(addMinutes(Date.now(), -messages.length * 30));
         let index = 0;
         for (const msg of messages) {
-            window.control.systems['sys-B0'].Slack[0].threads.local.push({
+            window.control.systems['sys-B0'].Slack?.[0].threads.local.push({
                 text: msg,
-                username: index % 2 === 0 ? window.backend.model.user.name : '',
+                username: index % 2 === 0 ? user.name : '',
                 ts: time.valueOf(),
             });
             index++;

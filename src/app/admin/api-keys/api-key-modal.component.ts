@@ -344,7 +344,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                 name: key.name,
                 description: key.description,
                 scopes: key.scopes || [],
-                user: (key as any).user || null,
+                user: (key as PlaceAPIKeyDetails & { user?: PlaceUser }).user || null,
                 user_id: key.user_id,
                 permissions: key.permissions,
             });

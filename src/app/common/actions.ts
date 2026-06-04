@@ -270,7 +270,7 @@ function parseIdList(value: readonly string[] | string | undefined): string[] {
     try {
         const parsed = JSON.parse(trimmed);
         if (Array.isArray(parsed)) return parseIdList(parsed);
-    } catch (_) {
+    } catch {
         // Continue with delimited text parsing for non-JSON cells.
     }
     return trimmed

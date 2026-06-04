@@ -100,9 +100,9 @@ export interface SignagePluginTestModalData {
                             </div>
                         }
                         @if (schema()) {
-                            <label class="mb-2 block text-sm font-medium">
+                            <div class="mb-2 block text-sm font-medium">
                                 {{ 'COMMON.CONFIG' | translate }}
-                            </label>
+                            </div>
                             <schema-form
                                 [schema]="schema()"
                                 [ngModel]="config_values()"
@@ -274,7 +274,7 @@ export class SignagePluginTestModalComponent
     );
 
     public details: PluginLoadedPayload = null;
-    public embed_schema: Record<string, any> = {};
+    public embed_schema: Record<string, unknown> = {};
     public embed_status: SignagePluginMessageType | 'unknown' = 'unknown';
 
     public plugin(): SignagePlugin {
