@@ -315,10 +315,6 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         { initialValue: this.form.controls.permissions.value },
     );
     public readonly users = computed(() => {
-        if (this.permissions() === 'admin')
-            return this.user_list().filter((_) => _.sys_admin);
-        if (this.permissions() === 'support')
-            return this.user_list().filter((_) => _.support || _.sys_admin);
         return this.user_list().sort((a, b) => a.name?.localeCompare(b.name));
     });
     /** List of separator characters for tags */
