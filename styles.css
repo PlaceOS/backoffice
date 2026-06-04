@@ -1052,9 +1052,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .min-w-64 {
   min-width: calc(var(--spacing) * 64);
 }
-#placeos .min-w-80 {
-  min-width: calc(var(--spacing) * 80);
-}
 #placeos .min-w-88 {
   min-width: calc(var(--spacing) * 88);
 }
@@ -1257,6 +1254,11 @@ input:where([type=button], [type=reset], [type=submit]),
   margin-inline-start: calc(calc(var(--spacing) * 2) * var(--tw-space-x-reverse));
   margin-inline-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-x-reverse)));
 }
+:where(#placeos .space-x-3 > :not(:last-child)) {
+  --tw-space-x-reverse: 0;
+  margin-inline-start: calc(calc(var(--spacing) * 3) * var(--tw-space-x-reverse));
+  margin-inline-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-x-reverse)));
+}
 :where(#placeos .space-x-4 > :not(:last-child)) {
   --tw-space-x-reverse: 0;
   margin-inline-start: calc(calc(var(--spacing) * 4) * var(--tw-space-x-reverse));
@@ -1300,9 +1302,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .overflow-visible {
   overflow: visible;
-}
-#placeos .overflow-x-hidden {
-  overflow-x: hidden;
 }
 #placeos .overflow-y-auto {
   overflow-y: auto;
@@ -1459,6 +1458,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .border-t-current {
   border-top-color: currentcolor;
+}
+#placeos .border-t-info {
+  border-top-color: var(--info);
 }
 #placeos .bg-\[hsl\(0\,0\%\,15\%\)\] {
   background-color: hsl(0, 0%, 15%);
