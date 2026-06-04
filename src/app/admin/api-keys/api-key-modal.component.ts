@@ -2,14 +2,12 @@ import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { CommonModule } from '@angular/common';
 import {
     Component,
-    ElementRef,
     EventEmitter,
     OnInit,
     Output,
     computed,
     inject,
     signal,
-    viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -24,9 +22,13 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
-import { PlaceDomain, PlaceUser, queryUsers } from '@placeos/ts-client';
+import {
+    PlaceDomain,
+    PlaceUser,
+    queryUsers,
+    showUser,
+} from '@placeos/ts-client';
 import { lastValueFrom, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../../common/async-handler.class';
@@ -35,10 +37,10 @@ import { getInvalidFields } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { DialogEvent } from '../../common/types';
-import { ActionFieldComponent } from '../../ui/custom-fields/action-field.component';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
+import { UserAvatarComponent } from '../../ui/user-avatar.component';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyService } from './api-keys.service';
 
@@ -141,80 +143,99 @@ export interface APIKeyModalData {
                     <label for="user">
                         {{ 'USERS.SINGULAR' | translate }}<span>*</span>
                     </label>
-                    <an-action-field
-                        [matMenuTriggerFor]="menu"
-                        yPosition="below"
-                        class="mb-8 w-full"
-                        (click)="focusInput()"
-                    >
-                        <div [class.opacity-30]="!form.value.user?.id">
-                            {{ form.value.user?.name || 'Select user' }}
+                    <mat-form-field appearance="outline">
+                        @if (form.value.user?.id) {
+                            <a-user-avatar
+                                matPrefix
+                                class="relative -left-1"
+                                [user]="form.value.user"
+                            ></a-user-avatar>
+                        } @else {
+                            <div class="prefix" matPrefix>
+                                <icon class="relative -left-0.5 text-2xl">
+                                    search
+                                </icon>
+                            </div>
+                        }
+                        <input
+                            id="user"
+                            matInput
+                            autocomplete="off"
+                            [ngModel]="search_term()"
+                            (ngModelChange)="setSearch($event)"
+                            [ngModelOptions]="{ standalone: true }"
+                            [matAutocomplete]="userAuto"
+                            [placeholder]="'USERS.SEARCH' | translate"
+                            (focus)="setSearch(search_term())"
+                            (blur)="resetUserSearch()"
+                        />
+                        <div matSuffix class="flex items-center gap-2">
+                            @if (user_list_loading()) {
+                                <span matSuffix class="px-2">
+                                    <span
+                                        class="border-base-300 border-t-info inline-block h-4 w-4 animate-spin rounded-full border-2"
+                                    ></span>
+                                </span>
+                            }
+                            @if (form.value.user?.id) {
+                                <button
+                                    icon
+                                    type="button"
+                                    (click)="clearUser()"
+                                >
+                                    <icon>close</icon>
+                                </button>
+                            }
                         </div>
-                    </an-action-field>
-                    <mat-menu
-                        #menu="matMenu"
-                        class="min-w-80 overflow-x-hidden"
-                    >
-                        <mat-form-field
-                            appearance="outline"
-                            class="no-subscript w-full px-2"
-                            (click)="
-                                $event.preventDefault();
-                                $event.stopPropagation()
-                            "
+                        <mat-error>{{
+                            'COMMON.FIELD_REQUIRED' | translate
+                        }}</mat-error>
+                        <mat-autocomplete
+                            #userAuto="matAutocomplete"
+                            (optionSelected)="selectUser($event.option.value)"
                         >
-                            <input
-                                matInput
-                                #input
-                                [(ngModel)]="search_term"
-                                (ngModelChange)="setSearch()"
-                                [ngModelOptions]="{ standalone: true }"
-                                [placeholder]="'USERS.SEARCH' | translate"
-                            />
-                        </mat-form-field>
-                        @for (item of users() | slice: 0 : 10; track item) {
-                            <button
-                                mat-menu-item
-                                class="min-w-80 overflow-hidden"
-                                (click)="
-                                    form.patchValue({
-                                        user: item,
-                                        user_id: item.id,
-                                    });
-                                    setSearch()
-                                "
-                                [class.text-secondary]="
-                                    form.value.user?.id === item.id
-                                "
-                            >
-                                <div class="flex w-full items-center space-x-4">
-                                    <div class="flex-1 leading-tight">
-                                        <div>{{ item.name }}</div>
-                                        <div class="text-xs opacity-30">
-                                            {{ item.email }}
+                            @for (item of users(); track item.id) {
+                                <mat-option [value]="item">
+                                    <div
+                                        class="flex min-w-0 items-center space-x-3 py-2"
+                                    >
+                                        <a-user-avatar
+                                            class="shrink-0"
+                                            [user]="item"
+                                        ></a-user-avatar>
+                                        <div
+                                            class="min-w-0 flex-1 leading-tight"
+                                        >
+                                            <div class="truncate font-medium">
+                                                {{ item.name || item.email }}
+                                            </div>
+                                            <div
+                                                class="text-base-content/60 truncate text-xs"
+                                            >
+                                                {{ item.email }}
+                                            </div>
                                         </div>
+                                        @if (item.sys_admin || item.support) {
+                                            <code
+                                                class="border-base-300 border px-2"
+                                                >{{
+                                                    (item.sys_admin
+                                                        ? 'COMMON.USER_ADMIN'
+                                                        : 'COMMON.USER_SUPPORT'
+                                                    ) | translate
+                                                }}</code
+                                            >
+                                        }
                                     </div>
-                                    @if (item.sys_admin || item.support) {
-                                        <code class="px-2">{{
-                                            (item.sys_admin
-                                                ? 'COMMON.USER_ADMIN'
-                                                : 'COMMON.USER_SUPPORT'
-                                            ) | translate
-                                        }}</code>
-                                    }
-                                </div>
-                            </button>
-                        }
-                        @if (!users()?.length) {
-                            <button
-                                mat-menu-item
-                                [disabled]="true"
-                                class="min-w-[20rem] text-center"
-                            >
-                                No results
-                            </button>
-                        }
-                    </mat-menu>
+                                </mat-option>
+                            }
+                            @if (!users()?.length) {
+                                <mat-option [disabled]="true">
+                                    No results
+                                </mat-option>
+                            }
+                        </mat-autocomplete>
+                    </mat-form-field>
                 </div>
                 <div class="flex flex-col">
                     <label for="permissions">{{
@@ -253,12 +274,11 @@ export interface APIKeyModalData {
         FullscreenModalShellComponent,
         MatFormFieldModule,
         MatSelectModule,
-        MatMenuModule,
         MatAutocompleteModule,
         MatInputModule,
         MatChipsModule,
-        ActionFieldComponent,
         IconComponent,
+        UserAvatarComponent,
     ],
 })
 export class APIKeyModalComponent extends AsyncHandler implements OnInit {
@@ -287,6 +307,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     public readonly search_term = signal('');
     public readonly domain = signal<PlaceDomain>(null);
     public readonly user_list = signal<PlaceUser[]>([]);
+    public readonly user_list_loading = signal(false);
     public readonly permissions = toSignal(
         this.form.controls.permissions.valueChanges.pipe(
             startWith(this.form.controls.permissions.value),
@@ -303,12 +324,10 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
-    public readonly _input_el =
-        viewChild<ElementRef<HTMLInputElement>>('input');
-
-    public readonly focusInput = () =>
-        setTimeout(() => this._input_el()?.nativeElement?.focus(), 100);
-    public readonly setSearch = () => this.loadUsers();
+    public readonly setSearch = (term = '') => {
+        this.search_term.set(term);
+        this.loadUsers();
+    };
 
     public readonly addScope = (
         e: MatChipInputEvent | { input: HTMLInputElement; value: string },
@@ -329,6 +348,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                 name: key.name,
                 description: key.description,
                 scopes: key.scopes || [],
+                user: (key as any).user || null,
                 user_id: key.user_id,
                 permissions: key.permissions,
             });
@@ -339,7 +359,26 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                 100,
             );
         }
+        this.loadSelectedUser();
         this.loadUsers();
+    }
+
+    public selectUser(user: PlaceUser) {
+        this.form.patchValue({ user, user_id: user.id });
+        this.search_term.set(this._userLabel(user));
+    }
+
+    public clearUser() {
+        this.form.patchValue({ user: null, user_id: '' });
+        this.search_term.set('');
+        this.loadUsers();
+    }
+
+    public resetUserSearch() {
+        setTimeout(() => {
+            const user = this.form.value.user;
+            this.search_term.set(user ? this._userLabel(user) : '');
+        }, 150);
     }
 
     public get scope_list(): string[] {
@@ -358,27 +397,48 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         this.event.emit({ reason: 'done', metadata: this.form.value });
     }
 
+    public async loadSelectedUser() {
+        const user_id = this.form.value.user_id;
+        if (!user_id || this.form.value.user) return;
+        const user = await lastValueFrom(showUser(user_id)).catch(() => null);
+        if (!user) return;
+        this.form.patchValue({ user });
+        this.search_term.set(this._userLabel(user));
+    }
+
     public loadUsers() {
         this.timeout('load_users', async () => {
-            const users = await lastValueFrom(
-                this.domain()
-                    ? queryUsers({
-                          authority_id: this.domain().id,
-                          q: this.search_term(),
-                      }).pipe(map((_) => _.data as PlaceUser[]))
-                    : of([] as PlaceUser[]),
-            );
-            this.user_list.set(users);
-            if (
-                this.editing &&
-                !this.form.value.user &&
-                this._data.key.user_id
-            ) {
-                const user = users.find((u) => u.id === this._data.key.user_id);
-                if (user) {
-                    this.form.patchValue({ user });
+            this.user_list_loading.set(true);
+            try {
+                const users = await lastValueFrom(
+                    this.domain()
+                        ? queryUsers({
+                              authority_id: this.domain().id,
+                              q: this.search_term(),
+                          }).pipe(map((_) => _.data as PlaceUser[]))
+                        : of([] as PlaceUser[]),
+                );
+                this.user_list.set(users);
+                if (
+                    this.editing &&
+                    !this.form.value.user &&
+                    this._data.key.user_id
+                ) {
+                    const user = users.find(
+                        (u) => u.id === this._data.key.user_id,
+                    );
+                    if (user) {
+                        this.form.patchValue({ user });
+                        this.search_term.set(this._userLabel(user));
+                    }
                 }
+            } finally {
+                this.user_list_loading.set(false);
             }
         });
+    }
+
+    private _userLabel(user: PlaceUser) {
+        return user?.name || user?.email || '';
     }
 }
