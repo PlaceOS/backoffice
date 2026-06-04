@@ -5,20 +5,17 @@ vi.mock('../../app/common/general', () => ({
     log: vi.fn(),
 }));
 
-// Mock notifications
-vi.mock('../../app/common/notifications', () => ({
-    notifyInfo: vi.fn(),
-}));
-
 import {
     hasNewVersion,
     setupCache,
     clearCacheCheck,
+    updateAvailable,
 } from '../../app/common/application';
 
 describe('application.ts', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        updateAvailable.set(false);
         // Reset the module state by clearing cache check
         clearCacheCheck();
     });
@@ -54,6 +51,10 @@ describe('application.ts', () => {
     });
 
     describe('setupCache', () => {
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
         it('should not setup interval if cache is not enabled', () => {
             const mock_cache = {
                 isEnabled: false,
@@ -116,6 +117,22 @@ describe('application.ts', () => {
             setupCache(mock_cache2 as any, 2000);
             clearCacheCheck();
             // Should not throw
+        });
+
+        it('should flag the update card without activating the service worker update', async () => {
+            vi.useFakeTimers();
+            const mock_cache = {
+                isEnabled: true,
+                checkForUpdate: vi.fn().mockResolvedValue(true),
+                activateUpdate: vi.fn().mockResolvedValue(true),
+            };
+
+            setupCache(mock_cache as any, 1000);
+            await vi.advanceTimersByTimeAsync(1000);
+
+            expect(mock_cache.checkForUpdate).toHaveBeenCalled();
+            expect(mock_cache.activateUpdate).not.toHaveBeenCalled();
+            expect(updateAvailable()).toBe(true);
         });
     });
 });

@@ -19,7 +19,7 @@ import {
     RouterOutlet,
 } from '@angular/router';
 import { addDays, format, getUnixTime } from 'date-fns';
-import { setupCache } from './common/application';
+import { setupCache, updateAvailable } from './common/application';
 import { AsyncHandler } from './common/async-handler.class';
 import { detectIE, log } from './common/general';
 import { setNotifyOutlet } from './common/notifications';
@@ -29,11 +29,13 @@ import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { firstValueFrom } from 'rxjs';
 import { PlaceTenant } from './admin/staff-api.component';
 import { LocaleService, setTranslationService } from './common/locale.service';
 import { GlobalBannerComponent } from './ui/global-banner.component';
 import { GlobalLoadingComponent } from './ui/global-loading.component';
+import { IconComponent } from './ui/icon.component';
 import { UploadListComponent } from './ui/upload-list.component';
 
 @Component({
@@ -75,6 +77,32 @@ import { UploadListComponent } from './ui/upload-list.component';
                 Unable to reach server... Some features may not work.
             </div>
         }
+        @if (update_available() && !loading()) {
+            <section
+                role="status"
+                aria-live="polite"
+                class="border-info/30 bg-base-100 text-base-content fixed right-3 bottom-3 z-100 w-88 max-w-[calc(100vw-2rem)] rounded-md border p-3 shadow-lg"
+            >
+                <div class="flex items-center gap-2">
+                    <div class="min-w-0 flex-1">
+                        <div class="text-sm font-medium">Update available</div>
+                        <p class="mt-0.5 text-xs opacity-70">
+                            Refresh to load the latest Backoffice version.
+                        </p>
+                    </div>
+                    <button
+                        icon
+                        default
+                        type="button"
+                        (click)="refreshApplication()"
+                        matTooltip="Refresh"
+                        matTooltipPosition="left"
+                    >
+                        <icon>refresh</icon>
+                    </button>
+                </div>
+            </section>
+        }
     `,
     styles: [
         `
@@ -93,6 +121,8 @@ import { UploadListComponent } from './ui/upload-list.component';
         UploadListComponent,
         MatProgressBarModule,
         GlobalLoadingComponent,
+        IconComponent,
+        MatTooltipModule,
     ],
 })
 export class AppComponent extends AsyncHandler implements OnInit {
@@ -109,6 +139,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
     public readonly filter = signal(false);
     public readonly show = signal(false);
     public readonly simple = signal(false);
+    public readonly update_available = updateAvailable;
 
     public get dark_mode() {
         return this._users.dark_mode;
@@ -120,6 +151,10 @@ export class AppComponent extends AsyncHandler implements OnInit {
 
     public get is_fools_day(): boolean {
         return false;
+    }
+
+    public refreshApplication() {
+        location.reload();
     }
 
     public async ngOnInit() {

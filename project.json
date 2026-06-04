@@ -90,7 +90,6 @@
                     "outputHashing": "all"
                 },
                 "development": {
-                    "serviceWorker": "ngsw-config.json",
                     "optimization": false,
                     "extractLicenses": false,
                     "sourceMap": true
