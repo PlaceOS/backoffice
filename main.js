@@ -1,6 +1,6 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-GHXMMBEO.js";
+} from "./chunk-CS7T2HLA.js";
 import {
   getUnixTime
 } from "./chunk-MXECN6VN.js";
@@ -33,12 +33,12 @@ import "./chunk-AVP547Y3.js";
 import "./chunk-T6JVNKEV.js";
 import {
   BackofficeUsersService
-} from "./chunk-MJCCW474.js";
+} from "./chunk-E7MTJQKB.js";
 import {
   SettingsService,
   currentUser,
   format
-} from "./chunk-HV6WAF26.js";
+} from "./chunk-AJBRYSFE.js";
 import {
   addDays
 } from "./chunk-LYW23EPM.js";
@@ -2238,24 +2238,21 @@ var ServiceWorkerModule = class _ServiceWorkerModule {
 
 // src/app/common/application.ts
 var _timer;
-var _new_version = false;
+var updateAvailable = signal(false, ...ngDevMode ? [{ debugName: "updateAvailable" }] : []);
 function setupCache(cache, interval = 5 * 60 * 1e3) {
   if (cache.isEnabled) {
     if (_timer)
       clearInterval(_timer);
     _timer = setInterval(() => {
       log("CACHE", `Checking for updates...`);
-      activateUpdate(cache);
+      checkForUpdate(cache);
     }, interval);
   }
 }
-async function activateUpdate(cache) {
+async function checkForUpdate(cache) {
   if (cache.isEnabled && await cache.checkForUpdate()) {
-    log("CACHE", `Activating changes to the cache...`);
-    if (!await cache.activateUpdate())
-      return;
-    _new_version = true;
-    notifyInfo("Newer version of the application is available", "Refresh", () => location.reload());
+    log("CACHE", `Newer application version is available.`);
+    updateAvailable.set(true);
   }
 }
 
@@ -2984,7 +2981,7 @@ function AppComponent_Conditional_1_Conditional_3_Template(rf, ctx) {
 function AppComponent_Conditional_1_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275element(0, "global-banner");
-    \u0275\u0275elementStart(1, "div", 3);
+    \u0275\u0275elementStart(1, "div", 4);
     \u0275\u0275element(2, "router-outlet");
     \u0275\u0275elementEnd();
     \u0275\u0275conditionalCreate(3, AppComponent_Conditional_1_Conditional_3_Template, 1, 0, "app-upload-list");
@@ -2997,8 +2994,8 @@ function AppComponent_Conditional_1_Template(rf, ctx) {
 }
 function AppComponent_Conditional_2_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 1)(1, "div", 4);
-    \u0275\u0275element(2, "mat-progress-bar", 5);
+    \u0275\u0275elementStart(0, "div", 1)(1, "div", 5);
+    \u0275\u0275element(2, "mat-progress-bar", 6);
     \u0275\u0275elementEnd()();
   }
 }
@@ -3007,6 +3004,26 @@ function AppComponent_Conditional_4_Template(rf, ctx) {
     \u0275\u0275elementStart(0, "div", 2);
     \u0275\u0275text(1, " Unable to reach server... Some features may not work. ");
     \u0275\u0275elementEnd();
+  }
+}
+function AppComponent_Conditional_5_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r2 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "section", 3)(1, "div", 7)(2, "div", 8)(3, "div", 9);
+    \u0275\u0275text(4, "Update available");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "p", 10);
+    \u0275\u0275text(6, " Refresh to load the latest Backoffice version. ");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(7, "button", 11);
+    \u0275\u0275listener("click", function AppComponent_Conditional_5_Template_button_click_7_listener() {
+      \u0275\u0275restoreView(_r2);
+      const ctx_r0 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r0.refreshApplication());
+    });
+    \u0275\u0275elementStart(8, "icon");
+    \u0275\u0275text(9, "refresh");
+    \u0275\u0275elementEnd()()()();
   }
 }
 var AppComponent = class _AppComponent extends AsyncHandler {
@@ -3022,6 +3039,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   filter = signal(false, ...ngDevMode ? [{ debugName: "filter" }] : []);
   show = signal(false, ...ngDevMode ? [{ debugName: "show" }] : []);
   simple = signal(false, ...ngDevMode ? [{ debugName: "simple" }] : []);
+  update_available = updateAvailable;
   get dark_mode() {
     return this._users.dark_mode;
   }
@@ -3030,6 +3048,9 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   }
   get is_fools_day() {
     return false;
+  }
+  refreshApplication() {
+    location.reload();
   }
   async ngOnInit() {
     setLoadingMessage("Initialising application...");
@@ -3132,19 +3153,22 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       return (\u0275AppComponent_BaseFactory || (\u0275AppComponent_BaseFactory = \u0275\u0275getInheritedFactory(_AppComponent)))(__ngFactoryType__ || _AppComponent);
     };
   })();
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 5, vars: 2, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], ["loader", "", 1, "absolute", "inset-0", "z-50", "flex", "items-center", "justify-center"], [1, "bg-error", "text-error-content", "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "px-4", "py-2", "text-xs", "shadow-sm"], [1, "relative", "h-1/2", "w-full", "flex-1"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", 1, "scale-150", "rounded"]], template: function AppComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 6, vars: 3, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], ["loader", "", 1, "absolute", "inset-0", "z-50", "flex", "items-center", "justify-center"], [1, "bg-error", "text-error-content", "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "px-4", "py-2", "text-xs", "shadow-sm"], ["role", "status", "aria-live", "polite", 1, "border-info/30", "bg-base-100", "text-base-content", "fixed", "right-3", "bottom-3", "z-100", "w-88", "max-w-[calc(100vw-2rem)]", "rounded-md", "border", "p-3", "shadow-lg"], [1, "relative", "h-1/2", "w-full", "flex-1"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", 1, "scale-150", "rounded"], [1, "flex", "items-center", "gap-2"], [1, "min-w-0", "flex-1"], [1, "text-sm", "font-medium"], [1, "mt-0.5", "text-xs", "opacity-70"], ["icon", "", "default", "", "type", "button", "matTooltip", "Refresh", "matTooltipPosition", "left", 3, "click"]], template: function AppComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0);
       \u0275\u0275conditionalCreate(1, AppComponent_Conditional_1_Template, 4, 1)(2, AppComponent_Conditional_2_Template, 3, 0, "div", 1);
       \u0275\u0275elementEnd();
       \u0275\u0275element(3, "global-loading");
       \u0275\u0275conditionalCreate(4, AppComponent_Conditional_4_Template, 2, 0, "div", 2);
+      \u0275\u0275conditionalCreate(5, AppComponent_Conditional_5_Template, 10, 0, "section", 3);
     }
     if (rf & 2) {
       \u0275\u0275advance();
       \u0275\u0275conditional(!ctx.loading() ? 1 : 2);
       \u0275\u0275advance(3);
       \u0275\u0275conditional(!ctx.online && !ctx.loading() ? 4 : -1);
+      \u0275\u0275advance();
+      \u0275\u0275conditional(ctx.update_available() && !ctx.loading() ? 5 : -1);
     }
   }, dependencies: [
     GlobalBannerComponent,
@@ -3152,7 +3176,10 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     UploadListComponent,
     MatProgressBarModule,
     MatProgressBar,
-    GlobalLoadingComponent
+    GlobalLoadingComponent,
+    IconComponent,
+    MatTooltipModule,
+    MatTooltip
   ], styles: ["\n\n[loader][_ngcontent-%COMP%] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=app.css.map */"] });
 };
 (() => {
@@ -3195,17 +3222,45 @@ var AppComponent = class _AppComponent extends AsyncHandler {
                 Unable to reach server... Some features may not work.
             </div>
         }
+        @if (update_available() && !loading()) {
+            <section
+                role="status"
+                aria-live="polite"
+                class="border-info/30 bg-base-100 text-base-content fixed right-3 bottom-3 z-100 w-88 max-w-[calc(100vw-2rem)] rounded-md border p-3 shadow-lg"
+            >
+                <div class="flex items-center gap-2">
+                    <div class="min-w-0 flex-1">
+                        <div class="text-sm font-medium">Update available</div>
+                        <p class="mt-0.5 text-xs opacity-70">
+                            Refresh to load the latest Backoffice version.
+                        </p>
+                    </div>
+                    <button
+                        icon
+                        default
+                        type="button"
+                        (click)="refreshApplication()"
+                        matTooltip="Refresh"
+                        matTooltipPosition="left"
+                    >
+                        <icon>refresh</icon>
+                    </button>
+                </div>
+            </section>
+        }
     `, imports: [
       GlobalBannerComponent,
       RouterOutlet,
       UploadListComponent,
       MatProgressBarModule,
-      GlobalLoadingComponent
+      GlobalLoadingComponent,
+      IconComponent,
+      MatTooltipModule
     ], styles: ["/* angular:styles/component:css;014ea54e3a0c35073e918aea542f90943f3e6d306dafcf1bef51d87ebded5ceb;/home/runner/work/backoffice/backoffice/src/app/app.ts */\n[loader] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=app.css.map */\n"] }]
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 98 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 128 });
 })();
 
 // src/app/ui/guards/authorised-user.guard.ts
@@ -3306,52 +3361,52 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-2AZC4IOY.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-LZFCKSYE.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-Q4DM6LXK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-AUH7VMHY.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-FQKUWIBL.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-7YL4DLZU.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-3K442MZ2.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-MK5FTSXO.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-UPDZHREN.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-SVATUMPU.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-5I33O4UJ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YXOPB2KQ.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-V56F25L2.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-4PZPCGGO.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-T5WKKL7W.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-JMXD24QA.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-OJU2MUEK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-TXJWB6BG.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-FSSEUNNJ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-US5LJ6DT.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];

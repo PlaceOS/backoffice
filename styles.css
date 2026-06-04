@@ -352,6 +352,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .right-2 {
   right: calc(var(--spacing) * 2);
 }
+#placeos .right-3 {
+  right: calc(var(--spacing) * 3);
+}
 #placeos .right-4 {
   right: calc(var(--spacing) * 4);
 }
@@ -363,6 +366,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .bottom-2 {
   bottom: calc(var(--spacing) * 2);
+}
+#placeos .bottom-3 {
+  bottom: calc(var(--spacing) * 3);
 }
 #placeos .bottom-4 {
   bottom: calc(var(--spacing) * 4);
@@ -420,6 +426,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .z-50 {
   z-index: 50;
+}
+#placeos .z-100 {
+  z-index: 100;
 }
 #placeos .z-999 {
   z-index: 999;
@@ -859,6 +868,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .w-60 {
   width: calc(var(--spacing) * 60);
+}
+#placeos .w-88 {
+  width: calc(var(--spacing) * 88);
 }
 #placeos .w-92 {
   width: calc(var(--spacing) * 92);
@@ -1438,6 +1450,14 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .border-info {
   border-color: var(--info);
+}
+#placeos .border-info\/30 {
+  border-color: var(--info);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .border-info\/30 {
+    border-color: color-mix(in oklab, var(--info) 30%, transparent);
+  }
 }
 #placeos .border-neutral {
   border-color: var(--neutral);
@@ -3267,6 +3287,32 @@ a[icon] {
 button[icon] icon,
 a[icon] icon {
   font-size: 1.5em;
+}
+button[icon][default],
+a[icon][default] {
+  background: var(--base-100);
+  border: 1px solid var(--base-300);
+  border-radius: 0.5rem;
+  color: var(--base-content);
+}
+button[icon][default]:hover,
+a[icon][default]:hover {
+  background: var(--base-200);
+  border-color: var(--base-400);
+  --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+  box-shadow:
+    var(--tw-inset-shadow),
+    var(--tw-inset-ring-shadow),
+    var(--tw-ring-offset-shadow),
+    var(--tw-ring-shadow),
+    var(--tw-shadow);
+}
+button[icon][default][error],
+a[icon][default][error] {
+  --base-200: var(--error-light);
+  --base-300: var(--error);
+  --base-400: var(--error);
+  --base-content: var(--error);
 }
 button[icon][disabled],
 a[icon][disabled] {
