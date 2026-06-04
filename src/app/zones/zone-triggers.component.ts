@@ -92,11 +92,13 @@ import { ZonesStateService } from './zones-state.service';
                     <div class="flex items-center space-x-2 p-2">
                         <button
                             icon
+                            default
+                            error
                             matRipple
                             [matTooltip]="'TRIGGERS.REMOVE'"
                             (click)="deleteTrigger(row)"
                         >
-                            <icon class="text-error">delete</icon>
+                            <icon>delete</icon>
                         </button>
                     </div>
                 </ng-template>

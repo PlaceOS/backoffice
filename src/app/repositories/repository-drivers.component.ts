@@ -55,6 +55,7 @@ import { RepositoriesStateService } from './repositories-state.service';
             <div class="flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'DRIVERS.NEW' | translate"
                     matTooltipPosition="left"

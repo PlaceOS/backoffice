@@ -155,6 +155,7 @@ import { BrokerFormComponent } from './broker-form.component';
             <div class="flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'ADMIN.BROKERS_EDIT' | translate"
                     (click)="editBroker(row)"
@@ -163,9 +164,10 @@ import { BrokerFormComponent } from './broker-form.component';
                 </button>
                 <button
                     icon
+                    default
+                    error
                     matRipple
                     [matTooltip]="'ADMIN.BROKERS_REMOVE' | translate"
-                    class="text-error"
                     (click)="deleteBroker(row)"
                 >
                     <icon>delete</icon>

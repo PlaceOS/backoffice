@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { CdkTreeModule } from '@angular/cdk/tree';
+import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
     Component,
@@ -51,7 +51,7 @@ interface GroupTreeItem {
             class="border-base-200 bg-base-100 flex h-full w-[24rem] max-w-[25vw] min-w-64 flex-col space-y-2 overflow-hidden rounded-sm shadow-sm sm:border-r"
             (click)="$event.stopPropagation()"
         >
-            <div class="flex items-center space-x-2 px-1 pt-1">
+            <div class="flex items-center gap-1 px-1 pt-1">
                 <div
                     class="border-base-300 relative flex flex-1 items-center rounded-lg border shadow-sm"
                 >
@@ -80,12 +80,13 @@ interface GroupTreeItem {
                     <div class="relative flex overflow-hidden">
                         <button
                             icon
+                            default
                             matRipple
-                            [class.border]="selected_filters.length"
+                            class="h-11 w-11"
                             [class.border-info]="selected_filters.length"
                             [class.text-info]="selected_filters.length"
                         >
-                            <icon class="text-2xl">filter_list</icon>
+                            <icon class="m-2 text-2xl">filter_list</icon>
                         </button>
                         <mat-form-field
                             appearance="outline"

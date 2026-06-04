@@ -276,6 +276,7 @@ export interface UploadInfo {
                                 >
                                     <button
                                         icon
+                                        default
                                         matRipple
                                         (click)="downloadUpload(upload)"
                                         [matTooltip]="
@@ -287,6 +288,7 @@ export interface UploadInfo {
                                     </button>
                                     <button
                                         icon
+                                        default
                                         matRipple
                                         (click)="copyLink(upload)"
                                         [matTooltip]="
@@ -297,6 +299,7 @@ export interface UploadInfo {
                                     </button>
                                     <button
                                         icon
+                                        default
                                         matRipple
                                         (click)="viewUpload(upload)"
                                         [disabled]="
@@ -313,13 +316,14 @@ export interface UploadInfo {
                                     </button>
                                     <button
                                         icon
+                                        default
+                                        error
                                         matRipple
                                         (click)="removeUpload(upload)"
                                         [matTooltip]="
                                             'ADMIN.UPLOADS_LIB_REMOVE'
                                                 | translate
                                         "
-                                        class="text-error"
                                     >
                                         <icon>delete</icon>
                                     </button>

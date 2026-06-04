@@ -74,7 +74,7 @@ import { ZonesStateService } from './zones-state.service';
                         {
                             key: 'actions',
                             name: ' ',
-                            size: '7rem',
+                            size: '6.5rem',
                             content: actions_template,
                         },
                     ]"
@@ -127,6 +127,7 @@ import { ZonesStateService } from './zones-state.service';
             <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'ZONES.GROUP_PERMISSIONS' | translate"
                     (click)="editPermissions(row)"
@@ -135,11 +136,13 @@ import { ZonesStateService } from './zones-state.service';
                 </button>
                 <button
                     icon
+                    default
+                    error
                     matRipple
                     [matTooltip]="'ZONES.GROUP_REMOVE' | translate"
                     (click)="removeGroup(row)"
                 >
-                    <icon class="text-error">delete</icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

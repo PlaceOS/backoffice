@@ -100,16 +100,15 @@ import { TriggerStateService } from './trigger-state.service';
                 {{ 'TRIGGERS.CONDITIONS' | translate }}
             </div>
             <button
-                btn
+                icon
+                default
                 matRipple
-                class="w-48"
                 [disabled]="!template_system()"
                 (click)="editCondition()"
+                [matTooltip]="'TRIGGERS.CONDITION_ADD' | translate"
+                matTooltipPosition="left"
             >
-                <icon class="text-2xl">add</icon>
-                <div class="mr-4 ml-2">
-                    {{ 'TRIGGERS.CONDITION_ADD' | translate }}
-                </div>
+                <icon>add</icon>
             </button>
         </header>
         <section>
@@ -172,14 +171,21 @@ import { TriggerStateService } from './trigger-state.service';
                 <div class="mx-auto flex items-center space-x-2 p-2">
                     <button
                         icon
+                        default
                         matRipple
                         [disabled]="!template_system()"
                         (click)="editCondition(row)"
                     >
                         <icon>edit</icon>
                     </button>
-                    <button icon matRipple (click)="removeCondition(row)">
-                        <icon class="text-error">delete</icon>
+                    <button
+                        icon
+                        default
+                        error
+                        matRipple
+                        (click)="removeCondition(row)"
+                    >
+                        <icon>delete</icon>
                     </button>
                 </div>
             </ng-template>
@@ -189,16 +195,15 @@ import { TriggerStateService } from './trigger-state.service';
                 {{ 'TRIGGERS.ACTIONS' | translate }}
             </div>
             <button
-                btn
+                icon
+                default
                 matRipple
-                class="w-48"
                 [disabled]="!template_system()"
                 (click)="editAction()"
+                [matTooltip]="'TRIGGERS.ACTION_ADD' | translate"
+                matTooltipPosition="left"
             >
-                <icon class="text-2xl">add</icon>
-                <div class="mr-4 ml-2">
-                    {{ 'TRIGGERS.ACTION_ADD' | translate }}
-                </div>
+                <icon>add</icon>
             </button>
         </header>
         <section>
@@ -263,14 +268,21 @@ import { TriggerStateService } from './trigger-state.service';
                 <div class="mx-auto flex items-center space-x-2 p-2">
                     <button
                         icon
+                        default
                         matRipple
                         [disabled]="!template_system()"
                         (click)="editAction(row)"
                     >
                         <icon>edit</icon>
                     </button>
-                    <button icon matRipple (click)="removeAction(row)">
-                        <icon class="text-error">delete</icon>
+                    <button
+                        icon
+                        default
+                        error
+                        matRipple
+                        (click)="removeAction(row)"
+                    >
+                        <icon>delete</icon>
                     </button>
                 </div>
             </ng-template>

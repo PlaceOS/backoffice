@@ -172,6 +172,7 @@ import { APIKeyService } from './api-keys.service';
             <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'COMMON.EDIT' | translate"
                     (click)="editKey(row)"
@@ -180,11 +181,13 @@ import { APIKeyService } from './api-keys.service';
                 </button>
                 <button
                     icon
+                    default
+                    error
                     matRipple
                     [matTooltip]="'ADMIN.APP_KEYS_REMOVE' | translate"
                     (click)="deleteKey(row)"
                 >
-                    <icon class="text-error">delete</icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

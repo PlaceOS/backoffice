@@ -57,19 +57,19 @@ import { DomainStateService } from './domain-state.service';
             </div>
         }
         <header
-            class="bg-base-200 mb-2 flex h-16 w-full items-center justify-between rounded-sm px-2 text-lg font-medium"
+            class="bg-base-200 mb-2 flex h-14 w-full items-center justify-between rounded-sm px-2"
         >
             <h3 class="px-2 text-lg font-medium">
                 {{ 'COMMON.SETTINGS' | translate }}
             </h3>
             <button
                 icon
+                default
                 matRipple
-                class="bg-secondary text-secondary-content rounded-sm"
                 [matTooltip]="'COMMON.SAVE_CHANGES' | translate"
                 (click)="saveChanges()"
             >
-                <icon class="text-2xl">save</icon>
+                <icon>save</icon>
             </button>
         </header>
         @if (form) {

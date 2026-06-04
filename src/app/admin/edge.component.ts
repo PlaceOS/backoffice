@@ -141,6 +141,7 @@ import { EdgeModalComponent } from './edge-modal.component';
             <div class="flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'ADMIN.EDGE_EDIT' | translate"
                     (click)="edit(row)"
@@ -149,8 +150,9 @@ import { EdgeModalComponent } from './edge-modal.component';
                 </button>
                 <button
                     icon
+                    default
+                    error
                     matRipple
-                    class="text-error"
                     [matTooltip]="'ADMIN.EDGE_REMOVE' | translate"
                     (click)="remove(row)"
                 >

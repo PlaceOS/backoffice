@@ -147,9 +147,10 @@ export interface ExternalResource {
                     </div>
                 </ng-template>
                 <ng-template #actions_template let-row="row">
-                    <div class="flex items-center space-x-2 p-2">
+                    <div class="mx-auto flex items-center space-x-2 p-2">
                         <button
                             icon
+                            default
                             matRipple
                             (click)="importResource(row)"
                             [disabled]="row.imported"
@@ -161,6 +162,7 @@ export interface ExternalResource {
                         </button>
                         <a
                             icon
+                            default
                             matRipple
                             [matTooltip]="
                                 'ADMIN.RESOURCE_IMPORTS_VIEW' | translate

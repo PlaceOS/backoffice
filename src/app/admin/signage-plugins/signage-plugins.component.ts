@@ -49,7 +49,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                     [class.opacity-0]="!loading()"
                 ></mat-progress-bar>
                 <simple-table
-                    class="block min-w-5xl text-sm"
+                    class="block min-w-6xl text-sm"
                     [data]="plugins()"
                     [columns]="[
                         {
@@ -85,7 +85,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                         {
                             key: 'actions',
                             name: ' ',
-                            size: '8rem',
+                            size: '8.5rem',
                             content: actions_template,
                             sortable: false,
                         },
@@ -98,7 +98,9 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
             </div>
         </div>
         <ng-template #mono_template let-data="data">
-            <div class="truncate p-4 font-mono text-sm">{{ data }}</div>
+            <div class="max-w-[50vw] truncate p-4 font-mono text-xs">
+                {{ data }}
+            </div>
         </ng-template>
         <ng-template #description_template let-data="data">
             <div class="p-4 text-xs">
@@ -118,14 +120,14 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                 <div
                     class="bg-success mx-auto flex h-8 w-8 items-center justify-center rounded-sm"
                 >
-                    <icon class="text-success-content text-xl">check</icon>
+                    <icon class="text-success-content text-2xl">check</icon>
                 </div>
             }
             @if (!data) {
                 <div
                     class="bg-error mx-auto flex h-8 w-8 items-center justify-center rounded-sm"
                 >
-                    <icon class="text-error-content text-xl">close</icon>
+                    <icon class="text-error-content text-2xl">close</icon>
                 </div>
             }
         </ng-template>
@@ -133,6 +135,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
             <div class="flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'ADMIN.SIGNAGE_PLUGINS_TEST' | translate"
                     (click)="testPlugin(row)"
@@ -141,6 +144,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                 </button>
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'ADMIN.SIGNAGE_PLUGINS_EDIT' | translate"
                     (click)="editPlugin(row)"
@@ -149,9 +153,10 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                 </button>
                 <button
                     icon
+                    default
+                    error
                     matRipple
                     [matTooltip]="'ADMIN.SIGNAGE_PLUGINS_REMOVE' | translate"
-                    class="text-error"
                     (click)="deletePlugin(row)"
                 >
                     <icon>delete</icon>

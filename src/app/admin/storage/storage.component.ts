@@ -145,6 +145,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
             <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'ADMIN.STORAGE_EDIT' | translate"
                     (click)="edit(row)"
@@ -153,11 +154,13 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                 </button>
                 <button
                     icon
+                    default
+                    error
                     matRipple
                     [matTooltip]="'ADMIN.STORAGE_REMOVE' | translate"
                     (click)="remove(row)"
                 >
-                    <icon class="text-error">delete</icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

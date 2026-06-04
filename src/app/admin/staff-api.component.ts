@@ -138,6 +138,7 @@ export interface PlaceTenant {
             <div class="flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="
                         'ADMIN.TENANTS_EDIT_BOOKING_LIMITS' | translate
@@ -148,6 +149,7 @@ export interface PlaceTenant {
                 </button>
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'ADMIN.TENANTS_EDIT' | translate"
                     (click)="editTenant(row)"
@@ -156,8 +158,9 @@ export interface PlaceTenant {
                 </button>
                 <button
                     icon
+                    default
+                    error
                     matRipple
-                    class="text-error"
                     [matTooltip]="'ADMIN.TENANTS_REMOVE' | translate"
                     (click)="removeTenant(row)"
                 >

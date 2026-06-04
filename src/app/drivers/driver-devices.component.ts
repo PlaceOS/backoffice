@@ -106,6 +106,7 @@ import { DriverStateService } from './driver-state.service';
                     <div class="mx-auto flex items-center space-x-2 p-2">
                         <button
                             icon
+                            default
                             matRipple
                             [matTooltip]="'DRIVERS.VIEW_SYSTEMS' | translate"
                             [matMenuTriggerFor]="menu"
@@ -115,11 +116,13 @@ import { DriverStateService } from './driver-state.service';
                         </button>
                         <button
                             icon
+                            default
+                            error
                             matRipple
                             [matTooltip]="'MODULES.DELETE' | translate"
                             (click)="removeModule(row)"
                         >
-                            <icon class="text-error">delete</icon>
+                            <icon>delete</icon>
                         </button>
                         <mat-menu #menu="matMenu">
                             <div

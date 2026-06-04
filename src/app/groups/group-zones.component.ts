@@ -122,6 +122,7 @@ import { GroupStateService } from './group-state.service';
             <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'GROUPS.ZONE_PERMISSIONS' | translate"
                     (click)="editPermissions(row)"
@@ -130,11 +131,13 @@ import { GroupStateService } from './group-state.service';
                 </button>
                 <button
                     icon
+                    default
+                    error
                     matRipple
                     [matTooltip]="'GROUPS.ZONE_REMOVE' | translate"
                     (click)="removeZone(row)"
                 >
-                    <icon class="text-error">delete</icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

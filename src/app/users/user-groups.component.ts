@@ -101,6 +101,7 @@ import { UsersStateService } from './users-state.service';
             <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'USERS.GROUP_PERMISSIONS' | translate"
                     (click)="editPermissions(row)"
@@ -109,11 +110,13 @@ import { UsersStateService } from './users-state.service';
                 </button>
                 <button
                     icon
+                    default
+                    error
                     matRipple
                     [matTooltip]="'USERS.GROUP_REMOVE' | translate"
                     (click)="removeGroup(row)"
                 >
-                    <icon class="text-error">delete</icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>

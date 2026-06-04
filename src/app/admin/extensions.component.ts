@@ -145,6 +145,7 @@ export interface BackofficeExtension {
                     <div class="flex items-center space-x-2 p-2">
                         <button
                             icon
+                            default
                             matRipple
                             [matTooltip]="'ADMIN.EXTENSIONS_EDIT' | translate"
                             (click)="editExtension(row)"
@@ -153,11 +154,13 @@ export interface BackofficeExtension {
                         </button>
                         <button
                             icon
+                            default
+                            error
                             matRipple
                             [matTooltip]="'ADMIN.EXTENSIONS_REMOVE' | translate"
                             (click)="removeExtension(row)"
                         >
-                            <icon class="text-error">delete</icon>
+                            <icon>delete</icon>
                         </button>
                     </div>
                 </ng-template>

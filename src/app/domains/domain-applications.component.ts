@@ -147,6 +147,7 @@ import { DomainStateService } from './domain-state.service';
             <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     [matTooltip]="'DOMAINS.APPLICATION_EDIT' | translate"
                     (click)="editApplication(row)"
@@ -155,8 +156,9 @@ import { DomainStateService } from './domain-state.service';
                 </button>
                 <button
                     icon
+                    default
+                    error
                     matRipple
-                    class="text-error"
                     [matTooltip]="'DOMAINS.APPLICATION_REMOVE' | translate"
                     (click)="removeApplication(row)"
                 >
