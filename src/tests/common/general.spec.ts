@@ -1,4 +1,3 @@
-import { signal } from '@angular/core';
 import {
     UntypedFormControl,
     UntypedFormGroup,
@@ -11,15 +10,12 @@ import {
     detectIE,
     downloadFile,
     eventToPoint,
-    firstTruthyValueFrom,
     flatten,
     getInvalidFields,
     getItemWithKeys,
     issueDescription,
     jsonToCsv,
     log,
-    mapLastValueFrom,
-    nextValueFrom,
     numberToPosition,
     padLength,
     parseCSV,
@@ -578,56 +574,6 @@ describe('general.ts utilities', () => {
                 name: new UntypedFormControl('', Validators.required),
             });
             expect(getInvalidFields(form, 'form.')).toEqual(['form.name']);
-        });
-    });
-
-    describe('nextValueFrom', () => {
-        it('should return current value from signal', async () => {
-            const value = signal(42);
-            expect(await nextValueFrom(value)).toBe(42);
-        });
-
-        it('should return null for null signal', async () => {
-            expect(await nextValueFrom(null as any)).toBeNull();
-        });
-    });
-
-    describe('firstTruthyValueFrom', () => {
-        it('should return first truthy value', async () => {
-            const value = signal(0);
-            const promise = firstTruthyValueFrom(value);
-            value.set(1);
-            expect(await promise).toBe(1);
-        });
-
-        it('should return null for null signal', async () => {
-            expect(await firstTruthyValueFrom(null as any)).toBeNull();
-        });
-
-        it('should skip falsy values', async () => {
-            const value = signal('');
-            const promise = firstTruthyValueFrom(value);
-            value.set('hello');
-            expect(await promise).toBe('hello');
-        });
-    });
-
-    describe('mapLastValueFrom', () => {
-        it('should map and return last value', async () => {
-            const result = await mapLastValueFrom(
-                Promise.resolve(5),
-                (x) => x * 2,
-            );
-            expect(result).toBe(10);
-        });
-
-        it('should return last value without mapping if no map_fn', async () => {
-            const result = await mapLastValueFrom(Promise.resolve(5));
-            expect(result).toBe(5);
-        });
-
-        it('should return null for null source', async () => {
-            expect(await mapLastValueFrom(null as any)).toBeNull();
         });
     });
 
