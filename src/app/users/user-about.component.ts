@@ -73,7 +73,9 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 <div>
                     <a
                         class="mono truncate text-sm underline"
-                        [href]="'mailto:' + item?.email"
+                        [href]="
+                            'mailto:' + $safeNavigationMigration(item?.email)
+                        "
                     >
                         {{ item?.email }}
                     </a>
@@ -90,7 +92,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     </div>
                     <div class="mono text-sm">
                         <a
-                            [routerLink]="['/domains', item?.authority_id]"
+                            [routerLink]="[
+                                '/domains',
+                                $safeNavigationMigration(item?.authority_id),
+                            ]"
                             class="underline"
                         >
                             {{ (domain | async)?.name }} ({{

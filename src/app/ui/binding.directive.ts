@@ -8,7 +8,7 @@ import {
     SimpleChanges,
     inject,
     input,
-    model,
+    linkedSignal,
     output,
 } from '@angular/core';
 import { authority, getModule, onlineState } from '@placeos/ts-client';
@@ -44,7 +44,9 @@ export class BindingDirective<T = unknown>
     public readonly params = input<unknown[] | null>(null);
     public readonly ignore = input(false);
     /** Current value of the binding */
-    public readonly model = model<T | null>(null);
+    // eslint-disable-next-line @angular-eslint/no-input-rename
+    public readonly modelInput = input<T | null>(null, { alias: 'model' });
+    public readonly model = linkedSignal(this.modelInput);
     /** Emitter for changes to the value of the binding */
     public readonly modelChange = output<T | null>();
 
@@ -62,7 +64,11 @@ export class BindingDirective<T = unknown>
             this.bindVariable();
         }
         const model = this.model();
-        if (changes.model && this._old_model !== model && this.model != null) {
+        if (
+            changes.modelInput &&
+            this._old_model !== model &&
+            this.model != null
+        ) {
             this._old_model = model;
             this.execute();
         }

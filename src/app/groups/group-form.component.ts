@@ -1,15 +1,14 @@
-import { AsyncPipe } from '@angular/common';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { AsyncPipe } from '@angular/common';
 import {
     Component,
     EventEmitter,
+    inject,
     OnInit,
     Output,
-    inject,
     signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -33,8 +32,8 @@ import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
-import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
+import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { generateGroupFormFields } from './groups.utilities';
@@ -67,7 +66,9 @@ import { generateGroupFormFields } from './groups.utilities';
                             formControlName="name"
                             required
                         />
-                        <mat-error>{{ 'GROUPS.NAME_REQUIRED' | translate }}</mat-error>
+                        <mat-error>{{
+                            'GROUPS.NAME_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field">
@@ -130,7 +131,10 @@ import { generateGroupFormFields } from './groups.utilities';
                     }}</label>
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-chip-grid #chipList aria-label="Subsystem List">
-                            @for (subsystem of subsystem_list(); track subsystem) {
+                            @for (
+                                subsystem of subsystem_list();
+                                track subsystem
+                            ) {
                                 <mat-chip-row
                                     (removed)="removeSubsystem(subsystem)"
                                 >
@@ -141,8 +145,7 @@ import { generateGroupFormFields } from './groups.utilities';
                                         matChipRemove
                                         [attr.aria-label]="
                                             'COMMON.ITEM_REMOVE'
-                                                | translate
-                                                    : { item: subsystem }
+                                                | translate: { item: subsystem }
                                         "
                                     >
                                         <icon>cancel</icon>
@@ -180,7 +183,8 @@ import { generateGroupFormFields } from './groups.utilities';
     ],
 })
 export class GroupFormComponent extends AsyncHandler implements OnInit {
-    private _dialog_ref = inject<MatDialogRef<GroupFormComponent>>(MatDialogRef);
+    private _dialog_ref =
+        inject<MatDialogRef<GroupFormComponent>>(MatDialogRef);
     private _data = inject<{ item: PlaceGroup }>(MAT_DIALOG_DATA);
     private _hotkey = inject(HotkeysService);
     private readonly _name = 'GROUPS';

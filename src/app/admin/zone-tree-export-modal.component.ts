@@ -16,9 +16,7 @@ import { IconComponent } from '../ui/icon.component';
 @Component({
     selector: 'app-zone-tree-export-modal',
     template: `
-        <div
-            class="bg-base-200 flex items-center justify-between px-4 py-2"
-        >
+        <div class="bg-base-200 flex items-center justify-between px-4 py-2">
             <h3 class="text-xl font-medium">Export Zone Tree</h3>
             <button icon matRipple mat-dialog-close>
                 <icon>close</icon>
@@ -111,9 +109,10 @@ import { IconComponent } from '../ui/icon.component';
     ],
 })
 export class ZoneTreeExportModalComponent {
-    private readonly _dialog_ref = inject<
-        MatDialogRef<ZoneTreeExportModalComponent, PlaceZone[]>
-    >(MatDialogRef);
+    private readonly _dialog_ref =
+        inject<MatDialogRef<ZoneTreeExportModalComponent, PlaceZone[]>>(
+            MatDialogRef,
+        );
     private readonly _data = inject<{ selected: PlaceZone[] }>(MAT_DIALOG_DATA);
 
     public readonly selected = signal<PlaceZone[]>(this._data.selected || []);
@@ -133,7 +132,8 @@ export class ZoneTreeExportModalComponent {
         queryZones({ q: query, include_children_count: true, limit: 100 }).pipe(
             map((resp) =>
                 resp.data.map((zone) => {
-                    (zone as PlaceZone & { extra?: string }).extra = `${zone.children_count || 0} children`;
+                    (zone as PlaceZone & { extra?: string }).extra =
+                        `${zone.children_count || 0} children`;
                     return zone;
                 }),
             ),

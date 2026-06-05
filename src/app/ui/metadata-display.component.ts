@@ -107,7 +107,10 @@ function replaceDescTag(inputString, newContent) {
                             <div
                                 class="border-base-300 rounded-sm border px-2 py-1 font-mono text-[0.625rem] whitespace-nowrap"
                                 [matTooltip]="
-                                    (item.modified_by_id | user | async)?.name
+                                    $safeNavigationMigration(
+                                        (item.modified_by_id | user | async)
+                                            ?.name
+                                    )
                                 "
                                 matTooltipPosition="left"
                             >

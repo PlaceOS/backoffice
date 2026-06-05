@@ -42,7 +42,9 @@ interface DateItem {
                         icon
                         matRipple
                         name="schedule-next-month"
-                        [disabled]="date_list[0]?.id < from()"
+                        [disabled]="
+                            $safeNavigationMigration(date_list[0]?.id) < from()
+                        "
                         (click)="changeMonth(-1)"
                     >
                         <icon>chevron_left</icon>
@@ -51,7 +53,9 @@ interface DateItem {
                         icon
                         matRipple
                         name="schedule-previous-month"
-                        [disabled]="date_list[34]?.id > to()"
+                        [disabled]="
+                            $safeNavigationMigration(date_list[34]?.id) > to()
+                        "
                         (click)="changeMonth(1)"
                     >
                         <icon>chevron_right</icon>
@@ -63,7 +67,7 @@ interface DateItem {
             >
                 @for (day of date_list | slice: 0 : 7; track day) {
                     <div class="flex-1 text-center opacity-60">
-                        {{ day?.id | date: 'EE' }}
+                        {{ $safeNavigationMigration(day?.id) | date: 'EE' }}
                     </div>
                 }
             </div>

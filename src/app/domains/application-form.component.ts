@@ -28,7 +28,6 @@ import {
 import { startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 
-import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -218,7 +217,6 @@ import { generateApplicationFormFields } from './applications.utilities';
         MatFormFieldModule,
         MatChipsModule,
         FormsModule,
-        CommonModule,
         TranslatePipe,
         SettingsToggleComponent,
         ReactiveFormsModule,

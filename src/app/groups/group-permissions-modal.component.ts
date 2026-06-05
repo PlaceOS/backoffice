@@ -1,7 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {
+    MAT_DIALOG_DATA,
+    MatDialogModule,
+    MatDialogRef,
+} from '@angular/material/dialog';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -35,7 +39,9 @@ export interface GroupPermissionsModalResult {
             <section class="grid grid-cols-2 gap-x-4 gap-y-2">
                 @for (permission of permission_flags; track permission.key) {
                     <settings-toggle
-                        [ngModel]="hasPermission(permissions(), permission.value)"
+                        [ngModel]="
+                            hasPermission(permissions(), permission.value)
+                        "
                         (ngModelChange)="
                             setPermission(permission.value, $event)
                         "
@@ -79,9 +85,13 @@ export interface GroupPermissionsModalResult {
     ],
 })
 export class GroupPermissionsModalComponent {
-    private _dialog_ref = inject<
-        MatDialogRef<GroupPermissionsModalComponent, GroupPermissionsModalResult>
-    >(MatDialogRef);
+    private _dialog_ref =
+        inject<
+            MatDialogRef<
+                GroupPermissionsModalComponent,
+                GroupPermissionsModalResult
+            >
+        >(MatDialogRef);
     private _data = inject<GroupPermissionsModalData>(MAT_DIALOG_DATA);
 
     public readonly title = this._data.title;

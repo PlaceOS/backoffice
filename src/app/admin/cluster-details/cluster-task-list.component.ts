@@ -16,7 +16,6 @@ import {
     terminateProcess,
 } from '@placeos/ts-client';
 
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -166,7 +165,6 @@ const task_details = {};
         `,
     ],
     imports: [
-        CommonModule,
         SimpleTableComponent,
         IconComponent,
         MatRippleModule,

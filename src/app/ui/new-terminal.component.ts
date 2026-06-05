@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
     Component,
     computed,
@@ -79,7 +78,6 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
     imports: [
         IconComponent,
         FormsModule,
-        CommonModule,
         SafePipe,
         TranslatePipe,
         VirtualScrollComponent,

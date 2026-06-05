@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
     Component,
     OnChanges,
@@ -300,7 +299,6 @@ import { TranslatePipe } from '../../translate.pipe';
     `,
     styles: [],
     imports: [
-        CommonModule,
         FormsModule,
         CronInputFieldComponent,
         MatFormFieldModule,

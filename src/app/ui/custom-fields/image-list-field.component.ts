@@ -14,7 +14,6 @@ import {
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 
-import { CommonModule } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -201,7 +200,6 @@ import { TranslatePipe } from '../translate.pipe';
         MatChipsModule,
         MatRippleModule,
         MatProgressSpinnerModule,
-        CommonModule,
         AuthenticatedImageDirective,
         MatTooltipModule,
     ],

@@ -351,7 +351,9 @@ import { generateSystemsFormFields } from './systems.utilities';
                                         track item
                                     ) {
                                         <mat-chip-row
-                                            (removed)="removeSecurityGroup(item)"
+                                            (removed)="
+                                                removeSecurityGroup(item)
+                                            "
                                         >
                                             <div class="max-w-md truncate">
                                                 {{ item }}
@@ -706,8 +708,8 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
             ...form_item,
             support_url: this.processURL(
                 form_item as unknown as PlaceSystem,
-                (form_item as Identity & { support_url?: string }).support_url ||
-                    '',
+                (form_item as Identity & { support_url?: string })
+                    .support_url || '',
             ),
         };
         (processed_item.id

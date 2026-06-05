@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -121,7 +120,6 @@ export interface JsonSchema {
         MatFormFieldModule,
         MatInputModule,
         FormsModule,
-        CommonModule,
         MatSelectModule,
     ],
 })

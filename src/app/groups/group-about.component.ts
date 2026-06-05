@@ -32,7 +32,7 @@ import { GroupStateService } from './group-state.service';
                             class="text-sm underline"
                             [routerLink]="[
                                 '/domains',
-                                item()?.authority_id,
+                                $safeNavigationMigration(item()?.authority_id),
                                 'about',
                             ]"
                         >
@@ -47,7 +47,7 @@ import { GroupStateService } from './group-state.service';
                             class="text-sm underline"
                             [routerLink]="[
                                 '/groups',
-                                item()?.parent_id,
+                                $safeNavigationMigration(item()?.parent_id),
                                 'about',
                             ]"
                         >
@@ -82,7 +82,11 @@ import { GroupStateService } from './group-state.service';
                         {{ 'COMMON.CREATED_AT' | translate }}
                     </div>
                     <div class="flex items-center">
-                        <span [matTooltip]="item()?.created_at">
+                        <span
+                            [matTooltip]="
+                                $safeNavigationMigration(item()?.created_at)
+                            "
+                        >
                             {{ created_at() * 1000 | dateFrom }}
                         </span>
                     </div>
@@ -90,7 +94,11 @@ import { GroupStateService } from './group-state.service';
                         {{ 'COMMON.UPDATED_AT' | translate }}
                     </div>
                     <div class="flex items-center">
-                        <span [matTooltip]="item()?.updated_at">
+                        <span
+                            [matTooltip]="
+                                $safeNavigationMigration(item()?.updated_at)
+                            "
+                        >
                             {{ updated_at() * 1000 | dateFrom }}
                         </span>
                     </div>
@@ -106,7 +114,11 @@ import { GroupStateService } from './group-state.service';
                 </h3>
                 <div
                     class="markdown w-full overflow-auto p-4 text-sm"
-                    [innerHTML]="item()?.description | markdown | async"
+                    [innerHTML]="
+                        $safeNavigationMigration(item()?.description)
+                            | markdown
+                            | async
+                    "
                 ></div>
             </div>
         }

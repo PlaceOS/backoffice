@@ -9,7 +9,10 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
-import { DisplayItem, ItemDetailsComponent } from '../ui/item-details.component';
+import {
+    DisplayItem,
+    ItemDetailsComponent,
+} from '../ui/item-details.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';

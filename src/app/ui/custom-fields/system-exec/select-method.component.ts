@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
     Component,
     computed,
@@ -122,7 +121,6 @@ interface MethodOption extends PlaceModuleFunction {
         MatInputModule,
         MatSelectModule,
         FormsModule,
-        CommonModule,
     ],
 })
 export class SelectMethodComponent

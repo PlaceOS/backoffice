@@ -187,7 +187,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 <a-user-avatar
                     [user]="user"
                     [class.sm:pl-2]="compact()"
-                    [matTooltip]="compact() ? user?.name : ''"
+                    [matTooltip]="compact() ? $safeNavigationMigration(user?.name) : ''"
                     matTooltipPosition="right"
                 ></a-user-avatar>
                 <div

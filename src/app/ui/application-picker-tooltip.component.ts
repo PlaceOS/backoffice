@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import {
@@ -116,7 +115,7 @@ const PAGE_SIZE = 9;
             }
         `,
     ],
-    imports: [CommonModule, MatRippleModule],
+    imports: [MatRippleModule],
 })
 export class ApplicationPickerTooltipComponent implements OnInit {
     private _tooltip = inject(CustomTooltipData, { optional: true });

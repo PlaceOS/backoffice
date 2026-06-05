@@ -58,12 +58,11 @@ export interface ExternalResource {
                             (ngModelChange)="loadResourceList()"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            <mat-option
-                                *ngFor="let domain of domain_list()"
-                                [value]="domain"
-                            >
-                                {{ domain.name }}
-                            </mat-option>
+                            @for (domain of domain_list(); track domain.id) {
+                                <mat-option [value]="domain">
+                                    {{ domain.name }}
+                                </mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                     <button
@@ -117,9 +116,6 @@ export interface ExternalResource {
                 <ng-template #email_template let-data="data">
                     <div class="mono p-4 text-xs">{{ data }}</div>
                 </ng-template>
-                <ng-template #email_template let-data="data">
-                    <div class="mono p-4 text-xs">{{ data }}</div>
-                </ng-template>
                 <ng-template #bool_template let-data="data">
                     <div
                         [class.bg-error]="!data"
@@ -137,12 +133,11 @@ export interface ExternalResource {
                             <div class="w-full truncate">
                                 {{ row.display_name }}
                             </div>
-                            <div
-                                class="text-xs opacity-30"
-                                *ngIf="row.nickname !== row.display_name"
-                            >
-                                {{ row.nickname }}
-                            </div>
+                            @if (row.nickname !== row.display_name) {
+                                <div class="text-xs opacity-30">
+                                    {{ row.nickname }}
+                                </div>
+                            }
                         </div>
                     </div>
                 </ng-template>

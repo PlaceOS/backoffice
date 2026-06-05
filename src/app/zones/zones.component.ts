@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
@@ -110,7 +109,6 @@ import { ZonesStateService } from './zones-state.service';
     `,
     styles: [``],
     imports: [
-        CommonModule,
         DebugOutputComponent,
         IconComponent,
         TranslatePipe,
@@ -153,48 +151,50 @@ export class ZonesComponent extends AsyncHandler {
     });
     public readonly tab_list = computed(() => {
         const details = this.counts();
-        return ([
-            {
-                id: 'about',
-                name: i18n('ZONES.TAB_ABOUT'),
-                icon: { content: 'info' },
-            },
-            {
-                id: 'systems',
-                name: i18n('ZONES.TAB_SYSTEMS'),
-                count: details.systems ?? '?',
-                icon: { content: 'meeting_room' },
-            },
-            {
-                id: 'triggers',
-                name: i18n('ZONES.TAB_TRIGGERS'),
-                count: details.triggers ?? '?',
-                icon: { content: 'timer' },
-            },
-            {
-                id: 'metadata',
-                name: i18n('ZONES.TAB_METADATA'),
-                count: details.metadata ?? '?',
-                icon: { content: 'code_blocks' },
-            },
-            {
-                id: 'groups',
-                name: i18n('ZONES.TAB_GROUPS'),
-                count: details.groups ?? '?',
-                icon: { content: 'groups' },
-            },
-            {
-                id: 'children',
-                name: i18n('ZONES.TAB_CHILDREN'),
-                count: details.children ?? '?',
-                icon: { content: 'account_tree' },
-            },
-            {
-                id: 'history',
-                name: i18n('ZONES.TAB_SETTINGS_HISTORY'),
-                icon: { content: 'schedule' },
-            },
-        ] as ItemTab[]).concat(extensionsForItem(this.item(), this.name));
+        return (
+            [
+                {
+                    id: 'about',
+                    name: i18n('ZONES.TAB_ABOUT'),
+                    icon: { content: 'info' },
+                },
+                {
+                    id: 'systems',
+                    name: i18n('ZONES.TAB_SYSTEMS'),
+                    count: details.systems ?? '?',
+                    icon: { content: 'meeting_room' },
+                },
+                {
+                    id: 'triggers',
+                    name: i18n('ZONES.TAB_TRIGGERS'),
+                    count: details.triggers ?? '?',
+                    icon: { content: 'timer' },
+                },
+                {
+                    id: 'metadata',
+                    name: i18n('ZONES.TAB_METADATA'),
+                    count: details.metadata ?? '?',
+                    icon: { content: 'code_blocks' },
+                },
+                {
+                    id: 'groups',
+                    name: i18n('ZONES.TAB_GROUPS'),
+                    count: details.groups ?? '?',
+                    icon: { content: 'groups' },
+                },
+                {
+                    id: 'children',
+                    name: i18n('ZONES.TAB_CHILDREN'),
+                    count: details.children ?? '?',
+                    icon: { content: 'account_tree' },
+                },
+                {
+                    id: 'history',
+                    name: i18n('ZONES.TAB_SETTINGS_HISTORY'),
+                    icon: { content: 'schedule' },
+                },
+            ] as ItemTab[]
+        ).concat(extensionsForItem(this.item(), this.name));
     });
 
     public readonly newItem = () => this._item.create();

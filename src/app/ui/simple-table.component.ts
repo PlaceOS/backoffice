@@ -6,7 +6,7 @@ import {
     computed,
     effect,
     input,
-    model,
+    linkedSignal,
     output,
     signal,
 } from '@angular/core';
@@ -257,7 +257,9 @@ export interface TableColumn {
     imports: [CommonModule, MatCheckboxModule, DragDropModule, IconComponent],
 })
 export class SimpleTableComponent<T = Record<string, unknown>> {
-    public readonly selected = model<number[]>([]);
+    // eslint-disable-next-line @angular-eslint/no-input-rename
+    public readonly selectedInput = input<number[]>([], { alias: 'selected' });
+    public readonly selected = linkedSignal(this.selectedInput);
 
     public readonly data = input<T[] | Observable<T[]>>(undefined);
     public readonly columns = input<TableColumn[]>([]);

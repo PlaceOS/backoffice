@@ -4,9 +4,13 @@
         "emitDecoratorMetadata": false,
         "target": "es2022",
         "module": "preserve",
-        "lib": ["es2020", "dom"],
+        "lib": ["es2022", "dom"],
         "paths": {},
         "isolatedModules": true,
+        "strict": false,
+        "noImplicitAny": false,
+        "strictNullChecks": false,
+        "strictPropertyInitialization": false,
         "skipLibCheck": true
     },
     "angularCompilerOptions": {

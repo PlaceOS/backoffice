@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { CommonModule } from '@angular/common';
+
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -180,7 +180,6 @@ export function extractTextFromHTML(html_string: string) {
     `,
     styles: [``],
     imports: [
-        CommonModule,
         MatProgressSpinnerModule,
         MatRippleModule,
         RichTextInputComponent,

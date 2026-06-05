@@ -3,7 +3,7 @@ import {
     DragDropModule,
     moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -65,13 +65,7 @@ export interface ReorderItemsOptions {
         </footer>
     `,
     styles: [``],
-    imports: [
-        MatDialogModule,
-        MatRippleModule,
-        DragDropModule,
-        CommonModule,
-        IconComponent,
-    ],
+    imports: [MatDialogModule, MatRippleModule, DragDropModule, IconComponent],
 })
 export class ReorderItemsModalComponent {
     private _data = inject<ReorderItemsOptions>(MAT_DIALOG_DATA);

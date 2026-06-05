@@ -146,9 +146,9 @@ export class DriversComponent {
     public readonly extensions = computed(() =>
         extensionsForItem(this.item(), this.name),
     );
-    public readonly tab_list = computed(
-        () =>
-            ([
+    public readonly tab_list = computed(() =>
+        (
+            [
                 {
                     id: 'about',
                     name: i18n('DRIVERS.TAB_ABOUT'),
@@ -174,7 +174,8 @@ export class DriversComponent {
                     name: i18n('DRIVERS.TAB_SETTINGS_HISTORY'),
                     icon: { content: 'schedule' },
                 },
-            ] as ItemTab[]).concat(this.extensions()),
+            ] as ItemTab[]
+        ).concat(this.extensions()),
     );
     public readonly updates_available = this._drivers.updates_available;
     public readonly debug_position = this._debug.position;

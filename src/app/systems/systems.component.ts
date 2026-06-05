@@ -140,9 +140,9 @@ export class SystemsComponent {
     public readonly extensions = computed(() =>
         extensionsForItem(this.item(), this.name),
     );
-    public readonly tab_list = computed(
-        () =>
-            ([
+    public readonly tab_list = computed(() =>
+        (
+            [
                 {
                     id: 'about',
                     name: i18n('SYSTEMS.TAB_ABOUT'),
@@ -177,7 +177,8 @@ export class SystemsComponent {
                     name: i18n('SYSTEMS.TAB_SETTINGS_HISTORY'),
                     icon: { content: 'schedule' },
                 },
-            ] as ItemTab[]).concat(this.extensions()),
+            ] as ItemTab[]
+        ).concat(this.extensions()),
     );
     public readonly debug_position = this._debug.position;
     public readonly newItem = () => this._item.create();

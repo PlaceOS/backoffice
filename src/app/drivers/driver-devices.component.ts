@@ -131,8 +131,14 @@ import { DriverStateService } from './driver-state.service';
                                 {{
                                     'DRIVERS.SYSTEM_COUNT'
                                         | translate
-                                            : { count: systems[row.id]?.length }
-                                            : systems[row.id]?.length
+                                            : {
+                                                  count: $safeNavigationMigration(
+                                                      systems[row.id]?.length
+                                                  ),
+                                              }
+                                            : $safeNavigationMigration(
+                                                  systems[row.id]?.length
+                                              )
                                 }}
                             </div>
                             @if (loading_systems) {
