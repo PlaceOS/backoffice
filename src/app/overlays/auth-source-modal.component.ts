@@ -21,7 +21,6 @@ import {
     updateOAuthSource,
     updateSAMLSource,
 } from '@placeos/ts-client';
-import { lastValueFrom } from '../common/general';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -98,9 +97,7 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
                         />
                     }
                     @case ('ldap') {
-                        <ldap-source-form
-                            [form]="ldapForm"
-                        />
+                        <ldap-source-form [form]="ldapForm" />
                     }
                     @default {
                         <oauth-source-form
@@ -231,12 +228,10 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
             return;
         }
         this.loading.set('Saving authentication source...');
-        const method: Promise<unknown> = lastValueFrom<unknown>(
-            this.updateMethod({
-                ...this.item().toJSON(),
-                ...this.activeFormModel()(),
-            }),
-        );
+        const method: Promise<unknown> = this.updateMethod({
+            ...this.item().toJSON(),
+            ...this.activeFormModel()(),
+        });
         method.then(
             (item) => {
                 this.event.emit({ reason: 'done', metadata: { source: item } });

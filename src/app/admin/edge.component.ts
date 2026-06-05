@@ -11,7 +11,7 @@ import {
     removeEdge,
     retrieveEdgeToken,
 } from '@placeos/ts-client';
-import { copyToClipboard, lastValueFrom } from '../common/general';
+import { copyToClipboard } from '../common/general';
 import {
     notifyError,
     notifyInfo,
@@ -203,7 +203,7 @@ export class PlaceEdgeComponent implements OnInit {
     }
 
     public async token(edge: PlaceEdge) {
-        const details = await lastValueFrom(retrieveEdgeToken(edge.id));
+        const details = await retrieveEdgeToken(edge.id);
         copyToClipboard(details.token);
         notifyInfo(`Token copied to clickboard.`);
     }
@@ -228,7 +228,7 @@ export class PlaceEdgeComponent implements OnInit {
         );
         if (!details) return;
         details.loading('Removing edge...');
-        const err = await lastValueFrom(removeEdge(i.id)).catch((_) => _);
+        const err = await removeEdge(i.id).catch((_) => _);
         details.close();
         if (err)
             return notifyError(
@@ -250,7 +250,7 @@ export class PlaceEdgeComponent implements OnInit {
 
     public async loadEdges() {
         this.loading.set('Loading edge node list...');
-        const { data } = await lastValueFrom(queryEdges());
+        const { data } = await queryEdges();
         this.edge_list.set(
             (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
         );

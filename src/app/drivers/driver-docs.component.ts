@@ -3,7 +3,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { DriverStateService } from './driver-state.service';
 
 import { Router } from '@angular/router';
-import { nextValueFrom } from '../common/general';
 import { IconComponent } from '../ui/icon.component';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 
@@ -37,7 +36,7 @@ export class DriverDocsComponent implements OnInit {
     public readonly docs = this._service.docs;
 
     public async ngOnInit() {
-        const str = await nextValueFrom(this.docs);
+        const str = this.docs();
         if (str) return;
         this._router.navigate([
             '/drivers',

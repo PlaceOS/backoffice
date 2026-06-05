@@ -21,6 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     apiKey,
     authority,
+    cleanObject,
     PlaceDomain,
     query,
     queryDomains,
@@ -28,7 +29,6 @@ import {
     token,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
-import { nextValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import {
     notifyError,
@@ -409,11 +409,14 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
             if (!domain) return [] as UploadInfo[];
             const response = await query<UploadInfo>({
                 path: 'uploads',
-                query_params: {
-                    limit: 1000,
-                    file_search: search,
-                    authority_id: domain.id,
-                },
+                query_params: cleanObject(
+                    {
+                        limit: 1000,
+                        file_search: search,
+                        authority_id: domain.id,
+                    },
+                    [null, '', undefined],
+                ),
             }).catch(() => ({ data: [] as UploadInfo[] }));
             return response.data
                 .map((_) => ({ ..._, mime_type: getMimeType(_.file_name) }))
@@ -425,10 +428,11 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         () => this._uploads_list.value() || [],
     );
 
-    public async ngOnInit() {
+    public ngOnInit() {
         const domain = authority();
-        const domain_list = await nextValueFrom(this.domain_list);
-        if (!domain_list?.length) return;
+        const domain_list = this.domain_list();
+        if (!domain_list?.length)
+            return this.timeout('init', () => this.ngOnInit());
         const match = domain_list.find((d) => d.id === domain.id);
         if (match) this.domain.set(match);
     }

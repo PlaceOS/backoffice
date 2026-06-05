@@ -15,8 +15,8 @@ import {
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { lastValueFrom } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
-import { firstValueFrom } from '../common/general';
 import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
@@ -66,7 +66,7 @@ export async function openConfirmModal(
                 ref.componentInstance.event,
                 (_: DialogEvent) => _.reason === 'done',
             ),
-            firstValueFrom(ref.afterClosed()),
+            lastValueFrom(ref.afterClosed()),
         ])),
         loading: (s) => ref.componentInstance.loading.set(s),
         close: () => ref.close(),

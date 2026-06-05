@@ -8,7 +8,6 @@ import {
     showDomain,
     showGroup,
 } from '@placeos/ts-client';
-import { lastValueFrom } from '../common/general';
 import { toSignal } from '../common/signals';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
@@ -168,18 +167,14 @@ export class GroupAboutComponent {
     }
 
     private async loadAuthority(authority_id: string) {
-        const authority = await lastValueFrom(showDomain(authority_id)).catch(
-            () => null,
-        );
+        const authority = await showDomain(authority_id).catch(() => null);
         if (this.item()?.authority_id === authority_id) {
             this.authority.set(authority);
         }
     }
 
     private async loadParent(parent_id: string) {
-        const parent = await lastValueFrom(showGroup(parent_id)).catch(
-            () => null,
-        );
+        const parent = await showGroup(parent_id).catch(() => null);
         if (this.item()?.parent_id === parent_id) this.parent.set(parent);
     }
 }

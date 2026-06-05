@@ -4,7 +4,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { addEdge, PlaceEdge, updateEdge } from '@placeos/ts-client';
-import { lastValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent } from '../common/types';
@@ -112,7 +111,7 @@ export class EdgeModalComponent implements OnInit {
         this.loading.set('Saving edge node...');
         const edge = { ...this.edge, ...this.formModel() };
         const method = edge.id ? updateEdge(edge.id, edge) : addEdge(edge);
-        const new_edge = await lastValueFrom(method).catch(() => null);
+        const new_edge = await method.catch(() => null);
         this.loading.set('');
         this._dialog_ref.disableClose = false;
         if (!new_edge) return notifyError(i18n('ADMIN.EDGE_ERROR'));

@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { lastValueFrom } from 'rxjs';
 import { UploadPermissionsModalComponent } from '../ui/upload-permissions-modal.component';
-import { firstValueFrom } from './general';
 import { UploadDetails, UploadPermissions, uploadFile } from './uploads';
 
 @Injectable({
@@ -34,7 +34,7 @@ export class UploadsService {
             const ref = this._dialog.open(UploadPermissionsModalComponent, {
                 data: { file },
             });
-            firstValueFrom(ref.afterClosed()).then(async (details) => {
+            lastValueFrom(ref.afterClosed()).then(async (details) => {
                 if (details) {
                     const id = await this.uploadFile(
                         details.file,

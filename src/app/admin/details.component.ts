@@ -13,7 +13,7 @@ import { BackofficeUsersService } from '../users/users.service';
 
 import { CommonModule } from '@angular/common';
 import { format } from 'date-fns';
-import { copyToClipboard, lastValueFrom } from '../common/general';
+import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -249,21 +249,22 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     }
 
     public async loadApiDetails() {
-        const details = await lastValueFrom(
-            get(`${apiEndpoint()}/cluster/versions`),
-        ).catch((err) =>
-            notifyError(
-                i18n('ADMIN.BACKEND_SERVICES_ERROR', {
-                    error: JSON.stringify(err.response || err.message || err),
-                }),
-            ),
+        const details = await get(`${apiEndpoint()}/cluster/versions`).catch(
+            (err) =>
+                notifyError(
+                    i18n('ADMIN.BACKEND_SERVICES_ERROR', {
+                        error: JSON.stringify(
+                            err.response || err.message || err,
+                        ),
+                    }),
+                ),
         );
         this.api_details.set((details as PlaceServiceDetails[]) || []);
     }
 
     public async loadPlatformDetails() {
-        const { changelog, version } = await lastValueFrom(
-            get(`${apiEndpoint()}/platform`),
+        const { changelog, version } = await get(
+            `${apiEndpoint()}/platform`,
         ).catch((err) => {
             notifyError(
                 i18n('ADMIN.BACKEND_SERVICES_ERROR', {

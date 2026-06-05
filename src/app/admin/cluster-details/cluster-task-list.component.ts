@@ -14,7 +14,6 @@ import {
     queryProcesses,
     terminateProcess,
 } from '@placeos/ts-client';
-import { lastValueFrom } from '../../common/general';
 
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -282,9 +281,7 @@ export class PlaceClusterTaskListComponent
     }
 
     public killProcess(process: PlaceProcess) {
-        return lastValueFrom(
-            terminateProcess(this.cluster().id, { driver: process.id }),
-        );
+        return terminateProcess(this.cluster().id, { driver: process.id });
     }
 
     public async loadCluster(id: string) {
@@ -300,11 +297,9 @@ export class PlaceClusterTaskListComponent
     public async updateProcessList() {
         if (!this.cluster()) return;
         this.loading.set(true);
-        const list = await lastValueFrom(
-            queryProcesses(this.cluster().id, {
-                include_status: true,
-            }),
-        ).catch(() => []);
+        const list = await queryProcesses(this.cluster().id, {
+            include_status: true,
+        }).catch(() => []);
         this.process_list.set(
             list.sort((a, b) => b.module_instances - a.module_instances),
         );

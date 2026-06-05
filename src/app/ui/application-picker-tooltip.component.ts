@@ -5,7 +5,6 @@ import {
     PlaceApplication,
     queryApplications,
 } from '@placeos/ts-client';
-import { lastValueFrom } from '../common/general';
 import { CustomTooltipData } from './custom-tooltip.component';
 
 interface SidebarApplication {
@@ -138,12 +137,9 @@ export class ApplicationPickerTooltipComponent implements OnInit {
             this.loading.set(false);
             return;
         }
-        const response = await lastValueFrom(
-            queryApplications({ authority_id: active_authority.id } as Record<
-                string,
-                unknown
-            >),
-        ).catch(() => null);
+        const response = await queryApplications({
+            authority_id: active_authority.id,
+        } as Record<string, unknown>).catch(() => null);
         const applications = (response?.data || [])
             .filter((app) => this.isSupportedRedirectUri(app?.redirect_uri))
             .sort((lhs, rhs) =>

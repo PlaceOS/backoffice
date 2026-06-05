@@ -1,6 +1,4 @@
-import { Signal } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { Subscribable, waitForEvent, waitForSignalValue } from './signals';
 import { HashMap, Point } from './types';
 
 /** Available console output streams. */
@@ -463,51 +461,6 @@ export function getInvalidFields(form: UntypedFormGroup, prefix = '') {
     }
     return invalid;
 }
-
-/**
- * Create a promise that returns the current value returned by the given signal
- * @param source Signal to use
- */
-export function nextValueFrom<T = unknown>(source: Signal<T>): Promise<T> {
-    return source ? Promise.resolve(source()) : Promise.resolve(null);
-}
-
-/**
- * Create a promise that returns the first truthy value returned by the given signal
- * @param source Signal to use
- */
-export function firstTruthyValueFrom<T>(source: Signal<T>): Promise<T> {
-    return source
-        ? waitForSignalValue(source, (_) => !!_)
-        : Promise.resolve(null);
-}
-
-export function mapLastValueFrom<T, R>(
-    source: Promise<T> | Signal<T>,
-    map_fn?: (value: T) => R,
-): Promise<T | R> {
-    if (!source) return Promise.resolve(null);
-    const promise =
-        source instanceof Promise ? source : Promise.resolve(source());
-    return map_fn ? promise.then(map_fn) : promise;
-}
-
-type AwaitableSource<T> = PromiseLike<T> | Subscribable<T> | Signal<T>;
-
-export function lastValueFrom<T = unknown>(
-    source: AwaitableSource<T>,
-): Promise<T> {
-    if (!source) return Promise.resolve(null);
-    if (typeof source === 'function') {
-        return Promise.resolve((source as Signal<T>)());
-    }
-    if (typeof (source as PromiseLike<T>).then === 'function') {
-        return Promise.resolve(source as PromiseLike<T>);
-    }
-    return waitForEvent(source as Subscribable<T>);
-}
-
-export const firstValueFrom = lastValueFrom;
 
 /**
  * Pad the start of a string or number with given character

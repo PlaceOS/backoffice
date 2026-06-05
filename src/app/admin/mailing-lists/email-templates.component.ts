@@ -6,7 +6,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { authority } from '@placeos/ts-client';
-import { nextValueFrom } from '../../common/general';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { EmailStateService } from './email-state.service';
 
@@ -81,7 +80,7 @@ export class EmailTemplatesComponent implements OnInit {
 
     public async ngOnInit() {
         const domain = authority();
-        const domain_list = await nextValueFrom(this.domain_list);
+        const domain_list = this.domain_list();
         if (!domain_list?.length) return;
         const match = domain_list.find((d) => d.id === domain.id);
         if (match) this._service.setDomain(match);

@@ -16,7 +16,6 @@ import {
     queryDomains,
     querySystemsWithEmails,
 } from '@placeos/ts-client';
-import { lastValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifySuccess, notifyWarn } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -245,14 +244,12 @@ export class ResourceImportsComponent implements OnInit {
     public async importResource(resource: ExternalResource, notify = true) {
         const domain = this.domain();
         if (!domain) return;
-        const system = await lastValueFrom(
-            addSystem({
-                name: `[${domain.name}] ${resource.display_name}`,
-                email: resource.email,
-                display_name: resource.display_name,
-                capacity: resource.capacity,
-            }),
-        );
+        const system = await addSystem({
+            name: `[${domain.name}] ${resource.display_name}`,
+            email: resource.email,
+            display_name: resource.display_name,
+            capacity: resource.capacity,
+        });
         if (!system) return;
         resource.system_id = system.id;
         resource.imported = true;
@@ -289,11 +286,9 @@ export class ResourceImportsComponent implements OnInit {
             imported: false,
             system_id: '',
         }));
-        const { data } = await lastValueFrom(
-            querySystemsWithEmails({
-                in: list.map((_) => _.email).join(','),
-            }),
-        );
+        const { data } = await querySystemsWithEmails({
+            in: list.map((_) => _.email).join(','),
+        });
         for (const resource of list) {
             const system = data.find(
                 (_) => _.email.toLowerCase() === resource.email.toLowerCase(),

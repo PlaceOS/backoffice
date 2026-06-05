@@ -1,14 +1,26 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, model, output, signal } from '@angular/core';
+import {
+    Component,
+    computed,
+    inject,
+    model,
+    output,
+    signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { email, form, FormField, required, submit } from '@angular/forms/signals';
+import {
+    email,
+    form,
+    FormField,
+    required,
+    submit,
+} from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
 import { getInvalidSignalFields } from '../common/forms';
-import { lastValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
@@ -207,8 +219,7 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
                 @if (
-                    formModel().platform !== 'google' &&
-                    !formModel().delegated
+                    formModel().platform !== 'google' && !formModel().delegated
                 ) {
                     <div
                         class="flex flex-wrap items-center space-x-0 sm:space-x-2"
@@ -249,7 +260,10 @@ export interface StaffTenantModalData {
                 </div>
                 @for (item of credential_fields(); track item.key) {
                     <div class="flex flex-col" [class.hidden]="item.disabled">
-                        <label class="capitalize" [for]="'credential-' + item.key">
+                        <label
+                            class="capitalize"
+                            [for]="'credential-' + item.key"
+                        >
                             {{ name_map[item.key] || item.key }}
                             @if (item.required) {
                                 <span>*</span>
@@ -518,7 +532,7 @@ export class StaffTenantModalComponent {
         const call = this.tenant?.id
             ? put(`/api/staff/v1/tenants/${this.tenant.id}`, data)
             : post('/api/staff/v1/tenants', data);
-        const tenant = await lastValueFrom(call).catch((__) => null);
+        const tenant = await call.catch((__) => null);
         this.loading.set('');
         this._dialog_ref.disableClose = false;
         if (!tenant) return notifyError(i18n('ADMIN.TENANATS_SAVE_ERROR'));

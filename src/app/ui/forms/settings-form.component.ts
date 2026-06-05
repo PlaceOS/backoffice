@@ -15,7 +15,6 @@ import {
     PlaceSettings,
     updateSettings,
 } from '@placeos/ts-client';
-import { lastValueFrom } from '../../common/general';
 
 import { AsyncHandler } from '../../common/async-handler.class';
 import { HotkeysService } from '../../common/hotkeys.service';
@@ -101,8 +100,7 @@ type SettingsArray = [
                         <mat-tab
                             [label]="
                                 option.name +
-                                (option.id !== 4 &&
-                                settingDirty(+option.id)
+                                (option.id !== 4 && settingDirty(+option.id)
                                     ? ' *'
                                     : '')
                             "
@@ -115,11 +113,7 @@ type SettingsArray = [
                         encryption_level() === option.id &&
                         hasSetting(+option.id)
                     ) {
-                        <div
-                            [class.error-border]="
-                                settingError(+option.id)
-                            "
-                        >
+                        <div [class.error-border]="settingError(+option.id)">
                             <settings-form-field
                                 [decorations]="
                                     +option.id === 4 ? merge_decorations : []
@@ -439,10 +433,9 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             settings_string: this.settingValue(level),
         };
         const settings = this.settings();
-        lastValueFrom(
-            settings[level].id
-                ? updateSettings(settings[level].id, details)
-                : addSettings(details),
+        (settings[level].id
+            ? updateSettings(settings[level].id, details)
+            : addSettings(details)
         ).then(
             (new_settings: PlaceSettings) => {
                 this.saving.update((s) => {

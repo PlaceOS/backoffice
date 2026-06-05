@@ -1,6 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { PlaceUser, showUser } from '@placeos/ts-client';
-import { lastValueFrom } from '../../common/general';
 
 const USERS: PlaceUser[] = [];
 
@@ -14,7 +13,7 @@ export class UserPipe implements PipeTransform {
             (_) => _.id === id || _.email === id || _.card_number === id,
         );
         if (!user) {
-            user = await lastValueFrom(showUser(id));
+            user = await showUser(id);
             USERS.push(user);
         }
         return user;

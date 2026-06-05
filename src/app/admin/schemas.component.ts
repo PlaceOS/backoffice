@@ -4,7 +4,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { create, query, update } from '@placeos/ts-client';
-import { lastValueFrom } from '../common/general';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -150,15 +149,13 @@ export class AdminSchemasComponent implements OnInit {
             form_data: schema,
             path: 'schema',
         };
-        const new_schema = await lastValueFrom(
-            schema.id
-                ? update<JsonSchema>({
-                      ...details,
-                      id: schema.id,
-                      method: 'patch',
-                  })
-                : create<JsonSchema>({ ...details }),
-        );
+        const new_schema = await (schema.id
+            ? update<JsonSchema>({
+                  ...details,
+                  id: schema.id,
+                  method: 'patch',
+              })
+            : create<JsonSchema>({ ...details }));
         schema_list = [
             ...schema_list.filter((_) => schema.id !== _.id),
             new_schema,

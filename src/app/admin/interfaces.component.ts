@@ -1,6 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { listInterfaceRepositories } from '@placeos/ts-client';
-import { lastValueFrom } from '../common/general';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -69,7 +68,7 @@ export class AdminInterfacesComponent implements OnInit {
 
     public async loadInterfaces() {
         this.loading.set(true);
-        const mapping = await lastValueFrom(listInterfaceRepositories());
+        const mapping = await listInterfaceRepositories();
         const list = Object.keys(mapping).map((id) => ({
             id,
             name: mapping[id],

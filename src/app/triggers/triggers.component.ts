@@ -6,7 +6,6 @@ import { listTriggerInstances, PlaceTrigger } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
-import { lastValueFrom } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { toSignal } from '../common/signals';
@@ -158,8 +157,6 @@ export class TriggersComponent extends AsyncHandler {
             return;
         }
         // Get trigger count
-        this.instance_count.set(
-            (await lastValueFrom(listTriggerInstances(item.id))).length,
-        );
+        this.instance_count.set((await listTriggerInstances(item.id)).length);
     }
 }

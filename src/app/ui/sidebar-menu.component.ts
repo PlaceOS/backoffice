@@ -8,7 +8,6 @@ import {
     Router,
     RouterModule,
 } from '@angular/router';
-import { lastValueFrom } from '../common/general';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -377,12 +376,9 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         );
         const active_authority = authority();
         if (!active_authority?.id) return;
-        const response = await lastValueFrom(
-            queryApplications({ authority_id: active_authority.id } as Record<
-                string,
-                unknown
-            >),
-        ).catch(() => null);
+        const response = await queryApplications({
+            authority_id: active_authority.id,
+        } as Record<string, unknown>).catch(() => null);
         this.show_application_picker.set(
             !!(response?.data || []).find((app) =>
                 this.isSupportedRedirectUri(app?.redirect_uri),

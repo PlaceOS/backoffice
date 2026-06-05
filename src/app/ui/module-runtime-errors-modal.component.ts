@@ -8,7 +8,6 @@ import {
     PlaceModule,
     showModule,
 } from '@placeos/ts-client';
-import { firstValueFrom } from '../common/general';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
@@ -99,12 +98,10 @@ export class ModuleRuntimeErrorsModalComponent {
     private async _loadData() {
         this.loading.set(true);
         try {
-            const module = await firstValueFrom(showModule(this._module_id));
+            const module = await showModule(this._module_id);
             this.module.set(module);
             try {
-                const errors = await firstValueFrom(
-                    moduleRuntimeError(module.id),
-                );
+                const errors = await moduleRuntimeError(module.id);
                 this.errors.set(errors);
             } catch {
                 this.errors.set([]);

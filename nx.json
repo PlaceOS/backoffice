@@ -55,5 +55,6 @@
             "unitTestRunner": "vitest"
         }
     },
-    "defaultProject": "backoffice"
+    "defaultProject": "backoffice",
+    "analytics": false
 }

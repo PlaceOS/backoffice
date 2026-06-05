@@ -8,7 +8,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, queryDomains } from '@placeos/ts-client';
-import { lastValueFrom } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
@@ -231,9 +230,9 @@ export class StorageComponent implements OnInit {
 
     public async loadStorage() {
         this.loading.set('Loading storage...');
-        const { data } = await lastValueFrom(
-            queryStorage({ auth_id: this.domain()?.id }),
-        ).catch(() => ({ data: [] }));
+        const { data } = await queryStorage({
+            auth_id: this.domain()?.id,
+        }).catch(() => ({ data: [] }));
         this.store_list.set(data);
         this.loading.set('');
     }

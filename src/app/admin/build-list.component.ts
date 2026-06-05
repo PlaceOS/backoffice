@@ -5,7 +5,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get } from '@placeos/ts-client';
 import { toQueryString } from '../common/api';
-import { lastValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -169,7 +168,7 @@ export class PlaceBuildListComponent implements OnInit {
         );
         if (!details) return;
         details.loading(i18n('ADMIN.BUILD_LIST_REMOVE_LOADING'));
-        const err = await lastValueFrom(cancelBuildJob(i.id)).catch((_) => _);
+        const err = await cancelBuildJob(i.id).catch((_) => _);
         details.close();
         if (err)
             return notifyError(
@@ -189,9 +188,9 @@ export class PlaceBuildListComponent implements OnInit {
 
     public async loadJobList() {
         this.loading.set('Loading build jobs...');
-        const { data }: { data: BuildJob[] } = await lastValueFrom(
-            queryBuildJobs(),
-        ).catch(() => ({ data: [] }));
+        const { data }: { data: BuildJob[] } = await queryBuildJobs().catch(
+            () => ({ data: [] }),
+        );
         this.job_list.set(
             (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
         );

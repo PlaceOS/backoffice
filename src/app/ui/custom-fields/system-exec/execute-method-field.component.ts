@@ -14,7 +14,6 @@ import {
     PlaceSystem,
     TriggerFunction,
 } from '@placeos/ts-client';
-import { lastValueFrom } from '../../../common/general';
 import { notifyError, notifySuccess } from '../../../common/notifications';
 import { ViewResponseModalComponent } from '../../../overlays/view-response-modal.component';
 import { TranslatePipe } from '../../translate.pipe';
@@ -218,29 +217,28 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         this.loading.set(true);
         this.arguments.set(this.arguments() || {});
         const method = this.zone() ? executeOnZone : executeOnSystem;
-        const result = await lastValueFrom(
-            method(
-                this.zone() || this.system().id,
-                (this.fn() as unknown as { name: string }).name,
-                this.module().module,
-                this.module().index,
-                this.fn().order.map((key) => {
-                    const fn_details = this.fn().params[
-                        key
-                    ] as unknown as Record<string, unknown>;
-                    try {
-                        return JSON.parse(this.arguments()[key] as string);
-                    } catch {
-                        return (
-                            (this.arguments()[key] !== ''
-                                ? this.arguments()[key]
-                                : null) ??
-                            fn_details?.default ??
-                            null
-                        );
-                    }
-                }),
-            ),
+        const result = await method(
+            this.zone() || this.system().id,
+            (this.fn() as unknown as { name: string }).name,
+            this.module().module,
+            this.module().index,
+            this.fn().order.map((key) => {
+                const fn_details = this.fn().params[key] as unknown as Record<
+                    string,
+                    unknown
+                >;
+                try {
+                    return JSON.parse(this.arguments()[key] as string);
+                } catch {
+                    return (
+                        (this.arguments()[key] !== ''
+                            ? this.arguments()[key]
+                            : null) ??
+                        fn_details?.default ??
+                        null
+                    );
+                }
+            }),
         ).catch((err) => {
             if (typeof err === 'string' && err.length < 128) {
                 notifyError(err);

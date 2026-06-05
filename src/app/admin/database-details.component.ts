@@ -11,12 +11,7 @@ import {
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {
-    csvToJson,
-    downloadFile,
-    jsonToCsv,
-    lastValueFrom,
-} from '../common/general';
+import { csvToJson, downloadFile, jsonToCsv } from '../common/general';
 import {
     notifyError,
     notifySuccess,
@@ -79,21 +74,19 @@ function zoneToImportItem(
 
 function reindex(backfill = true) {
     const url = `${apiEndpoint()}/reindex${backfill ? '?backfill=true' : ''}`;
-    return lastValueFrom(post(url, null));
+    return post(url, null);
 }
 
 function backfill() {
     const url = `${apiEndpoint()}/backfill`;
-    return lastValueFrom(post(url, null));
+    return post(url, null);
 }
 
 async function queryAllZones(query_params: Record<string, unknown> = {}) {
-    let response = await lastValueFrom(
-        queryZones({ ...query_params, limit: 500 }),
-    );
+    let response = await queryZones({ ...query_params, limit: 500 });
     const zones = [...response.data];
     while (response.next) {
-        response = await lastValueFrom(response.next());
+        response = await response.next();
         zones.push(...response.data);
     }
     return zones;
@@ -347,7 +340,7 @@ export class PlaceDatabaseDetailsComponent {
     ) {
         if (visited.has(zone_id)) return;
         visited.add(zone_id);
-        const zone = await lastValueFrom(showZone(zone_id));
+        const zone = await showZone(zone_id);
         const children = await queryAllZones({ parent_id: zone_id });
         zones.push(zoneToExportItem(zone));
         for (const child of children) {
@@ -366,8 +359,8 @@ export class PlaceDatabaseDetailsComponent {
             const parent_id = zone.parent_id
                 ? id_map.get(zone.parent_id) || ''
                 : '';
-            const created_zone = await lastValueFrom(
-                addZone(zoneToImportItem(zone, parent_id)),
+            const created_zone = await addZone(
+                zoneToImportItem(zone, parent_id),
             );
             id_map.set(zone.id, created_zone.id);
         }
