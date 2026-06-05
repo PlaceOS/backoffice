@@ -22,7 +22,7 @@ import { TranslatePipe } from './translate.pipe';
                 class="border-base-300 bg-base-100 text-base-content pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded-sm border text-sm shadow-sm"
             >
                 <div
-                    class="bg-base-200 text-base-content flex items-center p-2"
+                    class="bg-base-200 text-base-content flex items-center gap-2 p-2"
                 >
                     <div class="px-2 text-lg font-medium">
                         {{ 'COMMON.UPLOADS' | translate }}
@@ -35,6 +35,7 @@ import { TranslatePipe } from './translate.pipe';
                     <div class="flex-1"></div>
                     <button
                         icon
+                        default
                         matRipple
                         (click)="clearList()"
                         [matTooltip]="'COMMON.CLEAR_UPLOADS' | translate"
@@ -88,8 +89,8 @@ import { TranslatePipe } from './translate.pipe';
                                     @if (item.progress >= 100 && item.link) {
                                         <button
                                             icon
+                                            default
                                             matRipple
-                                            class="clear"
                                             [matTooltip]="
                                                 'COMMON.COPY_LINK' | translate
                                             "
@@ -104,8 +105,8 @@ import { TranslatePipe } from './translate.pipe';
                                     @if (item.error) {
                                         <button
                                             icon
+                                            default
                                             matRipple
-                                            class="clear"
                                             matTooltipPosition="right"
                                             [matTooltip]="
                                                 'COMMON.RETRY' | translate

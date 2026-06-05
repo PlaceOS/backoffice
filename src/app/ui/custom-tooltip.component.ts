@@ -33,7 +33,7 @@ export class CustomTooltipData<T = unknown> {
     template: `
         <ng-content />
 
-        <ng-template cdk-portal>
+        <ng-template cdkPortal>
             <div custom-tooltip class="relative print:hidden">
                 @switch (type) {
                     @case ('component') {

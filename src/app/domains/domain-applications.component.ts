@@ -97,9 +97,10 @@ import { DomainStateService } from './domain-state.service';
             <div class="p-4 font-mono text-xs">{{ row.uid }}</div>
         </ng-template>
         <ng-template #secret_template let-row="row">
-            <div class="flex items-center p-2">
+            <div class="flex items-center gap-2 p-2">
                 <button
                     icon
+                    default
                     matRipple
                     (click)="copySecret(row)"
                     [matTooltip]="'DOMAINS.COPY_SECRET' | translate"
@@ -108,6 +109,7 @@ import { DomainStateService } from './domain-state.service';
                 </button>
                 <button
                     icon
+                    default
                     matRipple
                     (mousedown)="show_secret[row.id] = true"
                     (touchstart)="show_secret[row.id] = true"
@@ -117,7 +119,7 @@ import { DomainStateService } from './domain-state.service';
                 >
                     <icon>visibility</icon>
                 </button>
-                <div class="p-2 font-mono text-xs">
+                <div class="font-mono text-xs">
                     @if (!show_secret[row.id]) {
                         <span class="bg-base-200 rounded-sm p-2">{{
                             'DOMAINS.SECRET_HIDDEN' | translate

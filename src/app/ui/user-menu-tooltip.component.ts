@@ -148,7 +148,7 @@ export class UserMenuTooltipComponent implements OnInit {
         this._settings.setTheme(theme);
         this.github_icon.set(
             theme === 'dark'
-                ? 'assets/img/Github_dark.svg'
+                ? 'assets/img/GitHub_dark.svg'
                 : 'assets/img/GitHub_light.svg',
         );
     }
@@ -187,7 +187,7 @@ export class UserMenuTooltipComponent implements OnInit {
         ];
         this.github_icon.set(
             this._settings.get('theme') === 'dark'
-                ? 'assets/img/Github_dark.svg'
+                ? 'assets/img/GitHub_dark.svg'
                 : 'assets/img/GitHub_light.svg',
         );
     }

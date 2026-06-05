@@ -107,7 +107,7 @@ import { DriverStateService } from './driver-state.service';
                 </div>
                 <div class="flex-1 sm:w-1/3">
                     <div
-                        class="border-base-200 grid gap-4 rounded-sm border p-4"
+                        class="border-base-200 grid gap-2 rounded-sm border p-4"
                         [style.gridTemplateColumns]="'5.5rem auto'"
                     >
                         <div class="flex items-center text-sm font-medium">

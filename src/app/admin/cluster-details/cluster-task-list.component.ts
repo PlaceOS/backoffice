@@ -97,6 +97,7 @@ const task_details = {};
                             name:
                                 'ADMIN.CLUSTERS_FIELD_MEMORY_USAGE' | translate,
                             size: '7rem',
+                            content: memory_template,
                         },
                         {
                             key: 'module_instances',
@@ -139,12 +140,18 @@ const task_details = {};
                 {{ row.cpu_usage.toFixed(2) }}%
             </div>
         </ng-template>
+        <ng-template #memory_template let-usage="data">
+            <div class="w-full p-4 text-right font-mono text-xs">
+                {{ usage }}
+            </div>
+        </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
+                    error
                     matRipple
-                    class="text-error"
                     [matTooltip]="'ADMIN.CLUSTER_PROCESS_KILL' | translate"
                     (click)="confirmKillProcess(row)"
                 >

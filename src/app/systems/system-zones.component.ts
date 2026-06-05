@@ -136,11 +136,13 @@ import { SystemStateService } from './system-state.service';
                     <div class="mx-auto flex items-center space-x-2 p-2">
                         <button
                             icon
+                            default
+                            error
                             matRipple
                             [matTooltip]="'SYSTEMS.ZONE_REMOVE' | translate"
                             (click)="removeZone(row)"
                         >
-                            <icon class="text-error">delete</icon>
+                            <icon>delete</icon>
                         </button>
                     </div>
                 </ng-template>

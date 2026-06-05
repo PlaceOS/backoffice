@@ -79,11 +79,13 @@ import { TriggerStateService } from './trigger-state.service';
             <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
+                    default
+                    error
                     matRipple
                     [matTooltip]="'TRIGGERS.DELETE_INSTANCE' | translate"
                     (click)="deleteTrigger(item)"
                 >
-                    <icon class="text-error">delete</icon>
+                    <icon>delete</icon>
                 </button>
             </div>
         </ng-template>
