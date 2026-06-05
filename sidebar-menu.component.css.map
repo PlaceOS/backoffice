@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["sidebar-menu.component.ts"],
   "sourcesContent": ["\n            [sidebar-menu] {\n                transition: width 200ms;\n            }\n\n            .active {\n                background-color: var(--secondary);\n                color: var(--secondary-content);\n            }\n\n            @media screen and (min-width: 512px) {\n                .compact {\n                    width: 4.5rem;\n                }\n            }\n        "],
-  "mappings": ";AACY,CAAA;AACI,cAAA,MAAA;AACJ;AAEA,CAAA;AACI,oBAAA,IAAA;AACA,SAAA,IAAA;AACJ;AAEA,OAAA,OAAA,IAAA,CAAA,SAAA,EAAA;AACI,GAAA;AACI,WAAA;AACJ;AACJ;",
+  "mappings": ";AACY,CAAA;AACI,cAAA,MAAA;AACJ;AAEA,CAAA;AACI,oBAAA,IAAA;AACA,SAAA,IAAA;AACJ;AAEA,OAAA,YAAA,WAAA;AACI,GAAA;AACI,WAAA;AACJ;AACJ;",
   "names": []
 }

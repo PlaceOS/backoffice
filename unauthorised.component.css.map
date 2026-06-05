@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["unauthorised.component.ts"],
   "sourcesContent": ["\n            :host {\n                display: flex;\n                align-items: center;\n                justify-content: center;\n            }\n\n            .unauthorised {\n                width: 24em;\n            }\n\n            @media (prefers-color-scheme: dark) {\n                .unauthorised {\n                    background-color: #262626 !important;\n                    color: #fff !important;\n                }\n            }\n        "],
-  "mappings": ";AACY;AACI,WAAA;AACA,eAAA;AACA,mBAAA;AACJ;AAEA,CAAA;AACI,SAAA;AACJ;AAEA,OAAA,CAAA,oBAAA,EAAA;AACI,GALJ;AAMQ,sBAAA;AACA,WAAA;AACJ;AACJ;",
+  "mappings": ";AACY;AACI,WAAA;AACA,eAAA;AACA,mBAAA;AACJ;AAEA,CAAA;AACI,SAAA;AACJ;AAEA,QAAA,sBAAA;AACI,GALJ;AAMQ,sBAAA;AACA,WAAA;AACJ;AACJ;",
   "names": []
 }

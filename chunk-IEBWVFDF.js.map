@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/ui/pipes/user.pipe.ts"],
+  "sourcesContent": ["import { Pipe, PipeTransform } from '@angular/core';\nimport { PlaceUser, showUser } from '@placeos/ts-client';\n\nconst USERS: PlaceUser[] = [];\n\n@Pipe({\n    name: 'user',\n})\nexport class UserPipe implements PipeTransform {\n    public async transform(id: string): Promise<PlaceUser> {\n        if (!id) return {} as PlaceUser;\n        let user = USERS.find(\n            (_) => _.id === id || _.email === id || _.card_number === id,\n        );\n        if (!user) {\n            user = await showUser(id);\n            USERS.push(user);\n        }\n        return user;\n    }\n}\n"],
+  "mappings": ";;;;;;;;AAGA,IAAM,QAAqB,CAAA;AAKrB,IAAO,WAAP,MAAO,UAAQ;EACV,MAAM,UAAU,IAAU;AAC7B,QAAI,CAAC;AAAI,aAAO,CAAA;AAChB,QAAI,OAAO,MAAM,KACb,CAAC,MAAM,EAAE,OAAO,MAAM,EAAE,UAAU,MAAM,EAAE,gBAAgB,EAAE;AAEhE,QAAI,CAAC,MAAM;AACP,aAAO,MAAM,GAAS,EAAE;AACxB,YAAM,KAAK,IAAI;IACnB;AACA,WAAO;EACX;;qCAXS,WAAQ;EAAA;mFAAR,WAAQ,MAAA,KAAA,CAAA;;;sEAAR,UAAQ,CAAA;UAHpB;WAAK;MACF,MAAM;KACT;;;",
+  "names": []
+}
