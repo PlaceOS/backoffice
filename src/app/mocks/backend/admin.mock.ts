@@ -26,6 +26,15 @@ const STORAGE_PROVIDERS: Record<string, any>[] = loadFromSession(
     'storage_providers',
     [],
 );
+const AVAILABLE_SCOPES = [
+    'public',
+    'read',
+    'write',
+    'systems',
+    'zones',
+    'users',
+    'admin',
+];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createFilter = (items: Record<string, any>[]) => (q: HashMap) => {
@@ -49,6 +58,13 @@ const createFilter = (items: Record<string, any>[]) => (q: HashMap) => {
 };
 
 // ============ API KEYS ============
+
+/** GET available API key scopes */
+registerMockEndpoint({
+    path: `${API}/scopes`,
+    metadata: AVAILABLE_SCOPES,
+    method: 'GET',
+} as MockHttpRequestHandler);
 
 /** GET API keys list */
 registerMockEndpoint({

@@ -237,6 +237,8 @@ export interface APIKeyModalData {
                     }}</label>
                     <mat-form-field appearance="outline">
                         <mat-select
+                            id="permissions"
+                            data-testid="api-key-permissions"
                             placeholder="None"
                             [formField]="form.permissions"
                         >

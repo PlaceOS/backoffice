@@ -293,7 +293,16 @@ export class AdminPage extends BasePage {
      * Get the API key permissions dropdown in the modal
      */
     get apiKeyPermissionsSelect(): Locator {
-        return this.dialog.locator('mat-select[name="permissions"]').first();
+        return this.dialog
+            .locator('[data-testid="api-key-permissions"]')
+            .first();
+    }
+
+    /**
+     * Get a user option from the API key user autocomplete panel
+     */
+    apiKeyUserOption(name: string): Locator {
+        return this.page.locator(`mat-option:has-text("${name}")`).first();
     }
 
     /**
@@ -302,16 +311,26 @@ export class AdminPage extends BasePage {
     async searchApiKeyUser(query: string): Promise<void> {
         await this.apiKeyUserSearchInput.click();
         await this.apiKeyUserSearchInput.fill(query);
-        await this.page.waitForTimeout(500);
+        await this.dialog
+            .locator('.animate-spin')
+            .waitFor({ state: 'hidden', timeout: 10000 })
+            .catch(() => undefined);
+        await this.apiKeyUserSearchInput.press('ArrowDown');
+        await this.apiKeyUserOption(query).waitFor({
+            state: 'visible',
+            timeout: 10000,
+        });
     }
 
     /**
      * Select API key permissions
      */
     async selectApiKeyPermissions(permission: string): Promise<void> {
+        const permission_label =
+            permission.charAt(0).toUpperCase() + permission.slice(1);
         await this.apiKeyPermissionsSelect.click();
         await this.page
-            .locator(`mat-option[value="${permission}"]`)
+            .locator(`mat-option:has-text("${permission_label}")`)
             .first()
             .click();
         await this.page.waitForTimeout(300);

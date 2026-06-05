@@ -227,10 +227,7 @@ test.describe('Admin', () => {
 
             await adminPage.searchApiKeyUser('Alex');
 
-            const userOption = page
-                .locator('mat-option:has-text("Alex")')
-                .first();
-            await expect(userOption).toBeVisible({ timeout: 10000 });
+            const userOption = adminPage.apiKeyUserOption('Alex');
             await expect(userOption.locator('a-user-avatar')).toBeVisible();
             await expect(
                 userOption.locator('text=/@place\\.tech/i'),
@@ -266,9 +263,9 @@ test.describe('Admin', () => {
             await adminPage.selectApiKeyPermissions('admin');
             await adminPage.searchApiKeyUser('Jeremy');
 
-            await expect(
-                page.locator('mat-option:has-text("Jeremy West")'),
-            ).toBeVisible({ timeout: 10000 });
+            await expect(adminPage.apiKeyUserOption('Jeremy West')).toBeVisible(
+                { timeout: 10000 },
+            );
         });
     });
 
