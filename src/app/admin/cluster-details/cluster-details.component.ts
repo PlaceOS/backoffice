@@ -1,13 +1,4 @@
 import { Component, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import {
-    catchError,
-    filter,
-    map,
-    startWith,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
 
 import { PlaceCluster, queryClusters } from '@placeos/ts-client';
 import { AsyncHandler } from '../../common/async-handler.class';
@@ -15,7 +6,6 @@ import { HashMap } from '../../common/types';
 
 import { MatRippleModule } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
-import { interval, of } from 'rxjs';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { AdminClusterNodeComponent } from './cluster-node.component';
@@ -101,53 +91,48 @@ export class PlaceClusterDetailsComponent extends AsyncHandler {
     /** Whether cluster details are being loaded */
     public readonly loading = signal(false);
 
-    public readonly clusters$ = interval(2 * 1000).pipe(
-        startWith(0),
-        filter(() => !this.loading()),
-        switchMap(() => {
-            this.loading.set(true);
-            return queryClusters({ include_status: false }).pipe(
-                catchError(() => of({ data: [] as PlaceCluster[] })),
-            );
-        }),
-        map((resp: { data: PlaceCluster[] }) => resp.data),
-        map((list) => {
-            this.cluster_list.set(list || []);
-            const date = Date.now();
-            const node_map = this.cluster_nodes();
-            this.cluster_list().forEach((cluster) => {
-                if (!this.usage_history[cluster.id])
-                    this.usage_history[cluster.id] = {};
-                const nodes = [cluster, ...cluster.edge_nodes] as Array<
-                    PlaceCluster & { hostname?: string }
-                >;
-                node_map[cluster.id] = nodes;
-                for (const node of nodes) {
-                    if (
-                        !this.usage_history[cluster.id][node.hostname as string]
-                    ) {
-                        this.usage_history[cluster.id][
-                            node.hostname as string
-                        ] = [];
-                    }
-                    const block =
-                        this.usage_history[cluster.id][node.hostname as string];
-                    block.unshift({
-                        id: date,
-                        cpu: node.total_cpu,
-                        memory: node.memory_percentage,
-                    });
-                    if (block.length > 120) block.pop();
-                    this.usage_history[cluster.id][node.hostname as string] = [
-                        ...block,
-                    ];
+    constructor() {
+        super();
+        this.updateClusters();
+        this.interval('clusters', () => this.updateClusters(), 2 * 1000);
+    }
+
+    private async updateClusters() {
+        if (this.loading()) return;
+        this.loading.set(true);
+        const response = await queryClusters({ include_status: false }).catch(
+            () => ({ data: [] as PlaceCluster[] }),
+        );
+        const list = response.data || [];
+        this.cluster_list.set(list);
+        const date = Date.now();
+        const node_map = this.cluster_nodes();
+        this.cluster_list().forEach((cluster) => {
+            if (!this.usage_history[cluster.id])
+                this.usage_history[cluster.id] = {};
+            const nodes = [cluster, ...cluster.edge_nodes] as Array<
+                PlaceCluster & { hostname?: string }
+            >;
+            node_map[cluster.id] = nodes;
+            for (const node of nodes) {
+                if (!this.usage_history[cluster.id][node.hostname as string]) {
+                    this.usage_history[cluster.id][node.hostname as string] =
+                        [];
                 }
-            });
-            this.cluster_nodes.set(node_map);
-        }),
-        tap(() => this.loading.set(false)),
-    );
-    private readonly _cluster_refresh = toSignal(this.clusters$, {
-        initialValue: undefined,
-    });
+                const block =
+                    this.usage_history[cluster.id][node.hostname as string];
+                block.unshift({
+                    id: date,
+                    cpu: node.total_cpu,
+                    memory: node.memory_percentage,
+                });
+                if (block.length > 120) block.pop();
+                this.usage_history[cluster.id][node.hostname as string] = [
+                    ...block,
+                ];
+            }
+        });
+        this.cluster_nodes.set(node_map);
+        this.loading.set(false);
+    }
 }

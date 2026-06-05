@@ -1,7 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceSystem, PlaceZone, queryZones } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
 
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
@@ -74,7 +72,7 @@ import { SystemStateService } from './system-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!(loading | async).zones"
+                    [class.opacity-0]="!loading().zones"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-lg text-sm"
@@ -181,16 +179,9 @@ export class SystemZonesComponent {
 
     public show_original = false;
 
-    public readonly original_zones = toSignal(this._service.zones, {
-        initialValue: [] as PlaceZone[],
-    });
+    public readonly original_zones = this._service.zones;
 
-    public readonly item_signal = toSignal(
-        this._service.item.pipe(map((item) => item as PlaceSystem)),
-        {
-            initialValue: null as PlaceSystem | null,
-        },
-    );
+    public readonly item_signal = this._service.item;
 
     public changed: Record<string, boolean> = {};
     /** ID of a zone that the user wishes to add to the system */
@@ -248,7 +239,7 @@ export class SystemZonesComponent {
 
     /** Query function for systems */
     public readonly query_fn = (_: string) =>
-        queryZones({ q: _ }).pipe(map((resp) => resp.data));
+        queryZones({ q: _ }).then((resp) => resp.data);
 
     public readonly exclude_fn = (zone: PlaceZone, __: string) =>
         this.item.zones.indexOf(zone.id) >= 0;

@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     listRepositoryCommits,
@@ -9,17 +9,6 @@ import {
     pullRepositoryChanges,
     showRepository,
 } from '@placeos/ts-client';
-import { BehaviorSubject, of } from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    filter,
-    map,
-    shareReplay,
-    startWith,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
 
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -34,62 +23,70 @@ export class RepositoriesStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _loading = new BehaviorSubject<boolean>(false);
+    private _loading = signal(false);
 
-    public readonly loading = this._loading.asObservable();
-    /** Active module */
-    public readonly item = this._state.item;
-    /** List of available drivers for repository */
-    public readonly driver_list = this._state.active_item$.pipe(
-        debounceTime(300),
-        switchMap((item: PlaceRepository) => {
+    public readonly loading = this._loading.asReadonly();
+    /** Active repository */
+    public readonly item = computed(
+        () => this._state.item() as unknown as PlaceRepository,
+    );
+
+    private readonly _driver_list = resource({
+        params: () => this.item(),
+        loader: async ({ params: item }) => {
             if (
                 !(item instanceof PlaceRepository) ||
                 item.repo_type === PlaceRepositoryType.Interface
             )
-                return of(null);
-            this._loading.next(true);
-            return listRepositoryDrivers(item.id, { limit: 2000 }).pipe(
-                catchError(() => []),
-            );
-        }),
-        tap(() => this._loading.next(false)),
-        startWith([]),
-        shareReplay(1),
+                return [] as string[];
+            this._loading.set(true);
+            try {
+                return listRepositoryDrivers(item.id, { limit: 2000 }).catch(
+                    () => [],
+                );
+            } finally {
+                this._loading.set(false);
+            }
+        },
+    });
+    /** List of available drivers for repository */
+    public readonly driver_list = computed(
+        () => this._driver_list.value() || [],
     );
+
+    private readonly _commit = resource({
+        params: () => this.item(),
+        loader: async ({ params: item }) => {
+            if (!(item instanceof PlaceRepository)) return 'HEAD';
+            const details = await listRepositoryCommits(item.id, {
+                count: 1,
+            } as Record<string, unknown>).catch(() => []);
+            return details[0]?.commit || 'HEAD';
+        },
+    });
     /** Get latest commit for the active repository */
-    public readonly commit = this._state.active_item$.pipe(
-        filter((i) => i instanceof PlaceRepository),
-        switchMap((item) =>
-            listRepositoryCommits(item.id, { count: 1 } as Record<
-                string,
-                unknown
-            >),
-        ),
-        catchError(() => []),
-        map((details) => details[0]?.commit || 'HEAD'),
-    );
+    public readonly commit = computed(() => this._commit.value() || 'HEAD');
 
     public get active_item(): PlaceRepository {
         return this._state.active_item as unknown as PlaceRepository;
     }
 
     public async pullLatestCommit() {
-        const commit: unknown = await pullRepositoryChanges(this.active_item.id)
-            .toPromise()
-            .catch((err) => {
-                notifyError(
-                    i18n('REPOS.GIT_PULL_ERROR', {
-                        error: JSON.stringify(
-                            err.response ||
-                                err.message ||
-                                i18n('REPOS.GIT_PULL_TIMEOUT'),
-                        ),
-                    }),
-                );
-            });
+        const commit: unknown = await pullRepositoryChanges(
+            this.active_item.id,
+        ).catch((err) => {
+            notifyError(
+                i18n('REPOS.GIT_PULL_ERROR', {
+                    error: JSON.stringify(
+                        err.response ||
+                            err.message ||
+                            i18n('REPOS.GIT_PULL_TIMEOUT'),
+                    ),
+                }),
+            );
+        });
         if (!commit) return;
-        const repo = await showRepository(this.active_item.id).toPromise();
+        const repo = await showRepository(this.active_item.id);
         if (repo) this._state.replaceItem(repo as unknown as Identity);
     }
 

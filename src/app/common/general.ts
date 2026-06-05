@@ -1,6 +1,6 @@
+import { Signal } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { lastValueFrom, Observable } from 'rxjs';
-import { first, map, take } from 'rxjs/operators';
+import { Subscribable, waitForEvent, waitForSignalValue } from './signals';
 import { HashMap, Point } from './types';
 
 /** Available console output streams. */
@@ -465,33 +465,49 @@ export function getInvalidFields(form: UntypedFormGroup, prefix = '') {
 }
 
 /**
- * Create a promise that returns the next value returned by the given observable
- * @param obs Observable to use
+ * Create a promise that returns the current value returned by the given signal
+ * @param source Signal to use
  */
-export function nextValueFrom<T = unknown>(obs: Observable<T>): Promise<T> {
-    return obs ? lastValueFrom(obs.pipe(take(1))) : Promise.resolve(null);
+export function nextValueFrom<T = unknown>(source: Signal<T>): Promise<T> {
+    return source ? Promise.resolve(source()) : Promise.resolve(null);
 }
 
 /**
- * Create a promise that returns the first truthy value returned by the given observable
- * @param obs Observable to use
+ * Create a promise that returns the first truthy value returned by the given signal
+ * @param source Signal to use
  */
-export function firstTruthyValueFrom<T>(obs: Observable<T>): Promise<T> {
-    return obs
-        ? lastValueFrom(obs.pipe(first((_) => !!_)))
+export function firstTruthyValueFrom<T>(source: Signal<T>): Promise<T> {
+    return source
+        ? waitForSignalValue(source, (_) => !!_)
         : Promise.resolve(null);
 }
 
 export function mapLastValueFrom<T, R>(
-    obs: Observable<T>,
+    source: Promise<T> | Signal<T>,
     map_fn?: (value: T) => R,
 ): Promise<T | R> {
-    return obs
-        ? map_fn
-            ? lastValueFrom(obs.pipe(map(map_fn)))
-            : lastValueFrom(obs)
-        : Promise.resolve(null);
+    if (!source) return Promise.resolve(null);
+    const promise =
+        source instanceof Promise ? source : Promise.resolve(source());
+    return map_fn ? promise.then(map_fn) : promise;
 }
+
+type AwaitableSource<T> = PromiseLike<T> | Subscribable<T> | Signal<T>;
+
+export function lastValueFrom<T = unknown>(
+    source: AwaitableSource<T>,
+): Promise<T> {
+    if (!source) return Promise.resolve(null);
+    if (typeof source === 'function') {
+        return Promise.resolve((source as Signal<T>)());
+    }
+    if (typeof (source as PromiseLike<T>).then === 'function') {
+        return Promise.resolve(source as PromiseLike<T>);
+    }
+    return waitForEvent(source as Subscribable<T>);
+}
+
+export const firstValueFrom = lastValueFrom;
 
 /**
  * Pad the start of a string or number with given character

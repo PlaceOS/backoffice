@@ -183,7 +183,7 @@ export class MetadataHistoryModalComponent implements OnInit {
         const history = await listMetadataHistory(this._data.id, {
             name: this._data.name,
             limit: 5000,
-        }).toPromise();
+        });
         this.history = history;
     }
 

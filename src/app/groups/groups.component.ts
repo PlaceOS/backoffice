@@ -1,9 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRipple } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { PlaceGroup } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -105,20 +103,14 @@ export class GroupsComponent extends AsyncHandler {
     public readonly name = 'groups';
     public open_menu = false;
     public readonly scroll = signal(0);
-    public readonly loading = toSignal(this._item.loading, {
-        initialValue: false,
-    });
-    public readonly item = toSignal(this._service.item, {
-        initialValue: null as PlaceGroup | null,
-    });
+    public readonly loading = this._item.loading;
+    public readonly item = this._service.item;
     public readonly display_item = computed(() => {
         const item = this.item();
         if (!item) return null;
         return { ...item, toJSON: () => ({ ...item }) } as DisplayItem;
     });
-    public readonly counts = toSignal(this._service.counts, {
-        initialValue: { users: 0, zones: 0 },
-    });
+    public readonly counts = this._service.counts;
     public readonly tab_list = computed(() => {
         const count = this.counts();
         return [

@@ -28,7 +28,6 @@ import {
     removeMetadata,
     updateMetadata,
 } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
 import { VERSION } from '../../env/version';
 // import { SchemaStateService } from '../admin/schema-state.service';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -322,9 +321,7 @@ export class MetadataDisplayComponent
             this._dialog,
         );
         if (result.reason !== 'done') return;
-        await lastValueFrom(
-            removeMetadata(this.item().id, { name: field }),
-        ).catch((err) => {
+        await removeMetadata(this.item().id, { name: field }).catch((err) => {
             notifyError(
                 `Error removing old "${field}" metadata. Error: ${
                     err.response || err.message || err
@@ -384,8 +381,8 @@ export class MetadataDisplayComponent
             ...value,
             description: new_desc,
             details: data,
-        }).subscribe({
-            next: (item: PlaceMetadata) => {
+        })
+            .then((item: PlaceMetadata) => {
                 this.loading.update((m) => ({ ...m, [field.name]: false }));
                 const index = this.metadata().findIndex(
                     (i) => i.name === field.name,
@@ -393,16 +390,15 @@ export class MetadataDisplayComponent
                 this.edited.update((m) => ({ ...m, [field.name]: false }));
                 console.log('Field:', field.name, value.name, item);
                 if (field.name !== value.name) {
-                    lastValueFrom(
-                        removeMetadata(this.item().id, { name: field.name }),
-                    ).catch((err) =>
-                        notifyError(
-                            `Error removing old "${
-                                field.name
-                            }" metadata. Error: ${JSON.stringify(
-                                err.response || err.message || err,
-                            )}`,
-                        ),
+                    removeMetadata(this.item().id, { name: field.name }).catch(
+                        (err) =>
+                            notifyError(
+                                `Error removing old "${
+                                    field.name
+                                }" metadata. Error: ${JSON.stringify(
+                                    err.response || err.message || err,
+                                )}`,
+                            ),
                     );
                 }
                 if (index >= 0) {
@@ -416,8 +412,8 @@ export class MetadataDisplayComponent
                 }
                 notifySuccess(`Saved "${value.name}" metadata.`);
                 this.generateForms();
-            },
-            error: (err) => {
+            })
+            .catch((err) => {
                 this.loading.update((m) => ({ ...m, [field.name]: false }));
                 notifyError(
                     `Error saving "${
@@ -426,8 +422,7 @@ export class MetadataDisplayComponent
                         err.response || err.message || err,
                     )}`,
                 );
-            },
-        });
+            });
     }
 
     private generateForms() {
@@ -486,10 +481,10 @@ export class MetadataDisplayComponent
         });
     }
 
-    private loadMetadata() {
+    private async loadMetadata() {
         this.loading_list.set(true);
-        listMetadata(this.item().id).subscribe({
-            next: (map) => {
+        await listMetadata(this.item().id)
+            .then((map) => {
                 this.metadata.set(
                     Object.keys(map)
                         .map((key) => map[key])
@@ -497,17 +492,15 @@ export class MetadataDisplayComponent
                         .filter((m) => !!m),
                 );
                 this.generateForms();
-            },
-            error: (err) => {
+            })
+            .catch((err) =>
                 notifyError(
                     `Error loading metadata. Error: ${
                         err.response || err.message || err
                     }`,
-                );
-                this.loading_list.set(false);
-            },
-            complete: () => this.loading_list.set(false),
-        });
+                ),
+            )
+            .finally(() => this.loading_list.set(false));
     }
 
     public viewMetadataHistory(item: PlaceMetadata) {

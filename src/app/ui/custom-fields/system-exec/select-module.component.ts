@@ -6,11 +6,11 @@ import {
     forwardRef,
     input,
     OnChanges,
+    resource,
     signal,
     SimpleChanges,
     viewChild,
 } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
     ControlValueAccessor,
     FormsModule,
@@ -21,15 +21,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { PlaceSystem, queryModules } from '@placeos/ts-client';
-import { combineLatest, of } from 'rxjs';
-import {
-    catchError,
-    distinctUntilChanged,
-    map,
-    shareReplay,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
 import { calculateModuleIndex } from '../../../common/api';
 import { AsyncHandler } from '../../../common/async-handler.class';
 import { TranslatePipe } from '../../translate.pipe';
@@ -129,28 +120,19 @@ export class SelectModuleComponent
 
     public readonly loading = signal(false);
 
-    private readonly _modules = toSignal(
-        combineLatest([
-            toObservable(this._system),
-            toObservable(this._change),
-        ]).pipe(
-            distinctUntilChanged(
-                ([id1, time1], [id2, time2]) => id1 === id2 && time1 === time2,
-            ),
-            tap(() => this.loading.set(true)),
-            switchMap(([id]) =>
-                id
-                    ? queryModules({
-                          control_system_id: id,
-                          limit: 500,
-                          complete: true,
-                      } as Record<string, unknown>).pipe(
-                          map(({ data }) => data),
-                      )
-                    : of([]),
-            ),
-            catchError(() => of([])),
-            map((mod_list) => {
+    private readonly _modules = resource({
+        params: () => ({ id: this._system(), change: this._change() }),
+        loader: async ({ params }) => {
+            if (!params.id) return [] as (ModuleLike & { running: boolean })[];
+            this.loading.set(true);
+            try {
+                const mod_list = await queryModules({
+                    control_system_id: params.id,
+                    limit: 500,
+                    complete: true,
+                } as Record<string, unknown>)
+                    .then(({ data }) => data)
+                    .catch(() => []);
                 mod_list.sort(
                     (a, b) =>
                         this.system().modules.indexOf(a.id) -
@@ -163,14 +145,13 @@ export class SelectModuleComponent
                     module: mod.custom_name || mod.name,
                     index: calculateModuleIndex(mod_list, mod),
                 }));
-            }),
-            tap(() => this.loading.set(false)),
-            shareReplay(1),
-        ),
-        { initialValue: [] as (ModuleLike & { running: boolean })[] },
-    );
+            } finally {
+                this.loading.set(false);
+            }
+        },
+    });
 
-    public readonly modules = this._modules;
+    public readonly modules = computed(() => this._modules.value() || []);
     public readonly filtered_modules = computed(() => {
         const search = this.module_filter().trim().toLowerCase();
         if (!search) return this.modules();

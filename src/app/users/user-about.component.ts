@@ -1,18 +1,11 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, resource } from '@angular/core';
 import { PlaceUser, showDomain } from '@placeos/ts-client';
 
 import { CommonModule } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    shareReplay,
-    switchMap,
-} from 'rxjs';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifySuccess } from '../common/notifications';
@@ -86,7 +79,8 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     </div>
                     <div>{{ item?.department }}</div>
                 }
-                @if (domain | async) {
+                @let domain_value = domain();
+                @if (domain_value) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'USERS.AUTHORITY_ID' | translate }}
                     </div>
@@ -98,9 +92,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             ]"
                             class="underline"
                         >
-                            {{ (domain | async)?.name }} ({{
-                                (domain | async)?.domain
-                            }})
+                            {{ domain_value.name }} ({{ domain_value.domain }})
                         </a>
                     </div>
                 }
@@ -180,16 +172,12 @@ export class UserAboutComponent {
     private _service = inject(ActiveItemService);
     private _clipboard = inject(Clipboard);
 
-    public readonly domain = this._service.item.pipe(
-        distinctUntilChanged(),
-        debounceTime(300),
-        filter(
-            (_): _ is PlaceUser =>
-                !!_ && typeof (_ as PlaceUser).authority_id === 'string',
-        ),
-        switchMap((i) => showDomain(i.authority_id)),
-        shareReplay(1),
-    );
+    private readonly _domain = resource({
+        params: () => (this._service.item() as PlaceUser)?.authority_id,
+        loader: async ({ params: id }) =>
+            id ? showDomain(id).catch(() => null) : null,
+    });
+    public readonly domain = computed(() => this._domain.value() || null);
 
     public get item(): PlaceUser {
         return (this._service.active_item as PlaceUser) || ({} as PlaceUser);

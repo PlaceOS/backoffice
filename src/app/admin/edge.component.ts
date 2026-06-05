@@ -11,8 +11,7 @@ import {
     removeEdge,
     retrieveEdgeToken,
 } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
-import { copyToClipboard } from '../common/general';
+import { copyToClipboard, lastValueFrom } from '../common/general';
 import {
     notifyError,
     notifyInfo,

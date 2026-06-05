@@ -1,13 +1,14 @@
 import {
     Component,
     EventEmitter,
+    Injector,
     OnInit,
     Output,
     computed,
+    effect,
     inject,
     signal,
 } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -22,6 +23,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import {
     EncryptionLevel,
+    GitCommitDetails,
     PlaceRepository,
     PlaceRepositoryType,
     PlaceSettings,
@@ -36,23 +38,12 @@ import {
     listRepositoryDefaultBranch,
     updateRepository,
 } from '@placeos/ts-client';
-import { combineLatest, merge, of, timer } from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    map,
-    shareReplay,
-    skip,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { getInvalidFields } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { toSignal } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { isValidUrl } from '../common/validation';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
@@ -61,6 +52,11 @@ import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { generateRepositoryFormFields } from './repositories.utilities';
+
+interface RepositoryCommit extends Partial<GitCommitDetails> {
+    hash: string;
+    subject: string;
+}
 
 @Component({
     selector: 'repository-form',
@@ -248,11 +244,11 @@ import { generateRepositoryFormFields } from './repositories.utilities';
                                     [placeholder]="'Select Branch'"
                                     [disabled]="
                                         loading_branches() ||
-                                        !(branch_list | async)?.length
+                                        !branch_list().length
                                     "
                                 >
                                     @for (
-                                        branch of branch_list | async;
+                                        branch of branch_list();
                                         track branch
                                     ) {
                                         <mat-option [value]="branch">
@@ -284,7 +280,7 @@ import { generateRepositoryFormFields } from './repositories.utilities';
                                     placeholder="Select commit"
                                     [disabled]="
                                         loading_commits() ||
-                                        !(commit_list | async)?.length
+                                        !commit_list().length
                                     "
                                 >
                                     <mat-select-trigger>
@@ -308,7 +304,7 @@ import { generateRepositoryFormFields } from './repositories.utilities';
                                         </div>
                                     </mat-select-trigger>
                                     @for (
-                                        commit of commit_list | async;
+                                        commit of commit_list();
                                         track commit
                                     ) {
                                         <mat-option [value]="commit.hash">
@@ -434,6 +430,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         MAT_DIALOG_DATA,
     );
     private _hotkey = inject(HotkeysService);
+    private _injector = inject(Injector);
     private readonly _name = 'REPOS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -443,15 +440,15 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     public heading: string;
 
     /** List of commits available for repository */
-    public commit_list = of([] as Record<string, string>[]);
+    public commit_list = signal<RepositoryCommit[]>([]);
     /** List of branches available for repository */
-    public branch_list = of([] as string[]);
+    public branch_list = signal<string[]>([]);
     /** Whether repository's branches are being loaded */
     public readonly loading_branches = signal(false);
     /** Whether repository's commits are being loaded */
     public readonly loading_commits = signal(false);
     /** Currently selected commit for the repository */
-    public base_commit: Identity | Record<string, string>;
+    public base_commit: RepositoryCommit;
     /** Whether to follow the latest branch commits(Auto-update) */
     public readonly follow_latest = signal(false);
     /** List of available types of repositories */
@@ -461,7 +458,6 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     public readonly is_editing = signal(false);
     /** Emits when URI, username, or password fields lose focus */
     public readonly credentials_blur = signal(0);
-    private _cred_blur = toObservable(this.credentials_blur);
 
     public readonly is_interface = computed(
         () => this.form?.value?.repo_type === PlaceRepositoryType.Interface,
@@ -492,7 +488,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    public submit(): void {
+    public async submit(): Promise<void> {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
@@ -515,38 +511,36 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         const form_item: PlaceRepository = item.id
             ? cleanObject({ ...item_json, ...form_value }, [undefined])
             : { ...item_json, ...form_value };
-        (form_item.id
-            ? updateRepository(
-                  form_item.id,
-                  form_item as unknown as PlaceRepository,
-              )
-            : addRepository(form_item as unknown as PlaceRepository)
-        ).subscribe(
-            (_item) => {
-                this._dialog_ref.disableClose = false;
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                if (!this.form.value.id && this.form.controls.settings) {
-                    this.newSettings(
-                        _item as unknown as Identity,
-                        this.form.controls.settings.value,
-                    ).then(() => this._dialog_ref.close());
-                } else {
-                    this._dialog_ref.close();
-                }
-            },
-            async (err) => {
-                this.saving = null;
-                this._dialog_ref.disableClose = false;
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await err.text?.()) || err.message || err,
-                        ),
-                    }),
+        try {
+            const _item = await (form_item.id
+                ? updateRepository(
+                      form_item.id,
+                      form_item as unknown as PlaceRepository,
+                  )
+                : addRepository(form_item as unknown as PlaceRepository));
+            this._dialog_ref.disableClose = false;
+            this.event.emit({ reason: 'done', metadata: { item: _item } });
+            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+            if (!this.form.value.id && this.form.controls.settings) {
+                await this.newSettings(
+                    _item as unknown as Identity,
+                    this.form.controls.settings.value,
                 );
-            },
-        );
+            }
+            this._dialog_ref.close();
+        } catch (err) {
+            this.saving = null;
+            this._dialog_ref.disableClose = false;
+            notifyError(
+                i18n(`${this._name}.SAVE_ERROR`, {
+                    error: JSON.stringify(
+                        (await (err as Response).text?.()) ||
+                            (err as Error).message ||
+                            err,
+                    ),
+                }),
+            );
+        }
     }
 
     public setFollow(value: boolean) {
@@ -554,7 +548,9 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         if (value) {
             this.form.controls.commit_hash.setValue('HEAD');
         } else if (this.form.controls.commit_hash.value === 'HEAD') {
-            this.form.controls.commit_hash.setValue(this.commit_list[1].id);
+            this.form.controls.commit_hash.setValue(
+                this.commit_list()[1]?.hash || '',
+            );
         }
     }
 
@@ -568,107 +564,136 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
 
     private _setupBranchAndCommitStreams() {
         this.form.get('branch').disable();
-        // Auto-trigger 1s after URI becomes a valid URL
-        const uri_valid$ = this.form.get('uri').valueChanges.pipe(
-            debounceTime(1000),
-            filter((uri: string) => isValidUrl(uri) && uri.startsWith('http')),
-            distinctUntilChanged(),
+        const uri = toSignal(this.form.get('uri').valueChanges, {
+            initialValue: this.form.get('uri').value,
+            injector: this._injector,
+        });
+        const branch = toSignal(this.form.get('branch').valueChanges, {
+            initialValue: this.form.get('branch').value,
+            injector: this._injector,
+        });
+        effect(
+            () => {
+                uri();
+                this.credentials_blur();
+                this.timeout(
+                    'repository_branches',
+                    () => this._loadBranches(),
+                    300,
+                );
+            },
+            { injector: this._injector },
         );
-        // Trigger branch fetch on blur or valid URL after 1s
-        const credentials_trigger$ = merge(
-            timer(300),
-            this._cred_blur.pipe(skip(1)),
-            uri_valid$,
+        effect(
+            () => {
+                uri();
+                branch();
+                this.credentials_blur();
+                this.timeout(
+                    'repository_commits',
+                    () => this._loadCommits(),
+                    300,
+                );
+            },
+            { injector: this._injector },
         );
-        this.branch_list = credentials_trigger$.pipe(
-            debounceTime(300),
-            tap(() => this.loading_branches.set(true)),
-            switchMap(() => {
-                const { id, uri, username, password } = this.form.value;
-                return (
-                    id
-                        ? listRepositoryBranches(id)
-                        : isValidUrl(uri) && uri.startsWith('http')
-                          ? listRemoteRepositoryBranches({
-                                repository_url: uri,
-                                username,
-                                password,
-                            })
-                          : of([])
-                ).pipe(catchError(() => of([])));
-            }),
-            tap((_) => {
-                this.loading_branches.set(false);
-                if (_.length) this.form.get('branch').enable();
-                else this.form.get('branch').disable();
-            }),
-            shareReplay(1),
-        );
-        const default_branch = this.branch_list.pipe(
-            debounceTime(300),
-            switchMap(() => {
-                const { id, uri, username, password } = this.form.value;
-                return (
-                    id
-                        ? listRepositoryDefaultBranch(id)
-                        : isValidUrl(uri) && uri.startsWith('http')
-                          ? listRemoteRepositoryDefaultBranch({
-                                repository_url: uri,
-                                username,
-                                password,
-                            })
-                          : of('')
-                ).pipe(catchError(() => of('')));
-            }),
-            shareReplay(1),
-        );
-        this.subscription(
-            'default_branch',
-            combineLatest([this.branch_list, default_branch]).subscribe(
-                ([list, branch]) => {
-                    return !this.form.value.branch ||
-                        !list.includes(this.form.value.branch)
-                        ? this.form.patchValue({ branch })
-                        : '';
+    }
+
+    private async _loadBranches() {
+        const { id, uri, username, password } = this.form.value;
+        if (!id && (!isValidUrl(uri) || !uri.startsWith('http'))) {
+            this.branch_list.set([]);
+            this.form.get('branch').disable();
+            return;
+        }
+        this.loading_branches.set(true);
+        try {
+            const list = await (
+                id
+                    ? listRepositoryBranches(id)
+                    : listRemoteRepositoryBranches({
+                          repository_url: uri,
+                          username,
+                          password,
+                      })
+            ).catch(() => [] as string[]);
+            this.branch_list.set(list);
+            if (list.length) this.form.get('branch').enable();
+            else this.form.get('branch').disable();
+            const branch = await this._loadDefaultBranch();
+            if (
+                branch &&
+                (!this.form.value.branch ||
+                    !list.includes(this.form.value.branch))
+            ) {
+                this.form.patchValue({ branch });
+            }
+        } finally {
+            this.loading_branches.set(false);
+        }
+    }
+
+    private async _loadDefaultBranch() {
+        const { id, uri, username, password } = this.form.value;
+        return (
+            id
+                ? listRepositoryDefaultBranch(id)
+                : isValidUrl(uri) && uri.startsWith('http')
+                  ? listRemoteRepositoryDefaultBranch({
+                        repository_url: uri,
+                        username,
+                        password,
+                    })
+                  : Promise.resolve('')
+        ).catch(() => '');
+    }
+
+    private async _loadCommits() {
+        const { id, uri, branch, username, password } = this.form.value;
+        if (!id && (!isValidUrl(uri) || !uri.startsWith('http') || !branch)) {
+            this.commit_list.set([
+                {
+                    hash: 'HEAD',
+                    subject: 'Latest commit on the branch',
                 },
-            ),
-        );
-        this.commit_list = merge(
-            timer(300),
-            this._cred_blur.pipe(skip(1)),
-            uri_valid$,
-            this.form.get('branch').valueChanges,
-        ).pipe(
-            debounceTime(300),
-            tap(() => this.loading_commits.set(true)),
-            switchMap(() => {
-                const { id, uri, branch, username, password } = this.form.value;
-                return (
-                    id
-                        ? listRepositoryCommits(id, { branch })
-                        : isValidUrl(uri) && uri.startsWith('http') && branch
-                          ? listRemoteRepositoryCommits({
-                                repository_url: uri,
-                                username,
-                                password,
-                                branch,
-                            })
-                          : of([])
-                ).pipe(catchError(() => of([])));
-            }),
-            map((l) => [
-                { hash: 'HEAD', subject: 'Latest commit on the branch' },
-                ...l,
-            ]),
-            tap((l) => {
-                this.loading_commits.set(false);
-                const commit =
-                    l.find((c) => c.hash === this.form.value.commit_hash) ||
-                    l[0];
-                this.base_commit = commit;
-            }),
-            shareReplay(1),
-        );
+            ]);
+            return;
+        }
+        this.loading_commits.set(true);
+        try {
+            const list = await (
+                id
+                    ? listRepositoryCommits(id, { branch })
+                    : listRemoteRepositoryCommits({
+                          repository_url: uri,
+                          username,
+                          password,
+                          branch,
+                      })
+            ).catch(() => [] as GitCommitDetails[]);
+            const commit_list: RepositoryCommit[] = [
+                {
+                    hash: 'HEAD',
+                    subject: 'Latest commit on the branch',
+                },
+                ...list.map((commit) => this._normaliseCommit(commit)),
+            ];
+            this.commit_list.set(commit_list);
+            this.base_commit =
+                commit_list.find(
+                    (commit) => commit.hash === this.form.value.commit_hash,
+                ) || commit_list[0];
+        } finally {
+            this.loading_commits.set(false);
+        }
+    }
+
+    private _normaliseCommit(commit: GitCommitDetails): RepositoryCommit {
+        return {
+            ...commit,
+            hash: commit.commit,
+            subject: commit.subject || commit.commit,
+        };
     }
 
     private async newSettings(item: Identity, settings_string: string) {
@@ -677,17 +702,15 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
-        await addSettings(new_settings)
-            .toPromise()
-            .catch((err) => {
-                this.saving = null;
-                notifyError(
-                    `Error saving settings for ${
-                        item.name || item.id
-                    }. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
-            });
+        await addSettings(new_settings).catch((err) => {
+            this.saving = null;
+            notifyError(
+                `Error saving settings for ${
+                    item.name || item.id
+                }. Error: ${JSON.stringify(
+                    err.response || err.message || err,
+                )}`,
+            );
+        });
     }
 }

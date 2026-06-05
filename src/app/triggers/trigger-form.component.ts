@@ -193,7 +193,7 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    public submit(): void {
+    public async submit(): Promise<void> {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
@@ -209,35 +209,33 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
         const form_item: PlaceTrigger = item.id
             ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
             : { ...item_json, ...this.form.value };
-        (form_item.id
-            ? updateTrigger(form_item.id, form_item)
-            : addTrigger(form_item)
-        ).subscribe(
-            (_item) => {
-                this._dialog_ref.disableClose = false;
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                if (!this.form.value.id && this.form.controls.settings) {
-                    this.newSettings(
-                        _item as unknown as Identity,
-                        this.form.controls.settings.value,
-                    ).then(() => this._dialog_ref.close());
-                } else {
-                    this._dialog_ref.close();
-                }
-            },
-            async (err) => {
-                this.loading = null;
-                this._dialog_ref.disableClose = false;
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await err.text?.()) || err.message || err,
-                        ),
-                    }),
+        try {
+            const _item = await (form_item.id
+                ? updateTrigger(form_item.id, form_item)
+                : addTrigger(form_item));
+            this._dialog_ref.disableClose = false;
+            this.event.emit({ reason: 'done', metadata: { item: _item } });
+            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+            if (!this.form.value.id && this.form.controls.settings) {
+                await this.newSettings(
+                    _item as unknown as Identity,
+                    this.form.controls.settings.value,
                 );
-            },
-        );
+            }
+            this._dialog_ref.close();
+        } catch (err) {
+            this.loading = null;
+            this._dialog_ref.disableClose = false;
+            notifyError(
+                i18n(`${this._name}.SAVE_ERROR`, {
+                    error: JSON.stringify(
+                        (await (err as Response).text?.()) ||
+                            (err as Error).message ||
+                            err,
+                    ),
+                }),
+            );
+        }
     }
 
     private async newSettings(item: Identity, settings_string: string) {
@@ -246,17 +244,15 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
-        await addSettings(new_settings)
-            .toPromise()
-            .catch((err) => {
-                this.loading = null;
-                notifyError(
-                    `Error saving settings for ${
-                        item.name || item.id
-                    }. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
-            });
+        await addSettings(new_settings).catch((err) => {
+            this.loading = null;
+            notifyError(
+                `Error saving settings for ${
+                    item.name || item.id
+                }. Error: ${JSON.stringify(
+                    err.response || err.message || err,
+                )}`,
+            );
+        });
     }
 }

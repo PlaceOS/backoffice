@@ -5,7 +5,7 @@ import {
     PlaceApplication,
     queryApplications,
 } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom } from '../common/general';
 import { CustomTooltipData } from './custom-tooltip.component';
 
 interface SidebarApplication {

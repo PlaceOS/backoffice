@@ -1,7 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject } from 'rxjs';
 import { UploadPermissionsModalComponent } from '../ui/upload-permissions-modal.component';
+import { firstValueFrom } from './general';
 import { UploadDetails, UploadPermissions, uploadFile } from './uploads';
 
 @Injectable({
@@ -10,23 +10,23 @@ import { UploadDetails, UploadPermissions, uploadFile } from './uploads';
 export class UploadsService {
     private _dialog = inject(MatDialog);
 
-    private _upload_list = new BehaviorSubject<UploadDetails[]>([]);
+    private _upload_list = signal<UploadDetails[]>([]);
 
-    public readonly upload_list = this._upload_list.asObservable();
+    public readonly upload_list = this._upload_list.asReadonly();
 
     constructor() {
         if (localStorage) {
-            this._upload_list.next(
+            this._upload_list.set(
                 JSON.parse(localStorage.getItem('BACKOFFICE.uploads') || '[]'),
             );
         }
     }
 
     public clearList() {
-        const in_progress_list = this._upload_list
-            .getValue()
-            .filter((file) => file.progress < 100 && !file.error);
-        this._upload_list.next(in_progress_list);
+        const in_progress_list = this._upload_list().filter(
+            (file) => file.progress < 100 && !file.error,
+        );
+        this._upload_list.set(in_progress_list);
     }
 
     public uploadFileWithPermissions(file: File) {
@@ -34,7 +34,7 @@ export class UploadsService {
             const ref = this._dialog.open(UploadPermissionsModalComponent, {
                 data: { file },
             });
-            ref.afterClosed().subscribe(async (details) => {
+            firstValueFrom(ref.afterClosed()).then(async (details) => {
                 if (details) {
                     const id = await this.uploadFile(
                         details.file,
@@ -62,10 +62,8 @@ export class UploadsService {
                     resolve(details.id);
                     resolved = true;
                 }
-                this._upload_list.next([
-                    ...this._upload_list
-                        .getValue()
-                        .filter((_) => _.id !== details.id),
+                this._upload_list.set([
+                    ...this._upload_list().filter((_) => _.id !== details.id),
                     details,
                 ]);
             };
@@ -78,9 +76,9 @@ export class UploadsService {
     }
 
     private _updateUploadHistory() {
-        const done_list = this._upload_list
-            .getValue()
-            .filter((file) => file.progress >= 100);
+        const done_list = this._upload_list().filter(
+            (file) => file.progress >= 100,
+        );
         done_list.forEach((i) => delete i.upload);
         if (localStorage) {
             localStorage.setItem(

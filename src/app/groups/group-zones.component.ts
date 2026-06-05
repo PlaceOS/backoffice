@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceGroupZone, PlaceZone, queryZones } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -43,7 +42,7 @@ import { GroupStateService } from './group-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="(loading | async) !== true"
+                    [class.opacity-0]="loading() !== true"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-[64rem] text-sm"
@@ -180,7 +179,7 @@ export class GroupZonesComponent {
         queryZones({
             q: _,
             authority_id: this._service.active_item?.authority_id,
-        } as Record<string, unknown>).pipe(map((resp) => resp.data));
+        } as Record<string, unknown>).then((resp) => resp.data);
     public readonly exclude_fn = (zone: PlaceZone, __: string) => {
         const authority_id = this._service.active_item?.authority_id;
         const zone_authority_id = (
@@ -198,6 +197,6 @@ export class GroupZonesComponent {
     private _current_zones: PlaceGroupZone[] = [];
 
     constructor() {
-        this.zones.subscribe((zones) => (this._current_zones = zones));
+        effect(() => (this._current_zones = this.zones()));
     }
 }

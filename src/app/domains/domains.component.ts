@@ -1,9 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRipple } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { PlaceDomain } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
@@ -105,19 +103,9 @@ export class DomainsComponent extends AsyncHandler {
 
     public open_menu = false;
     public readonly scroll = signal(0);
-    public readonly loading = toSignal(this._item.loading, {
-        initialValue: false,
-    });
-    public readonly counts = toSignal(this._service.counts, {
-        initialValue: {
-            applications: 0,
-            auth_sources: 0,
-            users: 0,
-        },
-    });
-    public readonly item = toSignal(this._service.item, {
-        initialValue: null as PlaceDomain | null,
-    });
+    public readonly loading = this._item.loading;
+    public readonly counts = this._service.counts;
+    public readonly item = this._service.item;
     public readonly extra_actions = [
         {
             label: 'DOMAINS.AZURE_INTEGRATION',

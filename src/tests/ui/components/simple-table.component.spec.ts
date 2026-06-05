@@ -1,7 +1,7 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BehaviorSubject } from 'rxjs';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
     SimpleTableComponent,
     TableColumn,
@@ -9,7 +9,9 @@ import {
 
 describe('SimpleTableComponent', () => {
     let component: SimpleTableComponent<Record<string, unknown>>;
-    let fixture: ComponentFixture<SimpleTableComponent<Record<string, unknown>>>;
+    let fixture: ComponentFixture<
+        SimpleTableComponent<Record<string, unknown>>
+    >;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -79,18 +81,16 @@ describe('SimpleTableComponent', () => {
             expect(component.data_view()).toEqual(data);
         });
 
-        it('should handle Observable data input', async () => {
-            const data$ = new BehaviorSubject([
-                { id: '1', name: 'Item 1', value: 10 },
-            ]);
-            fixture.componentRef.setInput('data', data$);
+        it('should handle signal data input', async () => {
+            const data = signal([{ id: '1', name: 'Item 1', value: 10 }]);
+            fixture.componentRef.setInput('data', data);
             fixture.componentRef.setInput('columns', test_columns);
             fixture.detectChanges();
             await fixture.whenStable();
 
             expect(component.data_length()).toBe(1);
 
-            data$.next([
+            data.set([
                 { id: '1', name: 'Item 1', value: 10 },
                 { id: '2', name: 'Item 2', value: 20 },
             ]);
@@ -552,10 +552,9 @@ describe('SimpleTableComponent', () => {
     describe('empty state', () => {
         it('should show empty message when no data', async () => {
             fixture.componentRef.setInput('data', []);
-            fixture.componentRef.setInput(
-                'columns',
-                [{ key: 'name', name: 'Name' }] as TableColumn[],
-            );
+            fixture.componentRef.setInput('columns', [
+                { key: 'name', name: 'Name' },
+            ] as TableColumn[]);
             fixture.detectChanges();
             await fixture.whenStable();
 
@@ -566,10 +565,9 @@ describe('SimpleTableComponent', () => {
 
         it('should show custom empty message', async () => {
             fixture.componentRef.setInput('data', []);
-            fixture.componentRef.setInput(
-                'columns',
-                [{ key: 'name', name: 'Name' }] as TableColumn[],
-            );
+            fixture.componentRef.setInput('columns', [
+                { key: 'name', name: 'Name' },
+            ] as TableColumn[]);
             fixture.componentRef.setInput('empty_message', 'No items found');
             fixture.detectChanges();
             await fixture.whenStable();

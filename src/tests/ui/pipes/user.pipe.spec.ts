@@ -1,11 +1,10 @@
-import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UserPipe } from '../../../app/ui/pipes/user.pipe';
 
 // Mock the @placeos/ts-client module
 vi.mock('@placeos/ts-client', () => ({
     showUser: vi.fn((id: string) =>
-        of({
+        Promise.resolve({
             id,
             name: `User ${id}`,
             email: `${id}@example.com`,

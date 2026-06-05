@@ -20,6 +20,7 @@ import {
     PlaceSettings,
     updateSettings,
 } from '@placeos/ts-client';
+import { lastValueFrom } from '../../common/general';
 
 import { AsyncHandler } from '../../common/async-handler.class';
 import { HotkeysService } from '../../common/hotkeys.service';
@@ -34,7 +35,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import * as yaml from 'js-yaml';
-import { lastValueFrom } from 'rxjs';
 import { i18n } from '../../common/locale.service';
 import { SettingsFieldComponent } from '../custom-fields/settings-field.component';
 import { IconComponent } from '../icon.component';

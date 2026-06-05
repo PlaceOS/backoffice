@@ -8,7 +8,7 @@ import {
     PlaceModule,
     showModule,
 } from '@placeos/ts-client';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom } from '../common/general';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';

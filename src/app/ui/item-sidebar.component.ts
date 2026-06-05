@@ -11,7 +11,6 @@ import {
     signal,
     viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -29,11 +28,9 @@ import {
     queryGroups,
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
-import { lastValueFrom, of } from 'rxjs';
-import { catchError, map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
-import { nextValueFrom } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
+import { toSignal } from '../common/signals';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 import { VirtualScrollComponent } from './virtual-scroll.component';
@@ -69,7 +66,7 @@ interface GroupTreeItem {
                             'COMMON.SEARCH_FOR' | translate: { name: title() }
                         "
                     />
-                    @if (loading | async) {
+                    @if (loading()) {
                         <mat-spinner
                             diameter="24"
                             class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
@@ -113,7 +110,7 @@ interface GroupTreeItem {
                 }
             </div>
             <p class="w-full px-2 text-sm opacity-60">
-                @let t = total | async;
+                @let t = total();
                 {{ 'COMMON.TOTAL_ITEMS' | translate: { count: t } : t }}
             </p>
             <div class="border-base-200 flex h-1/2 flex-1 flex-col border-t">
@@ -229,10 +226,10 @@ interface GroupTreeItem {
                             </p>
                         </div>
                     }
-                } @else if ((items | async)?.length) {
+                } @else if (items().length) {
                     <virtual-scroll
                         [item_size]="72"
-                        [items]="items | async"
+                        [items]="items()"
                         [item_template]="item_display"
                         (scrolled)="atBottom($event)"
                     >
@@ -361,10 +358,9 @@ export class ItemSidebarComponent
 {
     private _router = inject(Router);
     private _service = inject(ActiveItemService);
-    private readonly _route_change = toSignal(
-        this._router.events.pipe(startWith(null)),
-        { initialValue: null },
-    );
+    private readonly _route_change = toSignal(this._router.events, {
+        initialValue: null,
+    });
 
     public readonly title = input('Systems');
     public readonly route = input('systems');
@@ -378,16 +374,14 @@ export class ItemSidebarComponent
     public search = '';
     public selected_filters: string[] = [];
     /** List of items for the active route */
-    public readonly items = this._service.list.pipe(
-        map((l) =>
-            this._processItems(
-                l as ({
-                    id?: string;
-                    name?: string;
-                    display_name?: string;
-                    custom_name?: string;
-                } & Record<string, unknown>)[],
-            ),
+    public readonly items = computed(() =>
+        this._processItems(
+            this._service.list() as ({
+                id?: string;
+                name?: string;
+                display_name?: string;
+                custom_name?: string;
+            } & Record<string, unknown>)[],
         ),
     );
     /** Whether list of items for the active route are loading */
@@ -518,14 +512,14 @@ export class ItemSidebarComponent
         this.timeout(
             'load_more',
             async () => {
-                const loading = await nextValueFrom(this.loading);
-                const items = await nextValueFrom(this.items);
+                const loading = this.loading();
+                const items = this.items();
                 if (loading || !this.is_stale) return;
                 if (end >= items.length) {
                     // Buffer 2 items early to avoid edge jumps
                     this.last_total = items.length;
                     this.last_check = Date.now();
-                    const serviceTotal = await nextValueFrom(this.total); // Await for accuracy
+                    const serviceTotal = this.total();
                     if (this.last_total < serviceTotal) {
                         this._service.moreItems();
                     }
@@ -591,19 +585,17 @@ export class ItemSidebarComponent
     }
 
     private async loadGroupHierarchy() {
-        const response = await lastValueFrom(
-            queryGroups({
-                limit: 2500,
-                fields: [
-                    'id',
-                    'name',
-                    'description',
-                    'authority_id',
-                    'parent_id',
-                    'children_count',
-                ].join(','),
-            }).pipe(catchError(() => of({ data: [] }))),
-        );
+        const response = await queryGroups({
+            limit: 2500,
+            fields: [
+                'id',
+                'name',
+                'description',
+                'authority_id',
+                'parent_id',
+                'children_count',
+            ].join(','),
+        }).catch(() => ({ data: [] }));
         const groups = response.data.sort((a, b) =>
             this.displayName(a).localeCompare(this.displayName(b)),
         );

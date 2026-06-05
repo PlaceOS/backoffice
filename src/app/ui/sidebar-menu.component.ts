@@ -8,11 +8,11 @@ import {
     Router,
     RouterModule,
 } from '@angular/router';
+import { lastValueFrom } from '../common/general';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { authority, queryApplications } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';

@@ -1,8 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { listInterfaceRepositories } from '@placeos/ts-client';
+import { lastValueFrom } from '../common/general';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { lastValueFrom } from 'rxjs';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 

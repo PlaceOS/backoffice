@@ -1,11 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
+import { PlaceRepositoryType } from '@placeos/ts-client';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { SafePipe } from '../ui/pipes/safe.pipe';
@@ -211,15 +209,8 @@ export class RepositoryAboutComponent {
 
     /** Whether the latest commit is being pulled on the server */
     public readonly pulling = signal(false);
-    public readonly commit = toSignal(this._service.commit, {
-        initialValue: '',
-    });
-    public readonly item = toSignal(
-        this._service.item.pipe(map((item) => item as PlaceRepository)),
-        {
-            initialValue: undefined as PlaceRepository | undefined,
-        },
-    );
+    public readonly commit = this._service.commit;
+    public readonly item = this._service.item;
 
     public readonly local_url = computed(() =>
         this.item()?.type === PlaceRepositoryType.Interface

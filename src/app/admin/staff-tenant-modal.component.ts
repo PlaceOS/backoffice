@@ -8,7 +8,6 @@ import {
     output,
     signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     FormGroup,
@@ -21,11 +20,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
-import { startWith } from 'rxjs/operators';
-import { getInvalidFields } from '../common/general';
+import { getInvalidFields, lastValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { toSignal } from '../common/signals';
 import { DialogEvent, HashMap } from '../common/types';
 import { ObjectListFieldComponent } from '../ui/custom-fields/object-list-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
@@ -500,15 +498,11 @@ export class StaffTenantModalComponent implements OnInit {
 
     public readonly name_map = FIELD_NAME_MAPPING;
     private readonly _platform = toSignal(
-        this.form.controls.platform.valueChanges.pipe(
-            startWith(this.form.controls.platform.value),
-        ),
+        this.form.controls.platform.valueChanges,
         { initialValue: this.form.controls.platform.value },
     );
     private readonly _delegated = toSignal(
-        this.form.controls.delegated.valueChanges.pipe(
-            startWith(this.form.controls.delegated.value),
-        ),
+        this.form.controls.delegated.valueChanges,
         { initialValue: this.form.controls.delegated.value },
     );
 

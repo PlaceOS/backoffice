@@ -1,5 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { PlaceRepository } from '@placeos/ts-client';
 
 import { MatRippleModule } from '@angular/material/core';
@@ -89,9 +88,7 @@ export class RepositoryDriversComponent extends AsyncHandler implements OnInit {
     private _router = inject(Router);
 
     /** Whether driver list is loading */
-    public readonly loading = toSignal(this._service.loading, {
-        initialValue: false,
-    });
+    public readonly loading = this._service.loading;
     /** List of drivers available in the repository */
     public readonly driver_list = this._service.driver_list;
 
@@ -101,17 +98,19 @@ export class RepositoryDriversComponent extends AsyncHandler implements OnInit {
 
     public readonly newDriver = (d) => this._service.newDriver(d);
 
+    constructor() {
+        super();
+        effect(() => {
+            if (this.driver_list()?.length) this.clearTimeout('has_drivers');
+        });
+    }
+
     public ngOnInit() {
         this.timeout(
             'has_drivers',
             () => this._router.navigate(['/repositories', this.item.id]),
             3000,
         );
-        this.subscription(
-            'has_drivers',
-            this.driver_list.subscribe((_) => {
-                if (_?.length) this.clearTimeout('has_drivers');
-            }),
-        );
+        if (this.driver_list()?.length) this.clearTimeout('has_drivers');
     }
 }

@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { WritableSignal, signal } from '@angular/core';
 import { HashMap } from '../common/types';
 
 import {
@@ -11,10 +11,43 @@ export const DOMAIN = 'place.tech';
 /** Endpoint where the staff API is located */
 export const API = '/api/engine/v2';
 
+interface MockSubscription {
+    unsubscribe(): void;
+}
+
+interface MockChangeSignal<T> extends WritableSignal<T> {
+    subscribe(next: (value: T) => void): MockSubscription;
+    dispose(): void;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ENDPOINT_SUBJECTS: HashMap<BehaviorSubject<any[]>> = {};
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ENDPOINT_OBSERVABLES: HashMap<Observable<any[]>> = {};
+const ENDPOINT_SIGNALS: HashMap<MockChangeSignal<any[]>> = {};
+
+function createMockChangeSignal<T>(initial_value: T): MockChangeSignal<T> {
+    const state = signal(initial_value) as MockChangeSignal<T>;
+    const listeners = new Set<(value: T) => void>();
+    const original_set = state.set.bind(state);
+    const original_update = state.update.bind(state);
+    const emit = () => {
+        const value = state();
+        for (const listener of listeners) listener(value);
+    };
+    state.set = (value: T) => {
+        original_set(value);
+        emit();
+    };
+    state.update = (update_fn: (value: T) => T) => {
+        original_update(update_fn);
+        emit();
+    };
+    state.subscribe = (next: (value: T) => void): MockSubscription => {
+        listeners.add(next);
+        next(state());
+        return { unsubscribe: () => listeners.delete(next) };
+    };
+    state.dispose = () => listeners.clear();
+    return state;
+}
 
 /** Session storage key prefix for mock data */
 const STORAGE_PREFIX = 'PLACEOS.mocks.';
@@ -67,12 +100,13 @@ export function generateID(length = 12, chars: string[] = AVAILABLE_CHARS) {
 }
 
 /**
- * Get obsevable for changes to data on endpoint
+ * Get signal for changes to data on endpoint
  * @param endpoint Endpoint to listen to
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function listenToHandlerChanges(endpoint: string): Observable<any> {
-    return ENDPOINT_OBSERVABLES[endpoint];
+export function listenToHandlerChanges<T = unknown>(
+    endpoint: string,
+): MockChangeSignal<T[]> {
+    return ENDPOINT_SIGNALS[endpoint] as MockChangeSignal<T[]>;
 }
 
 /**
@@ -82,9 +116,7 @@ export function listenToHandlerChanges(endpoint: string): Observable<any> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function endpointData(endpoint: string): any[] {
     return (
-        (ENDPOINT_SUBJECTS[endpoint]
-            ? ENDPOINT_SUBJECTS[endpoint].getValue()
-            : null) || []
+        (ENDPOINT_SIGNALS[endpoint] ? ENDPOINT_SIGNALS[endpoint]() : null) || []
     );
 }
 
@@ -105,19 +137,17 @@ export function generateBasicHandlers<T = unknown>(
     endpoint: string,
     data: T[],
     filter: FilterFn<T> = (_: T, _q: HashMap) => true,
-): Observable<T[]> {
+): MockChangeSignal<T[]> {
     const storage_key = endpointToStorageKey(endpoint);
 
-    if (ENDPOINT_SUBJECTS[endpoint]) {
-        ENDPOINT_SUBJECTS[endpoint].complete();
-        delete ENDPOINT_SUBJECTS[endpoint];
-        delete ENDPOINT_OBSERVABLES[endpoint];
+    if (ENDPOINT_SIGNALS[endpoint]) {
+        ENDPOINT_SIGNALS[endpoint].dispose();
+        delete ENDPOINT_SIGNALS[endpoint];
     }
 
     // Load from session storage if available, otherwise use provided data
     const initial_data = loadFromSession<T>(storage_key, data);
-    ENDPOINT_SUBJECTS[endpoint] = new BehaviorSubject<T[]>(initial_data);
-    ENDPOINT_OBSERVABLES[endpoint] = ENDPOINT_SUBJECTS[endpoint].asObservable();
+    ENDPOINT_SIGNALS[endpoint] = createMockChangeSignal<T[]>(initial_data);
 
     /** Add GET for index */
     registerMockEndpoint({
@@ -125,7 +155,7 @@ export function generateBasicHandlers<T = unknown>(
         metadata: data,
         method: 'GET',
         callback: (event) => {
-            const list = ENDPOINT_SUBJECTS[endpoint].getValue() || [];
+            const list = [...(ENDPOINT_SIGNALS[endpoint]() || [])];
             list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
             return list.filter((item) => filter(item, event.query_params));
         },
@@ -137,7 +167,7 @@ export function generateBasicHandlers<T = unknown>(
         metadata: data,
         method: 'GET',
         callback: (event) => {
-            const list = ENDPOINT_SUBJECTS[endpoint].getValue() || [];
+            const list = ENDPOINT_SIGNALS[endpoint]() || [];
             return list.find(
                 (item) =>
                     item.id === event.route_params.id &&
@@ -156,9 +186,9 @@ export function generateBasicHandlers<T = unknown>(
             item.id = `item-${generateID()}`;
             item.created_at = Date.now() / 1000;
             item.updated_at = Date.now() / 1000;
-            const list = ENDPOINT_SUBJECTS[endpoint].getValue() || [];
+            const list = [...(ENDPOINT_SIGNALS[endpoint]() || [])];
             list.push(item);
-            ENDPOINT_SUBJECTS[endpoint].next(list);
+            ENDPOINT_SIGNALS[endpoint].set(list);
             saveToSession(storage_key, list);
             return item;
         },
@@ -171,7 +201,7 @@ export function generateBasicHandlers<T = unknown>(
         method: 'PATCH',
         callback: (event) => {
             const item = event.body;
-            const list = ENDPOINT_SUBJECTS[endpoint].getValue() || [];
+            const list = [...(ENDPOINT_SIGNALS[endpoint]() || [])];
             const index = list.findIndex(
                 (an_item) => an_item.id === event.route_params.id,
             );
@@ -183,7 +213,7 @@ export function generateBasicHandlers<T = unknown>(
                     updated_at: Date.now() / 1000,
                 };
                 list.splice(index, 1, updated_item);
-                ENDPOINT_SUBJECTS[endpoint].next(list);
+                ENDPOINT_SIGNALS[endpoint].set(list);
                 saveToSession(storage_key, list);
                 return updated_item;
             } else {
@@ -200,14 +230,14 @@ export function generateBasicHandlers<T = unknown>(
         metadata: data,
         method: 'DELETE',
         callback: (event) => {
-            const list = ENDPOINT_SUBJECTS[endpoint].getValue() || [];
+            const list = [...(ENDPOINT_SIGNALS[endpoint]() || [])];
             const index = list.findIndex(
                 (an_item) => an_item.id === event.route_params.id,
             );
             if (index >= 0) {
                 const deleted_item = list[index];
                 list.splice(index, 1);
-                ENDPOINT_SUBJECTS[endpoint].next(list);
+                ENDPOINT_SIGNALS[endpoint].set(list);
                 saveToSession(storage_key, list);
                 return deleted_item;
             } else {
@@ -216,5 +246,5 @@ export function generateBasicHandlers<T = unknown>(
         },
     } as MockHttpRequestHandler);
 
-    return ENDPOINT_OBSERVABLES[endpoint];
+    return ENDPOINT_SIGNALS[endpoint];
 }

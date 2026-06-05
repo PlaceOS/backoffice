@@ -7,12 +7,16 @@ import {
     queryZones,
     showZone,
 } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { csvToJson, downloadFile, jsonToCsv } from '../common/general';
+import {
+    csvToJson,
+    downloadFile,
+    jsonToCsv,
+    lastValueFrom,
+} from '../common/general';
 import {
     notifyError,
     notifySuccess,

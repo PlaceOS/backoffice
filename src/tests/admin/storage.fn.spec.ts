@@ -1,5 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { of } from 'rxjs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock @placeos/ts-client
 vi.mock('@placeos/ts-client', () => ({
@@ -12,23 +11,23 @@ vi.mock('@placeos/ts-client', () => ({
         }
         return result;
     }),
-    create: vi.fn(() => of({})),
-    query: vi.fn(() => of({ data: [], total: 0 })),
-    remove: vi.fn(() => of({})),
-    show: vi.fn(() => of({})),
-    update: vi.fn(() => of({})),
+    create: vi.fn(() => Promise.resolve({})),
+    query: vi.fn(() => Promise.resolve({ data: [], total: 0 })),
+    remove: vi.fn(() => Promise.resolve({})),
+    show: vi.fn(() => Promise.resolve({})),
+    update: vi.fn(() => Promise.resolve({})),
 }));
 
+import * as client from '@placeos/ts-client';
 import {
+    addStorage,
     PlaceStorage,
     queryStorage,
-    showStorage,
-    updateStorage,
-    addStorage,
     removeStorage,
     saveStorage,
+    showStorage,
+    updateStorage,
 } from '../../app/admin/storage/storage.fn';
-import * as client from '@placeos/ts-client';
 
 describe('storage.fn', () => {
     beforeEach(() => {
@@ -196,7 +195,10 @@ describe('storage.fn', () => {
             addStorage({ bucket_name: 'new-bucket', region: 'us-west-2' });
             expect(client.create).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    form_data: { bucket_name: 'new-bucket', region: 'us-west-2' },
+                    form_data: {
+                        bucket_name: 'new-bucket',
+                        region: 'us-west-2',
+                    },
                     path: 'storages',
                 }),
             );

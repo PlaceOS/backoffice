@@ -1,7 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { toSignal } from '../../common/signals';
 
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     FormGroup,
@@ -16,7 +16,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { notifySuccess } from '../../common/notifications';
 import { RichTextInputComponent } from '../../ui/custom-fields/rich-text-input.component';
@@ -215,17 +214,17 @@ export class EmailTemplateFormComponent extends AsyncHandler {
         zone_id: new FormControl(''),
     });
     public readonly active_trigger_id = toSignal(
-        this.form.controls.trigger.valueChanges.pipe(
-            startWith(this.form.controls.trigger.value),
-        ),
+        this.form.controls.trigger.valueChanges,
         { initialValue: this.form.controls.trigger.value },
     );
     public readonly active_trigger = computed(() =>
         this.definition_list().find((_) => _.id === this.active_trigger_id()),
     );
-    private readonly _template_id = toSignal(
-        this._route.paramMap.pipe(map((params) => params.get('id'))),
-        { initialValue: null },
+    private readonly _route_params = toSignal(this._route.paramMap, {
+        initialValue: null,
+    });
+    private readonly _template_id = computed(
+        () => this._route_params()?.get('id') || null,
     );
 
     constructor() {

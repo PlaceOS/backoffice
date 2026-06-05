@@ -170,7 +170,7 @@ export class ViewModuleStateModalComponent
     }
 
     /** Update the state of the module */
-    public updateState() {
+    public async updateState() {
         if (!this.system || !this.module) {
             return;
         }
@@ -183,26 +183,23 @@ export class ViewModuleStateModalComponent
         const num = !isNaN(+class_parts[class_parts.length - 1])
             ? +class_parts[class_parts.length - 1]
             : 1;
-        systemModuleState(
-            this.system.id,
-            class_parts.slice(0, class_parts.length - 1).join('_'),
-            num,
-        ).subscribe(
-            (state) => {
-                const pre_state =
-                    (typeof state === 'string' ? JSON.parse(state) : state) ||
-                    {};
-                Object.keys(pre_state).forEach((key) => {
-                    pre_state[key] = JSON.parse(pre_state[key]);
-                });
-                this.state = JSON.stringify(pre_state, undefined, 4);
-                this.loading.set(false);
-            },
-            (err) => {
-                notifyError(JSON.stringify(err.response || err.message || err));
-                this.loading.set(false);
-            },
-        );
+        try {
+            const state = await systemModuleState(
+                this.system.id,
+                class_parts.slice(0, class_parts.length - 1).join('_'),
+                num,
+            );
+            const pre_state =
+                (typeof state === 'string' ? JSON.parse(state) : state) || {};
+            Object.keys(pre_state).forEach((key) => {
+                pre_state[key] = JSON.parse(pre_state[key]);
+            });
+            this.state = JSON.stringify(pre_state, undefined, 4);
+        } catch (err) {
+            notifyError(JSON.stringify(err.response || err.message || err));
+        } finally {
+            this.loading.set(false);
+        }
     }
 
     /**

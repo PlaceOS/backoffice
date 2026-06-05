@@ -1,5 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, resource, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import {
@@ -10,8 +9,6 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Observable, of } from 'rxjs';
-import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -27,7 +24,7 @@ export interface GroupBulkAddModalData<T extends GroupBulkAddItem> {
     title: string;
     placeholder: string;
     empty_message: string;
-    query_fn: (query: string) => Observable<T[]>;
+    query_fn: (query: string) => Promise<T[]>;
     exclude?: (item: T, search: string) => boolean;
 }
 
@@ -155,6 +152,20 @@ export class GroupBulkAddModalComponent<T extends GroupBulkAddItem> {
     public readonly empty_message = this._data.empty_message;
     public readonly query_fn = this._data.query_fn;
     public readonly selected_count = computed(() => this.selected().length);
+    private readonly _items = resource({
+        params: () => this.search().trim(),
+        loader: async ({ params }) => {
+            this.loading.set(true);
+            try {
+                const items = await this.query_fn(params).catch(() => []);
+                const search = params.toLowerCase();
+                return items.filter((item) => !this.exclude_fn(item, search));
+            } finally {
+                this.loading.set(false);
+            }
+        },
+    });
+    public readonly items = computed(() => this._items.value() || []);
     public readonly list_items = computed(() => {
         const selected = this.selected();
         const selected_ids = new Set(selected.map((_) => _.id));
@@ -163,23 +174,6 @@ export class GroupBulkAddModalComponent<T extends GroupBulkAddItem> {
             ...this.items().filter((_) => !selected_ids.has(_.id)),
         ];
     });
-    public readonly items = toSignal(
-        toObservable(this.search).pipe(
-            debounceTime(300),
-            switchMap((search) => {
-                this.loading.set(true);
-                return this.query_fn(search.trim()).pipe(
-                    catchError(() => of([])),
-                );
-            }),
-            map((items) => {
-                const search = this.search().toLowerCase().trim();
-                this.loading.set(false);
-                return items.filter((item) => !this.exclude_fn(item, search));
-            }),
-        ),
-        { initialValue: [] as T[] },
-    );
 
     public readonly exclude_fn = (item: T, search: string) =>
         !!this._data.exclude?.(item, search);

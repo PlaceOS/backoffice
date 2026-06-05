@@ -10,8 +10,6 @@ import {
     removeSignagePlugin,
     updateSignagePlugin,
 } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { AsyncHandler } from '../../common/async-handler.class';
 import { i18n } from '../../common/locale.service';
@@ -243,9 +241,7 @@ export class AdminSignagePluginsComponent
         );
         if (!details) return;
         details.loading(i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_LOADING'));
-        const err = await removeSignagePlugin(item.id)
-            .toPromise()
-            .catch((_) => _);
+        const err = await removeSignagePlugin(item.id).catch((_) => _);
         details.close();
         if (err)
             return notifyError(
@@ -260,9 +256,7 @@ export class AdminSignagePluginsComponent
     public async loadPlugins(): Promise<void> {
         this.loading.set(true);
         try {
-            const plugins = await lastValueFrom(
-                querySignagePlugins().pipe(map((r) => r.data)),
-            );
+            const plugins = await querySignagePlugins().then((r) => r.data);
             this.plugins.set(plugins);
         } catch (err) {
             notifyError(

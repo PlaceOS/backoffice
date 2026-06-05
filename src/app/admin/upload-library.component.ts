@@ -7,9 +7,9 @@ import {
     inject,
     model,
     OnInit,
+    resource,
     signal,
 } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -27,16 +27,6 @@ import {
     remove,
     token,
 } from '@placeos/ts-client';
-import { combineLatest, Observable, of } from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    filter,
-    map,
-    shareReplay,
-    startWith,
-    switchMap,
-} from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { nextValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
@@ -397,49 +387,47 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         });
     });
 
-    public readonly domain_list = toSignal(
-        queryDomains({ limit: 100 }).pipe(
-            map((r) => r.data),
-            shareReplay(1),
-        ),
-        { initialValue: [] },
+    private readonly _domain_list = resource({
+        loader: async () =>
+            queryDomains({ limit: 100 })
+                .then((r) => r.data)
+                .catch(() => [] as PlaceDomain[]),
+    });
+
+    public readonly domain_list = computed(
+        () => this._domain_list.value() || [],
     );
 
-    private _uploads_list: Observable<UploadInfo[]> = combineLatest([
-        toObservable(this.domain),
-        toObservable(this.search_term),
-        toObservable(this.refresh),
-    ]).pipe(
-        filter(([domain]) => !!domain),
-        debounceTime(300),
-        switchMap(([domain, search]) =>
-            query<unknown>({
+    private readonly _uploads_list = resource({
+        params: () => ({
+            domain: this.domain(),
+            search: this.search_term(),
+            refresh: this.refresh(),
+        }),
+        loader: async ({ params }) => {
+            const { domain, search } = params;
+            if (!domain) return [] as UploadInfo[];
+            const response = await query<UploadInfo>({
                 path: 'uploads',
                 query_params: {
                     limit: 1000,
                     file_search: search,
                     authority_id: domain.id,
                 },
-            }).pipe(catchError(() => of({ data: [] }))),
-        ),
-        map((r) =>
-            r.data
+            }).catch(() => ({ data: [] as UploadInfo[] }));
+            return response.data
                 .map((_) => ({ ..._, mime_type: getMimeType(_.file_name) }))
-                .sort((a, b) => a.file_name.localeCompare(b.file_name)),
-        ),
-        startWith([]),
-        shareReplay(1),
-    );
-
-    public readonly uploads_list = toSignal(this._uploads_list, {
-        initialValue: [],
+                .sort((a, b) => a.file_name.localeCompare(b.file_name));
+        },
     });
+
+    public readonly uploads_list = computed(
+        () => this._uploads_list.value() || [],
+    );
 
     public async ngOnInit() {
         const domain = authority();
-        const domain_list = await nextValueFrom(
-            queryDomains({ limit: 100 }).pipe(map((r) => r.data)),
-        );
+        const domain_list = await nextValueFrom(this.domain_list);
         if (!domain_list?.length) return;
         const match = domain_list.find((d) => d.id === domain.id);
         if (match) this.domain.set(match);
@@ -488,30 +476,29 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                         );
                     }
                     const id_list = await Promise.all(uploads);
-                    this.subscription(
-                        'upload_list',
-                        this._uploads.upload_list.subscribe((list) => {
-                            let success = 0;
-                            let failed = 0;
-                            for (const id of id_list) {
-                                const upload = list.find((_) => _.id === id);
-                                if (!upload) continue;
+                    const checkUploads = () => {
+                        const list = this._uploads.upload_list();
+                        let success = 0;
+                        let failed = 0;
+                        for (const id of id_list) {
+                            const upload = list.find((_) => _.id === id);
+                            if (!upload) continue;
 
-                                if (upload.error) failed += 1;
-                                else if (upload.progress >= 100) success += 1;
+                            if (upload.error) failed += 1;
+                            else if (upload.progress >= 100) success += 1;
+                        }
+                        if (success + failed >= id_list.length) {
+                            if (failed) {
+                                notifyError('Failed to upload files.');
+                            } else if (success) {
+                                notifySuccess('Succesfully uploaded files.');
                             }
-                            if (success + failed >= id_list.length) {
-                                if (failed) {
-                                    notifyError('Failed to upload files.');
-                                } else if (success) {
-                                    notifySuccess(
-                                        'Succesfully uploaded files.',
-                                    );
-                                }
-                                this.unsub('upload_list');
-                            }
-                        }),
-                    );
+                            this.clearTimeout('upload_list');
+                        } else {
+                            this.timeout('upload_list', checkUploads, 250);
+                        }
+                    };
+                    checkUploads();
                 }
             }
         });
@@ -570,7 +557,7 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
             id: upload.id,
             query_params: {},
             path: 'uploads',
-        }).toPromise();
+        });
         result.close();
         this.refresh.update((value) => value + 1);
     }

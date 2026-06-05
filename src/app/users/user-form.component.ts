@@ -6,10 +6,11 @@ import {
     Output,
     Signal,
     computed,
+    effect,
     inject,
+    resource,
     signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     ReactiveFormsModule,
@@ -22,7 +23,7 @@ import {
     queryDomains,
     updateUser,
 } from '@placeos/ts-client';
-import { map, shareReplay } from 'rxjs/operators';
+import { toSignal } from '../common/signals';
 
 import { CommonModule } from '@angular/common';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -78,10 +79,7 @@ import { generateUserFormFields } from './users.utilities';
                                     'ADMIN.SELECT_DOMAIN' | translate
                                 "
                             >
-                                @for (
-                                    domain of domain_list | async;
-                                    track domain
-                                ) {
+                                @for (domain of domain_list(); track domain) {
                                     <mat-option [value]="domain.id">
                                         {{ domain.name }}
                                     </mat-option>
@@ -422,9 +420,11 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
     /** Whether password confirm should be visible in plaintext */
     public readonly show_confirm = signal(false);
     /** List of available domains */
-    public readonly domain_list = queryDomains().pipe(
-        map(({ data }) => data),
-        shareReplay(1),
+    private readonly _domain_list = resource({
+        loader: async () => (await queryDomains()).data,
+    });
+    public readonly domain_list = computed(
+        () => this._domain_list.value() || [],
     );
     /** List of separator characters for groups */
     public readonly separators: number[] = [ENTER, COMMA];
@@ -452,17 +452,24 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
     public readonly removeGroup = (i: string) =>
         removeChipItem(this.form.controls.groups as FormControl<string[]>, i);
 
+    constructor() {
+        super();
+        effect(() => {
+            const domains = this.domain_list();
+            if (!this.form.controls.authority_id.value && domains[0]) {
+                this.form.controls.authority_id.setValue(domains[0].id);
+            }
+        });
+    }
+
     public async ngOnInit() {
-        if (!this.form.controls.authority_id.value) {
-            this.form.controls.authority_id.setValue(this.domain_list[0]?.id);
-        }
         this.subscription(
             'save_item_key',
             this._hotkey.listen(['KeyS'], () => this.submit()),
         );
     }
 
-    public submit(): void {
+    public async submit(): Promise<void> {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
@@ -484,30 +491,29 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
                   ])
                 : { ...item_json, ...this.form.value }
         ) as Identity;
-        (form_item.id
-            ? updateUser(
-                  form_item.id as string,
-                  form_item as unknown as PlaceUser,
-              )
-            : addUser(form_item as unknown as PlaceUser)
-        ).subscribe(
-            (_item) => {
-                this._dialog_ref.disableClose = false;
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            },
-            async (err) => {
-                this.loading = null;
-                this._dialog_ref.disableClose = false;
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await err.text?.()) || err.message || err,
-                        ),
-                    }),
-                );
-            },
-        );
+        try {
+            const _item = await (form_item.id
+                ? updateUser(
+                      form_item.id as string,
+                      form_item as unknown as PlaceUser,
+                  )
+                : addUser(form_item as unknown as PlaceUser));
+            this._dialog_ref.disableClose = false;
+            this.event.emit({ reason: 'done', metadata: { item: _item } });
+            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+            this._dialog_ref.close();
+        } catch (err) {
+            this.loading = null;
+            this._dialog_ref.disableClose = false;
+            notifyError(
+                i18n(`${this._name}.SAVE_ERROR`, {
+                    error: JSON.stringify(
+                        (await (err as Response).text?.()) ||
+                            (err as Error).message ||
+                            err,
+                    ),
+                }),
+            );
+        }
     }
 }

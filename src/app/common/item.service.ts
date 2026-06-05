@@ -1,9 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlaceResource } from '@placeos/ts-client';
-import { BehaviorSubject, lastValueFrom, of } from 'rxjs';
-import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 
 import {
     PlaceSettings,
@@ -31,6 +29,7 @@ import { AsyncHandler } from './async-handler.class';
 import { log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
+import { waitForEvent } from './signals';
 
 export type ResourceType =
     | 'domains'
@@ -55,53 +54,45 @@ export class ActiveItemService extends AsyncHandler {
     private _user = inject(BackofficeUsersService);
 
     /** Whether active item is loading */
-    private _loading = new BehaviorSubject<boolean>(false);
+    private _loading = signal(false);
     /** Whether item list should show on mobile */
-    private _show_options = new BehaviorSubject<boolean>(false);
+    private _show_options = signal(false);
     /** Whether item list should show on mobile */
-    private _search = new BehaviorSubject<string>('');
+    private _search = signal('');
     /** Currently active item */
-    private _active_item = new BehaviorSubject<PlaceResource>(null);
+    private _active_item = signal<PlaceResource>(null);
     /** Currently active item */
-    private _next_query = new BehaviorSubject<() => QueryResponse<unknown>>(
-        null,
-    );
+    private _next_query = signal<() => QueryResponse<unknown>>(null);
     /** List of items for the current type */
-    private _list = new BehaviorSubject<unknown[]>([]);
+    private _list = signal<unknown[]>([]);
     /** Whether item list is loading */
-    private _loading_list = new BehaviorSubject<boolean>(false);
+    private _loading_list = signal(false);
     /** Whether active item is loading */
-    private _name = new BehaviorSubject<string>(null);
+    private _name = signal<string>(null);
     /** Type of the active item */
     private _type: ResourceType;
     /** Number of items */
-    private _count = new BehaviorSubject<number>(0);
+    private _count = signal(0);
 
-    public readonly count = this._count.asObservable();
+    public readonly count = this._count.asReadonly();
 
     public get total() {
-        return this._count.getValue();
+        return this._count();
     }
-    /** Observable for item loading state */
-    public readonly loading = this._loading.asObservable();
-    /** Observable for item loading state */
-    public readonly loading_list = this._loading_list.asObservable();
-    /** Observable for list of items */
-    public readonly list = this._list.asObservable();
-    /** Observable for active item */
-    public readonly active_item$ = this._active_item.asObservable();
-    /** Observable for active item */
-    public readonly item = this._active_item
-        .asObservable()
-        .pipe(
-            distinctUntilChanged(
-                (a, b) => a?.id === b?.id && a?.updated_at === b?.updated_at,
-            ),
-        );
-    /** Observable for list of items */
-    public readonly list_items = () => this._list.getValue();
-    /** Observable for whether the item list should show on mobile */
-    public readonly show_options = this._show_options.asObservable();
+    /** Signal for item loading state */
+    public readonly loading = this._loading.asReadonly();
+    /** Signal for item list loading state */
+    public readonly loading_list = this._loading_list.asReadonly();
+    /** Signal for list of items */
+    public readonly list = this._list.asReadonly();
+    /** Signal for active item */
+    public readonly active_item$ = this._active_item.asReadonly();
+    /** Signal for active item */
+    public readonly item = this._active_item.asReadonly();
+    /** Signal for list of items */
+    public readonly list_items = () => this._list();
+    /** Signal for whether the item list should show on mobile */
+    public readonly show_options = this._show_options.asReadonly();
 
     /** Available API actions for the active type */
     public get actions(): ItemActions<unknown> {
@@ -109,7 +100,7 @@ export class ActiveItemService extends AsyncHandler {
     }
 
     public get active_item() {
-        return this._active_item.getValue();
+        return this._active_item();
     }
 
     public get type() {
@@ -121,7 +112,11 @@ export class ActiveItemService extends AsyncHandler {
     }
 
     public setSearch(str: string) {
-        this._search.next(str);
+        this._search.set(str);
+        this._loading_list.set(true);
+        this._next_query.set(null);
+        this._list.set([]);
+        this.updateList();
     }
 
     constructor() {
@@ -133,14 +128,6 @@ export class ActiveItemService extends AsyncHandler {
         });
         this._hotkey.listen(['KeyN'], () => this.create());
         this._hotkey.listen(['KeyE'], () => this.edit());
-        this._search.subscribe((str) => {
-            this._loading_list.next(true);
-            if (str || this._next_query.getValue()) {
-                this._next_query.next(null);
-                this._list.next([]);
-                this.updateList();
-            }
-        });
         setTimeout(() => this.updateType(), 300);
     }
 
@@ -154,29 +141,28 @@ export class ActiveItemService extends AsyncHandler {
             this._type = url[1] as ResourceType;
             if (!this.type)
                 return this.timeout('setItem', () => this.setItem(id));
-            this._loading.next(true);
-            this._active_item.next(null);
+            this._loading.set(true);
+            this._active_item.set(null);
             const item = await this.actions
                 .show(id)
-                .toPromise()
                 .catch(() => notifyError(`Error loading ${id}`));
-            this._active_item.next(item as PlaceResource);
+            this._active_item.set(item as PlaceResource);
             const name = this._type[0].toUpperCase() + this._type.slice(1);
-            this._name.next(name);
+            this._name.set(name);
             this._settings.title = name;
-            this._show_options.next(false);
+            this._show_options.set(false);
             this.updateSettings();
-            this._loading.next(false);
+            this._loading.set(false);
         }
     }
 
     public toggleOptions() {
-        this._show_options.next(!this._show_options.getValue());
+        this._show_options.set(!this._show_options());
     }
 
     public create(item?: PlaceResource, copy = false) {
         if (!this._user.current().sys_admin) return;
-        item = item || this._active_item.getValue();
+        item = item || this._active_item();
         const actions =
             Object.values(ACTIONS).find(
                 (v) => item instanceof v.itemConstructor,
@@ -217,14 +203,14 @@ export class ActiveItemService extends AsyncHandler {
         options: HashMap = {},
     ) {
         if (!this._user.current().sys_admin) return;
-        item = item || (this._active_item.getValue() as T);
+        item = item || (this._active_item() as T);
         if (item) {
             const actions =
                 Object.values(ACTIONS).find(
                     (v) => item instanceof v.itemConstructor,
                 ) || this.actions;
             if (item.id) {
-                item = (await actions.show(item.id).toPromise()) as T;
+                item = (await actions.show(item.id)) as T;
             }
             return new Promise<T>((resolve) => {
                 const ref = this._dialog.open(actions.modalComponent, {
@@ -233,31 +219,33 @@ export class ActiveItemService extends AsyncHandler {
                         ...options,
                     },
                 });
-                (ref.componentInstance as unknown as FormModalComponent).event
-                    .pipe(filter((e: DialogEvent) => e.reason === 'done'))
-                    .subscribe((event: DialogEvent<{ item: T }>) => {
-                        resolve(event.metadata.item);
-                        this.replaceItem(
-                            event.metadata.item as unknown as Identity,
-                        );
-                        if (
-                            event.metadata.item instanceof
-                            this.actions.itemConstructor
-                        ) {
-                            this._router.navigate([
-                                `/${this._type}`,
-                                (event.metadata.item as unknown as Identity).id,
-                                'about',
-                            ]);
-                        }
-                    });
+                waitForEvent(
+                    (ref.componentInstance as unknown as FormModalComponent)
+                        .event,
+                    (e: DialogEvent) => e.reason === 'done',
+                ).then((event: DialogEvent<{ item: T }>) => {
+                    resolve(event.metadata.item);
+                    this.replaceItem(
+                        event.metadata.item as unknown as Identity,
+                    );
+                    if (
+                        event.metadata.item instanceof
+                        this.actions.itemConstructor
+                    ) {
+                        this._router.navigate([
+                            `/${this._type}`,
+                            (event.metadata.item as unknown as Identity).id,
+                            'about',
+                        ]);
+                    }
+                });
             });
         }
     }
 
     public async delete() {
         if (!this._user.current().sys_admin) return;
-        const item = this._active_item.getValue();
+        const item = this._active_item();
         if (item) {
             const ref = this._dialog.open<
                 ConfirmModalComponent,
@@ -277,46 +265,43 @@ export class ActiveItemService extends AsyncHandler {
                     icon: { type: 'icon', content: 'delete' },
                 },
             });
-            ref.componentInstance.event
-                .pipe(filter((e) => e.reason === 'done'))
-                .subscribe((_event: DialogEvent) => {
-                    ref.componentInstance.loading.set(
-                        i18n(`${this.actions.name}.DELETE_LOADING`),
-                    );
-                    this.actions.remove(item).subscribe(
-                        () => {
-                            notifySuccess(
-                                i18n(`${this.actions.name}.DELETE_SUCCESS`, {
-                                    name: item.name,
-                                }),
-                            );
-                            this._active_item.next(null);
-                            this.removeItem(item);
-                            this._router.navigate([
-                                `/${this._type}`,
-                                '-',
-                                'about',
-                            ]);
-                            ref.close();
-                        },
-                        (err) => {
-                            ref.componentInstance.loading.set('');
-                            notifyError(
-                                i18n(`${this.actions.name}.DELETE_ERROR`, {
-                                    error: JSON.stringify(
-                                        err.response || err.message || err,
-                                    ),
-                                }),
-                            );
-                        },
-                    );
-                });
+            waitForEvent(
+                ref.componentInstance.event,
+                (e: DialogEvent) => e.reason === 'done',
+            ).then(async () => {
+                ref.componentInstance.loading.set(
+                    i18n(`${this.actions.name}.DELETE_LOADING`),
+                );
+                await this.actions
+                    .remove(item)
+                    .then(() => {
+                        notifySuccess(
+                            i18n(`${this.actions.name}.DELETE_SUCCESS`, {
+                                name: item.name,
+                            }),
+                        );
+                        this._active_item.set(null);
+                        this.removeItem(item);
+                        this._router.navigate([`/${this._type}`, '-', 'about']);
+                        ref.close();
+                    })
+                    .catch((err) => {
+                        ref.componentInstance.loading.set('');
+                        notifyError(
+                            i18n(`${this.actions.name}.DELETE_ERROR`, {
+                                error: JSON.stringify(
+                                    err.response || err.message || err,
+                                ),
+                            }),
+                        );
+                    });
+            });
         }
     }
 
     public duplicate() {
         if (!this._user.current().sys_admin) return;
-        const item = this._active_item.getValue();
+        const item = this._active_item();
         if (item) {
             const ref = this._dialog.open(DuplicateModalComponent, {
                 data: {
@@ -326,7 +311,7 @@ export class ActiveItemService extends AsyncHandler {
             });
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    this._active_item.next(e.metadata[0] as PlaceResource);
+                    this._active_item.set(e.metadata[0] as PlaceResource);
                     this.replaceItem(e.metadata[0] as unknown as Identity);
                 }
             });
@@ -338,29 +323,29 @@ export class ActiveItemService extends AsyncHandler {
             item?.id &&
             (!this.active_item || this.active_item.id === item.id)
         ) {
-            this._active_item.next(item as PlaceResource);
-            const list = this._list
-                .getValue()
-                .filter((i) => (i as Identity).id !== item.id);
+            this._active_item.set(item as PlaceResource);
+            const list = this._list().filter(
+                (i) => (i as Identity).id !== item.id,
+            );
             list.push(item);
             list.sort((a, b) =>
                 (a as Identity).name?.localeCompare((b as Identity).name),
             );
             this.updateSettings();
-            this._list.next(list);
+            this._list.set(list);
         }
     }
 
     public removeItem(item: unknown) {
         if ((item as Identity).id) {
-            const list = this._list
-                .getValue()
-                .filter((i) => (i as Identity).id !== (item as Identity).id);
+            const list = this._list().filter(
+                (i) => (i as Identity).id !== (item as Identity).id,
+            );
             list.sort((a, b) =>
                 (a as Identity).name?.localeCompare((b as Identity).name),
             );
-            this._count.next(this._count.getValue() - 1);
-            this._list.next(list);
+            this._count.set(this._count() - 1);
+            this._list.set(list);
         }
     }
 
@@ -370,66 +355,64 @@ export class ActiveItemService extends AsyncHandler {
         this._type = url[1] as ResourceType;
         if (old_type !== this._type) {
             log('Service', `Item type set to ${this._type}`);
-            this._next_query.next(null);
-            this._active_item.next(null);
-            this._search.next('');
+            this._next_query.set(null);
+            this._active_item.set(null);
+            this._search.set('');
             const name = this._type[0]?.toUpperCase() + this._type.slice(1);
-            this._name.next(name);
+            this._name.set(name);
             this._settings.title = name;
-            this._show_options.next(true);
+            this._show_options.set(true);
             this.updateList();
         }
         if (this._type !== 'admin' && url[2]) {
             await this.setItem(url[2]);
         }
         if (this._type === 'admin') {
-            this._active_item.next({ name: 'PlaceOS Admin' } as PlaceResource);
+            this._active_item.set({ name: 'PlaceOS Admin' } as PlaceResource);
         }
     }
 
     private updateList() {
         const type = this._type;
-        const search = this._search.getValue();
+        const search = this._search();
         this.timeout(
             'update',
             async () => {
                 if (!this.actions) return;
-                this._loading_list.next(true);
-                let next = this._next_query.getValue();
+                this._loading_list.set(true);
+                let next = this._next_query();
                 if (!next) {
-                    next = () => this.actions.query(this._search.getValue());
-                    this._list.next([]);
+                    next = () => this.actions.query(this._search());
+                    this._list.set([]);
                 }
-                const resp = await next().toPromise();
+                const resp = await next();
                 if (type === this._type) {
-                    this._next_query.next(
+                    this._next_query.set(
                         resp.next ||
                             (() =>
-                                of({
+                                Promise.resolve({
                                     data: [],
                                     total: resp.total,
                                     next: null,
                                 })),
                     );
-                    this._count.next(resp.total);
-                    const list = this._list
-                        .getValue()
-                        .filter(
-                            (i) =>
-                                !resp.data.find(
-                                    (item) =>
-                                        (item as Identity).id ===
-                                        (i as Identity).id,
-                                ),
-                        );
+                    this._count.set(resp.total);
+                    const list = this._list().filter(
+                        (i) =>
+                            !resp.data.find(
+                                (item) =>
+                                    (item as Identity).id ===
+                                    (i as Identity).id,
+                            ),
+                    );
                     const new_list = list.concat(resp.data);
                     new_list.sort((a, b) =>
                         (a as Identity).name?.localeCompare(
                             (b as Identity).name,
                         ),
                     );
-                    this._list.next(new_list);
-                    this._loading_list.next(false);
+                    this._list.set(new_list);
+                    this._loading_list.set(false);
                 }
             },
             search ? 300 : 10,
@@ -439,11 +422,7 @@ export class ActiveItemService extends AsyncHandler {
     private async updateSettings() {
         const item = this.active_item;
         if (item && (item as PlaceResource & { settings?: unknown }).settings) {
-            let settings = await lastValueFrom(
-                querySettings({ parent_id: item.id }).pipe(
-                    map((resp) => resp.data),
-                ),
-            );
+            let settings = (await querySettings({ parent_id: item.id })).data;
             // Remove duplicate encryption_level
             settings = new Array(5).fill(0).map(
                 (_, idx) =>
@@ -455,7 +434,7 @@ export class ActiveItemService extends AsyncHandler {
 
             settings.sort((a, b) => a.encryption_level - b.encryption_level);
             if (this.actions?.itemConstructor) {
-                this._active_item.next(
+                this._active_item.set(
                     new this.actions.itemConstructor({
                         ...item,
                         settings,

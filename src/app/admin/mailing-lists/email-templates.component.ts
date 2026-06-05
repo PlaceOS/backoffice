@@ -23,14 +23,11 @@ import { EmailStateService } from './email-state.service';
                     >
                         <mat-select
                             name="type"
-                            [ngModel]="domain | async"
+                            [ngModel]="domain()"
                             (ngModelChange)="setDomain($event)"
                             placeholder="Select Domain..."
                         >
-                            @for (
-                                domain of domain_list | async;
-                                track domain.id
-                            ) {
+                            @for (domain of domain_list(); track domain.id) {
                                 <mat-option [value]="domain">
                                     {{ domain.name }}
                                 </mat-option>
@@ -51,7 +48,7 @@ import { EmailStateService } from './email-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
-                    [class.opacity-0]="(loading | async) !== true"
+                    [class.opacity-0]="loading() !== true"
                 ></mat-progress-bar>
                 <simple-table
                     class="mb-4 block min-w-4xl text-sm"
@@ -88,6 +85,6 @@ export class EmailTemplatesComponent implements OnInit {
         if (!domain_list?.length) return;
         const match = domain_list.find((d) => d.id === domain.id);
         if (match) this._service.setDomain(match);
-        this.templates.subscribe((_) => console.log(_));
+        console.log(this.templates());
     }
 }

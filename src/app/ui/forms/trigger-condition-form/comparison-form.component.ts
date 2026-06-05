@@ -23,7 +23,6 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { map } from 'rxjs/operators';
 import { calculateModuleIndex } from '../../../common/api';
 import { i18n } from '../../../common/locale.service';
 import { notifyError } from '../../../common/notifications';
@@ -323,17 +322,20 @@ export class TriggerConditionComparisonFormComponent
      * Load the list of status variables for the given modules
      * @param module Module to list status variables
      */
-    public loadSystemStatusVariables(mod_name: string, side: 'left' | 'right') {
+    public async loadSystemStatusVariables(
+        mod_name: string,
+        side: 'left' | 'right',
+    ) {
         const name = (mod_name || '').split('_');
         if (!name[0]?.length) return;
-        systemModuleState(
+        await systemModuleState(
             this.system().id,
             name.length > 1
                 ? name.slice(0, name.length - 1).join('_')
                 : name[0],
             +name[name.length - 1] || 1,
-        ).subscribe(
-            (var_map) => {
+        )
+            .then((var_map) => {
                 if (Object.keys(var_map || {}).length <= 0) {
                     var_map = { connected: true };
                 }
@@ -344,44 +346,43 @@ export class TriggerConditionComparisonFormComponent
                     }),
                 );
                 this.addExistingStatusVariables();
-            },
-            () =>
+            })
+            .catch(() =>
                 notifyError(
                     i18n('TRIGGERS.COMPARE_VARIABLE_LOAD_ERROR', {
                         system: this.system().id,
                         module: mod_name,
                     }),
                 ),
-        );
+            );
     }
 
     /**
      * Load the list of modules for the active system
      */
-    private loadSystemModules() {
+    private async loadSystemModules() {
         const system = this.system();
         if (!system) {
             return;
         }
-        queryModules({ control_system_id: system.id })
-            .pipe(map((resp) => resp.data))
-            .subscribe((module_list) => {
-                this.modules = module_list;
-                const mod_list = this.system().modules;
-                this.modules.sort(
-                    (a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id),
-                );
-                this.module_list = this.modules.map((mod) => {
-                    const name = mod.custom_name || mod.name || 'Blank';
-                    const index = calculateModuleIndex(this.modules, mod);
-                    return {
-                        id: mod.id,
-                        name: `${name}_${index}`,
-                        keys: [],
-                    };
-                });
-                this.addExistingModules();
-            });
+        const module_list = await queryModules({
+            control_system_id: system.id,
+        }).then((resp) => resp.data);
+        this.modules = module_list;
+        const mod_list = this.system().modules;
+        this.modules.sort(
+            (a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id),
+        );
+        this.module_list = this.modules.map((mod) => {
+            const name = mod.custom_name || mod.name || 'Blank';
+            const index = calculateModuleIndex(this.modules, mod);
+            return {
+                id: mod.id,
+                name: `${name}_${index}`,
+                keys: [],
+            };
+        });
+        this.addExistingModules();
     }
 
     /**

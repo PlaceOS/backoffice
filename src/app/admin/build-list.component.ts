@@ -4,8 +4,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get } from '@placeos/ts-client';
-import { lastValueFrom, Observable } from 'rxjs';
 import { toQueryString } from '../common/api';
+import { lastValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -26,11 +26,11 @@ interface BuildJob {
 
 function queryBuildJobs(
     q: Record<string, string> = {},
-): Observable<{ data: BuildJob[] }> {
+): Promise<{ data: BuildJob[] }> {
     const query = toQueryString(q);
-    return get(
-        `/api/build/v1/monitor${query ? '?' + query : ''}`,
-    ) as Observable<{ data: BuildJob[] }>;
+    return get(`/api/build/v1/monitor${query ? '?' + query : ''}`) as Promise<{
+        data: BuildJob[];
+    }>;
 }
 
 function cancelBuildJob(id, q = {}) {
@@ -174,7 +174,12 @@ export class PlaceBuildListComponent implements OnInit {
         if (err)
             return notifyError(
                 i18n('ADMIN.BUILD_LIST_REMOVE_ERROR', {
-                    error: err.statusText || err.message || err,
+                    error:
+                        (err as { statusText?: string; message?: string })
+                            .statusText ||
+                        (err as { statusText?: string; message?: string })
+                            .message ||
+                        err,
                 }),
             );
         this.last_change.set(null);

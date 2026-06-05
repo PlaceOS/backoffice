@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addGroupZone,
@@ -11,8 +11,8 @@ import {
     PlaceSystem,
     PlaceTrigger,
     PlaceZone,
-    queryGroupZones,
     queryGroups,
+    queryGroupZones,
     querySystems,
     queryTriggers,
     queryZones,
@@ -20,29 +20,14 @@ import {
     updateGroupZone,
     updateZone,
 } from '@placeos/ts-client';
-import {
-    BehaviorSubject,
-    combineLatest,
-    lastValueFrom,
-    Observable,
-    of,
-} from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    first,
-    map,
-    shareReplay,
-    startWith,
-    switchMap,
-} from 'rxjs/operators';
 import { unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { waitForEvent } from '../common/signals';
+import { DialogEvent, Identity } from '../common/types';
 import { GroupBulkAddModalComponent } from '../groups/group-bulk-add-modal.component';
 import { GroupPermissionsModalComponent } from '../groups/group-permissions-modal.component';
-import { Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {
     SelectItemModalComponent,
@@ -56,125 +41,146 @@ export class ZonesStateService {
     private _service = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _loading = new BehaviorSubject<boolean>(false);
-    private _change = new BehaviorSubject<boolean>(false);
+    private _loading = signal(false);
+    private _change = signal(0);
 
-    public readonly loading = this._loading.asObservable();
+    public readonly loading = this._loading.asReadonly();
 
-    public readonly item = this._service.active_item$;
+    public readonly item = computed(
+        () => this._service.item() as unknown as PlaceZone,
+    );
 
-    public readonly counts = combineLatest([
-        this._service.active_item$,
-        this._change,
-    ]).pipe(
-        debounceTime(300),
-        switchMap(async (d) => {
-            const [item] = d;
+    private readonly _counts = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
             if (!(item instanceof PlaceZone)) return {};
-            this._loading.next(true);
-            const details = await Promise.all([
-                lastValueFrom(
-                    querySystems({ zone_id: item.id, limit: 1 }).pipe(
-                        map((d) => d.total),
+            this._loading.set(true);
+            try {
+                const details = await Promise.all([
+                    querySystems({ zone_id: item.id, limit: 1 })
+                        .then((d) => d.total)
+                        .catch(() => 0),
+                    listZoneTriggers(item.id)
+                        .then((d) => d.total)
+                        .catch(() => 0),
+                    listMetadata(item.id)
+                        .then((d) => d.length)
+                        .catch(() => 0),
+                    queryZones({ parent_id: item.id, limit: 1 })
+                        .then((d) => d.total)
+                        .catch(() => 0),
+                    queryGroupZones({ zone_id: item.id, limit: 1 })
+                        .then((d) => d.total)
+                        .catch(() => 0),
+                ]);
+                const [systems, triggers, metadata, children, groups] = details;
+                return {
+                    systems,
+                    triggers,
+                    metadata,
+                    children,
+                    groups,
+                };
+            } finally {
+                this._loading.set(false);
+            }
+        },
+    });
+
+    public readonly counts = computed<{
+        systems?: number;
+        triggers?: number;
+        metadata?: number;
+        children?: number;
+        groups?: number;
+    }>(
+        () =>
+            this._counts.value() || {
+                systems: 0,
+                triggers: 0,
+                metadata: 0,
+                children: 0,
+                groups: 0,
+            },
+    );
+
+    private readonly _systems = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceZone)) return [] as PlaceSystem[];
+            const response = await querySystems({ zone_id: item.id }).catch(
+                () => ({ data: [] }),
+            );
+            return response.data;
+        },
+    });
+
+    public readonly systems = computed(() => this._systems.value() || []);
+
+    private readonly _triggers = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceZone)) return [] as PlaceTrigger[];
+            const response = await listZoneTriggers(item.id).catch(() => ({
+                data: [],
+            }));
+            return response.data;
+        },
+    });
+
+    public readonly triggers = computed(() => this._triggers.value() || []);
+
+    private readonly _metadata = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceZone)) return [] as PlaceMetadata[];
+            return listMetadata(item.id).catch(() => []);
+        },
+    });
+
+    public readonly metadata = computed(() => this._metadata.value() || []);
+
+    private readonly _children = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceZone)) return [] as PlaceZone[];
+            const response = await queryZones({ parent_id: item.id }).catch(
+                () => ({ data: [] }),
+            );
+            return response.data;
+        },
+    });
+
+    public readonly children = computed(() => this._children.value() || []);
+
+    private readonly _groups = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceZone)) return [] as PlaceGroupZone[];
+            this._loading.set(true);
+            try {
+                const response = await queryGroupZones({
+                    zone_id: item.id,
+                    limit: 1000,
+                }).catch(() => ({ data: [] }));
+                return response.data.sort((a, b) =>
+                    (a.group?.name || a.group_id).localeCompare(
+                        b.group?.name || b.group_id,
                     ),
-                ).catch(() => 0),
-                lastValueFrom(
-                    listZoneTriggers(item.id).pipe(map((d) => d.total)),
-                ).catch(() => 0),
-                lastValueFrom(
-                    listMetadata(item.id).pipe(map((d) => d.length)),
-                ).catch(() => 0),
-                lastValueFrom(
-                    queryZones({ parent_id: item.id, limit: 1 }).pipe(
-                        map((d) => d.total),
-                    ),
-                ).catch(() => 0),
-                lastValueFrom(
-                    queryGroupZones({ zone_id: item.id, limit: 1 }).pipe(
-                        map((d) => d.total),
-                    ),
-                ).catch(() => 0),
-            ]);
-            const [systems, triggers, metadata, children, groups] = details;
-            this._loading.next(false);
-            return {
-                systems,
-                triggers,
-                metadata,
-                children,
-                groups,
-            };
-        }),
-    );
+                );
+            } finally {
+                this._loading.set(false);
+            }
+        },
+    });
 
-    public readonly systems: Observable<PlaceSystem[]> = this.item.pipe(
-        switchMap((item) => {
-            if (!(item instanceof PlaceZone)) return of({ data: [] });
-            return querySystems({ zone_id: item.id }).pipe(
-                catchError(() => of({ data: [] })),
-                startWith({ data: [] }),
-            );
-        }),
-        map((list) => list.data),
-        shareReplay(1),
-    );
-
-    public readonly triggers = this.item.pipe(
-        switchMap((item) => {
-            if (!(item instanceof PlaceZone)) return of({ data: [] });
-            return listZoneTriggers(item.id).pipe(
-                catchError(() => of({ data: [] })),
-                startWith({ data: [] }),
-            );
-        }),
-        map((list) => list.data),
-        shareReplay(1),
-    );
-
-    public readonly metadata: Observable<PlaceMetadata[]> = this.item.pipe(
-        switchMap((item) => {
-            if (!(item instanceof PlaceZone)) return of([]);
-            return listMetadata(item.id).pipe(
-                catchError(() => of([])),
-                startWith([]),
-            );
-        }),
-        shareReplay(1),
-    );
-
-    public readonly children = this.item.pipe(
-        switchMap((item) => {
-            if (!(item instanceof PlaceZone)) return of({ data: [] });
-            return queryZones({ parent_id: item.id }).pipe(
-                catchError(() => of({ data: [] })),
-                startWith({ data: [] }),
-            );
-        }),
-        map((list) => list.data),
-        shareReplay(1),
-    );
-
-    public readonly groups: Observable<PlaceGroupZone[]> = combineLatest([
-        this._change,
-        this.item,
-    ]).pipe(
-        switchMap(([, item]) => {
-            if (!(item instanceof PlaceZone)) return of({ data: [] });
-            this._loading.next(true);
-            return queryGroupZones({ zone_id: item.id, limit: 1000 }).pipe(
-                catchError(() => of({ data: [] })),
-            );
-        }),
-        map((response) => {
-            this._loading.next(false);
-            return response.data.sort((a, b) =>
-                (a.group?.name || a.group_id).localeCompare(
-                    b.group?.name || b.group_id,
-                ),
-            );
-        }),
-        shareReplay(1),
-    );
+    public readonly groups = computed(() => this._groups.value() || []);
 
     public get active_item(): PlaceZone {
         return this._service.active_item as unknown as PlaceZone;
@@ -190,7 +196,7 @@ export class ZonesStateService {
     }
 
     constructor() {
-        setTimeout(() => this._change.next(!this._change.getValue()), 1000);
+        setTimeout(() => this.changed(), 1000);
     }
 
     public async selectTrigger() {
@@ -201,18 +207,17 @@ export class ZonesStateService {
             data: {
                 service_name: 'Triggers',
                 query_fn: (_) =>
-                    queryTriggers({ q: _ }).pipe(map((resp) => resp.data)),
+                    queryTriggers({ q: _ }).then((resp) => resp.data),
             },
         });
         const details = await Promise.race([
-            lastValueFrom(
-                ref.componentInstance.event.pipe(
-                    first((_) => _.reason === 'action'),
-                ),
+            waitForEvent(
+                ref.componentInstance.event,
+                (_: DialogEvent) => _.reason === 'action',
             ),
-            lastValueFrom(ref.afterClosed()),
+            waitForEvent(ref.afterClosed()),
         ]);
-        if (!details || !details.reason) return ref.close();
+        if (!details?.reason) return ref.close();
         const zone = await this.addTrigger(
             ref.componentInstance.item as PlaceTrigger,
         );
@@ -230,7 +235,7 @@ export class ZonesStateService {
         return updateZone(this.active_item.id, {
             ...this.active_item,
             triggers: triggers_list,
-        }).toPromise() as Promise<PlaceZone | undefined>;
+        });
     }
 
     public async removeTrigger(trigger: PlaceTrigger) {
@@ -242,15 +247,11 @@ export class ZonesStateService {
             },
             this._dialog,
         );
-        if (!details || !details.reason) return;
-        const zone = await lastValueFrom(
-            updateZone(this.active_item.id, {
-                ...this.active_item,
-                triggers: this.active_item.triggers.filter(
-                    (t) => t !== trigger.id,
-                ),
-            }),
-        ).catch((err) => {
+        if (!details?.reason) return;
+        const zone = await updateZone(this.active_item.id, {
+            ...this.active_item,
+            triggers: this.active_item.triggers.filter((t) => t !== trigger.id),
+        }).catch((err) => {
             details.close();
             notifyError(
                 `Error removing trigger ${trigger.id} from zone. Error: ${
@@ -266,9 +267,10 @@ export class ZonesStateService {
 
     public async addGroup(group: PlaceGroup) {
         if (!group?.id) return;
-        await lastValueFrom(
-            addGroupZone({ group_id: group.id, zone_id: this.active_item.id }),
-        ).catch((error) => {
+        await addGroupZone({
+            group_id: group.id,
+            zone_id: this.active_item.id,
+        }).catch((error) => {
             notifyError(i18n('ZONES.GROUP_ADD_ERROR', { error }));
             throw error;
         });
@@ -277,7 +279,7 @@ export class ZonesStateService {
     }
 
     public async bulkAddGroups(existing_groups: PlaceGroupZone[] = []) {
-        const groups = await lastValueFrom(
+        const groups = await waitForEvent(
             this._dialog
                 .open(GroupBulkAddModalComponent<PlaceGroup>, {
                     data: {
@@ -289,8 +291,8 @@ export class ZonesStateService {
                                 q: query,
                                 limit: 20,
                                 authority_id: this.authority_id,
-                            } as Record<string, unknown>).pipe(
-                                map((response) => response.data),
+                            } as Record<string, unknown>).then(
+                                (response) => response.data,
                             ),
                         exclude: (group: PlaceGroup) => {
                             const authority_id = this.authority_id;
@@ -311,18 +313,16 @@ export class ZonesStateService {
                 .afterClosed(),
         );
         if (!groups?.length) return;
-        this._loading.next(true);
+        this._loading.set(true);
         const results = await Promise.allSettled(
             groups.map((group) =>
-                lastValueFrom(
-                    addGroupZone({
-                        group_id: group.id,
-                        zone_id: this.active_item.id,
-                    }),
-                ),
+                addGroupZone({
+                    group_id: group.id,
+                    zone_id: this.active_item.id,
+                }),
             ),
         );
-        this._loading.next(false);
+        this._loading.set(false);
         const failed = results.filter((_) => _.status === 'rejected').length;
         if (failed) {
             notifyError(i18n('ZONES.GROUPS_BULK_ERROR', { count: failed }));
@@ -347,25 +347,21 @@ export class ZonesStateService {
         );
         if (details.reason !== 'done') return;
         details.loading(i18n('ZONES.GROUP_REMOVE_LOADING'));
-        await lastValueFrom(removeGroupZone(item.group_id, item.zone_id)).catch(
-            (error) => {
-                details.close();
-                notifyError(i18n('ZONES.GROUP_REMOVE_ERROR', { error }));
-                throw error;
-            },
-        );
+        await removeGroupZone(item.group_id, item.zone_id).catch((error) => {
+            details.close();
+            notifyError(i18n('ZONES.GROUP_REMOVE_ERROR', { error }));
+            throw error;
+        });
         details.close();
         notifySuccess(i18n('ZONES.GROUP_REMOVE_SUCCESS'));
         this.changed();
     }
 
     public async updateGroup(item: PlaceGroupZone) {
-        await lastValueFrom(
-            updateGroupZone(item.group_id, item.zone_id, {
-                permissions: +item.permissions || 0,
-                deny: !!item.deny,
-            }),
-        ).catch((error) => {
+        await updateGroupZone(item.group_id, item.zone_id, {
+            permissions: +item.permissions || 0,
+            deny: !!item.deny,
+        }).catch((error) => {
             notifyError(i18n('ZONES.GROUP_SAVE_ERROR', { error }));
             throw error;
         });
@@ -374,7 +370,7 @@ export class ZonesStateService {
     }
 
     public async editGroupPermissions(item: PlaceGroupZone) {
-        const result = await lastValueFrom(
+        const result = await waitForEvent(
             this._dialog
                 .open(GroupPermissionsModalComponent, {
                     data: {
@@ -395,6 +391,6 @@ export class ZonesStateService {
     }
 
     private changed() {
-        this._change.next(!this._change.getValue());
+        this._change.set(Date.now());
     }
 }

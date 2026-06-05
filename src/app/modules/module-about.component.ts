@@ -62,7 +62,8 @@ import { ModuleStateService } from './module-state.service';
                                 }
                             </div>
                         }
-                        @if (driver | async) {
+                        @let driver_value = driver();
+                        @if (driver_value) {
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'DRIVERS.SINGULAR' | translate }}
                             </div>
@@ -71,14 +72,15 @@ import { ModuleStateService } from './module-state.service';
                                 [routerLink]="['/drivers', item.driver_id]"
                             >
                                 {{
-                                    (driver | async).name ||
+                                    driver_value.name ||
                                         '&lt;' +
                                             ('COMMON.BLANK_NAME' | translate) +
                                             '&gt;'
                                 }}
                             </a>
                         }
-                        @if (system | async) {
+                        @let system_value = system();
+                        @if (system_value) {
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'SYSTEMS.SINGULAR' | translate }}
                             </div>
@@ -86,14 +88,15 @@ import { ModuleStateService } from './module-state.service';
                                 class="truncate underline"
                                 [routerLink]="[
                                     '/systems',
-                                    (system | async).id,
+                                    system_value.id,
                                     'modules',
                                 ]"
                             >
-                                {{ (system | async).name }}
+                                {{ system_value.name }}
                             </a>
                         }
-                        @if (edge | async) {
+                        @let edge_value = edge();
+                        @if (edge_value) {
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'COMMON.EDGE' | translate }}
                             </div>
@@ -103,10 +106,10 @@ import { ModuleStateService } from './module-state.service';
                                     [routerLink]="[
                                         '/admin',
                                         'edge',
-                                        (edge | async).id,
+                                        edge_value.id,
                                     ]"
                                 >
-                                    {{ (edge | async).name }}
+                                    {{ edge_value.name }}
                                 </a>
                                 <div class="w-px flex-1"></div>
                                 <button
@@ -118,7 +121,7 @@ import { ModuleStateService } from './module-state.service';
                                     yPosition="top"
                                     xPosition="center"
                                 >
-                                    @if ((edge | async).description) {
+                                    @if (edge_value.description) {
                                         <icon
                                             class="border-base-200 rounded-full border"
                                             >info</icon
@@ -132,7 +135,7 @@ import { ModuleStateService } from './module-state.service';
                                 >
                                     <pre
                                         class="bg-base-200 overflow-hidden rounded-xl p-2 text-sm"
-                                        >{{ (edge | async).description }}</pre
+                                        >{{ edge_value.description }}</pre
                                     >
                                 </div>
                             </ng-template>
@@ -226,13 +229,14 @@ import { ModuleStateService } from './module-state.service';
                 </div>
             </section>
             <hr class="my-4" />
-            @if (item.settings && (other_settings | async)) {
+            @let other_settings_value = other_settings();
+            @if (item.settings && other_settings_value) {
                 <section>
                     <a-settings-form
                         [id]="item.id"
                         [merge]="true"
                         [settings]="item.settings"
-                        [merge_settings]="(other_settings | async) || []"
+                        [merge_settings]="other_settings_value || []"
                     ></a-settings-form>
                 </section>
             } @else {

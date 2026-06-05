@@ -20,10 +20,10 @@ import {
     updateOAuthSource,
     updateSAMLSource,
 } from '@placeos/ts-client';
+import { lastValueFrom } from '../common/general';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { lastValueFrom } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';

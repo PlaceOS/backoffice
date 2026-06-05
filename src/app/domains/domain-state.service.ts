@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addApplication,
@@ -21,24 +21,11 @@ import {
     updateApplication,
     updateDomain,
 } from '@placeos/ts-client';
-import {
-    BehaviorSubject,
-    combineLatest,
-    lastValueFrom,
-    Observable,
-} from 'rxjs';
-import {
-    catchError,
-    filter,
-    first,
-    map,
-    shareReplay,
-    switchMap,
-} from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { FormModalComponent, Identity } from '../common/types';
+import { waitForEvent } from '../common/signals';
+import { DialogEvent, FormModalComponent, Identity } from '../common/types';
 import { AuthSourceModalComponent } from '../overlays/auth-source-modal.component';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ApplicationFormComponent } from './application-form.component';
@@ -55,103 +42,95 @@ export class DomainStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _loading = new BehaviorSubject<boolean>(false);
+    private _loading = signal(false);
 
-    private _changed = new BehaviorSubject<number>(0);
+    private _changed = signal(0);
 
-    public readonly item: Observable<PlaceDomain> = this._state
-        .item as Observable<PlaceDomain>;
-
-    public readonly loading = this._loading.asObservable();
-
-    public readonly users: Observable<PlaceUser[]> = combineLatest([
-        this._changed,
-        this.item,
-    ]).pipe(
-        filter(([, item]) => item instanceof PlaceDomain),
-        switchMap(([, item]) =>
-            queryUsers({ authority_id: item.id, limit: 1000 } as Record<
-                string,
-                unknown
-            >),
-        ),
-        map((response) =>
-            response.data.sort((a, b) => a.name.localeCompare(b.name)),
-        ),
-        catchError(() => []),
-        shareReplay(1),
+    public readonly item = computed(
+        () => this._state.item() as unknown as PlaceDomain,
     );
 
-    public readonly auth_sources: Observable<PlaceAuthSource[]> = combineLatest(
-        [this._changed, this.item],
-    ).pipe(
-        filter(([, item]) => item instanceof PlaceDomain),
-        switchMap(([, item]) => {
+    public readonly loading = this._loading.asReadonly();
+
+    private readonly _users = resource({
+        params: () => ({ item: this.item(), changed: this._changed() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceDomain)) return [] as PlaceUser[];
+            const response = await queryUsers({
+                authority_id: item.id,
+                limit: 1000,
+            } as Record<string, unknown>).catch(() => ({ data: [] }));
+            return response.data.sort((a, b) => a.name.localeCompare(b.name));
+        },
+    });
+
+    public readonly users = computed(() => this._users.value() || []);
+
+    private readonly _auth_sources = resource({
+        params: () => ({ item: this.item(), changed: this._changed() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceDomain)) return [] as PlaceAuthSource[];
             const q = { authority_id: item.id };
-            return combineLatest([
-                querySAMLSources(q as Record<string, unknown>).pipe(
-                    map((response) => response.data),
+            const [saml, oauth, ldap] = await Promise.all([
+                querySAMLSources(q as Record<string, unknown>).then(
+                    (response) => response.data,
                 ),
-                queryOAuthSources(q as Record<string, unknown>).pipe(
-                    map((response) => response.data),
+                queryOAuthSources(q as Record<string, unknown>).then(
+                    (response) => response.data,
                 ),
-                queryLDAPSources(q as Record<string, unknown>).pipe(
-                    map((response) => response.data),
+                queryLDAPSources(q as Record<string, unknown>).then(
+                    (response) => response.data,
                 ),
-            ]);
-        }),
-        map((sources) => {
-            let list = [];
-            sources.forEach((array) => (list = list.concat(array)));
-            return list;
-        }),
-        catchError(() => []),
-        shareReplay(1),
+            ]).catch(() => [[], [], []]);
+            return [...saml, ...oauth, ...ldap] as PlaceAuthSource[];
+        },
+    });
+
+    public readonly auth_sources = computed(
+        () => this._auth_sources.value() || [],
     );
 
-    public readonly applications: Observable<PlaceApplication[]> =
-        combineLatest([this._changed, this.item]).pipe(
-            filter(([, item]) => item instanceof PlaceDomain),
-            switchMap(([, item]) =>
-                queryApplications({ authority_id: item.id } as Record<
-                    string,
-                    unknown
-                >),
-            ),
-            map((response) =>
-                response.data.sort((a, b) => a.name.localeCompare(b.name)),
-            ),
-            catchError(() => []),
-            shareReplay(1),
-        );
+    private readonly _applications = resource({
+        params: () => ({ item: this.item(), changed: this._changed() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceDomain)) return [] as PlaceApplication[];
+            const response = await queryApplications({
+                authority_id: item.id,
+            } as Record<string, unknown>).catch(() => ({ data: [] }));
+            return response.data.sort((a, b) => a.name.localeCompare(b.name));
+        },
+    });
 
-    public readonly counts = combineLatest([this._changed, this.item]).pipe(
-        filter(([, item]) => item instanceof PlaceDomain),
-        switchMap(async ([, item]) => {
+    public readonly applications = computed(
+        () => this._applications.value() || [],
+    );
+
+    private readonly _counts = resource({
+        params: () => ({ item: this.item(), changed: this._changed() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceDomain)) return {};
             const q = { authority_id: item?.id };
             const details = await Promise.all([
-                lastValueFrom(
-                    queryApplications(q as Record<string, unknown>).pipe(
-                        map((response) => response.total),
-                    ),
-                ),
-                lastValueFrom(
-                    combineLatest([
-                        querySAMLSources(q as Record<string, unknown>),
-                        queryOAuthSources(q as Record<string, unknown>),
-                        queryLDAPSources(q as Record<string, unknown>),
-                    ]).pipe(
-                        map(
-                            ([saml, oauth, ldap]) =>
-                                saml.total + oauth.total + ldap.total,
-                        ),
-                    ),
-                ),
-                lastValueFrom(
-                    queryUsers(q as Record<string, unknown>).pipe(
-                        map((response) => response.total),
-                    ),
-                ),
+                queryApplications(q as Record<string, unknown>)
+                    .then((response) => response.total)
+                    .catch(() => 0),
+                Promise.all([
+                    querySAMLSources(q as Record<string, unknown>),
+                    queryOAuthSources(q as Record<string, unknown>),
+                    queryLDAPSources(q as Record<string, unknown>),
+                ])
+                    .then(
+                        ([saml, oauth, ldap]) =>
+                            saml.total + oauth.total + ldap.total,
+                    )
+                    .catch(() => 0),
+                queryUsers(q as Record<string, unknown>)
+                    .then((response) => response.total)
+                    .catch(() => 0),
             ]);
             const [applications, auth_sources, users] = details;
             return {
@@ -159,8 +138,20 @@ export class DomainStateService {
                 auth_sources: auth_sources || 0,
                 users,
             };
-        }),
-        shareReplay(1),
+        },
+    });
+
+    public readonly counts = computed<{
+        applications?: number;
+        auth_sources?: number;
+        users?: number;
+    }>(
+        () =>
+            this._counts.value() || {
+                applications: 0,
+                auth_sources: 0,
+                users: 0,
+            },
     );
 
     public get active_item() {
@@ -168,15 +159,15 @@ export class DomainStateService {
     }
 
     public async update(domain: PlaceDomain) {
-        const item = await updateDomain(domain.id, domain).toPromise();
+        const item = await updateDomain(domain.id, domain);
         this._state.replaceItem(item as unknown as Identity);
     }
 
     public async performAzureIntegration() {
         const item = this.active_item;
         if (!(item instanceof PlaceDomain)) return;
-        const result = await lastValueFrom(
-            get(`/api/engine/v2/admin_consent/${encodeURIComponent(item.id)}`),
+        const result = await get(
+            `/api/engine/v2/admin_consent/${encodeURIComponent(item.id)}`,
         ).catch((error) => {
             notifyError(i18n('DOMAINS.AZURE_INTEGRATION_ERROR', { error }));
             throw error;
@@ -205,13 +196,14 @@ export class DomainStateService {
         });
         const instance = ref.componentInstance as unknown as FormModalComponent;
         const details = await Promise.race([
-            lastValueFrom(
-                instance.event.pipe(first((_) => _.reason === 'done')),
+            waitForEvent(
+                instance.event,
+                (_: DialogEvent) => _.reason === 'done',
             ),
-            lastValueFrom(ref.afterClosed()),
+            waitForEvent(ref.afterClosed()),
         ]);
         if (!details) return;
-        this._changed.next(new Date().valueOf());
+        this._changed.set(new Date().valueOf());
     }
 
     /**
@@ -229,9 +221,7 @@ export class DomainStateService {
         );
         if (!details) return;
         details.loading('Deleting domain application...');
-        const err = await removeApplication(item.id)
-            .toPromise()
-            .catch((_) => _);
+        const err = await removeApplication(item.id).catch((_) => _);
         details.close();
         if (err)
             return notifyError(
@@ -240,7 +230,7 @@ export class DomainStateService {
                 }`,
             );
         notifySuccess('Successfully removed domain application.');
-        this._changed.next(new Date().valueOf());
+        this._changed.set(new Date().valueOf());
     }
 
     /**
@@ -254,13 +244,14 @@ export class DomainStateService {
             },
         });
         const details = await Promise.race([
-            ref.componentInstance.event
-                .pipe(first((_) => _.reason === 'done'))
-                .toPromise(),
-            ref.afterClosed().toPromise(),
+            waitForEvent(
+                ref.componentInstance.event,
+                (_: DialogEvent) => _.reason === 'done',
+            ),
+            waitForEvent(ref.afterClosed()),
         ]);
         if (!details) return;
-        this._changed.next(new Date().valueOf());
+        this._changed.set(new Date().valueOf());
     }
 
     /**
@@ -284,7 +275,7 @@ export class DomainStateService {
                 : item instanceof PlaceOAuthSource
                   ? removeOAuthSource
                   : removeLDAPSource;
-        const err = await lastValueFrom(method(item.id)).catch((_) => _);
+        const err = await method(item.id).catch((_) => _);
         details.close();
         if (err)
             return notifyError(
@@ -293,6 +284,6 @@ export class DomainStateService {
                 }`,
             );
         notifySuccess('Successfully removed domain auth source.');
-        this._changed.next(new Date().valueOf());
+        this._changed.set(new Date().valueOf());
     }
 }

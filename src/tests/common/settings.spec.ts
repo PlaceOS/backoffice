@@ -1,18 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
-import { BehaviorSubject, of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-// Create mock_user at module level BEFORE vi.mock calls
-const mock_user_subject = new BehaviorSubject<any>({
-    id: 'user-123',
-    name: 'Test User',
-});
 
 // Mock @placeos/ts-client
 vi.mock('@placeos/ts-client', () => ({
-    showMetadata: vi.fn(() => of({ details: {} })),
-    updateMetadata: vi.fn(() => of({})),
+    showMetadata: vi.fn(() => Promise.resolve({ details: {} })),
+    updateMetadata: vi.fn(() => Promise.resolve({})),
 }));
 
 // Mock Google Analytics Service
@@ -31,15 +24,11 @@ vi.mock('../../env/version', () => ({
     },
 }));
 
-// Mock user-state - use inline subject creation to avoid hoisting issues
-vi.mock('../../app/common/user-state', () => {
-    const { BehaviorSubject } = require('rxjs');
-    const subject = new BehaviorSubject({ id: 'user-123', name: 'Test User' });
-    return {
-        current_user: subject.asObservable(),
-        currentUser: vi.fn(() => ({ id: 'user-123' })),
-    };
-});
+// Mock user-state with a signal-shaped function.
+vi.mock('../../app/common/user-state', () => ({
+    current_user: () => ({ id: 'user-123', name: 'Test User' }),
+    currentUser: vi.fn(() => ({ id: 'user-123' })),
+}));
 
 // Mock general.ts
 vi.mock('../../app/common/general', () => ({
@@ -277,44 +266,36 @@ describe('SettingsService', () => {
     });
 
     describe('listen method', () => {
-        it('should return an observable', () => {
-            const obs = service.listen('test_key');
-            expect(obs).toBeDefined();
-            expect(typeof obs.subscribe).toBe('function');
+        it('should return a signal', () => {
+            const value = service.listen('test_key');
+            expect(value).toBeDefined();
+            expect(typeof value).toBe('function');
         });
 
-        it('should return same observable for same key', () => {
-            const obs1 = service.listen('test_key');
-            const obs2 = service.listen('test_key');
-            expect(obs1).toBe(obs2);
+        it('should return same signal for same key', () => {
+            const value1 = service.listen('test_key');
+            const value2 = service.listen('test_key');
+            expect(value1).toBe(value2);
         });
 
-        it('should emit null initially', async () => {
-            const obs = service.listen('new_key');
-            const value = await new Promise((resolve) => {
-                obs.subscribe((v) => resolve(v));
-            });
-            expect(value).toBeNull();
+        it('should expose null initially', () => {
+            const value = service.listen('new_key');
+            expect(value()).toBeNull();
         });
     });
 
     describe('post method', () => {
-        it('should update value for key', async () => {
-            const obs = service.listen('test_key');
+        it('should update value for key', () => {
+            const value = service.listen('test_key');
             service.post('test_key', 'new_value');
 
-            const value = await new Promise((resolve) => {
-                obs.subscribe((v) => {
-                    if (v !== null) resolve(v);
-                });
-            });
-            expect(value).toBe('new_value');
+            expect(value()).toBe('new_value');
         });
 
-        it('should create observable if not exists', () => {
+        it('should create signal if not exists', () => {
             service.post('brand_new_key', 'value');
-            const obs = service.listen('brand_new_key');
-            expect(obs).toBeDefined();
+            const value = service.listen('brand_new_key');
+            expect(value).toBeDefined();
         });
     });
 

@@ -1,10 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, resource, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { listZoneTags, PlaceZone } from '@placeos/ts-client';
-import { catchError, of, shareReplay } from 'rxjs';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
@@ -130,25 +128,15 @@ export class ZonesComponent extends AsyncHandler {
     protected _router = inject(Router);
     private _debug = inject(PlaceDebugService);
 
-    public readonly item = toSignal(this._item.active_item$, {
-        initialValue: null as PlaceZone | null,
-    });
-    public readonly loading = toSignal(this._item.loading, {
-        initialValue: false,
-    });
+    public readonly item = computed(
+        () => this._item.active_item$() as PlaceZone | null,
+    );
+    public readonly loading = this._item.loading;
     public readonly name = 'zones';
     public readonly open_menu = signal(false);
     public readonly scroll = signal(0);
     public readonly debug_position = this._debug.position;
-    public readonly counts = toSignal(this._service.counts, {
-        initialValue: {
-            systems: 0,
-            triggers: 0,
-            metadata: 0,
-            children: 0,
-            groups: 0,
-        },
-    });
+    public readonly counts = this._service.counts;
     public readonly tab_list = computed(() => {
         const details = this.counts();
         return (
@@ -199,12 +187,8 @@ export class ZonesComponent extends AsyncHandler {
 
     public readonly newItem = () => this._item.create();
     public readonly bulkAdd = () => this._item.bulkAdd();
-    public readonly zone_tags = toSignal(
-        listZoneTags()
-            .pipe(catchError(() => of([])))
-            .pipe(shareReplay(1)),
-        {
-            initialValue: [],
-        },
-    );
+    private readonly _zone_tags = resource({
+        loader: async () => listZoneTags().catch(() => []),
+    });
+    public readonly zone_tags = computed(() => this._zone_tags.value() || []);
 }

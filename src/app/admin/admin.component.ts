@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 
 import { MatRippleModule } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
-import { timer } from 'rxjs';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
@@ -198,7 +197,7 @@ export class PlaceComponent extends AsyncHandler implements OnInit {
 
     public async ngOnInit() {
         this.updateTabList();
-        await timer(1000).toPromise();
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         this._settings.title = i18n('ADMIN.TITLE');
     }
 }

@@ -6,11 +6,11 @@ import {
     forwardRef,
     input,
     OnChanges,
+    resource,
     signal,
     SimpleChanges,
     viewChild,
 } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
     ControlValueAccessor,
     FormsModule,
@@ -25,15 +25,6 @@ import {
     PlaceModuleFunction,
     PlaceSystem,
 } from '@placeos/ts-client';
-import { combineLatest, of } from 'rxjs';
-import {
-    catchError,
-    distinctUntilChanged,
-    map,
-    shareReplay,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
 import { AsyncHandler } from '../../../common/async-handler.class';
 import { TranslatePipe } from '../../translate.pipe';
 import { ModuleLike } from './select-module.component';
@@ -140,32 +131,36 @@ export class SelectMethodComponent
 
     public readonly loading = signal(false);
 
-    private readonly _method_list = toSignal(
-        combineLatest([
-            toObservable(this._system),
-            toObservable(this._module),
-        ]).pipe(
-            distinctUntilChanged(),
-            tap(() => this.loading.set(true)),
-            switchMap(([id, { module, index }]) =>
-                !!id && !!module ? functionList(id, module, index) : of({}),
-            ),
-            catchError(() => of({})),
-            map((fn_mapping) =>
-                Object.keys(fn_mapping || {})
+    private readonly _method_list = resource({
+        params: () => ({
+            id: this._system(),
+            module: this._module(),
+        }),
+        loader: async ({ params }) => {
+            const { id, module } = params;
+            if (!id || !module?.module) return [] as MethodOption[];
+            this.loading.set(true);
+            try {
+                const fn_mapping = await functionList(
+                    id,
+                    module.module,
+                    module.index,
+                ).catch(() => ({}));
+                return Object.keys(fn_mapping || {})
                     .map((i) => ({
                         name: i,
                         ...fn_mapping[i],
                     }))
-                    .sort((a, b) => a.name.localeCompare(b.name)),
-            ),
-            tap(() => this.loading.set(false)),
-            shareReplay(1),
-        ),
-        { initialValue: [] as MethodOption[] },
-    );
+                    .sort((a, b) => a.name.localeCompare(b.name));
+            } finally {
+                this.loading.set(false);
+            }
+        },
+    });
 
-    public readonly method_list = this._method_list;
+    public readonly method_list = computed(
+        () => this._method_list.value() || [],
+    );
     public readonly filtered_method_list = computed(() => {
         const search = this.method_filter().trim().toLowerCase();
         if (!search) return this.method_list();

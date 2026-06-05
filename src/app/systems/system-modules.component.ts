@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -17,9 +17,7 @@ import {
     queryModules,
     showModule,
 } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
-import { nextValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { AppLink, HashMap } from '../common/types';
@@ -49,8 +47,8 @@ import { SystemStateService } from './system-state.service';
                         {{ 'COMMON.EXECUTE_COMMAND' | translate }}
                     </h3>
                     <execute-method-field
-                        [system]="item$ | async"
-                        [refresh]="modules_refresh$ | async"
+                        [system]="item_signal()"
+                        [refresh]="modules_refresh()"
                     ></execute-method-field>
                 </section>
             }
@@ -91,7 +89,7 @@ import { SystemStateService } from './system-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
-                    [class.opacity-0]="!(loading | async).modules"
+                    [class.opacity-0]="!loading().modules"
                 ></mat-progress-bar>
                 <mat-menu #context_menu="matMenu">
                     @if (active_item()) {
@@ -174,7 +172,7 @@ import { SystemStateService } from './system-state.service';
                             },
                         ]"
                         [can_reorder]="true"
-                        [color]="colors | async"
+                        [color]="colors()"
                         (ondrop)="drop($event)"
                         [empty_message]="
                             'SYSTEMS.MODULE_LIST_EMPTY' | translate
@@ -188,7 +186,7 @@ import { SystemStateService } from './system-state.service';
                         dot
                         binding
                         [sys]="item.id"
-                        [mod]="(bindings | async)[index]"
+                        [mod]="bindings()[index]"
                         bind="connected"
                         [(model)]="row.connected"
                         class="mx-auto h-4 w-4 rounded-full"
@@ -248,7 +246,7 @@ import { SystemStateService } from './system-state.service';
                 </ng-template>
                 <ng-template #class_template let-row="row" let-index="index">
                     <div class="p-4 font-mono text-xs">
-                        {{ (bindings | async)[index] }}
+                        {{ bindings()[index] }}
                     </div>
                 </ng-template>
                 <ng-template #url_template let-row="row">
@@ -274,9 +272,9 @@ import { SystemStateService } from './system-state.service';
                     <div class="mx-auto">
                         <mat-checkbox
                             [disabled]="!row.running"
-                            [checked]="(debugging | async)[row.id]"
+                            [checked]="debugging()[row.id]"
                             [matTooltip]="
-                                ((debugging | async)[row.id]
+                                (debugging()[row.id]
                                     ? 'SYSTEMS.DEBUG_DISABLE'
                                     : 'SYSTEMS.DEBUG_ENABLE'
                                 ) | translate
@@ -381,26 +379,28 @@ export class SystemModulesComponent extends AsyncHandler {
 
     public readonly active_item = signal<PlaceModule>(null);
 
-    public readonly item$ = this._service.item.pipe(
-        map((_) => _ as PlaceSystem),
+    public readonly item_signal = computed(
+        () => this._service.item() as PlaceSystem,
     );
     public readonly loading = this._service.loading;
     public readonly modules = this._service.modules;
-    public readonly modules_refresh$ = this.modules.pipe(map(() => Date.now()));
+    public readonly modules_refresh = computed(() => {
+        this.modules();
+        return Date.now();
+    });
     public readonly debugging = this._service.debug_state;
     public readonly bindings = this._service.module_bindings;
 
-    public readonly colors = this.modules.pipe(
-        map((list) => {
-            const colors: Record<number, string> = {};
-            for (const i in list) {
-                if (list[i].has_runtime_error) {
-                    colors[i] = 'var(--error-light)';
-                }
+    public readonly colors = computed(() => {
+        const colors: Record<number, string> = {};
+        const list = this.modules();
+        for (const i in list) {
+            if (list[i].has_runtime_error) {
+                colors[i] = 'var(--error-light)';
             }
-            return colors;
-        }),
-    );
+        }
+        return colors;
+    });
     /** Actions available for the context menu */
     public menu_options: AppLink[] = [
         {
@@ -478,14 +478,12 @@ export class SystemModulesComponent extends AsyncHandler {
     ];
     /** Query method for modules */
     public readonly query_fn = (_: string) =>
-        queryModules({ q: _, no_logic: true }).pipe(
-            map(
-                (resp) =>
-                    resp.data.map((mod: PlaceModule) => ({
-                        ...mod,
-                        extra: mod.driver?.name,
-                    })) as (PlaceModule & { extra?: string })[],
-            ),
+        queryModules({ q: _, no_logic: true }).then(
+            (resp) =>
+                resp.data.map((mod: PlaceModule) => ({
+                    ...mod,
+                    extra: mod.driver?.name,
+                })) as (PlaceModule & { extra?: string })[],
         );
     /** Function for excluding modules already within this system */
     public readonly exclude_fn = (
@@ -563,7 +561,7 @@ export class SystemModulesComponent extends AsyncHandler {
      * @param device Module to reload
      */
     public async reload(device: PlaceModule) {
-        const item = await showModule(device.id).toPromise();
+        const item = await showModule(device.id);
         for (const k in item) {
             if (k in item) device[k] = item[k];
         }
@@ -578,28 +576,24 @@ export class SystemModulesComponent extends AsyncHandler {
     }
 
     public async setActive(idx: number) {
-        const modules = await nextValueFrom(this.modules);
+        const modules = this.modules();
         if (modules.length <= idx) this.active_item.set(null);
         else this.active_item.set(modules[idx]);
     }
 
-    public loadModule(device: PlaceModule) {
-        loadModule(device.id)
-            .toPromise()
-            .then(
-                () =>
-                    notifySuccess(
-                        `Successfully loaded module "${
-                            device.name || device.id
-                        }"`,
-                    ),
-                (err) =>
-                    notifyError(
-                        `Error loading module. Error: ${JSON.stringify(
-                            err.response || err.message || err,
-                        )}`,
-                    ),
-            );
+    public async loadModule(device: PlaceModule) {
+        await loadModule(device.id).then(
+            () =>
+                notifySuccess(
+                    `Successfully loaded module "${device.name || device.id}"`,
+                ),
+            (err) =>
+                notifyError(
+                    `Error loading module. Error: ${JSON.stringify(
+                        err.response || err.message || err,
+                    )}`,
+                ),
+        );
     }
 
     /**

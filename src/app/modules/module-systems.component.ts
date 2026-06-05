@@ -1,5 +1,4 @@
 import { Component, computed, inject, model } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -36,7 +35,7 @@ import { ModuleStateService } from './module-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="(loading | async) !== true"
+                    [class.opacity-0]="loading() !== true"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-lg text-sm"
@@ -112,13 +111,11 @@ import { ModuleStateService } from './module-state.service';
 export class ModuleSystemsComponent {
     private _service = inject(ModuleStateService);
 
-    /** Subject holding the value of the search */
+    /** Signal holding the value of the search */
     public readonly filter = model('');
     /** Whether systems are being loaded */
     public readonly loading = this._service.loading;
-    public readonly systems = toSignal(this._service.system_list, {
-        initialValue: [],
-    });
+    public readonly systems = this._service.system_list;
 
     public readonly system_list = computed(() => {
         const filter = this.filter().toLowerCase();

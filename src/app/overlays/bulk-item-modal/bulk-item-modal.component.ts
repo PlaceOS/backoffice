@@ -14,7 +14,6 @@ import {
     PlaceUser,
     PlaceZone,
 } from '@placeos/ts-client';
-import { Observable } from 'rxjs';
 import { unique } from '../../common/general';
 import { notifyError, notifyWarn } from '../../common/notifications';
 import { HashMap, Identity } from '../../common/types';
@@ -45,7 +44,7 @@ type BulkItemFlowStep = 'upload' | 'match-fields' | 'list' | 'status';
 export interface BulkItemModalData<T = HashMap<unknown>> {
     constr: Type<T>;
     name: string;
-    save: (item: Record<string, unknown>) => Observable<PlaceResource>;
+    save: (item: Record<string, unknown>) => Promise<PlaceResource>;
 }
 
 @Component({

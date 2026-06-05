@@ -1,13 +1,10 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { PlaceDriver } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
@@ -241,12 +238,7 @@ export class DriverAboutComponent {
     public readonly reload = () => this._service.reloadDriver();
     public readonly viewErrors = () => this._service.viewError();
 
-    public readonly item = toSignal(
-        this._service.item.pipe(map((item) => item as PlaceDriver)),
-        {
-            initialValue: undefined as PlaceDriver | undefined,
-        },
-    );
+    public readonly item = this._service.item;
     public copyCommit(): void {
         this._clipboard.copy(this.item()?.commit || '');
         notifyInfo(i18n('COMMON.COMMIT_HASH_COPIED'));

@@ -3,9 +3,9 @@ import { authority, isOnline, token } from '@placeos/ts-client';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AsyncHandler } from '../common/async-handler.class';
-import { firstTruthyValueFrom } from '../common/general';
 import { getLoadingMessage } from '../common/placeos';
 import { SettingsService } from '../common/settings.service';
+import { waitForSignalValue } from '../common/signals';
 
 @Component({
     selector: 'global-loading',
@@ -57,7 +57,7 @@ export class GlobalLoadingComponent extends AsyncHandler implements OnInit {
 
     public async ngOnInit() {
         this.loading.set(true);
-        await firstTruthyValueFrom(this._settings.initialised);
+        await waitForSignalValue(this._settings.initialised, (_) => _);
         this.online.set(isOnline());
         this.interval(
             'has_token',

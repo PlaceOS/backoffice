@@ -12,10 +12,9 @@ import {
     queryDomains,
     updateDomain,
 } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
-import { first, map } from 'rxjs/operators';
 import { notifyError } from '../common/notifications';
-import { ApplicationIcon } from '../common/types';
+import { waitForEvent } from '../common/signals';
+import { ApplicationIcon, DialogEvent } from '../common/types';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
@@ -224,9 +223,7 @@ export class PlaceExtensionsComponent implements OnInit {
 
     public async ngOnInit() {
         this.loading.set('Loading domains...');
-        const domain_list = await lastValueFrom(
-            queryDomains().pipe(map((r) => r.data)),
-        );
+        const domain_list = await queryDomains().then((r) => r.data);
         this.domain_list.set(domain_list);
         const domain = authority();
         if (!this.domain_list()?.length) return;
@@ -239,19 +236,18 @@ export class PlaceExtensionsComponent implements OnInit {
         const ref = this._dialog.open(ExtensionModalComponent, {
             data: { item: item ? JSON.parse(JSON.stringify(item)) : undefined },
         });
-        ref.componentInstance.event
-            .pipe(first((__) => __.reason === 'done'))
-            .subscribe(async (event) => {
-                ref.componentInstance.loading.set(
-                    'Saving backoffice extension...',
-                );
-                let ext_list = this.extensions() || [];
-                ext_list = ext_list.filter((i) => i.name !== item?.name);
-                ext_list.push(event.metadata as BackofficeExtension);
-                await this.updateDomain(ext_list);
-                ref.componentInstance.loading.set('');
-                ref.close();
-            });
+        waitForEvent(
+            ref.componentInstance.event,
+            (__: DialogEvent) => __.reason === 'done',
+        ).then(async (event) => {
+            ref.componentInstance.loading.set('Saving backoffice extension...');
+            let ext_list = this.extensions() || [];
+            ext_list = ext_list.filter((i) => i.name !== item?.name);
+            ext_list.push(event.metadata as BackofficeExtension);
+            await this.updateDomain(ext_list);
+            ref.componentInstance.loading.set('');
+            ref.close();
+        });
     }
 
     public async removeExtension(item: BackofficeExtension) {
@@ -265,18 +261,19 @@ export class PlaceExtensionsComponent implements OnInit {
                 },
             },
         );
-        ref.componentInstance.event
-            .pipe(first((__) => __.reason === 'done'))
-            .subscribe(async (__) => {
-                ref.componentInstance.loading.set('Removing extension...');
-                let ext_list = this.extensions();
-                ext_list = ext_list.filter((i) => i.name !== item.name);
-                await this.updateDomain(ext_list).catch((e) =>
-                    notifyError(`Error removing extension: ${e}`),
-                );
-                ref.componentInstance.loading.set('');
-                ref.close();
-            });
+        waitForEvent(
+            ref.componentInstance.event,
+            (__: DialogEvent) => __.reason === 'done',
+        ).then(async (__) => {
+            ref.componentInstance.loading.set('Removing extension...');
+            let ext_list = this.extensions();
+            ext_list = ext_list.filter((i) => i.name !== item.name);
+            await this.updateDomain(ext_list).catch((e) =>
+                notifyError(`Error removing extension: ${e}`),
+            );
+            ref.componentInstance.loading.set('');
+            ref.close();
+        });
     }
 
     public async updateDomain(extension_list: BackofficeExtension[]) {
@@ -302,7 +299,7 @@ export class PlaceExtensionsComponent implements OnInit {
                 },
             },
         });
-        const new_domain = await updateDomain(domain.id, updated).toPromise();
+        const new_domain = await updateDomain(domain.id, updated);
         this.domain.set(new_domain);
     }
 }

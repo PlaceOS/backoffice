@@ -8,8 +8,11 @@ import {
     UrlTree,
 } from '@angular/router';
 import { PlaceUser, onlineState } from '@placeos/ts-client';
-import { first } from 'rxjs/operators';
 
+import {
+    waitForClientSignalValue,
+    waitForSignalValue,
+} from '../../common/signals';
 import { BackofficeUsersService } from '../../users/users.service';
 
 @Injectable({
@@ -23,12 +26,11 @@ export class AuthorisedAdminGuard {
         _next: ActivatedRouteSnapshot,
         _state: RouterStateSnapshot,
     ): Promise<boolean | UrlTree> {
-        await onlineState()
-            .pipe(first((_) => _))
-            .toPromise();
-        const user: PlaceUser = await this._users.user
-            .pipe(first((_) => !!_))
-            .toPromise();
+        await waitForClientSignalValue(onlineState(), (_) => _);
+        const user: PlaceUser = await waitForSignalValue(
+            this._users.user,
+            (_) => !!_,
+        );
         const can_activate = user && user.sys_admin;
         if (!can_activate) {
             this._router.navigate(['/unauthorised']);
@@ -40,12 +42,11 @@ export class AuthorisedAdminGuard {
         _route: Route,
         _segments: UrlSegment[],
     ): Promise<boolean> {
-        await onlineState()
-            .pipe(first((_) => _))
-            .toPromise();
-        const user: PlaceUser = await this._users.user
-            .pipe(first((_) => !!_))
-            .toPromise();
+        await waitForClientSignalValue(onlineState(), (_) => _);
+        const user: PlaceUser = await waitForSignalValue(
+            this._users.user,
+            (_) => !!_,
+        );
         const can_activate = user && user.sys_admin;
         if (!can_activate) {
             this._router.navigate(['/unauthorised']);

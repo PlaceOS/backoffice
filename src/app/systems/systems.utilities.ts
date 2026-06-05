@@ -5,14 +5,14 @@ import {
     Validators,
 } from '@angular/forms';
 import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
-import { Subscription } from 'rxjs';
 
 import * as yaml from 'js-yaml';
+import { SubscriptionLike } from '../common/signals';
 import { validateURL } from '../common/validation';
 
 export interface FormDetails {
     form: FormGroup;
-    subscriptions: Subscription[];
+    subscriptions: SubscriptionLike[];
 }
 
 export function validateYAML(control: AbstractControl) {

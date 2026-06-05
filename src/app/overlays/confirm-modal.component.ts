@@ -12,11 +12,12 @@ import {
     MatDialogModule,
     MatDialogRef,
 } from '@angular/material/dialog';
-import { first } from 'rxjs/operators';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AsyncHandler } from '../common/async-handler.class';
+import { firstValueFrom } from '../common/general';
+import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -61,10 +62,11 @@ export async function openConfirmModal(
     );
     return {
         ...(await Promise.race([
-            ref.componentInstance.event
-                .pipe(first((_) => _.reason === 'done'))
-                .toPromise(),
-            ref.afterClosed().toPromise(),
+            waitForEvent(
+                ref.componentInstance.event,
+                (_: DialogEvent) => _.reason === 'done',
+            ),
+            firstValueFrom(ref.afterClosed()),
         ])),
         loading: (s) => ref.componentInstance.loading.set(s),
         close: () => ref.close(),

@@ -9,7 +9,6 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     FormGroup,
@@ -29,13 +28,12 @@ import {
     queryUsers,
     showUser,
 } from '@placeos/ts-client';
-import { lastValueFrom, of } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { getInvalidFields } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
+import { signalFromSubscribable } from '../../common/signals';
 import { DialogEvent } from '../../common/types';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../../ui/icon.component';
@@ -124,7 +122,7 @@ export interface APIKeyModalData {
                             'ADMIN.APP_KEYS_SCOPES_REQUIRED' | translate
                         }}</mat-error>
                         <mat-autocomplete #auto="matAutocomplete">
-                            @for (option of scopes | async; track option) {
+                            @for (option of scopes(); track option) {
                                 <mat-option
                                     (click)="
                                         addScope({
@@ -308,11 +306,9 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     public readonly domain = signal<PlaceDomain>(null);
     public readonly user_list = signal<PlaceUser[]>([]);
     public readonly user_list_loading = signal(false);
-    public readonly permissions = toSignal(
-        this.form.controls.permissions.valueChanges.pipe(
-            startWith(this.form.controls.permissions.value),
-        ),
-        { initialValue: this.form.controls.permissions.value },
+    public readonly permissions = signalFromSubscribable(
+        this.form.controls.permissions.valueChanges,
+        this.form.controls.permissions.value,
     );
     public readonly users = computed(() => {
         return this.user_list().sort((a, b) => a.name?.localeCompare(b.name));
@@ -398,7 +394,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     public async loadSelectedUser() {
         const user_id = this.form.value.user_id;
         if (!user_id || this.form.value.user) return;
-        const user = await lastValueFrom(showUser(user_id)).catch(() => null);
+        const user = await showUser(user_id).catch(() => null);
         if (!user) return;
         this.form.patchValue({ user });
         this.search_term.set(this._userLabel(user));
@@ -408,14 +404,14 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         this.timeout('load_users', async () => {
             this.user_list_loading.set(true);
             try {
-                const users = await lastValueFrom(
-                    this.domain()
-                        ? queryUsers({
+                const users = this.domain()
+                    ? (
+                          await queryUsers({
                               authority_id: this.domain().id,
                               q: this.search_term(),
-                          }).pipe(map((_) => _.data as PlaceUser[]))
-                        : of([] as PlaceUser[]),
-                );
+                          })
+                      ).data
+                    : [];
                 this.user_list.set(users);
                 if (
                     this.editing &&

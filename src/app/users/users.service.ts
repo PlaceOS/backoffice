@@ -7,8 +7,6 @@ import {
     onlineState,
     queryUsers,
 } from '@placeos/ts-client';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { first, map } from 'rxjs/operators';
 import { Md5 } from 'ts-md5';
 
 import { AsyncHandler } from '../common/async-handler.class';
@@ -26,23 +24,21 @@ type ServiceItem = PlaceUser;
 export class BackofficeUsersService extends AsyncHandler {
     private _settings = inject(SettingsService);
 
-    private _user_signal = signal<PlaceUser>(null);
-
     /** Name for a single user */
     public readonly singular: string = 'user';
-    /** Behavior subject with the currently available list of users */
-    public readonly listing = new BehaviorSubject<ServiceItem[]>([]);
+    /** Signal with the currently available list of users */
+    public readonly listing = signal<ServiceItem[]>([]);
 
-    private _user = new BehaviorSubject<ServiceItem>(null);
+    private _user = signal<ServiceItem>(null);
     /** Active User */
-    public readonly user = this._user.asObservable();
+    public readonly user = this._user.asReadonly();
     /** Active User */
-    public readonly current = () => this._user.getValue();
+    public readonly current = () => this._user();
 
     /** Active User */
-    public readonly currentSignal = () => this._user_signal;
+    public readonly currentSignal = () => this.user;
     /** State of loading the user */
-    public readonly state = new BehaviorSubject<string>('');
+    public readonly state = signal('');
 
     public readonly can_create: boolean = false;
     public readonly can_edit: boolean = true;
@@ -54,7 +50,7 @@ export class BackofficeUsersService extends AsyncHandler {
             : false;
         const theme =
             localStorage.getItem('BACKOFFICE.theme') ??
-            ((this._user.getValue() || {}) as Record<string, unknown>).ui_theme;
+            ((this._user() || {}) as Record<string, unknown>).ui_theme;
         return (theme && theme === 'dark') || (!theme && os_dark);
     }
     public set dark_mode(state: boolean) {
@@ -72,9 +68,10 @@ export class BackofficeUsersService extends AsyncHandler {
 
     constructor() {
         super();
-        onlineState()
-            .pipe(first((_) => _))
-            .subscribe(() => this.load());
+        const unsubscribe = onlineState().subscribe((online) => {
+            if (online) this.load();
+        });
+        this.subscription('online', unsubscribe);
     }
 
     /**
@@ -82,46 +79,45 @@ export class BackofficeUsersService extends AsyncHandler {
      * @param predicate Function to filter the zone list on
      */
     public list(predicate: FilterFn<PlaceUser> = this._filter_fn): PlaceUser[] {
-        return (this.listing.getValue() || []).filter(predicate);
+        return (this.listing() || []).filter(predicate);
     }
 
-    public query(
+    public async query(
         query_params?: PlaceUserQueryOptions,
-    ): Observable<PlaceUser[]> {
-        return queryUsers(query_params).pipe(map((resp) => resp.data));
+    ): Promise<PlaceUser[]> {
+        return (await queryUsers(query_params)).data;
     }
 
     public load(): Promise<void> {
         return new Promise((resolve) => {
-            this.state.next('loading');
-            currentUser().subscribe({
-                next: (user) => {
-                    if (user) {
-                        this._user.next(user);
-                        this._user_signal.set(user);
-                        Sentry.withScope((scope) =>
-                            scope.setUser({ email: user.email }),
-                        );
-                        this.state.next('success');
-                        this._initialised.next(true);
-                        // Trigger dark mode getter to apply current theme
-                        const _current_theme = this.dark_mode;
-                        resolve();
-                    } else {
+            this.state.set('loading');
+            currentUser()
+                .then((user) => {
+                    if (!user) {
                         this.timeout(
                             'load',
                             () => this.load().then((_) => resolve()),
                             600,
                         );
+                        return;
                     }
-                },
-                error: () =>
+                    this._user.set(user);
+                    Sentry.withScope((scope) =>
+                        scope.setUser({ email: user.email }),
+                    );
+                    this.state.set('success');
+                    this._initialised.set(true);
+                    // Trigger dark mode getter to apply current theme
+                    const _current_theme = this.dark_mode;
+                    resolve();
+                })
+                .catch(() =>
                     this.timeout(
                         'load',
                         () => this.load().then((_) => resolve()),
                         600,
                     ),
-            });
+                );
         });
     }
 

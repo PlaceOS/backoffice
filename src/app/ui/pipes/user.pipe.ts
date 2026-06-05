@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { PlaceUser, showUser } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom } from '../../common/general';
 
 const USERS: PlaceUser[] = [];
 

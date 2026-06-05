@@ -15,7 +15,6 @@ import {
     queryDomains,
 } from '@placeos/ts-client';
 import { addDays, getUnixTime, startOfDay } from 'date-fns';
-import { map } from 'rxjs/operators';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -216,9 +215,7 @@ export class PlaceStaffAPIComponent implements OnInit {
 
     public async ngOnInit() {
         this.loading.set('Loading domains...');
-        const domain_list = await queryDomains()
-            .pipe(map((r) => r.data))
-            .toPromise();
+        const domain_list = await queryDomains().then((r) => r.data);
         this.domain_list.set(domain_list || []);
         const domain = authority();
         if (!domain_list?.length) {
@@ -271,16 +268,16 @@ export class PlaceStaffAPIComponent implements OnInit {
         );
         if (!details || !details.reason) return;
         details.loading('Removing tenant from domain...');
-        const system = await del(`/api/staff/v1/tenants/${tenant.id}`)
-            .toPromise()
-            .catch((err) => {
+        const system = await del(`/api/staff/v1/tenants/${tenant.id}`).catch(
+            (err) => {
                 notifyError(
                     `Error removing module ${tenant.id} from domain. Error: ${
                         err.statusText || err.message || err
                     }`,
                 );
                 return true;
-            });
+            },
+        );
         details.close();
         if (system) return;
         notifySuccess(`Successfully removed tenant from domain.`);
@@ -293,9 +290,7 @@ export class PlaceStaffAPIComponent implements OnInit {
             return;
         }
         this.loading.set('Loading tenants for domain...');
-        const tenants = await get('/api/staff/v1/tenants')
-            .toPromise()
-            .catch(() => []);
+        const tenants = await get('/api/staff/v1/tenants').catch(() => []);
         this.tenants.set(
             (tenants || []).filter((t) => t.domain === this.domain()?.domain),
         );

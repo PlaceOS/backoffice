@@ -29,14 +29,11 @@ import { APIKeyService } from './api-keys.service';
                     <mat-form-field appearance="outline" class="h-12">
                         <mat-select
                             name="type"
-                            [ngModel]="domain | async"
+                            [ngModel]="domain()"
                             (ngModelChange)="setDomain($event)"
                             [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
-                            @for (
-                                domain of domain_list | async;
-                                track domain.id
-                            ) {
+                            @for (domain of domain_list(); track domain.id) {
                                 <mat-option [value]="domain">
                                     {{ domain.name }}
                                 </mat-option>
@@ -47,14 +44,14 @@ import { APIKeyService } from './api-keys.service';
                         btn
                         matRipple
                         class="w-32"
-                        [disabled]="(domain | async) === null"
+                        [disabled]="domain() === null"
                         (click)="newKey()"
                     >
                         {{ 'ADMIN.APP_KEYS_ADD' | translate }}
                     </button>
                 </div>
             </div>
-            @if (last_key | async) {
+            @if (last_key()) {
                 <div
                     class="mx-4 mb-4 flex w-[calc(100%-2rem)] items-start space-x-2"
                 >
@@ -70,10 +67,7 @@ import { APIKeyService } from './api-keys.service';
                             <div
                                 class="mono bg-base-100 rounded-sm px-2 py-1 text-xs opacity-60"
                             >
-                                {{
-                                    (last_key | async)?.name ||
-                                        'Unanamed API Key'
-                                }}
+                                {{ last_key()?.name || 'Unanamed API Key' }}
                             </div>
                         </div>
                         <button
@@ -81,7 +75,7 @@ import { APIKeyService } from './api-keys.service';
                             class="mono rounded px-4 py-3 wrap-break-word opacity-60 select-all"
                             (click)="copyKey()"
                         >
-                            {{ (last_key | async)?.x_api_key }}
+                            {{ last_key()?.x_api_key }}
                         </button>
                     </div>
                 </div>
@@ -90,7 +84,7 @@ import { APIKeyService } from './api-keys.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="(loading | async) !== true"
+                    [class.opacity-0]="loading() !== true"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-5xl text-sm"

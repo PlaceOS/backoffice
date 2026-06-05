@@ -6,7 +6,6 @@ import {
     OnInit,
     signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceCluster,
@@ -15,6 +14,7 @@ import {
     queryProcesses,
     terminateProcess,
 } from '@placeos/ts-client';
+import { lastValueFrom } from '../../common/general';
 
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -23,10 +23,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { lastValueFrom, map } from 'rxjs';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
+import { signalFromSubscribable } from '../../common/signals';
 import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
@@ -191,10 +191,11 @@ export class PlaceClusterTaskListComponent
 
     public readonly process_list = signal([]);
     public readonly filter = signal('');
-    private readonly _cluster_id = toSignal(
-        this._route.paramMap.pipe(map((params) => params.get('id'))),
-        { initialValue: null },
+    private readonly _param_map = signalFromSubscribable(
+        this._route.paramMap,
+        this._route.snapshot.paramMap,
     );
+    private readonly _cluster_id = computed(() => this._param_map().get('id'));
 
     public readonly filtered_list = computed(() =>
         this.process_list().filter((item) =>
@@ -287,11 +288,9 @@ export class PlaceClusterTaskListComponent
     }
 
     public async loadCluster(id: string) {
-        const clusters = await lastValueFrom(
-            queryClusters({ q: id } as Record<string, string>).pipe(
-                map((_) => _.data),
-            ),
-        );
+        const clusters = await queryClusters({
+            q: id,
+        } as Record<string, string>).then((_) => _.data);
         const match = clusters.find((_) => _.id === id) || clusters[0];
         console.log('Clusters:', clusters);
         this.cluster.set(match);

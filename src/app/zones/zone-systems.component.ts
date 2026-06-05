@@ -1,5 +1,4 @@
 import { Component, computed, inject, model } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -106,12 +105,8 @@ export class ZoneSystemsComponent {
     private _state = inject(ZonesStateService);
 
     public readonly filter = model('');
-    public readonly loading = toSignal(this._state.loading, {
-        initialValue: false,
-    });
-    private readonly _systems = toSignal(this._state.systems, {
-        initialValue: [],
-    });
+    public readonly loading = this._state.loading;
+    private readonly _systems = this._state.systems;
 
     public readonly systems = computed(() => {
         const filter = this.filter().toLowerCase();

@@ -1,6 +1,6 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceUser } from '@placeos/ts-client';
+import { toSignal } from '../common/signals';
 
 import { CommonModule } from '@angular/common';
 import { AsyncHandler } from '../common/async-handler.class';

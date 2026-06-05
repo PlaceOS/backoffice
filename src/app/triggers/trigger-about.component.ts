@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import {
     PlaceSystem,
     PlaceTrigger,
@@ -9,7 +8,7 @@ import {
     TriggerTimeCondition,
     querySystems,
 } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
+import { toSignal } from '../common/signals';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -343,7 +342,7 @@ export class TriggerAboutComponent extends AsyncHandler {
     );
     /** Query function for systems */
     public readonly query_fn = (q: string) =>
-        querySystems({ q }).pipe(map((resp) => resp.data as PlaceSystem[]));
+        querySystems({ q }).then((resp) => resp.data as PlaceSystem[]);
 
     public readonly editCondition = (
         c?: TriggerComparison | TriggerTimeCondition,

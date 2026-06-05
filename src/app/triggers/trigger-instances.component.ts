@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceTrigger } from '@placeos/ts-client';
+import { toSignal } from '../common/signals';
 
 import { HashMap } from '../common/types';
 

@@ -8,8 +8,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, queryDomains } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { lastValueFrom } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
@@ -198,9 +197,7 @@ export class StorageComponent implements OnInit {
 
     public async ngOnInit() {
         this.loading.set('Loading domains...');
-        const domain_list = await lastValueFrom(
-            queryDomains().pipe(map((r) => r.data)),
-        );
+        const domain_list = await queryDomains().then((r) => r.data);
         this.domain_list.set(domain_list);
         this.loadStorage();
         this.loading.set('');
@@ -227,7 +224,7 @@ export class StorageComponent implements OnInit {
         );
         if (resp.reason !== 'done') return;
         resp.loading(i18n('ADMIN.STORAGE_REMOVE_LOADING'));
-        await removeStorage(item.id).toPromise();
+        await removeStorage(item.id);
         resp.close();
         this.loadStorage();
     }

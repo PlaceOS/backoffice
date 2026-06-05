@@ -1,5 +1,4 @@
 import { Component, computed, inject, model } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,7 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
+import { toSignal } from '../common/signals';
 
 import { BindingDirective } from '../ui/binding.directive';
 import { IconComponent } from '../ui/icon.component';
@@ -215,7 +214,7 @@ export class DriverModulesComponent {
     private _service = inject(DriverStateService);
 
     public loading_systems = false;
-    /** Subject holding the value of the search */
+    /** Signal holding the value of the search */
     public readonly filter = model('');
     /** Whether systems are being loaded */
     public readonly loading = toSignal(this._service.loading, {
@@ -246,9 +245,7 @@ export class DriverModulesComponent {
 
     public async loadSystems(mod: PlaceModule) {
         this.loading_systems = true;
-        const systems = await querySystems({ module_id: mod.id })
-            .pipe(map(({ data }) => data))
-            .toPromise();
+        const { data: systems } = await querySystems({ module_id: mod.id });
         this.systems[mod.id] = systems || [];
         this.loading_systems = false;
     }

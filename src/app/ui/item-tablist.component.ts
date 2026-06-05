@@ -7,7 +7,6 @@ import {
     model,
     signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
     NavigationCancel,
@@ -18,9 +17,9 @@ import {
     Router,
     RouterModule,
 } from '@angular/router';
-import { startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
+import { toSignal } from '../common/signals';
 import { ApplicationIcon } from '../common/types';
 import { IconComponent } from './icon.component';
 
@@ -85,10 +84,9 @@ export interface ItemTab {
 export class ItemTablistComponent extends AsyncHandler implements OnInit {
     private _router = inject(Router);
     private _hotkey = inject(HotkeysService);
-    private readonly _route_change = toSignal(
-        this._router.events.pipe(startWith(null)),
-        { initialValue: null },
-    );
+    private readonly _route_change = toSignal(this._router.events, {
+        initialValue: null,
+    });
 
     public readonly base = input<string>('systems');
     public readonly item_id = model<string>('-');

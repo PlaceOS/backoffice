@@ -8,7 +8,6 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import {
     EncryptionLevel,
@@ -23,12 +22,12 @@ import {
     querySystems,
     updateModule,
 } from '@placeos/ts-client';
+import { toSignal } from '../common/signals';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { map } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { getInvalidFields } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
@@ -412,15 +411,15 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
     ];
 
     public readonly driver_query_fn = (_: string) =>
-        queryDrivers({ q: _ } as Record<string, unknown>).pipe(
-            map((resp) => resp.data),
+        queryDrivers({ q: _ } as Record<string, unknown>).then(
+            (resp) => resp.data,
         );
 
     public readonly system_query_fn = (_: string) =>
-        querySystems({ q: _ }).pipe(map((resp) => resp.data));
+        querySystems({ q: _ }).then((resp) => resp.data);
 
     public readonly edge_query_fn = (_: string) =>
-        queryEdges({ q: _ }).pipe(map((resp) => resp.data));
+        queryEdges({ q: _ }).then((resp) => resp.data);
 
     /** Role of the selected driver */
     public role: Signal<string> = computed(() => {
@@ -445,7 +444,7 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    public submit(): void {
+    public async submit(): Promise<void> {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
@@ -463,38 +462,36 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
                 ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
                 : { ...item_json, ...this.form.value }
         ) as Identity;
-        (form_item.id
-            ? updateModule(
-                  form_item.id as string,
-                  form_item as unknown as PlaceModule,
-              )
-            : addModule(form_item as unknown as PlaceModule)
-        ).subscribe(
-            (_item) => {
-                this._dialog_ref.disableClose = false;
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                if (!this.form.value.id && this.form.controls.settings) {
-                    this.newSettings(
-                        _item as unknown as Identity,
-                        this.form.controls.settings.value,
-                    ).then(() => this._dialog_ref.close());
-                } else {
-                    this._dialog_ref.close();
-                }
-            },
-            async (err) => {
-                this.loading = null;
-                this._dialog_ref.disableClose = false;
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await err.text?.()) || err.message || err,
-                        ),
-                    }),
+        try {
+            const _item = await (form_item.id
+                ? updateModule(
+                      form_item.id as string,
+                      form_item as unknown as PlaceModule,
+                  )
+                : addModule(form_item as unknown as PlaceModule));
+            this._dialog_ref.disableClose = false;
+            this.event.emit({ reason: 'done', metadata: { item: _item } });
+            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+            if (!this.form.value.id && this.form.controls.settings) {
+                await this.newSettings(
+                    _item as unknown as Identity,
+                    this.form.controls.settings.value,
                 );
-            },
-        );
+            }
+            this._dialog_ref.close();
+        } catch (err) {
+            this.loading = null;
+            this._dialog_ref.disableClose = false;
+            notifyError(
+                i18n(`${this._name}.SAVE_ERROR`, {
+                    error: JSON.stringify(
+                        (await (err as Response).text?.()) ||
+                            (err as Error).message ||
+                            err,
+                    ),
+                }),
+            );
+        }
     }
 
     private async newSettings(item: Identity, settings_string: string) {
@@ -503,17 +500,15 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
-        await addSettings(new_settings)
-            .toPromise()
-            .catch((err) => {
-                this.loading = null;
-                notifyError(
-                    `Error saving settings for ${
-                        item.name || item.id
-                    }. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
-            });
+        await addSettings(new_settings).catch((err) => {
+            this.loading = null;
+            notifyError(
+                `Error saving settings for ${
+                    item.name || item.id
+                }. Error: ${JSON.stringify(
+                    err.response || err.message || err,
+                )}`,
+            );
+        });
     }
 }

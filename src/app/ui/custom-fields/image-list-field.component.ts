@@ -19,7 +19,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from '../../common/async-handler.class';
-import { nextValueFrom, unique } from '../../common/general';
+import { unique } from '../../common/general';
 import { notifyInfo } from '../../common/notifications';
 import { UploadDetails } from '../../common/uploads';
 import { UploadsService } from '../../common/uploads.service';
@@ -338,7 +338,7 @@ export class ImageListFieldComponent
     private async _updateUploadHistory() {
         const list = this.upload_ids();
         if (list.length === 0) return;
-        const global_list = await nextValueFrom(this._uploads.upload_list);
+        const global_list = this._uploads.upload_list();
         const new_list = global_list.filter((_) =>
             list.find((i) => i === _.id),
         );

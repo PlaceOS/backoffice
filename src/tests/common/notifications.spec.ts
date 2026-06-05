@@ -1,4 +1,3 @@
-import { Subject } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     notify,
@@ -9,29 +8,44 @@ import {
     setNotifyOutlet,
 } from '../../app/common/notifications';
 
+const createActionSource = () => {
+    const listeners = new Set<() => void>();
+    return {
+        source: {
+            subscribe: (listener: () => void) => {
+                listeners.add(listener);
+                return { unsubscribe: () => listeners.delete(listener) };
+            },
+        },
+        next: () => {
+            for (const listener of listeners) listener();
+        },
+    };
+};
+
 // Create mock snackbar
 const createMockSnackbar = () => {
-    const action_subject = new Subject<void>();
+    const action_source = createActionSource();
     const mock_ref = {
         dismiss: vi.fn(),
-        onAction: vi.fn(() => action_subject.asObservable()),
+        onAction: vi.fn(() => action_source.source),
     };
     const mock_snackbar = {
         open: vi.fn(() => mock_ref),
     };
-    return { mock_snackbar, mock_ref, action_subject };
+    return { mock_snackbar, mock_ref, action_source };
 };
 
 describe('notifications.ts', () => {
     let mock_snackbar: any;
     let mock_ref: any;
-    let action_subject: Subject<void>;
+    let action_source: ReturnType<typeof createActionSource>;
 
     beforeEach(() => {
         const mocks = createMockSnackbar();
         mock_snackbar = mocks.mock_snackbar;
         mock_ref = mocks.mock_ref;
-        action_subject = mocks.action_subject;
+        action_source = mocks.action_source;
 
         setNotifyOutlet(mock_snackbar as any);
 
@@ -90,7 +104,7 @@ describe('notifications.ts', () => {
             const on_action = vi.fn();
             notify('info', 'Test message', 'ACTION', on_action);
 
-            action_subject.next();
+            action_source.next();
 
             expect(on_action).toHaveBeenCalled();
         });
@@ -98,7 +112,7 @@ describe('notifications.ts', () => {
         it('should dismiss snackbar on action if no callback provided', () => {
             notify('info', 'Test message', 'OK');
 
-            action_subject.next();
+            action_source.next();
 
             expect(mock_ref.dismiss).toHaveBeenCalled();
         });

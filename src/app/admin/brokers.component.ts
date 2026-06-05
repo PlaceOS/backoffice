@@ -12,8 +12,6 @@ import {
     removeBroker,
     updateBroker,
 } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { AsyncHandler } from '../common/async-handler.class';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -252,9 +250,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
             );
             if (!details) return;
             details.loading('Deleting broker...');
-            const err = await removeBroker(item.id)
-                .toPromise()
-                .catch((_) => _);
+            const err = await removeBroker(item.id).catch((_) => _);
             details.close();
             if (err)
                 return notifyError(
@@ -269,9 +265,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
 
     public async loadBrokers() {
         this.loading.set(true);
-        const brokers = await lastValueFrom(
-            queryBrokers().pipe(map((r) => r.data)),
-        );
+        const brokers = await queryBrokers().then((r) => r.data);
         this.brokers.set(brokers);
         this.loading.set(false);
     }

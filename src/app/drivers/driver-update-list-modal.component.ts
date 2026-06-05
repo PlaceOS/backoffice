@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, resource, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -8,8 +7,6 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { queryDrivers, updateDriver } from '@placeos/ts-client';
-import { of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
@@ -169,26 +166,27 @@ export class DriverUpdateListModalComponent {
 
     public readonly loading = signal('Loading drivers...');
     private readonly _change = signal(0);
-    public readonly drivers_with_updates = toSignal(
-        toObservable(this._change).pipe(
-            switchMap(() => {
-                this.loading.set('Loading drivers...');
-                return queryDrivers({
-                    update_available: true,
-                    limit: 1000,
-                }).pipe(catchError(() => of({ data: [], total: 0 })));
-            }),
-            map((_) => {
-                _.data = _.data.filter(
-                    (_) => _.commit !== _.update_info.commit,
-                );
-                _.data = _.data.sort((a, b) => a.name.localeCompare(b.name));
-                this.selected_drivers.set(_.data.map((d) => d.id));
-                this.loading.set('');
-                return _;
-            }),
-        ),
-        { initialValue: { data: [], total: 0 } },
+    private readonly _drivers_with_updates = resource({
+        params: () => this._change(),
+        loader: async () => {
+            this.loading.set('Loading drivers...');
+            const response = await queryDrivers({
+                update_available: true,
+                limit: 1000,
+            }).catch(() => ({ data: [], total: 0 }));
+            response.data = response.data.filter(
+                (_) => _.commit !== _.update_info.commit,
+            );
+            response.data = response.data.sort((a, b) =>
+                a.name.localeCompare(b.name),
+            );
+            this.selected_drivers.set(response.data.map((d) => d.id));
+            this.loading.set('');
+            return response;
+        },
+    });
+    public readonly drivers_with_updates = computed(
+        () => this._drivers_with_updates.value() || { data: [], total: 0 },
     );
     public readonly selected_drivers = signal<string[]>([]);
 
@@ -231,7 +229,7 @@ export class DriverUpdateListModalComponent {
                     ? updateDriver(driver.id, {
                           ...driver,
                           commit: driver.update_info.commit,
-                      }).toPromise()
+                      })
                     : Promise.resolve(),
             ),
         ).catch((_) => {

@@ -58,8 +58,6 @@ import {
     updateUser,
     updateZone,
 } from '@placeos/ts-client';
-import { from, lastValueFrom, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
 import { DomainFormComponent } from '../domains/domain-form.component';
 import { DriverFormComponent } from '../drivers/driver-form.component';
 import { GroupFormComponent } from '../groups/group-form.component';
@@ -72,9 +70,9 @@ import { ZoneFormComponent } from '../zones/zone-form.component';
 
 export interface ItemActions<T> {
     query: (_?: string) => QueryResponse<T>;
-    show: (_: string) => Observable<T>;
-    save: (_: T) => Observable<T>;
-    remove: (_: T) => Observable<unknown>;
+    show: (_: string) => Promise<T>;
+    save: (_: T) => Promise<T>;
+    remove: (_: T) => Promise<unknown>;
     itemConstructor: Type<T>;
     modalComponent: Type<unknown>;
     delete_message: string;
@@ -116,8 +114,7 @@ const drivers: ItemActions<PlaceDriver> = {
             driver_id: _.id,
         };
         const count = await queryModules(query)
-            .pipe(map(({ total }) => total))
-            .toPromise()
+            .then(({ total }) => total)
             .catch((_err) => 0);
         return count
             ? [
@@ -140,7 +137,7 @@ const groups: ItemActions<PlaceGroup> = {
     remove: (item) => removeGroup(item.id),
     itemConstructor: PlaceGroup,
     modalComponent: GroupFormComponent,
-    delete_message: `` ,
+    delete_message: ``,
     name: 'GROUPS',
 };
 
@@ -195,12 +192,8 @@ type BulkSystemItem = Omit<PlaceSystem, 'modules'> & {
     start_modules?: boolean;
 };
 
-function saveSystem(item: PlaceSystem): Observable<PlaceSystem> {
-    const {
-        modules,
-        start_modules,
-        ...system_data
-    } = item as BulkSystemItem;
+async function saveSystem(item: PlaceSystem): Promise<PlaceSystem> {
+    const { modules, start_modules, ...system_data } = item as BulkSystemItem;
     const { module_ids, driver_ids } = splitModuleIds(modules);
     const form_data = {
         ...system_data,
@@ -210,17 +203,9 @@ function saveSystem(item: PlaceSystem): Observable<PlaceSystem> {
         (form_data as { modules?: readonly string[] }).modules = module_ids;
     }
     if (item.id) return updateSystem(item.id, form_data);
-    return addSystem(form_data).pipe(
-        switchMap((system) =>
-            from(
-                finishSystemBulkAdd(
-                    system,
-                    driver_ids,
-                    !!start_modules,
-                ),
-            ).pipe(map(() => system)),
-        ),
-    );
+    const system = await addSystem(form_data);
+    await finishSystemBulkAdd(system, driver_ids, !!start_modules);
+    return system;
 }
 
 async function finishSystemBulkAdd(
@@ -229,27 +214,28 @@ async function finishSystemBulkAdd(
     start_modules: boolean,
 ) {
     await addLogicDriverModules(system, driver_ids);
-    if (start_modules) await lastValueFrom(startSystem(system.id));
+    if (start_modules) await startSystem(system.id);
 }
 
-async function addLogicDriverModules(system: PlaceSystem, driver_ids: string[]) {
+async function addLogicDriverModules(
+    system: PlaceSystem,
+    driver_ids: string[],
+) {
     if (!driver_ids.length) return;
     await Promise.all(
         [...new Set(driver_ids)].map(async (driver_id) => {
-            const driver = await lastValueFrom(showDriver(driver_id));
+            const driver = await showDriver(driver_id);
             if (driver.role !== PlaceDriverRole.Logic) return;
-            await lastValueFrom(
-                addModule({
-                    driver_id: driver.id,
-                    control_system_id: system.id,
-                    name: driver.name || driver.module_name,
-                    uri: driver.default_uri,
-                    port: driver.default_port || 1,
-                    role: driver.role,
-                    alert_level: driver.alert_level,
-                    ignore_connected: driver.ignore_connected,
-                } as Partial<PlaceModule>),
-            );
+            await addModule({
+                driver_id: driver.id,
+                control_system_id: system.id,
+                name: driver.name || driver.module_name,
+                uri: driver.default_uri,
+                port: driver.default_port || 1,
+                role: driver.role,
+                alert_level: driver.alert_level,
+                ignore_connected: driver.ignore_connected,
+            } as Partial<PlaceModule>);
         }),
     );
 }

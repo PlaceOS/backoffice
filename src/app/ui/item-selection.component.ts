@@ -14,7 +14,6 @@ import {
     SimpleChanges,
     viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterModule } from '@angular/router';
@@ -24,14 +23,10 @@ import {
     PlaceRepository,
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
-import { Observable } from 'rxjs';
-import { startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
-import { nextValueFrom } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
-import { SettingsService } from '../common/settings.service';
-import { BackofficeUsersService } from '../users/users.service';
+import { toSignal } from '../common/signals';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 import { VirtualScrollComponent } from './virtual-scroll.component';
@@ -81,7 +76,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                     | translate: { name: title() }
                             "
                         />
-                        @if (loading | async) {
+                        @if (loading()) {
                             <mat-spinner
                                 diameter="24"
                                 class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
@@ -91,14 +86,14 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                     <p class="w-full px-4 text-sm opacity-60 text-left">
                         {{
                             'COMMON.TOTAL_ITEMS'
-                                | translate: { count: (total | async) }:(total | async)
+                                | translate: { count: total() }:total()
                         }}
                     </p>
                     <div class="border-base-300 flex h-1/2 flex-1 flex-col">
-                        @if ((items | async)?.length) {
+                        @if (items().length) {
                             <virtual-scroll
                                 [item_size]="72"
-                                [items]="items | async"
+                                [items]="items()"
                                 [item_template]="item_display"
                                 (scrolled)="atBottom($event)"
                                 class="h-[768px] max-h-[75vh]"
@@ -191,15 +186,12 @@ export class ItemSelectionComponent
     extends AsyncHandler
     implements OnInit, OnChanges, AfterViewInit
 {
-    private _users = inject(BackofficeUsersService);
     private _router = inject(Router);
-    private _settings = inject(SettingsService);
     private _hotkeys = inject(HotkeysService);
     private _service = inject(ActiveItemService);
-    private readonly _route_change = toSignal(
-        this._router.events.pipe(startWith(null)),
-        { initialValue: null },
-    );
+    private readonly _route_change = toSignal(this._router.events, {
+        initialValue: null,
+    });
 
     public readonly show = model(true);
     public readonly title = input(undefined);
@@ -210,12 +202,16 @@ export class ItemSelectionComponent
     public last_check = 0;
     public search = '';
     /** List of items for the active route */
-    public readonly items = this._service.list as Observable<
-        ({ id?: string; name?: string; extra?: string } & Record<
-            string,
-            unknown
-        >)[]
-    >;
+    public readonly items = computed(() =>
+        this._processItems(
+            this._service.list() as ({
+                id?: string;
+                name?: string;
+                display_name?: string;
+                custom_name?: string;
+            } & Record<string, unknown>)[],
+        ),
+    );
     /** Whether list of items for the active route are loading */
     public readonly loading = this._service.loading_list;
     /** Total number of items in the last request */
@@ -234,28 +230,13 @@ export class ItemSelectionComponent
             this._route_change();
             this.subroute.set(this._router.url.split('/')[3] || '');
         });
+        effect(() => {
+            this._service.loading();
+            this.show.set(!this._service.active_item);
+        });
     }
 
     public ngOnInit() {
-        this.subscription(
-            'loading',
-            this._service.loading.subscribe(() =>
-                this.show.set(!this._service.active_item),
-            ),
-        );
-        this.subscription(
-            'list',
-            this._service.list.subscribe((l) =>
-                this._processItems(
-                    l as ({
-                        id?: string;
-                        name?: string;
-                        display_name?: string;
-                        custom_name?: string;
-                    } & Record<string, unknown>)[],
-                ),
-            ),
-        );
         this.subscription(
             'hotkey',
             this._hotkeys.listen(['KeyK'], () => this.open()),
@@ -303,8 +284,8 @@ export class ItemSelectionComponent
         this.timeout(
             'load_more',
             async () => {
-                const loading = await nextValueFrom(this.loading);
-                const items = await nextValueFrom(this.items);
+                const loading = this.loading();
+                const items = this.items();
                 if (loading || !this.is_stale) return;
                 if (end >= items.length) {
                     this.last_total = items.length;
@@ -350,5 +331,6 @@ export class ItemSelectionComponent
                 (item as Record<string, unknown>).extra = item.id;
             }
         }
+        return list;
     }
 }

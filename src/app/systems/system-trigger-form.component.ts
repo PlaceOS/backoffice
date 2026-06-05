@@ -7,7 +7,6 @@ import {
     Signal,
     inject,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     ReactiveFormsModule,
@@ -24,6 +23,7 @@ import { getInvalidFields } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
+import { toSignal } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { generateTriggerSettingsFormFields } from '../triggers/triggers.utilities';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';

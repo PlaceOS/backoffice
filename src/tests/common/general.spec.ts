@@ -1,9 +1,9 @@
+import { signal } from '@angular/core';
 import {
     UntypedFormControl,
     UntypedFormGroup,
     Validators,
 } from '@angular/forms';
-import { Subject, of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     copyToClipboard,
@@ -582,54 +582,51 @@ describe('general.ts utilities', () => {
     });
 
     describe('nextValueFrom', () => {
-        it('should return first value from observable', async () => {
-            const subject = new Subject<number>();
-            const promise = nextValueFrom(subject);
-            subject.next(42);
-            expect(await promise).toBe(42);
+        it('should return current value from signal', async () => {
+            const value = signal(42);
+            expect(await nextValueFrom(value)).toBe(42);
         });
 
-        it('should return null for null observable', async () => {
+        it('should return null for null signal', async () => {
             expect(await nextValueFrom(null as any)).toBeNull();
         });
     });
 
     describe('firstTruthyValueFrom', () => {
         it('should return first truthy value', async () => {
-            const subject = new Subject<number>();
-            const promise = firstTruthyValueFrom(subject);
-            subject.next(0);
-            subject.next(1);
+            const value = signal(0);
+            const promise = firstTruthyValueFrom(value);
+            value.set(1);
             expect(await promise).toBe(1);
         });
 
-        it('should return null for null observable', async () => {
+        it('should return null for null signal', async () => {
             expect(await firstTruthyValueFrom(null as any)).toBeNull();
         });
 
         it('should skip falsy values', async () => {
-            const subject = new Subject<string>();
-            const promise = firstTruthyValueFrom(subject);
-            subject.next('');
-            subject.next('hello');
+            const value = signal('');
+            const promise = firstTruthyValueFrom(value);
+            value.set('hello');
             expect(await promise).toBe('hello');
         });
     });
 
     describe('mapLastValueFrom', () => {
         it('should map and return last value', async () => {
-            const obs = of(5);
-            const result = await mapLastValueFrom(obs, (x) => x * 2);
+            const result = await mapLastValueFrom(
+                Promise.resolve(5),
+                (x) => x * 2,
+            );
             expect(result).toBe(10);
         });
 
         it('should return last value without mapping if no map_fn', async () => {
-            const obs = of(5);
-            const result = await mapLastValueFrom(obs);
+            const result = await mapLastValueFrom(Promise.resolve(5));
             expect(result).toBe(5);
         });
 
-        it('should return null for null observable', async () => {
+        it('should return null for null source', async () => {
             expect(await mapLastValueFrom(null as any)).toBeNull();
         });
     });

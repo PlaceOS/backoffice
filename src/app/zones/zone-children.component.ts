@@ -1,5 +1,4 @@
 import { Component, computed, inject, model } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceZone } from '@placeos/ts-client';
 
 import { FormsModule } from '@angular/forms';
@@ -104,12 +103,8 @@ export class ZoneChildrenComponent {
     private _state = inject(ZonesStateService);
 
     public readonly filter = model('');
-    public readonly loading = toSignal(this._state.loading, {
-        initialValue: false,
-    });
-    private readonly _children = toSignal(this._state.children, {
-        initialValue: [],
-    });
+    public readonly loading = this._state.loading;
+    private readonly _children = this._state.children;
     /** List of triggers associated with the zone */
     public readonly children = computed(() => {
         const filter = this.filter().toLowerCase();

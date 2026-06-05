@@ -7,8 +7,6 @@ import {
     MatDialogRef,
 } from '@angular/material/dialog';
 import { PlaceZone, queryZones } from '@placeos/ts-client';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
@@ -128,15 +126,17 @@ export class ZoneTreeExportModalComponent {
         return null;
     }
 
-    public readonly query_fn = (query: string): Observable<PlaceZone[]> =>
-        queryZones({ q: query, include_children_count: true, limit: 100 }).pipe(
-            map((resp) =>
-                resp.data.map((zone) => {
-                    (zone as PlaceZone & { extra?: string }).extra =
-                        `${zone.children_count || 0} children`;
-                    return zone;
-                }),
-            ),
+    public readonly query_fn = (query: string): Promise<PlaceZone[]> =>
+        queryZones({
+            q: query,
+            include_children_count: true,
+            limit: 100,
+        }).then((resp) =>
+            resp.data.map((zone) => {
+                (zone as PlaceZone & { extra?: string }).extra =
+                    `${zone.children_count || 0} children`;
+                return zone;
+            }),
         );
 
     public readonly exclude_fn = (zone: PlaceZone) =>

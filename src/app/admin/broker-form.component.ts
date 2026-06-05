@@ -8,7 +8,6 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -27,6 +26,7 @@ import { getInvalidFields, unique } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { toSignal } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
@@ -421,7 +421,7 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    public submit(): void {
+    public async submit(): Promise<void> {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
@@ -439,31 +439,30 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
                 ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
                 : { ...item_json, ...this.form.value }
         ) as Identity;
-        (form_item.id
-            ? updateBroker(
-                  form_item.id as string,
-                  form_item as unknown as PlaceMQTTBroker,
-              )
-            : addBroker(form_item as unknown as PlaceMQTTBroker)
-        ).subscribe(
-            (_item) => {
-                this._dialog_ref.disableClose = false;
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            },
-            async (err) => {
-                this.loading = null;
-                this._dialog_ref.disableClose = false;
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await err.text?.()) || err.message || err,
-                        ),
-                    }),
-                );
-            },
-        );
+        const result = await (
+            form_item.id
+                ? updateBroker(
+                      form_item.id as string,
+                      form_item as unknown as PlaceMQTTBroker,
+                  )
+                : addBroker(form_item as unknown as PlaceMQTTBroker)
+        ).catch(async (err) => {
+            this.loading = null;
+            this._dialog_ref.disableClose = false;
+            notifyError(
+                i18n(`${this._name}.SAVE_ERROR`, {
+                    error: JSON.stringify(
+                        (await err.text?.()) || err.message || err,
+                    ),
+                }),
+            );
+            return null;
+        });
+        if (!result) return;
+        this._dialog_ref.disableClose = false;
+        this.event.emit({ reason: 'done', metadata: { item: result } });
+        notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+        this._dialog_ref.close();
     }
 
     /**

@@ -4,7 +4,6 @@ import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 
 import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Observable } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { DialogEvent } from '../common/types';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
@@ -13,7 +12,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface SelectItemModalData<T = unknown> {
     service_name: string;
-    query_fn: (query: string) => Observable<T[]>;
+    query_fn: (query: string) => Promise<T[]>;
 }
 
 @Component({
@@ -92,7 +91,7 @@ export class SelectItemModalComponent extends AsyncHandler {
 
     public readonly filter_fn = () => false;
 
-    public get query_fn(): (query: string) => Observable<unknown[]> {
+    public get query_fn(): (query: string) => Promise<unknown[]> {
         return this._data.query_fn;
     }
 

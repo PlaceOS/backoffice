@@ -7,7 +7,6 @@ import {
     PlaceModule,
 } from '@placeos/ts-client';
 import { format } from 'date-fns';
-import { BehaviorSubject } from 'rxjs';
 import { HashMap } from '../common/types';
 import { AsyncHandler } from './async-handler.class';
 
@@ -27,7 +26,7 @@ const TERMINAL_COLOURS = {
     providedIn: 'root',
 })
 export class PlaceDebugService extends AsyncHandler {
-    private _changed = new BehaviorSubject(0);
+    private _changed = signal(0);
     /** List of the current state of events */
     /** Mapping of module IDs to display names */
     private _module_names: HashMap<string> = {};
@@ -63,7 +62,7 @@ export class PlaceDebugService extends AsyncHandler {
         );
     });
 
-    public readonly changed = this._changed.asObservable();
+    public readonly changed = this._changed.asReadonly();
 
     public get modules() {
         return this.bound_modules();
@@ -75,16 +74,22 @@ export class PlaceDebugService extends AsyncHandler {
 
     constructor() {
         super();
-        debug_events.subscribe((event) => {
-            if (this.bound_modules().find((mod) => mod.id === event.mod_id)) {
-                let event_list = [...this.events(), event];
-                if (event_list.length > 2000) {
-                    const [_first, ...events] = event_list;
-                    event_list = events;
+        this.subscription(
+            'debug_events',
+            debug_events.subscribe((event) => {
+                if (!event) return;
+                if (
+                    this.bound_modules().find((mod) => mod.id === event.mod_id)
+                ) {
+                    let event_list = [...this.events(), event];
+                    if (event_list.length > 2000) {
+                        const [_first, ...events] = event_list;
+                        event_list = events;
+                    }
+                    this.events.set(event_list);
                 }
-                this.events.set(event_list);
-            }
-        });
+            }),
+        );
     }
 
     /** Clear existing events */
@@ -119,7 +124,7 @@ export class PlaceDebugService extends AsyncHandler {
                 this.subscription(`debug_${module.id}`, () => ignore(options));
                 this.bound_modules.update((l) => [...l, module]);
                 this._module_names[module.id] = module_name;
-                this._changed.next(Date.now());
+                this._changed.update((value) => value + 1);
             });
         }
     }
@@ -134,7 +139,7 @@ export class PlaceDebugService extends AsyncHandler {
             this.bound_modules.update((l) =>
                 l.filter((mod) => mod.id !== module.id),
             );
-            this._changed.next(Date.now());
+            this._changed.update((value) => value + 1);
         }
     }
 

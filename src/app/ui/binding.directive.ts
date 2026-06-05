@@ -13,8 +13,8 @@ import {
 } from '@angular/core';
 import { authority, getModule, onlineState } from '@placeos/ts-client';
 
-import { filter, first } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
+import { waitForClientSignalValue } from '../common/signals';
 
 @Directive({
     selector: 'i[bind], [binding], co-bind',
@@ -54,9 +54,9 @@ export class BindingDirective<T = unknown>
     private _old_model: T | null = null;
 
     public ngOnInit(): void {
-        onlineState()
-            ?.pipe(first((_) => _))
-            .subscribe((_) => this.bindVariable());
+        waitForClientSignalValue(onlineState(), (_) => _).then(() =>
+            this.bindVariable(),
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -107,19 +107,17 @@ export class BindingDirective<T = unknown>
                     this.subscription('binding', binding.bind());
                     this.subscription(
                         'on_changes',
-                        binding
-                            .listen()
-                            .pipe(filter((_) => _ != null))
-                            .subscribe((value) => {
-                                setTimeout(() => {
-                                    this._binding = false;
-                                    this.clearTimeout('bound');
-                                    if (this.ignore()) return;
-                                    this.model.set(value);
-                                    this._old_model = this.model();
-                                    this.modelChange.emit(this.model());
-                                }, 10);
-                            }),
+                        binding.listen().subscribe((value) => {
+                            if (value == null) return;
+                            setTimeout(() => {
+                                this._binding = false;
+                                this.clearTimeout('bound');
+                                if (this.ignore()) return;
+                                this.model.set(value);
+                                this._old_model = this.model();
+                                this.modelChange.emit(this.model());
+                            }, 10);
+                        }),
                     );
                     this.timeout('bound', () => (this._binding = false), 200);
                 },

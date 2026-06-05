@@ -1,8 +1,8 @@
 import { Component, computed, inject, model, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceTrigger } from '@placeos/ts-client';
 import { copyToClipboard, unique } from '../common/general';
 import { notifyInfo } from '../common/notifications';
+import { toSignal } from '../common/signals';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -55,7 +55,7 @@ export interface TriggerInstanceState {
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!(loading | async).triggers"
+                    [class.opacity-0]="!loading().triggers"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-2xl text-sm"

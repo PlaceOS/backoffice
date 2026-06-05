@@ -14,7 +14,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SignagePlugin } from '@placeos/ts-client';
-import { Observable } from 'rxjs';
 
 import { AsyncHandler } from '../../common/async-handler.class';
 import { getInvalidFields } from '../../common/general';
@@ -35,7 +34,7 @@ import { generateSignagePluginFormFields } from './signage-plugins.utilities';
 
 export interface SignagePluginModalData {
     item: SignagePlugin;
-    save: (item: Partial<SignagePlugin>) => Observable<SignagePlugin>;
+    save: (item: Partial<SignagePlugin>) => Promise<SignagePlugin>;
 }
 
 @Component({
@@ -329,7 +328,7 @@ export class SignagePluginModalComponent
         this.schema_error.set(true);
     }
 
-    public submit(): void {
+    public async submit(): Promise<void> {
         this.form.markAllAsTouched();
         // Validate the schema-generated defaults form if present
         const schema_form = this._schema_form_el();
@@ -350,31 +349,27 @@ export class SignagePluginModalComponent
             ...this.form.value,
             params: this.schema() || this._data.item?.params || {},
         };
-        this._data.save(payload).subscribe({
-            next: (result) => {
-                this._dialog_ref.disableClose = false;
-                this.event.emit({
-                    reason: 'done',
-                    metadata: { item: result },
-                });
-                notifySuccess(i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_SUCCESS'));
-                this._dialog_ref.close({
-                    reason: 'done',
-                    metadata: { item: result },
-                });
-            },
-            error: async (err) => {
-                this.loading = null;
-                this._dialog_ref.disableClose = false;
-                notifyError(
-                    i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_ERROR', {
-                        error: JSON.stringify(
-                            err.response || err.message || err,
-                        ),
-                    }),
-                );
-            },
-        });
+        try {
+            const result = await this._data.save(payload);
+            this._dialog_ref.disableClose = false;
+            this.event.emit({
+                reason: 'done',
+                metadata: { item: result },
+            });
+            notifySuccess(i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_SUCCESS'));
+            this._dialog_ref.close({
+                reason: 'done',
+                metadata: { item: result },
+            });
+        } catch (err) {
+            this.loading = null;
+            this._dialog_ref.disableClose = false;
+            notifyError(
+                i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_ERROR', {
+                    error: JSON.stringify(err.response || err.message || err),
+                }),
+            );
+        }
     }
 
     private _loadPlugin(uri: string): void {

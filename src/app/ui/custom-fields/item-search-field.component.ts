@@ -1,5 +1,6 @@
 import {
     Component,
+    computed,
     effect,
     ElementRef,
     forwardRef,
@@ -7,18 +8,16 @@ import {
     model,
     OnChanges,
     OnInit,
+    resource,
     signal,
     SimpleChanges,
     viewChild,
 } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
     ControlValueAccessor,
     FormsModule,
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
 
 import { PlaceDriverRole, PlaceModule } from '@placeos/ts-client';
 
@@ -206,6 +205,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
     implements OnInit, OnChanges, ControlValueAccessor
 {
     private _changed = signal(0);
+    private _debounced_search = signal('');
     /** Name of the items being query'd */
     public readonly name = input<string>(undefined);
     /** Placeholder to display on the form input */
@@ -230,42 +230,44 @@ export class ItemSearchFieldComponent<T extends SearchItem>
     /** Whether item list is loading */
     public readonly loading = model<boolean>(false);
     /** Service used for searching items */
-    public readonly query_fn = input<(_: string) => Observable<T[]>>(() =>
-        of([]),
+    public readonly query_fn = input<(_: string) => Promise<T[]>>(() =>
+        Promise.resolve([]),
     );
     /** Currently selected item */
     public active_item = signal(null);
     /** Current display value of the search input field  */
     public search_str = signal('');
-    /** Item list to display */
-    public readonly item_list = toSignal(
-        combineLatest([
-            toObservable(this.search_str),
-            toObservable(this._changed),
-        ]).pipe(
-            debounceTime(400),
-            switchMap(([q]) => {
-                const query = q.trim();
-                this.loading.set(true);
-                const options = this.options();
-                const min_length = this.minLength();
-                return options && options.length > 0
-                    ? of(options)
-                    : !min_length || query.length >= min_length
-                      ? this.query_fn()(query)
-                      : of([]);
-            }),
-            catchError(() => of([])),
-            map((list: T[]) => {
-                const query = this.search_str().toLowerCase().trim();
-                this.loading.set(false);
+    private readonly _items = resource({
+        params: () => ({
+            changed: this._changed(),
+            query: this._debounced_search(),
+            options: this.options(),
+            min_length: this.minLength(),
+        }),
+        loader: async ({ params }) => {
+            const { query, options, min_length } = params;
+            const trimmed_query = query.trim();
+            this.loading.set(true);
+            try {
+                const list =
+                    options && options.length > 0
+                        ? options
+                        : !min_length || trimmed_query.length >= min_length
+                          ? await this.query_fn()(trimmed_query).catch(
+                                () => [] as T[],
+                            )
+                          : [];
+                const search = trimmed_query.toLowerCase();
                 return list.filter((item: T) =>
-                    this.exclude() ? !this.exclude()(item, query) : true,
+                    this.exclude() ? !this.exclude()(item, search) : true,
                 );
-            }),
-        ),
-        { initialValue: [] as T[] },
-    );
+            } finally {
+                this.loading.set(false);
+            }
+        },
+    });
+    /** Item list to display */
+    public readonly item_list = computed(() => this._items.value() || []);
     /** Form control on change handler */
     private _onChange: (_: T) => void;
     /** Form control on touch handler */
@@ -284,6 +286,14 @@ export class ItemSearchFieldComponent<T extends SearchItem>
 
     constructor() {
         super();
+        effect(() => {
+            const query = this.search_str();
+            this.timeout(
+                'search',
+                () => this._debounced_search.set(query),
+                400,
+            );
+        });
         effect(() => {
             this.item_list();
             this._updateNameMap();

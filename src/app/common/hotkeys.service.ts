@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 
 import { unique } from '../common/general';
+import { SubscriptionLike } from '../common/signals';
 import { HashMap } from '../common/types';
 
 /** List of keys that cannot be in a combination by themselves or with each other */
@@ -17,10 +17,10 @@ const INVALID_STANDALONE_KEYS: string[] = [
     providedIn: 'root',
 })
 export class HotkeysService {
-    /** Map of subjects which store press states of keys */
-    private keydown_states: HashMap<BehaviorSubject<number>> = {};
-    /** Map of obserers for key state subjects */
-    private keydown_observers: HashMap<Observable<number>> = {};
+    /** Map of signals which store press states of keys */
+    private keydown_states: HashMap<WritableSignal<number>> = {};
+    /** Map of listeners for key state signals */
+    private keydown_listeners: HashMap<((value: number) => void)[]> = {};
     /** List of keys at the end of a combination */
     private combo_end: string[] = [];
     /** List of registered hotkey combinations */
@@ -51,7 +51,7 @@ export class HotkeysService {
         window.addEventListener('keyup', (event: KeyboardEvent) => {
             const code = this.mapKey((event.code || '').toLowerCase());
             if (this.keydown_states[code]) {
-                this.keydown_states[code].next(null);
+                this.setKeyState(code, null);
             }
             if (this.last_down === code) {
                 this.last_down = null;
@@ -64,7 +64,10 @@ export class HotkeysService {
      * @param combo Array of key codes to listen to or a hotkey string e.g. `Alt+Shift+KeyK`
      * @param next Callback for combination presses
      */
-    public listen(combo: string | string[], next: () => void): Subscription {
+    public listen(
+        combo: string | string[],
+        next: () => void,
+    ): SubscriptionLike | null {
         combo = combo instanceof Array ? combo : combo.split('+');
         const combination: string[] = combo.map((i) =>
             this.mapKey(i.toLowerCase()),
@@ -74,14 +77,14 @@ export class HotkeysService {
             const last_key = combination[combination.length - 1];
             this.setKeyState(last_key, null);
             this.updateCombinationEndList();
-            return this.keydown_observers[last_key].subscribe((count) => {
+            const listener = (count: number) => {
                 if (count) {
                     const presses: number[] = [];
                     if (combination.length > 0) {
                         // Check that keys are pressed
                         for (const key of combination) {
                             const state = this.keydown_states[key];
-                            presses.push(state ? state.getValue() || -1 : -1);
+                            presses.push(state ? state() || -1 : -1);
                         }
                         // Check that keys are pressed in the correct order
                         for (let i = 0; i < combination.length - 1; i++) {
@@ -98,7 +101,15 @@ export class HotkeysService {
                         next();
                     }
                 }
-            });
+            };
+            this.keydown_listeners[last_key].push(listener);
+            return {
+                unsubscribe: () => {
+                    this.keydown_listeners[last_key] = this.keydown_listeners[
+                        last_key
+                    ].filter((item) => item !== listener);
+                },
+            };
         }
         return null;
     }
@@ -178,10 +189,12 @@ export class HotkeysService {
      */
     private setKeyState(code: string, value: number = null) {
         if (!this.keydown_states[code]) {
-            this.keydown_states[code] = new BehaviorSubject(null);
-            this.keydown_observers[code] =
-                this.keydown_states[code].asObservable();
+            this.keydown_states[code] = signal(null);
+            this.keydown_listeners[code] = [];
         }
-        this.keydown_states[code].next(value);
+        this.keydown_states[code].set(value);
+        for (const listener of this.keydown_listeners[code]) {
+            listener(value);
+        }
     }
 }

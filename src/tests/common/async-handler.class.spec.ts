@@ -1,6 +1,10 @@
-import { Subscription, of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AsyncHandler } from '../../app/common/async-handler.class';
+import type { SubscriptionLike } from '../../app/common/signals';
+
+const mockSubscription = (): SubscriptionLike => ({
+    unsubscribe: vi.fn(),
+});
 
 // Create a test subclass to access protected methods
 class TestableAsyncHandler extends AsyncHandler {
@@ -20,7 +24,10 @@ class TestableAsyncHandler extends AsyncHandler {
         this.clearInterval(name);
     }
 
-    public testSubscription(name: string, unsub: Subscription | (() => void)) {
+    public testSubscription(
+        name: string,
+        unsub: SubscriptionLike | (() => void),
+    ) {
         this.subscription(name, unsub);
     }
 
@@ -45,7 +52,7 @@ class TestableAsyncHandler extends AsyncHandler {
     }
 
     public setInitialised(value: boolean) {
-        this._initialised.next(value);
+        this._initialised.set(value);
     }
 }
 
@@ -67,11 +74,9 @@ describe('AsyncHandler', () => {
             expect(handler.is_initialised).toBe(false);
         });
 
-        it('should provide observable for initialised state', (done) => {
-            handler.initialised.subscribe((value) => {
-                expect(typeof value).toBe('boolean');
-                done();
-            });
+        it('should provide signal for initialised state', () => {
+            expect(typeof handler.initialised).toBe('function');
+            expect(typeof handler.initialised()).toBe('boolean');
         });
 
         it('should update is_initialised when state changes', () => {
@@ -209,7 +214,7 @@ describe('AsyncHandler', () => {
 
     describe('subscription', () => {
         it('should store Subscription object', () => {
-            const subscription = of(1).subscribe();
+            const subscription = mockSubscription();
             handler.testSubscription('test', subscription);
 
             expect(handler.getSubscriptions()['test']).toBe(subscription);
@@ -223,27 +228,25 @@ describe('AsyncHandler', () => {
         });
 
         it('should replace existing subscription with same name', () => {
-            const sub1 = of(1).subscribe();
-            const sub2 = of(2).subscribe();
-            const unsub_spy = vi.spyOn(sub1, 'unsubscribe');
+            const sub1 = mockSubscription();
+            const sub2 = mockSubscription();
 
             handler.testSubscription('test', sub1);
             handler.testSubscription('test', sub2);
 
-            expect(unsub_spy).toHaveBeenCalled();
+            expect(sub1.unsubscribe).toHaveBeenCalled();
             expect(handler.getSubscriptions()['test']).toBe(sub2);
         });
     });
 
     describe('unsub', () => {
         it('should call unsubscribe on Subscription', () => {
-            const subscription = of(1).subscribe();
-            const unsub_spy = vi.spyOn(subscription, 'unsubscribe');
+            const subscription = mockSubscription();
 
             handler.testSubscription('test', subscription);
             handler.testUnsub('test');
 
-            expect(unsub_spy).toHaveBeenCalled();
+            expect(subscription.unsubscribe).toHaveBeenCalled();
             expect(handler.getSubscriptions()['test']).toBeNull();
         });
 
@@ -261,7 +264,7 @@ describe('AsyncHandler', () => {
         });
 
         it('should handle null subscription', () => {
-            handler.testSubscription('test', of(1).subscribe());
+            handler.testSubscription('test', mockSubscription());
             handler.testUnsub('test');
             // Should not throw when calling unsub again
             expect(() => handler.testUnsub('test')).not.toThrow();
@@ -292,17 +295,15 @@ describe('AsyncHandler', () => {
         });
 
         it('should unsubscribe all subscriptions', () => {
-            const sub1 = of(1).subscribe();
-            const sub2 = of(2).subscribe();
-            const unsub_spy1 = vi.spyOn(sub1, 'unsubscribe');
-            const unsub_spy2 = vi.spyOn(sub2, 'unsubscribe');
+            const sub1 = mockSubscription();
+            const sub2 = mockSubscription();
 
             handler.testSubscription('sub1', sub1);
             handler.testSubscription('sub2', sub2);
             handler.testDestroy();
 
-            expect(unsub_spy1).toHaveBeenCalled();
-            expect(unsub_spy2).toHaveBeenCalled();
+            expect(sub1.unsubscribe).toHaveBeenCalled();
+            expect(sub2.unsubscribe).toHaveBeenCalled();
         });
     });
 

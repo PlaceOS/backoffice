@@ -10,7 +10,6 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     FormsModule,
@@ -25,8 +24,8 @@ import {
     cleanObject,
     updateApplication,
 } from '@placeos/ts-client';
-import { startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
+import { toSignal } from '../common/signals';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -268,20 +267,14 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
         const { redirect_uri } = this.form.value;
         this.default_redirect_uri = redirect_uri || '';
         const redirect_uri_signal = toSignal(
-            this.form
-                .get('redirect_uri')
-                .valueChanges.pipe(startWith(redirect_uri || '')),
+            this.form.get('redirect_uri').valueChanges,
             {
                 initialValue: redirect_uri || '',
                 injector: this._injector,
             },
         );
         const preserve_client_id_signal = toSignal(
-            this.form
-                .get('preserve_client_id')
-                .valueChanges.pipe(
-                    startWith(!!this.form.value.preserve_client_id),
-                ),
+            this.form.get('preserve_client_id').valueChanges,
             {
                 initialValue: !!this.form.value.preserve_client_id,
                 injector: this._injector,
@@ -311,7 +304,7 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    public submit(): void {
+    public async submit(): Promise<void> {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
@@ -331,30 +324,29 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
         ) as Identity;
         const save_item = { ...form_item, uid: this.client_id() };
         delete (save_item as Identity & { client_id?: unknown }).client_id;
-        (save_item.id
-            ? updateApplication(
-                  save_item.id as string,
-                  save_item as unknown as PlaceApplication,
-              )
-            : addApplication(save_item as unknown as PlaceApplication)
-        ).subscribe(
-            (_item) => {
-                this._dialog_ref.disableClose = false;
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}_SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            },
-            async (err) => {
-                this.loading = null;
-                this._dialog_ref.disableClose = false;
-                notifyError(
-                    i18n(`${this._name}_SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await err.text?.()) || err.message || err,
-                        ),
-                    }),
-                );
-            },
-        );
+        try {
+            const _item = await (save_item.id
+                ? updateApplication(
+                      save_item.id as string,
+                      save_item as unknown as PlaceApplication,
+                  )
+                : addApplication(save_item as unknown as PlaceApplication));
+            this._dialog_ref.disableClose = false;
+            this.event.emit({ reason: 'done', metadata: { item: _item } });
+            notifySuccess(i18n(`${this._name}_SAVE_SUCCESS`));
+            this._dialog_ref.close();
+        } catch (err) {
+            this.loading = null;
+            this._dialog_ref.disableClose = false;
+            notifyError(
+                i18n(`${this._name}_SAVE_ERROR`, {
+                    error: JSON.stringify(
+                        (await (err as Response).text?.()) ||
+                            (err as Error).message ||
+                            err,
+                    ),
+                }),
+            );
+        }
     }
 }

@@ -1,6 +1,5 @@
-import { Injectable, OnDestroy } from '@angular/core';
-
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { Injectable, OnDestroy, signal } from '@angular/core';
+import { SubscriptionLike } from './signals';
 
 @Injectable({
     providedIn: 'root',
@@ -12,16 +11,17 @@ export class AsyncHandler implements OnDestroy {
     protected _intervals: { [name: string]: ReturnType<typeof setInterval> } =
         {};
     /** Store for named subscription unsub callbacks */
-    protected _subscriptions: { [name: string]: Subscription | (() => void) } =
-        {};
-    /** Subject which stores the initialised state of the object */
-    protected readonly _initialised = new BehaviorSubject<boolean>(false);
-    /** Observable of the initialised state of the object */
-    public readonly initialised = this._initialised.asObservable();
+    protected _subscriptions: {
+        [name: string]: SubscriptionLike | (() => void) | null;
+    } = {};
+    /** Signal which stores the initialised state of the object */
+    protected readonly _initialised = signal(false);
+    /** Signal of the initialised state of the object */
+    public readonly initialised = this._initialised.asReadonly();
 
     /** Whether the object has been initialised */
     public get is_initialised(): boolean {
-        return this._initialised.getValue();
+        return this._initialised();
     }
 
     public ngOnDestroy(): void {
@@ -108,7 +108,11 @@ export class AsyncHandler implements OnDestroy {
      * @param name Name of the subscription
      * @param unsub Unsubscribe callback or Subscription object
      */
-    protected subscription(name: string, unsub: Subscription | (() => void)) {
+    protected subscription(
+        name: string,
+        unsub: SubscriptionLike | (() => void) | null,
+    ) {
+        if (!unsub) return;
         this.unsub(name);
         this._subscriptions[name] = unsub;
     }
@@ -121,10 +125,10 @@ export class AsyncHandler implements OnDestroy {
         if (!(name in this._subscriptions) || !this._subscriptions[name]) {
             return;
         }
-        if ('unsubscribe' in this._subscriptions[name]) {
-            (this._subscriptions[name] as Subscription).unsubscribe();
-        } else {
+        if (typeof this._subscriptions[name] === 'function') {
             (this._subscriptions[name] as () => void)();
+        } else {
+            (this._subscriptions[name] as SubscriptionLike).unsubscribe();
         }
         this._subscriptions[name] = null;
     }

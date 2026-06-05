@@ -1,6 +1,5 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, effect, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { PlaceDomain } from '@placeos/ts-client';
@@ -136,9 +135,7 @@ export class DomainAboutComponent extends AsyncHandler {
     /** Index of the active tab */
     public index: number;
 
-    private readonly _item = toSignal(this._service.item, {
-        initialValue: null as PlaceDomain | null,
-    });
+    private readonly _item = this._service.item;
     public get item(): PlaceDomain | null {
         return this._item();
     }

@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceGroupUser, PlaceUser, queryUsers } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -43,7 +42,7 @@ import { GroupStateService } from './group-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="(loading | async) !== true"
+                    [class.opacity-0]="loading() !== true"
                 ></mat-progress-bar>
                 <simple-table
                     class="block min-w-[56rem] text-sm"
@@ -159,7 +158,7 @@ export class GroupUsersComponent {
         queryUsers({
             q: _,
             authority_id: this._service.active_item?.authority_id,
-        }).pipe(map((resp) => resp.data));
+        }).then((resp) => resp.data);
     public readonly exclude_fn = (user: PlaceUser, __: string) => {
         const authority_id = this._service.active_item?.authority_id;
         return (
@@ -172,6 +171,6 @@ export class GroupUsersComponent {
     private _current_users: PlaceGroupUser[] = [];
 
     constructor() {
-        this.users.subscribe((users) => (this._current_users = users));
+        effect(() => (this._current_users = this.users()));
     }
 }

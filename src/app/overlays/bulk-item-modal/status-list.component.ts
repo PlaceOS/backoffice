@@ -10,7 +10,6 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceResource } from '@placeos/ts-client';
-import { Observable, firstValueFrom } from 'rxjs';
 import { notifyError } from '../../common/notifications';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -120,7 +119,7 @@ export class StatusListComponent implements OnChanges {
     public readonly list = input<Record<string, unknown>[]>([]);
     /** Method to save changes to items in the list */
     public readonly save =
-        input<(item: Record<string, unknown>) => Observable<PlaceResource>>(
+        input<(item: Record<string, unknown>) => Promise<PlaceResource>>(
             undefined,
         );
     /** Emitter for completion status of the item upload */
@@ -166,9 +165,10 @@ export class StatusListComponent implements OnChanges {
                     const index = i + batch_index;
                     this.status[index] = 'loading';
                     try {
-                        const saved_item = await firstValueFrom(
-                            this.save()({ ...item, id: '' }),
-                        );
+                        const saved_item = await this.save()({
+                            ...item,
+                            id: '',
+                        });
                         this.status[index] = 'done';
                         success_count++;
                         this.completed_count.set(success_count);

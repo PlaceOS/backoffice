@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -30,7 +30,7 @@ import { TranslatePipe } from './translate.pipe';
                     <div
                         class="mono border-base-100 bg-base-300 rounded-full border px-2 py-1 text-xs"
                     >
-                        {{ (uploads | async)?.length || '0' }}
+                        {{ uploads().length || '0' }}
                     </div>
                     <div class="flex-1"></div>
                     <button
@@ -46,9 +46,9 @@ import { TranslatePipe } from './translate.pipe';
                     </button>
                 </div>
                 <div list class="max-h-[65vh] overflow-auto">
-                    @if ((uploads | async)?.length) {
+                    @if (uploads().length) {
                         <ul>
-                            @for (item of uploads | async; track item.id) {
+                            @for (item of uploads(); track item.id) {
                                 <li
                                     upload-file
                                     class="hover:bg-base-200 relative my-1 flex h-12 items-center space-x-2 px-2"
@@ -215,21 +215,23 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     public readonly disabled = signal(false);
     /** List of uploads */
     public readonly uploads = this._uploads.upload_list;
+    private readonly _show_upload_manager = this._settings.listen<boolean>(
+        'show_upload_manager',
+    );
+    private readonly _disable_uploads =
+        this._settings.listen<boolean>('disable_uploads');
+
+    constructor() {
+        super();
+        effect(() => this.show.set(!!this._show_upload_manager()));
+        effect(() => {
+            const disabled = !!this._disable_uploads();
+            this.disabled.set(disabled);
+            if (disabled) this.show_overlay.set(false);
+        });
+    }
 
     public ngOnInit() {
-        this.subscription(
-            'show',
-            this._settings
-                .listen('show_upload_manager')
-                .subscribe((show) => this.show.set(show as boolean)),
-        );
-        this.subscription(
-            'disable_uploads',
-            this._settings.listen('disable_uploads').subscribe((disabled) => {
-                this.disabled.set(!!disabled);
-                if (disabled) this.show_overlay.set(false);
-            }),
-        );
         this.subscription(
             'on_dialog_open',
             this._dialog.afterOpened.subscribe(() => {

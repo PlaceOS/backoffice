@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     driverReadme,
@@ -11,14 +11,6 @@ import {
     removeSystemModule,
     updateDriver,
 } from '@placeos/ts-client';
-import { BehaviorSubject, lastValueFrom, Observable, of } from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    map,
-    shareReplay,
-    switchMap,
-} from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap, Identity } from '../common/types';
@@ -33,59 +25,66 @@ export class DriverStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _loading = new BehaviorSubject<boolean>(false);
-    private _last_error = new BehaviorSubject<HashMap>(null);
-    private _poll = new BehaviorSubject(0);
+    private _loading = signal(false);
+    private _last_error = signal<HashMap>(null);
+    private _poll = signal(0);
 
-    public readonly item = this._state.active_item$;
-
-    public readonly loading = this._loading.asObservable();
-
-    public readonly updates_available = this._poll.pipe(
-        switchMap(() =>
-            queryDrivers({ update_available: true, limit: 1 }).pipe(
-                catchError(() => of({ data: [], total: 0 })),
-            ),
-        ),
-        map((d) => d.total > 1),
-        shareReplay(1),
+    public readonly item = computed(
+        () => this._state.item() as unknown as PlaceDriver,
     );
 
-    public readonly modules = this.item.pipe(
-        switchMap(async (item) => {
-            if (!item) return { data: [] };
-            this._loading.next(true);
-            const details = await queryModules({
-                driver_id: item.id,
-            }).toPromise();
-            this._loading.next(false);
-            return details;
-        }),
-        map((d) => d.data),
-        shareReplay(1),
+    public readonly loading = this._loading.asReadonly();
+
+    private readonly _updates_available = resource({
+        params: () => this._poll(),
+        loader: async () => {
+            const response = await queryDrivers({
+                update_available: true,
+                limit: 1,
+            }).catch(() => ({ total: 0 }));
+            return response.total > 1;
+        },
+    });
+
+    public readonly updates_available = computed(
+        () => this._updates_available.value() || false,
     );
 
-    public readonly docs: Observable<string> = this.item.pipe(
-        debounceTime(100),
-        switchMap(async (item: PlaceDriver) => {
-            if (!item) return '';
-            this._loading.next(true);
-            const docs = await lastValueFrom(driverReadme(item.id)).catch(
-                () => '',
-            );
-            this._loading.next(false);
-            return docs;
-        }),
-        map((d) => d || ''),
-        shareReplay(1),
-    );
+    private readonly _modules = resource({
+        params: () => this.item(),
+        loader: async ({ params: item }) => {
+            if (!(item instanceof PlaceDriver)) return [] as PlaceModule[];
+            this._loading.set(true);
+            try {
+                const response = await queryModules({
+                    driver_id: item.id,
+                }).catch(() => ({ data: [] }));
+                return response.data;
+            } finally {
+                this._loading.set(false);
+            }
+        },
+    });
+
+    public readonly modules = computed(() => this._modules.value() || []);
+
+    private readonly _docs = resource({
+        params: () => this.item(),
+        loader: async ({ params: item }) => {
+            if (!(item instanceof PlaceDriver)) return '';
+            this._loading.set(true);
+            try {
+                return driverReadme(item.id).catch(() => '');
+            } finally {
+                this._loading.set(false);
+            }
+        },
+    });
+
+    public readonly docs = computed(() => this._docs.value() || '');
 
     public get active_item() {
         return this._state.active_item;
-    }
-
-    constructor() {
-        this.item.subscribe(() => this._last_error.next(null));
     }
 
     public showUpdateList() {
@@ -93,7 +92,7 @@ export class DriverStateService {
     }
 
     public viewError() {
-        const error = this._last_error.getValue();
+        const error = this._last_error();
         if (!error) return;
         this._dialog.open<ViewResponseModalComponent>(
             ViewResponseModalComponent,
@@ -114,14 +113,12 @@ export class DriverStateService {
             },
             this._dialog,
         );
-        if (!details || !details.reason) return details.close();
+        if (!details?.reason) return details.close();
         details.loading('Updating driver...');
         const success = await updateDriver(item.id, {
             ...item,
             commit: item.update_info.commit,
-        })
-            .toPromise()
-            .catch(() => null);
+        }).catch(() => null);
         if (!success) {
             notifyError('Failed to update driver.');
         }
@@ -138,20 +135,19 @@ export class DriverStateService {
             },
             this._dialog,
         );
-        if (!details || !details.reason) return details.close();
+        if (!details?.reason) return details.close();
         details.loading('Recompiling driver... This may take a while.');
-        await recompileDriver(item.id)
-            .toPromise()
-            .catch(async (e) => {
-                console.log('Error:', e);
-                const content = e instanceof Response ? await e.text() : e;
-                notifyError('Failed to recompile driver.', 'View Error', () =>
-                    this._dialog.open<ViewResponseModalComponent>(
-                        ViewResponseModalComponent,
-                        { data: { content } },
-                    ),
-                );
-            });
+        await recompileDriver(item.id).catch(async (e) => {
+            console.log('Error:', e);
+            const content = e instanceof Response ? await e.text() : e;
+            this._last_error.set(content);
+            notifyError('Failed to recompile driver.', 'View Error', () =>
+                this._dialog.open<ViewResponseModalComponent>(
+                    ViewResponseModalComponent,
+                    { data: { content } },
+                ),
+            );
+        });
         notifySuccess('Successfully recompiled the driver.');
         details.close();
     }
@@ -166,11 +162,9 @@ export class DriverStateService {
             },
             this._dialog,
         );
-        if (!details || !details.reason) return details.close();
+        if (!details?.reason) return details.close();
         details.loading('Reload driver... This may take a while.');
-        const success = await reloadDriver(item.id)
-            .toPromise()
-            .catch(() => false);
+        const success = await reloadDriver(item.id).catch(() => false);
         if (success === false) {
             notifyError(
                 'Failed to reload driver. Driver may not be compiled. Try recompiling first.',
@@ -194,16 +188,17 @@ export class DriverStateService {
             },
             this._dialog,
         );
-        if (!details || !details.reason) return;
-        const system = await removeSystemModule(this.active_item.id, device.id)
-            .toPromise()
-            .catch((err) => {
-                notifyError(
-                    `Error removing module ${device.id}. Error: ${
-                        err.statusText || err.message || err
-                    }`,
-                );
-            });
+        if (!details?.reason) return;
+        const system = await removeSystemModule(
+            this.active_item.id,
+            device.id,
+        ).catch((err) => {
+            notifyError(
+                `Error removing module ${device.id}. Error: ${
+                    err.statusText || err.message || err
+                }`,
+            );
+        });
         details.close();
         if (!system) return;
         this._state.replaceItem(system as unknown as Identity);

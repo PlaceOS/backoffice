@@ -145,17 +145,13 @@ export class TriggerConditionModalComponent extends AsyncHandler {
         const item = await updateTrigger(this.trigger.id, {
             ...this.trigger,
             conditions: this.conditions,
-        })
-            .toPromise()
-            .catch((err) =>
-                notifyError(
-                    i18n('TRIGGERS.CONDITION_SAVE_ERROR', {
-                        error: JSON.stringify(
-                            err.response || err.message || err,
-                        ),
-                    }),
-                ),
-            );
+        }).catch((err) =>
+            notifyError(
+                i18n('TRIGGERS.CONDITION_SAVE_ERROR', {
+                    error: JSON.stringify(err.response || err.message || err),
+                }),
+            ),
+        );
         if (item) {
             this.event.emit({
                 reason: 'done',

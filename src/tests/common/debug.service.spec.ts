@@ -1,15 +1,21 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { Subject } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock @placeos/ts-client before importing the service
-// Create the Subject inside the factory to avoid hoisting issues
 vi.mock('@placeos/ts-client', () => {
-    const { Subject } = require('rxjs');
+    const listeners = new Set<(event: unknown) => void>();
     return {
         debug: vi.fn(() => Promise.resolve()),
         ignore: vi.fn(),
-        debug_events: new Subject(),
+        debug_events: {
+            subscribe: vi.fn((listener: (event: unknown) => void) => {
+                listeners.add(listener);
+                return () => listeners.delete(listener);
+            }),
+            next: (event: unknown) => {
+                for (const listener of listeners) listener(event);
+            },
+        },
         PlaceModule: class {},
     };
 });
@@ -19,8 +25,8 @@ vi.mock('date-fns', () => ({
     format: vi.fn(() => '12:00 PM'),
 }));
 
-import { PlaceDebugService } from '../../app/common/debug.service';
 import { debug_events } from '@placeos/ts-client';
+import { PlaceDebugService } from '../../app/common/debug.service';
 
 // Mock PlaceModule interface
 interface MockPlaceModule {
@@ -165,8 +171,7 @@ describe('PlaceDebugService', () => {
         });
 
         it('should emit changed event after binding', async () => {
-            const changed_spy = vi.fn();
-            service.changed.subscribe(changed_spy);
+            const changed_value = service.changed();
 
             const module: MockPlaceModule = {
                 id: 'mod-1',
@@ -175,7 +180,7 @@ describe('PlaceDebugService', () => {
             service.bind(module as any, 'TestModule_1');
 
             await vi.waitFor(() => {
-                expect(changed_spy).toHaveBeenCalled();
+                expect(service.changed()).toBeGreaterThan(changed_value);
             });
         });
     });
@@ -213,11 +218,10 @@ describe('PlaceDebugService', () => {
                 expect(service.bound_modules().length).toBe(1);
             });
 
-            const changed_spy = vi.fn();
-            service.changed.subscribe(changed_spy);
+            const changed_value = service.changed();
 
             service.unbind(module as any);
-            expect(changed_spy).toHaveBeenCalled();
+            expect(service.changed()).toBeGreaterThan(changed_value);
         });
     });
 
@@ -344,7 +348,7 @@ describe('PlaceDebugService', () => {
             });
 
             // Emit event via the mocked debug_events
-            (debug_events as Subject<any>).next({
+            (debug_events as { next: (event: unknown) => void }).next({
                 mod_id: 'mod-1',
                 level: 'info',
                 message: 'Test event',
@@ -355,7 +359,7 @@ describe('PlaceDebugService', () => {
         });
 
         it('should ignore events for unbound modules', () => {
-            (debug_events as Subject<any>).next({
+            (debug_events as { next: (event: unknown) => void }).next({
                 mod_id: 'unbound-mod',
                 level: 'info',
                 message: 'Should be ignored',
@@ -387,7 +391,7 @@ describe('PlaceDebugService', () => {
             service.events.set(events as any);
 
             // Add one more event via subscription
-            (debug_events as Subject<any>).next({
+            (debug_events as { next: (event: unknown) => void }).next({
                 mod_id: 'mod-1',
                 level: 'info',
                 message: 'New event',

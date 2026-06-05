@@ -1,7 +1,5 @@
-import { Injectable } from '@angular/core';
+import { computed, Injectable, resource, signal } from '@angular/core';
 import { PlaceDomain, queryDomains } from '@placeos/ts-client';
-import { BehaviorSubject, of } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
 
 export interface EmailTemplate {
     id: string;
@@ -34,26 +32,34 @@ export interface EmailTemplatesFilters {
     providedIn: 'root',
 })
 export class EmailStateService {
-    private _loading = new BehaviorSubject<boolean>(false);
-    private _change = new BehaviorSubject<number>(0);
-    private _domain = new BehaviorSubject<PlaceDomain>(null);
+    private _loading = signal(false);
+    private _change = signal(0);
+    private _domain = signal<PlaceDomain>(null);
 
-    public readonly template_definitions = of([] as EmailTemplateDefinition[]);
-    public readonly templates = of([] as EmailTemplate[]);
-    public readonly domain = this._domain.asObservable();
-    public readonly loading = this._loading.asObservable();
+    public readonly template_definitions = signal(
+        [] as EmailTemplateDefinition[],
+    ).asReadonly();
+    public readonly templates = signal([] as EmailTemplate[]).asReadonly();
+    public readonly domain = this._domain.asReadonly();
+    public readonly loading = this._loading.asReadonly();
 
-    public readonly domain_list = queryDomains({ limit: 100 }).pipe(
-        map((r) => r.data),
-        shareReplay(1),
+    private readonly _domain_list = resource({
+        loader: async () =>
+            queryDomains({ limit: 100 })
+                .then((r) => r.data)
+                .catch(() => [] as PlaceDomain[]),
+    });
+
+    public readonly domain_list = computed(
+        () => this._domain_list.value() || [],
     );
 
     public setDomain(domain: PlaceDomain) {
-        this._domain.next(domain);
+        this._domain.set(domain);
     }
 
     public getDomain() {
-        return this._domain.getValue();
+        return this._domain();
     }
 
     public async loadTemplate(_id: string) {
@@ -78,6 +84,7 @@ export class EmailStateService {
             html: template.html || '',
             text: template.text || '',
         };
-        // return updateEmailTemplate(domain.id, template.id, details).toPromise();
+        // return updateEmailTemplate(domain.id, template.id, details);
+        this._change.set(Date.now());
     }
 }

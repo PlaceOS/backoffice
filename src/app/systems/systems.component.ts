@@ -1,10 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceSystem } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
@@ -124,19 +122,14 @@ export class SystemsComponent {
     private _item = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
 
-    public readonly item = toSignal(
-        this._item.active_item$.pipe(map((item) => item as PlaceSystem)),
-        { initialValue: null as PlaceSystem | null },
+    public readonly item = computed(
+        () => this._item.active_item$() as PlaceSystem | null,
     );
-    public readonly loading = toSignal(this._item.loading, {
-        initialValue: false,
-    });
+    public readonly loading = this._item.loading;
     public readonly open_menu = signal(false);
     public readonly name = 'systems';
     public readonly scroll = signal(0);
-    public readonly counts = toSignal(this._service.counts, {
-        initialValue: {} as Record<string, number>,
-    });
+    public readonly counts = this._service.counts;
     public readonly extensions = computed(() =>
         extensionsForItem(this.item(), this.name),
     );

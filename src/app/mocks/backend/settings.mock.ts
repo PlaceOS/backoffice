@@ -47,21 +47,21 @@ const handle_items_fn = (list: Record<string, unknown>[]) => {
     });
 };
 
-let obs = listenToHandlerChanges(`${API}/systems`);
-if (obs) {
-    obs.subscribe(handle_items_fn);
+let changes = listenToHandlerChanges(`${API}/systems`);
+if (changes) {
+    changes.subscribe(handle_items_fn);
 }
-obs = listenToHandlerChanges(`${API}/modules`);
-if (obs) {
-    obs.subscribe(handle_items_fn);
+changes = listenToHandlerChanges(`${API}/modules`);
+if (changes) {
+    changes.subscribe(handle_items_fn);
 }
-obs = listenToHandlerChanges(`${API}/zones`);
-if (obs) {
-    obs.subscribe(handle_items_fn);
+changes = listenToHandlerChanges(`${API}/zones`);
+if (changes) {
+    changes.subscribe(handle_items_fn);
 }
-obs = listenToHandlerChanges(`${API}/drivers`);
-if (obs) {
-    obs.subscribe(handle_items_fn);
+changes = listenToHandlerChanges(`${API}/drivers`);
+if (changes) {
+    changes.subscribe(handle_items_fn);
 }
 
 /** Add basic API handlers for systems */

@@ -1,4 +1,3 @@
-import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock @placeos/ts-client - must use inline class to avoid hoisting issues
@@ -12,7 +11,7 @@ vi.mock('@placeos/ts-client', () => ({
         }
     },
     showUser: vi.fn(() =>
-        of({
+        Promise.resolve({
             id: 'user-123',
             name: 'Test User',
             email: 'test@example.com',
@@ -28,23 +27,17 @@ describe('user-state.ts', () => {
         vi.clearAllMocks();
     });
 
-    describe('current_user observable', () => {
+    describe('current_user signal', () => {
         it('should be defined', () => {
             expect(current_user).toBeDefined();
         });
 
-        it('should be an observable', () => {
-            expect(typeof current_user.subscribe).toBe('function');
+        it('should be a signal', () => {
+            expect(typeof current_user).toBe('function');
         });
 
-        it('should emit values when subscribed', async () => {
-            const value = await new Promise((resolve) => {
-                const sub = current_user.subscribe((user) => {
-                    resolve(user);
-                    // Use setTimeout to ensure sub is assigned before unsubscribe
-                    setTimeout(() => sub?.unsubscribe(), 0);
-                });
-            });
+        it('should expose the current value', () => {
+            const value = current_user();
             // Initial value may be null or a user
             expect(value === null || typeof value === 'object').toBe(true);
         });

@@ -1,10 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { PlaceRepository } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -106,16 +103,9 @@ export class RepositoriesComponent {
 
     public readonly newItem = () => this._item.create();
 
-    public readonly item = toSignal(
-        this._service.item.pipe(map((item) => item as PlaceRepository)),
-        { initialValue: null as PlaceRepository | null },
-    );
-    public readonly loading = toSignal(this._item.loading, {
-        initialValue: false,
-    });
-    public readonly driver_list = toSignal(this._service.driver_list, {
-        initialValue: null as string[] | null,
-    });
+    public readonly item = this._service.item;
+    public readonly loading = this._item.loading;
+    public readonly driver_list = this._service.driver_list;
     public readonly driver_count = computed(() => {
         const list = this.driver_list();
         return list ? list.length : -1;

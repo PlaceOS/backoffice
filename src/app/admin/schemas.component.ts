@@ -4,8 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { create, query, update } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { lastValueFrom } from '../common/general';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -182,18 +181,16 @@ export class AdminSchemasComponent implements OnInit {
     }
 
     public async loadSchemas() {
-        const schema_list = await lastValueFrom(
-            query<JsonSchema>({
-                query_params: {},
-                fn: (_) =>
-                    ({
-                        name: _.name || '',
-                        schema: _.schema || '{}',
-                        ..._,
-                    }) as JsonSchema,
-                path: 'schema',
-            }).pipe(map((_) => _.data as JsonSchema[])),
-        );
+        const schema_list = await query<JsonSchema>({
+            query_params: {},
+            fn: (_) =>
+                ({
+                    name: _.name || '',
+                    schema: _.schema || '{}',
+                    ..._,
+                }) as JsonSchema,
+            path: 'schema',
+        }).then((_) => _.data as JsonSchema[]);
         schema_list.sort((a, b) => a.name?.localeCompare(b.name));
         this.schema_list.set(schema_list);
     }

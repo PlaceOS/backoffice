@@ -1,11 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PlaceSystem } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
@@ -222,13 +219,14 @@ import { SystemStateService } from './system-state.service';
                 </div>
             }
             <hr class="text-base-300 my-4" />
-            @if (item()?.settings && other_settings) {
+            @let other_settings_value = other_settings();
+            @if (item()?.settings && other_settings_value) {
                 <section>
                     <a-settings-form
                         [id]="$safeNavigationMigration(item()?.id)"
                         [merge]="true"
                         [settings]="$safeNavigationMigration(item()?.settings)"
-                        [merge_settings]="(other_settings | async) || []"
+                        [merge_settings]="other_settings_value || []"
                     ></a-settings-form>
                 </section>
             } @else {
@@ -271,10 +269,5 @@ export class SystemAboutComponent {
     public readonly start = () => this._service.startSystem();
     public readonly stop = () => this._service.stopSystem();
 
-    public readonly item = toSignal(
-        this._service.item.pipe(map((item) => item as PlaceSystem)),
-        {
-            initialValue: undefined as PlaceSystem | undefined,
-        },
-    );
+    public readonly item = this._service.item;
 }

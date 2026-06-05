@@ -16,8 +16,7 @@ import {
     queryDomains,
     querySystemsWithEmails,
 } from '@placeos/ts-client';
-import { lastValueFrom, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { lastValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifySuccess, notifyWarn } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -197,8 +196,8 @@ export class ResourceImportsComponent implements OnInit {
 
     public async ngOnInit() {
         const domain = authority();
-        const domain_list = await lastValueFrom(
-            queryDomains({ limit: 100 }).pipe(map((_) => _.data)),
+        const domain_list = await queryDomains({ limit: 100 }).then(
+            (_) => _.data,
         );
         if (!domain_list?.length) return;
         this.domain_list.set(domain_list);
@@ -269,16 +268,14 @@ export class ResourceImportsComponent implements OnInit {
         this.resource_list.set([]);
         if (!this.domain()) return;
         this.loading.set(true);
-        const result = await lastValueFrom(
-            query<{ data: ExternalResource[] }>({
-                path: 'place',
-                endpoint: '/api/staff/v1',
-                query_params: {
-                    limit: 1000,
-                    authority_id: this.domain().id,
-                },
-            }).pipe(catchError((__) => of({ data: [] }))),
-        );
+        const result = await query<ExternalResource>({
+            path: 'place',
+            endpoint: '/api/staff/v1',
+            query_params: {
+                limit: 1000,
+                authority_id: this.domain().id,
+            },
+        }).catch((__) => ({ data: [] }));
         const list = result.data.map((_) => ({
             id: _.id || '',
             booking_type: _.bookingType,

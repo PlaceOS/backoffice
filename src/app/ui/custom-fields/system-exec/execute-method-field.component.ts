@@ -14,7 +14,7 @@ import {
     PlaceSystem,
     TriggerFunction,
 } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom } from '../../../common/general';
 import { notifyError, notifySuccess } from '../../../common/notifications';
 import { ViewResponseModalComponent } from '../../../overlays/view-response-modal.component';
 import { TranslatePipe } from '../../translate.pipe';

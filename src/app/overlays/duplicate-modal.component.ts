@@ -4,7 +4,6 @@ import {
     MatDialogModule,
     MatDialogRef,
 } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,7 +15,7 @@ import { IconComponent } from '../ui/icon.component';
 
 export interface DuplicateModalData {
     item: HashMap;
-    save: <T>(_: T) => Observable<T>;
+    save: <T>(_: T) => Promise<T>;
 }
 
 @Component({
@@ -202,13 +201,10 @@ export class DuplicateModalComponent {
                 name: `${item.name} (${i + 1})`,
             });
             this.status[i] = 'loading';
-            const saved_item = await this._data
-                .save(new_item)
-                .toPromise()
-                .catch((err) => {
-                    this.status[i] = `Error: ${err.message || err}`;
-                    notifyError(this.status[i]);
-                });
+            const saved_item = await this._data.save(new_item).catch((err) => {
+                this.status[i] = `Error: ${err.message || err}`;
+                notifyError(this.status[i]);
+            });
             list.push(saved_item);
             if (this.status[i] === 'loading') {
                 this.status[i] = 'done';

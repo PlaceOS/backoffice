@@ -8,7 +8,6 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import {
     FormControl,
     ReactiveFormsModule,
@@ -37,6 +36,7 @@ import {
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
+import { toSignal } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { isValidDomain } from '../common/validation';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
@@ -326,7 +326,7 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    public submit(): void {
+    public async submit(): Promise<void> {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
@@ -344,38 +344,36 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
                 ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
                 : { ...item_json, ...this.form.value }
         ) as Identity;
-        (form_item.id
-            ? updateDomain(
-                  form_item.id as string,
-                  form_item as unknown as PlaceDomain,
-              )
-            : addDomain(form_item as unknown as PlaceDomain)
-        ).subscribe(
-            (_item) => {
-                this._dialog_ref.disableClose = false;
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                if (!this.form.value.id && this.form.controls.settings) {
-                    this.newSettings(
-                        _item as unknown as Identity,
-                        this.form.controls.settings.value,
-                    ).then(() => this._dialog_ref.close());
-                } else {
-                    this._dialog_ref.close();
-                }
-            },
-            async (err) => {
-                this.loading = null;
-                this._dialog_ref.disableClose = false;
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await err.text?.()) || err.message || err,
-                        ),
-                    }),
+        try {
+            const _item = await (form_item.id
+                ? updateDomain(
+                      form_item.id as string,
+                      form_item as unknown as PlaceDomain,
+                  )
+                : addDomain(form_item as unknown as PlaceDomain));
+            this._dialog_ref.disableClose = false;
+            this.event.emit({ reason: 'done', metadata: { item: _item } });
+            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+            if (!this.form.value.id && this.form.controls.settings) {
+                await this.newSettings(
+                    _item as unknown as Identity,
+                    this.form.controls.settings.value,
                 );
-            },
-        );
+            }
+            this._dialog_ref.close();
+        } catch (err) {
+            this.loading = null;
+            this._dialog_ref.disableClose = false;
+            notifyError(
+                i18n(`${this._name}.SAVE_ERROR`, {
+                    error: JSON.stringify(
+                        (await (err as Response).text?.()) ||
+                            (err as Error).message ||
+                            err,
+                    ),
+                }),
+            );
+        }
     }
 
     private async newSettings(item: Identity, settings_string: string) {
@@ -384,17 +382,15 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
-        await addSettings(new_settings)
-            .toPromise()
-            .catch((err) => {
-                this.loading = null;
-                notifyError(
-                    `Error saving settings for ${
-                        item.name || item.id
-                    }. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
-            });
+        await addSettings(new_settings).catch((err) => {
+            this.loading = null;
+            notifyError(
+                `Error saving settings for ${
+                    item.name || item.id
+                }. Error: ${JSON.stringify(
+                    err.response || err.message || err,
+                )}`,
+            );
+        });
     }
 }

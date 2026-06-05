@@ -6,9 +6,9 @@ import {
     Output,
     computed,
     inject,
+    resource,
     signal,
 } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -36,17 +36,6 @@ import {
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { format, isAfter, subMinutes } from 'date-fns';
-import { combineLatest, lastValueFrom, of } from 'rxjs';
-import {
-    catchError,
-    distinctUntilChanged,
-    distinctUntilKeyChanged,
-    filter,
-    map,
-    shareReplay,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -54,7 +43,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import * as yaml from 'js-yaml';
-import { getInvalidFields, nextValueFrom } from '../common/general';
+import { getInvalidFields } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -78,7 +67,7 @@ import { generateDriverFormFields } from './drivers.utilities';
                 <label for="repos">{{ 'REPOS.SINGULAR' | translate }}</label>
                 <item-search-field
                     [placeholder]="'REPOS.SEARCH' | translate"
-                    [options]="repo_list | async"
+                    [options]="repo_list()"
                     [loading]="loading_type().includes('repository')"
                     [(ngModel)]="repo"
                     (ngModelChange)="driver.set(null); commit.set(null)"
@@ -87,7 +76,7 @@ import { generateDriverFormFields } from './drivers.utilities';
                     <label for="driver">{{ 'DRIVERS.BASE' | translate }}</label>
                     <item-search-field
                         [placeholder]="'DRIVERS.SEARCH' | translate"
-                        [options]="driver_list | async"
+                        [options]="driver_list()"
                         [loading]="loading_type().includes('drivers')"
                         [(ngModel)]="driver"
                         (ngModelChange)="commit.set(null)"
@@ -100,7 +89,7 @@ import { generateDriverFormFields } from './drivers.utilities';
                 </label>
                 <item-search-field
                     [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
-                    [options]="commit_list | async"
+                    [options]="commit_list()"
                     [loading]="loading_type().includes('commits')"
                     [ngModel]="commit()"
                     (ngModelChange)="
@@ -299,7 +288,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
 
     public readonly is_editing = computed(() => !!this.form?.value?.id);
     public readonly loading = signal('');
-    public readonly loading_type = signal([]);
+    public readonly loading_type = signal<string[]>([]);
     public readonly commit_error = signal(false);
     private readonly _details_request = signal(0);
     public readonly role_types = [
@@ -328,68 +317,55 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         extra: string | null;
     } | null>(null);
 
-    public readonly repo_list = queryRepositories({ limit: 1000 }).pipe(
-        map(({ data }) =>
-            data.filter((repo) => repo.type === PlaceRepositoryType.Driver),
-        ),
-        shareReplay(1),
+    private readonly _repo_list = resource({
+        loader: async () => {
+            this._setLoadingType('repository', true);
+            try {
+                const { data } = await queryRepositories({ limit: 1000 });
+                return data.filter(
+                    (repo) => repo.type === PlaceRepositoryType.Driver,
+                );
+            } finally {
+                this._setLoadingType('repository', false);
+            }
+        },
+    });
+    public readonly repo_list = computed(() => this._repo_list.value() || []);
+
+    private readonly _driver_list = resource({
+        params: () => this.repo()?.id,
+        loader: async ({ params: repo_id }) => {
+            if (!repo_id) return [];
+            this._setLoadingType('drivers', true);
+            try {
+                const list = await listRepositoryDrivers(repo_id, {
+                    limit: 1000,
+                }).catch(() => [] as string[]);
+                return list.map((_) => ({
+                    id: _,
+                    name: _.replace(/\//g, ' > '),
+                }));
+            } finally {
+                this._setLoadingType('drivers', false);
+            }
+        },
+    });
+    public readonly driver_list = computed(
+        () => this._driver_list.value() || [],
     );
 
-    public readonly driver_list = toObservable(this.repo).pipe(
-        filter((item) => !!item?.id),
-        distinctUntilKeyChanged('id'),
-        tap(() => this.loading_type.update((types) => [...types, 'drivers'])),
-        switchMap(({ id }) =>
-            listRepositoryDrivers(id, { limit: 1000 }).pipe(
-                catchError(() => of([] as string[])),
-            ),
-        ),
-        map((list) =>
-            list.map((_) => ({
-                id: _,
-                name: _.replace(/\//g, ' > '),
-            })),
-        ),
-        tap(() =>
-            this.loading_type.update((types) =>
-                types.filter((_) => _ !== 'drivers'),
-            ),
-        ),
-        shareReplay(1),
-    );
-
-    public readonly commit_list = combineLatest([
-        toObservable(this.repo),
-        toObservable(this.driver),
-    ]).pipe(
-        filter(([repo, driver]) => !!repo?.id && !!driver?.id),
-        distinctUntilChanged(
-            ([prev_repo, prev_driver], [curr_repo, curr_driver]) =>
-                prev_repo?.id === curr_repo?.id &&
-                prev_driver?.id === curr_driver?.id,
-        ),
-        tap(() => this.loading_type.update((types) => [...types, 'commits'])),
-        switchMap(([{ id }, driver]) =>
-            listRepositoryCommits(id, {
-                driver: driver.id,
-                limit: 1000,
-            }).pipe(catchError(() => of([] as GitCommitDetails[]))),
-        ),
-        map((list) =>
-            list.map((item) => ({
-                id: item.commit,
-                name: `${item.subject}`,
-                extra: isAfter(item.date, subMinutes(item.date, 1))
-                    ? this._date_pipe.transform(item.date.valueOf())
-                    : format(item.date, 'dd MMM yyyy'),
-            })),
-        ),
-        tap(() =>
-            this.loading_type.update((types) =>
-                types.filter((_) => _ !== 'commits'),
-            ),
-        ),
-        shareReplay(1),
+    private readonly _commit_list = resource({
+        params: () => ({
+            repo_id: this.repo()?.id,
+            driver_id: this.driver()?.id,
+        }),
+        loader: async ({ params }) => {
+            if (!params.repo_id || !params.driver_id) return [];
+            return this._loadCommitList(params.repo_id, params.driver_id);
+        },
+    });
+    public readonly commit_list = computed(
+        () => this._commit_list.value() || [],
     );
 
     public ngOnInit(): void {
@@ -414,7 +390,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
     public async applyDriverCommit(commit: {
         id: string;
         name: string;
-        extra: string;
+        extra: string | null;
     }) {
         const request_id = this._details_request() + 1;
         this._details_request.set(request_id);
@@ -424,18 +400,16 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         this.commit_error.set(false);
         const repo = this.repo();
         const driver = this.driver();
-        if (!driver?.id) return;
+        if (!repo?.id || !driver?.id) return;
         this.loading.set('DRIVERS.DETAILS_LOADING');
         this.form.patchValue({
             repository_id: repo.id,
             file_name: driver.id,
         });
-        const details = await lastValueFrom(
-            listRepositoryDriverDetails(repo.id, {
-                driver: `${driver.id}`,
-                commit: `${commit.id}`,
-            }).pipe(catchError(() => of(null))),
-        );
+        const details = await listRepositoryDriverDetails(repo.id, {
+            driver: `${driver.id}`,
+            commit: `${commit.id}`,
+        }).catch(() => null);
         if (request_id !== this._details_request()) return;
         if (!details) {
             this.form.patchValue({ commit: old_commit?.id || null });
@@ -454,7 +428,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         this._applyDriverDetails(details);
     }
 
-    public submit(): void {
+    public async submit(): Promise<void> {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
@@ -472,41 +446,39 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
                 ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
                 : { ...item_json, ...this.form.value }
         ) as Identity;
-        (form_item.id
-            ? updateDriver(
-                  form_item.id as string,
-                  form_item as unknown as PlaceDriver,
-              )
-            : addDriver(form_item as unknown as PlaceDriver)
-        ).subscribe(
-            (_item) => {
-                this._dialog_ref.disableClose = false;
-                this.event.emit({
-                    reason: 'done',
-                    metadata: { item: _item as unknown as Identity },
-                });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                if (!this.form.value.id && this.form.controls.settings) {
-                    this.newSettings(
-                        _item as unknown as Identity,
-                        this.form.controls.settings.value,
-                    ).then(() => this._dialog_ref.close());
-                } else {
-                    this._dialog_ref.close();
-                }
-            },
-            async (err) => {
-                this.saving = null;
-                this._dialog_ref.disableClose = false;
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await err.text?.()) || err.message || err,
-                        ),
-                    }),
+        try {
+            const _item = await (form_item.id
+                ? updateDriver(
+                      form_item.id as string,
+                      form_item as unknown as PlaceDriver,
+                  )
+                : addDriver(form_item as unknown as PlaceDriver));
+            this._dialog_ref.disableClose = false;
+            this.event.emit({
+                reason: 'done',
+                metadata: { item: _item as unknown as Identity },
+            });
+            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+            if (!this.form.value.id && this.form.controls.settings) {
+                await this.newSettings(
+                    _item as unknown as Identity,
+                    this.form.controls.settings.value,
                 );
-            },
-        );
+            }
+            this._dialog_ref.close();
+        } catch (err) {
+            this.saving = null;
+            this._dialog_ref.disableClose = false;
+            notifyError(
+                i18n(`${this._name}.SAVE_ERROR`, {
+                    error: JSON.stringify(
+                        (await (err as Response).text?.()) ||
+                            (err as Error).message ||
+                            err,
+                    ),
+                }),
+            );
+        }
     }
 
     private _applyDriverDetails(details: PlaceDriverDetails) {
@@ -555,14 +527,17 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         const { id, commit, file_name, repository_id } = this.form.value;
         if (!id) return;
         this.loading.set('DRIVERS.DETAILS_LOADING');
-        const repo = await lastValueFrom(showRepository(repository_id));
+        const repo = await showRepository(repository_id);
         const driver = {
             id: file_name,
             name: file_name.replace(/\//g, ' > '),
         };
         this.repo.set(repo);
         this.driver.set(driver);
-        const commit_list = await nextValueFrom(this.commit_list);
+        const commit_list = await this._loadCommitList(
+            repository_id,
+            file_name,
+        );
         const active_commit = commit_list.find((c) => c.id === commit);
         if (active_commit) this.commit.set(active_commit);
         this.loading.set('');
@@ -574,17 +549,41 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
-        await addSettings(new_settings)
-            .toPromise()
-            .catch((err) => {
-                this.saving = null;
-                notifyError(
-                    `Error saving settings for ${
-                        item.name || item.id
-                    }. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
-            });
+        await addSettings(new_settings).catch((err) => {
+            this.saving = null;
+            notifyError(
+                `Error saving settings for ${
+                    item.name || item.id
+                }. Error: ${JSON.stringify(
+                    err.response || err.message || err,
+                )}`,
+            );
+        });
+    }
+
+    private async _loadCommitList(repo_id: string, driver_id: string) {
+        this._setLoadingType('commits', true);
+        try {
+            const list = await listRepositoryCommits(repo_id, {
+                driver: driver_id,
+                limit: 1000,
+            }).catch(() => [] as GitCommitDetails[]);
+            return list.map((item) => ({
+                id: item.commit,
+                name: `${item.subject}`,
+                extra: isAfter(item.date, subMinutes(item.date, 1))
+                    ? this._date_pipe.transform(item.date.valueOf())
+                    : format(item.date, 'dd MMM yyyy'),
+            }));
+        } finally {
+            this._setLoadingType('commits', false);
+        }
+    }
+
+    private _setLoadingType(type: string, loading: boolean) {
+        this.loading_type.update((types) => {
+            const list = types.filter((_) => _ !== type);
+            return loading ? [...list, type] : list;
+        });
     }
 }

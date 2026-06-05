@@ -1,12 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, resource, signal } from '@angular/core';
 import {
     PlaceSettings,
     querySettings,
     settingsHistory,
 } from '@placeos/ts-client';
-import { debounceTime, of, switchMap } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -174,21 +171,18 @@ export class SettingsHistoryViewComponent {
     public readonly old_setting = signal<PlaceSettings | null>(null);
     public readonly types = ['UNENCRYPTED', 'SUPPORT', 'ADMIN', 'ENCRYPTED'];
 
-    public readonly settings = toSignal(
-        this._service.item.pipe(
-            switchMap((i) =>
-                !i ? of({ data: [] }) : querySettings({ parent_id: i.id }),
-            ),
-            map((_) => _.data),
-        ),
-        { initialValue: [] as PlaceSettings[] },
-    );
+    private readonly _settings = resource({
+        params: () => this._service.item()?.id,
+        loader: async ({ params: id }) =>
+            id ? (await querySettings({ parent_id: id })).data : [],
+    });
+    public readonly settings = computed(() => this._settings.value() || []);
 
-    public readonly history = toSignal(
-        toObservable(this.active_setting).pipe(
-            debounceTime(300),
-            switchMap((_) => (!_ ? of([]) : settingsHistory(_.id))),
-        ),
-        { initialValue: [] as PlaceSettings[] },
+    private readonly _history = resource({
+        params: () => this.active_setting()?.id,
+        loader: async ({ params: id }) => (id ? settingsHistory(id) : []),
+    });
+    public readonly history = computed(
+        () => this._history.value() || ([] as PlaceSettings[]),
     );
 }

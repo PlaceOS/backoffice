@@ -1,5 +1,5 @@
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, computed, inject, resource, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceSystem,
@@ -12,12 +12,11 @@ import {
     removeSystemTrigger,
     updateTrigger,
 } from '@placeos/ts-client';
-import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
-import { first, shareReplay, switchMap, tap } from 'rxjs/operators';
 
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { waitForEvent } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {
@@ -36,25 +35,29 @@ export class TriggerStateService {
     private _service = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _change = new BehaviorSubject(0);
-    private _loading = new BehaviorSubject<boolean>(false);
-    public readonly item: Observable<PlaceTrigger> = this._service
-        .item as Observable<PlaceTrigger>;
-
-    public readonly loading = this._loading.asObservable();
-
-    public readonly instances: Observable<PlaceTrigger[]> = combineLatest([
-        this.item,
-        this._change,
-    ]).pipe(
-        switchMap(([item]) => {
-            this._loading.next(true);
-            if (!(item instanceof PlaceTrigger)) return of([]);
-            return listTriggerInstances(item.id);
-        }),
-        tap(() => this._loading.next(false)),
-        shareReplay(1),
+    private _change = signal(0);
+    private _loading = signal(false);
+    public readonly item = computed(
+        () => this._service.item() as unknown as PlaceTrigger,
     );
+
+    public readonly loading = this._loading.asReadonly();
+
+    private readonly _instances = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceTrigger)) return [] as PlaceTrigger[];
+            this._loading.set(true);
+            try {
+                return listTriggerInstances(item.id).catch(() => []);
+            } finally {
+                this._loading.set(false);
+            }
+        },
+    });
+
+    public readonly instances = computed(() => this._instances.value() || []);
 
     public get active_item(): PlaceTrigger {
         return this._service.active_item as PlaceTrigger;
@@ -84,10 +87,11 @@ export class TriggerStateService {
         });
         const result: DialogEvent<{ trigger: PlaceTrigger }> | null =
             (await Promise.race([
-                ref.componentInstance.event
-                    .pipe(first((event) => event.reason === 'done'))
-                    .toPromise(),
-                ref.afterClosed().toPromise(),
+                waitForEvent(
+                    ref.componentInstance.event,
+                    (event: DialogEvent) => event.reason === 'done',
+                ),
+                waitForEvent(ref.afterClosed()),
             ])) as DialogEvent<{ trigger: PlaceTrigger }> | null;
         if (!result?.reason || !result.metadata?.trigger) return;
         this._service.replaceItem(
@@ -116,10 +120,11 @@ export class TriggerStateService {
         });
         const result: DialogEvent<{ trigger: PlaceTrigger }> | null =
             (await Promise.race([
-                ref.componentInstance.event
-                    .pipe(first((event) => event.reason === 'done'))
-                    .toPromise(),
-                ref.afterClosed().toPromise(),
+                waitForEvent(
+                    ref.componentInstance.event,
+                    (event: DialogEvent) => event.reason === 'done',
+                ),
+                waitForEvent(ref.afterClosed()),
             ])) as DialogEvent<{ trigger: PlaceTrigger }> | null;
         if (!result?.reason || !result.metadata?.trigger) return;
         this._service.replaceItem(
@@ -169,9 +174,7 @@ export class TriggerStateService {
         const resp = await updateTrigger(this.active_item.id, {
             ...this.active_item.toJSON(),
             actions,
-        })
-            .toPromise()
-            .catch((_) => _);
+        }).catch((_) => _);
         if (!(resp instanceof PlaceTrigger)) {
             const error = resp as { response?: string; message?: string };
             return notifyError(
@@ -214,9 +217,7 @@ export class TriggerStateService {
         const resp = await updateTrigger(item.id, {
             ...item.toJSON(),
             conditions,
-        })
-            .toPromise()
-            .catch((err) => err);
+        }).catch((err) => err);
         details.close();
         if (!(resp instanceof PlaceTrigger)) {
             const error = resp as { response?: string; message?: string };
@@ -257,9 +258,10 @@ export class TriggerStateService {
             ? actions.mailers
             : actions.functions
         ).splice(index, 1);
-        const resp = await updateTrigger(item.id, { ...item.toJSON(), actions })
-            .toPromise()
-            .catch((err) => err);
+        const resp = await updateTrigger(item.id, {
+            ...item.toJSON(),
+            actions,
+        }).catch((err) => err);
         details.close();
         if (!(resp instanceof PlaceTrigger)) {
             const error = resp as { response?: string; message?: string };
@@ -297,9 +299,7 @@ export class TriggerStateService {
         let err: unknown = await method(
             instance.control_system_id,
             instance?.id || this.active_item.id,
-        )
-            .toPromise()
-            .catch((_) => ({ error: _ }));
+        ).catch((_) => ({ error: _ }));
         details.close();
         if ((err as Record<string, unknown>)?.error) {
             err = (err as Record<string, unknown>).error;
@@ -313,7 +313,7 @@ export class TriggerStateService {
                 }),
             );
         }
-        this._change.next(Date.now());
+        this._change.set(Date.now());
         notifySuccess(i18n('TRIGGERS.REMOVE_INSTANCE_SUCCESS', { type }));
     }
 }

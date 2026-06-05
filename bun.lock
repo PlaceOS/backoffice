@@ -43,7 +43,7 @@
         "@nx/web": "22.7.5",
         "@nx/workspace": "22.7.5",
         "@placeos/cloud-uploads": "^1.1.1",
-        "@placeos/ts-client": "^4.10.4",
+        "@placeos/ts-client": "^5.0.0",
         "@playwright/test": "^1.36.0",
         "@schematics/angular": "22.0.0",
         "@sentry/browser": "^10.25.0",
@@ -888,7 +888,7 @@
 
     "@placeos/cloud-uploads": ["@placeos/cloud-uploads@1.1.1", "", { "peerDependencies": { "rxjs": "^7.8.2", "ts-md5": "^2.0.1" } }, "sha512-krF2RiuX4u0MkHBhm+DkrxWa91pMHmiWs3M4tuFpFDEsnrpbvPVvVPDs1EwqyLib5D6d/vxS6an+TcMTGfA+tg=="],
 
-    "@placeos/ts-client": ["@placeos/ts-client@4.10.4", "", { "dependencies": { "byte-base64": "^1.1.0", "fast-sha256": "^1.3.0" }, "peerDependencies": { "date-fns": "^4.1.0", "node-fetch": "^3.2.0", "rxjs": "^7.8.2", "ts-md5": "^2.0.1", "websocket": "^1.0.34" } }, "sha512-f1tI8tosYblab51eZ702kj2dFKOCSf/4fklmxlrONk4ftb6ruSIkJIcyFxmrF5zvDYKn04uHBXtZmfe2tgaOXg=="],
+    "@placeos/ts-client": ["@placeos/ts-client@5.0.0", "", { "dependencies": { "byte-base64": "^1.1.0", "fast-sha256": "^1.3.0" }, "peerDependencies": { "date-fns": "^4.1.0", "node-fetch": "^3.2.0", "ts-md5": "^2.0.1", "websocket": "^1.0.34" } }, "sha512-DdZ4q61H90ZLDUzz7ITIXO4tuDd6XJtgy76Hvg9AhsPx9dvubVvRsiDStm1LwM9q+r6Gx187JHp2J6MBXv5M2A=="],
 
     "@playwright/test": ["@playwright/test@1.56.1", "", { "dependencies": { "playwright": "1.56.1" }, "bin": { "playwright": "cli.js" } }, "sha512-vSMYtL/zOcFpvJCW71Q/OEGQb7KYBPAdKh35WNSkaZA75JlAO8ED8UN6GUNTm3drWomcbcqRPFqQbLae8yBTdg=="],
 

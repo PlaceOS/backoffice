@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     create,
@@ -11,22 +11,9 @@ import {
     remove,
     update,
 } from '@placeos/ts-client';
-import {
-    BehaviorSubject,
-    combineLatest,
-    lastValueFrom,
-    Observable,
-    of,
-} from 'rxjs';
-import {
-    debounceTime,
-    first,
-    map,
-    shareReplay,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { waitForEvent } from '../../common/signals';
+import { DialogEvent } from '../../common/types';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyModalComponent } from './api-key-modal.component';
@@ -37,141 +24,145 @@ import { APIKeyModalComponent } from './api-key-modal.component';
 export class APIKeyService {
     private _dialog = inject(MatDialog);
 
-    private _search = new BehaviorSubject<string>('');
-    private _domain = new BehaviorSubject<PlaceDomain>(null);
-    private _last_key = new BehaviorSubject<PlaceAPIKeyDetails>(null);
-    private _change = new BehaviorSubject<number>(0);
-    private _loading = new BehaviorSubject<boolean>(false);
+    private _search = signal('');
+    private _domain = signal<PlaceDomain>(null);
+    private _last_key = signal<PlaceAPIKeyDetails>(null);
+    private _change = signal(0);
+    private _loading = signal(false);
 
-    public readonly last_key = this._last_key.asObservable();
-    public readonly active_domain = this._domain.asObservable();
-    public readonly loading = this._loading.asObservable();
+    public readonly last_key = this._last_key.asReadonly();
+    public readonly active_domain = this._domain.asReadonly();
+    public readonly loading = this._loading.asReadonly();
 
-    public readonly available_domains = queryDomains({ limit: 500 }).pipe(
-        map((_) => _.data),
-        shareReplay(1),
+    private readonly _available_domains = resource({
+        loader: async () => (await queryDomains({ limit: 500 })).data,
+    });
+
+    public readonly available_domains = computed(
+        () => this._available_domains.value() || [],
     );
 
-    public readonly available_scopes: Observable<string[]> = get(
-        '/api/engine/v2/scopes',
-    ).pipe(
-        map((_) => _ as string[]),
-        shareReplay(1),
+    private readonly _available_scopes = resource({
+        loader: async () => (await get('/api/engine/v2/scopes')) as string[],
+    });
+
+    public readonly available_scopes = computed(
+        () => this._available_scopes.value() || [],
     );
 
-    public readonly available_keys = combineLatest([
-        this._domain,
-        this._change,
-    ]).pipe(
-        switchMap(([domain]) => {
-            this._loading.next(true);
-            return domain
-                ? query({
-                      query_params: { authority_id: domain.id },
-                      fn: (d) => new PlaceAPIKeyDetails(d),
-                      path: 'api_keys',
-                  }).pipe(map((_) => _.data as PlaceAPIKeyDetails[]))
-                : of([] as PlaceAPIKeyDetails[]);
+    private readonly _available_keys = resource({
+        params: () => ({
+            domain: this._domain(),
+            change: this._change(),
         }),
-        tap(() => this._loading.next(false)),
-        shareReplay(1),
+        loader: async ({ params }) => {
+            const { domain } = params;
+            this._loading.set(true);
+            try {
+                if (!domain) return [] as PlaceAPIKeyDetails[];
+                const response = await query({
+                    query_params: { authority_id: domain.id },
+                    fn: (d) => new PlaceAPIKeyDetails(d),
+                    path: 'api_keys',
+                });
+                return response.data as PlaceAPIKeyDetails[];
+            } finally {
+                this._loading.set(false);
+            }
+        },
+    });
+
+    public readonly available_keys = computed(
+        () => this._available_keys.value() || [],
     );
 
-    public readonly users = combineLatest([
-        this._domain,
-        this._search,
-        this._change,
-    ]).pipe(
-        debounceTime(300),
-        switchMap(([domain, q]) => {
-            console.log('Users:', domain, q);
-            return domain
-                ? queryUsers({ authority_id: domain.id, q }).pipe(
-                      map((_) => _.data as PlaceUser[]),
-                  )
-                : of([] as PlaceUser[]);
+    private readonly _users = resource({
+        params: () => ({
+            domain: this._domain(),
+            q: this._search(),
+            change: this._change(),
         }),
-        shareReplay(1),
-    );
+        loader: async ({ params }) => {
+            const { domain, q } = params;
+            if (!domain) return [] as PlaceUser[];
+            return (await queryUsers({ authority_id: domain.id, q })).data;
+        },
+    });
+
+    public readonly users = computed(() => this._users.value() || []);
 
     public setDomain(domain: PlaceDomain) {
         console.log('Setting domain:', domain);
-        this._domain.next(domain);
+        this._domain.set(domain);
     }
 
     public setSearch(s: string) {
-        this._search.next(s);
+        this._search.set(s);
     }
 
     public async newKey() {
         const ref = this._dialog.open(APIKeyModalComponent, {
-            data: { domain: this._domain.getValue() },
+            data: { domain: this._domain() },
         });
         const details = await Promise.race([
-            lastValueFrom(
-                ref.componentInstance.event.pipe(
-                    first((_) => _.reason === 'done'),
-                ),
+            waitForEvent(
+                ref.componentInstance.event,
+                (_: DialogEvent) => _.reason === 'done',
             ),
-            lastValueFrom(ref.afterClosed()),
+            waitForEvent(ref.afterClosed()),
         ]);
         if (details?.reason !== 'done') return;
         ref.componentInstance.loading.set('Creating new API key...');
-        const domain = this._domain.getValue();
-        const key = await lastValueFrom(
-            create({
-                query_params: {},
-                fn: (d) => new PlaceAPIKeyDetails(d),
-                path: 'api_keys',
-                form_data: {
-                    ...details.metadata,
-                    authority_id: domain.id,
-                },
-            }),
-        ).catch((_) => {
+        const domain = this._domain();
+        const key = await create({
+            query_params: {},
+            fn: (d) => new PlaceAPIKeyDetails(d),
+            path: 'api_keys',
+            form_data: {
+                ...details.metadata,
+                authority_id: domain.id,
+            },
+        }).catch((_) => {
             ref.close();
             notifyError(_);
             throw _;
         });
-        this._last_key.next(key as PlaceAPIKeyDetails);
-        this._change.next(Date.now());
+        this._last_key.set(key as PlaceAPIKeyDetails);
+        this._change.set(Date.now());
         notifySuccess('Successfully created new API key.');
         ref.close();
     }
 
     public async editKey(key: PlaceAPIKeyDetails) {
         const ref = this._dialog.open(APIKeyModalComponent, {
-            data: { domain: this._domain.getValue(), key },
+            data: { domain: this._domain(), key },
         });
         const details = await Promise.race([
-            lastValueFrom(
-                ref.componentInstance.event.pipe(
-                    first((_) => _.reason === 'done'),
-                ),
+            waitForEvent(
+                ref.componentInstance.event,
+                (_: DialogEvent) => _.reason === 'done',
             ),
-            lastValueFrom(ref.afterClosed()),
+            waitForEvent(ref.afterClosed()),
         ]);
         if (details?.reason !== 'done') return;
         ref.componentInstance.loading.set('Updating API key...');
-        const domain = this._domain.getValue();
-        await lastValueFrom(
-            update({
-                id: key.id,
-                query_params: {},
-                fn: (d) => new PlaceAPIKeyDetails(d),
-                path: 'api_keys',
-                method: 'patch',
-                form_data: {
-                    ...details.metadata,
-                    authority_id: domain.id,
-                },
-            }),
-        ).catch((_) => {
+        const domain = this._domain();
+        await update({
+            id: key.id,
+            query_params: {},
+            fn: (d) => new PlaceAPIKeyDetails(d),
+            path: 'api_keys',
+            method: 'patch',
+            form_data: {
+                ...details.metadata,
+                authority_id: domain.id,
+            },
+        }).catch((_) => {
             ref.close();
             notifyError(_);
             throw _;
         });
-        this._change.next(Date.now());
+        this._change.set(Date.now());
         notifySuccess('Successfully updated API key.');
         ref.close();
     }
@@ -188,15 +179,13 @@ export class APIKeyService {
         );
         if (details?.reason !== 'done') return;
         details.loading('Removing API key...');
-        await lastValueFrom(
-            remove({
-                id: key.id,
-                query_params: {},
-                path: 'api_keys',
-            }),
-        );
+        await remove({
+            id: key.id,
+            query_params: {},
+            path: 'api_keys',
+        });
         details.close();
         notifySuccess('Successfully removed API key.');
-        this._change.next(Date.now());
+        this._change.set(Date.now());
     }
 }

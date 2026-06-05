@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import {
@@ -9,7 +8,8 @@ import {
     showDomain,
     showGroup,
 } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom } from '../common/general';
+import { toSignal } from '../common/signals';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';

@@ -2,6 +2,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import {
     Component,
+    Signal,
     TemplateRef,
     computed,
     effect,
@@ -11,7 +12,7 @@ import {
     signal,
 } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Observable } from 'rxjs';
+import { Subscribable } from '../common/signals';
 import { IconComponent } from './icon.component';
 
 export interface TableColumn {
@@ -24,6 +25,8 @@ export interface TableColumn {
     size?: string;
     show?: boolean;
 }
+
+type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
 
 @Component({
     selector: 'simple-table',
@@ -261,7 +264,7 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
     public readonly selectedInput = input<number[]>([], { alias: 'selected' });
     public readonly selected = linkedSignal(this.selectedInput);
 
-    public readonly data = input<T[] | Observable<T[]>>(undefined);
+    public readonly data = input<TableData<T>>(undefined);
     public readonly columns = input<TableColumn[]>([]);
     public readonly selectable = input(false);
     public readonly filter = input<string>('');
@@ -346,16 +349,30 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
     }
 
     constructor() {
-        // Handle Observable vs array data input
+        // Handle signal, subscribable, or array data input.
         effect((onCleanup) => {
             const data = this.data();
-            if (data instanceof Observable) {
+            if (Array.isArray(data)) {
+                this._data.set(data);
+            } else if (typeof data === 'function') {
+                this._data.set(data() || []);
+            } else if (
+                data &&
+                typeof data === 'object' &&
+                'subscribe' in data
+            ) {
                 const sub = data.subscribe((value) => {
                     this._data.set(value || []);
                 });
-                onCleanup(() => sub.unsubscribe());
+                onCleanup(() => {
+                    if (typeof sub === 'function') {
+                        sub();
+                    } else {
+                        sub.unsubscribe();
+                    }
+                });
             } else {
-                this._data.set(data || []);
+                this._data.set([]);
             }
         });
 

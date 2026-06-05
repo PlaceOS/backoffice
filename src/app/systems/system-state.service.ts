@@ -1,5 +1,5 @@
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addSystemModule,
@@ -27,30 +27,20 @@ import {
     updateSystem,
     updateTrigger,
 } from '@placeos/ts-client';
-import {
-    BehaviorSubject,
-    combineLatest,
-    lastValueFrom,
-    Observable,
-    of,
-} from 'rxjs';
-import {
-    debounceTime,
-    first,
-    map,
-    shareReplay,
-    startWith,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
-import { nextValueFrom, unique } from '../common/general';
+import { unique } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { FormModalComponent, HashMap, Identity } from '../common/types';
+import { waitForEvent } from '../common/signals';
+import {
+    DialogEvent,
+    FormModalComponent,
+    HashMap,
+    Identity,
+} from '../common/types';
 import {
     ConfirmModalData,
     openConfirmModal,
@@ -70,186 +60,182 @@ export class SystemStateService extends AsyncHandler {
     private _debug = inject(PlaceDebugService);
     private _dialog = inject(MatDialog);
 
-    /** Observable of the active item */
-    public readonly item = this._state.active_item$;
+    /** Signal of the active item */
+    public readonly item = computed(
+        () => this._state.item() as unknown as PlaceSystem,
+    );
 
-    private _loading = new BehaviorSubject<HashMap<boolean>>({});
-    private _modules = new BehaviorSubject<PlaceModule[]>([]);
-    private _change = new BehaviorSubject<number>(0);
-    /** Observable for associated settings of the active item */
-    public readonly associated_settings = this._state.active_item$.pipe(
-        debounceTime(300),
-        switchMap((item: PlaceSystem) => {
-            if (!item || !(item instanceof PlaceSystem)) return [];
-            return systemSettings(item.id);
-        }),
-        shareReplay(1),
+    private _loading = signal<HashMap<boolean>>({});
+    private _modules = signal<PlaceModule[]>([]);
+    private _change = signal(0);
+
+    private readonly _associated_settings = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceSystem)) return [];
+            return systemSettings(item.id).catch(() => []);
+        },
+    });
+    /** Signal for associated settings of the active item */
+    public readonly associated_settings = computed(
+        () => this._associated_settings.value() || [],
     );
-    /** Observable of the counts of the active item */
-    public readonly counts = combineLatest([
-        this._state.active_item$,
-        this._change,
-    ]).pipe(
-        debounceTime(300),
-        switchMap(async (_) => {
-            const [item] = _;
-            if (!item || !(item instanceof PlaceSystem)) return {};
-            this._loading.next({
-                ...this._loading.getValue(),
-                settings: true,
-            });
-            const details = await Promise.all([
-                lastValueFrom(
-                    listSystemTriggers(item.id).pipe(map((d) => d.total)),
-                ).catch(() => 0),
-                lastValueFrom(
-                    listMetadata(item.id).pipe(map((d) => d.length)),
-                ).catch(() => 0),
-            ]);
-            const [triggers, metadata] = details;
-            this._loading.next({
-                ...this._loading.getValue(),
-                settings: false,
-            });
-            return {
-                devices: (item as PlaceSystem).modules.length,
-                zones: (item as PlaceSystem).zones.length,
-                triggers,
-                metadata,
-            };
-        }),
-    );
-    /** Observable for modules associated with system */
-    public readonly modules: Observable<PlaceModule[]> = combineLatest([
-        this.item,
-        this._change,
-    ]).pipe(
-        debounceTime(200),
-        switchMap(([item]) => {
-            this._modules.next([]);
-            if (!item || !(item instanceof PlaceSystem)) return of([]);
-            this._loading.next({
-                ...this._loading.getValue(),
-                modules: true,
-            });
-            return queryModules({
-                control_system_id: item.id,
-                complete: true,
-                limit: 200,
-            } as Record<string, unknown>).pipe(
-                map((i) => [item, i.data]),
-                startWith([item, []]),
-            );
-        }),
-        map(([item, modules]: [PlaceSystem, PlaceModule[]]) => {
-            modules.forEach(
-                (_) =>
-                    ((_ as PlaceModule & { connected?: boolean }).connected =
-                        undefined),
-            );
-            this._loading.next({
-                ...this._loading.getValue(),
-                modules: false,
-            });
-            modules.sort((a, b) => {
-                const index_a =
-                    item.modules.indexOf(a.id) > -1
-                        ? item.modules.indexOf(a.id)
-                        : 9999;
-                const index_b =
-                    item.modules.indexOf(b.id) > -1
-                        ? item.modules.indexOf(b.id)
-                        : 9999;
-                return index_a - index_b;
-            });
-            this._modules.next(modules);
-            return modules;
-        }),
-        shareReplay(1),
-    );
-    /** Observable for debug state of the active modules */
-    public readonly debug_state = combineLatest([
-        this.modules,
-        this._debug.changed,
-    ]).pipe(
-        map(([modules]) => {
-            return modules.reduce((mapping, device) => {
-                mapping[device.id] = this._debug.isListening(device);
-                return mapping;
-            }, {});
-        }),
-    );
-    /** Observable for module bindings */
-    public readonly module_bindings = this.modules.pipe(
-        map((modules) =>
-            modules.map(
-                (mod) =>
-                    `${
-                        mod.custom_name || mod.name || 'Blank'
-                    }_${calculateModuleIndex(modules, mod)}`,
-            ),
-        ),
-        shareReplay(1),
-    );
-    /** Observable for zones associated with system */
-    public readonly zones: Observable<PlaceZone[]> = this._state.item.pipe(
-        debounceTime(200),
-        switchMap((item: PlaceSystem) => {
-            if (!item || !(item instanceof PlaceSystem)) return of([]);
-            this._loading.next({
-                ...this._loading.getValue(),
-                zones: true,
-            });
-            return listSystemZones(item.id).pipe(
-                map((i) => [item, i.data]),
-                startWith([item, []]),
-            );
-        }),
-        map(([item, zones]) => {
-            zones.sort(
-                (a, b) => item.zones.indexOf(a.id) - item.zones.indexOf(b.id),
-            );
-            this._loading.next({
-                ...this._loading.getValue(),
-                zones: false,
-            });
-            return zones;
-        }),
-        startWith([]),
-        shareReplay(1),
-    );
-    /** Observable for triggers associated with system */
-    public readonly triggers: Observable<PlaceTrigger[]> = combineLatest([
-        this.item,
-        this._change,
-    ]).pipe(
-        debounceTime(200),
-        switchMap(([item]) => {
-            if (!item || !(item instanceof PlaceSystem)) {
-                return of([]);
+
+    private readonly _counts = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceSystem)) return {};
+            this.setLoading('settings', true);
+            try {
+                const [triggers, metadata] = await Promise.all([
+                    listSystemTriggers(item.id)
+                        .then((response) => response.total)
+                        .catch(() => 0),
+                    listMetadata(item.id)
+                        .then((response) => response.length)
+                        .catch(() => 0),
+                ]);
+                return {
+                    devices: item.modules.length,
+                    zones: item.zones.length,
+                    triggers,
+                    metadata,
+                };
+            } finally {
+                this.setLoading('settings', false);
             }
-            this._loading.next({
-                ...this._loading.getValue(),
-                triggers: true,
-            });
-            return listSystemTriggers(item.id).pipe(
-                map((i) => i.data),
-                startWith([] as PlaceTrigger[]),
-            );
-        }),
-        tap(() =>
-            this._loading.next({
-                ...this._loading.getValue(),
-                triggers: false,
-            }),
-        ),
-        shareReplay(1),
+        },
+    });
+    /** Signal of the counts of the active item */
+    public readonly counts = computed<{
+        devices?: number;
+        zones?: number;
+        triggers?: number;
+        metadata?: number;
+    }>(
+        () =>
+            this._counts.value() || {
+                devices: 0,
+                zones: 0,
+                triggers: 0,
+                metadata: 0,
+            },
     );
-    /** Observable of the active item */
-    public readonly loading = this._loading.asObservable();
 
-    public readonly getModules = () => this._modules.getValue();
-    /** Observable of the active item */
+    private readonly _module_resource = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            this._modules.set([]);
+            if (!(item instanceof PlaceSystem)) return [] as PlaceModule[];
+            this.setLoading('modules', true);
+            try {
+                const response = await queryModules({
+                    control_system_id: item.id,
+                    complete: true,
+                    limit: 200,
+                } as Record<string, unknown>).catch(() => ({ data: [] }));
+                const modules = [...response.data];
+                modules.forEach(
+                    (_) =>
+                        ((
+                            _ as PlaceModule & { connected?: boolean }
+                        ).connected = undefined),
+                );
+                modules.sort((a, b) => {
+                    const index_a =
+                        item.modules.indexOf(a.id) > -1
+                            ? item.modules.indexOf(a.id)
+                            : 9999;
+                    const index_b =
+                        item.modules.indexOf(b.id) > -1
+                            ? item.modules.indexOf(b.id)
+                            : 9999;
+                    return index_a - index_b;
+                });
+                this._modules.set(modules);
+                return modules;
+            } finally {
+                this.setLoading('modules', false);
+            }
+        },
+    });
+    /** Signal for modules associated with system */
+    public readonly modules = computed(
+        () => this._module_resource.value() || [],
+    );
+
+    /** Signal for debug state of the active modules */
+    public readonly debug_state = computed(() => {
+        this._debug.changed();
+        return this.modules().reduce((mapping, device) => {
+            mapping[device.id] = this._debug.isListening(device);
+            return mapping;
+        }, {});
+    });
+
+    /** Signal for module bindings */
+    public readonly module_bindings = computed(() =>
+        this.modules().map(
+            (mod) =>
+                `${
+                    mod.custom_name || mod.name || 'Blank'
+                }_${calculateModuleIndex(this.modules(), mod)}`,
+        ),
+    );
+
+    private readonly _zones = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceSystem)) return [] as PlaceZone[];
+            this.setLoading('zones', true);
+            try {
+                const response = await listSystemZones(item.id).catch(() => ({
+                    data: [],
+                }));
+                const zones = [...response.data];
+                zones.sort(
+                    (a, b) =>
+                        item.zones.indexOf(a.id) - item.zones.indexOf(b.id),
+                );
+                return zones;
+            } finally {
+                this.setLoading('zones', false);
+            }
+        },
+    });
+    /** Signal for zones associated with system */
+    public readonly zones = computed(() => this._zones.value() || []);
+
+    private readonly _triggers = resource({
+        params: () => ({ item: this.item(), changed: this._change() }),
+        loader: async ({ params }) => {
+            const { item } = params;
+            if (!(item instanceof PlaceSystem)) return [] as PlaceTrigger[];
+            this.setLoading('triggers', true);
+            try {
+                const response = await listSystemTriggers(item.id).catch(
+                    () => ({
+                        data: [],
+                    }),
+                );
+                return response.data;
+            } finally {
+                this.setLoading('triggers', false);
+            }
+        },
+    });
+    /** Signal for triggers associated with system */
+    public readonly triggers = computed(() => this._triggers.value() || []);
+
+    /** Signal of loading states */
+    public readonly loading = this._loading.asReadonly();
+
+    public readonly getModules = () => this._modules();
+    /** Active system */
     public get active_item(): PlaceSystem {
         return (this._state.active_item || {}) as PlaceSystem;
     }
@@ -263,11 +249,11 @@ export class SystemStateService extends AsyncHandler {
             content: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
             icon: { type: 'icon', class: 'backoffice-controller-play' },
         });
-        if (details && details.reason) {
-            details.loading('Starting system...');
-            const resp = await lastValueFrom(
-                startSystem(this.active_item.id),
-            ).catch((err) => {
+        if (!details?.reason) return;
+        details.loading('Starting system...');
+        const error = await startSystem(this.active_item.id)
+            .then(() => null)
+            .catch((err) => {
                 notifyError(
                     `Failed to start system: ${JSON.stringify(
                         err.response || err.message || err,
@@ -275,12 +261,11 @@ export class SystemStateService extends AsyncHandler {
                 );
                 return err;
             });
-            if (resp) {
-                notifySuccess(`Successfully started system`);
-                this.timeout('change', () => this._change.next(Date.now()));
-            }
-            details.close();
+        if (!error) {
+            notifySuccess(`Successfully started system`);
+            this.timeout('change', () => this.changed());
         }
+        details.close();
     }
 
     /**
@@ -292,22 +277,21 @@ export class SystemStateService extends AsyncHandler {
             content: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
             icon: { type: 'icon', class: 'backoffice-controller-stop' },
         });
-        if (!details || !details.reason) return;
+        if (!details?.reason) return;
         details.loading('Stopping system...');
-        const resp = await lastValueFrom(stopSystem(this.active_item.id)).catch(
-            (err) => {
+        const error = await stopSystem(this.active_item.id)
+            .then(() => null)
+            .catch((err) => {
                 notifyError(
                     `Failed to stop system: ${JSON.stringify(
                         err.response || err.message || err,
                     )}`,
                 );
                 return err;
-            },
-        );
-        console.log('RESP:', resp);
-        if (resp) {
+            });
+        if (!error) {
             notifySuccess(`Successfully stopped system`);
-            this.timeout('change', () => this._change.next(Date.now()));
+            this.timeout('change', () => this.changed());
         }
         details.close();
     }
@@ -321,7 +305,7 @@ export class SystemStateService extends AsyncHandler {
                 device,
                 `${
                     device.custom_name || device.name || 'Blank'
-                }_${calculateModuleIndex(this._modules.getValue(), device)}`,
+                }_${calculateModuleIndex(this._modules(), device)}`,
             );
         }
     }
@@ -341,7 +325,7 @@ export class SystemStateService extends AsyncHandler {
 
     public async editModule(device: PlaceModule) {
         await this._state.edit(device).catch((_err) => null);
-        this._change.next(Date.now());
+        this.changed();
     }
 
     public async addModuleToSystem(device: PlaceModule) {
@@ -349,7 +333,7 @@ export class SystemStateService extends AsyncHandler {
             return notifyError(
                 'Logic modules cannot be added to another system',
             );
-        const item = await nextValueFrom(this.item);
+        const item = this.item();
         const ref = this._dialog.open<
             SelectItemModalComponent,
             SelectItemModalData
@@ -357,37 +341,32 @@ export class SystemStateService extends AsyncHandler {
             data: {
                 service_name: 'module to system',
                 query_fn: (_) =>
-                    querySystems({ q: _ }).pipe(
-                        map((resp) =>
-                            resp.data.filter((_) => _.id !== item.id),
-                        ),
+                    querySystems({ q: _ }).then((resp) =>
+                        resp.data.filter((_) => _.id !== item.id),
                     ),
             },
         });
         const details = await Promise.race([
-            lastValueFrom(
-                ref.componentInstance.event.pipe(
-                    first((_) => _.reason === 'action'),
-                ),
+            waitForEvent(
+                ref.componentInstance.event,
+                (_: DialogEvent) => _.reason === 'action',
             ),
-            lastValueFrom(ref.afterClosed()),
+            waitForEvent(ref.afterClosed()),
         ]);
-        if (!details || !details.reason) return ref.close();
+        if (!details?.reason) return ref.close();
         const system = ref.componentInstance.item as PlaceSystem;
-        if (!system) return;
-        await lastValueFrom(addSystemModule(system.id, device.id)).catch(
-            (_e) => {
-                ref.close();
-                notifyError(
-                    `Error adding module to system "${
-                        (system as PlaceSystem & { display_name?: string })
-                            .display_name || system.name
-                    }". Error: ${JSON.stringify(_e.response || _e.message || _e)}`,
-                );
-                throw _e;
-            },
-        );
-        this._change.next(Date.now());
+        if (!system) return ref.close();
+        await addSystemModule(system.id, device.id).catch((_e) => {
+            ref.close();
+            notifyError(
+                `Error adding module to system "${
+                    (system as PlaceSystem & { display_name?: string })
+                        .display_name || system.name
+                }". Error: ${JSON.stringify(_e.response || _e.message || _e)}`,
+            );
+            throw _e;
+        });
+        this.changed();
         ref.close();
         notifySuccess(
             `Successfully added module to system "${
@@ -405,41 +384,38 @@ export class SystemStateService extends AsyncHandler {
             data: {
                 service_name: 'Triggers',
                 query_fn: (_) =>
-                    queryTriggers({ q: _ }).pipe(map((resp) => resp.data)),
+                    queryTriggers({ q: _ }).then((resp) => resp.data),
             },
         });
         const details = await Promise.race([
-            lastValueFrom(
-                ref.componentInstance.event.pipe(
-                    first((_) => _.reason === 'action'),
-                ),
+            waitForEvent(
+                ref.componentInstance.event,
+                (_: DialogEvent) => _.reason === 'action',
             ),
-            lastValueFrom(ref.afterClosed()),
+            waitForEvent(ref.afterClosed()),
         ]);
-        if (!details || !details.reason) return ref.close();
+        if (!details?.reason) return ref.close();
         const t = await this.addTrigger(
             ref.componentInstance.item as PlaceTrigger,
         );
         ref.close();
-        this._change.next(Date.now());
+        this.changed();
         return t;
     }
 
     public async addTrigger(trigger: PlaceTrigger) {
-        const t = await lastValueFrom(
-            addSystemTrigger(this.active_item.id, {
-                control_system_id: this.active_item.id,
-                enabled: true,
-                important: false,
-                trigger_id: trigger.id,
-            } as Record<string, unknown>),
-        );
-        this.timeout('change', () => this._change.next(Date.now()));
+        const t = await addSystemTrigger(this.active_item.id, {
+            control_system_id: this.active_item.id,
+            enabled: true,
+            important: false,
+            trigger_id: trigger.id,
+        } as Record<string, unknown>);
+        this.timeout('change', () => this.changed());
         return t;
     }
 
     public async editTrigger(trigger: PlaceTrigger) {
-        if (this.item && trigger) {
+        if (this.item() && trigger) {
             const ref = this._dialog.open(SystemTriggerFormComponent, {
                 data: {
                     item: trigger,
@@ -451,31 +427,30 @@ export class SystemStateService extends AsyncHandler {
             const instance =
                 ref.componentInstance as unknown as FormModalComponent;
             const details = await Promise.race([
-                lastValueFrom(
-                    instance.event.pipe(first((_) => _.reason === 'action')),
+                waitForEvent(
+                    instance.event,
+                    (_: DialogEvent) => _.reason === 'action',
                 ),
-                lastValueFrom(ref.afterClosed()),
+                waitForEvent(ref.afterClosed()),
             ]);
-            if (!details || !details.reason) return;
+            if (!details?.reason) return;
             instance.loading = 'Saving trigger settings...';
 
             const url = `${apiEndpoint()}/systems/${
                 this.active_item.id
             }/triggers/${trigger.id}`;
-            const trig = await lastValueFrom(put(url, details.metadata)).catch(
-                (err) => {
-                    notifyError(
-                        `Error updating trigger settings. Error: ${JSON.stringify(
-                            err.response || err.message || err,
-                        )}`,
-                    );
-                    throw err;
-                },
-            );
+            const trig = await put(url, details.metadata).catch((err) => {
+                notifyError(
+                    `Error updating trigger settings. Error: ${JSON.stringify(
+                        err.response || err.message || err,
+                    )}`,
+                );
+                throw err;
+            });
             ref.close();
             if (!trig) return trigger;
             notifySuccess(`Successfully updated trigger settings.`);
-            this.timeout('change', () => this._change.next(Date.now()));
+            this.timeout('change', () => this.changed());
             return trig;
         }
     }
@@ -486,21 +461,21 @@ export class SystemStateService extends AsyncHandler {
             content: `<p>Are you sure you want remove trigger "${trigger.name}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
             icon: { type: 'icon', content: 'delete' },
         });
-        if (!details || !details.reason) return;
-        await lastValueFrom(
-            removeSystemTrigger(this.active_item.id, trigger.id),
-        ).catch((err) => {
-            details.close();
-            notifyError(
-                `Error removing trigger ${trigger.id} from system. Error: ${
-                    err.statusText || err.message || err
-                }`,
-            );
-            throw err;
-        });
+        if (!details?.reason) return;
+        await removeSystemTrigger(this.active_item.id, trigger.id).catch(
+            (err) => {
+                details.close();
+                notifyError(
+                    `Error removing trigger ${trigger.id} from system. Error: ${
+                        err.statusText || err.message || err
+                    }`,
+                );
+                throw err;
+            },
+        );
         details.close();
         notifySuccess(`Successfully removed trigger from system.`);
-        this._change.next(Date.now());
+        this.changed();
     }
 
     public async reorderModules(fst: number, snd: number) {
@@ -509,16 +484,14 @@ export class SystemStateService extends AsyncHandler {
             content: `Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.`,
             icon: { type: 'icon', content: 'layers' },
         });
-        if (!details || !details.reason) return;
+        if (!details?.reason) return;
         details.loading('Updating module order...');
         const list: string[] = [...this.active_item.modules];
         moveItemInArray(list, fst, snd);
-        const resp = await lastValueFrom(
-            updateSystem(this.active_item.id, {
-                ...this.active_item,
-                modules: list,
-            }),
-        ).catch((err) => {
+        const resp = await updateSystem(this.active_item.id, {
+            ...this.active_item,
+            modules: list,
+        }).catch((err) => {
             notifyError(
                 `Failed to reorder system modules: ${JSON.stringify(
                     err.response || err.message || err,
@@ -534,7 +507,7 @@ export class SystemStateService extends AsyncHandler {
     }
 
     public async sortModulesByType(alphabetical = false) {
-        const modules = this._modules.getValue();
+        const modules = this._modules();
         if (modules.length < 2) return;
 
         const details = await this.confirm({
@@ -542,7 +515,7 @@ export class SystemStateService extends AsyncHandler {
             content: `Are you sure you want to sort modules by class?<br>Modules with the same class name will be grouped together.`,
             icon: { type: 'icon', content: 'sort' },
         });
-        if (!details || !details.reason) return;
+        if (!details?.reason) return;
         details.loading('Sorting modules by class...');
         let sorted_modules = [];
         if (alphabetical) {
@@ -572,7 +545,6 @@ export class SystemStateService extends AsyncHandler {
                     '';
                 sorted_modules.push(mod_a);
                 processed.add(mod_a);
-                // Find all other modules with the same class that come after this one
                 for (const mod_b of modules) {
                     if (processed.has(mod_b)) continue;
                     const mod_b_class =
@@ -589,12 +561,10 @@ export class SystemStateService extends AsyncHandler {
         }
         const sorted_ids = sorted_modules.map((m) => m.id);
 
-        const resp = await lastValueFrom(
-            updateSystem(this.active_item.id, {
-                ...this.active_item,
-                modules: sorted_ids,
-            }),
-        ).catch((err) => {
+        const resp = await updateSystem(this.active_item.id, {
+            ...this.active_item,
+            modules: sorted_ids,
+        }).catch((err) => {
             notifyError(
                 `Failed to sort system modules: ${JSON.stringify(
                     err.response || err.message || err,
@@ -616,14 +586,12 @@ export class SystemStateService extends AsyncHandler {
             content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
             icon: { type: 'icon', content: 'layers' },
         });
-        if (!details || !details.reason) return;
+        if (!details?.reason) return;
         details.loading('Updating zone order...');
-        const resp = await lastValueFrom(
-            updateSystem(this.active_item.id, {
-                ...this.active_item,
-                zones: order,
-            }),
-        ).catch((err) => {
+        const resp = await updateSystem(this.active_item.id, {
+            ...this.active_item,
+            zones: order,
+        }).catch((err) => {
             notifyError(
                 `Failed to reorder system zones: ${JSON.stringify(
                     err.response || err.message || err,
@@ -643,20 +611,18 @@ export class SystemStateService extends AsyncHandler {
      * @param id ID of the module to associate with the active system
      */
     public async joinModule(id: string) {
-        await lastValueFrom(addSystemModule(this.active_item.id, id)).catch(
-            (err) => {
-                notifyError(
-                    `Error adding module ${id} to system. Error: ${
-                        err.statusText || err.message || err
-                    }`,
-                );
-            },
-        );
+        await addSystemModule(this.active_item.id, id).catch((err) => {
+            notifyError(
+                `Error adding module ${id} to system. Error: ${
+                    err.statusText || err.message || err
+                }`,
+            );
+        });
         this.timeout('join', async () => {
-            const system = await lastValueFrom(showSystem(this.active_item.id));
+            const system = await showSystem(this.active_item.id);
             if (system) this._state.replaceItem(system as unknown as Identity);
             notifySuccess(`Successfully added module to system.`);
-            this._change.next(Date.now());
+            this.changed();
         });
     }
 
@@ -670,9 +636,10 @@ export class SystemStateService extends AsyncHandler {
             content: `Remove ${device.driver_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
             icon: { type: 'icon', content: 'delete' },
         });
-        if (!details || !details.reason) return;
-        const system = await lastValueFrom(
-            removeSystemModule(this.active_item.id, device.id),
+        if (!details?.reason) return;
+        const system = await removeSystemModule(
+            this.active_item.id,
+            device.id,
         ).catch((err) => {
             notifyError(
                 `Error removing module ${device.id} from system. Error: ${
@@ -694,12 +661,10 @@ export class SystemStateService extends AsyncHandler {
             ...this.active_item.zones,
             ...zone_list.map((_) => _.id),
         ]) as string[];
-        const system = await lastValueFrom(
-            updateSystem(this.active_item.id, {
-                ...this.active_item,
-                zones,
-            }),
-        ).catch((err) => {
+        const system = await updateSystem(this.active_item.id, {
+            ...this.active_item,
+            zones,
+        }).catch((err) => {
             notifyError(
                 `Error adding ${zone_list.length} zone(s) to system. Error: ${
                     err.statusText || err.message || err
@@ -720,14 +685,12 @@ export class SystemStateService extends AsyncHandler {
             content: `<p>Are you sure you want remove zone "${zone.name}" from the system?</p>Configuration will be updated immediately.`,
             icon: { type: 'icon', content: 'delete' },
         });
-        if (!details || !details.reason) return;
+        if (!details?.reason) return;
         const zones = this.active_item.zones.filter((z) => z !== zone.id);
-        const system = await lastValueFrom(
-            updateSystem(this.active_item.id, {
-                ...this.active_item,
-                zones,
-            }),
-        ).catch((err) => {
+        const system = await updateSystem(this.active_item.id, {
+            ...this.active_item,
+            zones,
+        }).catch((err) => {
             notifyError(
                 `Error removing zone ${zone.id} from system. Error: ${
                     err.statusText || err.message || err
@@ -745,7 +708,7 @@ export class SystemStateService extends AsyncHandler {
      */
     public async toggleModulePower(device: PlaceModule) {
         const method = device.running ? stopModule : startModule;
-        await lastValueFrom(method(device.id)).catch((err) => {
+        await method(device.id).catch((err) => {
             if (typeof err === 'string' && err.length < 64) {
                 notifyError(err);
             } else {
@@ -764,7 +727,7 @@ export class SystemStateService extends AsyncHandler {
         );
         (device as PlaceModule & { running: boolean }).running =
             !device.running;
-        this._change.next(Date.now());
+        this.changed();
     }
 
     /** View Results of the execute */
@@ -779,5 +742,13 @@ export class SystemStateService extends AsyncHandler {
 
     private async confirm(data: ConfirmModalData) {
         return openConfirmModal(data, this._dialog);
+    }
+
+    private setLoading(key: string, value: boolean) {
+        this._loading.update((state) => ({ ...state, [key]: value }));
+    }
+
+    private changed() {
+        this._change.set(Date.now());
     }
 }

@@ -1,12 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceDriver, queryModules } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
@@ -75,7 +72,7 @@ import { DriverStateService } from './driver-state.service';
                                 </div>
                             }
                         </div>
-                        @if (updates_available | async) {
+                        @if (updates_available()) {
                             <button
                                 class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-1 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm sm:-left-8"
                                 [matTooltip]="'DRIVERS.UPDATE' | translate"
@@ -132,17 +129,12 @@ export class DriversComponent {
     private _debug = inject(PlaceDebugService);
 
     public readonly name = 'drivers';
-    public readonly item = toSignal(
-        this._service.item.pipe(map((item) => item as PlaceDriver)),
-        { initialValue: null as PlaceDriver | null },
-    );
-    public readonly loading = toSignal(this._service.loading, {
-        initialValue: false,
-    });
+    public readonly item = this._drivers.item;
+    public readonly loading = this._service.loading;
     public readonly scroll = signal(0);
     public readonly open_menu = signal(false);
     public readonly device_count = signal(0);
-    public readonly docs = toSignal(this._drivers.docs, { initialValue: null });
+    public readonly docs = this._drivers.docs;
     public readonly extensions = computed(() =>
         extensionsForItem(this.item(), this.name),
     );
@@ -199,9 +191,9 @@ export class DriversComponent {
             driver_id: item.id,
         };
         this.device_count.set(
-            await lastValueFrom(
-                queryModules(query).pipe(map(({ total }) => total)),
-            ).catch(() => 0),
+            await queryModules(query)
+                .then(({ total }) => total)
+                .catch(() => 0),
         );
     }
 }

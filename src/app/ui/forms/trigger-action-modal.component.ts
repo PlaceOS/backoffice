@@ -295,7 +295,7 @@ export class TriggerActionModalComponent
         this.chip_list().errorState = !this.form.controls.emails.valid;
     }
 
-    public save() {
+    public async save() {
         this.form.markAllAsTouched();
         if (
             (this.form.controls.action_type.value === 'emails' &&
@@ -311,35 +311,33 @@ export class TriggerActionModalComponent
         } else {
             this.updateFunctions();
         }
-        updateTrigger(this.trigger.id, {
+        await updateTrigger(this.trigger.id, {
             ...this.trigger,
             actions: this.actions,
-        })
-            .toPromise()
-            .then(
-                (item) => {
-                    this.event.emit({
-                        reason: 'done',
-                        metadata: { trigger: item },
-                    });
-                    notifySuccess(
-                        `Successfully ${
-                            this.is_new ? 'added' : 'updated'
-                        } condition to trigger`,
-                    );
-                    this._dialog.close();
-                },
-                (err) => {
-                    this.loading.set('');
-                    notifyError(
-                        `Error ${
-                            this.is_new ? 'adding' : 'updating'
-                        } condition to trigger. Error: ${JSON.stringify(
-                            err.response || err.message || err,
-                        )}`,
-                    );
-                },
-            );
+        }).then(
+            (item) => {
+                this.event.emit({
+                    reason: 'done',
+                    metadata: { trigger: item },
+                });
+                notifySuccess(
+                    `Successfully ${
+                        this.is_new ? 'added' : 'updated'
+                    } condition to trigger`,
+                );
+                this._dialog.close();
+            },
+            (err) => {
+                this.loading.set('');
+                notifyError(
+                    `Error ${
+                        this.is_new ? 'adding' : 'updating'
+                    } condition to trigger. Error: ${JSON.stringify(
+                        err.response || err.message || err,
+                    )}`,
+                );
+            },
+        );
     }
 
     private updateMailers() {

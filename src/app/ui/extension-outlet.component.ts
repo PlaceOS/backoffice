@@ -1,13 +1,13 @@
 import { Location } from '@angular/common';
 import {
     Component,
+    computed,
     effect,
     ElementRef,
     inject,
     signal,
     viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import {
     apiKey,
@@ -17,11 +17,11 @@ import {
     token,
     updateMetadata,
 } from '@placeos/ts-client';
-import { map, startWith } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { signalFromClient, toSignal } from '../common/signals';
 import { HashMap } from '../common/types';
 import { SafePipe } from './pipes/safe.pipe';
 
@@ -55,15 +55,18 @@ export class ExtensionOutletComponent extends AsyncHandler {
     private _location = inject(Location);
     private _service = inject(ActiveItemService);
 
-    private readonly _online = toSignal(onlineState().pipe(startWith(false)), {
-        initialValue: false,
+    private readonly _online = signalFromClient(onlineState(), false);
+    private readonly _query_params = toSignal(this._route.queryParamMap, {
+        initialValue: undefined,
     });
-    private readonly _embed = toSignal(
-        this._route.queryParamMap.pipe(
-            map((params) => (params.has('embed') ? params.get('embed') : null)),
-        ),
-        { initialValue: undefined },
-    );
+    private readonly _embed = computed(() => {
+        const params = this._query_params();
+        return params === undefined
+            ? undefined
+            : params.has('embed')
+              ? params.get('embed')
+              : null;
+    });
 
     public readonly url = signal('');
     public readonly app_loaded = signal(false);
@@ -139,7 +142,6 @@ export class ExtensionOutletComponent extends AsyncHandler {
                 ...item,
                 ...(typeof message.content === 'object' ? message.content : {}),
             })
-            .toPromise()
             .catch(() => notifyError(i18n('COMMON.ITEM_ERROR')));
 
         if (this._frame_el()?.nativeElement) {
@@ -155,13 +157,13 @@ export class ExtensionOutletComponent extends AsyncHandler {
     }
 
     private async updateMetadata(item: PlaceResource, message: FrameMessage) {
-        await showMetadata(item.id, message.name).toPromise();
+        await showMetadata(item.id, message.name);
         await updateMetadata(item.id, {
             id: item.id,
             name: message.name,
             description: `Metadata from ${this.url()}`,
             details: typeof message.content === 'object' ? message.content : {},
-        }).toPromise();
+        });
         notifySuccess(i18n('COMMON.METADTA_SAVE'));
         this._postMessage({
             id: message.id,
@@ -180,7 +182,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
                 ? (item as PlaceResource & { parent_id?: string }).parent_id
                 : item.id) as string,
             message.name,
-        ).toPromise();
+        );
         if (metadata) {
             this._postMessage({
                 id: message.id,

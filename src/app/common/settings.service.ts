@@ -1,13 +1,19 @@
-import { Injectable, inject } from '@angular/core';
+import {
+    Injectable,
+    Signal,
+    WritableSignal,
+    effect,
+    inject,
+    signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { showMetadata, updateMetadata } from '@placeos/ts-client';
 import { format, isSameDay } from 'date-fns';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
 
 import { AsyncHandler } from './async-handler.class';
 import { getItemWithKeys, log } from './general';
 import { DEFAULT_SETTINGS } from './settings';
+import { waitForSignalValue } from './signals';
 import { HashMap } from './types';
 
 import { VERSION } from '../../env/version';
@@ -31,13 +37,11 @@ export class SettingsService extends AsyncHandler {
     /** Name of the application */
     private _app_name = 'PlaceOS';
     /** List of override settings in order of priority */
-    private _overrides = new BehaviorSubject<HashMap[]>([]);
+    private _overrides = signal<HashMap[]>([]);
     /** User's personal settings */
-    private _user_settings = new BehaviorSubject<HashMap>({});
-    /** Mapping of behaviour subjects */
-    private _subjects: HashMap<BehaviorSubject<unknown>> = {};
-    /** Mapping of observables */
-    private _observables: HashMap<Observable<unknown>> = {};
+    private _user_settings = signal<HashMap>({});
+    /** Mapping of named settings signals */
+    private _signals: HashMap<WritableSignal<unknown>> = {};
     /** Mapping of pending settings */
     private _pending_settings: HashMap<unknown> = {};
 
@@ -45,32 +49,28 @@ export class SettingsService extends AsyncHandler {
      * @hidden
      */
     public set overrides(value: HashMap[]) {
-        this._overrides.next(value);
+        this._overrides.set(value);
         this._applyCssVariables();
     }
 
-    /** Get observable for key */
-    public listen<T = unknown>(name: string): Observable<T> {
-        if (!this._observables[name]) {
-            this._subjects[name] = new BehaviorSubject<T>(null);
-            this._observables[name] = this._subjects[name].asObservable();
+    /** Get signal for key */
+    public listen<T = unknown>(name: string): Signal<T> {
+        if (!this._signals[name]) {
+            this._signals[name] = signal<T>(null);
         }
-        return this._observables[name] as Observable<T>;
+        return this._signals[name].asReadonly() as Signal<T>;
     }
 
-    /** Update observable value for key */
+    /** Update signal value for key */
     public post<T>(name: string, value: T): void {
-        if (!this._observables[name]) {
-            this._subjects[name] = new BehaviorSubject<T>(null);
-            this._observables[name] = this._subjects[name].asObservable();
+        if (!this._signals[name]) {
+            this._signals[name] = signal<T>(null);
         }
-        this._subjects[name].next(value);
+        (this._signals[name] as WritableSignal<T>).set(value);
     }
 
     public value<T = unknown>(name: string): T {
-        return !this._observables[name]
-            ? null
-            : (this._subjects[name].getValue() as T);
+        return !this._signals[name] ? null : (this._signals[name]() as T);
     }
 
     /** Page title */
@@ -95,6 +95,7 @@ export class SettingsService extends AsyncHandler {
             : format(time, 'do MMM yyyy, h:mma');
         log('CORE', `${VERSION.semver}`, null, 'debug', true);
         log('APP', `${VERSION.hash} | Built: ${built}`, null, 'debug', true);
+        effect(() => this._applyUserSettings(this._user_settings()));
         this.init();
     }
 
@@ -111,18 +112,14 @@ export class SettingsService extends AsyncHandler {
         this._app_name =
             location.pathname.replace(/[\\/]/g, '').trim() || this._app_name;
         log('Settings', 'Successfully loaded settings');
-        this._initialised.next(true);
+        this._initialised.set(true);
         if (window.debug) {
             if (!window.application) window.application = {};
             window.application.settings = this;
         }
-        this.subscription(
-            'user_settings',
-            this._user_settings.subscribe((_) => this._applyUserSettings(_)),
-        );
-        const user = await current_user.pipe(first((_) => !!_)).toPromise();
-        const data = await showMetadata(user.id, 'settings').toPromise();
-        this._user_settings.next((data.details || {}) as HashMap);
+        const user = await waitForSignalValue(current_user, (user) => !!user);
+        const data = await showMetadata(user.id, 'settings');
+        this._user_settings.set((data.details || {}) as HashMap);
         this._initDarkMode();
         this._applyTheme();
         this._setFontSize();
@@ -145,13 +142,13 @@ export class SettingsService extends AsyncHandler {
         const keys = key.split('.');
         if (keys[0] !== 'app') {
             return (getItemWithKeys(keys, this._pending_settings) ??
-                getItemWithKeys(keys, this._user_settings.getValue()) ??
+                getItemWithKeys(keys, this._user_settings()) ??
                 getItemWithKeys(
                     keys,
                     DEFAULT_SETTINGS as HashMap<unknown>,
                 )) as T;
         }
-        const override_settings = [...this._overrides.getValue()];
+        const override_settings = [...this._overrides()];
         for (const override of override_settings) {
             const value = getItemWithKeys(keys.slice(1), override);
             if (value != null) {
@@ -214,12 +211,12 @@ export class SettingsService extends AsyncHandler {
             name: 'settings',
             description: '',
             details: {
-                ...this._user_settings.getValue(),
+                ...this._user_settings(),
                 ...this._pending_settings,
             },
-        }).toPromise();
-        this._user_settings.next({
-            ...this._user_settings.getValue(),
+        });
+        this._user_settings.set({
+            ...this._user_settings(),
             ...this._pending_settings,
         } as HashMap);
         this._pending_settings = {};

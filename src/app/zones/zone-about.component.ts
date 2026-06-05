@@ -1,5 +1,4 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { PlaceSystem, PlaceZone, showZone } from '@placeos/ts-client';
 
 import { ZonesStateService } from './zones-state.service';
@@ -11,7 +10,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { lastValueFrom, Observable } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
@@ -173,7 +171,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         </div>
                     </div>
                 </div>
-                @if ((systems | async)?.length) {
+                @if (systems().length) {
                     <div class="w-1/3 flex-1">
                         <div
                             class="border-base-200 flex flex-col rounded-sm border"
@@ -195,7 +193,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                         "
                                     >
                                         @for (
-                                            system of systems | async;
+                                            system of systems();
                                             track system.id
                                         ) {
                                             <mat-option [value]="system">
@@ -282,12 +280,7 @@ export class ZoneAboutComponent extends AsyncHandler {
     public readonly systems = this._service.systems;
     /** Selected system */
     public readonly active_system = signal<PlaceSystem | undefined>(undefined);
-    public readonly item = toSignal(
-        this._service.item as Observable<PlaceZone>,
-        {
-            initialValue: undefined as PlaceZone | undefined,
-        },
-    );
+    public readonly item = this._service.item;
     public readonly parent = signal<PlaceZone | undefined>(undefined);
     public readonly tag_list = computed(() =>
         this.item() ? this.item()?.tags : [],
@@ -313,7 +306,7 @@ export class ZoneAboutComponent extends AsyncHandler {
     }
 
     private async loadParent(parent_id: string) {
-        const zone = await lastValueFrom(showZone(parent_id));
+        const zone = await showZone(parent_id);
         if (this.item()?.parent_id === parent_id && zone) this.parent.set(zone);
     }
 }

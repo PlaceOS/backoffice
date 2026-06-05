@@ -1,5 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { firstValueFrom, of } from 'rxjs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock form components to avoid loading heavy Angular dependencies
 vi.mock('../../app/domains/domain-form.component', () => ({
@@ -28,65 +27,74 @@ vi.mock('../../app/zones/zone-form.component', () => ({
 }));
 
 // Mock @placeos/ts-client
-vi.mock('@placeos/ts-client', () => ({
-    PlaceDomain: class {},
-    PlaceDriver: class {},
-    PlaceGroup: class {},
-    PlaceModule: class {},
-    PlaceRepository: class {},
-    PlaceSystem: class {},
-    PlaceTrigger: class {},
-    PlaceUser: class {},
-    PlaceZone: class {},
-    PlaceDriverRole: {
-        Device: 1,
-        Logic: 3,
-    },
-    addDomain: vi.fn(() => of({})),
-    addDriver: vi.fn(() => of({})),
-    addModule: vi.fn(() => of({})),
-    addRepository: vi.fn(() => of({})),
-    addSystem: vi.fn(() => of({})),
-    addTrigger: vi.fn(() => of({})),
-    addUser: vi.fn(() => of({})),
-    addZone: vi.fn(() => of({})),
-    queryDomains: vi.fn(() => ({ pipe: vi.fn() })),
-    queryDrivers: vi.fn(() => ({ pipe: vi.fn() })),
-    queryModules: vi.fn(() => of({ data: [], total: 0 })),
-    queryRepositories: vi.fn(() => ({ pipe: vi.fn() })),
-    querySystems: vi.fn(() => ({ pipe: vi.fn() })),
-    queryTriggers: vi.fn(() => ({ pipe: vi.fn() })),
-    queryUsers: vi.fn(() => ({ pipe: vi.fn() })),
-    queryZones: vi.fn(() => ({ pipe: vi.fn() })),
-    removeDomain: vi.fn(() => of({})),
-    removeDriver: vi.fn(() => of({})),
-    removeModule: vi.fn(() => of({})),
-    removeRepository: vi.fn(() => of({})),
-    removeSystem: vi.fn(() => of({})),
-    removeTrigger: vi.fn(() => of({})),
-    removeUser: vi.fn(() => of({})),
-    removeZone: vi.fn(() => of({})),
-    showDomain: vi.fn(() => of({})),
-    showDriver: vi.fn(() => of({})),
-    showModule: vi.fn(() => of({})),
-    showRepository: vi.fn(() => of({})),
-    showSystem: vi.fn(() => of({})),
-    showTrigger: vi.fn(() => of({})),
-    showUser: vi.fn(() => of({})),
-    showZone: vi.fn(() => of({})),
-    startSystem: vi.fn(() => of({})),
-    updateDomain: vi.fn(() => of({})),
-    updateDriver: vi.fn(() => of({})),
-    updateModule: vi.fn(() => of({})),
-    updateRepository: vi.fn(() => of({})),
-    updateSystem: vi.fn(() => of({})),
-    updateTrigger: vi.fn(() => of({})),
-    updateUser: vi.fn(() => of({})),
-    updateZone: vi.fn(() => of({})),
-}));
+vi.mock('@placeos/ts-client', () => {
+    const resolved = (value: unknown = {}) => Promise.resolve(value);
+    const query_response = () => resolved({ data: [], total: 0 });
+    return {
+        PlaceDomain: class {},
+        PlaceDriver: class {},
+        PlaceGroup: class {},
+        PlaceModule: class {},
+        PlaceRepository: class {},
+        PlaceSystem: class {},
+        PlaceTrigger: class {},
+        PlaceUser: class {},
+        PlaceZone: class {},
+        PlaceDriverRole: {
+            Device: 1,
+            Logic: 3,
+        },
+        addDomain: vi.fn(() => resolved()),
+        addDriver: vi.fn(() => resolved()),
+        addGroup: vi.fn(() => resolved()),
+        addModule: vi.fn(() => resolved()),
+        addRepository: vi.fn(() => resolved()),
+        addSystem: vi.fn(() => resolved()),
+        addTrigger: vi.fn(() => resolved()),
+        addUser: vi.fn(() => resolved()),
+        addZone: vi.fn(() => resolved()),
+        queryDomains: vi.fn(query_response),
+        queryDrivers: vi.fn(query_response),
+        queryGroups: vi.fn(query_response),
+        queryModules: vi.fn(query_response),
+        queryRepositories: vi.fn(query_response),
+        querySystems: vi.fn(query_response),
+        queryTriggers: vi.fn(query_response),
+        queryUsers: vi.fn(query_response),
+        queryZones: vi.fn(query_response),
+        removeDomain: vi.fn(() => resolved()),
+        removeDriver: vi.fn(() => resolved()),
+        removeGroup: vi.fn(() => resolved()),
+        removeModule: vi.fn(() => resolved()),
+        removeRepository: vi.fn(() => resolved()),
+        removeSystem: vi.fn(() => resolved()),
+        removeTrigger: vi.fn(() => resolved()),
+        removeUser: vi.fn(() => resolved()),
+        removeZone: vi.fn(() => resolved()),
+        showDomain: vi.fn(() => resolved()),
+        showDriver: vi.fn(() => resolved()),
+        showGroup: vi.fn(() => resolved()),
+        showModule: vi.fn(() => resolved()),
+        showRepository: vi.fn(() => resolved()),
+        showSystem: vi.fn(() => resolved()),
+        showTrigger: vi.fn(() => resolved()),
+        showUser: vi.fn(() => resolved()),
+        showZone: vi.fn(() => resolved()),
+        startSystem: vi.fn(() => resolved()),
+        updateDomain: vi.fn(() => resolved()),
+        updateDriver: vi.fn(() => resolved()),
+        updateGroup: vi.fn(() => resolved()),
+        updateModule: vi.fn(() => resolved()),
+        updateRepository: vi.fn(() => resolved()),
+        updateSystem: vi.fn(() => resolved()),
+        updateTrigger: vi.fn(() => resolved()),
+        updateUser: vi.fn(() => resolved()),
+        updateZone: vi.fn(() => resolved()),
+    };
+});
 
-import { ACTIONS } from '../../app/common/actions';
 import * as client from '@placeos/ts-client';
+import { ACTIONS } from '../../app/common/actions';
 
 describe('actions.ts', () => {
     beforeEach(() => {
@@ -162,7 +170,10 @@ describe('actions.ts', () => {
         it('should call updateDomain for existing item', () => {
             const item = { id: 'domain-123', name: 'Updated Domain' } as any;
             ACTIONS.domains.save(item);
-            expect(client.updateDomain).toHaveBeenCalledWith('domain-123', item);
+            expect(client.updateDomain).toHaveBeenCalledWith(
+                'domain-123',
+                item,
+            );
         });
 
         it('should call removeDomain for remove', () => {
@@ -199,7 +210,10 @@ describe('actions.ts', () => {
         it('should call updateDriver for existing item', () => {
             const item = { id: 'driver-123', name: 'Updated Driver' } as any;
             ACTIONS.drivers.save(item);
-            expect(client.updateDriver).toHaveBeenCalledWith('driver-123', item);
+            expect(client.updateDriver).toHaveBeenCalledWith(
+                'driver-123',
+                item,
+            );
         });
 
         it('should call removeDriver for remove', () => {
@@ -319,10 +333,10 @@ describe('actions.ts', () => {
 
         it('should create modules for logic driver ids when adding systems', async () => {
             vi.mocked(client.addSystem).mockReturnValueOnce(
-                of({ id: 'sys-new' } as any),
+                Promise.resolve({ id: 'sys-new' } as any),
             );
             vi.mocked(client.showDriver).mockImplementation((id: string) =>
-                of({
+                Promise.resolve({
                     id,
                     name: `${id} name`,
                     module_name: `${id} module`,
@@ -337,13 +351,11 @@ describe('actions.ts', () => {
                 } as any),
             );
 
-            await firstValueFrom(
-                ACTIONS.systems.save({
-                    name: 'New System',
-                    support_url: '',
-                    modules: ['mod-123', 'driver-logic', 'driver-device'],
-                } as any),
-            );
+            await ACTIONS.systems.save({
+                name: 'New System',
+                support_url: '',
+                modules: ['mod-123', 'driver-logic', 'driver-device'],
+            } as any);
 
             expect(client.addSystem).toHaveBeenCalledWith(
                 expect.objectContaining({ modules: ['mod-123'] }),
@@ -362,17 +374,15 @@ describe('actions.ts', () => {
 
         it('should start systems after bulk add when requested', async () => {
             vi.mocked(client.addSystem).mockReturnValueOnce(
-                of({ id: 'sys-new' } as any),
+                Promise.resolve({ id: 'sys-new' } as any),
             );
 
-            await firstValueFrom(
-                ACTIONS.systems.save({
-                    name: 'New System',
-                    support_url: '',
-                    modules: ['mod-123'],
-                    start_modules: true,
-                } as any),
-            );
+            await ACTIONS.systems.save({
+                name: 'New System',
+                support_url: '',
+                modules: ['mod-123'],
+                start_modules: true,
+            } as any);
 
             expect(client.addSystem).toHaveBeenCalledWith(
                 expect.not.objectContaining({ start_modules: true }),
@@ -593,14 +603,16 @@ describe('actions.ts', () => {
                 id: 'sys-789',
                 name: 'Room A',
                 code: 'ROOM-A',
-                support_url: 'https://support.example.com/{{id}}/{{name}}/{{code}}',
+                support_url:
+                    'https://support.example.com/{{id}}/{{name}}/{{code}}',
             } as any;
             ACTIONS.systems.save(item);
 
             expect(client.updateSystem).toHaveBeenCalledWith(
                 'sys-789',
                 expect.objectContaining({
-                    support_url: 'https://support.example.com/sys-789/Room A/ROOM-A',
+                    support_url:
+                        'https://support.example.com/sys-789/Room A/ROOM-A',
                 }),
             );
         });

@@ -10,7 +10,6 @@ import {
     setAPI_Key,
     token,
 } from '@placeos/ts-client';
-import { first } from 'rxjs/operators';
 
 import {
     ActivatedRoute,
@@ -25,12 +24,12 @@ import { detectIE, log } from './common/general';
 import { setNotifyOutlet } from './common/notifications';
 import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
 import { SettingsService } from './common/settings.service';
+import { waitForSignalValue } from './common/signals';
 import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { firstValueFrom } from 'rxjs';
 import { PlaceTenant } from './admin/staff-api.component';
 import { LocaleService, setTranslationService } from './common/locale.service';
 import { GlobalBannerComponent } from './ui/global-banner.component';
@@ -179,7 +178,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
         this.loading.set(true);
         setLoadingMessage('Loading application settings...');
         /** Wait for settings to initialise */
-        await this._settings.initialised.pipe(first((_) => _)).toPromise();
+        await waitForSignalValue(this._settings.initialised, (_) => _);
         const settings = (this._settings.get('composer') ||
             {}) as PlaceSettings;
         settings.mock = !!this._settings.get('mock');
@@ -189,7 +188,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
         await setupPlace(settings).catch(() => this.onInitError());
         setupCache(this._cache);
         this.timeout('wait_for_user', () => this.onInitError(), 30 * 1000);
-        await this._users.initialised.pipe(first((_) => _)).toPromise();
+        await waitForSignalValue(this._users.initialised, (_) => _);
         this.clearTimeout('wait_for_user');
         this.loading.set(false);
         setLoadingMessage('Initialising upload service...');
@@ -232,7 +231,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
     private async _checkTenants() {
         if (!currentUser()?.sys_admin) return;
         const tenant_list: PlaceTenant[] = (
-            await firstValueFrom(get('/api/staff/v1/tenants'))
+            await get('/api/staff/v1/tenants')
         ).map((_) => Object.keys(_).map((i) => _[i] as PlaceTenant));
         for (const tenant of tenant_list) {
             if (!tenant.secret_expiry) continue;

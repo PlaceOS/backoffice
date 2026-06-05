@@ -13,8 +13,7 @@ import { BackofficeUsersService } from '../users/users.service';
 
 import { CommonModule } from '@angular/common';
 import { format } from 'date-fns';
-import { lastValueFrom } from 'rxjs';
-import { copyToClipboard } from '../common/general';
+import { copyToClipboard, lastValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { TranslatePipe } from '../ui/translate.pipe';
 

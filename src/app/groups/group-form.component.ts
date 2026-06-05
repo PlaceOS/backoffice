@@ -1,11 +1,12 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { AsyncPipe } from '@angular/common';
 import {
     Component,
+    computed,
     EventEmitter,
     inject,
     OnInit,
     Output,
+    resource,
     signal,
 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -23,14 +24,13 @@ import {
     showGroup,
     updateGroup,
 } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { addChipItem, removeChipItem } from '../common/forms';
 import { getInvalidFields } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { toSignal } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
@@ -114,7 +114,7 @@ import { generateGroupFormFields } from './groups.utilities';
                                 formControlName="authority_id"
                             >
                                 @for (
-                                    domain of domain_list | async;
+                                    domain of domain_list();
                                     track domain.id
                                 ) {
                                     <mat-option [value]="domain.id">
@@ -173,7 +173,6 @@ import { generateGroupFormFields } from './groups.utilities';
         MatInputModule,
         MatSelectModule,
         MatChipsModule,
-        AsyncPipe,
         FormsModule,
         ItemSearchFieldComponent,
         IconComponent,
@@ -196,17 +195,20 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
     );
-    public readonly domain_list = queryDomains({ limit: 1000 }).pipe(
-        map(({ data }) => data),
-        shareReplay(1),
+    private readonly _domain_list = resource({
+        loader: async () => (await queryDomains({ limit: 1000 })).data,
+    });
+    public readonly domain_list = computed(
+        () => this._domain_list.value() || [],
     );
     public readonly parent_group = signal<PlaceGroup | null>(null);
-    public readonly subsystem_list = signal<string[]>(
-        this.form.controls.subsystems.value || [],
+    public readonly subsystem_list = toSignal(
+        this.form.controls.subsystems.valueChanges,
+        { initialValue: this.form.controls.subsystems.value || [] },
     );
     public readonly separators: number[] = [ENTER, COMMA];
     public readonly query_parent_groups = (_: string) =>
-        queryGroups({ q: _, limit: 20 }).pipe(map(({ data }) => data));
+        queryGroups({ q: _, limit: 20 }).then(({ data }) => data);
     public readonly exclude_parent_group = (group: PlaceGroup, __: string) =>
         group.id === this._data.item.id;
 
@@ -216,12 +218,6 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
             this._hotkey.listen(['KeyS'], () => this.submit()),
         );
         this.loadParentGroup();
-        this.subscription(
-            'subsystems',
-            this.form.controls.subsystems.valueChanges.subscribe((list) =>
-                this.subsystem_list.set(list || []),
-            ),
-        );
     }
 
     public setParentGroup(group: PlaceGroup | null) {
@@ -244,7 +240,7 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
     public readonly removeSubsystem = (subsystem: string) =>
         removeChipItem(this.form.controls.subsystems, subsystem);
 
-    public submit(): void {
+    public async submit(): Promise<void> {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
@@ -265,39 +261,36 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
             },
             ['', undefined],
         ) as Identity;
-        (form_item.id
-            ? updateGroup(
-                  form_item.id as string,
-                  form_item as unknown as PlaceGroup,
-              )
-            : addGroup(form_item as unknown as PlaceGroup)
-        ).subscribe(
-            (_item) => {
-                this._dialog_ref.disableClose = false;
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            },
-            async (err) => {
-                this.loading = null;
-                this._dialog_ref.disableClose = false;
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await err.text?.()) || err.message || err,
-                        ),
-                    }),
-                );
-            },
-        );
+        try {
+            const _item = await (form_item.id
+                ? updateGroup(
+                      form_item.id as string,
+                      form_item as unknown as PlaceGroup,
+                  )
+                : addGroup(form_item as unknown as PlaceGroup));
+            this._dialog_ref.disableClose = false;
+            this.event.emit({ reason: 'done', metadata: { item: _item } });
+            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+            this._dialog_ref.close();
+        } catch (err) {
+            this.loading = null;
+            this._dialog_ref.disableClose = false;
+            notifyError(
+                i18n(`${this._name}.SAVE_ERROR`, {
+                    error: JSON.stringify(
+                        (await (err as Response).text?.()) ||
+                            (err as Error).message ||
+                            err,
+                    ),
+                }),
+            );
+        }
     }
 
     private async loadParentGroup() {
         const parent_id = this.form.controls.parent_id.value;
         if (!parent_id) return;
-        const parent = await lastValueFrom(showGroup(parent_id)).catch(
-            () => null,
-        );
+        const parent = await showGroup(parent_id).catch(() => null);
         this.parent_group.set(parent);
     }
 }

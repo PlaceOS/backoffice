@@ -1,10 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceModule, querySystems } from '@placeos/ts-client';
-import { lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
@@ -116,13 +113,10 @@ export class ModulesComponent {
     private _debug = inject(PlaceDebugService);
 
     public readonly name = 'modules';
-    public readonly item = toSignal(
-        this._service.item.pipe(map((item) => item as PlaceModule)),
-        { initialValue: null as PlaceModule | null },
+    public readonly item = computed(
+        () => this._service.item() as PlaceModule | null,
     );
-    public readonly loading = toSignal(this._service.loading, {
-        initialValue: false,
-    });
+    public readonly loading = this._service.loading;
     /** Number of systems for the active device */
     public readonly system_count = signal(undefined);
     public readonly open_menu = signal(false);
@@ -170,6 +164,6 @@ export class ModulesComponent {
             module_id: item.id,
         };
         // Get system count
-        this.system_count.set((await lastValueFrom(querySystems(query))).total);
+        this.system_count.set((await querySystems(query)).total);
     }
 }
