@@ -152,6 +152,7 @@ export interface TriggerInstanceState {
                     <div class="flex items-center space-x-2 p-2">
                         <button
                             icon
+                            default
                             matRipple
                             [matTooltip]="'SYSTEMS.COPY_WEBHOOK' | translate"
                             (click)="copyWebhookURL(row)"
@@ -160,6 +161,7 @@ export interface TriggerInstanceState {
                         </button>
                         <button
                             icon
+                            default
                             matRipple
                             [matTooltip]="'SYSTEMS.TRIGGER_EDIT' | translate"
                             (click)="editTrigger(row)"
@@ -168,11 +170,13 @@ export interface TriggerInstanceState {
                         </button>
                         <button
                             icon
+                            default
+                            error
                             matRipple
                             [matTooltip]="'SYSTEMS.TRIGGER_REMOVE' | translate"
                             (click)="deleteTrigger(row)"
                         >
-                            <icon class="text-error">delete</icon>
+                            <icon>delete</icon>
                         </button>
                     </div>
                 </ng-template>

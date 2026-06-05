@@ -288,11 +288,17 @@ import { SystemStateService } from './system-state.service';
                 </ng-template>
                 <ng-template #actions_template let-i="index" let-row="row">
                     <div class="mx-auto flex items-center space-x-2 p-2">
-                        <button icon matRipple (click)="editModule(row)">
+                        <button
+                            icon
+                            default
+                            matRipple
+                            (click)="editModule(row)"
+                        >
                             <icon>edit</icon>
                         </button>
                         <button
                             icon
+                            default
                             matRipple
                             (click)="setActive(i)"
                             [matMenuTriggerFor]="context_menu"
