@@ -1,19 +1,9 @@
-import {
-    AbstractControl,
-    FormControl,
-    FormGroup,
-    Validators,
-} from '@angular/forms';
+import { AbstractControl } from '@angular/forms';
 import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
 
 import * as yaml from 'js-yaml';
-import { SubscriptionLike } from '../common/signals';
-import { validateURL } from '../common/validation';
-
-export interface FormDetails {
-    form: FormGroup;
-    subscriptions: SubscriptionLike[];
-}
+import { email, required, SchemaFn, validate } from '@angular/forms/signals';
+import { isValidUrl } from '../common/validation';
 
 export function validateYAML(control: AbstractControl) {
     const value = control.value || '';
@@ -27,14 +17,11 @@ export function validateYAML(control: AbstractControl) {
     return message ? { yaml: message } : null;
 }
 
-function validateURLArray(control: AbstractControl) {
-    const value = control.value;
+function hasInvalidURLArray(value: string[]) {
     if (!value || !Array.isArray(value) || !value.length) {
-        return null;
+        return false;
     }
-    return value.every((url) => !validateURL({ value: url } as AbstractControl))
-        ? null
-        : { url: 'invalid' };
+    return value.some((url) => !isValidUrl(url));
 }
 
 function normaliseCameraSnapshotUrls(system?: PlaceSystem): string[] {
@@ -55,53 +42,88 @@ function normaliseCameraSnapshotUrls(system?: PlaceSystem): string[] {
         : snapshot_urls;
 }
 
-export function generateSystemsFormFields(system?: PlaceSystem) {
+export interface SystemFormModel {
+    name: string;
+    display_name: string;
+    email: string;
+    code: string;
+    support_url: string;
+    timetable_url: string;
+    camera_url: string;
+    camera_snapshot_url: string;
+    camera_snapshot_urls: string[];
+    room_booking_url: string;
+    installed_ui_devices: number;
+    features: string[];
+    security_groups: string[];
+    capacity: number;
+    bookable: boolean;
+    signage: boolean;
+    public: boolean;
+    description: string;
+    images: string[];
+    map_id: string;
+    timezone: string;
+    zone?: PlaceZone;
+    zones: string[];
+}
+
+export function generateSystemFormModel(system?: PlaceSystem): SystemFormModel {
     system ||= {} as PlaceSystem;
-    const fields = {
-        name: new FormControl(system.name || '', [Validators.required]),
-        display_name: new FormControl(system.display_name || ''),
-        email: new FormControl(system.email || '', [Validators.email]),
-        code: new FormControl(system.code || ''),
-        support_url: new FormControl(system.support_url || '', [validateURL]),
-        timetable_url: new FormControl(system.timetable_url || '', [
-            validateURL,
-        ]),
-        camera_url: new FormControl(system.camera_url || '', [validateURL]),
-        camera_snapshot_url: new FormControl(null),
-        camera_snapshot_urls: new FormControl(
-            normaliseCameraSnapshotUrls(system),
-            [validateURLArray],
-        ),
-        room_booking_url: new FormControl(system.room_booking_url || '', [
-            validateURL,
-        ]),
-        installed_ui_devices: new FormControl(
-            system.installed_ui_devices || 0,
-            [Validators.pattern('[0-9]*')],
-        ),
-        features: new FormControl(
+    return {
+        name: system.name || '',
+        display_name: system.display_name || '',
+        email: system.email || '',
+        code: system.code || '',
+        support_url: system.support_url || '',
+        timetable_url: system.timetable_url || '',
+        camera_url: system.camera_url || '',
+        camera_snapshot_url: '',
+        camera_snapshot_urls: normaliseCameraSnapshotUrls(system),
+        room_booking_url: system.room_booking_url || '',
+        installed_ui_devices: system.installed_ui_devices || 0,
+        features:
             (typeof system.features === 'string'
                 ? (system.features as string).split(' ')
                 : system.features) || [],
-        ),
-        security_groups: new FormControl([...(system.security_groups || [])]),
-        capacity: new FormControl(system.capacity || 0, [
-            Validators.pattern('[0-9]*'),
-        ]),
-        bookable: new FormControl(system.bookable || false),
-        signage: new FormControl(system.signage || false),
-        public: new FormControl(system.public || false),
-        description: new FormControl(system.description || ''),
-        images: new FormControl(system.images || []),
-        map_id: new FormControl(system.map_id || ''),
-        timezone: new FormControl(system.timezone || ''),
-        zone: new FormControl<PlaceZone | null>(null, [Validators.required]),
-        zones: new FormControl(system.zones, [Validators.required]),
+        security_groups: [...(system.security_groups || [])],
+        capacity: system.capacity || 0,
+        bookable: system.bookable || false,
+        signage: system.signage || false,
+        public: system.public || false,
+        description: system.description || '',
+        images: [...(system.images || [])],
+        map_id: system.map_id || '',
+        timezone: system.timezone || '',
+        zone: undefined,
+        zones: [...(system.zones || [])],
     };
-    if (!system.id) {
-        fields.zone.valueChanges.subscribe((value: PlaceZone) =>
-            fields.zones.setValue([value.id]),
-        );
-    } else delete fields.zone;
-    return new FormGroup(fields);
 }
+
+export const applySystemFormSchema: SchemaFn<SystemFormModel> = (path) => {
+    required(path.name);
+    email(path.email);
+    required(path.zones);
+    required(path.zone, {
+        when({ valueOf }) {
+            return !valueOf(path.zones)?.length;
+        },
+    });
+    for (const url_path of [
+        path.support_url,
+        path.timetable_url,
+        path.camera_url,
+        path.room_booking_url,
+    ]) {
+        validate(url_path, ({ value }) =>
+            isValidUrl(value())
+                ? undefined
+                : { kind: 'url', message: 'Invalid URL' },
+        );
+    }
+    validate(path.camera_snapshot_urls, ({ value }) =>
+        hasInvalidURLArray(value())
+            ? { kind: 'url', message: 'Invalid URL' }
+            : undefined,
+    );
+};

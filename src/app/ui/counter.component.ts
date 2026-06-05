@@ -1,4 +1,10 @@
-import { Component, forwardRef, HostListener, input } from '@angular/core';
+import {
+    Component,
+    forwardRef,
+    HostListener,
+    input,
+    signal,
+} from '@angular/core';
 import {
     ControlValueAccessor,
     FormsModule,
@@ -17,7 +23,7 @@ import { IconComponent } from './icon.component';
                 matRipple
                 type="button"
                 class="border-secondary text-secondary z-10 h-12 w-12 rounded-l rounded-r-none border"
-                [disabled]="!value || value === min()"
+                [disabled]="disabled() || !value || value === min()"
                 (click)="remove()"
             >
                 <icon>remove</icon>
@@ -34,6 +40,7 @@ import { IconComponent } from './icon.component';
                 <input
                     type="text"
                     class="absolute inset-0 p-2 opacity-0 focus:opacity-100"
+                    [disabled]="disabled()"
                     [(ngModel)]="value"
                     (focus)="focused = true"
                     (blur)="setValue(+value); focused = false"
@@ -46,7 +53,7 @@ import { IconComponent } from './icon.component';
                 matRipple
                 type="button"
                 class="border-secondary text-secondary z-10 h-12 w-12 rounded-l-none rounded-r border"
-                [disabled]="value === max()"
+                [disabled]="disabled() || value === max()"
                 (click)="add()"
             >
                 <icon>add</icon>
@@ -73,6 +80,7 @@ export class CounterComponent implements ControlValueAccessor {
     public readonly min = input(0);
     /** Custom function for rendering the counter value */
     public readonly render_fn = input<(v: number) => string>(undefined);
+    public readonly disabled = signal(false);
     /** Current value of the counter */
     public value: number;
     /** Whether shift key is being held by the user */
@@ -102,6 +110,7 @@ export class CounterComponent implements ControlValueAccessor {
      * Add the `step` to the current value
      */
     public add() {
+        if (this.disabled()) return;
         if (!this.value) {
             this.value = this.min() || 0;
         }
@@ -119,6 +128,7 @@ export class CounterComponent implements ControlValueAccessor {
 
     /** Remove the `step` from the current value */
     public remove() {
+        if (this.disabled()) return;
         if (!this.value) {
             this.value = this.min() || 0;
         }
@@ -139,6 +149,7 @@ export class CounterComponent implements ControlValueAccessor {
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: number): void {
+        if (this.disabled()) return;
         if (new_value < this.min()) new_value = this.min();
         if (new_value > this.max()) new_value = this.max();
         if ((new_value / this.step()) % 1 !== 0) {
@@ -150,6 +161,7 @@ export class CounterComponent implements ControlValueAccessor {
         if (this._onChange) {
             this._onChange(new_value);
         }
+        this._onTouch?.(new_value);
     }
 
     /**
@@ -176,5 +188,9 @@ export class CounterComponent implements ControlValueAccessor {
      */
     public registerOnTouched(fn: (_: number) => void): void {
         this._onTouch = fn;
+    }
+
+    public setDisabledState(disabled: boolean): void {
+        this.disabled.set(disabled);
     }
 }

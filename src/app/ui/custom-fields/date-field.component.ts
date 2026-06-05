@@ -198,6 +198,7 @@ export class DateFieldComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: number) {
+        if (this.disabled()) return;
         // Keep hours and minutes of the old date
         const old_date = new Date(this.date);
         let new_date = set(new_value, {
@@ -212,6 +213,7 @@ export class DateFieldComponent
         if (this._onChange) {
             this._onChange(new_date);
         }
+        this._onTouch?.(new_date);
         this._tooltip()?.close();
     }
 

@@ -1,4 +1,4 @@
-import { Component, forwardRef, input } from '@angular/core';
+import { Component, forwardRef, input, model } from '@angular/core';
 import {
     ControlValueAccessor,
     FormsModule,
@@ -17,13 +17,15 @@ import { IconComponent } from './icon.component';
             class="relative flex min-h-12 flex-1 items-center space-x-2 overflow-hidden rounded-sm border px-2"
             [class.border-base-300]="!value"
             [class.border-info]="value"
+            [disabled]="disabled()"
+            [class.opacity-30]="disabled()"
             (click)="setValue(!value)"
         >
             @if (value) {
                 <div class="bg-info absolute inset-0 m-0! opacity-10"></div>
             }
             <div class="ml-2 flex flex-1 items-center space-x-2 text-left">
-                <div>{{ name() }}<ng-content></ng-content></div>
+                <div>{{ label() }}<ng-content></ng-content></div>
                 @if (info()) {
                     <icon [matTooltip]="info()">info</icon>
                 }
@@ -31,6 +33,7 @@ import { IconComponent } from './icon.component';
             <mat-checkbox
                 [(ngModel)]="value"
                 class="pointer-events-none"
+                [disabled]="disabled()"
             ></mat-checkbox>
         </button>
     `,
@@ -57,8 +60,9 @@ import { IconComponent } from './icon.component';
     ],
 })
 export class SettingsToggleComponent implements ControlValueAccessor {
-    public readonly name = input<string>(undefined);
+    public readonly label = input<string>(undefined);
     public readonly info = input<string>(undefined);
+    public readonly disabled = model(false);
 
     public value: boolean;
 
@@ -75,9 +79,11 @@ export class SettingsToggleComponent implements ControlValueAccessor {
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: boolean): void {
+        if (this.disabled()) return;
         this.value = new_value;
         /* istanbul ignore else */
         if (this._onChange) this._onChange(new_value);
+        this._onTouch?.(new_value);
     }
 
     /* istanbul ignore next */
@@ -87,5 +93,9 @@ export class SettingsToggleComponent implements ControlValueAccessor {
      */
     public writeValue(value: boolean) {
         this.value = value;
+    }
+
+    public setDisabledState(disabled: boolean) {
+        this.disabled.set(disabled);
     }
 }

@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, signal } from '@angular/core';
+import { form, FormField, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { post } from '@placeos/ts-client';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -18,9 +18,9 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
             "
             (save)="save()"
         >
-            <div [formGroup]="form" class="flex flex-col">
+            <div class="flex flex-col">
                 <object-list-field
-                    formControlName="booking_limits"
+                    [formField]="form.booking_limits"
                     [fields]="['type', 'amount']"
                 ></object-list-field>
             </div>
@@ -30,7 +30,7 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
     imports: [
         FullscreenModalShellComponent,
         ObjectListFieldComponent,
-        ReactiveFormsModule,
+        FormField,
     ],
 })
 export class BookingLimitsModalComponent {
@@ -42,15 +42,16 @@ export class BookingLimitsModalComponent {
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;
 
-    public form = new FormGroup({
-        booking_limits: new FormControl<{ type: string; amount: string }[]>([]),
+    public readonly formModel = signal({
+        booking_limits: [] as { type: string; amount: string }[],
     });
+    public readonly form = form(this.formModel);
 
     public loading = false;
 
     constructor() {
         const limits = this.tenant?.booking_limits || {};
-        this.form.patchValue({
+        this.formModel.set({
             booking_limits: Object.keys(limits).map((k) => ({
                 type: k,
                 amount: `${limits[k]}`,
@@ -59,25 +60,24 @@ export class BookingLimitsModalComponent {
     }
 
     public async save() {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) return;
-        this._dialog_ref.disableClose = true;
-        this.loading = true;
-        const limits: { type: string; amount: string }[] =
-            this.form.value.booking_limits || [];
-        const booking_limits = {};
-        for (const { type, amount } of limits) {
-            booking_limits[type] = +amount || 0;
-        }
-        const call = post(
-            `/api/staff/v1/tenants/${this.tenant.id}/limits`,
-            booking_limits,
-        );
-        const resp = await call.catch(() => null);
-        this.loading = false;
-        this._dialog_ref.disableClose = false;
-        if (!resp) return notifyError('Error adding new tenant.');
-        notifySuccess('Successfully added new tenant.');
-        this._dialog_ref.close({ ...this.tenant, booking_limits: resp });
+        await submit(this.form, async () => {
+            this._dialog_ref.disableClose = true;
+            this.loading = true;
+            const limits = this.formModel().booking_limits || [];
+            const booking_limits = {};
+            for (const { type, amount } of limits) {
+                booking_limits[type] = +amount || 0;
+            }
+            const call = post(
+                `/api/staff/v1/tenants/${this.tenant.id}/limits`,
+                booking_limits,
+            );
+            const resp = await call.catch(() => null);
+            this.loading = false;
+            this._dialog_ref.disableClose = false;
+            if (!resp) return notifyError('Error adding new tenant.');
+            notifySuccess('Successfully added new tenant.');
+            this._dialog_ref.close({ ...this.tenant, booking_limits: resp });
+        });
     }
 }

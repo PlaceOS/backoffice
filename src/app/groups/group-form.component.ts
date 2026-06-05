@@ -9,7 +9,8 @@ import {
     resource,
     signal,
 } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,18 +26,23 @@ import {
     updateGroup,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
-import { addChipItem, removeChipItem } from '../common/forms';
-import { getInvalidFields } from '../common/general';
+import {
+    addSignalChipItem,
+    getInvalidSignalFields,
+    removeSignalChipItem,
+} from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { toSignal } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { generateGroupFormFields } from './groups.utilities';
+import {
+    applyGroupFormSchema,
+    generateGroupFormModel,
+} from './groups.utilities';
 
 @Component({
     selector: 'group-form',
@@ -46,13 +52,12 @@ import { generateGroupFormFields } from './groups.utilities';
             [loading]="loading"
             (save)="submit()"
         >
-            <form class="flex flex-col" [formGroup]="form">
+            <form class="flex flex-col">
                 <div class="field">
                     <label
                         for="group-name"
                         [class.error]="
-                            form.controls.name.invalid &&
-                            form.controls.name.touched
+                            form.name().invalid() && form.name().touched()
                         "
                     >
                         {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
@@ -61,10 +66,8 @@ import { generateGroupFormFields } from './groups.utilities';
                         <input
                             matInput
                             id="group-name"
-                            name="group-name"
                             [placeholder]="'COMMON.FIELD_NAME' | translate"
-                            formControlName="name"
-                            required
+                            [formField]="form.name"
                         />
                         <mat-error>{{
                             'GROUPS.NAME_REQUIRED' | translate
@@ -79,11 +82,10 @@ import { generateGroupFormFields } from './groups.utilities';
                         <textarea
                             matInput
                             id="group-description"
-                            name="group-description"
                             [placeholder]="
                                 'COMMON.FIELD_DESCRIPTION' | translate
                             "
-                            formControlName="description"
+                            [formField]="form.description"
                         ></textarea>
                     </mat-form-field>
                 </div>
@@ -107,11 +109,10 @@ import { generateGroupFormFields } from './groups.utilities';
                         }}</label>
                         <mat-form-field appearance="outline">
                             <mat-select
-                                name="group-authority"
                                 [placeholder]="
                                     'GROUPS.AUTHORITY_SELECT' | translate
                                 "
-                                formControlName="authority_id"
+                                [formField]="form.authority_id"
                             >
                                 @for (
                                     domain of domain_list();
@@ -177,7 +178,7 @@ import { generateGroupFormFields } from './groups.utilities';
         ItemSearchFieldComponent,
         IconComponent,
         TranslatePipe,
-        ReactiveFormsModule,
+        FormField,
         FullscreenModalShellComponent,
     ],
 })
@@ -190,7 +191,8 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form = generateGroupFormFields(this._data.item);
+    public readonly formModel = signal(generateGroupFormModel(this._data.item));
+    public readonly form = form(this.formModel, applyGroupFormSchema);
     public loading: string;
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
@@ -202,9 +204,8 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
         () => this._domain_list.value() || [],
     );
     public readonly parent_group = signal<PlaceGroup | null>(null);
-    public readonly subsystem_list = toSignal(
-        this.form.controls.subsystems.valueChanges,
-        { initialValue: this.form.controls.subsystems.value || [] },
+    public readonly subsystem_list = computed(
+        () => this.formModel().subsystems || [],
     );
     public readonly separators: number[] = [ENTER, COMMA];
     public readonly query_parent_groups = (_: string) =>
@@ -222,73 +223,81 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
 
     public setParentGroup(group: PlaceGroup | null) {
         this.parent_group.set(group);
-        this.form.controls.parent_id.setValue(group?.id || '');
+        this.formModel.update((value) => ({
+            ...value,
+            parent_id: group?.id || '',
+        }));
         if (!group?.subsystems?.length) return;
-        this.form.controls.subsystems.setValue(
-            Array.from(
-                new Set([
-                    ...(this.form.controls.subsystems.value || []),
-                    ...group.subsystems,
-                ]),
+        this.formModel.update((value) => ({
+            ...value,
+            subsystems: Array.from(
+                new Set([...(value.subsystems || []), ...group.subsystems]),
             ),
-        );
+        }));
     }
 
     public readonly addSubsystem = (event: MatChipInputEvent) =>
-        addChipItem(this.form.controls.subsystems, event);
+        this.formModel.update((value) => ({
+            ...value,
+            subsystems: addSignalChipItem(value.subsystems, event),
+        }));
 
     public readonly removeSubsystem = (subsystem: string) =>
-        removeChipItem(this.form.controls.subsystems, subsystem);
+        this.formModel.update((value) => ({
+            ...value,
+            subsystems: removeSignalChipItem(value.subsystems, subsystem),
+        }));
 
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
+        await submit(this.form, async () => {
+            const item = this._data.item;
+            this.loading = i18n(`${this._name}.SAVING`);
+            this._dialog_ref.disableClose = true;
+            const form_value = this.formModel();
+            const form_item = cleanObject(
+                {
+                    ...item,
+                    ...form_value,
+                    subsystems: form_value.subsystems || [],
+                },
+                ['', undefined],
+            ) as Identity;
+            try {
+                const _item = await (form_item.id
+                    ? updateGroup(
+                          form_item.id as string,
+                          form_item as unknown as PlaceGroup,
+                      )
+                    : addGroup(form_item as unknown as PlaceGroup));
+                this._dialog_ref.disableClose = false;
+                this.event.emit({ reason: 'done', metadata: { item: _item } });
+                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+                this._dialog_ref.close();
+            } catch (err) {
+                this.loading = null;
+                this._dialog_ref.disableClose = false;
+                notifyError(
+                    i18n(`${this._name}.SAVE_ERROR`, {
+                        error: JSON.stringify(
+                            (await (err as Response).text?.()) ||
+                                (err as Error).message ||
+                                err,
+                        ),
+                    }),
+                );
+            }
+        });
+        if (this.form().invalid()) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
-                }),
-            );
-        }
-        const item = this._data.item;
-        this.loading = i18n(`${this._name}.SAVING`);
-        this._dialog_ref.disableClose = true;
-        const form_value = this.form.value;
-        const form_item = cleanObject(
-            {
-                ...item,
-                ...form_value,
-                subsystems: form_value.subsystems || [],
-            },
-            ['', undefined],
-        ) as Identity;
-        try {
-            const _item = await (form_item.id
-                ? updateGroup(
-                      form_item.id as string,
-                      form_item as unknown as PlaceGroup,
-                  )
-                : addGroup(form_item as unknown as PlaceGroup));
-            this._dialog_ref.disableClose = false;
-            this.event.emit({ reason: 'done', metadata: { item: _item } });
-            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-            this._dialog_ref.close();
-        } catch (err) {
-            this.loading = null;
-            this._dialog_ref.disableClose = false;
-            notifyError(
-                i18n(`${this._name}.SAVE_ERROR`, {
-                    error: JSON.stringify(
-                        (await (err as Response).text?.()) ||
-                            (err as Error).message ||
-                            err,
-                    ),
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }
     }
 
     private async loadParentGroup() {
-        const parent_id = this.form.controls.parent_id.value;
+        const parent_id = this.formModel().parent_id;
         if (!parent_id) return;
         const parent = await showGroup(parent_id).catch(() => null);
         this.parent_group.set(parent);

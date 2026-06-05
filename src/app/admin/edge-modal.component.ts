@@ -1,10 +1,5 @@
 import { Component, inject, OnInit, output, signal } from '@angular/core';
-import {
-    FormControl,
-    FormGroup,
-    ReactiveFormsModule,
-    Validators,
-} from '@angular/forms';
+import { form, FormField, required, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -30,7 +25,7 @@ export interface EdgeModalData {
             [loading]="loading()"
             (save)="save()"
         >
-            <form [formGroup]="form">
+            <form>
                 <div class="flex flex-1 flex-col">
                     <label for="edge-name">
                         {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
@@ -39,7 +34,7 @@ export interface EdgeModalData {
                         <input
                             id="edge-name"
                             matInput
-                            formControlName="name"
+                            [formField]="form.name"
                             [placeholder]="
                                 'ADMIN.EDGE_NAME_PLACEHOLDER' | translate
                             "
@@ -57,7 +52,7 @@ export interface EdgeModalData {
                         <textarea
                             id="edge-description"
                             matInput
-                            formControlName="description"
+                            [formField]="form.description"
                             [placeholder]="
                                 'ADMIN.EDGE_DESCRIPTION_PLACEHOLDER' | translate
                             "
@@ -81,7 +76,7 @@ export interface EdgeModalData {
         MatFormFieldModule,
         MatInputModule,
         TranslatePipe,
-        ReactiveFormsModule,
+        FormField,
     ],
 })
 export class EdgeModalComponent implements OnInit {
@@ -93,23 +88,29 @@ export class EdgeModalComponent implements OnInit {
 
     public readonly edge = this._data.edge;
 
-    public form = new FormGroup({
-        name: new FormControl('', [Validators.required]),
-        description: new FormControl(''),
+    public readonly formModel = signal({
+        name: '',
+        description: '',
+    });
+    public readonly form = form(this.formModel, (path) => {
+        required(path.name);
     });
 
     public readonly loading = signal('');
 
     public ngOnInit() {
-        this.form.patchValue(this.edge);
+        this.formModel.set({
+            name: this.edge?.name || '',
+            description: this.edge?.description || '',
+        });
     }
 
     public async save() {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) return;
+        await submit(this.form, async () => undefined);
+        if (this.form().invalid()) return;
         this._dialog_ref.disableClose = true;
         this.loading.set('Saving edge node...');
-        const edge = { ...this.edge, ...this.form.value };
+        const edge = { ...this.edge, ...this.formModel() };
         const method = edge.id ? updateEdge(edge.id, edge) : addEdge(edge);
         const new_edge = await lastValueFrom(method).catch(() => null);
         this.loading.set('');

@@ -11,7 +11,7 @@ import {
     signal,
     viewChild,
 } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 
 import { MatRippleModule } from '@angular/material/core';
@@ -40,6 +40,8 @@ import { TranslatePipe } from '../translate.pipe';
                 image
                 class="hover:bg-base-content/10 :bg-base-100/10 border-base-200 relative flex h-32 w-36 shrink-0 cursor-pointer flex-col items-center justify-center rounded-sm border-2 border-dashed"
                 [style.transform]="'translate(-' + offset + '00%)'"
+                [class.pointer-events-none]="disabled()"
+                [class.opacity-30]="disabled()"
             >
                 <icon class="text-4xl opacity-60">add</icon>
                 <p class="w-4/5 text-center opacity-60">
@@ -48,20 +50,21 @@ import { TranslatePipe } from '../translate.pipe';
                 <input
                     type="file"
                     class="absolute inset-0 h-32 w-32 cursor-pointer opacity-0"
+                    [disabled]="disabled()"
                     (change)="uploadImages($event)"
                 />
             </div>
             @for (url of list(); track url; let i = $index) {
                 <div
                     image
-                    class="bg-base-200 relative h-32 w-36 shrink-0 overflow-hidden rounded-sm bg-cover bg-center"
+                    class="border-base-300 bg-base-200 relative h-32 w-36 shrink-0 overflow-hidden rounded-sm border"
                     [style.transform]="'translate(-' + offset + '00%)'"
                 >
                     <img
                         auth
                         [source]="url"
-                        alt="Image preview"
-                        class="pointer-events-none absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 object-contain"
+                        [alt]="'Preview - ' + url"
+                        class="pointer-events-none absolute inset-0 z-10 object-contain p-2 text-center align-middle text-xs"
                     />
                     <div overlay class="text-base-100 absolute inset-0 z-20">
                         <div
@@ -78,7 +81,11 @@ import { TranslatePipe } from '../translate.pipe';
                             <button icon (click)="viewImage(url)">
                                 <icon>visibility</icon>
                             </button>
-                            <button icon (click)="removeImage(url)">
+                            <button
+                                icon
+                                [disabled]="disabled()"
+                                (click)="removeImage(url)"
+                            >
                                 <icon>close</icon>
                             </button>
                         </div>
@@ -142,6 +149,7 @@ import { TranslatePipe } from '../translate.pipe';
                         <button
                             matChipRemove
                             [attr.aria-label]="'Remove ' + item"
+                            [disabled]="disabled()"
                         >
                             <icon>cancel</icon>
                         </button>
@@ -153,6 +161,7 @@ import { TranslatePipe } from '../translate.pipe';
                 [matChipInputFor]="chipList"
                 [matChipInputSeparatorKeyCodes]="separators"
                 [matChipInputAddOnBlur]="true"
+                [disabled]="disabled()"
                 (matChipInputTokenEnd)="addImage($event)"
             />
         </mat-form-field>
@@ -206,7 +215,7 @@ import { TranslatePipe } from '../translate.pipe';
 })
 export class ImageListFieldComponent
     extends AsyncHandler
-    implements AfterViewInit
+    implements AfterViewInit, ControlValueAccessor
 {
     private _clipboard = inject(Clipboard);
     private _uploads = inject(UploadsService);
@@ -219,6 +228,7 @@ export class ImageListFieldComponent
     public readonly upload_list = this._upload_list;
     public readonly offset = signal(0);
     public readonly view_space = signal(0);
+    public readonly disabled = signal(false);
     public readonly separators = [COMMA, ENTER];
     public readonly length = computed(
         () => this.list().length + this.upload_list().length + 1,
@@ -277,20 +287,24 @@ export class ImageListFieldComponent
     }
 
     public removeImage(url: string) {
+        if (this.disabled()) return;
         this.setValue(this.list().filter((_) => _ !== url));
     }
 
     public addImage(event: MatChipInputEvent) {
+        if (this.disabled()) return;
         if (!event.value) return;
         this.setValue(unique([...this.list(), event.value]) as string[]);
         event.chipInput.inputElement.value = '';
     }
 
     public addImageUrl(url: string) {
+        if (this.disabled()) return;
         this.setValue(unique([...this.list(), url]) as string[]);
     }
 
     public retryUpload(item: UploadDetails) {
+        if (this.disabled()) return;
         if (item.error) {
             item.error = null;
             item.upload.resume();
@@ -298,6 +312,7 @@ export class ImageListFieldComponent
     }
 
     public async uploadImages(event: Event) {
+        if (this.disabled()) return;
         const element = event.target as HTMLInputElement;
         /* istanbul ignore else */
         if (element?.files) {
@@ -318,8 +333,10 @@ export class ImageListFieldComponent
     }
 
     public setValue(value: string[]) {
+        if (this.disabled()) return;
         this.list.set(value);
         if (this._onChange) this._onChange(value);
+        this._onTouch?.(value);
     }
 
     /**
@@ -327,13 +344,17 @@ export class ImageListFieldComponent
      * @param value The new value for the component
      */
     public writeValue(value: string[]) {
-        this.list.set(value);
+        this.list.set(value || []);
     }
 
     public readonly registerOnChange = (fn: (_: string[]) => void) =>
         (this._onChange = fn);
     public readonly registerOnTouched = (fn: (_: string[]) => void) =>
         (this._onTouch = fn);
+
+    public setDisabledState(disabled: boolean) {
+        this.disabled.set(disabled);
+    }
 
     private async _updateUploadHistory() {
         const list = this.upload_ids();

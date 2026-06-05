@@ -6,7 +6,8 @@ import {
     OnInit,
     signal,
 } from '@angular/core';
-import { FormGroup, FormsModule, UntypedFormGroup } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     addLDAPSource,
@@ -29,6 +30,9 @@ import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
 import {
+    applyLDAPSourceFormSchema,
+    applyOAuthSourceFormSchema,
+    applySAMLSourceFormSchema,
     generateLDAPSourceForm,
     generateOAuthSourceForm,
     generateSAMLSourceForm,
@@ -88,13 +92,21 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
             @if (item()) {
                 @switch (type()) {
                     @case ('saml') {
-                        <saml-source-form [form]="form()" />
+                        <saml-source-form
+                            [form]="samlForm"
+                            [formModel]="samlFormModel"
+                        />
                     }
                     @case ('ldap') {
-                        <ldap-source-form [form]="form()" />
+                        <ldap-source-form
+                            [form]="ldapForm"
+                        />
                     }
                     @default {
-                        <oauth-source-form [form]="form()" />
+                        <oauth-source-form
+                            [form]="oauthForm"
+                            [formModel]="oauthFormModel"
+                        />
                     }
                 }
             }
@@ -127,7 +139,29 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
     /** Emitter for events on the modal */
     public readonly event = new EventEmitter<DialogEvent>();
     public readonly loading = signal('');
-    public readonly form = signal<UntypedFormGroup>(new FormGroup({}));
+    public readonly oauthFormModel = signal(generateOAuthSourceForm());
+    public readonly oauthForm = form(
+        this.oauthFormModel,
+        applyOAuthSourceFormSchema,
+    );
+    public readonly samlFormModel = signal(
+        generateSAMLSourceForm(
+            new PlaceSAMLSource({ authority_id: this._data.domain.id }),
+        ),
+    );
+    public readonly samlForm = form(
+        this.samlFormModel,
+        applySAMLSourceFormSchema,
+    );
+    public readonly ldapFormModel = signal(
+        generateLDAPSourceForm(
+            new PlaceLDAPSource({ authority_id: this._data.domain.id }),
+        ),
+    );
+    public readonly ldapForm = form(
+        this.ldapFormModel,
+        applyLDAPSourceFormSchema,
+    );
     public readonly item = signal<
         PlaceOAuthSource | PlaceLDAPSource | PlaceSAMLSource
     >(null);
@@ -192,16 +226,15 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
     /**
      * Create item if new or update if exsiting
      */
-    public save() {
-        this.form().markAllAsTouched();
-        if (!this.form().valid) {
+    public async save() {
+        if (!(await this.submitActiveForm())) {
             return;
         }
         this.loading.set('Saving authentication source...');
         const method: Promise<unknown> = lastValueFrom<unknown>(
             this.updateMethod({
                 ...this.item().toJSON(),
-                ...this.form().value,
+                ...this.activeFormModel()(),
             }),
         );
         method.then(
@@ -230,11 +263,34 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
         if (!this.item()) return;
         const item = this.item();
         if (item instanceof PlaceOAuthSource) {
-            this.form.set(generateOAuthSourceForm(item));
+            this.oauthFormModel.set(generateOAuthSourceForm(item));
         } else if (item instanceof PlaceSAMLSource) {
-            this.form.set(generateSAMLSourceForm(item));
+            this.samlFormModel.set(generateSAMLSourceForm(item));
         } else if (item instanceof PlaceLDAPSource) {
-            this.form.set(generateLDAPSourceForm(item));
+            this.ldapFormModel.set(generateLDAPSourceForm(item));
         }
+    }
+
+    private async submitActiveForm(): Promise<boolean> {
+        switch (this.type()) {
+            case 'saml':
+                await submit(this.samlForm, async () => undefined);
+                return !this.samlForm().invalid();
+            case 'ldap':
+                await submit(this.ldapForm, async () => undefined);
+                return !this.ldapForm().invalid();
+        }
+        await submit(this.oauthForm, async () => undefined);
+        return !this.oauthForm().invalid();
+    }
+
+    private activeFormModel() {
+        switch (this.type()) {
+            case 'saml':
+                return this.samlFormModel;
+            case 'ldap':
+                return this.ldapFormModel;
+        }
+        return this.oauthFormModel;
     }
 }

@@ -1,21 +1,17 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
+    computed,
     EventEmitter,
     Injector,
     OnInit,
     Output,
-    Signal,
     effect,
     inject,
     signal,
 } from '@angular/core';
-import {
-    FormControl,
-    FormsModule,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import {
     PlaceApplication,
@@ -25,14 +21,16 @@ import {
     updateApplication,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
-import { toSignal } from '../common/signals';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Md5 } from 'ts-md5';
-import { addChipItem, removeChipItem } from '../common/forms';
-import { getInvalidFields } from '../common/general';
+import {
+    addSignalChipItem,
+    getInvalidSignalFields,
+    removeSignalChipItem,
+} from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -41,7 +39,10 @@ import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.comp
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { generateApplicationFormFields } from './applications.utilities';
+import {
+    applyApplicationFormSchema,
+    generateApplicationFormModel,
+} from './applications.utilities';
 
 @Component({
     selector: 'application-form',
@@ -52,15 +53,15 @@ import { generateApplicationFormFields } from './applications.utilities';
             (save)="submit()"
         >
             @if (form) {
-                <form application class="flex flex-col" [formGroup]="form">
+                <form application class="flex flex-col">
                     <div class="fieldset">
-                        @if (form.controls.name) {
+                        @if (form.name) {
                             <div class="field">
                                 <label
                                     for="application-name"
                                     [class.error]="
-                                        form.controls.name.invalid &&
-                                        form.controls.name.touched
+                                        form.name().invalid() &&
+                                        form.name().touched()
                                     "
                                 >
                                     {{ 'COMMON.FIELD_NAME' | translate
@@ -69,10 +70,8 @@ import { generateApplicationFormFields } from './applications.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="application-name"
                                         placeholder="Application Name"
-                                        formControlName="name"
-                                        required
+                                        [formField]="form.name"
                                     />
                                     <mat-error>{{
                                         'DOMAINS.APP_NAME_REQUIRED' | translate
@@ -80,7 +79,7 @@ import { generateApplicationFormFields } from './applications.utilities';
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.scopes) {
+                        @if (form.scopes) {
                             <div class="field">
                                 <label for="scopes"
                                     >{{
@@ -90,17 +89,16 @@ import { generateApplicationFormFields } from './applications.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="scopes"
                                         [placeholder]="
                                             'DOMAINS.APP_SCOPES' | translate
                                         "
-                                        formControlName="scopes"
+                                        [formField]="form.scopes"
                                     />
                                 </mat-form-field>
                             </div>
                         }
                     </div>
-                    @if (form.controls.subsystems) {
+                    @if (form.subsystems) {
                         <div class="field">
                             <label for="subsystems-input"
                                 >{{
@@ -150,7 +148,7 @@ import { generateApplicationFormFields } from './applications.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.redirect_uri) {
+                    @if (form.redirect_uri) {
                         <div class="field">
                             <label for="redirect-uri"
                                 >{{ 'DOMAINS.APP_REDIRECT_URL' | translate }}:
@@ -158,9 +156,8 @@ import { generateApplicationFormFields } from './applications.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="redirect-uri"
                                     placeholder="Redirect URI e.g. http://localhost:4200/oauth-resp.html"
-                                    formControlName="redirect_uri"
+                                    [formField]="form.redirect_uri"
                                 />
                                 <mat-error>{{
                                     'DOMAINS.APP_REDIRECT_URL_REQUIRED'
@@ -172,16 +169,16 @@ import { generateApplicationFormFields } from './applications.utilities';
                     <div class="fieldset mb-4">
                         <settings-toggle
                             class="flex-1"
-                            [name]="'DOMAINS.APP_SKIP' | translate"
-                            formControlName="skip_authorization"
+                            [label]="'DOMAINS.APP_SKIP' | translate"
+                            [formField]="form.skip_authorization"
                         ></settings-toggle>
                         <settings-toggle
                             class="flex-1"
-                            [name]="'DOMAINS.APP_PRESERVE_ID' | translate"
-                            formControlName="preserve_client_id"
+                            [label]="'DOMAINS.APP_PRESERVE_ID' | translate"
+                            [formField]="form.preserve_client_id"
                         ></settings-toggle>
                     </div>
-                    @if (form.controls.redirect_uri) {
+                    @if (form.redirect_uri) {
                         <div class="field">
                             <label for="client-id"
                                 >{{ 'DOMAINS.APP_CLIENT_ID' | translate }}:
@@ -218,7 +215,7 @@ import { generateApplicationFormFields } from './applications.utilities';
         FormsModule,
         TranslatePipe,
         SettingsToggleComponent,
-        ReactiveFormsModule,
+        FormField,
         MatInputModule,
         IconComponent,
         FullscreenModalShellComponent,
@@ -236,60 +233,44 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup;
+    public readonly formModel = signal(
+        generateApplicationFormModel(this._data.item),
+    );
+    public readonly form = form(this.formModel, applyApplicationFormSchema);
     public loading: string;
     public heading: string;
     public default_redirect_uri: string;
     public readonly client_id = signal('');
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
-    public subsystem_list: Signal<string[]> = signal([]);
+    public subsystem_list = computed(() => this.formModel().subsystems || []);
 
     public readonly addSubsystem = (e: MatChipInputEvent) =>
-        addChipItem(this.form.controls.subsystems as FormControl<string[]>, e);
+        this.formModel.update((value) => ({
+            ...value,
+            subsystems: addSignalChipItem(value.subsystems, e),
+        }));
     public readonly removeSubsystem = (i: string) =>
-        removeChipItem(
-            this.form.controls.subsystems as FormControl<string[]>,
-            i,
-        );
+        this.formModel.update((value) => ({
+            ...value,
+            subsystems: removeSignalChipItem(value.subsystems, i),
+        }));
 
     public ngOnInit(): void {
         const item = this._data.item;
         const edit = !!item.id;
         this.heading = i18n(`DOMAINS.APPLICATION_${edit ? 'EDIT' : 'NEW'}`);
-        this.form = generateApplicationFormFields(item);
-        this.subsystem_list = toSignal(
-            this.form.controls.subsystems.valueChanges,
-            {
-                initialValue: this.form.controls.subsystems.value || [],
-                injector: this._injector,
-            },
-        );
-        const { redirect_uri } = this.form.value;
+        const { redirect_uri } = this.formModel();
         this.default_redirect_uri = redirect_uri || '';
-        const redirect_uri_signal = toSignal(
-            this.form.get('redirect_uri').valueChanges,
-            {
-                initialValue: redirect_uri || '',
-                injector: this._injector,
-            },
-        );
-        const preserve_client_id_signal = toSignal(
-            this.form.get('preserve_client_id').valueChanges,
-            {
-                initialValue: !!this.form.value.preserve_client_id,
-                injector: this._injector,
-            },
-        );
         effect(
             () => {
-                const preserve = preserve_client_id_signal();
-                const redirect_value = `${redirect_uri_signal() || ''}`;
+                const preserve = this.formModel().preserve_client_id;
+                const redirect_value = `${this.formModel().redirect_uri || ''}`;
                 const trimmed_value = redirect_value.trim();
                 if (redirect_value !== trimmed_value) {
-                    this.form.patchValue(
-                        { redirect_uri: trimmed_value },
-                        { emitEvent: false },
-                    );
+                    this.formModel.update((value) => ({
+                        ...value,
+                        redirect_uri: trimmed_value,
+                    }));
                 }
                 const uri = preserve
                     ? this.default_redirect_uri
@@ -305,46 +286,50 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
+        await submit(this.form, async () => {
+            const item = this._data.item as unknown as PlaceResource;
+            this.loading = i18n(`${this._name}_SAVING`);
+            this._dialog_ref.disableClose = true;
+            const item_json = item.toJSON ? item.toJSON() : item;
+            const form_item = (
+                item.id
+                    ? cleanObject(
+                          { ...item_json, ...this.formModel() },
+                          [undefined],
+                      )
+                    : { ...item_json, ...this.formModel() }
+            ) as Identity;
+            const save_item = { ...form_item, uid: this.client_id() };
+            delete (save_item as Identity & { client_id?: unknown }).client_id;
+            try {
+                const _item = await (save_item.id
+                    ? updateApplication(
+                          save_item.id as string,
+                          save_item as unknown as PlaceApplication,
+                      )
+                    : addApplication(save_item as unknown as PlaceApplication));
+                this._dialog_ref.disableClose = false;
+                this.event.emit({ reason: 'done', metadata: { item: _item } });
+                notifySuccess(i18n(`${this._name}_SAVE_SUCCESS`));
+                this._dialog_ref.close();
+            } catch (err) {
+                this.loading = null;
+                this._dialog_ref.disableClose = false;
+                notifyError(
+                    i18n(`${this._name}_SAVE_ERROR`, {
+                        error: JSON.stringify(
+                            (await (err as Response).text?.()) ||
+                                (err as Error).message ||
+                                err,
+                        ),
+                    }),
+                );
+            }
+        });
+        if (this.form().invalid()) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
-                }),
-            );
-        }
-        const item = this._data.item as unknown as PlaceResource;
-        this.loading = i18n(`${this._name}_SAVING`);
-        this._dialog_ref.disableClose = true;
-        const item_json = item.toJSON ? item.toJSON() : item;
-        const form_item = (
-            item.id
-                ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
-                : { ...item_json, ...this.form.value }
-        ) as Identity;
-        const save_item = { ...form_item, uid: this.client_id() };
-        delete (save_item as Identity & { client_id?: unknown }).client_id;
-        try {
-            const _item = await (save_item.id
-                ? updateApplication(
-                      save_item.id as string,
-                      save_item as unknown as PlaceApplication,
-                  )
-                : addApplication(save_item as unknown as PlaceApplication));
-            this._dialog_ref.disableClose = false;
-            this.event.emit({ reason: 'done', metadata: { item: _item } });
-            notifySuccess(i18n(`${this._name}_SAVE_SUCCESS`));
-            this._dialog_ref.close();
-        } catch (err) {
-            this.loading = null;
-            this._dialog_ref.disableClose = false;
-            notifyError(
-                i18n(`${this._name}_SAVE_ERROR`, {
-                    error: JSON.stringify(
-                        (await (err as Response).text?.()) ||
-                            (err as Error).message ||
-                            err,
-                    ),
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }

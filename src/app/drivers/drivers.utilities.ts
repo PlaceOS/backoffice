@@ -1,10 +1,10 @@
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
     PlaceDriver,
     PlaceDriverRole,
     PlaceRepository,
 } from '@placeos/ts-client';
 
+import { max, min, required, SchemaFn, validate } from '@angular/forms/signals';
 import { validateURI } from '../common/validation';
 
 export interface DriverInitData {
@@ -12,36 +12,50 @@ export interface DriverInitData {
     driver: PlaceDriver;
 }
 
-export function generateDriverFormFields(driver?: PlaceDriver) {
-    const fields = {
-        id: new FormControl(driver?.id || ''),
-        repository_id: new FormControl(driver?.repository_id),
-        file_name: new FormControl(driver?.file_name),
-        commit: new FormControl(driver?.commit),
-        name: new FormControl(driver?.name || '', [Validators.required]),
-        role: new FormControl(driver?.role || PlaceDriverRole.Logic),
-        module_name: new FormControl(driver?.module_name || '', [
-            Validators.required,
-        ]),
-        default_uri: new FormControl(driver?.default_uri || '', [validateURI]),
-        default_port: new FormControl(driver?.default_port || 1, [
-            Validators.min(1),
-            Validators.max(65535),
-        ]),
-        alert_level: new FormControl(driver?.alert_level || 'medium'),
-        class_name: new FormControl(driver?.class_name || ''),
-        description: new FormControl(driver?.description || ''),
-        ignore_connected: new FormControl(driver?.ignore_connected || false),
-        settings: new FormControl(''),
-    };
-    fields.module_name.valueChanges.subscribe((value: string) => {
-        fields.module_name.setValue(value?.replace(/ /g, '_'), {
-            emitEvent: false,
-        });
-    });
-    if (driver.id) {
-        delete fields.class_name;
-        delete fields.role;
-    }
-    return new FormGroup(fields);
+export interface DriverFormModel {
+    id: string;
+    repository_id: string;
+    file_name: string;
+    commit: string;
+    name: string;
+    role: PlaceDriverRole;
+    module_name: string;
+    default_uri: string;
+    default_port: number;
+    alert_level: string;
+    class_name: string;
+    description: string;
+    ignore_connected: boolean;
+    settings: string;
 }
+
+export function generateDriverFormModel(driver?: PlaceDriver): DriverFormModel {
+    return {
+        id: driver?.id || '',
+        repository_id: driver?.repository_id || '',
+        file_name: driver?.file_name || '',
+        commit: driver?.commit || '',
+        name: driver?.name || '',
+        role: driver?.role || PlaceDriverRole.Logic,
+        module_name: driver?.module_name || '',
+        default_uri: driver?.default_uri || '',
+        default_port: driver?.default_port || 1,
+        alert_level: driver?.alert_level || 'medium',
+        class_name: driver?.class_name || '',
+        description: driver?.description || '',
+        ignore_connected: driver?.ignore_connected || false,
+        settings: '',
+    };
+}
+
+export const applyDriverFormSchema: SchemaFn<DriverFormModel> = (path) => {
+    required(path.name);
+    required(path.module_name);
+    validate(path.default_uri, ({ value }) =>
+        validateURI({ value: value() })
+            ? { kind: 'pattern', message: 'Invalid URI' }
+            : undefined,
+    );
+    min(path.default_port, 1);
+    max(path.default_port, 65535);
+};

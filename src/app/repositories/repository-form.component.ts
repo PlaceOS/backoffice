@@ -9,11 +9,8 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import {
-    FormsModule,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { disabled, form, FormField, submit } from '@angular/forms/signals';
 
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -39,11 +36,10 @@ import {
     updateRepository,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
-import { getInvalidFields } from '../common/general';
+import { getInvalidSignalFields } from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { toSignal } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { isValidUrl } from '../common/validation';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
@@ -51,7 +47,10 @@ import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { generateRepositoryFormFields } from './repositories.utilities';
+import {
+    applyRepositoryFormSchema,
+    generateRepositoryFormModel,
+} from './repositories.utilities';
 
 interface RepositoryCommit extends Partial<GitCommitDetails> {
     hash: string;
@@ -67,14 +66,14 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
             (save)="submit()"
         >
             @if (form) {
-                <form repository class="flex flex-col" [formGroup]="form">
-                    @if (form.controls.name) {
+                <form repository class="flex flex-col">
+                    @if (form.name) {
                         <div class="field">
                             <label
                                 for="repository-name"
                                 [class.error]="
-                                    form.controls.name.invalid &&
-                                    form.controls.name.touched
+                                    form.name().invalid() &&
+                                    form.name().touched()
                                 "
                             >
                                 {{ 'COMMON.FIELD_NAME' | translate
@@ -83,12 +82,10 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="repository-name"
                                     [placeholder]="
                                         'COMMON.FIELD_NAME' | translate
                                     "
-                                    formControlName="name"
-                                    required
+                                    [formField]="form.name"
                                 />
                                 <mat-error>{{
                                     'REPOS.NAME_REQUIRED' | translate
@@ -99,8 +96,8 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                     <div class="fieldset">
                         @if (
                             !is_editing() &&
-                            form.controls.repo_type &&
-                            form.controls.folder_name
+                            form.repo_type &&
+                            form.folder_name
                         ) {
                             <div class="field">
                                 <label for="type">
@@ -108,8 +105,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 </label>
                                 <mat-form-field appearance="outline">
                                     <mat-select
-                                        name="type"
-                                        formControlName="repo_type"
+                                        [formField]="form.repo_type"
                                     >
                                         @for (type of repo_types; track type) {
                                             <mat-option [value]="type.id">
@@ -120,13 +116,13 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.folder_name) {
+                        @if (!is_editing() && form.folder_name) {
                             <div class="field">
                                 <label
                                     for="folder-name"
                                     [class.error]="
-                                        form.controls.folder_name.invalid &&
-                                        form.controls.folder_name.touched
+                                        form.folder_name().invalid() &&
+                                        form.folder_name().touched()
                                     "
                                 >
                                     {{ 'REPOS.FOLDER_NAME' | translate
@@ -135,12 +131,10 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="folder-name"
                                         [placeholder]="
                                             'REPOS.FOLDER_NAME' | translate
                                         "
-                                        formControlName="folder_name"
-                                        required
+                                        [formField]="form.folder_name"
                                     />
                                     <mat-error>{{
                                         'REPOS.FOLDER_NAME_REQUIRED' | translate
@@ -149,13 +143,12 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             </div>
                         }
                     </div>
-                    @if (form.controls.uri && !hide_uri) {
+                    @if (form.uri && !hide_uri) {
                         <div class="field">
                             <label
                                 for="uri"
                                 [class.error]="
-                                    form.controls.uri.invalid &&
-                                    form.controls.uri.touched
+                                    form.uri().invalid() && form.uri().touched()
                                 "
                             >
                                 {{ 'REPOS.URI' | translate }}<span>*</span>
@@ -163,11 +156,9 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="uri"
                                     [placeholder]="'REPOS.URI' | translate"
-                                    formControlName="uri"
+                                    [formField]="form.uri"
                                     (blur)="markCredentialsBlur()"
-                                    required
                                 />
                                 <mat-error>{{
                                     'REPOS.URI_REQUIRED' | translate
@@ -176,7 +167,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                         </div>
                     }
                     <div class="fieldset">
-                        @if (form.controls.username) {
+                        @if (form.username) {
                             <div class="field">
                                 <label for="repo-u"
                                     >{{ 'REPOS.USERNAME' | translate }}
@@ -184,18 +175,17 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="repo-u"
                                         autocomplete="off"
                                         [placeholder]="
                                             'REPOS.USERNAME' | translate
                                         "
-                                        formControlName="username"
+                                        [formField]="form.username"
                                         (blur)="markCredentialsBlur()"
                                     />
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.password) {
+                        @if (form.password) {
                             <div class="field">
                                 <label for="repo-p">
                                     {{ 'REPOS.PASSWORD' | translate }}
@@ -203,7 +193,6 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="repo-pwd"
                                         autocomplete="new-password"
                                         [type]="
                                             show_password()
@@ -213,7 +202,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                         [placeholder]="
                                             'COMMON.PASSWORD' | translate
                                         "
-                                        formControlName="password"
+                                        [formField]="form.password"
                                         (blur)="markCredentialsBlur()"
                                     />
                                     <button
@@ -226,26 +215,21 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             </div>
                         }
                     </div>
-                    @if (form.controls.branch) {
+                    @if (form.branch) {
                         <div class="field">
                             <label
                                 for="repository-name"
                                 [class.error]="
-                                    form.controls.branch.invalid &&
-                                    form.controls.branch.touched
+                                    form.branch().invalid() &&
+                                    form.branch().touched()
                                 "
                             >
                                 {{ 'REPOS.BRANCH' | translate }}<span>*</span>
                             </label>
                             <mat-form-field appearance="outline">
                                 <mat-select
-                                    name="type"
-                                    formControlName="branch"
+                                    [formField]="form.branch"
                                     [placeholder]="'Select Branch'"
-                                    [disabled]="
-                                        loading_branches() ||
-                                        !branch_list().length
-                                    "
                                 >
                                     @for (
                                         branch of branch_list();
@@ -276,12 +260,8 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             >
                             <mat-form-field appearance="outline">
                                 <mat-select
-                                    formControlName="commit_hash"
+                                    [formField]="form.commit_hash"
                                     placeholder="Select commit"
-                                    [disabled]="
-                                        loading_commits() ||
-                                        !commit_list().length
-                                    "
                                 >
                                     <mat-select-trigger>
                                         <div
@@ -297,7 +277,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                                 class="bg-base-200 mr-4! rounded-sm px-1.5 font-mono text-[0.625rem]"
                                             >
                                                 {{
-                                                    form.value.commit_hash ||
+                                                    formModel().commit_hash ||
                                                         'HEAD' | slice: 0 : 8
                                                 }}
                                             </div>
@@ -312,7 +292,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                             <div
                                                 class="flex w-[calc(100%-2.20rem)] flex-1 items-center space-x-2"
                                                 [class.w-full!]="
-                                                    form.value.commit_hash ===
+                                                    formModel().commit_hash ===
                                                     commit.hash
                                                 "
                                                 (click)="base_commit = commit"
@@ -362,7 +342,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                         </div>
                         <div class="field">
                             <settings-toggle
-                                name="Follow latest commit"
+                                label="Follow latest commit"
                                 class="mb-4"
                                 [ngModel]="follow_latest()"
                                 [ngModelOptions]="{ standalone: true }"
@@ -370,7 +350,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             />
                         </div>
                     }
-                    @if (form.controls.description) {
+                    @if (form.description) {
                         <div class="field">
                             <label for="description">
                                 {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
@@ -378,16 +358,15 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
-                                    name="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
-                                    formControlName="description"
+                                    [formField]="form.description"
                                 ></textarea>
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.root_path) {
+                    @if (form.root_path) {
                         <div class="field">
                             <label for="root-path">
                                 {{ 'REPOS.ROOT_PATH' | translate }}
@@ -395,11 +374,10 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="root-path"
                                     [placeholder]="
                                         'REPOS.ROOT_PATH' | translate
                                     "
-                                    formControlName="root_path"
+                                    [formField]="form.root_path"
                                 />
                             </mat-form-field>
                         </div>
@@ -413,7 +391,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
         MatFormFieldModule,
         MatInputModule,
         MatProgressSpinnerModule,
-        ReactiveFormsModule,
+        FormField,
         TranslatePipe,
         FormsModule,
         MatSelectModule,
@@ -435,7 +413,9 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup;
+    public readonly formModel = signal(
+        generateRepositoryFormModel(this._data.item),
+    );
     public saving: string;
     public heading: string;
 
@@ -459,19 +439,32 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     /** Emits when URI, username, or password fields lose focus */
     public readonly credentials_blur = signal(0);
 
+    public readonly form = form(this.formModel, (path) => {
+        applyRepositoryFormSchema(path);
+        disabled(path.branch, () => {
+            return this.loading_branches() || !this.branch_list().length;
+        });
+        disabled(path.commit_hash, () => {
+            return (
+                this.loading_commits() ||
+                !this.commit_list().length ||
+                !this.formModel().branch
+            );
+        });
+    });
+
     public readonly is_interface = computed(
-        () => this.form?.value?.repo_type === PlaceRepositoryType.Interface,
+        () => this.formModel().repo_type === PlaceRepositoryType.Interface,
     );
 
     public get hide_uri() {
-        return !this.is_interface() && this.form.value.id;
+        return !this.is_interface() && this.formModel().id;
     }
 
     public ngOnInit(): void {
         const item = this._data.item;
         const edit = !!item.id;
         this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
-        this.form = generateRepositoryFormFields(item);
         this.repo_types = [
             { id: PlaceRepositoryType.Driver, name: i18n('REPOS.TYPE_DRIVER') },
             {
@@ -479,8 +472,8 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
                 name: i18n('REPOS.TYPE_INTERFACE'),
             },
         ];
-        this.follow_latest.set(this.form?.value.commit_hash === 'HEAD');
-        this.is_editing.set(!!this.form?.value.id);
+        this.follow_latest.set(this.formModel().commit_hash === 'HEAD');
+        this.is_editing.set(!!this.formModel().id);
         this._setupBranchAndCommitStreams();
         this.subscription(
             'save_item_key',
@@ -489,55 +482,53 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
-                }),
-            );
-        }
-        const item = this._data.item;
-        this.saving = i18n(`${this._name}.SAVING`);
-        this._dialog_ref.disableClose = true;
-        const item_json = item.toJSON ? item.toJSON() : item;
-        const form_value = { ...this.form.value };
-        if (form_value.root_path) {
-            form_value.root_path = form_value.root_path.replace(
-                /^\/+|\/+$/g,
-                '',
-            );
-        }
-        const form_item: PlaceRepository = item.id
-            ? cleanObject({ ...item_json, ...form_value }, [undefined])
-            : { ...item_json, ...form_value };
-        try {
-            const _item = await (form_item.id
-                ? updateRepository(
-                      form_item.id,
-                      form_item as unknown as PlaceRepository,
-                  )
-                : addRepository(form_item as unknown as PlaceRepository));
-            this._dialog_ref.disableClose = false;
-            this.event.emit({ reason: 'done', metadata: { item: _item } });
-            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-            if (!this.form.value.id && this.form.controls.settings) {
-                await this.newSettings(
-                    _item as unknown as Identity,
-                    this.form.controls.settings.value,
+        await submit(this.form, async () => {
+            const item = this._data.item;
+            this.saving = i18n(`${this._name}.SAVING`);
+            this._dialog_ref.disableClose = true;
+            const item_json = item.toJSON ? item.toJSON() : item;
+            const form_value = { ...this.formModel() };
+            if (form_value.root_path) {
+                form_value.root_path = form_value.root_path.replace(
+                    /^\/+|\/+$/g,
+                    '',
                 );
             }
-            this._dialog_ref.close();
-        } catch (err) {
-            this.saving = null;
-            this._dialog_ref.disableClose = false;
-            notifyError(
-                i18n(`${this._name}.SAVE_ERROR`, {
-                    error: JSON.stringify(
-                        (await (err as Response).text?.()) ||
-                            (err as Error).message ||
-                            err,
-                    ),
+            if (item.id) {
+                delete form_value.folder_name;
+            }
+            const form_item = (item.id
+                ? cleanObject({ ...item_json, ...form_value }, [undefined])
+                : { ...item_json, ...form_value }) as PlaceRepository;
+            try {
+                const _item = await (form_item.id
+                    ? updateRepository(
+                          form_item.id,
+                          form_item as unknown as PlaceRepository,
+                      )
+                    : addRepository(form_item as unknown as PlaceRepository));
+                this._dialog_ref.disableClose = false;
+                this.event.emit({ reason: 'done', metadata: { item: _item } });
+                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+                this._dialog_ref.close();
+            } catch (err) {
+                this.saving = null;
+                this._dialog_ref.disableClose = false;
+                notifyError(
+                    i18n(`${this._name}.SAVE_ERROR`, {
+                        error: JSON.stringify(
+                            (await (err as Response).text?.()) ||
+                                (err as Error).message ||
+                                err,
+                        ),
+                    }),
+                );
+            }
+        });
+        if (this.form().invalid()) {
+            return notifyError(
+                i18n('COMMON.INVALID_FIELDS', {
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }
@@ -546,11 +537,15 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     public setFollow(value: boolean) {
         this.follow_latest.set(value);
         if (value) {
-            this.form.controls.commit_hash.setValue('HEAD');
-        } else if (this.form.controls.commit_hash.value === 'HEAD') {
-            this.form.controls.commit_hash.setValue(
-                this.commit_list()[1]?.hash || '',
-            );
+            this.formModel.update((model) => ({
+                ...model,
+                commit_hash: 'HEAD',
+            }));
+        } else if (this.formModel().commit_hash === 'HEAD') {
+            this.formModel.update((model) => ({
+                ...model,
+                commit_hash: this.commit_list()[1]?.hash || '',
+            }));
         }
     }
 
@@ -563,19 +558,10 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     }
 
     private _setupBranchAndCommitStreams() {
-        this.form.get('branch').disable();
-        const uri = toSignal(this.form.get('uri').valueChanges, {
-            initialValue: this.form.get('uri').value,
-            injector: this._injector,
-        });
-        const branch = toSignal(this.form.get('branch').valueChanges, {
-            initialValue: this.form.get('branch').value,
-            injector: this._injector,
-        });
         effect(
             () => {
-                uri();
-                this.credentials_blur();
+                void this.formModel().uri;
+                void this.credentials_blur();
                 this.timeout(
                     'repository_branches',
                     () => this._loadBranches(),
@@ -586,9 +572,9 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         );
         effect(
             () => {
-                uri();
-                branch();
-                this.credentials_blur();
+                void this.formModel().uri;
+                void this.formModel().branch;
+                void this.credentials_blur();
                 this.timeout(
                     'repository_commits',
                     () => this._loadCommits(),
@@ -600,10 +586,9 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     }
 
     private async _loadBranches() {
-        const { id, uri, username, password } = this.form.value;
+        const { id, uri, username, password } = this.formModel();
         if (!id && (!isValidUrl(uri) || !uri.startsWith('http'))) {
             this.branch_list.set([]);
-            this.form.get('branch').disable();
             return;
         }
         this.loading_branches.set(true);
@@ -618,15 +603,13 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
                       })
             ).catch(() => [] as string[]);
             this.branch_list.set(list);
-            if (list.length) this.form.get('branch').enable();
-            else this.form.get('branch').disable();
             const branch = await this._loadDefaultBranch();
             if (
                 branch &&
-                (!this.form.value.branch ||
-                    !list.includes(this.form.value.branch))
+                (!this.formModel().branch ||
+                    !list.includes(this.formModel().branch))
             ) {
-                this.form.patchValue({ branch });
+                this.formModel.update((model) => ({ ...model, branch }));
             }
         } finally {
             this.loading_branches.set(false);
@@ -634,7 +617,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     }
 
     private async _loadDefaultBranch() {
-        const { id, uri, username, password } = this.form.value;
+        const { id, uri, username, password } = this.formModel();
         return (
             id
                 ? listRepositoryDefaultBranch(id)
@@ -649,7 +632,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     }
 
     private async _loadCommits() {
-        const { id, uri, branch, username, password } = this.form.value;
+        const { id, uri, branch, username, password } = this.formModel();
         if (!id && (!isValidUrl(uri) || !uri.startsWith('http') || !branch)) {
             this.commit_list.set([
                 {
@@ -681,7 +664,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
             this.commit_list.set(commit_list);
             this.base_commit =
                 commit_list.find(
-                    (commit) => commit.hash === this.form.value.commit_hash,
+                    (commit) => commit.hash === this.formModel().commit_hash,
                 ) || commit_list[0];
         } finally {
             this.loading_commits.set(false);

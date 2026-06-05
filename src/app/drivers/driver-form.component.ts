@@ -1,6 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import {
     Component,
+    effect,
     EventEmitter,
     OnInit,
     Output,
@@ -9,11 +10,8 @@ import {
     resource,
     signal,
 } from '@angular/core';
-import {
-    FormsModule,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import {
     EncryptionLevel,
     GitCommitDetails,
@@ -43,7 +41,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import * as yaml from 'js-yaml';
-import { getInvalidFields } from '../common/general';
+import { getInvalidSignalFields } from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -53,7 +51,7 @@ import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { generateDriverFormFields } from './drivers.utilities';
+import { applyDriverFormSchema, generateDriverFormModel } from './drivers.utilities';
 
 @Component({
     selector: 'driver-form',
@@ -103,8 +101,8 @@ import { generateDriverFormFields } from './drivers.utilities';
                     </div>
                 }
             }
-            @if (commit() && !loading() && form.controls.id) {
-                <div class="flex flex-col" [formGroup]="form">
+            @if (commit() && !loading() && form.id) {
+                <div class="flex flex-col">
                     <label
                         for="driver-name"
                         [class.error]="fieldInvalid('name')"
@@ -115,10 +113,8 @@ import { generateDriverFormFields } from './drivers.utilities';
                     <mat-form-field appearance="outline">
                         <input
                             matInput
-                            name="driver-name"
                             [placeholder]="'COMMON.FIELD_NAME' | translate"
-                            formControlName="name"
-                            required
+                            [formField]="form.name"
                         />
                         <mat-error>
                             {{ 'DRIVERS.NAME_REQUIRED' | translate }}
@@ -131,10 +127,7 @@ import { generateDriverFormFields } from './drivers.utilities';
                                     {{ 'DRIVERS.ROLE' | translate }}
                                 </label>
                                 <mat-form-field appearance="outline">
-                                    <mat-select
-                                        name="role"
-                                        formControlName="role"
-                                    >
+                                    <mat-select [formField]="form.role">
                                         @for (type of role_types; track type) {
                                             <mat-option [value]="type.id">
                                                 {{ type.name | translate }}
@@ -155,12 +148,10 @@ import { generateDriverFormFields } from './drivers.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="module-name"
                                     [placeholder]="
                                         'DRIVERS.MODULE_NAME' | translate
                                     "
-                                    formControlName="module_name"
-                                    required
+                                    [formField]="form.module_name"
                                 />
                                 <mat-error>
                                     {{
@@ -177,11 +168,10 @@ import { generateDriverFormFields } from './drivers.utilities';
                     <mat-form-field appearance="outline">
                         <textarea
                             matInput
-                            name="description"
                             [placeholder]="
                                 'COMMON.FIELD_DESCRIPTION' | translate
                             "
-                            formControlName="description"
+                            [formField]="form.description"
                         ></textarea>
                     </mat-form-field>
                     <label for="default-uri">{{
@@ -190,9 +180,8 @@ import { generateDriverFormFields } from './drivers.utilities';
                     <mat-form-field appearance="outline">
                         <input
                             matInput
-                            name="default-uri"
                             [placeholder]="'DRIVERS.DEFAULT_URI' | translate"
-                            formControlName="default_uri"
+                            [formField]="form.default_uri"
                         />
                     </mat-form-field>
                     <div class="flex items-center space-x-4">
@@ -206,12 +195,11 @@ import { generateDriverFormFields } from './drivers.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="default-port"
                                     type="number"
                                     [placeholder]="
                                         'DRIVERS.DEFAULT_PORT' | translate
                                     "
-                                    formControlName="default_port"
+                                    [formField]="form.default_port"
                                 />
                                 <mat-error>
                                     {{ 'MODULES.PORT_REQUIRED' | translate }}
@@ -222,8 +210,8 @@ import { generateDriverFormFields } from './drivers.utilities';
                             <div class="h-1 w-full"></div>
                             <settings-toggle
                                 class="w-full"
-                                [name]="'MODULES.IGNORE_CONNECTED' | translate"
-                                formControlName="ignore_connected"
+                                [label]="'MODULES.IGNORE_CONNECTED' | translate"
+                                [formField]="form.ignore_connected"
                             ></settings-toggle>
                         </div>
                     </div>
@@ -232,8 +220,7 @@ import { generateDriverFormFields } from './drivers.utilities';
                     </label>
                     <mat-form-field appearance="outline">
                         <mat-select
-                            name="alert-level"
-                            formControlName="alert_level"
+                            [formField]="form.alert_level"
                         >
                             @for (level of alert_levels; track level.id) {
                                 <mat-option [value]="level.id">
@@ -263,7 +250,7 @@ import { generateDriverFormFields } from './drivers.utilities';
         SettingsToggleComponent,
         MatFormFieldModule,
         MatInputModule,
-        ReactiveFormsModule,
+        FormField,
         MatSelectModule,
         ItemSearchFieldComponent,
         FormsModule,
@@ -282,11 +269,12 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup;
+    public readonly formModel = signal(generateDriverFormModel(this._data.item));
+    public readonly form = form(this.formModel, applyDriverFormSchema);
     public saving: string;
     public heading: string;
 
-    public readonly is_editing = computed(() => !!this.form?.value?.id);
+    public readonly is_editing = computed(() => !!this.formModel().id);
     public readonly loading = signal('');
     public readonly loading_type = signal<string[]>([]);
     public readonly commit_error = signal(false);
@@ -372,7 +360,6 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         const item = this._data.item;
         const edit = !!item.id;
         this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
-        this.form = generateDriverFormFields(item);
         this._loadDetailsFromForm();
         this.subscription(
             'save_item_key',
@@ -380,11 +367,30 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
+    constructor() {
+        super();
+        effect(() => {
+            const module_name = this.formModel().module_name;
+            const clean_name = module_name?.replace(/ /g, '_') || '';
+            if (module_name !== clean_name) {
+                this.formModel.update((value) => ({
+                    ...value,
+                    module_name: clean_name,
+                }));
+            }
+        });
+    }
+
     public fieldInvalid(field: string) {
-        return (
-            this.form.controls[field].invalid &&
-            this.form.controls[field].touched
-        );
+        const form_field = this.form[
+            field as keyof typeof this.form
+        ] as unknown as () => {
+            invalid: () => boolean;
+            touched: () => boolean;
+        };
+        return typeof form_field === 'function'
+            ? form_field().invalid() && form_field().touched()
+            : false;
     }
 
     public async applyDriverCommit(commit: {
@@ -395,24 +401,28 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         const request_id = this._details_request() + 1;
         this._details_request.set(request_id);
         const old_commit = this.commit();
-        this.form.patchValue({ commit: commit.id });
+        this.formModel.update((value) => ({ ...value, commit: commit.id }));
         this.commit.set(commit);
         this.commit_error.set(false);
         const repo = this.repo();
         const driver = this.driver();
         if (!repo?.id || !driver?.id) return;
         this.loading.set('DRIVERS.DETAILS_LOADING');
-        this.form.patchValue({
+        this.formModel.update((value) => ({
+            ...value,
             repository_id: repo.id,
             file_name: driver.id,
-        });
+        }));
         const details = await listRepositoryDriverDetails(repo.id, {
             driver: `${driver.id}`,
             commit: `${commit.id}`,
         }).catch(() => null);
         if (request_id !== this._details_request()) return;
         if (!details) {
-            this.form.patchValue({ commit: old_commit?.id || null });
+            this.formModel.update((value) => ({
+                ...value,
+                commit: old_commit?.id || '',
+            }));
             this.commit.set(old_commit);
             this.loading.set('');
             this.commit_error.set(true);
@@ -421,7 +431,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
             );
             return;
         }
-        if (this.form.value.id) {
+        if (this.formModel().id) {
             this.loading.set('');
             return;
         }
@@ -429,53 +439,62 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
-                }),
-            );
-        }
-        const item = this._data.item;
-        this.saving = i18n(`${this._name}.SAVING`);
-        this._dialog_ref.disableClose = true;
-        const item_json = item.toJSON ? item.toJSON() : item;
-        const form_item = (
-            item.id
-                ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
-                : { ...item_json, ...this.form.value }
-        ) as Identity;
-        try {
-            const _item = await (form_item.id
-                ? updateDriver(
-                      form_item.id as string,
-                      form_item as unknown as PlaceDriver,
-                  )
-                : addDriver(form_item as unknown as PlaceDriver));
-            this._dialog_ref.disableClose = false;
-            this.event.emit({
-                reason: 'done',
-                metadata: { item: _item as unknown as Identity },
-            });
-            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-            if (!this.form.value.id && this.form.controls.settings) {
-                await this.newSettings(
-                    _item as unknown as Identity,
-                    this.form.controls.settings.value,
+        await submit(this.form, async () => {
+            const item = this._data.item;
+            this.saving = i18n(`${this._name}.SAVING`);
+            this._dialog_ref.disableClose = true;
+            const item_json = item.toJSON ? item.toJSON() : item;
+            const form_value = { ...this.formModel() };
+            if (item.id) {
+                delete form_value.role;
+                delete form_value.class_name;
+            }
+            const form_item = (
+                item.id
+                    ? cleanObject(
+                          { ...item_json, ...form_value },
+                          [undefined],
+                      )
+                    : { ...item_json, ...form_value }
+            ) as Identity;
+            try {
+                const _item = await (form_item.id
+                    ? updateDriver(
+                          form_item.id as string,
+                          form_item as unknown as PlaceDriver,
+                      )
+                    : addDriver(form_item as unknown as PlaceDriver));
+                this._dialog_ref.disableClose = false;
+                this.event.emit({
+                    reason: 'done',
+                    metadata: { item: _item as unknown as Identity },
+                });
+                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+                if (!this.formModel().id && this.formModel().settings) {
+                    await this.newSettings(
+                        _item as unknown as Identity,
+                        this.formModel().settings,
+                    );
+                }
+                this._dialog_ref.close();
+            } catch (err) {
+                this.saving = null;
+                this._dialog_ref.disableClose = false;
+                notifyError(
+                    i18n(`${this._name}.SAVE_ERROR`, {
+                        error: JSON.stringify(
+                            (await (err as Response).text?.()) ||
+                                (err as Error).message ||
+                                err,
+                        ),
+                    }),
                 );
             }
-            this._dialog_ref.close();
-        } catch (err) {
-            this.saving = null;
-            this._dialog_ref.disableClose = false;
-            notifyError(
-                i18n(`${this._name}.SAVE_ERROR`, {
-                    error: JSON.stringify(
-                        (await (err as Response).text?.()) ||
-                            (err as Error).message ||
-                            err,
-                    ),
+        });
+        if (this.form().invalid()) {
+            return notifyError(
+                i18n('COMMON.INVALID_FIELDS', {
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }
@@ -502,7 +521,8 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         }
         const port_number =
             details_any.tcp_port || details_any.udp_port || null;
-        this.form.patchValue({
+        this.formModel.update((value) => ({
+            ...value,
             name: details_any.descriptive_name || '',
             module_name: details_any.generic_name || '',
             class_name: driver.id || '',
@@ -519,12 +539,12 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
                       : PlaceDriverRole.Service
                   : PlaceDriverRole.Logic,
             description: details_any.description || '',
-        });
+        }));
         this.loading.set('');
     }
 
     private async _loadDetailsFromForm() {
-        const { id, commit, file_name, repository_id } = this.form.value;
+        const { id, commit, file_name, repository_id } = this.formModel();
         if (!id) return;
         this.loading.set('DRIVERS.DETAILS_LOADING');
         const repo = await showRepository(repository_id);

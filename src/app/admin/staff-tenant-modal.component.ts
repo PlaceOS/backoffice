@@ -1,29 +1,16 @@
 import { CommonModule } from '@angular/common';
-import {
-    Component,
-    effect,
-    inject,
-    model,
-    OnInit,
-    output,
-    signal,
-} from '@angular/core';
-import {
-    FormControl,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
-    Validators,
-} from '@angular/forms';
+import { Component, computed, inject, model, output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { email, form, FormField, required, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
-import { getInvalidFields, lastValueFrom } from '../common/general';
+import { getInvalidSignalFields } from '../common/forms';
+import { lastValueFrom } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { toSignal } from '../common/signals';
 import { DialogEvent, HashMap } from '../common/types';
 import { ObjectListFieldComponent } from '../ui/custom-fields/object-list-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
@@ -43,6 +30,37 @@ const FIELD_NAME_MAPPING: HashMap<string> = {
     user_agent: 'User Agent',
 };
 
+const GOOGLE_CREDENTIALS = [
+    'issuer',
+    'signing_key',
+    'scopes',
+    'domain',
+    'sub',
+    'user_agent',
+    'conference_type',
+];
+
+const OFFICE_CREDENTIALS = [
+    'tenant',
+    'client_id',
+    'client_secret',
+    'conference_type',
+];
+
+interface StaffTenantFormModel {
+    id: string;
+    domain: string;
+    name: string;
+    email_domain: string;
+    delegated: boolean;
+    platform: 'google' | 'office365';
+    service_account: string;
+    booking_limits: { type: string; amount: string | number }[];
+    early_checkin: number;
+    credentials: HashMap;
+    outlook_config: HashMap;
+}
+
 export interface StaffTenantModalData {
     tenant?: PlaceTenant;
     domain?: PlaceDomain;
@@ -59,7 +77,7 @@ export interface StaffTenantModalData {
             [loading]="loading()"
             (save)="save()"
         >
-            <form [formGroup]="form" class="mb-16">
+            <form class="mb-16">
                 <div class="flex flex-wrap items-center space-x-0 sm:space-x-2">
                     <div class="flex flex-1 flex-col">
                         <label for="tenant-name">
@@ -69,7 +87,7 @@ export interface StaffTenantModalData {
                             <input
                                 id="tenant-name"
                                 matInput
-                                formControlName="name"
+                                [formField]="form.name"
                                 [placeholder]="
                                     'ADMIN.TENANTS_FIELD_NAME' | translate
                                 "
@@ -87,7 +105,7 @@ export interface StaffTenantModalData {
                         <mat-form-field appearance="outline">
                             <mat-select
                                 id="tenant-platform"
-                                formControlName="platform"
+                                [formField]="form.platform"
                             >
                                 <mat-option value="google">Google</mat-option>
                                 <mat-option value="office365">
@@ -105,7 +123,7 @@ export interface StaffTenantModalData {
                         <input
                             id="tenant-email-domain"
                             matInput
-                            formControlName="email_domain"
+                            [formField]="form.email_domain"
                             [placeholder]="
                                 'ADMIN.TENANTS_EMAIL_PLACEHOLDER' | translate
                             "
@@ -122,8 +140,7 @@ export interface StaffTenantModalData {
                     <mat-form-field appearance="outline">
                         <mat-select
                             id="tenant-early-checkin"
-                            name="early_checkin"
-                            formControlName="early_checkin"
+                            [formField]="form.early_checkin"
                             placeholder="Select time"
                         >
                             <mat-option [value]="15 * 60">
@@ -190,7 +207,8 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
                 @if (
-                    form.value.platform !== 'google' && !form.value.delegated
+                    formModel().platform !== 'google' &&
+                    !formModel().delegated
                 ) {
                     <div
                         class="flex flex-wrap items-center space-x-0 sm:space-x-2"
@@ -205,7 +223,7 @@ export interface StaffTenantModalData {
                                 <input
                                     id="tenant-service-account"
                                     matInput
-                                    formControlName="service_account"
+                                    [formField]="form.service_account"
                                     [placeholder]="
                                         'ADMIN.TENANTS_SERVICE_ACCOUNT'
                                             | translate
@@ -223,74 +241,74 @@ export interface StaffTenantModalData {
                 }
                 <div class="mb-6 flex items-center">
                     <settings-toggle
-                        [name]="'ADMIN.TENANTS_DELEGATED' | translate"
+                        [label]="'ADMIN.TENANTS_DELEGATED' | translate"
                         class="w-1/2"
-                        formControlName="delegated"
+                        [formField]="form.delegated"
                     >
                     </settings-toggle>
                 </div>
-                @if (credentials) {
-                    <form [formGroup]="credentials">
-                        @for (
-                            item of credentials.controls | keyvalue;
-                            track item
-                        ) {
-                            <div
-                                class="flex flex-col"
-                                [class.hidden]="item.value?.disabled"
-                            >
-                                <label
-                                    class="capitalize"
-                                    [for]="'credential-' + item.key"
-                                >
-                                    {{ name_map[item.key] || item.key }}
-                                    @if (
-                                        item.key !== 'conference_type' &&
-                                        !form.value.id
-                                    ) {
-                                        <span>*</span>
-                                    }
-                                </label>
-                                <mat-form-field appearance="outline">
-                                    @switch (item.key) {
-                                        @default {
-                                            <input
-                                                [id]="'credential-' + item.key"
-                                                matInput
-                                                [formControlName]="item.key"
-                                                [placeholder]="
-                                                    name_map[item.key] ||
-                                                    item.key
-                                                "
-                                            />
-                                        }
-                                        @case ('signing_key') {
-                                            <textarea
-                                                [id]="'credential-' + item.key"
-                                                matInput
-                                                [formControlName]="item.key"
-                                                [placeholder]="
-                                                    name_map[item.key] ||
-                                                    item.key
-                                                "
-                                            ></textarea>
-                                        }
-                                    }
-                                    <mat-error>
-                                        {{
-                                            'ADMIN.TENANT_ITEM_REQUIRED'
-                                                | translate: { name: item.key }
-                                        }}
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
-                        }
-                    </form>
+                @for (item of credential_fields(); track item.key) {
+                    <div class="flex flex-col" [class.hidden]="item.disabled">
+                        <label class="capitalize" [for]="'credential-' + item.key">
+                            {{ name_map[item.key] || item.key }}
+                            @if (item.required) {
+                                <span>*</span>
+                            }
+                        </label>
+                        <mat-form-field appearance="outline">
+                            @switch (item.key) {
+                                @default {
+                                    <input
+                                        [id]="'credential-' + item.key"
+                                        matInput
+                                        [ngModel]="
+                                            formModel().credentials[item.key] ||
+                                            ''
+                                        "
+                                        (ngModelChange)="
+                                            updateCredential(item.key, $event)
+                                        "
+                                        [ngModelOptions]="{
+                                            standalone: true,
+                                        }"
+                                        [placeholder]="
+                                            name_map[item.key] || item.key
+                                        "
+                                    />
+                                }
+                                @case ('signing_key') {
+                                    <textarea
+                                        [id]="'credential-' + item.key"
+                                        matInput
+                                        [ngModel]="
+                                            formModel().credentials[item.key] ||
+                                            ''
+                                        "
+                                        (ngModelChange)="
+                                            updateCredential(item.key, $event)
+                                        "
+                                        [ngModelOptions]="{
+                                            standalone: true,
+                                        }"
+                                        [placeholder]="
+                                            name_map[item.key] || item.key
+                                        "
+                                    ></textarea>
+                                }
+                            }
+                            <mat-error>
+                                {{
+                                    'ADMIN.TENANT_ITEM_REQUIRED'
+                                        | translate: { name: item.key }
+                                }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
                 }
-                @if (form.value.platform === 'office365') {
+                @if (formModel().platform === 'office365') {
                     <div class="mb-4 flex items-center">
                         <settings-toggle
-                            [name]="'ADMIN.TENANTS_CONFIG_OUTLOOK' | translate"
+                            [label]="'ADMIN.TENANTS_CONFIG_OUTLOOK' | translate"
                             class="w-1/2"
                             [(ngModel)]="show_outlook"
                             [ngModelOptions]="{ standalone: true }"
@@ -298,141 +316,49 @@ export interface StaffTenantModalData {
                         </settings-toggle>
                     </div>
                 }
-                @if (show_outlook() && form.get('outlook_config')) {
-                    <form formGroupName="outlook_config">
-                        <div
-                            class="flex flex-wrap items-center space-x-0 sm:space-x-2"
-                        >
+                @if (show_outlook() && formModel().platform === 'office365') {
+                    <div
+                        class="flex flex-wrap items-center space-x-0 sm:space-x-2"
+                    >
+                        @for (item of outlook_fields; track item) {
                             <div class="flex flex-1 flex-col">
-                                <label for="outlook-app-id">
-                                    {{ 'ADMIN.TENANTS_APP_ID' | translate }}
-                                    <span>*</span>
+                                <label [for]="'outlook-' + item">
+                                    {{ outlookName(item) | translate }}
+                                    @if (item === 'app_id') {
+                                        <span>*</span>
+                                    }
                                 </label>
                                 <mat-form-field appearance="outline">
                                     <input
-                                        id="outlook-app-id"
+                                        [id]="'outlook-' + item"
                                         matInput
-                                        formControlName="app_id"
+                                        [ngModel]="
+                                            formModel().outlook_config[item] ||
+                                            ''
+                                        "
+                                        (ngModelChange)="
+                                            updateOutlookConfig(item, $event)
+                                        "
+                                        [ngModelOptions]="{
+                                            standalone: true,
+                                        }"
                                         [placeholder]="
-                                            'ADMIN.TENANTS_APP_ID' | translate
+                                            outlookName(item) | translate
                                         "
                                     />
-                                    <mat-error>{{
-                                        'ADMIN.TENANTS_APP_ID_REQUIRED'
-                                            | translate
-                                    }}</mat-error>
                                 </mat-form-field>
                             </div>
-                            <div class="flex flex-1 flex-col">
-                                <label for="outlook-app-domain">{{
-                                    'ADMIN.TENANTS_APP_DOMAIN' | translate
-                                }}</label>
-                                <mat-form-field appearance="outline">
-                                    <input
-                                        id="outlook-app-domain"
-                                        matInput
-                                        formControlName="app_domain"
-                                        [placeholder]="
-                                            'ADMIN.TENANTS_APP_DOMAIN'
-                                                | translate
-                                        "
-                                    />
-                                    <mat-error>
-                                        {{
-                                            'ADMIN.TENANTS_APP_DOMAIN_REQUIRED'
-                                                | translate
-                                        }}
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
-                        </div>
-                        <div
-                            class="flex flex-wrap items-center space-x-0 sm:space-x-2"
-                        >
-                            <div class="flex flex-1 flex-col">
-                                <label for="outlook-app-resource">
-                                    {{
-                                        'ADMIN.TENANTS_APP_RESOURCE' | translate
-                                    }}
-                                </label>
-                                <mat-form-field appearance="outline">
-                                    <input
-                                        id="outlook-app-resource"
-                                        matInput
-                                        formControlName="app_resource"
-                                        [placeholder]="
-                                            'ADMIN.TENANTS_APP_RESOURCE'
-                                                | translate
-                                        "
-                                    />
-                                    <mat-error>
-                                        {{
-                                            'ADMIN.TENANTS_APP_RESOURCE_REQUIRED'
-                                                | translate
-                                        }}
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
-                            <div class="flex flex-1 flex-col">
-                                <label for="outlook-source-location">
-                                    {{
-                                        'ADMIN.TENANTS_SOURCE_LOCATION'
-                                            | translate
-                                    }}
-                                </label>
-                                <mat-form-field appearance="outline">
-                                    <input
-                                        id="outlook-source-location"
-                                        matInput
-                                        formControlName="source_location"
-                                        [placeholder]="
-                                            'ADMIN.TENANTS_SOURCE_LOCATION'
-                                                | translate
-                                        "
-                                    />
-                                    <mat-error>
-                                        {{
-                                            'ADMIN.TENANTS_SOURCE_LOCATION_REQUIRED'
-                                                | translate
-                                        }}
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
-                        </div>
-                        <div
-                            class="flex flex-wrap items-center space-x-0 sm:space-x-4"
-                        >
-                            <div class="flex flex-1 flex-col">
-                                <label for="outlook-base-path">
-                                    {{ 'ADMIN.TENANTS_BASE_PATH' | translate }}
-                                </label>
-                                <mat-form-field appearance="outline">
-                                    <input
-                                        id="outlook-base-path"
-                                        matInput
-                                        formControlName="base_path"
-                                        [placeholder]="
-                                            'ADMIN.TENANTS_BASE_PATH'
-                                                | translate
-                                        "
-                                    />
-                                    <mat-error>
-                                        {{
-                                            'ADMIN.TENANTS_BASE_PATH_REQUIRED'
-                                                | translate
-                                        }}
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
-                        </div>
-                    </form>
+                        }
+                    </div>
                 }
                 <div class="flex flex-col space-y-2">
                     <span class="label">{{
                         'ADMIN.TENANTS_BOOKING_LIMITS' | translate
                     }}</span>
                     <object-list-field
-                        formControlName="booking_limits"
+                        [ngModel]="formModel().booking_limits"
+                        (ngModelChange)="updateBookingLimits($event)"
+                        [ngModelOptions]="{ standalone: true }"
                         [fields]="['type', 'amount']"
                     ></object-list-field>
                 </div>
@@ -452,7 +378,7 @@ export interface StaffTenantModalData {
         CommonModule,
         FullscreenModalShellComponent,
         ObjectListFieldComponent,
-        ReactiveFormsModule,
+        FormField,
         TranslatePipe,
         MatFormFieldModule,
         MatInputModule,
@@ -461,7 +387,7 @@ export interface StaffTenantModalData {
         MatSelectModule,
     ],
 })
-export class StaffTenantModalComponent implements OnInit {
+export class StaffTenantModalComponent {
     private _data = inject<StaffTenantModalData>(MAT_DIALOG_DATA);
     private _dialog_ref =
         inject<MatDialogRef<StaffTenantModalComponent>>(MatDialogRef);
@@ -471,162 +397,121 @@ export class StaffTenantModalComponent implements OnInit {
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;
     public readonly loading = signal('');
-
     public readonly show_outlook = model(false);
+    public readonly name_map = FIELD_NAME_MAPPING;
+    public readonly outlook_fields = [
+        'app_id',
+        'app_domain',
+        'app_resource',
+        'source_location',
+        'base_path',
+    ];
 
-    public form = new FormGroup({
-        id: new FormControl(this.tenant?.id || ''),
-        domain: new FormControl(
-            this.domain?.domain || this.tenant?.domain || 'localhost',
-        ),
-        name: new FormControl(this.tenant?.name || '', [Validators.required]),
-        email_domain: new FormControl(this.tenant?.email_domain || ''),
-        delegated: new FormControl(this.tenant?.delegated ?? false),
-        platform: new FormControl(this.tenant?.platform || 'google', [
-            Validators.required,
-        ]),
-        service_account: new FormControl(this.tenant?.service_account, [
-            Validators.email,
-        ]),
-        booking_limits: new FormControl([]),
-        early_checkin: new FormControl(this.tenant?.early_checkin || 60 * 60),
-        credentials:
-            this.tenant?.platform === 'office365'
-                ? this.office_form
-                : this.google_form,
+    public readonly formModel = signal(this.generateFormModel());
+    public readonly form = form(this.formModel, (path) => {
+        required(path.name);
+        required(path.platform);
+        email(path.service_account);
     });
 
-    public readonly name_map = FIELD_NAME_MAPPING;
-    private readonly _platform = toSignal(
-        this.form.controls.platform.valueChanges,
-        { initialValue: this.form.controls.platform.value },
-    );
-    private readonly _delegated = toSignal(
-        this.form.controls.delegated.valueChanges,
-        { initialValue: this.form.controls.delegated.value },
-    );
+    public readonly credential_fields = computed(() => {
+        const model = this.formModel();
+        const required = !model.id && !model.delegated;
+        return this.credentialKeys().map((key) => ({
+            key,
+            required: required && key !== 'conference_type',
+            disabled: model.delegated && key !== 'conference_type',
+        }));
+    });
 
-    constructor() {
-        effect(() => {
-            const platform = this._platform();
-            const credentials = this.form.getRawValue().credentials;
-            this.form.removeControl('credentials');
-            this.form.addControl(
-                'credentials',
-                platform === 'office365' ? this.office_form : this.google_form,
-            );
-            if (platform === 'office365') {
-                if (!this.form.get('outlook_config')) {
-                    (this.form as FormGroup).addControl(
-                        'outlook_config',
-                        new FormGroup({
-                            app_id: new FormControl(''),
-                            app_domain: new FormControl(''),
-                            app_resource: new FormControl(''),
-                            source_location: new FormControl(''),
-                            base_path: new FormControl(''),
-                        }),
-                    );
-                }
-            } else {
-                (this.form as FormGroup).removeControl('outlook_config');
-            }
-            this._handleDelegation(!!this._delegated());
-            this.form.patchValue({ credentials });
-        });
-        effect(() => this._handleDelegation(!!this._delegated()));
+    public outlookName(field: string) {
+        switch (field) {
+            case 'app_id':
+                return 'ADMIN.TENANTS_APP_ID';
+            case 'app_domain':
+                return 'ADMIN.TENANTS_APP_DOMAIN';
+            case 'app_resource':
+                return 'ADMIN.TENANTS_APP_RESOURCE';
+            case 'source_location':
+                return 'ADMIN.TENANTS_SOURCE_LOCATION';
+            default:
+                return 'ADMIN.TENANTS_BASE_PATH';
+        }
     }
 
-    public get office_form() {
-        return new FormGroup({
-            tenant: new FormControl('', [Validators.required]),
-            client_id: new FormControl('', [Validators.required]),
-            client_secret: new FormControl('', [Validators.required]),
-            conference_type: new FormControl(''),
-        });
+    public updateCredential(key: string, value: string) {
+        this.formModel.update((model) => ({
+            ...model,
+            credentials: { ...model.credentials, [key]: value },
+        }));
     }
 
-    public get google_form() {
-        return new FormGroup({
-            issuer: new FormControl('', [Validators.required]),
-            signing_key: new FormControl('', [Validators.required]),
-            scopes: new FormControl('', [Validators.required]),
-            domain: new FormControl('', [Validators.required]),
-            sub: new FormControl('', [Validators.required]),
-            user_agent: new FormControl('PlaceOS', [Validators.required]),
-            conference_type: new FormControl(''),
-        });
+    public updateOutlookConfig(key: string, value: string) {
+        this.formModel.update((model) => ({
+            ...model,
+            outlook_config: { ...model.outlook_config, [key]: value },
+        }));
     }
 
-    public get credentials(): FormGroup {
-        return this.form?.controls.credentials as FormGroup;
-    }
-
-    public ngOnInit() {
-        const limits = this.tenant?.booking_limits || {};
-        this.form.patchValue({
-            ...(this.tenant || {}),
-            domain: this.tenant?.domain || this._data.domain?.domain,
-            booking_limits: Object.keys(limits).map((k) => ({
-                type: k,
-                amount: limits[k],
-            })),
-        });
+    public updateBookingLimits(
+        booking_limits: { type: string; amount: string | number }[],
+    ) {
+        this.formModel.update((model) => ({ ...model, booking_limits }));
     }
 
     public async save() {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
+        await submit(this.form, async () => undefined);
+        const invalid_credentials = this.credential_fields()
+            .filter((field) => field.required)
+            .filter((field) => !this.formModel().credentials[field.key])
+            .map((field) => field.key);
+        if (this.form().invalid() || invalid_credentials.length) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
+                    field_list: [
+                        ...getInvalidSignalFields(this.form),
+                        ...invalid_credentials,
+                    ].join(', '),
                 }),
             );
         }
         this._dialog_ref.disableClose = true;
         this.loading.set('Saving staff API tenant...');
-        const limits: { type: string; amount: string }[] =
-            this.form.value.booking_limits || [];
+        const model = this.formModel();
+        const limits = model.booking_limits || [];
         const booking_limits = limits.reduce((m, { type, amount }) => {
             m[type] = +amount;
             return m;
         }, {});
-        const value = this.form.value;
-        if (!value.credentials.conference_type)
-            delete value.credentials.conference_type;
+        const value: Record<string, unknown> = {
+            ...model,
+            credentials: this.activeCredentials(model),
+            booking_limits,
+        };
+        if (!(value.credentials as HashMap).conference_type) {
+            delete (value.credentials as HashMap).conference_type;
+        }
         if (!this.show_outlook()) {
-            delete (value as Record<string, unknown>).outlook_config;
+            delete value.outlook_config;
         } else {
-            for (const key in (value as Record<string, Record<string, unknown>>)
-                .outlook_config) {
-                if (
-                    (value as Record<string, Record<string, unknown>>)
-                        .outlook_config[key] == null
-                ) {
-                    delete (value as Record<string, Record<string, unknown>>)
-                        .outlook_config[key];
+            for (const key in value.outlook_config as HashMap) {
+                if ((value.outlook_config as HashMap)[key] == null) {
+                    delete (value.outlook_config as HashMap)[key];
                 }
             }
         }
-        for (const key in (value as Record<string, Record<string, unknown>>)
-            .credentials) {
-            if (
-                (value as Record<string, Record<string, unknown>>).credentials[
-                    key
-                ] == null
-            ) {
-                delete (value as Record<string, Record<string, unknown>>)
-                    .credentials[key];
+        for (const key in value.credentials as HashMap) {
+            if ((value.credentials as HashMap)[key] == null) {
+                delete (value.credentials as HashMap)[key];
             }
         }
-        if (!Object.keys(value.credentials).length) {
+        if (!Object.keys(value.credentials as HashMap).length) {
             delete value.credentials;
         }
         const data = cleanObject(
             {
                 ...(this.tenant || {}),
                 ...value,
-                booking_limits,
             },
             ['', null, undefined],
         );
@@ -641,33 +526,53 @@ export class StaffTenantModalComponent implements OnInit {
         this._dialog_ref.close();
     }
 
-    private _handleDelegation(delegated: boolean) {
-        const fields = [
-            'tenant',
-            'client_id',
-            'client_secret',
-            'issuer',
-            'signing_key',
-            'scopes',
-            'sub',
-            'domain',
-            'user_agent',
-        ];
-        if (delegated) {
-            for (const field of fields) {
-                this.form.get('credentials')?.get(field)?.disable();
-                this.form.get('credentials')?.get(field)?.setValidators([]);
-            }
-        } else {
-            const id = this.form.value.id;
-            for (const field of fields) {
-                this.form.get('credentials')?.get(field)?.enable();
-                this.form
-                    .get('credentials')
-                    ?.get(field)
-                    ?.setValidators(id ? [] : [Validators.required]);
-            }
+    private credentialKeys(model = this.formModel()) {
+        return model.platform === 'office365'
+            ? OFFICE_CREDENTIALS
+            : GOOGLE_CREDENTIALS;
+    }
+
+    private activeCredentials(model: StaffTenantFormModel): HashMap {
+        const credentials: HashMap = {};
+        const conference_type = model.credentials.conference_type;
+        if (conference_type) {
+            credentials.conference_type = conference_type;
         }
-        this.form.updateValueAndValidity();
+        if (model.delegated) {
+            return credentials;
+        }
+        for (const key of this.credentialKeys(model)) {
+            if (key === 'conference_type') continue;
+            credentials[key] = model.credentials[key];
+        }
+        return credentials;
+    }
+
+    private generateFormModel(): StaffTenantFormModel {
+        const limits = this.tenant?.booking_limits || {};
+        const credentials = this.tenant?.credentials || {};
+        return {
+            id: this.tenant?.id || '',
+            domain: this.tenant?.domain || this.domain?.domain || 'localhost',
+            name: this.tenant?.name || '',
+            email_domain: this.tenant?.email_domain || '',
+            delegated: this.tenant?.delegated ?? false,
+            platform:
+                this.tenant?.platform === 'office365' ? 'office365' : 'google',
+            service_account: this.tenant?.service_account || '',
+            booking_limits: Object.keys(limits).map((k) => ({
+                type: k,
+                amount: limits[k],
+            })),
+            early_checkin: this.tenant?.early_checkin || 60 * 60,
+            credentials: {
+                user_agent: 'PlaceOS',
+                ...credentials,
+            },
+            outlook_config: {
+                ...(((this.tenant || {}) as { outlook_config?: HashMap })
+                    .outlook_config || {}),
+            },
+        };
     }
 }

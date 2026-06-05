@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, inject, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -16,7 +16,10 @@ import { AsyncHandler } from '../../common/async-handler.class';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { DialogEvent, Identity } from '../../common/types';
-import { generateTriggerConditionForm } from '../../triggers/triggers.utilities';
+import {
+    applyTriggerConditionFormSchema,
+    generateTriggerConditionFormModel,
+} from '../../triggers/triggers.utilities';
 import { FullscreenModalShellComponent } from '../fullscreen-modal-shell.component';
 import { TranslatePipe } from '../translate.pipe';
 import { TriggerConditionComparisonFormComponent } from './trigger-condition-form/comparison-form.component';
@@ -46,9 +49,8 @@ export interface TriggerConditionData {
                 <form
                     trigger-condition
                     class="flex flex-col"
-                    [formGroup]="form"
                 >
-                    @if (form.controls.condition_type) {
+                    @if (form.condition_type) {
                         <div class="field">
                             <label for="type">
                                 {{
@@ -57,8 +59,7 @@ export interface TriggerConditionData {
                             </label>
                             <mat-form-field appearance="outline">
                                 <mat-select
-                                    name="type"
-                                    formControlName="condition_type"
+                                    [formField]="form.condition_type"
                                 >
                                     @for (type of condition_types; track type) {
                                         <mat-option [value]="type.id">
@@ -74,14 +75,16 @@ export interface TriggerConditionData {
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.condition_type.value === 'compare') {
+                    @if (formModel().condition_type === 'compare') {
                         <trigger-condition-comparison-form
                             [form]="form"
+                            [formModel]="formModel"
                             [system]="system"
                         ></trigger-condition-comparison-form>
                     } @else {
                         <trigger-condition-time-form
                             [form]="form"
+                            [formModel]="formModel"
                         ></trigger-condition-time-form>
                     }
                 </form>
@@ -95,7 +98,7 @@ export interface TriggerConditionData {
         TriggerConditionTimeFormComponent,
         MatFormFieldModule,
         MatSelectModule,
-        ReactiveFormsModule,
+        FormField,
         TranslatePipe,
     ],
 })
@@ -109,7 +112,13 @@ export class TriggerConditionModalComponent extends AsyncHandler {
     /** Whether actions are loading */
     public readonly loading = signal('');
     /** Form fields for trigger condition */
-    public form = generateTriggerConditionForm(this._data.condition);
+    public readonly formModel = signal(
+        generateTriggerConditionFormModel(this._data.condition),
+    );
+    public readonly form = form(
+        this.formModel,
+        applyTriggerConditionFormSchema,
+    );
     /** Store for updated conditions */
     public conditions: TriggerConditions;
 
@@ -135,10 +144,10 @@ export class TriggerConditionModalComponent extends AsyncHandler {
     }
 
     public async save() {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) return;
+        await submit(this.form, async () => undefined);
+        if (this.form().invalid()) return;
         this.loading.set('Saving trigger condition...');
-        void (this.form.controls.condition_type.value === 'compare'
+        void (this.formModel().condition_type === 'compare'
             ? this.updateComparisons()
             : this.updateTimeDependents());
 
@@ -170,14 +179,14 @@ export class TriggerConditionModalComponent extends AsyncHandler {
         const old_values = [...this.trigger.conditions.comparisons];
         const new_value: TriggerComparison = {
             left:
-                typeof this.form.controls.left.value === 'string'
-                    ? JSON.parse(this.form.controls.left.value)
-                    : this.form.controls.left.value,
-            operator: this.form.controls.operator.value,
+                typeof this.formModel().left === 'string'
+                    ? JSON.parse(this.formModel().left as string)
+                    : this.formModel().left,
+            operator: this.formModel().operator,
             right:
-                typeof this.form.controls.right.value === 'string'
-                    ? JSON.parse(this.form.controls.right.value)
-                    : this.form.controls.right.value,
+                typeof this.formModel().right === 'string'
+                    ? JSON.parse(this.formModel().right as string)
+                    : this.formModel().right,
         };
         if (this._data.condition) {
             const old_value = JSON.stringify(this._data.condition);
@@ -203,10 +212,10 @@ export class TriggerConditionModalComponent extends AsyncHandler {
     private updateTimeDependents() {
         const old_values = [...(this.trigger.conditions.time_dependents || [])];
         const new_value = {
-            type: this.form.controls.time_type.value,
-            time: +(this.form.controls.time.value / 1000).toFixed(0),
-            cron: this.form.get('cron').value,
-            timezone: this.form.get('timezone')?.value,
+            type: this.formModel().time_type,
+            time: +(this.formModel().time / 1000).toFixed(0),
+            cron: this.formModel().cron,
+            timezone: this.formModel().timezone,
         };
         if (new_value.type === TriggerTimeConditionType.CRON) {
             delete new_value.time;

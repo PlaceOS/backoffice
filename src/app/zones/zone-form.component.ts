@@ -2,16 +2,14 @@ import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
     EventEmitter,
+    effect,
     OnInit,
     Output,
     computed,
     inject,
+    signal,
 } from '@angular/core';
-import {
-    FormControl,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import {
     EncryptionLevel,
     PlaceSettings,
@@ -23,7 +21,6 @@ import {
     showZone,
     updateZone as updateZoneRequest,
 } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -31,8 +28,11 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from '../common/async-handler.class';
-import { addChipItem, removeChipItem } from '../common/forms';
-import { getInvalidFields } from '../common/general';
+import {
+    addSignalChipItem,
+    getInvalidSignalFields,
+    removeSignalChipItem,
+} from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -44,7 +44,7 @@ import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { generateZoneFormFields } from './zones.utilites';
+import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
 
 @Component({
     selector: 'zone-form',
@@ -55,8 +55,8 @@ import { generateZoneFormFields } from './zones.utilites';
             (save)="submit()"
         >
             @if (form) {
-                <form zone class="flex flex-col" [formGroup]="form">
-                    @if (form.controls.parent_zone) {
+                <form zone class="flex flex-col">
+                    @if (form.parent_zone) {
                         <div class="field">
                             <label for="parent-zone">
                                 {{ 'ZONES.PARENT' | translate }}
@@ -65,18 +65,18 @@ import { generateZoneFormFields } from './zones.utilites';
                                 [placeholder]="'ZONES.SEARCH' | translate"
                                 [query_fn]="query_fn"
                                 [exclude]="exclude"
-                                formControlName="parent_zone"
+                                [formField]="form.parent_zone"
                             ></item-search-field>
                         </div>
                     }
                     <div class="fieldset">
-                        @if (form.controls.name) {
+                        @if (form.name) {
                             <div class="field">
                                 <label
                                     for="zone-name"
                                     [class.error]="
-                                        form.controls.name.invalid &&
-                                        form.controls.name.touched
+                                        form.name().invalid() &&
+                                        form.name().touched()
                                     "
                                 >
                                     {{ 'COMMON.FIELD_NAME' | translate
@@ -85,12 +85,10 @@ import { generateZoneFormFields } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="zone-name"
                                         [placeholder]="
                                             'COMMON.FIELD_NAME' | translate
                                         "
-                                        formControlName="name"
-                                        required
+                                        [formField]="form.name"
                                     />
                                     <mat-error>{{
                                         'ZONES.NAME_REQUIRED' | translate
@@ -98,13 +96,13 @@ import { generateZoneFormFields } from './zones.utilites';
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.display_name) {
+                        @if (form.display_name) {
                             <div class="field">
                                 <label
                                     for="zone-display"
                                     [class.error]="
-                                        form.controls.display_name.invalid &&
-                                        form.controls.display_name.touched
+                                        form.display_name().invalid() &&
+                                        form.display_name().touched()
                                     "
                                 >
                                     {{ 'ZONES.DISPLAY_NAME' | translate }}
@@ -112,23 +110,22 @@ import { generateZoneFormFields } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="zone-display"
                                         [placeholder]="
                                             'ZONES.DISPLAY_NAME' | translate
                                         "
-                                        formControlName="display_name"
+                                        [formField]="form.display_name"
                                     />
                                 </mat-form-field>
                             </div>
                         }
                     </div>
-                    @if (form.controls.tags) {
+                    @if (form.tags) {
                         <div class="field">
                             <label
                                 for="tags"
                                 [class.error]="
-                                    form.controls.tags.invalid &&
-                                    form.controls.tags.touched
+                                    form.tags().invalid() &&
+                                    form.tags().touched()
                                 "
                             >
                                 {{ 'ZONES.TAGS' | translate }}
@@ -166,7 +163,7 @@ import { generateZoneFormFields } from './zones.utilites';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.description) {
+                    @if (form.description) {
                         <div class="field">
                             <label for="description">
                                 {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
@@ -174,17 +171,16 @@ import { generateZoneFormFields } from './zones.utilites';
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
-                                    name="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
-                                    formControlName="description"
+                                    [formField]="form.description"
                                 ></textarea>
                             </mat-form-field>
                         </div>
                     }
                     <div class="fieldset">
-                        @if (form.controls.location) {
+                        @if (form.location) {
                             <div class="field">
                                 <label for="location">{{
                                     'ZONES.LOCATION' | translate
@@ -192,12 +188,11 @@ import { generateZoneFormFields } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="location"
                                         [placeholder]="
                                             'ZONES.LOCATION_PLACEHOLDER'
                                                 | translate
                                         "
-                                        formControlName="location"
+                                        [formField]="form.location"
                                     />
                                 </mat-form-field>
                             </div>
@@ -214,7 +209,7 @@ import { generateZoneFormFields } from './zones.utilites';
                                 </div>
                                 <input
                                     matInput
-                                    formControlName="timezone"
+                                    [formField]="form.timezone"
                                     [placeholder]="
                                         'COMMON.TIMEZONE' | translate
                                     "
@@ -238,7 +233,7 @@ import { generateZoneFormFields } from './zones.utilites';
                         </div>
                     </div>
                     <div class="fieldset">
-                        @if (form.controls.code) {
+                        @if (form.code) {
                             <div class="field">
                                 <label for="code">{{
                                     'ZONES.CODE' | translate
@@ -246,16 +241,15 @@ import { generateZoneFormFields } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="code"
                                         [placeholder]="
                                             'ZONES.CODE_PLACEHOLDER' | translate
                                         "
-                                        formControlName="code"
+                                        [formField]="form.code"
                                     />
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.location) {
+                        @if (form.type) {
                             <div class="field">
                                 <label for="type">{{
                                     'ZONES.TYPE' | translate
@@ -263,43 +257,42 @@ import { generateZoneFormFields } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="type"
                                         [placeholder]="
                                             'ZONES.TYPE_PLACEHOLDER' | translate
                                         "
-                                        formControlName="type"
+                                        [formField]="form.type"
                                     />
                                 </mat-form-field>
                             </div>
                         }
                     </div>
                     <div class="fieldset mb-4">
-                        @if (form.controls.count) {
+                        @if (form.count) {
                             <div class="field">
                                 <label for="count">{{
                                     'ZONES.COUNT' | translate
                                 }}</label>
                                 <a-counter
-                                    formControlName="count"
+                                    [formField]="form.count"
                                     [min]="0"
                                     [max]="999"
                                 ></a-counter>
                             </div>
                         }
-                        @if (form.controls.capacity) {
+                        @if (form.capacity) {
                             <div class="field">
                                 <label for="capacity">
                                     {{ 'ZONES.CAPACITY' | translate }}
                                 </label>
                                 <a-counter
-                                    formControlName="capacity"
+                                    [formField]="form.capacity"
                                     [min]="0"
                                     [max]="999"
                                 ></a-counter>
                             </div>
                         }
                     </div>
-                    @if (form.controls.map_id) {
+                    @if (form.map_id) {
                         <div class="field">
                             <label for="map">{{
                                 'ZONES.MAP_URL' | translate
@@ -307,21 +300,19 @@ import { generateZoneFormFields } from './zones.utilites';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="map"
                                     [placeholder]="'ZONES.MAP_URL' | translate"
-                                    formControlName="map_id"
+                                    [formField]="form.map_id"
                                 />
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.images) {
+                    @if (form.images) {
                         <div class="field">
                             <label for="images">{{
                                 'COMMON.IMAGES' | translate
                             }}</label>
                             <image-list-field
-                                name="images"
-                                formControlName="images"
+                                [formField]="form.images"
                             ></image-list-field>
                         </div>
                     }
@@ -332,7 +323,7 @@ import { generateZoneFormFields } from './zones.utilites';
     styles: [``],
     imports: [
         ImageListFieldComponent,
-        ReactiveFormsModule,
+        FormField,
         TranslatePipe,
         IconComponent,
         MatFormFieldModule,
@@ -354,16 +345,10 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public readonly form: UntypedFormGroup = generateZoneFormFields(
-        this._data.item,
-    );
+    public readonly formModel = signal(generateZoneFormModel(this._data.item));
+    public readonly form = form(this.formModel, applyZoneFormSchema);
     public readonly timezones = TIMEZONES_IANA as string[];
-    public readonly timezone = toSignal(
-        this.form.controls.timezone.valueChanges,
-        {
-            initialValue: `${this.form.value.timezone || ''}`,
-        },
-    );
+    public readonly timezone = computed(() => `${this.formModel().timezone || ''}`);
     public readonly filtered_timezones = computed(() => {
         const search = this.timezone().toLowerCase();
         return this.timezones.filter((_tz) =>
@@ -375,6 +360,17 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
         `${this._name}.${this._data.item?.id ? 'EDIT' : 'NEW'}`,
     );
 
+    constructor() {
+        super();
+        effect(() => {
+            const parent_zone = this.formModel().parent_zone;
+            const parent_id = parent_zone?.id || '';
+            if (parent_id !== this.formModel().parent_id) {
+                this.formModel.update((value) => ({ ...value, parent_id }));
+            }
+        });
+    }
+
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
     /** Query function for zones */
@@ -382,15 +378,21 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
         queryZones({ q: _ }).then((resp) => resp.data as PlaceZone[]);
     /** Function to exclude zones */
     public readonly exclude = (zone: PlaceZone) =>
-        zone.id === this.form.controls.id.value;
+        zone.id === this.formModel().id;
 
     public readonly addTag = (e: MatChipInputEvent) =>
-        addChipItem(this.form.controls.tags as FormControl<string[]>, e);
+        this.formModel.update((value) => ({
+            ...value,
+            tags: addSignalChipItem(value.tags, e),
+        }));
     public readonly removeTag = (i: string) =>
-        removeChipItem(this.form.controls.tags as FormControl<string[]>, i);
+        this.formModel.update((value) => ({
+            ...value,
+            tags: removeSignalChipItem(value.tags, i),
+        }));
 
     public get tag_list(): string[] {
-        return this.form.controls.tags.value;
+        return this.formModel().tags;
     }
 
     public ngOnInit(): void {
@@ -402,50 +404,48 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
-                }),
-            );
-        }
-        const item: PlaceZone = this._data.item;
-        this.loading = i18n(`${this._name}.SAVING`);
-        this._dialog_ref.disableClose = true;
-        const item_json = item.toJSON ? item.toJSON() : item;
-        const form_item = (
-            item.id
-                ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
-                : { ...item_json, ...this.form.value }
-        ) as Identity;
-        try {
-            const _item = await (form_item.id
-                ? updateZoneRequest(
-                      form_item.id as string,
-                      form_item as unknown as PlaceZone,
-                  )
-                : addZoneRequest(form_item as unknown as PlaceZone));
-            this._dialog_ref.disableClose = false;
-            this.event.emit({ reason: 'done', metadata: { item: _item } });
-            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-            if (!this.form.value.id && this.form.controls.settings) {
-                await this.newSettings(
-                    _item as unknown as Identity,
-                    this.form.controls.settings.value,
+        await submit(this.form, async () => {
+            const item: PlaceZone = this._data.item;
+            this.loading = i18n(`${this._name}.SAVING`);
+            this._dialog_ref.disableClose = true;
+            const item_json = item.toJSON ? item.toJSON() : item;
+            const form_item = (
+                item.id
+                    ? cleanObject(
+                          { ...item_json, ...this.formModel() },
+                          [undefined],
+                      )
+                    : { ...item_json, ...this.formModel() }
+            ) as Identity;
+            try {
+                const _item = await (form_item.id
+                    ? updateZoneRequest(
+                          form_item.id as string,
+                          form_item as unknown as PlaceZone,
+                      )
+                    : addZoneRequest(form_item as unknown as PlaceZone));
+                this._dialog_ref.disableClose = false;
+                this.event.emit({ reason: 'done', metadata: { item: _item } });
+                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+                this._dialog_ref.close();
+            } catch (err) {
+                this.loading = null;
+                this._dialog_ref.disableClose = false;
+                notifyError(
+                    i18n(`${this._name}.SAVE_ERROR`, {
+                        error: JSON.stringify(
+                            (await (err as Response).text?.()) ||
+                                (err as Error).message ||
+                                err,
+                        ),
+                    }),
                 );
             }
-            this._dialog_ref.close();
-        } catch (err) {
-            this.loading = null;
-            this._dialog_ref.disableClose = false;
-            notifyError(
-                i18n(`${this._name}.SAVE_ERROR`, {
-                    error: JSON.stringify(
-                        (await (err as Response).text?.()) ||
-                            (err as Error).message ||
-                            err,
-                    ),
+        });
+        if (this.form().invalid()) {
+            return notifyError(
+                i18n('COMMON.INVALID_FIELDS', {
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }
@@ -453,12 +453,14 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
 
     /** Update parent zone details if set */
     private async updateZone() {
-        const parent_id = this.form.controls.parent_id
-            ? this.form.controls.parent_id.value
-            : '';
+        const parent_id = this.formModel().parent_id;
         if (parent_id) {
             const zone = await showZone(parent_id);
-            this.form.controls.parent_zone.setValue(zone);
+            this.formModel.update((value) => ({
+                ...value,
+                parent_zone: zone,
+                parent_id: zone?.id || '',
+            }));
         }
     }
 

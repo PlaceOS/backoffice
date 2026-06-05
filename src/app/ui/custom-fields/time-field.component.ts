@@ -172,6 +172,7 @@ export class TimeFieldComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: string): void {
+        if (this.disabled()) return;
         this.time = new_value;
         if (this._onChange) {
             const time = (this.time || '00:00').split(':');
@@ -179,6 +180,7 @@ export class TimeFieldComponent
                 set(this.date, { hours: +time[0], minutes: +time[1] }),
             );
             this._onChange(date.valueOf());
+            this._onTouch?.(date.valueOf());
         }
     }
 
@@ -222,6 +224,7 @@ export class TimeFieldComponent
      * Show select field for time options
      */
     public showSelect() {
+        if (this.disabled()) return;
         this.show_select = true;
         this.timeout('on_shown', () => {
             const select_field = this.select_field();

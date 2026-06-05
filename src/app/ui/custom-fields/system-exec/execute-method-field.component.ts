@@ -30,6 +30,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
                 <select-system-module
                     [system]="system()"
                     [refresh]="refresh()"
+                    [disabled]="disabled()"
                     [(ngModel)]="module"
                     (ngModelChange)="fn.set(null)"
                 ></select-system-module>
@@ -37,6 +38,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
                     <select-module-method
                         [system]="system()"
                         [module]="module()"
+                        [disabled]="disabled()"
                         [(ngModel)]="fn"
                         (ngModelChange)="
                             fn()?.order?.length === 0 ? postArguments({}) : ''
@@ -46,6 +48,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
                 @if (fn()) {
                     <function-arguments
                         [method]="fn()"
+                        [disabled]="disabled()"
                         [ngModel]="arguments()"
                         (valid)="valid.set($event)"
                         (ngModelChange)="postArguments($event)"
@@ -53,12 +56,17 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
                 }
                 @if (can_execute()) {
                     <div class="flex w-full items-center space-x-2">
-                        <button class="inverse flex-1" btn (click)="clear()">
+                        <button
+                            class="inverse flex-1"
+                            btn
+                            [disabled]="disabled()"
+                            (click)="clear()"
+                        >
                             {{ 'COMMON.EXECUTE_CLEAR' | translate }}
                         </button>
                         <button
                             class="flex-1"
-                            [disabled]="!fn() || !valid()"
+                            [disabled]="disabled() || !fn() || !valid()"
                             btn
                             matRipple
                             (click)="execute()"
@@ -112,6 +120,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     public readonly module = signal<ModuleLike>(undefined);
     public readonly fn = signal<PlaceModuleFunction>(undefined);
     public readonly arguments = signal<Record<string, unknown>>({});
+    public readonly disabled = signal(false);
 
     public loading = signal(false);
 
@@ -125,9 +134,11 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: TriggerFunction): void {
+        if (this.disabled()) return;
         if (this._onChange) {
             this._onChange(new_value);
         }
+        this._onTouch?.(new_value);
     }
 
     /**
@@ -157,6 +168,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     }
 
     public postArguments(arg_map: Record<string, unknown>) {
+        if (this.disabled()) return;
         if (!this.fn()?.params) return;
         const args: Record<string, unknown> = {};
         for (const key in arg_map) {
@@ -189,17 +201,23 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     public registerOnTouched = (fn: (_: TriggerFunction) => void) =>
         (this._onTouch = fn);
 
+    public setDisabledState(disabled: boolean) {
+        this.disabled.set(disabled);
+    }
+
     public clear() {
+        if (this.disabled()) return;
         this.module.set(null);
         this.fn.set(null);
         this.arguments.set({});
+        this._onTouch?.(null);
     }
 
     public async execute() {
+        if (this.disabled()) return;
         this.loading.set(true);
         this.arguments.set(this.arguments() || {});
         const method = this.zone() ? executeOnZone : executeOnSystem;
-        console.log('Fn:', this.fn(), this.arguments());
         const result = await lastValueFrom(
             method(
                 this.zone() || this.system().id,

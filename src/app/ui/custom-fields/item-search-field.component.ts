@@ -46,7 +46,7 @@ interface SearchItem {
         <div
             class="item-search-field flex max-h-full flex-col"
             form-field
-            [class.disabled]="disabled()"
+            [class.disabled]="is_disabled()"
         >
             <mat-form-field appearance="outline">
                 <input
@@ -54,18 +54,18 @@ interface SearchItem {
                     name="item-search"
                     #input
                     [(ngModel)]="search_str"
-                    [disabled]="disabled()"
+                    [disabled]="is_disabled()"
                     [placeholder]="
                         placeholder()
                             ? placeholder()
                             : 'Search' +
-                              (name() ? ' for ' + name() : '') +
+                              (label() ? ' for ' + label() : '') +
                               '...'
                     "
                     [matAutocomplete]="auto"
                     [matAutocompleteDisabled]="display_list()"
                     (focus)="search_str.set('')"
-                    (blur)="resetSearchString()"
+                    (blur)="markTouched(); resetSearchString()"
                 />
                 <div class="prefix" matPrefix>
                     <icon class="relative -left-0.5 text-2xl">search</icon>
@@ -109,10 +109,10 @@ interface SearchItem {
                             {{
                                 search_str?.length
                                     ? 'No matching ' +
-                                      (name() || 'item') +
+                                      (label() || 'item') +
                                       ' for search string'
                                     : 'No ' +
-                                      (name() || 'items') +
+                                      (label() || 'items') +
                                       ' available to search'
                             }}
                         </p>
@@ -207,13 +207,17 @@ export class ItemSearchFieldComponent<T extends SearchItem>
     private _changed = signal(0);
     private _debounced_search = signal('');
     /** Name of the items being query'd */
-    public readonly name = input<string>(undefined);
+    public readonly label = input<string>(undefined);
     /** Placeholder to display on the form input */
     public readonly placeholder = input<string>(undefined);
     /** Limit available options to these */
     public readonly options = input<T[]>(undefined);
     /** Whether the form field should be disabled */
     public readonly disabled = input<boolean>(false);
+    public readonly cva_disabled = signal(false);
+    public readonly is_disabled = computed(
+        () => this.disabled() || this.cva_disabled(),
+    );
     public readonly display_list = input<boolean>(false);
     public readonly clear_on_select = input<boolean>(false);
     /** Function for filtering out options */
@@ -339,10 +343,12 @@ export class ItemSearchFieldComponent<T extends SearchItem>
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: T): void {
+        if (this.is_disabled()) return;
         this.active_item.set(new_value);
         if (this._onChange) {
             this._onChange(new_value);
         }
+        this.markTouched();
         this.resetSearchString();
     }
 
@@ -371,6 +377,14 @@ export class ItemSearchFieldComponent<T extends SearchItem>
      */
     public registerOnTouched(fn: (_: T) => void): void {
         this._onTouch = fn;
+    }
+
+    public setDisabledState(disabled: boolean) {
+        this.cva_disabled.set(disabled);
+    }
+
+    public markTouched() {
+        this._onTouch?.(this.active_item());
     }
 
     private _updateNameMap() {

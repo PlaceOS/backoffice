@@ -9,13 +9,14 @@ import {
     inject,
     signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
-    FormControl,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
-    Validators,
-} from '@angular/forms';
+    form,
+    FormField,
+    minLength,
+    required,
+    submit,
+} from '@angular/forms/signals';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -29,11 +30,8 @@ import {
     showUser,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../../common/async-handler.class';
-import { addChipItem, removeChipItem } from '../../common/forms';
-import { getInvalidFields } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
-import { signalFromSubscribable } from '../../common/signals';
 import { DialogEvent } from '../../common/types';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../../ui/icon.component';
@@ -58,7 +56,7 @@ export interface APIKeyModalData {
             [loading]="loading()"
             (save)="save()"
         >
-            <form class="w-full" [formGroup]="form">
+            <form class="w-full">
                 <div class="flex flex-col">
                     <label for="name"
                         >{{ 'COMMON.FIELD_NAME' | translate
@@ -66,9 +64,8 @@ export interface APIKeyModalData {
                     >
                     <mat-form-field appearance="outline">
                         <input
-                            name="name"
-                            formControlName="name"
                             [placeholder]="'COMMON.FIELD_NAME' | translate"
+                            [formField]="form.name"
                             matInput
                         />
                         <mat-error>{{
@@ -82,11 +79,10 @@ export interface APIKeyModalData {
                     }}</label>
                     <mat-form-field appearance="outline">
                         <textarea
-                            name="description"
-                            formControlName="description"
                             [placeholder]="
                                 'COMMON.FIELD_DESCRIPTION' | translate
                             "
+                            [formField]="form.description"
                             matInput
                         ></textarea>
                     </mat-form-field>
@@ -142,11 +138,11 @@ export interface APIKeyModalData {
                         {{ 'USERS.SINGULAR' | translate }}<span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
-                        @if (form.value.user?.id) {
+                        @if (formModel().user?.id) {
                             <a-user-avatar
                                 matPrefix
                                 class="relative -left-1"
-                                [user]="form.value.user"
+                                [user]="formModel().user"
                             ></a-user-avatar>
                         } @else {
                             <div class="prefix" matPrefix>
@@ -175,7 +171,7 @@ export interface APIKeyModalData {
                                     ></span>
                                 </span>
                             }
-                            @if (form.value.user?.id) {
+                            @if (formModel().user?.id) {
                                 <button
                                     icon
                                     type="button"
@@ -241,9 +237,8 @@ export interface APIKeyModalData {
                     }}</label>
                     <mat-form-field appearance="outline">
                         <mat-select
-                            name="permissions"
-                            formControlName="permissions"
                             placeholder="None"
+                            [formField]="form.permissions"
                         >
                             <mat-option [value]="null">{{
                                 'ADMIN.PERMISSIONS_NONE' | translate
@@ -268,7 +263,7 @@ export interface APIKeyModalData {
         CommonModule,
         TranslatePipe,
         FormsModule,
-        ReactiveFormsModule,
+        FormField,
         FullscreenModalShellComponent,
         MatFormFieldModule,
         MatSelectModule,
@@ -288,17 +283,27 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
 
     public readonly editing = !!this._data.key?.id;
 
-    public form = new FormGroup({
-        id: new FormControl(''),
-        name: new FormControl('', [Validators.required]),
-        user: new FormControl(null),
-        user_id: new FormControl('', [Validators.required]),
-        description: new FormControl(''),
-        scopes: new FormControl(
-            [],
-            [Validators.required, Validators.minLength(1)],
-        ),
-        permissions: new FormControl(''),
+    public readonly formModel = signal<{
+        id: string;
+        name: string;
+        user?: PlaceUser;
+        user_id: string;
+        description: string;
+        scopes: string[];
+        permissions: string | null;
+    }>({
+        id: '',
+        name: '',
+        user_id: '',
+        description: '',
+        scopes: [],
+        permissions: null,
+    });
+    public readonly form = form(this.formModel, (p) => {
+        required(p.name);
+        required(p.user_id);
+        required(p.scopes);
+        minLength(p.scopes, 1);
     });
 
     public readonly loading = signal('');
@@ -306,12 +311,11 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     public readonly domain = signal<PlaceDomain>(null);
     public readonly user_list = signal<PlaceUser[]>([]);
     public readonly user_list_loading = signal(false);
-    public readonly permissions = signalFromSubscribable(
-        this.form.controls.permissions.valueChanges,
-        this.form.controls.permissions.value,
-    );
+    public readonly permissions = computed(() => this.formModel().permissions);
     public readonly users = computed(() => {
-        return this.user_list().sort((a, b) => a.name?.localeCompare(b.name));
+        return [...this.user_list()].sort((a, b) =>
+            a.name?.localeCompare(b.name),
+        );
     });
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
@@ -323,33 +327,47 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
 
     public readonly addScope = (
         e: MatChipInputEvent | { input: HTMLInputElement; value: string },
-    ) =>
-        addChipItem(
-            this.form.controls.scopes as FormControl<string[]>,
-            e as MatChipInputEvent,
-        );
+    ) => {
+        const value = `${e.value || ''}`.trim();
+        if (!value) return;
+        this.formModel.update((model) => ({
+            ...model,
+            scopes: model.scopes.includes(value)
+                ? model.scopes
+                : [...model.scopes, value],
+        }));
+        e.input.value = '';
+    };
     public readonly removeScope = (i: string) =>
-        removeChipItem(this.form.controls.scopes as FormControl<string[]>, i);
+        this.formModel.update((model) => ({
+            ...model,
+            scopes: model.scopes.filter((scope) => scope !== i),
+        }));
 
     public ngOnInit() {
         this.domain.set(this._data.domain);
         if (this.editing) {
             const key = this._data.key;
-            this.form.patchValue({
+            this.formModel.update((value) => ({
+                ...value,
                 id: key.id,
                 name: key.name,
                 description: key.description,
                 scopes: key.scopes || [],
                 user:
                     (key as PlaceAPIKeyDetails & { user?: PlaceUser }).user ||
-                    null,
+                    undefined,
                 user_id: key.user_id,
-                permissions: key.permissions,
-            });
+                permissions: key.permissions || null,
+            }));
         } else {
             this.timeout(
                 'reset_perms',
-                () => this.form.patchValue({ permissions: null }),
+                () =>
+                    this.formModel.update((value) => ({
+                        ...value,
+                        permissions: null,
+                    })),
                 100,
             );
         }
@@ -358,45 +376,50 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     }
 
     public selectUser(user: PlaceUser) {
-        this.form.patchValue({ user, user_id: user.id });
+        this.formModel.update((value) => ({ ...value, user, user_id: user.id }));
         this.search_term.set(this._userLabel(user));
     }
 
     public clearUser() {
-        this.form.patchValue({ user: null, user_id: '' });
+        this.formModel.update((value) => ({
+            ...value,
+            user: undefined,
+            user_id: '',
+        }));
         this.search_term.set('');
         this.loadUsers();
     }
 
     public resetUserSearch() {
         setTimeout(() => {
-            const user = this.form.value.user;
+            const user = this.formModel().user;
             this.search_term.set(user ? this._userLabel(user) : '');
         }, 150);
     }
 
     public get scope_list(): string[] {
-        return this.form.controls.scopes.value;
+        return this.formModel().scopes;
     }
 
-    public save() {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
+    public async save() {
+        await submit(this.form, async () => {
+            this.event.emit({ reason: 'done', metadata: this.formModel() });
+        });
+        if (this.form().invalid()) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
+                    field_list: this._invalidFields().join(', '),
                 }),
             );
         }
-        this.event.emit({ reason: 'done', metadata: this.form.value });
     }
 
     public async loadSelectedUser() {
-        const user_id = this.form.value.user_id;
-        if (!user_id || this.form.value.user) return;
+        const { user: selected_user, user_id } = this.formModel();
+        if (!user_id || selected_user) return;
         const user = await showUser(user_id).catch(() => null);
         if (!user) return;
-        this.form.patchValue({ user });
+        this.formModel.update((value) => ({ ...value, user }));
         this.search_term.set(this._userLabel(user));
     }
 
@@ -415,14 +438,14 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                 this.user_list.set(users);
                 if (
                     this.editing &&
-                    !this.form.value.user &&
+                    !this.formModel().user &&
                     this._data.key.user_id
                 ) {
                     const user = users.find(
                         (u) => u.id === this._data.key.user_id,
                     );
                     if (user) {
-                        this.form.patchValue({ user });
+                        this.formModel.update((value) => ({ ...value, user }));
                         this.search_term.set(this._userLabel(user));
                     }
                 }
@@ -434,5 +457,13 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
 
     private _userLabel(user: PlaceUser) {
         return user?.name || user?.email || '';
+    }
+
+    private _invalidFields() {
+        const fields: string[] = [];
+        if (this.form.name().invalid()) fields.push('name');
+        if (this.form.user_id().invalid()) fields.push('user_id');
+        if (this.form.scopes().invalid()) fields.push('scopes');
+        return fields;
     }
 }

@@ -4,12 +4,10 @@ import {
     OnInit,
     SimpleChanges,
     input,
+    WritableSignal,
 } from '@angular/core';
-import {
-    FormsModule,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { FieldTree, FormField } from '@angular/forms/signals';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -21,6 +19,7 @@ import { numberToPosition } from '../../../common/general';
 import { i18n } from '../../../common/locale.service';
 import { TIMEZONES_IANA } from '../../../common/timezones';
 import { Identity } from '../../../common/types';
+import { TriggerConditionFormModel } from '../../../triggers/triggers.utilities';
 import { CronInputFieldComponent } from '../../custom-fields/cron-input-field.component';
 import { DateFieldComponent } from '../../custom-fields/date-field.component';
 import { TimeFieldComponent } from '../../custom-fields/time-field.component';
@@ -32,10 +31,10 @@ import { TranslatePipe } from '../../translate.pipe';
     selector: 'trigger-condition-time-form',
     template: `
         @if (form()) {
-            <div class="trigger-condition form time" [formGroup]="form()">
+            <div class="trigger-condition form time">
                 <div class="field mb-4">
                     <settings-toggle
-                        [name]="'TRIGGERS.TIME_SCHEDULE' | translate"
+                        [label]="'TRIGGERS.TIME_SCHEDULE' | translate"
                         [(ngModel)]="is_cron"
                         (ngModelChange)="toggleCRON($event)"
                         [ngModelOptions]="{ standalone: true }"
@@ -50,7 +49,10 @@ import { TranslatePipe } from '../../translate.pipe';
                             <icon matPrefix class="text-2xl">search</icon>
                             <input
                                 matInput
-                                formControlName="timezone"
+                                [formField]="form().timezone"
+                                (input)="
+                                    updateTimezoneList($any($event.target).value)
+                                "
                                 [placeholder]="'COMMON.TIMEZONE' | translate"
                                 [matAutocomplete]="auto"
                             />
@@ -69,7 +71,7 @@ import { TranslatePipe } from '../../translate.pipe';
                 }
                 @if (!is_cron) {
                     <div class="flex space-x-4">
-                        @if (form().controls.time) {
+                        @if (form().time) {
                             <div class="field">
                                 <label for="type"
                                     >{{
@@ -77,12 +79,11 @@ import { TranslatePipe } from '../../translate.pipe';
                                     }}
                                 </label>
                                 <a-date-field
-                                    name="date"
-                                    formControlName="time"
+                                    [formField]="form().time"
                                 ></a-date-field>
                             </div>
                         }
-                        @if (form().controls.time) {
+                        @if (form().time) {
                             <div class="field">
                                 <label for="type"
                                     >{{
@@ -90,8 +91,7 @@ import { TranslatePipe } from '../../translate.pipe';
                                     }}
                                 </label>
                                 <a-time-field
-                                    name="date"
-                                    formControlName="time"
+                                    [formField]="form().time"
                                 ></a-time-field>
                             </div>
                         }
@@ -308,7 +308,7 @@ import { TranslatePipe } from '../../translate.pipe';
         MatAutocompleteModule,
         SettingsToggleComponent,
         MatInputModule,
-        ReactiveFormsModule,
+        FormField,
         TranslatePipe,
         IconComponent,
     ],
@@ -317,8 +317,10 @@ export class TriggerConditionTimeFormComponent
     extends AsyncHandler
     implements OnChanges, OnInit
 {
-    /** Group of form fields used for creating the system */
-    public readonly form = input<UntypedFormGroup>(undefined);
+    /** Signal form fields used for editing the trigger condition */
+    public readonly form = input<FieldTree<TriggerConditionFormModel>>(undefined);
+    public readonly formModel =
+        input<WritableSignal<TriggerConditionFormModel>>(undefined);
     /** List of available periods for scheduled repetition */
     public repeat_period: Identity[] = [];
     /** Whether condition is a cron(recurring) job */
@@ -398,19 +400,11 @@ export class TriggerConditionTimeFormComponent
     public ngOnChanges(changes: SimpleChanges): void {
         const form = this.form();
         if (changes.form && form) {
-            this.is_cron = form.controls.time_type.value === 'cron';
+            this.is_cron = this.formModel()().time_type === 'cron';
             if (this.is_cron) {
-                this.loadCronTab(form.controls.cron.value);
+                this.loadCronTab(this.formModel()().cron);
             }
-            this.subscription(
-                'timezone',
-                form
-                    .get('timezone')
-                    .valueChanges.subscribe((tz) =>
-                        this.updateTimezoneList(tz),
-                    ),
-            );
-            this.updateTimezoneList(form.get('timezone').value);
+            this.updateTimezoneList(this.formModel()().timezone);
         }
     }
 
@@ -422,19 +416,24 @@ export class TriggerConditionTimeFormComponent
     }
 
     public toggleCRON(is_cron: boolean) {
-        this.form().controls.cron.setValue(null);
-        this.form().controls.time_type.setValue(
-            is_cron
+        this.formModel().update((model) => ({
+            ...model,
+            cron: '',
+            time_type: is_cron
                 ? TriggerTimeConditionType.CRON
                 : TriggerTimeConditionType.AT,
-        );
+        }));
         this.updateCronString();
     }
 
     public saveCRON(cron_str: string) {
         this.timeout(
             'save_cron',
-            () => this.form().controls.cron.setValue(cron_str),
+            () =>
+                this.formModel().update((model) => ({
+                    ...model,
+                    cron: cron_str,
+                })),
             1000,
         );
     }
@@ -444,7 +443,7 @@ export class TriggerConditionTimeFormComponent
      */
     public updateCronString() {
         const form = this.form();
-        if (form && form.controls.cron) {
+        if (form && form.cron) {
             const hour = this.cron_hour;
             const minute = this.cron_minute % 60;
             const day_of_week = this.days_of_week.indexOf(this.cron_day);
@@ -473,7 +472,7 @@ export class TriggerConditionTimeFormComponent
                     cron_str = `${minute} ${hour} ${day_of_month} ${month} *`;
                     break;
             }
-            form.controls.cron.setValue(cron_str);
+            this.formModel().update((model) => ({ ...model, cron: cron_str }));
         }
     }
 

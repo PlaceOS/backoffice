@@ -1,19 +1,15 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
+    effect,
     EventEmitter,
     OnInit,
     Output,
-    Signal,
     computed,
     inject,
     signal,
 } from '@angular/core';
-import {
-    FormControl,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
@@ -27,14 +23,16 @@ import {
     queryZones,
     updateSystem,
 } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from '../common/async-handler.class';
-import { addChipItem, removeChipItem } from '../common/forms';
-import { getInvalidFields } from '../common/general';
+import {
+    addSignalChipItem,
+    getInvalidSignalFields,
+    removeSignalChipItem,
+} from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -48,7 +46,10 @@ import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.comp
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { generateSystemsFormFields } from './systems.utilities';
+import {
+    applySystemFormSchema,
+    generateSystemFormModel,
+} from './systems.utilities';
 
 @Component({
     selector: 'system-form',
@@ -59,26 +60,25 @@ import { generateSystemsFormFields } from './systems.utilities';
             (save)="submit()"
         >
             @if (form) {
-                <form system class="flex w-full flex-col" [formGroup]="form">
-                    @if (form.controls.zone) {
+                <form system class="flex w-full flex-col">
+                    @if (form.zone && !formModel().zones.length) {
                         <div class="field">
                             <label
                                 for="zone"
                                 [class.error]="
-                                    form.controls.zone.invalid &&
-                                    form.controls.zone.touched
+                                    form.zone().invalid() &&
+                                    form.zone().touched()
                                 "
                             >
                                 {{ 'ZONES.SINGULAR' | translate }}<span>*</span>
                             </label>
                             <item-search-field
-                                name="zone"
                                 [query_fn]="query_fn"
-                                formControlName="zone"
+                                [formField]="form.zone"
                             ></item-search-field>
                             @if (
-                                form.controls.zone.invalid &&
-                                form.controls.zone.touched
+                                form.zone().invalid() &&
+                                form.zone().touched()
                             ) {
                                 <div class="error">
                                     {{ 'SYSTEMS.ZONE_REQUIRED' | translate }}
@@ -87,13 +87,13 @@ import { generateSystemsFormFields } from './systems.utilities';
                         </div>
                     }
                     <div class="fieldset">
-                        @if (form.controls.name) {
+                        @if (form.name) {
                             <div class="field">
                                 <label
                                     for="system-name"
                                     [class.error]="
-                                        form.controls.name.invalid &&
-                                        form.controls.name.touched
+                                        form.name().invalid() &&
+                                        form.name().touched()
                                     "
                                 >
                                     {{ 'COMMON.FIELD_NAME' | translate
@@ -102,12 +102,10 @@ import { generateSystemsFormFields } from './systems.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="system-name"
                                         placeholder="System Name"
-                                        formControlName="name"
-                                        required
+                                        [formField]="form.name"
                                     />
-                                    @if (form.controls.name.invalid) {
+                                    @if (form.name().invalid()) {
                                         <mat-error>{{
                                             'SYSTEMS.NAME_REQUIRED' | translate
                                         }}</mat-error>
@@ -115,13 +113,13 @@ import { generateSystemsFormFields } from './systems.utilities';
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.email) {
+                        @if (form.email) {
                             <div class="field">
                                 <label
                                     for="system-email"
                                     [class.error]="
-                                        form.controls.email.invalid &&
-                                        form.controls.email.touched
+                                        form.email().invalid() &&
+                                        form.email().touched()
                                     "
                                 >
                                     {{ 'COMMON.FIELD_EMAIL' | translate }}
@@ -129,13 +127,12 @@ import { generateSystemsFormFields } from './systems.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="system-email"
                                         [placeholder]="
                                             'COMMON.FIELD_EMAIL' | translate
                                         "
-                                        formControlName="email"
+                                        [formField]="form.email"
                                     />
-                                    @if (form.controls.email.invalid) {
+                                    @if (form.email().invalid()) {
                                         <mat-error>{{
                                             'SYSTEMS.EMAIL_REQUIRED' | translate
                                         }}</mat-error>
@@ -145,7 +142,7 @@ import { generateSystemsFormFields } from './systems.utilities';
                         }
                     </div>
                     <div class="fieldset">
-                        @if (form.controls.display_name) {
+                        @if (form.display_name) {
                             <div class="field">
                                 <label for="display-name">
                                     {{ 'SYSTEMS.DISPLAY_NAME' | translate }}
@@ -153,16 +150,15 @@ import { generateSystemsFormFields } from './systems.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="display-name"
                                         [placeholder]="
                                             'SYSTEMS.DISPLAY_NAME' | translate
                                         "
-                                        formControlName="display_name"
+                                        [formField]="form.display_name"
                                     />
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.display_name) {
+                        @if (form.code) {
                             <div class="field">
                                 <label for="code-name"
                                     >{{ 'SYSTEMS.CODE' | translate }}
@@ -170,23 +166,22 @@ import { generateSystemsFormFields } from './systems.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="code-name"
                                         [placeholder]="
                                             'SYSTEMS.CODE' | translate
                                         "
-                                        formControlName="code"
+                                        [formField]="form.code"
                                     />
                                 </mat-form-field>
                             </div>
                         }
                     </div>
-                    @if (form.controls.support_url) {
+                    @if (form.support_url) {
                         <div class="field">
                             <label
                                 for="support-url"
                                 [class.error]="
-                                    form.controls.support_url.invalid &&
-                                    form.controls.support_url.touched
+                                    form.support_url().invalid() &&
+                                    form.support_url().touched()
                                 "
                             >
                                 {{ 'SYSTEMS.SUPPORT_URL' | translate }}
@@ -194,11 +189,10 @@ import { generateSystemsFormFields } from './systems.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="support-url"
                                     [placeholder]="
                                         'SYSTEMS.SUPPORT_URL' | translate
                                     "
-                                    formControlName="support_url"
+                                    [formField]="form.support_url"
                                 />
                                 <mat-error>
                                     {{ 'SYSTEMS.URL_VALID' | translate }}
@@ -207,39 +201,37 @@ import { generateSystemsFormFields } from './systems.utilities';
                         </div>
                     }
                     <div class="fieldset mb-4">
-                        @if (form.controls.installed_ui_devices) {
+                        @if (form.installed_ui_devices) {
                             <div class="field">
                                 <label
                                     for="ui-devices"
                                     [class.error]="
-                                        form.controls.installed_ui_devices
-                                            .invalid &&
-                                        form.controls.installed_ui_devices
-                                            .touched
+                                        form.installed_ui_devices().invalid() &&
+                                        form.installed_ui_devices().touched()
                                     "
                                 >
                                     {{ 'SYSTEMS.PANEL_COUNT' | translate }}
                                 </label>
                                 <a-counter
-                                    formControlName="installed_ui_devices"
+                                    [formField]="form.installed_ui_devices"
                                     [min]="0"
                                     [max]="999"
                                 ></a-counter>
                             </div>
                         }
-                        @if (form.controls.capacity) {
+                        @if (form.capacity) {
                             <div class="field">
                                 <label
                                     for="capacity"
                                     [class.error]="
-                                        form.controls.capacity.invalid &&
-                                        form.controls.capacity.touched
+                                        form.capacity().invalid() &&
+                                        form.capacity().touched()
                                     "
                                 >
                                     {{ 'SYSTEMS.CAPACITY' | translate }}
                                 </label>
                                 <a-counter
-                                    formControlName="capacity"
+                                    [formField]="form.capacity"
                                     [min]="0"
                                     [max]="999"
                                 ></a-counter>
@@ -248,22 +240,22 @@ import { generateSystemsFormFields } from './systems.utilities';
                     </div>
                     <div class="mb-4 flex items-center space-x-4">
                         <settings-toggle
-                            [name]="'SYSTEMS.BOOKABLE' | translate"
+                            [label]="'SYSTEMS.BOOKABLE' | translate"
                             class="flex-1"
-                            formControlName="bookable"
+                            [formField]="form.bookable"
                         ></settings-toggle>
                         <settings-toggle
-                            [name]="'SYSTEMS.SIGNAGE' | translate"
+                            [label]="'SYSTEMS.SIGNAGE' | translate"
                             class="flex-1"
-                            formControlName="signage"
+                            [formField]="form.signage"
                         ></settings-toggle>
                         <settings-toggle
-                            [name]="'SYSTEMS.PUBLIC' | translate"
+                            [label]="'SYSTEMS.PUBLIC' | translate"
                             class="flex-1"
-                            formControlName="public"
+                            [formField]="form.public"
                         ></settings-toggle>
                     </div>
-                    @if (form.controls.description) {
+                    @if (form.description) {
                         <div class="field">
                             <label for="description">
                                 {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
@@ -271,22 +263,21 @@ import { generateSystemsFormFields } from './systems.utilities';
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
-                                    name="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
-                                    formControlName="description"
+                                    [formField]="form.description"
                                 ></textarea>
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.features) {
+                    @if (form.features) {
                         <div class="field">
                             <label
                                 for="feature-list"
                                 [class.error]="
-                                    form.controls.features.invalid &&
-                                    form.controls.features.touched
+                                    form.features().invalid() &&
+                                    form.features().touched()
                                 "
                             >
                                 {{ 'SYSTEMS.FEATURES' | translate }}
@@ -329,13 +320,13 @@ import { generateSystemsFormFields } from './systems.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.security_groups) {
+                    @if (form.security_groups) {
                         <div class="field">
                             <label
                                 for="security-group-list"
                                 [class.error]="
-                                    form.controls.security_groups.invalid &&
-                                    form.controls.security_groups.touched
+                                    form.security_groups().invalid() &&
+                                    form.security_groups().touched()
                                 "
                             >
                                 {{ 'SYSTEMS.SECURITY_GROUPS' | translate }}
@@ -385,7 +376,7 @@ import { generateSystemsFormFields } from './systems.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.map_id) {
+                    @if (form.map_id) {
                         <div class="field">
                             <label for="map_id">{{
                                 'SYSTEMS.MAP_ID' | translate
@@ -393,9 +384,8 @@ import { generateSystemsFormFields } from './systems.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="map_id"
                                     placeholder="Map SVG ID selector e.g. area-01.10-status"
-                                    formControlName="map_id"
+                                    [formField]="form.map_id"
                                 />
                             </mat-form-field>
                         </div>
@@ -412,7 +402,7 @@ import { generateSystemsFormFields } from './systems.utilities';
                             </div>
                             <input
                                 matInput
-                                formControlName="timezone"
+                                [formField]="form.timezone"
                                 [placeholder]="'COMMON.TIMEZONE' | translate"
                                 [matAutocomplete]="auto"
                             />
@@ -430,24 +420,23 @@ import { generateSystemsFormFields } from './systems.utilities';
                             }
                         </mat-autocomplete>
                     </div>
-                    @if (form.controls.images) {
+                    @if (form.images) {
                         <div class="field">
                             <label for="images">{{
                                 'COMMON.IMAGES' | translate
                             }}</label>
                             <image-list-field
-                                name="images"
-                                formControlName="images"
+                                [formField]="form.images"
                             ></image-list-field>
                         </div>
                     }
-                    @if (form.controls.timetable_url) {
+                    @if (form.timetable_url) {
                         <div class="field">
                             <label
                                 for="timetable-url"
                                 [class.error]="
-                                    form.controls.timetable_url.invalid &&
-                                    form.controls.timetable_url.touched
+                                    form.timetable_url().invalid() &&
+                                    form.timetable_url().touched()
                                 "
                             >
                                 {{ 'SYSTEMS.TIMETABLE_URL' | translate }}
@@ -455,11 +444,10 @@ import { generateSystemsFormFields } from './systems.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="timetable-url"
                                     [placeholder]="
                                         'SYSTEMS.TIMETABLE_URL' | translate
                                     "
-                                    formControlName="timetable_url"
+                                    [formField]="form.timetable_url"
                                 />
                                 <mat-error>
                                     {{ 'SYSTEMS.URL_VALID' | translate }}
@@ -467,13 +455,13 @@ import { generateSystemsFormFields } from './systems.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.camera_url) {
+                    @if (form.camera_url) {
                         <div class="field">
                             <label
                                 for="camera-url"
                                 [class.error]="
-                                    form.controls.camera_url.invalid &&
-                                    form.controls.camera_url.touched
+                                    form.camera_url().invalid() &&
+                                    form.camera_url().touched()
                                 "
                             >
                                 {{ 'SYSTEMS.CAMERA_URL' | translate }}
@@ -481,11 +469,10 @@ import { generateSystemsFormFields } from './systems.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="camera-url"
                                     [placeholder]="
                                         'SYSTEMS.CAMERA_URL' | translate
                                     "
-                                    formControlName="camera_url"
+                                    [formField]="form.camera_url"
                                 />
                                 <mat-error>
                                     {{ 'SYSTEMS.URL_VALID' | translate }}
@@ -493,14 +480,13 @@ import { generateSystemsFormFields } from './systems.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.camera_snapshot_urls) {
+                    @if (form.camera_snapshot_urls) {
                         <div class="field">
                             <label
                                 for="camera-snap-url"
                                 [class.error]="
-                                    form.controls.camera_snapshot_urls
-                                        .invalid &&
-                                    form.controls.camera_snapshot_urls.touched
+                                    form.camera_snapshot_urls().invalid() &&
+                                    form.camera_snapshot_urls().touched()
                                 "
                             >
                                 {{ 'SYSTEMS.CAMERA_SNAPSHOT_URL' | translate }}
@@ -549,7 +535,7 @@ import { generateSystemsFormFields } from './systems.utilities';
                                     "
                                 />
                                 @if (
-                                    form.controls.camera_snapshot_urls.invalid
+                                    form.camera_snapshot_urls().invalid()
                                 ) {
                                     <mat-error>
                                         {{ 'SYSTEMS.URL_VALID' | translate }}
@@ -558,13 +544,13 @@ import { generateSystemsFormFields } from './systems.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.room_booking_url) {
+                    @if (form.room_booking_url) {
                         <div class="field">
                             <label
                                 for="room-booking-url"
                                 [class.error]="
-                                    form.controls.room_booking_url.invalid &&
-                                    form.controls.room_booking_url.touched
+                                    form.room_booking_url().invalid() &&
+                                    form.room_booking_url().touched()
                                 "
                             >
                                 {{ 'SYSTEMS.ROOM_BOOKING_URL' | translate }}
@@ -572,11 +558,10 @@ import { generateSystemsFormFields } from './systems.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="room-booking-url"
                                     [placeholder]="
                                         'SYSTEMS.ROOM_BOOKING_URL' | translate
                                     "
-                                    formControlName="room_booking_url"
+                                    [formField]="form.room_booking_url"
                                 />
                                 <mat-error>
                                     {{ 'SYSTEMS.URL_VALID' | translate }}
@@ -604,7 +589,7 @@ import { generateSystemsFormFields } from './systems.utilities';
     ],
     imports: [
         ImageListFieldComponent,
-        ReactiveFormsModule,
+        FormField,
         TranslatePipe,
         MatFormFieldModule,
         MatInputModule,
@@ -629,28 +614,19 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     @Output() public event = new EventEmitter<DialogEvent>();
 
     public readonly timezones = TIMEZONES_IANA;
-    public form: UntypedFormGroup = generateSystemsFormFields(this._data.item);
+    public readonly formModel = signal(generateSystemFormModel(this._data.item));
+    public readonly form = form(this.formModel, applySystemFormSchema);
     public loading: string;
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
     );
-    public feature_list: Signal<string[]> = this.form.controls.features
-        ? toSignal(this.form.controls.features.valueChanges, {
-              initialValue: this.form.controls.features.value || [],
-          })
-        : signal([]);
-    public camera_snapshot_url_list: Signal<string[]> = this.form.controls
-        .camera_snapshot_urls
-        ? toSignal(this.cameraSnapshotUrlsControl.valueChanges, {
-              initialValue: this.cameraSnapshotUrlsControl.value || [],
-          })
-        : signal([]);
-    public security_group_list: Signal<string[]> = this.form.controls
-        .security_groups
-        ? toSignal(this.securityGroupsControl.valueChanges, {
-              initialValue: this.securityGroupsControl.value || [],
-          })
-        : signal([]);
+    public feature_list = computed(() => this.formModel().features || []);
+    public camera_snapshot_url_list = computed(
+        () => this.formModel().camera_snapshot_urls || [],
+    );
+    public security_group_list = computed(
+        () => this.formModel().security_groups || [],
+    );
 
     /** Function for querying zones */
     public readonly query_fn = (_: string) =>
@@ -658,24 +634,24 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     /** List of separator characters for features */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
-    private _timezone: Signal<string> = toSignal(
-        this.form.controls.timezone.valueChanges,
-        {
-            initialValue: this.form.controls.timezone.value || '',
-        },
-    );
-    public filtered_timezones: Signal<string[]> = computed(() =>
+    private _timezone = computed(() => this.formModel().timezone || '');
+    public filtered_timezones = computed(() =>
         this.timezones.filter((_tz) =>
             _tz.toLowerCase().includes(this._timezone().toLowerCase()),
         ),
     );
 
-    private get cameraSnapshotUrlsControl(): FormControl<string[]> {
-        return this.form.controls.camera_snapshot_urls as FormControl<string[]>;
-    }
-
-    private get securityGroupsControl(): FormControl<string[]> {
-        return this.form.controls.security_groups as FormControl<string[]>;
+    constructor() {
+        super();
+        effect(() => {
+            const zone = this.formModel().zone;
+            if (zone?.id) {
+                this.formModel.update((value) => ({
+                    ...value,
+                    zones: [zone.id],
+                }));
+            }
+        });
     }
 
     public ngOnInit(): void {
@@ -686,58 +662,56 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
-                }),
-            );
-        }
-        const item = this._data.item as unknown as PlaceResource;
-        this.loading = i18n(`${this._name}.SAVING`);
-        this._dialog_ref.disableClose = true;
-        const item_json = item.toJSON ? item.toJSON() : item;
-        const form_item = (
-            item.id
-                ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
-                : { ...item_json, ...this.form.value }
-        ) as Identity;
-        const processed_item = {
-            ...form_item,
-            support_url: this.processURL(
-                form_item as unknown as PlaceSystem,
-                (form_item as Identity & { support_url?: string })
-                    .support_url || '',
-            ),
-        };
-        try {
-            const _item = await (processed_item.id
-                ? updateSystem(
-                      processed_item.id as string,
-                      processed_item as unknown as PlaceSystem,
-                  )
-                : addSystem(processed_item as unknown as PlaceSystem));
-            this._dialog_ref.disableClose = false;
-            this.event.emit({ reason: 'done', metadata: { item: _item } });
-            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-            if (!this.form.value.id && this.form.controls.settings) {
-                await this.newSettings(
-                    _item as unknown as Identity,
-                    this.form.controls.settings.value,
+        await submit(this.form, async () => {
+            const item = this._data.item as unknown as PlaceResource;
+            this.loading = i18n(`${this._name}.SAVING`);
+            this._dialog_ref.disableClose = true;
+            const item_json = item.toJSON ? item.toJSON() : item;
+            const form_item = (
+                item.id
+                    ? cleanObject(
+                          { ...item_json, ...this.formModel() },
+                          [undefined],
+                      )
+                    : { ...item_json, ...this.formModel() }
+            ) as Identity;
+            const processed_item = {
+                ...form_item,
+                support_url: this.processURL(
+                    form_item as unknown as PlaceSystem,
+                    (form_item as Identity & { support_url?: string })
+                        .support_url || '',
+                ),
+            };
+            try {
+                const _item = await (processed_item.id
+                    ? updateSystem(
+                          processed_item.id as string,
+                          processed_item as unknown as PlaceSystem,
+                      )
+                    : addSystem(processed_item as unknown as PlaceSystem));
+                this._dialog_ref.disableClose = false;
+                this.event.emit({ reason: 'done', metadata: { item: _item } });
+                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+                this._dialog_ref.close();
+            } catch (err) {
+                this.loading = null;
+                this._dialog_ref.disableClose = false;
+                notifyError(
+                    i18n(`${this._name}.SAVE_ERROR`, {
+                        error: JSON.stringify(
+                            (await (err as Response).text?.()) ||
+                                (err as Error).message ||
+                                err,
+                        ),
+                    }),
                 );
             }
-            this._dialog_ref.close();
-        } catch (err) {
-            this.loading = null;
-            this._dialog_ref.disableClose = false;
-            notifyError(
-                i18n(`${this._name}.SAVE_ERROR`, {
-                    error: JSON.stringify(
-                        (await (err as Response).text?.()) ||
-                            (err as Error).message ||
-                            err,
-                    ),
+        });
+        if (this.form().invalid()) {
+            return notifyError(
+                i18n('COMMON.INVALID_FIELDS', {
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }
@@ -766,19 +740,10 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
      * @param event Input event
      */
     public addFeature(event: MatChipInputEvent): void {
-        if (!this.form || !this.form.controls.features) return;
-        const input = event.input;
-        const value = event.value;
-        const feature_list = [...this.feature_list()];
-        if ((value || '').trim()) {
-            feature_list.push(value);
-            this.form.controls.features.setValue(feature_list);
-        }
-
-        // Reset the input value
-        if (input) {
-            input.value = '';
-        }
+        this.formModel.update((value) => ({
+            ...value,
+            features: addSignalChipItem(value.features, event),
+        }));
     }
 
     /**
@@ -786,30 +751,47 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
      * @param existing_feature Feature to remove
      */
     public removeFeature(existing_feature: string): void {
-        if (!this.form || !this.form.controls.features) return;
-        const feature_list = [...this.feature_list()];
-        const index = feature_list.indexOf(existing_feature);
-
-        if (index >= 0) {
-            feature_list.splice(index, 1);
-            this.form.controls.features.setValue(feature_list);
-        }
+        this.formModel.update((value) => ({
+            ...value,
+            features: removeSignalChipItem(value.features, existing_feature),
+        }));
     }
 
     public addCameraSnapshotUrl(event: MatChipInputEvent): void {
-        addChipItem(this.cameraSnapshotUrlsControl, event);
+        this.formModel.update((value) => ({
+            ...value,
+            camera_snapshot_urls: addSignalChipItem(
+                value.camera_snapshot_urls,
+                event,
+            ),
+        }));
     }
 
     public removeCameraSnapshotUrl(url: string): void {
-        removeChipItem(this.cameraSnapshotUrlsControl, url);
+        this.formModel.update((value) => ({
+            ...value,
+            camera_snapshot_urls: removeSignalChipItem(
+                value.camera_snapshot_urls,
+                url,
+            ),
+        }));
     }
 
     public addSecurityGroup(event: MatChipInputEvent): void {
-        addChipItem(this.securityGroupsControl, event);
+        this.formModel.update((value) => ({
+            ...value,
+            security_groups: addSignalChipItem(value.security_groups, event),
+        }));
     }
 
     public removeSecurityGroup(group: string): void {
-        removeChipItem(this.securityGroupsControl, group);
+        this.formModel.update((value) => ({
+            ...value,
+            security_groups: removeSignalChipItem(
+                value.security_groups,
+                group,
+            ),
+        }));
     }
 
     private processURL(system: PlaceSystem, url: string): string {

@@ -8,12 +8,7 @@ import {
     OnInit,
     signal,
 } from '@angular/core';
-import {
-    FormControl,
-    FormGroup,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import {
     addSettings,
     EncryptionLevel,
@@ -93,8 +88,8 @@ type SettingsArray = [
                 </div>
             }
         </header>
-        @if (form() && used_settings() && used_settings().length) {
-            <form [formGroup]="form()">
+        @if (used_settings() && used_settings().length) {
+            <form>
                 <mat-tab-group
                     [selectedIndex]="level_index()"
                     (selectedIndexChange)="
@@ -107,7 +102,7 @@ type SettingsArray = [
                             [label]="
                                 option.name +
                                 (option.id !== 4 &&
-                                form().controls['settings' + option.id]?.dirty
+                                settingDirty(+option.id)
                                     ? ' *'
                                     : '')
                             "
@@ -117,31 +112,31 @@ type SettingsArray = [
                 </mat-tab-group>
                 @for (option of levels(); track $index; let i = $index) {
                     @if (
-                        form() &&
                         encryption_level() === option.id &&
-                        form().controls['settings' + option.id]
+                        hasSetting(+option.id)
                     ) {
                         <div
                             [class.error-border]="
-                                form().controls['settings' + option.id]?.errors
+                                settingError(+option.id)
                             "
                         >
                             <settings-form-field
                                 [decorations]="
                                     +option.id === 4 ? merge_decorations : []
                                 "
-                                [formControlName]="'settings' + option.id"
+                                [ngModel]="settingValue(+option.id)"
+                                (ngModelChange)="
+                                    updateSetting(+option.id, $event)
+                                "
+                                [ngModelOptions]="{ standalone: true }"
                                 [readonly]="
                                     !option.active || this.saving()[option.id]
                                 "
                             ></settings-form-field>
                         </div>
-                        @if (form().controls['settings' + option.id]?.errors) {
+                        @if (settingError(+option.id)) {
                             <div class="error-display">
-                                {{
-                                    form().controls['settings' + option.id]
-                                        .errors.yaml
-                                }}
+                                {{ settingError(+option.id)?.yaml }}
                             </div>
                         }
                         @if (
@@ -231,7 +226,7 @@ type SettingsArray = [
         MatTabsModule,
         MatTooltipModule,
         MatRippleModule,
-        ReactiveFormsModule,
+        FormsModule,
         IconComponent,
         UserPipe,
     ],
@@ -251,15 +246,14 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
     /** List of settings to merge into the main settings */
     public readonly merge_settings = input<PlaceSettings[]>(undefined);
     /** Form fields for settings */
-    public readonly form = signal<UntypedFormGroup>(
-        new FormGroup({
-            settings0: new FormControl('', [validateYAML]),
-            settings1: new FormControl('', [validateYAML]),
-            settings2: new FormControl('', [validateYAML]),
-            settings3: new FormControl('', [validateYAML]),
-            settings4: new FormControl('', [validateYAML]),
-        }),
-    );
+    public readonly form = signal<HashMap>({
+        settings0: '',
+        settings1: '',
+        settings2: '',
+        settings3: '',
+        settings4: '',
+    });
+    public readonly dirty = signal<HashMap<boolean>>({});
     /** Whether a setting is being saved */
     public readonly saving = signal<[boolean, boolean, boolean, boolean]>([
         false,
@@ -303,7 +297,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         return (
             this.used_settings() &&
             this.used_settings()[this.encryption_level()] &&
-            this.form().controls[`settings${this.encryption_level()}`]?.dirty
+            this.settingDirty(this.encryption_level())
         );
     });
 
@@ -311,8 +305,8 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
     public readonly edited_count = computed(() => {
         this.changed();
         let count = 0;
-        for (const field in this.form().controls) {
-            if (this.form().controls[field].dirty) {
+        for (const field in this.dirty()) {
+            if (this.dirty()[field]) {
                 count++;
             }
         }
@@ -323,8 +317,8 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
     /** Whether a settings group has errors */
     public readonly has_errors = computed(() => {
         this.changed();
-        for (const key in this.form().controls) {
-            if (this.form().controls[key] && this.form().controls[key].errors) {
+        for (const key in this.form()) {
+            if (this.settingError(+key.replace('settings', ''))) {
                 return true;
             }
         }
@@ -396,6 +390,31 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         return i18n('COMMON.SETTINGS_ENCRYPTED');
     }
 
+    public hasSetting(level: number) {
+        return `settings${level}` in this.form();
+    }
+
+    public settingValue(level: number) {
+        return this.form()[`settings${level}`] || '';
+    }
+
+    public settingDirty(level: number) {
+        return !!this.dirty()[`settings${level}`];
+    }
+
+    public settingError(level: number) {
+        return validateYAML({
+            value: this.settingValue(level),
+        } as never) as { yaml?: string } | null;
+    }
+
+    public updateSetting(level: number, value: string) {
+        const key = `settings${level}`;
+        this.form.update((form) => ({ ...form, [key]: value }));
+        this.dirty.update((dirty) => ({ ...dirty, [key]: true }));
+        this.changed.set(Date.now());
+    }
+
     public ngOnInit(): void {
         this.subscription(
             'save_all',
@@ -417,7 +436,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         });
         const details = {
             ...item,
-            settings_string: this.form().controls[`settings${level}`].value,
+            settings_string: this.settingValue(level),
         };
         const settings = this.settings();
         lastValueFrom(
@@ -471,7 +490,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
                 });
                 const details = {
                     ...settings[i],
-                    settings_string: this.form().controls[`settings${i}`].value,
+                    settings_string: this.settingValue(i),
                 };
                 promises.push(
                     settings[i].id
@@ -522,31 +541,15 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
 
     private _initForm() {
         const used = this.used_settings();
-        this.form.set(
-            new FormGroup({
-                settings0: new FormControl(used[0].settings_string, [
-                    validateYAML,
-                ]),
-                settings1: new FormControl(used[1].settings_string, [
-                    validateYAML,
-                ]),
-                settings2: new FormControl(used[2].settings_string, [
-                    validateYAML,
-                ]),
-                settings3: new FormControl(used[3].settings_string, [
-                    validateYAML,
-                ]),
-                settings4: new FormControl(used[4].settings_string, [
-                    validateYAML,
-                ]),
-            }),
-        );
-        this.subscription(
-            'changes',
-            this.form().valueChanges.subscribe(() =>
-                this.changed.set(Date.now()),
-            ),
-        );
+        this.form.set({
+            settings0: used[0].settings_string,
+            settings1: used[1].settings_string,
+            settings2: used[2].settings_string,
+            settings3: used[3].settings_string,
+            settings4: used[4].settings_string,
+        });
+        this.dirty.set({});
+        this.changed.set(Date.now());
     }
 
     private _processSettings(settings: PlaceSettings[]): PlaceSettings[] {

@@ -2,12 +2,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { toSignal } from '../../common/signals';
 
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import {
-    FormControl,
-    FormGroup,
-    ReactiveFormsModule,
-    Validators,
-} from '@angular/forms';
+import { form, FormField, required, submit } from '@angular/forms/signals';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -33,7 +28,6 @@ export function extractTextFromHTML(html_string: string) {
         <div class="bg-base-100 absolute inset-0 overflow-auto p-4">
             <form
                 class="mx-auto min-h-full w-3xl max-w-full pt-4"
-                [formGroup]="form"
             >
                 <div class="mb-8 flex items-center space-x-2">
                     <h2 class="text-2xl font-medium">
@@ -45,9 +39,8 @@ export function extractTextFromHTML(html_string: string) {
                         <label for="trigger">Trigger</label>
                         <mat-form-field appearance="outline" class="w-full">
                             <mat-select
-                                name="trigger"
                                 placeholder="Select Trigger"
-                                formControlName="trigger"
+                                [formField]="form.trigger"
                             >
                                 <mat-option value="">None</mat-option>
                                 @for (
@@ -77,7 +70,7 @@ export function extractTextFromHTML(html_string: string) {
                         matRipple
                         class="my-4 w-1/4 flex-1"
                         matTooltip="Values that get replaced in the email template when sent"
-                        [disabled]="!form.value.trigger"
+                        [disabled]="!formModel().trigger"
                         [matMenuTriggerFor]="tracking_menu"
                     >
                         Placeholders
@@ -113,7 +106,7 @@ export function extractTextFromHTML(html_string: string) {
                         <input
                             matInput
                             placeholder="Reply to address"
-                            formControlName="reply_to"
+                            [formField]="form.reply_to"
                         />
                         <mat-error>A reply address is required</mat-error>
                     </mat-form-field>
@@ -121,7 +114,7 @@ export function extractTextFromHTML(html_string: string) {
                         <input
                             matInput
                             placeholder="From address"
-                            formControlName="from"
+                            [formField]="form.from"
                         />
                         <mat-error>A from address is required</mat-error>
                     </mat-form-field>
@@ -133,12 +126,12 @@ export function extractTextFromHTML(html_string: string) {
                     <input
                         matInput
                         placeholder="Template Subject"
-                        formControlName="subject"
+                        [formField]="form.subject"
                     />
                     <mat-error>A title for the template is required</mat-error>
                 </mat-form-field>
                 <rich-text-input
-                    formControlName="html"
+                    [formField]="form.html"
                     placeholder="Body of the email template"
                     [images_allowed]="true"
                     class="block min-h-[calc(100vh-28rem)]"
@@ -182,7 +175,7 @@ export function extractTextFromHTML(html_string: string) {
         MatProgressSpinnerModule,
         MatRippleModule,
         RichTextInputComponent,
-        ReactiveFormsModule,
+        FormField,
         MatFormFieldModule,
         MatInputModule,
         MatMenuModule,
@@ -203,20 +196,21 @@ export class EmailTemplateFormComponent extends AsyncHandler {
     public readonly definition_list = toSignal(this.definitions, {
         initialValue: [],
     });
-    public readonly form = new FormGroup({
-        id: new FormControl(''),
-        reply_to: new FormControl(''),
-        from: new FormControl(''),
-        subject: new FormControl('', [Validators.required]),
-        category: new FormControl('internal'),
-        trigger: new FormControl(''),
-        html: new FormControl('', [Validators.required]),
-        zone_id: new FormControl(''),
+    public readonly formModel = signal({
+        id: '',
+        reply_to: '',
+        from: '',
+        subject: '',
+        category: 'internal',
+        trigger: '',
+        html: '',
+        zone_id: '',
     });
-    public readonly active_trigger_id = toSignal(
-        this.form.controls.trigger.valueChanges,
-        { initialValue: this.form.controls.trigger.value },
-    );
+    public readonly form = form(this.formModel, (p) => {
+        required(p.subject);
+        required(p.html);
+    });
+    public readonly active_trigger_id = computed(() => this.formModel().trigger);
     public readonly active_trigger = computed(() =>
         this.definition_list().find((_) => _.id === this.active_trigger_id()),
     );
@@ -243,15 +237,18 @@ export class EmailTemplateFormComponent extends AsyncHandler {
     }
 
     public async save() {
-        this.loading.set('Saving email template...');
-        await this._state.saveTemplate({
-            ...(this.template() || {}),
-            ...this.form.getRawValue(),
-            text: extractTextFromHTML(this.form.getRawValue().html || ''),
-        } as EmailTemplate);
-        this.loading.set('');
-        notifySuccess('Successfully saved email template');
-        this._router.navigate(['/email-templates']);
+        await submit(this.form, async () => {
+            this.loading.set('Saving email template...');
+            const value = this.formModel();
+            await this._state.saveTemplate({
+                ...(this.template() || {}),
+                ...value,
+                text: extractTextFromHTML(value.html || ''),
+            } as EmailTemplate);
+            this.loading.set('');
+            notifySuccess('Successfully saved email template');
+            this._router.navigate(['/email-templates']);
+        });
     }
 
     private async loadTemplate(template_id: string) {
@@ -259,11 +256,10 @@ export class EmailTemplateFormComponent extends AsyncHandler {
         const template = await this._state.loadTemplate(template_id);
         this.template.set(template);
         this.loading.set('');
-        console.log('Template:', template);
         if (!template) {
             this._router.navigate(['/email-templates', 'manage']);
         } else {
-            this.form.patchValue(template);
+            this.formModel.update((value) => ({ ...value, ...template }));
         }
     }
 }

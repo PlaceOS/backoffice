@@ -1,10 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import {
-    FormControl,
-    FormGroup,
-    ReactiveFormsModule,
-    Validators,
-} from '@angular/forms';
+import { Component, inject, signal } from '@angular/core';
+import { form, FormField, required, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -28,13 +23,12 @@ import { PlaceStorage, saveStorage } from './storage.fn';
             [loading]="loading()"
             (save)="save()"
         >
-            <form [formGroup]="form" class="w-full">
+            <form class="w-full">
                 <div class="flex flex-col">
                     <label for="storage-type">Storage Type</label>
                     <mat-form-field appearance="outline">
                         <mat-select
-                            name="storage-type"
-                            formControlName="storage_type"
+                            [formField]="form.storage_type"
                             placeholder="None"
                         >
                             <mat-option value="s3">Amazon S3</mat-option>
@@ -52,8 +46,7 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="bucket-name"
-                                formControlName="bucket_name"
+                                [formField]="form.bucket_name"
                                 [placeholder]="
                                     'ADMIN.STORAGE_BUCKET_NAME_LABEL'
                                         | translate
@@ -71,8 +64,7 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="region"
-                                formControlName="region"
+                                [formField]="form.region"
                                 [placeholder]="
                                     'ADMIN.STORAGE_REGION_LABEL' | translate
                                 "
@@ -91,8 +83,7 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="access-key"
-                                formControlName="access_key"
+                                [formField]="form.access_key"
                                 [placeholder]="
                                     'ADMIN.STORAGE_ACCESS_KEY_LABEL' | translate
                                 "
@@ -109,8 +100,7 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="access-secret"
-                                formControlName="access_secret"
+                                [formField]="form.access_secret"
                                 [placeholder]="
                                     'ADMIN.STORAGE_SECRET_LABEL' | translate
                                 "
@@ -128,8 +118,7 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                     <mat-form-field appearance="outline">
                         <input
                             matInput
-                            name="endpoint"
-                            formControlName="endpoint"
+                            [formField]="form.endpoint"
                             [placeholder]="
                                 'ADMIN.STORAGE_ENDPOINT_LABEL' | translate
                             "
@@ -142,8 +131,7 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                     }}</label>
                     <mat-form-field appearance="outline">
                         <mat-select
-                            name="extensions"
-                            formControlName="ext_filter"
+                            [formField]="form.ext_filter"
                             [placeholder]="
                                 'ADMIN.STORAGE_ALLOW_ALL_EXTENSIONS' | translate
                             "
@@ -163,8 +151,7 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                     }}</label>
                     <mat-form-field appearance="outline">
                         <mat-select
-                            name="mime-types"
-                            formControlName="mime_filter"
+                            [formField]="form.mime_filter"
                             [placeholder]="
                                 'ADMIN.STORAGE_ALLOW_ALL_MIME' | translate
                             "
@@ -178,7 +165,7 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <settings-toggle formControlName="is_default">{{
+                <settings-toggle [formField]="form.is_default">{{
                     'ADMIN.STORAGE_IS_DEFAULT_LABEL' | translate
                 }}</settings-toggle>
             </form>
@@ -191,11 +178,11 @@ import { PlaceStorage, saveStorage } from './storage.fn';
         TranslatePipe,
         MatFormFieldModule,
         MatSelectModule,
-        ReactiveFormsModule,
+        FormField,
         MatInputModule,
     ],
 })
-export class StorageProviderModalComponent implements OnInit {
+export class StorageProviderModalComponent {
     private _data = inject<{ item?: PlaceStorage; domain?: string }>(
         MAT_DIALOG_DATA,
     );
@@ -242,43 +229,36 @@ export class StorageProviderModalComponent implements OnInit {
         'video/webm',
     ].sort((a, b) => a.localeCompare(b));
     public readonly storage = this._data.item;
-    public readonly form = new FormGroup({
-        id: new FormControl(this._data.item?.id || ''),
-        authority_id: new FormControl(this._data.domain || ''),
-        storage_type: new FormControl(this._data.item?.storage_type || 's3', [
-            Validators.required,
-        ]),
-        bucket_name: new FormControl(this._data.item?.bucket_name || '', [
-            Validators.required,
-        ]),
-        region: new FormControl(this._data.item?.region || '', [
-            Validators.required,
-        ]),
-        access_key: new FormControl(this._data.item?.access_key || '', [
-            Validators.required,
-        ]),
-        access_secret: new FormControl(''),
-        endpoint: new FormControl(this._data.item?.endpoint || ''),
-        ext_filter: new FormControl(this._data.item?.ext_filter || []),
-        mime_filter: new FormControl(this._data.item?.mime_filter || []),
-        is_default: new FormControl(this._data.item?.is_default || false),
+    public readonly formModel = signal({
+        id: this._data.item?.id || '',
+        authority_id: this._data.domain || '',
+        storage_type: this._data.item?.storage_type || 's3',
+        bucket_name: this._data.item?.bucket_name || '',
+        region: this._data.item?.region || '',
+        access_key: this._data.item?.access_key || '',
+        access_secret: '',
+        endpoint: this._data.item?.endpoint || '',
+        ext_filter: [...(this._data.item?.ext_filter || [])],
+        mime_filter: [...(this._data.item?.mime_filter || [])],
+        is_default: this._data.item?.is_default || false,
+    });
+    public readonly form = form(this.formModel, (path) => {
+        required(path.storage_type);
+        required(path.bucket_name);
+        required(path.region);
+        required(path.access_key);
+        required(path.access_secret, {
+            when: () => !this._data.item?.id,
+        });
     });
     public readonly loading = signal('');
 
-    public ngOnInit() {
-        if (!this._data.item?.id) {
-            this.form.controls.access_secret.setValidators([
-                Validators.required,
-            ]);
-        }
-    }
-
     public async save() {
-        this.form.markAllAsTouched();
-        if (this.form.invalid) return;
+        await submit(this.form, async () => undefined);
+        if (this.form().invalid()) return;
         this.loading.set('Saving storage provider...');
         this._dialog_ref.disableClose = true;
-        const details = this.form.value as PlaceStorage;
+        const details = { ...this.formModel() } as PlaceStorage;
         if (details.id && !details.access_secret) {
             delete (details as PlaceStorage & { access_secret?: unknown })
                 .access_secret;

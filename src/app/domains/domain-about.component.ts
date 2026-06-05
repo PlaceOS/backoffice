@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, effect, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, effect, inject, signal } from '@angular/core';
+import { form, FormField, submit, validate } from '@angular/forms/signals';
 
 import { PlaceDomain } from '@placeos/ts-client';
 
@@ -76,7 +76,7 @@ import { DomainStateService } from './domain-state.service';
             </button>
         </header>
         @if (form) {
-            <section [formGroup]="form">
+            <section>
                 <mat-tab-group
                     [(selectedIndex)]="index"
                     class="border-base-300 border-x border-t"
@@ -88,14 +88,14 @@ import { DomainStateService } from './domain-state.service';
                 </mat-tab-group>
                 @if (index !== 1) {
                     <settings-form-field
-                        formControlName="config"
+                        [formField]="form.config"
                         lang="json"
                         [readonly]="false"
                     ></settings-form-field>
                 }
                 @if (index === 1) {
                     <settings-form-field
-                        formControlName="internals"
+                        [formField]="form.internals"
                         lang="json"
                         [readonly]="false"
                     ></settings-form-field>
@@ -114,7 +114,7 @@ import { DomainStateService } from './domain-state.service';
     imports: [
         SettingsFieldComponent,
         MatTabsModule,
-        ReactiveFormsModule,
+        FormField,
         MatRippleModule,
         IconComponent,
         MatTooltipModule,
@@ -127,10 +127,22 @@ export class DomainAboutComponent extends AsyncHandler {
     private _service = inject(DomainStateService);
     private _clipboard = inject(Clipboard);
 
-    /** Form group for edit domain settings */
-    public form = new FormGroup({
-        config: new FormControl('', [validateJSONString]),
-        internals: new FormControl('', [validateJSONString]),
+    /** Signal model for edit domain settings */
+    public readonly formModel = signal({
+        config: '',
+        internals: '',
+    });
+    public readonly form = form(this.formModel, (path) => {
+        validate(path.config, ({ value }) =>
+            validateJSONString({ value: value() } as never)
+                ? { kind: 'json', message: 'Invalid JSON' }
+                : undefined,
+        );
+        validate(path.internals, ({ value }) =>
+            validateJSONString({ value: value() } as never)
+                ? { kind: 'json', message: 'Invalid JSON' }
+                : undefined,
+        );
     });
     /** Index of the active tab */
     public index: number;
@@ -152,24 +164,25 @@ export class DomainAboutComponent extends AsyncHandler {
         notifySuccess(i18n('DOMAINS.COPIED_EMAIL_DOMAIN'));
     }
 
-    /** Save changes to the form fields */
+    /** Save changes to the settings fields */
     public async saveChanges() {
-        if (!this.form.valid)
+        await submit(this.form, async () => undefined);
+        if (this.form().invalid())
             return notifyError(i18n('DOMAINS.SETTINGS_ERROR'));
         const domain = new PlaceDomain({
             ...this.item,
-            config: JSON.parse(this.form.value.config),
-            internals: JSON.parse(this.form.value.internals),
+            config: JSON.parse(this.formModel().config),
+            internals: JSON.parse(this.formModel().internals),
         });
         await this._service.update(domain);
         notifySuccess(i18n('DOMAINS.SETTINGS_SAVED'));
     }
 
-    /** Load form fields for active item */
+    /** Load settings fields for active item */
     private loadForm(): void {
         const item = this.item;
         if (!item) return;
-        this.form.patchValue({
+        this.formModel.set({
             internals: JSON.stringify(item.internals, undefined, 4),
             config: JSON.stringify(item.config, undefined, 4),
         });

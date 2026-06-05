@@ -1,14 +1,14 @@
 import {
     Component,
+    effect,
     EventEmitter,
     OnInit,
     Output,
-    Signal,
     computed,
     inject,
     signal,
 } from '@angular/core';
-import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import {
     EncryptionLevel,
     PlaceDriverRole,
@@ -22,14 +22,13 @@ import {
     querySystems,
     updateModule,
 } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AsyncHandler } from '../common/async-handler.class';
-import { getInvalidFields } from '../common/general';
+import { getInvalidSignalFields } from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -38,7 +37,7 @@ import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { generateModuleFormFields } from './modules.utilities';
+import { applyModuleFormSchema, generateModuleFormModel } from './modules.utilities';
 
 @Component({
     selector: 'module-form',
@@ -49,27 +48,26 @@ import { generateModuleFormFields } from './modules.utilities';
             (save)="submit()"
         >
             @if (form) {
-                <form module class="flex flex-col" [formGroup]="form">
-                    @if (form.controls.driver && !form.controls.id.value) {
+                <form module class="flex flex-col">
+                    @if (form.driver && !formModel().id) {
                         <div class="field">
                             <label
                                 for="driver"
                                 [class.error]="
-                                    form.controls.driver.invalid &&
-                                    form.controls.driver.touched
+                                    form.driver().invalid() &&
+                                    form.driver().touched()
                                 "
                             >
                                 {{ 'DRIVERS.SINGULAR' | translate
                                 }}<span>*</span>
                             </label>
                             <item-search-field
-                                name="driver"
                                 [query_fn]="driver_query_fn"
-                                formControlName="driver"
+                                [formField]="form.driver"
                             ></item-search-field>
                             @if (
-                                form.controls.driver.invalid &&
-                                form.controls.driver.touched
+                                form.driver().invalid() &&
+                                form.driver().touched()
                             ) {
                                 <div class="error">
                                     {{ 'MODULES.DRIVER_REQUIRED' | translate }}
@@ -77,14 +75,14 @@ import { generateModuleFormFields } from './modules.utilities';
                             }
                         </div>
                     }
-                    @if (!form.controls.driver || form.controls.driver.value) {
-                        @if (form.controls.system && role() === 'logic') {
+                    @if (!form.driver || formModel().driver) {
+                        @if (form.system && role() === 'logic') {
                             <div class="field">
                                 <label
                                     for="system"
                                     [class.error]="
-                                        form.controls.system.invalid &&
-                                        form.controls.system.touched
+                                        form.system().invalid() &&
+                                        form.system().touched()
                                     "
                                 >
                                     {{ 'MODULES.CONTROL_SYSTEM' | translate }}
@@ -94,13 +92,12 @@ import { generateModuleFormFields } from './modules.utilities';
                                 </label>
                                 @if (!is_readonly) {
                                     <item-search-field
-                                        name="system"
                                         [query_fn]="system_query_fn"
-                                        formControlName="system"
+                                        [formField]="form.system"
                                     ></item-search-field>
                                     @if (
-                                        form.controls.system.invalid &&
-                                        form.controls.system.touched
+                                        form.system().invalid() &&
+                                        form.system().touched()
                                     ) {
                                         <div class="error">
                                             {{
@@ -111,24 +108,24 @@ import { generateModuleFormFields } from './modules.utilities';
                                     }
                                 } @else {
                                     <div class="value">
-                                        {{ form.controls.system.value?.name }}
+                                        {{ formModel().system?.name }}
                                         <span>{{
-                                            form.controls.system.value?.id
+                                            formModel().system?.id
                                         }}</span>
                                     </div>
                                 }
                             </div>
                         }
                         @if (
-                            form.controls.uri &&
+                            form.uri &&
                             (role() === 'service' || role() === 'websocket')
                         ) {
                             <div class="field">
                                 <label
                                     for="uri"
                                     [class.error]="
-                                        form.controls.uri.invalid &&
-                                        form.controls.uri.touched
+                                        form.uri().invalid() &&
+                                        form.uri().touched()
                                     "
                                 >
                                     {{ 'MODULES.URI' | translate
@@ -137,11 +134,10 @@ import { generateModuleFormFields } from './modules.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="uri"
                                         [placeholder]="
                                             'MODULES.URI' | translate
                                         "
-                                        formControlName="uri"
+                                        [formField]="form.uri"
                                     />
                                     <mat-error>{{
                                         'MODULES.URI_REQUIRED' | translate
@@ -151,7 +147,7 @@ import { generateModuleFormFields } from './modules.utilities';
                         }
                         <div class="fieldset">
                             @if (
-                                form.controls.ip &&
+                                form.ip &&
                                 !(
                                     role() === 'service' ||
                                     role() === 'websocket'
@@ -161,8 +157,8 @@ import { generateModuleFormFields } from './modules.utilities';
                                     <label
                                         for="ip"
                                         [class.error]="
-                                            form.controls.ip.invalid &&
-                                            form.controls.ip.touched
+                                            form.ip().invalid() &&
+                                            form.ip().touched()
                                         "
                                     >
                                         {{ 'MODULES.FIELD_IP' | translate }}
@@ -176,11 +172,10 @@ import { generateModuleFormFields } from './modules.utilities';
                                     <mat-form-field appearance="outline">
                                         <input
                                             matInput
-                                            name="ip"
                                             placeholder="IP Address"
-                                            formControlName="ip"
+                                            [formField]="form.ip"
                                         />
-                                        @if (form.controls.ip.invalid) {
+                                        @if (form.ip().invalid()) {
                                             <mat-error>
                                                 {{
                                                     'MODULES.IP_REQUIRED'
@@ -192,7 +187,7 @@ import { generateModuleFormFields } from './modules.utilities';
                                 </div>
                             }
                             @if (
-                                form.controls.port &&
+                                form.port &&
                                 !(
                                     role() === 'service' ||
                                     role() === 'websocket'
@@ -202,8 +197,8 @@ import { generateModuleFormFields } from './modules.utilities';
                                     <label
                                         for="port-number"
                                         [class.error]="
-                                            form.controls.port.invalid &&
-                                            form.controls.port.touched
+                                            form.port().invalid() &&
+                                            form.port().touched()
                                         "
                                     >
                                         {{ 'MODULES.PORT_NUMBER' | translate }}
@@ -217,15 +212,14 @@ import { generateModuleFormFields } from './modules.utilities';
                                     <mat-form-field appearance="outline">
                                         <input
                                             matInput
-                                            name="port-number"
                                             type="number"
                                             [placeholder]="
                                                 'MODULES.PORT_NUMBER'
                                                     | translate
                                             "
-                                            formControlName="port"
+                                            [formField]="form.port"
                                         />
-                                        @if (form.controls.port.invalid) {
+                                        @if (form.port().invalid()) {
                                             <mat-error>
                                                 {{
                                                     'MODULES.PORT_REQUIRED'
@@ -239,7 +233,7 @@ import { generateModuleFormFields } from './modules.utilities';
                         </div>
                         <div class="-mx-2 mb-4 flex flex-wrap items-center">
                             @if (
-                                form.controls.tls &&
+                                form.tls &&
                                 !(
                                     role() === 'service' ||
                                     role() === 'websocket'
@@ -247,12 +241,12 @@ import { generateModuleFormFields } from './modules.utilities';
                             ) {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
-                                    [name]="'COMMON.TLS' | translate"
-                                    formControlName="tls"
+                                    [label]="'COMMON.TLS' | translate"
+                                    [formField]="form.tls"
                                 ></settings-toggle>
                             }
                             @if (
-                                form.controls.udp &&
+                                form.udp &&
                                 !(
                                     role() === 'service' ||
                                     role() === 'websocket'
@@ -260,41 +254,40 @@ import { generateModuleFormFields } from './modules.utilities';
                             ) {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
-                                    [name]="'COMMON.UDP' | translate"
-                                    formControlName="udp"
+                                    [label]="'COMMON.UDP' | translate"
+                                    [formField]="form.udp"
                                 ></settings-toggle>
                             }
                             @if (
-                                form.controls.makebreak && role() !== 'logic'
+                                form.makebreak && role() !== 'logic'
                             ) {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
-                                    [name]="'MODULES.MAKEBREAK' | translate"
-                                    formControlName="makebreak"
+                                    [label]="'MODULES.MAKEBREAK' | translate"
+                                    [formField]="form.makebreak"
                                 ></settings-toggle>
                             }
                             @if (
-                                form.controls.ignore_connected &&
+                                form.ignore_connected &&
                                 role() !== 'logic'
                             ) {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
-                                    [name]="
+                                    [label]="
                                         'MODULES.IGNORE_CONNECTED' | translate
                                     "
-                                    formControlName="ignore_connected"
+                                    [formField]="form.ignore_connected"
                                 ></settings-toggle>
                             }
                         </div>
-                        @if (form.controls.alert_level) {
+                        @if (form.alert_level) {
                             <div class="field">
                                 <label for="alert-level">
                                     {{ 'COMMON.ALERT_LEVEL' | translate }}
                                 </label>
                                 <mat-form-field appearance="outline">
                                     <mat-select
-                                        name="alert-level"
-                                        formControlName="alert_level"
+                                        [formField]="form.alert_level"
                                     >
                                         @for (
                                             level of alert_levels;
@@ -308,7 +301,7 @@ import { generateModuleFormFields } from './modules.utilities';
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.notes) {
+                        @if (form.notes) {
                             <div class="field">
                                 <label for="notes">{{
                                     'COMMON.NOTES' | translate
@@ -316,16 +309,15 @@ import { generateModuleFormFields } from './modules.utilities';
                                 <mat-form-field appearance="outline">
                                     <textarea
                                         matInput
-                                        name="notes"
                                         [placeholder]="
                                             'COMMON.NOTES' | translate
                                         "
-                                        formControlName="notes"
+                                        [formField]="form.notes"
                                     ></textarea>
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.custom_name) {
+                        @if (form.custom_name) {
                             <div class="field">
                                 <label for="custom-name">
                                     {{ 'MODULES.CUSTOM_NAME' | translate }}
@@ -333,16 +325,15 @@ import { generateModuleFormFields } from './modules.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="custom-name"
                                         [placeholder]="
                                             'MODULES.CUSTOM_NAME' | translate
                                         "
-                                        formControlName="custom_name"
+                                        [formField]="form.custom_name"
                                     />
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.edge && !form.controls.id.value) {
+                        @if (form.edge && !formModel().id) {
                             <div class="field">
                                 <label for="driver">
                                     {{ 'COMMON.EDGE' | translate }}
@@ -352,7 +343,7 @@ import { generateModuleFormFields } from './modules.utilities';
                                         'COMMON.EDGE_SEARCH' | translate
                                     "
                                     [query_fn]="edge_query_fn"
-                                    formControlName="edge"
+                                    [formField]="form.edge"
                                 ></item-search-field>
                             </div>
                         }
@@ -365,7 +356,7 @@ import { generateModuleFormFields } from './modules.utilities';
     imports: [
         ItemSearchFieldComponent,
         TranslatePipe,
-        ReactiveFormsModule,
+        FormField,
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
@@ -384,25 +375,13 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup = generateModuleFormFields(this._data.item);
+    public readonly formModel = signal(generateModuleFormModel(this._data.item));
+    public readonly form = form(this.formModel, applyModuleFormSchema);
     public loading: string;
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
     );
     public is_readonly = !!this._data.readonly;
-    private _driver: Signal<{ role?: PlaceDriverRole } | null> = this.form
-        .controls.driver
-        ? toSignal(this.form.controls.driver.valueChanges, {
-              initialValue: this.form.controls.driver.value || null,
-          })
-        : signal(null);
-    private _module_role: Signal<PlaceDriverRole | null> = toSignal(
-        this.form.controls.role.valueChanges,
-        {
-            initialValue: this.form.controls.role.value || null,
-        },
-    );
-
     public readonly alert_levels = [
         { id: 'low', name: 'COMMON.ALERT_LOW' },
         { id: 'medium', name: 'COMMON.ALERT_MEDIUM' },
@@ -422,8 +401,8 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
         queryEdges({ q: _ }).then((resp) => resp.data);
 
     /** Role of the selected driver */
-    public role: Signal<string> = computed(() => {
-        const role = this._driver()?.role || this._module_role();
+    public role = computed(() => {
+        const role = this.formModel().driver?.role || this.formModel().role;
         switch (role) {
             case PlaceDriverRole.SSH:
                 return 'ssh';
@@ -444,51 +423,115 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
+    constructor() {
+        super();
+        effect(() => {
+            const custom_name = this.formModel().custom_name;
+            const clean_name = custom_name?.replace(/ /g, '_') || '';
+            if (custom_name !== clean_name) {
+                this.formModel.update((value) => ({
+                    ...value,
+                    custom_name: clean_name,
+                }));
+            }
+        });
+        effect(() => {
+            const system = this.formModel().system;
+            if (system?.id !== this.formModel().control_system_id) {
+                this.formModel.update((value) => ({
+                    ...value,
+                    control_system_id: system?.id || '',
+                }));
+            }
+        });
+        effect(() => {
+            const edge = this.formModel().edge;
+            if ((edge?.id || '') !== this.formModel().edge_id) {
+                this.formModel.update((value) => ({
+                    ...value,
+                    edge_id: edge?.id || '',
+                }));
+            }
+        });
+        effect(() => {
+            const driver = this.formModel().driver;
+            if (!driver?.id) return;
+            this.formModel.update((value) => ({
+                ...value,
+                driver_id: driver.id,
+                name: driver.name || driver.module_name,
+                uri: driver.default_uri || '',
+                port: driver.default_port || 1,
+                alert_level: driver.alert_level || 'medium',
+                role: driver.role || PlaceDriverRole.Logic,
+                udp:
+                    driver.role === PlaceDriverRole.Service ||
+                    driver.role === PlaceDriverRole.Websocket
+                        ? false
+                        : value.udp,
+                system:
+                    driver.role === PlaceDriverRole.Logic
+                        ? value.system
+                        : undefined,
+            }));
+        });
+    }
+
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
-                }),
-            );
-        }
-        const item = this._data.item;
-        this.loading = i18n(`${this._name}.SAVING`);
-        this._dialog_ref.disableClose = true;
-        const item_json = item.toJSON ? item.toJSON() : item;
-        const form_item = (
-            item.id
-                ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
-                : { ...item_json, ...this.form.value }
-        ) as Identity;
-        try {
-            const _item = await (form_item.id
-                ? updateModule(
-                      form_item.id as string,
-                      form_item as unknown as PlaceModule,
-                  )
-                : addModule(form_item as unknown as PlaceModule));
-            this._dialog_ref.disableClose = false;
-            this.event.emit({ reason: 'done', metadata: { item: _item } });
-            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-            if (!this.form.value.id && this.form.controls.settings) {
-                await this.newSettings(
-                    _item as unknown as Identity,
-                    this.form.controls.settings.value,
+        await submit(this.form, async () => {
+            const item = this._data.item;
+            this.loading = i18n(`${this._name}.SAVING`);
+            this._dialog_ref.disableClose = true;
+            const item_json = item.toJSON ? item.toJSON() : item;
+            const form_value = { ...this.formModel() };
+            if (item.id) {
+                delete form_value.system;
+                delete form_value.driver;
+                delete form_value.edge;
+            }
+            const form_item = (
+                item.id
+                    ? cleanObject(
+                          { ...item_json, ...form_value },
+                          [undefined],
+                      )
+                    : { ...item_json, ...form_value }
+            ) as Identity;
+            try {
+                const _item = await (form_item.id
+                    ? updateModule(
+                          form_item.id as string,
+                          form_item as unknown as PlaceModule,
+                      )
+                    : addModule(form_item as unknown as PlaceModule));
+                this._dialog_ref.disableClose = false;
+                this.event.emit({ reason: 'done', metadata: { item: _item } });
+                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+                if (!this.formModel().id && form_item.settings) {
+                    await this.newSettings(
+                        _item as unknown as Identity,
+                        form_item.settings as string,
+                    );
+                }
+                this._dialog_ref.close();
+            } catch (err) {
+                this.loading = null;
+                this._dialog_ref.disableClose = false;
+                notifyError(
+                    i18n(`${this._name}.SAVE_ERROR`, {
+                        error: JSON.stringify(
+                            (await (err as Response).text?.()) ||
+                                (err as Error).message ||
+                                err,
+                        ),
+                    }),
                 );
             }
-            this._dialog_ref.close();
-        } catch (err) {
-            this.loading = null;
-            this._dialog_ref.disableClose = false;
-            notifyError(
-                i18n(`${this._name}.SAVE_ERROR`, {
-                    error: JSON.stringify(
-                        (await (err as Response).text?.()) ||
-                            (err as Error).message ||
-                            err,
-                    ),
+        });
+        if (this.form().invalid()) {
+            return notifyError(
+                i18n('COMMON.INVALID_FIELDS', {
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }

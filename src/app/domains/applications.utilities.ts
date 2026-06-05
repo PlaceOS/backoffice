@@ -1,18 +1,37 @@
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlaceApplication } from '@placeos/ts-client';
+import { required, SchemaFn, validate } from '@angular/forms/signals';
+import { isValidUrl } from '../common/validation';
 
-import { validateURL } from '../common/validation';
-
-export function generateApplicationFormFields(app?: PlaceApplication) {
-    const application = app as PlaceApplication & { subsystems?: string[] };
-    const fields = {
-        name: new FormControl(app?.name || '', [Validators.required]),
-        scopes: new FormControl(app?.scopes || ''),
-        subsystems: new FormControl(application?.subsystems || []),
-        skip_authorization: new FormControl(!!app?.skip_authorization),
-        redirect_uri: new FormControl(app?.redirect_uri || '', validateURL),
-        client_id: new FormControl(app?.uid || ''),
-        preserve_client_id: new FormControl(false),
-    };
-    return new FormGroup(fields);
+export interface ApplicationFormModel {
+    name: string;
+    scopes: string;
+    subsystems: string[];
+    skip_authorization: boolean;
+    redirect_uri: string;
+    client_id: string;
+    preserve_client_id: boolean;
 }
+
+export function generateApplicationFormModel(
+    app?: PlaceApplication,
+): ApplicationFormModel {
+    const application = app as PlaceApplication & { subsystems?: string[] };
+    return {
+        name: app?.name || '',
+        scopes: app?.scopes || '',
+        subsystems: application?.subsystems || [],
+        skip_authorization: !!app?.skip_authorization,
+        redirect_uri: app?.redirect_uri || '',
+        client_id: app?.uid || '',
+        preserve_client_id: false,
+    };
+}
+
+export const applyApplicationFormSchema: SchemaFn<ApplicationFormModel> = (
+    path,
+) => {
+    required(path.name);
+    validate(path.redirect_uri, ({ value }) =>
+        isValidUrl(value()) ? undefined : { kind: 'url', message: 'Invalid URL' },
+    );
+};

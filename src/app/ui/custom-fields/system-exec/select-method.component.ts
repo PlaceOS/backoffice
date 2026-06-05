@@ -5,6 +5,7 @@ import {
     ElementRef,
     forwardRef,
     input,
+    model,
     OnChanges,
     resource,
     signal,
@@ -43,6 +44,7 @@ interface MethodOption extends PlaceModuleFunction {
                         [placeholder]="
                             'COMMON.EXECUTE_METHOD_SELECT' | translate
                         "
+                        [disabled]="disabled()"
                         [(ngModel)]="method"
                         (ngModelChange)="setValue($event)"
                         (openedChange)="setOpen($event)"
@@ -128,6 +130,7 @@ export class SelectMethodComponent
 
     public readonly method = signal<PlaceModuleFunction>(undefined);
     public readonly method_filter = signal('');
+    public readonly disabled = model(false);
 
     public readonly loading = signal(false);
 
@@ -201,15 +204,21 @@ export class SelectMethodComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: PlaceModuleFunction): void {
+        if (this.disabled()) return;
         this.method.set(new_value);
         if (this._onChange && !this.loading()) {
             this._onChange(new_value);
         }
+        this._onTouch?.(new_value);
     }
 
     /** Handle dropdown opening to reset and focus method search. */
     public setOpen(open: boolean): void {
-        if (!open) return;
+        if (!open) {
+            this._onTouch?.(this.method());
+            return;
+        }
+        if (this.disabled()) return;
         this.method_filter.set('');
         this.timeout('focus_search', () =>
             this._search_el()?.nativeElement.focus(),
@@ -236,4 +245,8 @@ export class SelectMethodComponent
      * @param fn The callback function to register
      */
     public registerOnTouched = (fn) => (this._onTouch = fn);
+
+    public setDisabledState(disabled: boolean) {
+        this.disabled.set(disabled);
+    }
 }

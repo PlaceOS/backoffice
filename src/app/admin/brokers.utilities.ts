@@ -1,49 +1,54 @@
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthType, PlaceMQTTBroker } from '@placeos/ts-client';
+import { required, SchemaFn } from '@angular/forms/signals';
 
-export function generateBrokerFormFields(broker?: PlaceMQTTBroker) {
-    const auth_type = broker.auth_type ?? AuthType.NoAuth;
-    const fields = {
-        name: new FormControl(broker.name || '', [Validators.required]),
-        description: new FormControl(broker.description),
-        auth_type: new FormControl(auth_type),
-        host: new FormControl(broker.host, [Validators.required]),
-        port: new FormControl(broker.port, [Validators.required]),
-        tls: new FormControl(!!broker.tls),
-        username: new FormControl(
-            broker.username,
-            auth_type === AuthType.UserPassword ? [Validators.required] : [],
-        ),
-        password: new FormControl(
-            broker.password,
-            auth_type === AuthType.UserPassword ? [Validators.required] : [],
-        ),
-        certificate: new FormControl(
-            broker.certificate,
-            auth_type === AuthType.Certificate ? [Validators.required] : [],
-        ),
-        filters: new FormControl(broker.filters),
-    };
-    fields.auth_type.valueChanges.subscribe((type) => {
-        switch (type) {
-            case AuthType.Certificate:
-                fields.username.setValidators([]);
-                fields.password.setValidators([]);
-                fields.certificate.setValidators([Validators.required]);
-                break;
-            case AuthType.UserPassword:
-                fields.username.setValidators([Validators.required]);
-                fields.password.setValidators([Validators.required]);
-                fields.certificate.setValidators([]);
-                break;
-            default:
-                fields.username.setValidators([]);
-                fields.password.setValidators([]);
-                fields.certificate.setValidators([]);
-        }
-        fields.username.updateValueAndValidity();
-        fields.password.updateValueAndValidity();
-        fields.certificate.updateValueAndValidity();
-    });
-    return new FormGroup(fields);
+export interface BrokerFormModel {
+    name: string;
+    description: string;
+    auth_type: AuthType;
+    host: string;
+    port: number;
+    tls: boolean;
+    username: string;
+    password: string;
+    certificate: string;
+    filters: string[];
 }
+
+export function generateBrokerFormModel(
+    broker: Partial<PlaceMQTTBroker> = {},
+): BrokerFormModel {
+    const auth_type = broker.auth_type ?? AuthType.NoAuth;
+    return {
+        name: broker.name || '',
+        description: broker.description || '',
+        auth_type,
+        host: broker.host || '',
+        port: broker.port || 0,
+        tls: !!broker.tls,
+        username: broker.username || '',
+        password: broker.password || '',
+        certificate: broker.certificate || '',
+        filters: broker.filters || [],
+    };
+}
+
+export const applyBrokerFormSchema: SchemaFn<BrokerFormModel> = (path) => {
+    required(path.name);
+    required(path.host);
+    required(path.port);
+    required(path.username, {
+        when({ valueOf }) {
+            return valueOf(path.auth_type) === AuthType.UserPassword;
+        },
+    });
+    required(path.password, {
+        when({ valueOf }) {
+            return valueOf(path.auth_type) === AuthType.UserPassword;
+        },
+    });
+    required(path.certificate, {
+        when({ valueOf }) {
+            return valueOf(path.auth_type) === AuthType.Certificate;
+        },
+    });
+};

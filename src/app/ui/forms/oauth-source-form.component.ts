@@ -1,16 +1,19 @@
-import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
 import {
-    AbstractControl,
-    FormsModule,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+    Component,
+    OnChanges,
+    SimpleChanges,
+    WritableSignal,
+    input,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { FieldTree, FormField } from '@angular/forms/signals';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { HashMap, Identity } from '../../common/types';
+import { OAuthSourceFormModel } from '../../domains/auth-sources.utilities';
 import { ObjectListFieldComponent } from '../custom-fields/object-list-field.component';
 import { TranslatePipe } from '../translate.pipe';
 
@@ -18,14 +21,14 @@ import { TranslatePipe } from '../translate.pipe';
     selector: 'oauth-source-form',
     template: `
         @if (form()) {
-            <form oauth-source class="flex flex-col" [formGroup]="form()">
-                @if (form().controls.name) {
+            <form oauth-source class="flex flex-col" >
+                @if (form().name) {
                     <div class="field">
                         <label
                             for="auth-source-name"
                             [class.error]="
-                                form().controls.name.invalid &&
-                                form().controls.name.touched
+                                form().name().invalid() &&
+                                form().name().touched()
                             "
                         >
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
@@ -33,12 +36,10 @@ import { TranslatePipe } from '../translate.pipe';
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="auth-source-name"
                                 [placeholder]="'COMMON.FIELD_NAME' | translate"
-                                formControlName="name"
-                                required
+                                [formField]="form().name"
                             />
-                            @if (form().controls.name.invalid) {
+                            @if (form().name().invalid()) {
                                 <mat-error>
                                     {{
                                         'DOMAINS.AUTHENTICATION_NAME_REQUIRE'
@@ -50,7 +51,7 @@ import { TranslatePipe } from '../translate.pipe';
                     </div>
                 }
                 <div class="fieldset">
-                    @if (form().controls.client_id) {
+                    @if (form().client_id) {
                         <div class="field">
                             <label for="client-id"
                                 >{{ 'DOMAINS.CLIENT_ID' | translate }}:</label
@@ -58,16 +59,15 @@ import { TranslatePipe } from '../translate.pipe';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="client-id"
                                     [placeholder]="
                                         'DOMAINS.CLIENT_ID' | translate
                                     "
-                                    formControlName="client_id"
+                                    [formField]="form().client_id"
                                 />
                             </mat-form-field>
                         </div>
                     }
-                    @if (form().controls.client_secret) {
+                    @if (form().client_secret) {
                         <div class="field">
                             <label for="client-secret"
                                 >{{ 'DOMAINS.CLIENT_SECRET' | translate }}:
@@ -75,18 +75,17 @@ import { TranslatePipe } from '../translate.pipe';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="client-secret"
                                     [placeholder]="
                                         'DOMAINS.CLIENT_SECRET' | translate
                                     "
-                                    formControlName="client_secret"
+                                    [formField]="form().client_secret"
                                 />
                             </mat-form-field>
                         </div>
                     }
                 </div>
                 <div class="fieldset">
-                    @if (form().controls.site) {
+                    @if (form().site) {
                         <div class="field">
                             <label for="site"
                                 >{{ 'DOMAINS.OAUTH_SITE' | translate }}:</label
@@ -94,17 +93,16 @@ import { TranslatePipe } from '../translate.pipe';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="site"
                                     [placeholder]="
                                         'DOMAINS.OAUTH_SITE_PLACEHOLDER'
                                             | translate
                                     "
-                                    formControlName="site"
+                                    [formField]="form().site"
                                 />
                             </mat-form-field>
                         </div>
                     }
-                    @if (form().controls.scope) {
+                    @if (form().scope) {
                         <div class="field">
                             <label for="scope"
                                 >{{
@@ -114,26 +112,24 @@ import { TranslatePipe } from '../translate.pipe';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="scope"
                                     [placeholder]="
                                         'DOMAINS.OAUTH_SCOPES' | translate
                                     "
-                                    formControlName="scope"
+                                    [formField]="form().scope"
                                 />
                             </mat-form-field>
                         </div>
                     }
                 </div>
                 <div class="fieldset">
-                    @if (form().controls.token_method) {
+                    @if (form().token_method) {
                         <div class="field type">
                             <label for="token-method"
                                 >{{ 'DOMAINS.OAUTH_TOKEN_METHOD' | translate }}:
                             </label>
                             <mat-form-field appearance="outline">
                                 <mat-select
-                                    name="token-method"
-                                    formControlName="token_method"
+                                    [formField]="form().token_method"
                                 >
                                     @for (type of token_methods; track type) {
                                         <mat-option [value]="type.id">
@@ -144,15 +140,14 @@ import { TranslatePipe } from '../translate.pipe';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form().controls.auth_scheme) {
+                    @if (form().auth_scheme) {
                         <div class="field type">
                             <label for="auth-scheme">
                                 Authentication Scheme:
                             </label>
                             <mat-form-field appearance="outline">
                                 <mat-select
-                                    name="auth-scheme"
-                                    formControlName="auth_scheme"
+                                    [formField]="form().auth_scheme"
                                 >
                                     @for (type of auth_schemes; track type) {
                                         <mat-option [value]="type.id">
@@ -169,7 +164,7 @@ import { TranslatePipe } from '../translate.pipe';
                         </div>
                     }
                 </div>
-                @if (form().controls.token_url) {
+                @if (form().token_url) {
                     <div class="field">
                         <label for="token-url"
                             >{{ 'DOMAINS.OAUTH_TOKEN_URL' | translate }}:</label
@@ -177,17 +172,16 @@ import { TranslatePipe } from '../translate.pipe';
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="token-url"
                                 [placeholder]="
                                     'DOMAINS.OAUTH_TOKEN_URL' | translate
                                 "
-                                formControlName="token_url"
+                                [formField]="form().token_url"
                             />
                         </mat-form-field>
                     </div>
                 }
                 <div class="fieldset">
-                    @if (form().controls.authorize_url) {
+                    @if (form().authorize_url) {
                         <div class="field">
                             <label for="authorize-url"
                                 >{{
@@ -197,17 +191,16 @@ import { TranslatePipe } from '../translate.pipe';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="authorize-url"
                                     [placeholder]="
                                         'DOMAINS.OAUTH_AUTHORISE_URL'
                                             | translate
                                     "
-                                    formControlName="authorize_url"
+                                    [formField]="form().authorize_url"
                                 />
                             </mat-form-field>
                         </div>
                     }
-                    @if (form().controls.raw_info_url) {
+                    @if (form().raw_info_url) {
                         <div class="field">
                             <label for="info-url"
                                 >{{
@@ -217,17 +210,16 @@ import { TranslatePipe } from '../translate.pipe';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="raw_info_url"
                                     [placeholder]="
                                         'DOMAINS.OAUTH_PROFILE_URL' | translate
                                     "
-                                    formControlName="raw_info_url"
+                                    [formField]="form().raw_info_url"
                                 />
                             </mat-form-field>
                         </div>
                     }
                 </div>
-                @if (form().controls.info_mappings) {
+                @if (form().info_mappings) {
                     <div class="field mb-4">
                         <label for="client-secret"
                             >{{
@@ -239,7 +231,7 @@ import { TranslatePipe } from '../translate.pipe';
                             (ngModelChange)="
                                 updateMappings(
                                     $event,
-                                    form().controls.info_mappings
+                                    'info_mappings'
                                 )
                             "
                             [ngModelOptions]="{ standalone: true }"
@@ -247,7 +239,7 @@ import { TranslatePipe } from '../translate.pipe';
                         ></object-list-field>
                     </div>
                 }
-                @if (form().controls.authorize_params) {
+                @if (form().authorize_params) {
                     <div class="field mb-4">
                         <label for="client-secret"
                             >{{
@@ -259,7 +251,7 @@ import { TranslatePipe } from '../translate.pipe';
                             (ngModelChange)="
                                 updateMappings(
                                     $event,
-                                    form().controls.authorize_params,
+                                    'authorize_params',
                                     false,
                                     ['Parameter', 'Value']
                                 )
@@ -269,7 +261,7 @@ import { TranslatePipe } from '../translate.pipe';
                         ></object-list-field>
                     </div>
                 }
-                @if (form().controls.ensure_matching) {
+                @if (form().ensure_matching) {
                     <div class="field mb-4">
                         <label for="client-secret"
                             >{{
@@ -281,7 +273,7 @@ import { TranslatePipe } from '../translate.pipe';
                             (ngModelChange)="
                                 updateMappings(
                                     $event,
-                                    form().controls.ensure_matching,
+                                    'ensure_matching',
                                     true,
                                     ['Parameter', 'Value']
                                 )
@@ -305,7 +297,7 @@ import { TranslatePipe } from '../translate.pipe';
         ObjectListFieldComponent,
         FormsModule,
         TranslatePipe,
-        ReactiveFormsModule,
+        FormField,
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
@@ -315,8 +307,10 @@ export class OauthSourceFormComponent
     extends AsyncHandler
     implements OnChanges
 {
-    /** Group of form fields used for creating the system */
-    public readonly form = input<UntypedFormGroup>(undefined);
+    /** Signal form fields used for editing the OAuth source */
+    public readonly form = input<FieldTree<OAuthSourceFormModel>>(undefined);
+    public readonly formModel =
+        input<WritableSignal<OAuthSourceFormModel>>(undefined);
     /** List of available token request methods */
     public token_methods: Identity[] = [
         { id: 'get', name: 'GET' },
@@ -338,24 +332,26 @@ export class OauthSourceFormComponent
     public ngOnChanges(changes: SimpleChanges): void {
         const form = this.form();
         if (changes.form && form) {
-            if (form.controls.info_mappings) {
-                const map = form.controls.info_mappings.value || {};
+            const model = this.formModel()();
+            if (form.info_mappings) {
+                const map = model.info_mappings || {};
                 this.info_mapping_list = Object.keys(map).map((key) => {
                     return { PlaceOS: key, Remote: map[key] };
                 });
             }
-            if (form.controls.authorize_params) {
-                const map = form.controls.authorize_params.value || {};
+            if (form.authorize_params) {
+                const map = model.authorize_params || {};
                 this.auth_params_list = Object.keys(map).map((key) => {
                     return { Parameter: key, Value: map[key] };
                 });
             }
-            if (form.controls.ensure_matching) {
-                const map = form.controls.ensure_matching.value || {};
+            if (form.ensure_matching) {
+                const map = model.ensure_matching || {};
                 this.ensure_matching_list = Object.keys(map).map((key) => {
+                    const value = map[key];
                     return {
                         Parameter: key,
-                        Value: (map[key] || []).join(','),
+                        Value: Array.isArray(value) ? value.join(',') : value,
                     };
                 });
             }
@@ -364,7 +360,7 @@ export class OauthSourceFormComponent
 
     public updateMappings(
         mappings: { PlaceOS: string; Remote: string }[],
-        control: AbstractControl,
+        key: 'info_mappings' | 'authorize_params' | 'ensure_matching',
         split = false,
         fields: [string, string] = ['PlaceOS', 'Remote'],
     ) {
@@ -376,6 +372,6 @@ export class OauthSourceFormComponent
                     : (pair[fields[1]] || '').split(',');
             }
         }
-        control.setValue(map);
+        this.formModel().update((model) => ({ ...model, [key]: map }));
     }
 }

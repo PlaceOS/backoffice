@@ -1,11 +1,13 @@
+import { AbstractControl } from '@angular/forms';
 import {
-    AbstractControl,
-    FormControl,
-    FormGroup,
-    Validators,
-} from '@angular/forms';
+    disabled,
+    email,
+    required,
+    SchemaFn,
+    validate,
+} from '@angular/forms/signals';
 import { PlaceUser } from '@placeos/ts-client';
-import { validateURL } from '../common/validation';
+import { isValidUrl } from '../common/validation';
 
 export function validateMatch(name: string) {
     return (control: AbstractControl) => {
@@ -20,39 +22,62 @@ export function validateMatch(name: string) {
     };
 }
 
-export function generateUserFormFields(user: PlaceUser) {
-    const fields = {
-        authority_id: new FormControl(user?.authority_id || '', [
-            Validators.required,
-        ]),
-        first_name: new FormControl(user?.first_name || user?.name || '', [
-            Validators.required,
-        ]),
-        last_name: new FormControl(user?.last_name || '', [
-            Validators.required,
-        ]),
-        email: new FormControl(user?.email || '', [
-            Validators.email,
-            Validators.required,
-        ]),
-        staff_id: new FormControl(user?.staff_id || ''),
-        support: new FormControl(user?.support || false),
-        sys_admin: new FormControl(user?.sys_admin || false),
-        locatable: new FormControl(user?.locatable || false),
-        groups: new FormControl(user?.groups || []),
-        password: new FormControl(
-            '',
-            !user?.id ? [Validators.required] : undefined,
-        ),
-        confirm_password: new FormControl('', [validateMatch('password')]),
-        card_number: new FormControl(user?.card_number || ''),
-        image: new FormControl(user?.image || '', [validateURL]),
+export interface UserFormModel {
+    authority_id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    staff_id: string;
+    support: boolean;
+    sys_admin: boolean;
+    locatable: boolean;
+    groups: string[];
+    password: string;
+    confirm_password: string;
+    card_number: string;
+    image: string;
+}
+
+export function generateUserFormModel(user: PlaceUser): UserFormModel {
+    return {
+        authority_id: user?.authority_id || '',
+        first_name: user?.first_name || user?.name || '',
+        last_name: user?.last_name || '',
+        email: user?.email || '',
+        staff_id: user?.staff_id || '',
+        support: user?.support || false,
+        sys_admin: user?.sys_admin || false,
+        locatable: user?.locatable || false,
+        groups: user?.groups || [],
+        password: '',
+        confirm_password: '',
+        card_number: user?.card_number || '',
+        image: user?.image || '',
     };
-    if (user?.id) {
-        fields.authority_id.disable();
-    }
-    fields.password.valueChanges.subscribe(() => {
-        fields.confirm_password.updateValueAndValidity();
-    });
-    return new FormGroup(fields);
+}
+
+export function userFormSchema(user?: PlaceUser): SchemaFn<UserFormModel> {
+    return (path) => {
+        required(path.authority_id);
+        required(path.first_name);
+        required(path.last_name);
+        required(path.email);
+        email(path.email);
+        required(path.password, {
+            when() {
+                return !user?.id;
+            },
+        });
+        validate(path.confirm_password, ({ value, valueOf }) =>
+            valueOf(path.password) !== value()
+                ? { kind: 'match', message: 'Passwords must match' }
+                : undefined,
+        );
+        validate(path.image, ({ value }) =>
+            isValidUrl(value())
+                ? undefined
+                : { kind: 'url', message: 'Invalid URL' },
+        );
+        disabled(path.authority_id, () => !!user?.id);
+    };
 }

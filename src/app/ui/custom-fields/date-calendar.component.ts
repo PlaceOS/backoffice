@@ -6,6 +6,7 @@ import {
     input,
     OnChanges,
     OnInit,
+    signal,
     SimpleChanges,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -43,6 +44,7 @@ interface DateItem {
                         matRipple
                         name="schedule-next-month"
                         [disabled]="
+                            disabled() ||
                             $safeNavigationMigration(date_list[0]?.id) < from()
                         "
                         (click)="changeMonth(-1)"
@@ -54,6 +56,7 @@ interface DateItem {
                         matRipple
                         name="schedule-previous-month"
                         [disabled]="
+                            disabled() ||
                             $safeNavigationMigration(date_list[34]?.id) > to()
                         "
                         (click)="changeMonth(1)"
@@ -84,7 +87,9 @@ interface DateItem {
                         [class.bg-secondary]="day.id === active_date"
                         [class.font-normal]="day.id !== active_date"
                         (click)="setValue(day.id)"
-                        [disabled]="day.id < from() || day.id > to()"
+                        [disabled]="
+                            disabled() || day.id < from() || day.id > to()
+                        "
                     >
                         {{ day.id | date: 'd' }}
                         @if (today === day.id) {
@@ -121,6 +126,7 @@ export class DateCalendarComponent
     public readonly from = input(0);
     public readonly to = input(Date.now() * 10);
     public readonly offset_weekday = input(0);
+    public readonly disabled = signal(false);
     public readonly today = startOfDay(Date.now()).valueOf();
     public date: number = Date.now();
     public active_date: number = startOfDay(Date.now()).valueOf();
@@ -143,6 +149,7 @@ export class DateCalendarComponent
     }
 
     public setValue(new_value: number) {
+        if (this.disabled()) return;
         if (new_value < this.from() || new_value >= this.to()) return;
         const date = new Date(new_value);
         this.date = set(this.date, {
@@ -152,6 +159,7 @@ export class DateCalendarComponent
         }).valueOf();
         this.active_date = startOfDay(this.date).valueOf();
         if (this._onChange) this._onChange(new_value);
+        this._onTouch?.(new_value);
     }
 
     public writeValue(value: number) {
@@ -162,6 +170,7 @@ export class DateCalendarComponent
     }
 
     public changeMonth(change: number) {
+        if (this.disabled()) return;
         this.offset += change;
         this.generateDates();
     }
@@ -170,6 +179,10 @@ export class DateCalendarComponent
         (this._onChange = fn);
     public readonly registerOnTouched = (fn: (_: number) => void) =>
         (this._onTouch = fn);
+
+    public setDisabledState(disabled: boolean): void {
+        this.disabled.set(disabled);
+    }
 
     public generateDates() {
         const offset =

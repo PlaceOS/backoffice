@@ -1,5 +1,12 @@
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
-import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import {
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    inject,
+    signal,
+} from '@angular/core';
+import { form, FormField, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,7 +21,7 @@ import {
     updateTrigger,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
-import { getInvalidFields } from '../common/general';
+import { getInvalidSignalFields } from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -23,7 +30,10 @@ import { CounterComponent } from '../ui/counter.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { generateTriggerFormFields } from './triggers.utilities';
+import {
+    applyTriggerFormSchema,
+    generateTriggerFormModel,
+} from './triggers.utilities';
 
 @Component({
     selector: 'trigger-form',
@@ -37,15 +47,14 @@ import { generateTriggerFormFields } from './triggers.utilities';
                 <form
                     trigger
                     class="flex w-xl max-w-[calc(100vw-4rem)] flex-col"
-                    [formGroup]="form"
                 >
-                    @if (form.controls.name) {
+                    @if (form.name) {
                         <div class="field">
                             <label
                                 for="trigger-name"
                                 [class.error]="
-                                    form.controls.name.invalid &&
-                                    form.controls.name.touched
+                                    form.name().invalid() &&
+                                    form.name().touched()
                                 "
                             >
                                 {{ 'COMMON.FIELD_NAME' | translate
@@ -54,18 +63,16 @@ import { generateTriggerFormFields } from './triggers.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="trigger-name"
                                     [placeholder]="
                                         'COMMON.FIELD_NAME' | translate
                                     "
-                                    formControlName="name"
-                                    required
+                                    [formField]="form.name"
                                 />
                                 <mat-error>Trigger name is required</mat-error>
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.description) {
+                    @if (form.description) {
                         <div class="field">
                             <label for="description">{{
                                 'COMMON.FIELD_DESCRIPTION' | translate
@@ -73,40 +80,39 @@ import { generateTriggerFormFields } from './triggers.utilities';
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
-                                    name="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
-                                    formControlName="description"
+                                    [formField]="form.description"
                                 ></textarea>
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.enable_webhook) {
+                    @if (form.enable_webhook) {
                         <div class="field mb-4 w-[calc(50%-0.75rem)]">
                             <settings-toggle
-                                [name]="'TRIGGERS.ENABLE_WEBHOOK' | translate"
-                                formControlName="enable_webhook"
+                                [label]="'TRIGGERS.ENABLE_WEBHOOK' | translate"
+                                [formField]="form.enable_webhook"
                             ></settings-toggle>
                         </div>
                     }
                     <div class="flex items-center space-x-4">
                         @if (
-                            form.controls.enable_webhook.value &&
-                            form.controls.debounce_period
+                            formModel().enable_webhook &&
+                            form.debounce_period
                         ) {
                             <div class="field">
                                 <label
                                     for="debounce-period"
                                     [class.error]="
-                                        form.controls.name.invalid &&
-                                        form.controls.name.touched
+                                        form.name().invalid() &&
+                                        form.name().touched()
                                     "
                                 >
                                     {{ 'TRIGGERS.DEBOUNCE_PERIOD' | translate }}
                                 </label>
                                 <a-counter
-                                    formControlName="debounce_period"
+                                    [formField]="form.debounce_period"
                                     [min]="0"
                                     [step]="100"
                                     [max]="24 * 60 * 60"
@@ -115,8 +121,8 @@ import { generateTriggerFormFields } from './triggers.utilities';
                             </div>
                         }
                         @if (
-                            form.controls.enable_webhook.value &&
-                            form.controls.supported_methods
+                            formModel().enable_webhook &&
+                            form.supported_methods
                         ) {
                             <div class="field">
                                 <label for="methods">
@@ -129,9 +135,8 @@ import { generateTriggerFormFields } from './triggers.utilities';
                                     class="no-subscript"
                                 >
                                     <mat-select
-                                        name="methods"
                                         multiple
-                                        formControlName="supported_methods"
+                                        [formField]="form.supported_methods"
                                     >
                                         <mat-option value="GET">GET</mat-option>
                                         <mat-option value="POST"
@@ -157,7 +162,7 @@ import { generateTriggerFormFields } from './triggers.utilities';
     imports: [
         MatFormFieldModule,
         MatSelectModule,
-        ReactiveFormsModule,
+        FormField,
         CounterComponent,
         SettingsToggleComponent,
         MatInputModule,
@@ -176,7 +181,8 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup;
+    public readonly formModel = signal(generateTriggerFormModel(this._data.item));
+    public readonly form = form(this.formModel, applyTriggerFormSchema);
     public loading: string;
     public heading: string;
 
@@ -186,7 +192,6 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
         const item = this._data.item;
         const edit = !!item.id;
         this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
-        this.form = generateTriggerFormFields(item);
         this.subscription(
             'save_item_key',
             this._hotkey.listen(['KeyS'], () => this.submit()),
@@ -194,11 +199,11 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
+        await submit(this.form, async () => undefined);
+        if (this.form().invalid()) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }
@@ -206,9 +211,13 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
         this.loading = i18n(`${this._name}.SAVING`);
         this._dialog_ref.disableClose = true;
         const item_json = item.toJSON ? item.toJSON() : item;
-        const form_item: PlaceTrigger = item.id
-            ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
-            : { ...item_json, ...this.form.value };
+        const form_item = (
+            item.id
+                ? cleanObject({ ...item_json, ...this.formModel() }, [
+                      undefined,
+                  ])
+                : { ...item_json, ...this.formModel() }
+        ) as PlaceTrigger;
         try {
             const _item = await (form_item.id
                 ? updateTrigger(form_item.id, form_item)
@@ -216,12 +225,6 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
             this._dialog_ref.disableClose = false;
             this.event.emit({ reason: 'done', metadata: { item: _item } });
             notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-            if (!this.form.value.id && this.form.controls.settings) {
-                await this.newSettings(
-                    _item as unknown as Identity,
-                    this.form.controls.settings.value,
-                );
-            }
             this._dialog_ref.close();
         } catch (err) {
             this.loading = null;

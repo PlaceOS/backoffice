@@ -9,6 +9,7 @@ import {
     OnChanges,
     OnDestroy,
     OnInit,
+    signal,
     SimpleChanges,
     viewChild,
 } from '@angular/core';
@@ -58,6 +59,7 @@ export class SettingsFieldComponent
 
     /** Whether form field is readonly */
     public readonly readonly = input(true);
+    public readonly disabled = signal(false);
     /** Resize */
     public readonly resize = input<boolean>(undefined);
     /** Whether the field should fill the available height */
@@ -160,11 +162,13 @@ export class SettingsFieldComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: string): void {
+        if (this.disabled()) return;
         if (this.settings_string !== new_value) {
             this.settings_string = new_value;
             if (this._onChange) {
                 this._onChange(new_value);
             }
+            this._onTouch?.(new_value);
         }
     }
 
@@ -202,6 +206,11 @@ export class SettingsFieldComponent
         this._onTouch = fn;
     }
 
+    public setDisabledState(disabled: boolean) {
+        this.disabled.set(disabled);
+        this.editor?.updateOptions({ readOnly: this.readonly() || disabled });
+    }
+
     /** Update sizing of the editor after window has resized */
     public resizeEditor() {
         this.timeout('resize', () => this.createEditor(), 100);
@@ -226,7 +235,7 @@ export class SettingsFieldComponent
                 lineNumbers: 'on',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
-                readOnly: this.readonly(),
+                readOnly: this.readonly() || this.disabled(),
                 automaticLayout: true,
                 theme:
                     this._settings.get('theme') !== 'dark' ? 'vs' : 'vs-dark',
@@ -241,6 +250,9 @@ export class SettingsFieldComponent
                     );
                 }
             });
+            this.editor.onDidBlurEditorText(() =>
+                this._onTouch?.(this.settings_string),
+            );
             this.timeout(
                 'decorations',
                 () => {

@@ -1,6 +1,7 @@
 import {
     Component,
     computed,
+    effect,
     EventEmitter,
     inject,
     OnInit,
@@ -8,7 +9,7 @@ import {
     signal,
     viewChild,
 } from '@angular/core';
-import { ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,7 +17,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SignagePlugin } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../../common/async-handler.class';
-import { getInvalidFields } from '../../common/general';
+import { getInvalidSignalFields } from '../../common/forms';
 import { HotkeysService } from '../../common/hotkeys.service';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
@@ -30,7 +31,10 @@ import {
     PluginLoadedPayload,
     SignagePluginEmbedComponent,
 } from './signage-plugin-embed.component';
-import { generateSignagePluginFormFields } from './signage-plugins.utilities';
+import {
+    applySignagePluginFormSchema,
+    generateSignagePluginFormModel,
+} from './signage-plugins.utilities';
 
 export interface SignagePluginModalData {
     item: SignagePlugin;
@@ -51,13 +55,12 @@ export interface SignagePluginModalData {
             (save)="submit()"
         >
             @if (form) {
-                <form class="flex flex-col" [formGroup]="form">
+                <form class="flex flex-col">
                     <div class="field">
                         <label
                             for="plugin-name"
                             [class.error]="
-                                form.controls.name.invalid &&
-                                form.controls.name.touched
+                                form.name().invalid() && form.name().touched()
                             "
                         >
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
@@ -65,10 +68,8 @@ export interface SignagePluginModalData {
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="plugin-name"
                                 [placeholder]="'COMMON.FIELD_NAME' | translate"
-                                formControlName="name"
-                                required
+                                [formField]="form.name"
                             />
                             <mat-error>{{
                                 'ADMIN.SIGNAGE_PLUGINS_NAME_REQUIRED'
@@ -83,11 +84,10 @@ export interface SignagePluginModalData {
                         <mat-form-field appearance="outline">
                             <textarea
                                 matInput
-                                name="description"
                                 [placeholder]="
                                     'COMMON.FIELD_DESCRIPTION' | translate
                                 "
-                                formControlName="description"
+                                [formField]="form.description"
                             ></textarea>
                         </mat-form-field>
                     </div>
@@ -95,8 +95,7 @@ export interface SignagePluginModalData {
                         <label
                             for="plugin-uri"
                             [class.error]="
-                                form.controls.uri.invalid &&
-                                form.controls.uri.touched
+                                form.uri().invalid() && form.uri().touched()
                             "
                         >
                             {{ 'ADMIN.SIGNAGE_PLUGINS_FIELD_URI' | translate
@@ -105,13 +104,11 @@ export interface SignagePluginModalData {
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="plugin-uri"
                                 [placeholder]="
                                     'ADMIN.SIGNAGE_PLUGINS_FIELD_URI'
                                         | translate
                                 "
-                                formControlName="uri"
-                                required
+                                [formField]="form.uri"
                             />
                             <mat-error>{{
                                 'ADMIN.SIGNAGE_PLUGINS_URI_REQUIRED' | translate
@@ -138,11 +135,11 @@ export interface SignagePluginModalData {
                     <div class="field mb-4">
                         <settings-toggle
                             class="w-full"
-                            [name]="
+                            [label]="
                                 'ADMIN.SIGNAGE_PLUGINS_FIELD_ENABLED'
                                     | translate
                             "
-                            formControlName="enabled"
+                            [formField]="form.enabled"
                         ></settings-toggle>
                     </div>
                     <!-- Schema / Defaults section -->
@@ -182,7 +179,7 @@ export interface SignagePluginModalData {
                                 <schema-form
                                     #schema_form_el
                                     [schema]="schema()"
-                                    formControlName="defaults"
+                                    [formField]="form.defaults"
                                 />
                             </div>
                         }
@@ -217,7 +214,7 @@ export interface SignagePluginModalData {
     styles: [``],
     imports: [
         FullscreenModalShellComponent,
-        ReactiveFormsModule,
+        FormField,
         MatFormFieldModule,
         MatInputModule,
         MatProgressBarModule,
@@ -242,7 +239,13 @@ export class SignagePluginModalComponent
     @Output() public event = new EventEmitter<DialogEvent>();
 
     public edit: boolean;
-    public form: UntypedFormGroup;
+    public readonly formModel = signal(
+        generateSignagePluginFormModel(this._data.item),
+    );
+    public readonly form = form(
+        this.formModel,
+        applySignagePluginFormSchema,
+    );
     public loading: string;
 
     public readonly embed_plugin = signal<SignagePlugin>(null);
@@ -262,43 +265,40 @@ export class SignagePluginModalComponent
         }
     });
 
+    constructor() {
+        super();
+        effect(() => {
+            const uri = this.formModel().uri;
+            this.timeout(
+                'uri_debounce',
+                () => {
+                    if (uri) {
+                        this._loadPlugin(uri);
+                    } else {
+                        this.embed_plugin.set(null);
+                        this.schema.set(null);
+                        this.schema_loading.set(false);
+                        this.schema_error.set(false);
+                        this.playback_type.set('static');
+                        this.formModel.update((value) => ({
+                            ...value,
+                            playback_type: 'static',
+                        }));
+                    }
+                },
+                800,
+            );
+        });
+    }
+
     public ngOnInit(): void {
         this.edit = !!this._data.item?.id;
-        this.form = generateSignagePluginFormFields(this._data.item);
-        this.playback_type.set(
-            this.form.controls.playback_type.value || 'static',
-        );
+        this.playback_type.set(this.formModel().playback_type || 'static');
 
         // If editing and we already have a URI, load the plugin to get schema
         if (this._data.item?.uri) {
             this._loadPlugin(this._data.item.uri);
         }
-
-        // Watch URI changes to reload plugin embed
-        this.subscription(
-            'uri_change',
-            this.form.controls.uri.valueChanges.subscribe((uri: string) => {
-                this.timeout(
-                    'uri_debounce',
-                    () => {
-                        if (uri) {
-                            this._loadPlugin(uri);
-                        } else {
-                            this.embed_plugin.set(null);
-                            this.schema.set(null);
-                            this.schema_loading.set(false);
-                            this.schema_error.set(false);
-                            this.playback_type.set('static');
-                            this.form.patchValue(
-                                { playback_type: 'static' },
-                                { emitEvent: false },
-                            );
-                        }
-                    },
-                    800,
-                );
-            }),
-        );
 
         this.subscription(
             'save_key',
@@ -320,7 +320,7 @@ export class SignagePluginModalComponent
         const playback_type = this._resolvePlaybackType(details);
         if (!playback_type) return;
         this.playback_type.set(playback_type);
-        this.form.patchValue({ playback_type }, { emitEvent: false });
+        this.formModel.update((value) => ({ ...value, playback_type }));
     }
 
     public onPluginError(_error: PluginErrorPayload): void {
@@ -329,44 +329,47 @@ export class SignagePluginModalComponent
     }
 
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
         // Validate the schema-generated defaults form if present
         const schema_form = this._schema_form_el();
         if (schema_form && !schema_form.isValid()) {
             return notifyError(i18n('ADMIN.SIGNAGE_PLUGINS_DEFAULTS_INVALID'));
         }
-        if (!this.form.valid) {
+        await submit(this.form, async () => {
+            this.loading = i18n('ADMIN.SIGNAGE_PLUGINS_SAVING');
+            this._dialog_ref.disableClose = true;
+            const payload: Partial<SignagePlugin> = {
+                ...this._data.item,
+                ...this.formModel(),
+                params: this.schema() || this._data.item?.params || {},
+            };
+            try {
+                const result = await this._data.save(payload);
+                this._dialog_ref.disableClose = false;
+                this.event.emit({
+                    reason: 'done',
+                    metadata: { item: result },
+                });
+                notifySuccess(i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_SUCCESS'));
+                this._dialog_ref.close({
+                    reason: 'done',
+                    metadata: { item: result },
+                });
+            } catch (err) {
+                this.loading = null;
+                this._dialog_ref.disableClose = false;
+                notifyError(
+                    i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_ERROR', {
+                        error: JSON.stringify(
+                            err.response || err.message || err,
+                        ),
+                    }),
+                );
+            }
+        });
+        if (this.form().invalid()) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
-                }),
-            );
-        }
-        this.loading = i18n('ADMIN.SIGNAGE_PLUGINS_SAVING');
-        this._dialog_ref.disableClose = true;
-        const payload: Partial<SignagePlugin> = {
-            ...this._data.item,
-            ...this.form.value,
-            params: this.schema() || this._data.item?.params || {},
-        };
-        try {
-            const result = await this._data.save(payload);
-            this._dialog_ref.disableClose = false;
-            this.event.emit({
-                reason: 'done',
-                metadata: { item: result },
-            });
-            notifySuccess(i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_SUCCESS'));
-            this._dialog_ref.close({
-                reason: 'done',
-                metadata: { item: result },
-            });
-        } catch (err) {
-            this.loading = null;
-            this._dialog_ref.disableClose = false;
-            notifyError(
-                i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_ERROR', {
-                    error: JSON.stringify(err.response || err.message || err),
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }

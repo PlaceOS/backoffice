@@ -18,7 +18,8 @@ import {
 } from '@placeos/ts-client';
 
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import { MatChipGrid, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -27,7 +28,10 @@ import { AsyncHandler } from '../../common/async-handler.class';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { DialogEvent, Identity } from '../../common/types';
-import { generateTriggerActionForm } from '../../triggers/triggers.utilities';
+import {
+    applyTriggerActionFormSchema,
+    generateTriggerActionFormModel,
+} from '../../triggers/triggers.utilities';
 import { ExecuteMethodFieldComponent } from '../custom-fields/system-exec/execute-method-field.component';
 import { FullscreenModalShellComponent } from '../fullscreen-modal-shell.component';
 import { IconComponent } from '../icon.component';
@@ -57,17 +61,15 @@ export interface TriggerActionModalData {
                 <form
                     trigger-action
                     class="flex w-full max-w-[calc(100vw-2rem)] flex-col"
-                    [formGroup]="form"
                 >
-                    @if (form.controls.action_type) {
+                    @if (form.action_type) {
                         <div class="field">
                             <label for="type">
                                 {{ 'TRIGGERS.ACTION_FIELD_TYPE' | translate }}:
                             </label>
                             <mat-form-field appearance="outline">
                                 <mat-select
-                                    name="type"
-                                    formControlName="action_type"
+                                    [formField]="form.action_type"
                                 >
                                     @for (type of action_types; track type) {
                                         <mat-option [value]="type.id">
@@ -78,15 +80,15 @@ export interface TriggerActionModalData {
                             </mat-form-field>
                         </div>
                     }
-                    @switch (form.controls.action_type.value) {
+                    @switch (formModel().action_type) {
                         @case ('emails') {
-                            @if (form.controls.emails) {
+                            @if (form.emails) {
                                 <div class="field">
                                     <label
                                         for="description"
                                         [class.error]="
-                                            form.controls.emails.touched &&
-                                            form.controls.emails.errors
+                                            form.emails().touched() &&
+                                            form.emails().invalid()
                                         "
                                     >
                                         {{
@@ -157,7 +159,7 @@ export interface TriggerActionModalData {
                                     </mat-form-field>
                                 </div>
                             }
-                            @if (form.controls.content) {
+                            @if (form.content) {
                                 <div class="field">
                                     <label for="content">{{
                                         'TRIGGERS.ACTION_EMAIL_BODY' | translate
@@ -165,16 +167,15 @@ export interface TriggerActionModalData {
                                     <mat-form-field appearance="outline">
                                         <textarea
                                             matInput
-                                            name="content"
                                             placeholder="Email body contents..."
-                                            formControlName="content"
+                                            [formField]="form.content"
                                         ></textarea>
                                     </mat-form-field>
                                 </div>
                             }
                         }
                         @default {
-                            @if (form.controls.method_call) {
+                            @if (form.method_call) {
                                 <div class="field">
                                     <label for="content">
                                         {{
@@ -183,7 +184,7 @@ export interface TriggerActionModalData {
                                         }}
                                     </label>
                                     <execute-method-field
-                                        formControlName="method_call"
+                                        [formField]="form.method_call"
                                         [system]="system"
                                         [can_execute]="false"
                                     ></execute-method-field>
@@ -199,7 +200,7 @@ export interface TriggerActionModalData {
     imports: [
         FormsModule,
         MatFormFieldModule,
-        ReactiveFormsModule,
+        FormField,
         MatInputModule,
         MatChipsModule,
         FullscreenModalShellComponent,
@@ -222,7 +223,10 @@ export class TriggerActionModalComponent
     /** Whether actions are loading */
     public readonly loading = signal('');
     /** Form fields for trigger action */
-    public form = generateTriggerActionForm(this._data.action);
+    public readonly formModel = signal(
+        generateTriggerActionFormModel(this._data.action),
+    );
+    public readonly form = form(this.formModel, applyTriggerActionFormSchema);
     /** Store for changes to actions */
     public actions: TriggerActions;
     /** List of seperators for storing emails */
@@ -252,9 +256,7 @@ export class TriggerActionModalComponent
 
     public get email_list(): string[] {
         return (
-            (this.form && this.form.controls.emails
-                ? this.form.controls.emails.value
-                : null) || []
+            (this.formModel().emails ? this.formModel().emails : null) || []
         );
     }
 
@@ -277,8 +279,8 @@ export class TriggerActionModalComponent
         if (email_list.indexOf(email) < 0) {
             email_list.push(email);
         }
-        this.form.controls.emails.setValue(email_list);
-        this.chip_list().errorState = !this.form.controls.emails.valid;
+        this.formModel.update((model) => ({ ...model, emails: email_list }));
+        this.chip_list().errorState = this.form.emails().invalid();
     }
 
     /**
@@ -291,22 +293,17 @@ export class TriggerActionModalComponent
         if (index >= 0) {
             email_list.splice(index, 1);
         }
-        this.form.controls.emails.setValue(email_list);
-        this.chip_list().errorState = !this.form.controls.emails.valid;
+        this.formModel.update((model) => ({ ...model, emails: email_list }));
+        this.chip_list().errorState = this.form.emails().invalid();
     }
 
     public async save() {
-        this.form.markAllAsTouched();
-        if (
-            (this.form.controls.action_type.value === 'emails' &&
-                !this.form.valid) ||
-            (this.form.controls.action_type.value === 'function' &&
-                !this.form.value.method_call)
-        ) {
+        await submit(this.form, async () => undefined);
+        if (this.form().invalid()) {
             return;
         }
         this.loading.set('Save trigger action...');
-        if (this.form.value.action_type === 'emails') {
+        if (this.formModel().action_type === 'emails') {
             this.updateMailers();
         } else {
             this.updateFunctions();
@@ -343,8 +340,8 @@ export class TriggerActionModalComponent
     private updateMailers() {
         const mailers = this.trigger.actions.mailers;
         const new_mailer = {
-            emails: this.form.value.emails,
-            content: this.form.value.content,
+            emails: this.formModel().emails,
+            content: this.formModel().content,
         };
         if (this._data.action) {
             const old_mailer = JSON.stringify(this._data.action || {});
@@ -365,9 +362,9 @@ export class TriggerActionModalComponent
             const index = functions.findIndex(
                 (fn) => JSON.stringify(fn) === old_function,
             );
-            functions.splice(index, 1, this.form.value.method_call);
+            functions.splice(index, 1, this.formModel().method_call);
         } else {
-            functions.push(this.form.value.method_call);
+            functions.push(this.formModel().method_call);
         }
         this.actions = { ...this.trigger.actions, functions };
     }

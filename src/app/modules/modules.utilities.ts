@@ -1,4 +1,3 @@
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
     PlaceDriver,
     PlaceDriverRole,
@@ -7,96 +6,99 @@ import {
     PlaceSystem,
 } from '@placeos/ts-client';
 
-import { HashMap } from '../common/types';
+import {
+    max,
+    min,
+    required,
+    SchemaFn,
+    validate,
+} from '@angular/forms/signals';
 import { validateIpAddress, validateURI } from '../common/validation';
 
-export function generateModuleFormFields(mod?: PlaceModule) {
-    const fields = {
-        id: new FormControl(mod?.id || ''),
-        ip: new FormControl(mod?.ip || '', [validateIpAddress]),
-        port: new FormControl(mod?.port || null, [
-            Validators.min(1),
-            Validators.max(65535),
-        ]),
-        tls: new FormControl(mod?.tls || false),
-        udp: new FormControl(mod?.udp || false),
-        makebreak: new FormControl(mod?.makebreak || false),
-        ignore_connected: new FormControl(mod?.ignore_connected || false),
-        alert_level: new FormControl(mod?.alert_level || 'medium'),
-        uri: new FormControl(mod?.uri || '', [validateURI]),
-        notes: new FormControl(mod?.notes || ''),
-        name: new FormControl(mod?.name || ''),
-        custom_name: new FormControl(mod?.custom_name || ''),
-        system: new FormControl(mod?.system),
-        control_system_id: new FormControl(mod?.control_system_id),
-        role: new FormControl(mod?.role || PlaceDriverRole.Logic),
-        driver: new FormControl<PlaceDriver | null>(null),
-        driver_id: new FormControl(mod?.driver_id, [Validators.required]),
-        edge: new FormControl<PlaceEdge | null>(null),
-        edge_id: new FormControl(mod?.edge_id || null),
-    };
-    const system = mod?.system || fields.system.value || null;
-    fields.custom_name.valueChanges.subscribe((value: string) => {
-        fields.custom_name.setValue(value?.replace(/ /g, '_'), {
-            emitEvent: false,
-        });
-    });
-    if (!mod?.id) {
-        fields.system.valueChanges.subscribe((value: PlaceSystem) => {
-            fields.control_system_id.setValue(value?.id);
-        });
-        fields.edge.valueChanges.subscribe((value) => {
-            fields.edge_id.setValue(value?.id || null);
-        });
-        fields.driver.valueChanges.subscribe((value) => {
-            fields.driver_id.setValue(value.id);
-            fields.name.setValue(value.name || value.module_name);
-            fields.uri.setValue(value.default_uri);
-            fields.port.setValue(value.default_port || 1);
-            fields.alert_level.setValue(value.alert_level || 'medium');
-            fields.role.setValue(value.role || PlaceDriverRole.Logic);
-            resetModuleFormValidators(fields);
-            switch (value.role) {
-                case PlaceDriverRole.Service:
-                case PlaceDriverRole.Websocket:
-                    fields.uri.setValidators([
-                        Validators.required,
-                        validateURI,
-                    ]);
-                    fields.udp.setValue(false);
-                    fields.system.setValue(null);
-                    break;
-                case PlaceDriverRole.Device:
-                case PlaceDriverRole.SSH:
-                    fields.ip.setValidators([
-                        validateIpAddress,
-                        Validators.required,
-                    ]);
-                    fields.port.setValidators([
-                        Validators.min(1),
-                        Validators.max(65535),
-                        Validators.required,
-                    ]);
-                    fields.system.setValue(null);
-                    break;
-                case PlaceDriverRole.Logic:
-                    fields.system.setValidators([Validators.required]);
-                    fields.system.setValue(system);
-                    break;
-            }
-        });
-    } else {
-        delete fields.system;
-        delete fields.driver;
-    }
-    return new FormGroup(fields);
+export interface ModuleFormModel {
+    id: string;
+    ip: string;
+    port: number;
+    tls: boolean;
+    udp: boolean;
+    makebreak: boolean;
+    ignore_connected: boolean;
+    alert_level: string;
+    uri: string;
+    notes: string;
+    name: string;
+    custom_name: string;
+    system?: PlaceSystem;
+    control_system_id: string;
+    role: PlaceDriverRole;
+    driver?: PlaceDriver;
+    driver_id: string;
+    edge?: PlaceEdge;
+    edge_id: string;
 }
 
-export function resetModuleFormValidators(fields: HashMap<FormControl>) {
-    fields.ip.setValidators([validateIpAddress]);
-    fields.port.setValidators([Validators.min(1), Validators.max(65535)]);
-    fields.uri.setValidators([validateURI]);
-    // fields.settings_string.setValidators([validateYAML]);
-    fields.system.setValidators([]);
-    fields.driver.setValidators([Validators.required]);
+export function generateModuleFormModel(mod?: PlaceModule): ModuleFormModel {
+    return {
+        id: mod?.id || '',
+        ip: mod?.ip || '',
+        port: mod?.port || 0,
+        tls: mod?.tls || false,
+        udp: mod?.udp || false,
+        makebreak: mod?.makebreak || false,
+        ignore_connected: mod?.ignore_connected || false,
+        alert_level: mod?.alert_level || 'medium',
+        uri: mod?.uri || '',
+        notes: mod?.notes || '',
+        name: mod?.name || '',
+        custom_name: mod?.custom_name || '',
+        system: mod?.system,
+        control_system_id: mod?.control_system_id || '',
+        role: mod?.role || PlaceDriverRole.Logic,
+        driver: undefined,
+        driver_id: mod?.driver_id || '',
+        edge: undefined,
+        edge_id: mod?.edge_id || '',
+    };
 }
+
+export const applyModuleFormSchema: SchemaFn<ModuleFormModel> = (path) => {
+    required(path.driver_id);
+    min(path.port, 1);
+    max(path.port, 65535);
+    validate(path.ip, ({ value }) =>
+        validateIpAddress({ value: value() })
+            ? { kind: 'pattern', message: 'Invalid IP address' }
+            : undefined,
+    );
+    validate(path.uri, ({ value }) =>
+        validateURI({ value: value() })
+            ? { kind: 'pattern', message: 'Invalid URI' }
+            : undefined,
+    );
+    required(path.uri, {
+        when({ valueOf }) {
+            const role = valueOf(path.role);
+            return (
+                role === PlaceDriverRole.Service ||
+                role === PlaceDriverRole.Websocket
+            );
+        },
+    });
+    required(path.ip, {
+        when({ valueOf }) {
+            const role = valueOf(path.role);
+            return role === PlaceDriverRole.Device || role === PlaceDriverRole.SSH;
+        },
+    });
+    required(path.port, {
+        when({ valueOf }) {
+            const role = valueOf(path.role);
+            return role === PlaceDriverRole.Device || role === PlaceDriverRole.SSH;
+        },
+    });
+    required(path.system, {
+        when({ valueOf }) {
+            return valueOf(path.role) === PlaceDriverRole.Logic;
+        },
+    });
+};

@@ -60,7 +60,7 @@ import { SystemStateService } from './system-state.service';
             <section add-module class="flex w-full flex-wrap space-x-2 px-4">
                 <item-search-field
                     class="h-12 w-full grow sm:w-auto sm:flex-1"
-                    name="module"
+                    label="module"
                     [placeholder]="'SYSTEMS.FIND_MODULE' | translate"
                     [query_fn]="query_fn"
                     [exclude]="exclude_fn"

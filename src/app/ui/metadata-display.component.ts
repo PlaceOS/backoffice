@@ -9,12 +9,7 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import {
-    AbstractControl,
-    FormControl,
-    FormGroup,
     FormsModule,
-    ReactiveFormsModule,
-    Validators,
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -47,6 +42,14 @@ import { TranslatePipe } from './translate.pipe';
 interface Metadata extends PlaceMetadata {
     match?: boolean;
     [key: string]: unknown;
+}
+
+export interface MetadataFormModel {
+    name: string;
+    description: string;
+    editors: string[];
+    details: string;
+    schema: string;
 }
 
 function replaceDescTag(inputString, newContent) {
@@ -83,7 +86,6 @@ function replaceDescTag(inputString, newContent) {
                         class="border-base-300 rounded-sm border"
                         [class.shadow]="show_view() === item.name"
                         [class.opacity-30]="item.match === false"
-                        [formGroup]="form_map()[item.name]"
                     >
                         <button
                             header
@@ -177,7 +179,19 @@ function replaceDescTag(inputString, newContent) {
                                 <div class="border-base-300 h-130 border-t p-1">
                                     @if (show_view() === item.name) {
                                         <settings-form-field
-                                            formControlName="details"
+                                            [ngModel]="
+                                                form_map()[item.name]?.details
+                                            "
+                                            (ngModelChange)="
+                                                updateMetadataField(
+                                                    item.name,
+                                                    'details',
+                                                    $event
+                                                )
+                                            "
+                                            [ngModelOptions]="{
+                                                standalone: true,
+                                            }"
                                             lang="json"
                                             [schema]="schema_map()[item.name]"
                                             [readonly]="false"
@@ -212,7 +226,6 @@ function replaceDescTag(inputString, newContent) {
         IconComponent,
         SettingsFieldComponent,
         MatTooltipModule,
-        ReactiveFormsModule,
         FormsModule,
         MatFormFieldModule,
         MatInputModule,
@@ -230,7 +243,7 @@ export class MetadataDisplayComponent
     /** List of metadata associated with the zone */
     public readonly metadata = signal<Metadata[]>([]);
     /** Map of form field groups to metadata fields */
-    public readonly form_map = signal<HashMap<FormGroup>>({});
+    public readonly form_map = signal<HashMap<MetadataFormModel>>({});
     /** Map of metadata fields to whether they have been edited */
     public readonly edited = signal<HashMap<boolean>>({});
     /** Map of metadata properties to whether they are saving */
@@ -248,7 +261,7 @@ export class MetadataDisplayComponent
         this.change();
         const name_map = {};
         for (const key in this.form_map()) {
-            name_map[key] = this.form_map()[key].value.name;
+            name_map[key] = this.form_map()[key].name;
         }
         return name_map;
     });
@@ -256,19 +269,11 @@ export class MetadataDisplayComponent
         this.change();
         const desc_map = {};
         for (const key in this.form_map()) {
-            const desc = this.form_map()[key].value.description || '';
+            const desc = this.form_map()[key].description || '';
             desc_map[key] = desc; //.replace(/^\[.*?\]\s*/, '');
         }
         return desc_map;
     });
-
-    private validateName(name_list: string[]) {
-        return (control: AbstractControl) => {
-            return name_list.indexOf(control.value) >= 0
-                ? { name: true }
-                : null;
-        };
-    }
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.item && this.item()) {
@@ -301,7 +306,15 @@ export class MetadataDisplayComponent
         const form = this.form_map()[field.name];
         this._dialog.open(MetadataDetailsModalComponent, {
             maxWidth: '95vw',
-            data: { form, change: this.change },
+            data: {
+                value: form,
+                existing_names: this.metadata()
+                    .filter((i) => i.name !== field.name)
+                    .map((i) => i.name),
+                change: this.change,
+                update: (value: MetadataFormModel) =>
+                    this.updateMetadataDetails(field.name, value),
+            },
         });
     }
 
@@ -343,7 +356,7 @@ export class MetadataDisplayComponent
             for (const block of list) {
                 (block as Record<string, unknown>).match =
                     block.name.toLowerCase().includes(search) ||
-                    `${this.form_map()[block.name].controls.name.value}`
+                    `${this.form_map()[block.name].name}`
                         .toLowerCase()
                         .includes(search);
             }
@@ -353,12 +366,18 @@ export class MetadataDisplayComponent
 
     public saveMetadata(field: PlaceMetadata) {
         const form = this.form_map()[field.name];
-        form.markAllAsTouched();
-        if (!form.valid)
+        if (
+            !form.name ||
+            this.metadata()
+                .filter((i) => i.name !== field.name)
+                .some((item) => item.name === form.name) ||
+            validateJSONString({ value: form.details } as never)
+        ) {
             return notifyError(
-                `JSON for property "${form.controls.name.value}" is invalid`,
+                `JSON for property "${form.name}" is invalid`,
             );
-        const value = form.value;
+        }
+        const value = form;
         this.loading.update((m) => ({ ...m, [field.name]: true }));
         const desc = value.description;
         const new_desc = replaceDescTag(desc, `${VERSION.hash}|B`);
@@ -388,7 +407,6 @@ export class MetadataDisplayComponent
                     (i) => i.name === field.name,
                 );
                 this.edited.update((m) => ({ ...m, [field.name]: false }));
-                console.log('Field:', field.name, value.name, item);
                 if (field.name !== value.name) {
                     removeMetadata(this.item().id, { name: field.name }).catch(
                         (err) =>
@@ -434,34 +452,15 @@ export class MetadataDisplayComponent
                     ? JSON.parse(group.details)
                     : group.details;
             this.form_map.update((m) => {
-                m[group.name] = new FormGroup({
-                    name: new FormControl(group.name, [
-                        Validators.required,
-                        this.validateName(
-                            this.metadata()
-                                .filter((i) => i.name !== group.name)
-                                .map((i) => i.name),
-                        ),
-                    ]),
-                    description: new FormControl(group.description),
-                    editors: new FormControl(group.editors),
-                    details: new FormControl(
-                        JSON.stringify(details || {}, undefined, 4),
-                        [Validators.required, validateJSONString],
-                    ),
-                    schema: new FormControl(group.schema),
-                });
+                m[group.name] = {
+                    name: group.name,
+                    description: group.description,
+                    editors: [...(group.editors || [])],
+                    details: JSON.stringify(details || {}, undefined, 4),
+                    schema: group.schema,
+                };
                 return m;
             });
-            this.subscription(
-                `${group.name}_changes`,
-                this.form_map()[group.name].valueChanges.subscribe(() =>
-                    this.edited.update((m) => ({
-                        ...m,
-                        [group.name]: true,
-                    })),
-                ),
-            );
             // this.subscription(
             //     `${group.name}_schema`,
             //     this.form_map()[
@@ -479,6 +478,31 @@ export class MetadataDisplayComponent
             //     }),
             // );
         });
+    }
+
+    public updateMetadataField(
+        block: string,
+        field: keyof MetadataFormModel,
+        value: string | string[],
+    ) {
+        this.form_map.update((map) => ({
+            ...map,
+            [block]: {
+                ...map[block],
+                [field]: value,
+            },
+        }));
+        this.edited.update((m) => ({ ...m, [block]: true }));
+        this.change.set(Date.now());
+    }
+
+    private updateMetadataDetails(block: string, value: MetadataFormModel) {
+        this.form_map.update((map) => ({
+            ...map,
+            [block]: value,
+        }));
+        this.edited.update((m) => ({ ...m, [block]: true }));
+        this.change.set(Date.now());
     }
 
     private async loadMetadata() {

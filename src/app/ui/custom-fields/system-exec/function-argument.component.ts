@@ -2,19 +2,16 @@ import {
     Component,
     forwardRef,
     input,
+    model,
     OnChanges,
     output,
     signal,
     SimpleChanges,
 } from '@angular/core';
 import {
-    AbstractControl,
     ControlValueAccessor,
+    FormsModule,
     NG_VALUE_ACCESSOR,
-    ReactiveFormsModule,
-    UntypedFormControl,
-    UntypedFormGroup,
-    Validators,
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -23,12 +20,12 @@ import { AsyncHandler } from '../../../common/async-handler.class';
 import { HashMap } from '../../../common/types';
 import { TranslatePipe } from '../../translate.pipe';
 
-const validateType = (type) => (control: AbstractControl) => {
+const validateType = (type: string, raw_value: unknown) => {
     let value: unknown = '';
     try {
-        value = JSON.parse(control.value);
+        value = JSON.parse(raw_value as string);
     } catch {
-        value = control.value;
+        value = raw_value;
     }
     if (value === undefined || value == '') return null;
     switch (type) {
@@ -50,7 +47,7 @@ const validateType = (type) => (control: AbstractControl) => {
     selector: 'function-arguments',
     template: `
         @if (form()) {
-            <form class="pl-8" [formGroup]="form()">
+            <form class="pl-8">
                 @for (key of method().order; track key; let i = $index) {
                     <div field class="relative flex items-center space-x-2">
                         <div
@@ -64,9 +61,11 @@ const validateType = (type) => (control: AbstractControl) => {
                             appearance="outline"
                         >
                             <input
-                                [name]="key"
                                 matInput
-                                [formControlName]="key"
+                                [disabled]="disabled()"
+                                [ngModel]="form()[key] || ''"
+                                (ngModelChange)="updateField(key, $event)"
+                                [ngModelOptions]="{ standalone: true }"
                                 [placeholder]="
                                     key +
                                     (defaults[key] ? ' = ' + defaults[key] : '')
@@ -116,7 +115,7 @@ const validateType = (type) => (control: AbstractControl) => {
         TranslatePipe,
         MatFormFieldModule,
         MatInputModule,
-        ReactiveFormsModule,
+        FormsModule,
     ],
 })
 export class FunctionArgumentComponent
@@ -125,8 +124,9 @@ export class FunctionArgumentComponent
 {
     public readonly method = input<PlaceModuleFunction>(undefined);
     public readonly valid = output<boolean>();
+    public readonly disabled = model(false);
 
-    public readonly form = signal<UntypedFormGroup>(new UntypedFormGroup({}));
+    public readonly form = signal<HashMap<unknown>>({});
 
     public value: HashMap<unknown>;
 
@@ -145,7 +145,7 @@ export class FunctionArgumentComponent
     public loadForm() {
         const method = this.method();
         if (!method && !method.order.length) return;
-        const form_controls = {};
+        const form_values: HashMap<unknown> = {};
         for (const prop in method.params) {
             const prop_details = method.params[prop] as unknown as Record<
                 string,
@@ -153,15 +153,7 @@ export class FunctionArgumentComponent
             >;
             const optional = 'default' in prop_details;
             this.required[prop] = !optional;
-            form_controls[prop] = new UntypedFormControl(
-                (this.value ? this.value[prop] : '') || '',
-                !optional
-                    ? [
-                          validateType(prop_details.type as string),
-                          Validators.required,
-                      ]
-                    : [validateType(prop_details.type as string)],
-            );
+            form_values[prop] = (this.value ? this.value[prop] : '') || '';
             if (optional) {
                 try {
                     this.defaults[prop] = JSON.stringify(prop_details.default);
@@ -170,12 +162,8 @@ export class FunctionArgumentComponent
                 }
             }
         }
-        this.form.set(new UntypedFormGroup(form_controls));
-        this.valid.emit(this.form()?.valid);
-        this.subscription(
-            'form',
-            this.form().valueChanges.subscribe((v) => this.setValue(v)),
-        );
+        this.form.set(form_values);
+        this.valid.emit(this.isValid(form_values));
     }
 
     /**
@@ -183,11 +171,13 @@ export class FunctionArgumentComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: HashMap<unknown>): void {
+        if (this.disabled()) return;
         this.value = new_value || {};
-        this.valid.emit(this.form()?.valid);
+        this.valid.emit(this.isValid(new_value));
         if (this._onChange) {
             this._onChange(new_value);
         }
+        this._onTouch?.(new_value);
     }
 
     /**
@@ -197,7 +187,7 @@ export class FunctionArgumentComponent
     public writeValue(value: HashMap<unknown>) {
         this.value = value || {};
         if (!value || !this.form) return;
-        this.form().patchValue(value);
+        this.form.set({ ...this.form(), ...value });
     }
 
     /**
@@ -211,4 +201,32 @@ export class FunctionArgumentComponent
      * @param fn The callback function to register
      */
     public readonly registerOnTouched = (fn) => (this._onTouch = fn);
+
+    public setDisabledState(disabled: boolean) {
+        this.disabled.set(disabled);
+    }
+
+    public updateField(key: string, value: unknown) {
+        if (this.disabled()) return;
+        const new_value = { ...this.form(), [key]: value };
+        this.form.set(new_value);
+        this.setValue(new_value);
+    }
+
+    private isValid(value: HashMap<unknown> = {}) {
+        const method = this.method();
+        if (!method) return true;
+        for (const prop in method.params) {
+            const prop_details = method.params[prop] as unknown as Record<
+                string,
+                unknown
+            >;
+            const required = !('default' in prop_details);
+            if (required && !value[prop]) return false;
+            if (validateType(prop_details.type as string, value[prop])) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

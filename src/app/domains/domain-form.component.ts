@@ -1,18 +1,14 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
+    computed,
     EventEmitter,
     OnInit,
     Output,
-    Signal,
     inject,
     signal,
 } from '@angular/core';
-import {
-    FormControl,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,8 +23,11 @@ import {
     updateDomain,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
-import { addChipItem, removeChipItem } from '../common/forms';
-import { getInvalidFields } from '../common/general';
+import {
+    addSignalChipItem,
+    getInvalidSignalFields,
+    removeSignalChipItem,
+} from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import {
@@ -36,13 +35,15 @@ import {
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
-import { toSignal } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { isValidDomain } from '../common/validation';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { generateDomainFormFields } from './domains.utilities';
+import {
+    applyDomainFormSchema,
+    generateDomainFormModel,
+} from './domains.utilities';
 
 @Component({
     selector: 'domain-form',
@@ -53,15 +54,15 @@ import { generateDomainFormFields } from './domains.utilities';
             (save)="submit()"
         >
             @if (form) {
-                <form domain class="flex flex-col" [formGroup]="form">
+                <form domain class="flex flex-col">
                     <div class="fieldset">
-                        @if (form.controls.name) {
+                        @if (form.name) {
                             <div class="field">
                                 <label
                                     for="domain-name"
                                     [class.error]="
-                                        form.controls.name.invalid &&
-                                        form.controls.name.touched
+                                        form.name().invalid() &&
+                                        form.name().touched()
                                     "
                                 >
                                     {{ 'COMMON.FIELD_NAME' | translate
@@ -70,14 +71,12 @@ import { generateDomainFormFields } from './domains.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="domain-name"
                                         [placeholder]="
                                             'COMMON.FIELD_NAME' | translate
                                         "
-                                        formControlName="name"
-                                        required
+                                        [formField]="form.name"
                                     />
-                                    @if (form.controls.name.invalid) {
+                                    @if (form.name().invalid()) {
                                         <mat-error>
                                             {{
                                                 'DOMAINS.NAME_REQUIRED'
@@ -88,13 +87,13 @@ import { generateDomainFormFields } from './domains.utilities';
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.domain) {
+                        @if (form.domain) {
                             <div class="field">
                                 <label
                                     for="domain"
                                     [class.error]="
-                                        form.controls.domain.invalid &&
-                                        form.controls.domain.touched
+                                        form.domain().invalid() &&
+                                        form.domain().touched()
                                     "
                                 >
                                     {{ 'DOMAINS.NAME' | translate }}
@@ -102,12 +101,11 @@ import { generateDomainFormFields } from './domains.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="domain"
                                         [placeholder]="
                                             'DOMAINS.NAME_PLACEHOLDER'
                                                 | translate
                                         "
-                                        formControlName="domain"
+                                        [formField]="form.domain"
                                     />
                                     <mat-error>{{
                                         'DOMAINS.DOMAIN_REQUIRED' | translate
@@ -116,13 +114,13 @@ import { generateDomainFormFields } from './domains.utilities';
                             </div>
                         }
                     </div>
-                    @if (form.controls.login_url) {
+                    @if (form.login_url) {
                         <div class="field">
                             <label
                                 for="login-url"
                                 [class.error]="
-                                    form.controls.login_url.invalid &&
-                                    form.controls.login_url.touched
+                                    form.login_url().invalid() &&
+                                    form.login_url().touched()
                                 "
                             >
                                 {{ 'DOMAINS.LOGIN_URL' | translate }}
@@ -130,13 +128,12 @@ import { generateDomainFormFields } from './domains.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="login-url"
                                     [placeholder]="
                                         'DOMAINS.LOGIN_URL' | translate
                                     "
-                                    formControlName="login_url"
+                                    [formField]="form.login_url"
                                 />
-                                @if (form.controls.login_url.invalid) {
+                                @if (form.login_url().invalid()) {
                                     <mat-error>
                                         {{
                                             'DOMAINS.LOGIN_URL_REQUIRED'
@@ -147,13 +144,13 @@ import { generateDomainFormFields } from './domains.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.logout_url) {
+                    @if (form.logout_url) {
                         <div class="field">
                             <label
                                 for="logout-url"
                                 [class.error]="
-                                    form.controls.logout_url.invalid &&
-                                    form.controls.logout_url.touched
+                                    form.logout_url().invalid() &&
+                                    form.logout_url().touched()
                                 "
                             >
                                 {{ 'DOMAINS.LOGOUT_URL' | translate }}
@@ -161,13 +158,12 @@ import { generateDomainFormFields } from './domains.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="logout-url"
                                     [placeholder]="
                                         'DOMAINS.LOGOUT_URL' | translate
                                     "
-                                    formControlName="logout_url"
+                                    [formField]="form.logout_url"
                                 />
-                                @if (form.controls.logout_url.invalid) {
+                                @if (form.logout_url().invalid()) {
                                     <mat-error>
                                         {{
                                             'DOMAINS.LOGOUT_URL_REQUIRED'
@@ -178,7 +174,7 @@ import { generateDomainFormFields } from './domains.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.description) {
+                    @if (form.description) {
                         <div class="field">
                             <label for="description">{{
                                 'COMMON.FIELD_DESCRIPTION' | translate
@@ -186,22 +182,21 @@ import { generateDomainFormFields } from './domains.utilities';
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
-                                    name="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
-                                    formControlName="description"
+                                    [formField]="form.description"
                                 ></textarea>
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.email_domains) {
+                    @if (form.email_domains) {
                         <div class="field">
                             <label
                                 for="email-domains-input"
                                 [class.error]="
-                                    form.controls.email_domains.invalid &&
-                                    form.controls.email_domains.touched
+                                    form.email_domains().invalid() &&
+                                    form.email_domains().touched()
                                 "
                             >
                                 {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
@@ -272,7 +267,7 @@ import { generateDomainFormFields } from './domains.utilities';
         MatChipsModule,
         MatInputModule,
         TranslatePipe,
-        ReactiveFormsModule,
+        FormField,
         IconComponent,
         FullscreenModalShellComponent,
     ],
@@ -288,7 +283,8 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup = generateDomainFormFields(this._data.item);
+    public readonly formModel = signal(generateDomainFormModel(this._data.item));
+    public readonly form = form(this.formModel, applyDomainFormSchema);
     public loading: string;
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
@@ -301,23 +297,20 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
         if (!e?.value) return;
         if (!isValidDomain(e.value as string))
             return notifyWarn('Invalid email');
-        addChipItem(
-            this.form.controls.email_domains as FormControl<string[]>,
-            e,
-        );
+        this.formModel.update((value) => ({
+            ...value,
+            email_domains: addSignalChipItem(value.email_domains, e),
+        }));
     };
     public readonly removeEmailDomain = (i: string) =>
-        removeChipItem(
-            this.form.controls.email_domains as FormControl<string[]>,
-            i,
-        );
+        this.formModel.update((value) => ({
+            ...value,
+            email_domains: removeSignalChipItem(value.email_domains, i),
+        }));
 
-    public email_domain_list: Signal<string[]> = this.form.controls
-        .email_domains
-        ? toSignal(this.form.controls.email_domains.valueChanges, {
-              initialValue: this.form.controls.email_domains.value || [],
-          })
-        : signal([]);
+    public email_domain_list = computed(
+        () => this.formModel().email_domains || [],
+    );
 
     public ngOnInit(): void {
         this.subscription(
@@ -327,50 +320,48 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
-                }),
-            );
-        }
-        const item = this._data.item;
-        this.loading = i18n(`${this._name}.SAVING`);
-        this._dialog_ref.disableClose = true;
-        const item_json = item.toJSON ? item.toJSON() : item;
-        const form_item = (
-            item.id
-                ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
-                : { ...item_json, ...this.form.value }
-        ) as Identity;
-        try {
-            const _item = await (form_item.id
-                ? updateDomain(
-                      form_item.id as string,
-                      form_item as unknown as PlaceDomain,
-                  )
-                : addDomain(form_item as unknown as PlaceDomain));
-            this._dialog_ref.disableClose = false;
-            this.event.emit({ reason: 'done', metadata: { item: _item } });
-            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-            if (!this.form.value.id && this.form.controls.settings) {
-                await this.newSettings(
-                    _item as unknown as Identity,
-                    this.form.controls.settings.value,
+        await submit(this.form, async () => {
+            const item = this._data.item;
+            this.loading = i18n(`${this._name}.SAVING`);
+            this._dialog_ref.disableClose = true;
+            const item_json = item.toJSON ? item.toJSON() : item;
+            const form_item = (
+                item.id
+                    ? cleanObject(
+                          { ...item_json, ...this.formModel() },
+                          [undefined],
+                      )
+                    : { ...item_json, ...this.formModel() }
+            ) as Identity;
+            try {
+                const _item = await (form_item.id
+                    ? updateDomain(
+                          form_item.id as string,
+                          form_item as unknown as PlaceDomain,
+                      )
+                    : addDomain(form_item as unknown as PlaceDomain));
+                this._dialog_ref.disableClose = false;
+                this.event.emit({ reason: 'done', metadata: { item: _item } });
+                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+                this._dialog_ref.close();
+            } catch (err) {
+                this.loading = null;
+                this._dialog_ref.disableClose = false;
+                notifyError(
+                    i18n(`${this._name}.SAVE_ERROR`, {
+                        error: JSON.stringify(
+                            (await (err as Response).text?.()) ||
+                                (err as Error).message ||
+                                err,
+                        ),
+                    }),
                 );
             }
-            this._dialog_ref.close();
-        } catch (err) {
-            this.loading = null;
-            this._dialog_ref.disableClose = false;
-            notifyError(
-                i18n(`${this._name}.SAVE_ERROR`, {
-                    error: JSON.stringify(
-                        (await (err as Response).text?.()) ||
-                            (err as Error).message ||
-                            err,
-                    ),
+        });
+        if (this.form().invalid()) {
+            return notifyError(
+                i18n('COMMON.INVALID_FIELDS', {
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }

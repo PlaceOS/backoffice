@@ -4,28 +4,26 @@ import {
     EventEmitter,
     OnInit,
     Output,
-    Signal,
     inject,
+    signal,
 } from '@angular/core';
-import {
-    FormControl,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { PlaceTrigger, cleanObject } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
-import { addChipItem, removeChipItem } from '../common/forms';
-import { getInvalidFields } from '../common/general';
+import {
+    addSignalChipItem,
+    getInvalidSignalFields,
+    removeSignalChipItem,
+} from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
-import { toSignal } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
-import { generateTriggerSettingsFormFields } from '../triggers/triggers.utilities';
+import { generateTriggerSettingsFormModel } from '../triggers/triggers.utilities';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -40,9 +38,9 @@ import { TranslatePipe } from '../ui/translate.pipe';
             (save)="submit()"
         >
             @if (form) {
-                <form system-trigger class="flex flex-col" [formGroup]="form">
+                <form system-trigger class="flex flex-col">
                     <div class="mb-4 flex space-x-4">
-                        @if (form.controls.name) {
+                        @if (form.name) {
                             <div
                                 class="border-base-300 relative flex flex-1 items-center rounded-sm border p-4"
                             >
@@ -52,11 +50,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                     {{ 'SYSTEMS.TRIGGER_NAME' | translate }}
                                 </div>
                                 <div class="text-xl">
-                                    {{ form.controls.name.value }}
+                                    {{ formModel().name }}
                                 </div>
                             </div>
                         }
-                        @if (form.controls.name) {
+                        @if (form.name) {
                             <div
                                 class="border-base-300 relative flex-1 rounded-sm border p-4"
                             >
@@ -92,7 +90,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             </div>
                         }
                     </div>
-                    @if (form.controls.playlists) {
+                    @if (form.playlists) {
                         <div class="flex flex-col">
                             <label for="playlists">{{
                                 'SYSTEMS.PLAYLISTS' | translate
@@ -130,20 +128,20 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     <div class="-mx-2 flex flex-wrap items-center">
                         <settings-toggle
                             class="m-2 max-w-[calc(50%-1rem)] min-w-[40%] flex-1"
-                            [name]="'SYSTEMS.TRIGGER_ENABLED' | translate"
-                            formControlName="enabled"
+                            [label]="'SYSTEMS.TRIGGER_ENABLED' | translate"
+                            [formField]="form.enabled"
                         ></settings-toggle>
                         <settings-toggle
                             class="m-2 max-w-[calc(50%-1rem)] min-w-[40%] flex-1"
-                            [name]="
+                            [label]="
                                 'SYSTEMS.TRIGGER_EXECUTE_ENABLED' | translate
                             "
-                            formControlName="exec_enabled"
+                            [formField]="form.exec_enabled"
                         ></settings-toggle>
                         <settings-toggle
                             class="m-2 max-w-[calc(50%-1rem)] min-w-[40%] flex-1"
-                            [name]="'SYSTEMS.TRIGGER_IMPORTANT' | translate"
-                            formControlName="important"
+                            [label]="'SYSTEMS.TRIGGER_IMPORTANT' | translate"
+                            [formField]="form.important"
                         ></settings-toggle>
                     </div>
                 </form>
@@ -154,7 +152,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
     imports: [
         SettingsToggleComponent,
         TranslatePipe,
-        ReactiveFormsModule,
+        FormField,
         MatFormFieldModule,
         MatChipsModule,
         MatInputModule,
@@ -172,27 +170,26 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup = generateTriggerSettingsFormFields(
-        this._data.item,
+    public readonly formModel = signal(
+        generateTriggerSettingsFormModel(this._data.item),
     );
+    public readonly form = form(this.formModel);
     public loading: string;
     public heading = i18n(`Trigger.${this._data.item.id ? 'EDIT' : 'NEW'}`);
-    public trigger_state: Signal<{
-        triggered?: boolean;
-        playlists?: string[];
-    }> = toSignal(this.form.valueChanges, {
-        initialValue: this.form.getRawValue(),
-    });
+    public readonly trigger_state = this.formModel.asReadonly();
 
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
     public readonly addPlaylist = (e: MatChipInputEvent) =>
-        addChipItem(this.form.controls.playlists as FormControl<string[]>, e);
+        this.formModel.update((model) => ({
+            ...model,
+            playlists: addSignalChipItem(model.playlists, e),
+        }));
     public readonly removePlaylist = (i: string) =>
-        removeChipItem(
-            this.form.controls.playlists as FormControl<string[]>,
-            i,
-        );
+        this.formModel.update((model) => ({
+            ...model,
+            playlists: removeSignalChipItem(model.playlists, i),
+        }));
 
     public ngOnInit(): void {
         this.subscription(
@@ -201,12 +198,12 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    public submit(): void {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
+    public async submit(): Promise<void> {
+        await submit(this.form, async () => undefined);
+        if (this.form().invalid()) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }
@@ -214,8 +211,10 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
         const item_json = item.toJSON ? item.toJSON() : item;
         const form_item = (
             item.id
-                ? cleanObject({ ...item_json, ...this.form.value }, [undefined])
-                : { ...item_json, ...this.form.value }
+                ? cleanObject({ ...item_json, ...this.formModel() }, [
+                      undefined,
+                  ])
+                : { ...item_json, ...this.formModel() }
         ) as Identity;
         // System trigger uses external save - emit action event
         this.event.emit({ reason: 'action', metadata: form_item });

@@ -1,27 +1,44 @@
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlaceZone } from '@placeos/ts-client';
+import { required, SchemaFn } from '@angular/forms/signals';
 
-export function generateZoneFormFields(zone?: PlaceZone) {
-    const fields = {
-        id: new FormControl(zone?.id),
-        name: new FormControl(zone?.name || '', [Validators.required]),
-        tags: new FormControl(zone?.tags || []),
-        description: new FormControl(zone?.description || ''),
-        parent_zone: new FormControl<PlaceZone | null>(null),
-        parent_id: new FormControl(zone?.parent_id),
-        location: new FormControl(zone?.location),
-        display_name: new FormControl(zone?.display_name),
-        code: new FormControl(zone?.code),
-        type: new FormControl(zone?.type),
-        count: new FormControl(zone?.count),
-        capacity: new FormControl(zone?.capacity),
-        map_id: new FormControl(zone?.map_id),
-        timezone: new FormControl(zone?.timezone),
-        images: new FormControl(zone?.images),
-    };
-
-    fields.parent_zone.valueChanges.subscribe((parent_zone: PlaceZone) =>
-        fields.parent_id.setValue(parent_zone?.id),
-    );
-    return new FormGroup(fields);
+export interface ZoneFormModel {
+    id: string;
+    name: string;
+    tags: string[];
+    description: string;
+    parent_zone?: PlaceZone;
+    parent_id: string;
+    location: string;
+    display_name: string;
+    code: string;
+    type: string;
+    count: number;
+    capacity: number;
+    map_id: string;
+    timezone: string;
+    images: string[];
 }
+
+export function generateZoneFormModel(zone?: PlaceZone): ZoneFormModel {
+    return {
+        id: zone?.id || '',
+        name: zone?.name || '',
+        tags: zone?.tags || [],
+        description: zone?.description || '',
+        parent_zone: undefined,
+        parent_id: zone?.parent_id || '',
+        location: zone?.location || '',
+        display_name: zone?.display_name || '',
+        code: zone?.code || '',
+        type: zone?.type || '',
+        count: zone?.count || 0,
+        capacity: zone?.capacity || 0,
+        map_id: zone?.map_id || '',
+        timezone: zone?.timezone || '',
+        images: zone?.images || [],
+    };
+}
+
+export const applyZoneFormSchema: SchemaFn<ZoneFormModel> = (path) => {
+    required(path.name);
+};

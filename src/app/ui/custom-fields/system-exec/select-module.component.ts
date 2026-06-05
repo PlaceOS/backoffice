@@ -5,6 +5,7 @@ import {
     ElementRef,
     forwardRef,
     input,
+    model,
     OnChanges,
     resource,
     signal,
@@ -39,6 +40,7 @@ export interface ModuleLike {
             <mat-form-field class="h-14 w-full" appearance="outline">
                 <mat-select
                     [placeholder]="'COMMON.EXECUTE_MODULE_SELECT' | translate"
+                    [disabled]="disabled()"
                     [(ngModel)]="module"
                     (ngModelChange)="setValue($event)"
                     (openedChange)="setOpen($event)"
@@ -117,6 +119,7 @@ export class SelectModuleComponent
 
     public readonly module = signal<ModuleLike | undefined>(undefined);
     public readonly module_filter = signal('');
+    public readonly disabled = model(false);
 
     public readonly loading = signal(false);
 
@@ -200,15 +203,21 @@ export class SelectModuleComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: ModuleLike): void {
+        if (this.disabled()) return;
         this.module.set(new_value);
         if (this._onChange && !this.loading()) {
             this._onChange(new_value);
         }
+        this._onTouch?.(new_value);
     }
 
     /** Handle dropdown opening to reset and focus module search. */
     public setOpen(open: boolean): void {
-        if (!open) return;
+        if (!open) {
+            this._onTouch?.(this.module());
+            return;
+        }
+        if (this.disabled()) return;
         this.module_filter.set('');
         this.timeout('focus_search', () =>
             this._search_el()?.nativeElement.focus(),
@@ -235,4 +244,8 @@ export class SelectModuleComponent
      * @param fn The callback function to register
      */
     public registerOnTouched = (fn) => (this._onTouch = fn);
+
+    public setDisabledState(disabled: boolean) {
+        this.disabled.set(disabled);
+    }
 }

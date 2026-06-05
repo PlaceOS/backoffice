@@ -6,13 +6,8 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import {
-    FormControl,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
-    Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, FormField, required, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { HotkeysService } from '../../common/hotkeys.service';
@@ -38,7 +33,7 @@ import { BackofficeExtension } from '../extensions.component';
             [loading]="loading()"
             (save)="submit()"
         >
-            <form [formGroup]="form">
+            <form>
                 <div class="fieldset">
                     <div class="field">
                         <label for="type">
@@ -46,7 +41,7 @@ import { BackofficeExtension } from '../extensions.component';
                             <span>*</span>
                         </label>
                         <mat-form-field appearance="outline">
-                            <mat-select formControlName="type">
+                            <mat-select [formField]="form.type">
                                 @for (type of available_types; track type) {
                                     <mat-option [value]="type">
                                         <span class="capitalize">{{
@@ -65,11 +60,10 @@ import { BackofficeExtension } from '../extensions.component';
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="name"
                                 [placeholder]="
                                     'ADMIN.EXTENSIONS_FIELD_NAME' | translate
                                 "
-                                formControlName="name"
+                                [formField]="form.name"
                             />
                             <mat-error>{{
                                 'ADMIN.EXTENSIONS_NAME_REQUIRED' | translate
@@ -85,11 +79,10 @@ import { BackofficeExtension } from '../extensions.component';
                     <mat-form-field appearance="outline">
                         <input
                             matInput
-                            name="url"
                             [placeholder]="
                                 'ADMIN.EXTENSIONS_FIELD_URL' | translate
                             "
-                            formControlName="url"
+                            [formField]="form.url"
                         />
                         <mat-error>{{
                             'ADMIN.EXTENSIONS_URL_REQUIRED' | translate
@@ -97,7 +90,7 @@ import { BackofficeExtension } from '../extensions.component';
                     </mat-form-field>
                 </div>
                 <div class="w-full">
-                    @if (form.controls.conditions.value?.length) {
+                    @if (formModel().conditions.length) {
                         <span class="label">
                             {{
                                 'ADMIN.EXTENSIONS_FIELD_CONDITIONS' | translate
@@ -105,7 +98,7 @@ import { BackofficeExtension } from '../extensions.component';
                         </span>
                     }
                     @for (
-                        condition of form.controls.conditions.value;
+                        condition of formModel().conditions;
                         track condition
                     ) {
                         <div class="fieldset">
@@ -193,10 +186,10 @@ import { BackofficeExtension } from '../extensions.component';
         MatRippleModule,
         IconComponent,
         FormsModule,
+        FormField,
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
-        ReactiveFormsModule,
     ],
 })
 export class ExtensionModalComponent extends AsyncHandler implements OnInit {
@@ -222,11 +215,21 @@ export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     public readonly condition_ops = ['includes', 'equals', 'truthy', 'falsy'];
     public readonly item = this._data.item;
     public readonly loading = signal('');
-    public form = new FormGroup({
-        type: new FormControl('systems', [Validators.required]),
-        name: new FormControl('', [Validators.required]),
-        url: new FormControl('', [Validators.required]),
-        conditions: new FormControl([]),
+    public readonly formModel = signal<{
+        type: string;
+        name: string;
+        url: string;
+        conditions: [string, string, unknown][];
+    }>({
+        type: 'systems',
+        name: '',
+        url: '',
+        conditions: [],
+    });
+    public readonly form = form(this.formModel, (p) => {
+        required(p.type);
+        required(p.name);
+        required(p.url);
     });
 
     public ngOnInit() {
@@ -234,27 +237,32 @@ export class ExtensionModalComponent extends AsyncHandler implements OnInit {
             'save',
             this._hotkey.listen(['KeyS'], () => this.submit()),
         );
-        this.form.patchValue(this.item);
+        this.formModel.update((value) => ({ ...value, ...this.item }));
     }
 
     public addCondition() {
-        const conditions = this.form.controls.conditions.value;
-        conditions.push(['', '', '']);
+        this.formModel.update((value) => ({
+            ...value,
+            conditions: [...value.conditions, ['', '', '']],
+        }));
     }
 
     public removeCondition(condition: [string, string, unknown]) {
-        this.form.controls.conditions.setValue(
-            this.form.controls.conditions.value.filter((c) => c !== condition),
-        );
+        this.formModel.update((value) => ({
+            ...value,
+            conditions: value.conditions.filter((c) => c !== condition),
+        }));
     }
 
-    public submit() {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
-            return;
-        }
-        const value = this.form.value;
-        value.conditions = value.conditions.filter((c) => c[0] && c[1]);
-        this.event.emit({ reason: 'done', metadata: value });
+    public async submit() {
+        await submit(this.form, async () => {
+            const value = {
+                ...this.formModel(),
+                conditions: this.formModel().conditions.filter(
+                    (c) => c[0] && c[1],
+                ),
+            };
+            this.event.emit({ reason: 'done', metadata: value });
+        });
     }
 }

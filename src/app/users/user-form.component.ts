@@ -4,18 +4,13 @@ import {
     EventEmitter,
     OnInit,
     Output,
-    Signal,
     computed,
     effect,
     inject,
     resource,
     signal,
 } from '@angular/core';
-import {
-    FormControl,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { form, FormField, submit } from '@angular/forms/signals';
 import {
     PlaceUser,
     addUser,
@@ -23,7 +18,6 @@ import {
     queryDomains,
     updateUser,
 } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 
 import { CommonModule } from '@angular/common';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -32,8 +26,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AsyncHandler } from '../common/async-handler.class';
-import { addChipItem, removeChipItem } from '../common/forms';
-import { getInvalidFields } from '../common/general';
+import {
+    addSignalChipItem,
+    getInvalidSignalFields,
+    removeSignalChipItem,
+} from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -42,7 +39,7 @@ import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.comp
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { generateUserFormFields } from './users.utilities';
+import { generateUserFormModel, userFormSchema } from './users.utilities';
 
 @Component({
     selector: 'user-form',
@@ -53,7 +50,7 @@ import { generateUserFormFields } from './users.utilities';
             (save)="submit()"
         >
             @if (form) {
-                <form user class="flex flex-col" [formGroup]="form">
+                <form user class="flex flex-col">
                     <!--  fake fields are a workaround for chrome/opera autofill getting the wrong fields -->
                     <input
                         id="email"
@@ -73,8 +70,7 @@ import { generateUserFormFields } from './users.utilities';
                         }}</label>
                         <mat-form-field appearance="outline" class="h-12">
                             <mat-select
-                                name="type"
-                                formControlName="authority_id"
+                                [formField]="form.authority_id"
                                 [placeholder]="
                                     'ADMIN.SELECT_DOMAIN' | translate
                                 "
@@ -88,13 +84,13 @@ import { generateUserFormFields } from './users.utilities';
                         </mat-form-field>
                     </div>
                     <div class="fieldset">
-                        @if (form.controls.first_name) {
+                        @if (form.first_name) {
                             <div class="field">
                                 <label
                                     for="system-name"
                                     [class.error]="
-                                        form.controls.first_name.invalid &&
-                                        form.controls.first_name.touched
+                                        form.first_name().invalid() &&
+                                        form.first_name().touched()
                                     "
                                 >
                                     {{ 'USERS.FIRST_NAME' | translate
@@ -103,12 +99,10 @@ import { generateUserFormFields } from './users.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="first-name"
                                         [placeholder]="
                                             'USERS.FIRST_NAME' | translate
                                         "
-                                        formControlName="first_name"
-                                        required
+                                        [formField]="form.first_name"
                                     />
                                     <mat-error>{{
                                         'USERS.FIRST_NAME_REQUIRED' | translate
@@ -116,7 +110,7 @@ import { generateUserFormFields } from './users.utilities';
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.last_name) {
+                        @if (form.last_name) {
                             <div class="field">
                                 <label for="system-name"
                                     >{{ 'USERS.LAST_NAME' | translate
@@ -125,12 +119,10 @@ import { generateUserFormFields } from './users.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="last-name"
                                         [placeholder]="
                                             'USERS.LAST_NAME' | translate
                                         "
-                                        formControlName="last_name"
-                                        required
+                                        [formField]="form.last_name"
                                     />
                                     <mat-error>{{
                                         'USERS.LAST_NAME_REQUIRED' | translate
@@ -139,13 +131,13 @@ import { generateUserFormFields } from './users.utilities';
                             </div>
                         }
                     </div>
-                    @if (form.controls.email) {
+                    @if (form.email) {
                         <div class="field">
                             <label
                                 for="useremail"
                                 [class.error]="
-                                    form.controls.email.invalid &&
-                                    form.controls.email.touched
+                                    form.email().invalid() &&
+                                    form.email().touched()
                                 "
                             >
                                 {{ 'COMMON.FIELD_EMAIL' | translate
@@ -154,11 +146,10 @@ import { generateUserFormFields } from './users.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="useremail"
                                     [placeholder]="
                                         'COMMON.FIELD_EMAIL' | translate
                                     "
-                                    formControlName="email"
+                                    [formField]="form.email"
                                     autocomplete="nope"
                                 />
                                 <mat-error>{{
@@ -168,7 +159,7 @@ import { generateUserFormFields } from './users.utilities';
                         </div>
                     }
                     <div class="fieldset">
-                        @if (form.controls.staff_id) {
+                        @if (form.staff_id) {
                             <div class="field">
                                 <label for="staff-id"
                                     >{{ 'USERS.STAFF_ID' | translate }}
@@ -176,16 +167,15 @@ import { generateUserFormFields } from './users.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="staff-id"
                                         [placeholder]="
                                             'USERS.STAFF_ID' | translate
                                         "
-                                        formControlName="staff_id"
+                                        [formField]="form.staff_id"
                                     />
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.controls.card_number) {
+                        @if (form.card_number) {
                             <div class="field">
                                 <label for="card-number"
                                     >{{ 'USERS.STAFF_CARD' | translate }}
@@ -193,40 +183,39 @@ import { generateUserFormFields } from './users.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="card-number"
                                         [placeholder]="
                                             'USERS.STAFF_CARD' | translate
                                         "
-                                        formControlName="card_number"
+                                        [formField]="form.card_number"
                                     />
                                 </mat-form-field>
                             </div>
                         }
                     </div>
                     <div class="mb-4 flex items-center space-x-4">
-                        @if (form.controls.support) {
+                        @if (form.support) {
                             <settings-toggle
                                 class="max-w-1/2 flex-1"
-                                [name]="'USERS.ROLE_SUPPORT' | translate"
-                                formControlName="support"
+                                [label]="'USERS.ROLE_SUPPORT' | translate"
+                                [formField]="form.support"
                             ></settings-toggle>
                         }
-                        @if (form.controls.sys_admin) {
+                        @if (form.sys_admin) {
                             <settings-toggle
                                 class="max-w-1/2 flex-1"
-                                [name]="'USERS.ROLE_ADMIN' | translate"
-                                formControlName="sys_admin"
+                                [label]="'USERS.ROLE_ADMIN' | translate"
+                                [formField]="form.sys_admin"
                             ></settings-toggle>
                         }
                     </div>
                     <div class="fieldset">
-                        @if (form.controls.staff_id && !hide_password()) {
+                        @if (form.staff_id && !hide_password()) {
                             <div class="field">
                                 <label
                                     for="new-password"
                                     [class.error]="
-                                        form.controls.password.invalid &&
-                                        form.controls.password.touched
+                                        form.password().invalid() &&
+                                        form.password().touched()
                                     "
                                 >
                                     {{ 'COMMON.PASSWORD' | translate }}
@@ -234,7 +223,6 @@ import { generateUserFormFields } from './users.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
-                                        name="new-password"
                                         autocomplete="new-password"
                                         [type]="
                                             show_password()
@@ -244,7 +232,7 @@ import { generateUserFormFields } from './users.utilities';
                                         [placeholder]="
                                             'COMMON.PASSWORD' | translate
                                         "
-                                        formControlName="password"
+                                        [formField]="form.password"
                                     />
                                     <icon
                                         matSuffix
@@ -261,17 +249,15 @@ import { generateUserFormFields } from './users.utilities';
                             </div>
                         }
                         @if (
-                            form.controls.confirm_password && !hide_password()
+                            form.confirm_password && !hide_password()
                         ) {
                             <div class="field">
                                 <label
                                     for="confirm-password"
                                     [class.error]="
-                                        form.controls.confirm_password
-                                            .invalid &&
-                                        form.controls.confirm_password.touched
+                                        form.confirm_password().invalid() &&
+                                        form.confirm_password().touched()
                                     "
-                                    minlength="1"
                                 >
                                     {{ 'USERS.PASSWORD_CONFIRM' | translate }}
                                 </label>
@@ -281,12 +267,10 @@ import { generateUserFormFields } from './users.utilities';
                                         [type]="
                                             show_confirm() ? 'text' : 'password'
                                         "
-                                        name="confirm-password"
                                         [placeholder]="
                                             'USERS.PASSWORD_CONFIRM' | translate
                                         "
-                                        formControlName="confirm_password"
-                                        minlength="1"
+                                        [formField]="form.confirm_password"
                                     />
                                     <icon
                                         matSuffix
@@ -303,13 +287,13 @@ import { generateUserFormFields } from './users.utilities';
                             </div>
                         }
                     </div>
-                    @if (form.controls.groups) {
+                    @if (form.groups) {
                         <div class="field">
                             <label
                                 for="groups"
                                 [class.error]="
-                                    form.controls.groups.invalid &&
-                                    form.controls.groups.touched
+                                    form.groups().invalid() &&
+                                    form.groups().touched()
                                 "
                             >
                                 {{ 'USERS.FIELD_GROUPS' | translate }}
@@ -351,13 +335,13 @@ import { generateUserFormFields } from './users.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.image) {
+                    @if (form.image) {
                         <div class="field">
                             <label
                                 for="image"
                                 [class.error]="
-                                    form.controls.image.invalid &&
-                                    form.controls.image.touched
+                                    form.image().invalid() &&
+                                    form.image().touched()
                                 "
                             >
                                 {{ 'USERS.IMAGE' | translate }}
@@ -365,9 +349,8 @@ import { generateUserFormFields } from './users.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
-                                    name="image"
                                     [placeholder]="'USERS.IMAGE' | translate"
-                                    formControlName="image"
+                                    [formField]="form.image"
                                 />
                                 <mat-error>{{
                                     'USERS.IMAGE_INVALID' | translate
@@ -375,10 +358,10 @@ import { generateUserFormFields } from './users.utilities';
                             </mat-form-field>
                         </div>
                     }
-                    @if (form.controls.locatable) {
+                    @if (form.locatable) {
                         <settings-toggle
-                            formControlName="locatable"
-                            [name]="'USERS.LOCATABLE' | translate"
+                            [formField]="form.locatable"
+                            [label]="'USERS.LOCATABLE' | translate"
                             class="mb-4"
                         ></settings-toggle>
                     }
@@ -390,7 +373,7 @@ import { generateUserFormFields } from './users.utilities';
     imports: [
         CommonModule,
         SettingsToggleComponent,
-        ReactiveFormsModule,
+        FormField,
         TranslatePipe,
         MatFormFieldModule,
         MatInputModule,
@@ -410,7 +393,8 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public form: UntypedFormGroup = generateUserFormFields(this._data.item);
+    public readonly formModel = signal(generateUserFormModel(this._data.item));
+    public readonly form = form(this.formModel, userFormSchema(this._data.item));
     public loading: string;
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
@@ -428,18 +412,8 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
     );
     /** List of separator characters for groups */
     public readonly separators: number[] = [ENTER, COMMA];
-    private _email: Signal<string> = toSignal(
-        this.form.controls.email.valueChanges,
-        {
-            initialValue: this.form.controls.email.value || '',
-        },
-    );
-    public group_list: Signal<string[]> = toSignal(
-        this.form.controls.groups.valueChanges,
-        {
-            initialValue: this.form.controls.groups.value || [],
-        },
-    );
+    private _email = computed(() => this.formModel().email || '');
+    public group_list = computed(() => this.formModel().groups || []);
 
     public readonly hide_password = computed(
         () =>
@@ -448,16 +422,25 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
     );
 
     public readonly addGroup = (e: MatChipInputEvent) =>
-        addChipItem(this.form.controls.groups as FormControl<string[]>, e);
+        this.formModel.update((value) => ({
+            ...value,
+            groups: addSignalChipItem(value.groups, e),
+        }));
     public readonly removeGroup = (i: string) =>
-        removeChipItem(this.form.controls.groups as FormControl<string[]>, i);
+        this.formModel.update((value) => ({
+            ...value,
+            groups: removeSignalChipItem(value.groups, i),
+        }));
 
     constructor() {
         super();
         effect(() => {
             const domains = this.domain_list();
-            if (!this.form.controls.authority_id.value && domains[0]) {
-                this.form.controls.authority_id.setValue(domains[0].id);
+            if (!this.formModel().authority_id && domains[0]) {
+                this.formModel.update((value) => ({
+                    ...value,
+                    authority_id: domains[0].id,
+                }));
             }
         });
     }
@@ -470,48 +453,48 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
+        await submit(this.form, async () => {
+            const item = this._data.item;
+            this.loading = i18n(`${this._name}.SAVING`);
+            this._dialog_ref.disableClose = true;
+            const item_json = item.toJSON ? item.toJSON() : item;
+            const form_item = (
+                item.id
+                    ? cleanObject(
+                          { ...item_json, ...this.formModel() },
+                          [undefined, null, ''],
+                      )
+                    : { ...item_json, ...this.formModel() }
+            ) as Identity;
+            try {
+                const _item = await (form_item.id
+                    ? updateUser(
+                          form_item.id as string,
+                          form_item as unknown as PlaceUser,
+                      )
+                    : addUser(form_item as unknown as PlaceUser));
+                this._dialog_ref.disableClose = false;
+                this.event.emit({ reason: 'done', metadata: { item: _item } });
+                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+                this._dialog_ref.close();
+            } catch (err) {
+                this.loading = null;
+                this._dialog_ref.disableClose = false;
+                notifyError(
+                    i18n(`${this._name}.SAVE_ERROR`, {
+                        error: JSON.stringify(
+                            (await (err as Response).text?.()) ||
+                                (err as Error).message ||
+                                err,
+                        ),
+                    }),
+                );
+            }
+        });
+        if (this.form().invalid()) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidFields(this.form).join(', '),
-                }),
-            );
-        }
-        const item = this._data.item;
-        this.loading = i18n(`${this._name}.SAVING`);
-        this._dialog_ref.disableClose = true;
-        const item_json = item.toJSON ? item.toJSON() : item;
-        const form_item = (
-            item.id
-                ? cleanObject({ ...item_json, ...this.form.value }, [
-                      undefined,
-                      null,
-                      '',
-                  ])
-                : { ...item_json, ...this.form.value }
-        ) as Identity;
-        try {
-            const _item = await (form_item.id
-                ? updateUser(
-                      form_item.id as string,
-                      form_item as unknown as PlaceUser,
-                  )
-                : addUser(form_item as unknown as PlaceUser));
-            this._dialog_ref.disableClose = false;
-            this.event.emit({ reason: 'done', metadata: { item: _item } });
-            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-            this._dialog_ref.close();
-        } catch (err) {
-            this.loading = null;
-            this._dialog_ref.disableClose = false;
-            notifyError(
-                i18n(`${this._name}.SAVE_ERROR`, {
-                    error: JSON.stringify(
-                        (await (err as Response).text?.()) ||
-                            (err as Error).message ||
-                            err,
-                    ),
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }

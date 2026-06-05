@@ -4,12 +4,10 @@ import {
     OnInit,
     SimpleChanges,
     input,
+    WritableSignal,
 } from '@angular/core';
-import {
-    FormsModule,
-    ReactiveFormsModule,
-    UntypedFormGroup,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { FieldTree, FormField } from '@angular/forms/signals';
 import {
     PlaceModule,
     PlaceSystem,
@@ -27,12 +25,13 @@ import { calculateModuleIndex } from '../../../common/api';
 import { i18n } from '../../../common/locale.service';
 import { notifyError } from '../../../common/notifications';
 import { Identity } from '../../../common/types';
+import { TriggerConditionFormModel } from '../../../triggers/triggers.utilities';
 import { TranslatePipe } from '../../translate.pipe';
 
 @Component({
     selector: 'trigger-condition-comparison-form',
     template: `@if (form()) {
-            <div class="trigger-condition form comparison" [formGroup]="form()">
+            <div class="trigger-condition form comparison">
                 <ng-container
                     *ngTemplateOutlet="
                         status_variable_form;
@@ -40,21 +39,20 @@ import { TranslatePipe } from '../../translate.pipe';
                     "
                 ></ng-container>
                 @if (
-                    form().controls.left.touched && form().controls.left.errors
+                    form().left().touched() && form().left().invalid()
                 ) {
                     <div class="error">
                         {{ 'TRIGGERS.COMPARE_VARIABLE_ERROR' | translate }}
                     </div>
                 }
-                @if (form().controls.operator) {
+                @if (form().operator) {
                     <div class="field">
                         <label for="operator" hidden>{{
                             'TRIGGERS.COMPARE_OP' | translate
                         }}</label>
                         <mat-form-field appearance="outline">
                             <mat-select
-                                name="operator"
-                                formControlName="operator"
+                                [formField]="form().operator"
                                 [placeholder]="
                                     'TRIGGERS.COMPARE_OP_SELECT' | translate
                                 "
@@ -71,7 +69,7 @@ import { TranslatePipe } from '../../translate.pipe';
                         </mat-form-field>
                     </div>
                 }
-                @if (form().controls.operator) {
+                @if (form().operator) {
                     <div class="field">
                         <label for="compared-to" hidden>{{
                             'TRIGGERS.COMPARE_TO' | translate
@@ -81,7 +79,10 @@ import { TranslatePipe } from '../../translate.pipe';
                                 name="compared-to"
                                 [(ngModel)]="rhs_type"
                                 (ngModelChange)="
-                                    form().controls.right.setValue(null)
+                                formModel().update((model) => ({
+                                        ...model,
+                                        right: '',
+                                    }))
                                 "
                                 [ngModelOptions]="{ standalone: true }"
                             >
@@ -94,7 +95,7 @@ import { TranslatePipe } from '../../translate.pipe';
                         </mat-form-field>
                     </div>
                 }
-                @if (rhs_type === 'constant' && form().controls.right) {
+                @if (rhs_type === 'constant') {
                     <div class="field">
                         <label for="constant" hidden>{{
                             'TRIGGERS.COMPARE_TO' | translate
@@ -102,8 +103,14 @@ import { TranslatePipe } from '../../translate.pipe';
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="constant"
-                                formControlName="right"
+                                [ngModel]="formModel()().right"
+                                (ngModelChange)="
+                                    formModel().update((model) => ({
+                                        ...model,
+                                        right: $event,
+                                    }))
+                                "
+                                [ngModelOptions]="{ standalone: true }"
                                 placeholder="true/false, 'string', 123.456"
                             />
                             <mat-error>{{
@@ -213,14 +220,16 @@ import { TranslatePipe } from '../../translate.pipe';
         FormsModule,
         MatSelectModule,
         MatInputModule,
-        ReactiveFormsModule,
+        FormField,
     ],
 })
 export class TriggerConditionComparisonFormComponent
     implements OnChanges, OnInit
 {
-    /** Group of form fields used for creating the system */
-    public readonly form = input<UntypedFormGroup>(undefined);
+    /** Signal form fields used for editing the trigger condition */
+    public readonly form = input<FieldTree<TriggerConditionFormModel>>(undefined);
+    public readonly formModel =
+        input<WritableSignal<TriggerConditionFormModel>>(undefined);
     /** Systems used for templating the status variables */
     public readonly system = input<PlaceSystem>(undefined);
     /** List of modules associated with the template system */
@@ -310,11 +319,14 @@ export class TriggerConditionComparisonFormComponent
 
     public updateFormForSide(side: 'left' | 'right') {
         const form = this.form();
-        if (form.controls[side]) {
+        if (form?.[side]) {
             if (!this[side + '_side'].keys) {
                 this[side + '_side'].keys = [];
             }
-            form.controls[side].setValue(this[side + '_side']);
+            this.formModel().update((model) => ({
+                ...model,
+                [side]: this[side + '_side'],
+            }));
         }
     }
 
@@ -390,8 +402,9 @@ export class TriggerConditionComparisonFormComponent
      */
     private addExistingModules() {
         const form = this.form();
-        if (form.controls.left && form.controls.left.value) {
-            const module = form.controls.left.value.mod;
+        const model = this.formModel()();
+        if (form.left && model.left) {
+            const module = (model.left as TriggerStatusVariable).mod;
             if (!this.module_list.find((mod) => mod.name === module)) {
                 this.module_list.unshift({
                     id: 'old_left_value',
@@ -400,15 +413,15 @@ export class TriggerConditionComparisonFormComponent
                 });
             }
             this.loadSystemStatusVariables(module, 'left');
-            this.left_side = form.controls.left.value;
+            this.left_side = model.left as TriggerStatusVariable;
         }
         if (
-            form.controls.right &&
-            form.controls.right.value &&
-            form.controls.right.value.mod
+            form.right &&
+            model.right &&
+            (model.right as TriggerStatusVariable).mod
         ) {
             this.rhs_type = 'status_var';
-            const module = form.controls.right.value.mod;
+            const module = (model.right as TriggerStatusVariable).mod;
             if (!this.module_list.find((mod) => mod.name === module)) {
                 this.module_list.unshift({
                     id: 'old_right_value',
@@ -417,7 +430,7 @@ export class TriggerConditionComparisonFormComponent
                 });
             }
             this.loadSystemStatusVariables(module, 'right');
-            this.right_side = form.controls.right_side.value;
+            this.right_side = model.right as TriggerStatusVariable;
         }
     }
 

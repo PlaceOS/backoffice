@@ -1,4 +1,4 @@
-import { Component, forwardRef, input } from '@angular/core';
+import { Component, forwardRef, input, signal } from '@angular/core';
 import {
     ControlValueAccessor,
     FormsModule,
@@ -37,6 +37,7 @@ import { TranslatePipe } from '../translate.pipe';
                                         matInput
                                         [name]="field"
                                         [placeholder]="field"
+                                        [disabled]="disabled()"
                                         [(ngModel)]="item[field]"
                                         (ngModelChange)="setValue(active_list)"
                                     />
@@ -47,6 +48,7 @@ import { TranslatePipe } from '../translate.pipe';
                             icon
                             matRipple
                             class="border-error text-error h-12 w-12 rounded-sm border"
+                            [disabled]="disabled()"
                             (click)="removeRow(item)"
                         >
                             <icon>delete</icon>
@@ -54,7 +56,13 @@ import { TranslatePipe } from '../translate.pipe';
                     </div>
                 }
                 <div class="row h-10 text-center">
-                    <button btn type="button" class="w-full" (click)="addRow()">
+                    <button
+                        btn
+                        type="button"
+                        class="w-full"
+                        [disabled]="disabled()"
+                        (click)="addRow()"
+                    >
                         <div class="contents">
                             <icon class="text-2xl">add</icon>
                             <div class="text">
@@ -128,6 +136,7 @@ export class ObjectListFieldComponent
 {
     /** List of fields that can be populated for each object */
     public readonly fields = input<string[]>(undefined);
+    public readonly disabled = signal(false);
     /** List of objects */
     public active_list: HashMap[] = [];
 
@@ -138,6 +147,7 @@ export class ObjectListFieldComponent
 
     /** Add a new item the the active list */
     public addRow() {
+        if (this.disabled()) return;
         if (!this.active_list) {
             this.active_list = [];
         }
@@ -150,6 +160,7 @@ export class ObjectListFieldComponent
      * @param item Item to remove
      */
     public removeRow(item: HashMap) {
+        if (this.disabled()) return;
         const index = this.active_list.indexOf(item);
         if (index >= 0) {
             this.active_list.splice(index, 1);
@@ -162,9 +173,11 @@ export class ObjectListFieldComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: HashMap[]): void {
+        if (this.disabled()) return;
         if (this._onChange) {
             this._onChange(new_value);
         }
+        this._onTouch?.(new_value);
     }
 
     /**
@@ -172,7 +185,7 @@ export class ObjectListFieldComponent
      * @param value The new value for the component
      */
     public writeValue(value: HashMap[]) {
-        this.active_list = value;
+        this.active_list = value || [];
     }
 
     /**
@@ -191,5 +204,9 @@ export class ObjectListFieldComponent
      */
     public registerOnTouched(fn: (_: HashMap[]) => void): void {
         this._onTouch = fn;
+    }
+
+    public setDisabledState(disabled: boolean) {
+        this.disabled.set(disabled);
     }
 }

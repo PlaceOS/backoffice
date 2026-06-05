@@ -5,6 +5,7 @@ import {
     forwardRef,
     input,
     OnChanges,
+    signal,
     SimpleChanges,
     viewChild,
 } from '@angular/core';
@@ -50,6 +51,7 @@ export class RichTextInputComponent
     public readonly placeholder = input('');
     public readonly readonly = input(false);
     public readonly images_allowed = input(false);
+    public readonly disabled = signal(false);
 
     private readonly _container_el =
         viewChild<ElementRef<HTMLDivElement>>('container');
@@ -80,9 +82,10 @@ export class RichTextInputComponent
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: string): void {
-        console.log('Value:', new_value);
+        if (this.disabled()) return;
         /* istanbul ignore else */
         if (this._onChange) this._onChange(new_value);
+        this._onTouch?.(new_value);
     }
 
     /**
@@ -166,12 +169,17 @@ export class RichTextInputComponent
             ],
             buttonList: buttons,
         });
-        this._editor.readOnly(this.readonly());
+        this._editor.readOnly(this.readonly() || this.disabled());
         this._editor.onChange = (c) => this.setValue(c);
     }
 
+    public setDisabledState(disabled: boolean) {
+        this.disabled.set(disabled);
+        this._editor?.readOnly(this.readonly() || disabled);
+    }
+
     private _embedImage() {
-        if (!this._editor) return;
+        if (!this._editor || this.disabled()) return;
         // Create a File input element
         const file_input = document.createElement('input');
         file_input.setAttribute('type', 'file');
@@ -194,7 +202,7 @@ export class RichTextInputComponent
     }
 
     private _embedAttachment() {
-        if (!this._editor) return;
+        if (!this._editor || this.disabled()) return;
         // Create a File input element
         const file_input = document.createElement('input');
         file_input.setAttribute('type', 'file');

@@ -1,11 +1,7 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, OnInit, WritableSignal, inject } from '@angular/core';
-import {
-    FormControl,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
-} from '@angular/forms';
+import { Component, OnInit, WritableSignal, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { form, FormField, required, submit, validate } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import {
@@ -15,11 +11,14 @@ import {
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { addChipItem, removeChipItem } from '../common/forms';
+import { addSignalChipItem, removeSignalChipItem } from '../common/forms';
 import { IconComponent } from '../ui/icon.component';
+import type { MetadataFormModel } from '../ui/metadata-display.component';
 
 export interface MetadataDetailsModalData {
-    form: FormGroup;
+    value: MetadataFormModel;
+    existing_names: string[];
+    update: (value: MetadataFormModel) => void;
     change: WritableSignal<number>;
 }
 
@@ -35,24 +34,22 @@ export interface MetadataDetailsModalData {
             </button>
         </header>
         @if (form) {
-            <main [formGroup]="form" class="flex w-lg flex-col p-4">
+            <main class="flex w-lg flex-col p-4">
                 <label
                     for="property-name"
                     [class.error]="
-                        form.controls.name.invalid && form.controls.name.touched
+                        form.name().invalid() && form.name().touched()
                     "
                     >Name<span required>*</span>:</label
                 >
                 <mat-form-field appearance="outline">
                     <input
                         matInput
-                        name="property-name"
                         placeholder="Property Name"
-                        formControlName="name"
-                        required
+                        [formField]="form.name"
                     />
                     <mat-error>{{
-                        form.controls.name?.errors?.name
+                        form.name().errors().find((error) => error.kind === 'name')
                             ? 'Property name must be unique'
                             : 'Property name is required'
                     }}</mat-error>
@@ -61,9 +58,8 @@ export interface MetadataDetailsModalData {
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
-                        name="description"
                         placeholder="Description"
-                        formControlName="description"
+                        [formField]="form.description"
                     ></textarea>
                 </mat-form-field>
                 <label for="system-email">Editors:</label>
@@ -93,9 +89,8 @@ export interface MetadataDetailsModalData {
                 <mat-form-field appearance="outline">
                     <input
                         matInput
-                        name="schema"
                         placeholder="Schema"
-                        formControlName="schema"
+                        [formField]="form.schema"
                     />
                 </mat-form-field>
             </main>
@@ -107,7 +102,7 @@ export interface MetadataDetailsModalData {
                 btn
                 matRipple
                 class="w-40"
-                [disabled]="!form?.controls.name.valid"
+                [disabled]="form.name().invalid()"
                 (click)="updateDetails()"
             >
                 Apply Locally
@@ -119,12 +114,11 @@ export interface MetadataDetailsModalData {
         MatDialogModule,
         MatRippleModule,
         MatFormFieldModule,
-        ReactiveFormsModule,
+        FormField,
         MatChipsModule,
         MatInputModule,
         IconComponent,
         MatInputModule,
-        ReactiveFormsModule,
         FormsModule,
     ],
 })
@@ -133,35 +127,51 @@ export class MetadataDetailsModalComponent implements OnInit {
         inject<MatDialogRef<MetadataDetailsModalComponent>>(MatDialogRef);
     private _data = inject<MetadataDetailsModalData>(MAT_DIALOG_DATA);
 
-    public form = new FormGroup({
-        name: new FormControl(''),
-        description: new FormControl(''),
-        editors: new FormControl<string[]>([]),
-        schema: new FormControl(''),
+    public readonly formModel = signal({
+        name: '',
+        description: '',
+        editors: [] as string[],
+        schema: '',
+    });
+    public readonly form = form(this.formModel, (path) => {
+        required(path.name);
+        validate(path.name, ({ value }) =>
+            this._data.existing_names.includes(value())
+                ? { kind: 'name', message: 'Property name must be unique' }
+                : undefined,
+        );
     });
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
     public readonly addEditor = (e: MatChipInputEvent) =>
-        addChipItem(this.form.controls.editors as FormControl<string[]>, e);
+        this.formModel.update((model) => ({
+            ...model,
+            editors: addSignalChipItem(model.editors, e),
+        }));
     public readonly removeEditor = (i: string) =>
-        removeChipItem(this.form.controls.editors as FormControl<string[]>, i);
+        this.formModel.update((model) => ({
+            ...model,
+            editors: removeSignalChipItem(model.editors, i),
+        }));
 
     public get editors() {
-        return this.form?.controls.editors.value;
+        return this.formModel().editors;
     }
 
     public ngOnInit(): void {
-        this.form.controls.name.setValidators(
-            this._data.form.controls.name.validator,
-        );
-        this.form.patchValue(this._data.form.value);
+        this.formModel.set({
+            name: this._data.value.name || '',
+            description: this._data.value.description || '',
+            editors: this._data.value.editors || [],
+            schema: this._data.value.schema || '',
+        });
     }
 
-    public updateDetails() {
-        this._data.form.patchValue(this.form.value);
-        const { name, description, editors, schema } = this.form.getRawValue();
-        this._data.form.patchValue({ name, description, editors, schema });
+    public async updateDetails() {
+        await submit(this.form, async () => undefined);
+        if (this.form().invalid()) return;
+        this._data.update({ ...this._data.value, ...this.formModel() });
         this._data.change.set(Date.now());
         this._dialog_ref.close();
     }
