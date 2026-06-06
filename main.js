@@ -1,6 +1,6 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-HNSNLM2P.js";
+} from "./chunk-ARDE22ZZ.js";
 import {
   getUnixTime
 } from "./chunk-GV5KQIK5.js";
@@ -10,7 +10,7 @@ import {
 } from "./chunk-GEMSQ6RP.js";
 import {
   UploadsService
-} from "./chunk-XTI3UY2I.js";
+} from "./chunk-F2HNGVKT.js";
 import {
   tr
 } from "./chunk-XAS7GUY2.js";
@@ -22,7 +22,7 @@ import {
   provideRouter,
   withHashLocation
 } from "./chunk-3VJIC3YA.js";
-import "./chunk-FURA3VPU.js";
+import "./chunk-TKFEBGAX.js";
 import "./chunk-CEZ5W4YU.js";
 import {
   MatTooltip,
@@ -33,12 +33,12 @@ import "./chunk-IE6E7XHG.js";
 import "./chunk-V5GEKXNH.js";
 import {
   BackofficeUsersService
-} from "./chunk-BXI7YY4Q.js";
+} from "./chunk-PA6FDKVV.js";
 import {
   SettingsService,
   currentUser,
   format
-} from "./chunk-TVGX4KHG.js";
+} from "./chunk-DORAF4CE.js";
 import {
   addDays
 } from "./chunk-XI4ZLZAC.js";
@@ -83,7 +83,7 @@ import {
 } from "./chunk-XL23FFMP.js";
 import {
   IconComponent
-} from "./chunk-MQA7H2MF.js";
+} from "./chunk-YUNY6RXQ.js";
 import {
   copyToClipboard,
   detectIE,
@@ -2182,7 +2182,7 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
                     <mat-progress-bar
                         mode="indeterminate"
                         class="scale-150 rounded"
-                    ></mat-progress-bar>
+                    />
                 </div>
             </div>
         }
@@ -2667,7 +2667,7 @@ var UploadListComponent = class _UploadListComponent extends AsyncHandler {
                                             class="absolute inset-x-0 bottom-0 mx-0!"
                                             mode="determinate"
                                             [value]="item.progress"
-                                        ></mat-progress-bar>
+                                        />
                                     }
                                 </li>
                             }
@@ -2973,15 +2973,15 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     args: [{ selector: "placeos-root", template: `
         <div class="flex h-full w-full flex-col overflow-hidden">
             @if (!loading()) {
-                <global-banner></global-banner>
+                <global-banner />
                 <div class="relative h-1/2 w-full flex-1">
-                    <router-outlet></router-outlet>
+                    <router-outlet />
                 </div>
                 <!-- @if (filter()) {
                     <global-search [(search)]="filter"></global-search>
                 } -->
                 @if (!simple()) {
-                    <app-upload-list></app-upload-list>
+                    <app-upload-list />
                 }
             } @else {
                 <div
@@ -2994,7 +2994,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
                         <mat-progress-bar
                             mode="indeterminate"
                             class="scale-150 rounded"
-                        ></mat-progress-bar>
+                        />
                     </div>
                 </div>
             }
@@ -3143,52 +3143,52 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-4X3QEBH4.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-UJLK6UJE.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-7LYQYVAZ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-TQ6AEIOO.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-U46SVFWM.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-2LT7RSOY.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-YIN3WWID.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-4CV3OK63.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-TXBGONRU.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IXJUOB4S.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-NO4OARVV.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-E3JRWAZZ.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-OUSSS2PU.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-ZQ7B5IZF.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-VAZC3I5G.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-DSMNJF5R.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-YN5LOFIN.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-NDYRI2RB.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-3L6FEII7.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-DW5HOBJX.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
