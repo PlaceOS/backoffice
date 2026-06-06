@@ -74,7 +74,7 @@ export interface PlaceTenant {
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading()"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-3xl text-sm"
                     [data]="tenants()"
@@ -100,7 +100,7 @@ export interface PlaceTenant {
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.TENANTS_EMPTY' | translate"
-                ></simple-table>
+                />
             </div>
         </div>
         <ng-template #expires_template let-data="data" let-row="row">

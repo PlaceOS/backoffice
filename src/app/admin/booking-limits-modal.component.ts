@@ -22,7 +22,7 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
                 <object-list-field
                     [formField]="form.booking_limits"
                     [fields]="['type', 'amount']"
-                ></object-list-field>
+                />
             </div>
         </fullscreen-modal-shell>
     `,

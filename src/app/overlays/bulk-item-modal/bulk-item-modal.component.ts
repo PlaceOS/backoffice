@@ -103,7 +103,7 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
                         [list]="item_list"
                         (done)="done()"
                         (close_modal)="close()"
-                    ></bulk-item-status-list>
+                    />
                 }
                 @case ('list') {
                     <bulk-item-list
@@ -115,7 +115,7 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
                         [show_start_modules]="is_system"
                         (next)="showStatus()"
                         (previous)="goTo('match-fields')"
-                    ></bulk-item-list>
+                    />
                 }
                 @case ('match-fields') {
                     <bulk-item-match-fields
@@ -126,13 +126,13 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
                         (new_mappings)="mappings = $event"
                         (mapping_done)="handleList($event, true)"
                         (previous)="goTo('upload')"
-                    ></bulk-item-match-fields>
+                    />
                 }
                 @default {
                     <bulk-item-csv-upload
                         [template]="template"
                         (list)="handleList($event)"
-                    ></bulk-item-csv-upload>
+                    />
                 }
             }
         </main>

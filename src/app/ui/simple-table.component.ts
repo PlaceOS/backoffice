@@ -61,7 +61,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                             selected().length < data_length()
                         "
                         (change)="selectAll($event.checked)"
-                    ></mat-checkbox>
+                    />
                 </div>
             }
             @for (
@@ -144,7 +144,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                                 row_template;
                                 context: { row: row, index: i }
                             "
-                        ></ng-container>
+                        />
                     </div>
                 } @else {
                     <ng-container
@@ -152,7 +152,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                             row_template;
                             context: { row: row, index: i }
                         "
-                    ></ng-container>
+                    />
                 }
             }
             @if (!paginated_data()?.length) {
@@ -180,7 +180,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                     <mat-checkbox
                         [checked]="selected().includes(i)"
                         (change)="select(i, $event.checked)"
-                    ></mat-checkbox>
+                    />
                 </div>
             }
             @for (column of active_columns(); track column; let j = $index) {
@@ -228,7 +228,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                                         name: column.name || column.key,
                                     }
                                 "
-                            ></ng-container>
+                            />
                         }
                     }
                 </div>

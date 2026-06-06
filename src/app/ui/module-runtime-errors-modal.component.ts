@@ -41,7 +41,7 @@ import { TranslatePipe } from './translate.pipe';
                         [readonly]="true"
                         [fill]="true"
                         lang="json"
-                    ></settings-form-field>
+                    />
                 } @else {
                     <div
                         class="flex flex-1 flex-col items-center justify-center space-y-2 opacity-30"
@@ -54,7 +54,7 @@ import { TranslatePipe } from './translate.pipe';
             <main
                 class="flex h-[calc(100vh-6rem)] w-[80vw] flex-col items-center justify-center"
             >
-                <mat-spinner diameter="32"></mat-spinner>
+                <mat-spinner diameter="32" />
                 <div class="opacity-30">
                     {{ 'MODULES.RUNTIME_ERRORS_LOADING' | translate }}
                 </div>

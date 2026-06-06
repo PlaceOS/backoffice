@@ -48,7 +48,7 @@ import { SystemStateService } from './system-state.service';
                     <execute-method-field
                         [system]="item_signal()"
                         [refresh]="modules_refresh()"
-                    ></execute-method-field>
+                    />
                 </section>
             }
             <h3
@@ -65,7 +65,7 @@ import { SystemStateService } from './system-state.service';
                     [exclude]="exclude_fn"
                     [ngModel]="null"
                     (ngModelChange)="new_module.set($event.id)"
-                ></item-search-field>
+                />
                 <button
                     btn
                     matRipple
@@ -89,7 +89,7 @@ import { SystemStateService } from './system-state.service';
                     mode="indeterminate"
                     class="sticky left-0 w-full"
                     [class.opacity-0]="!loading().modules"
-                ></mat-progress-bar>
+                />
                 <mat-menu #context_menu="matMenu">
                     @if (active_item()) {
                         @for (
@@ -112,7 +112,7 @@ import { SystemStateService } from './system-state.service';
                                     <icon
                                         class="text-xl"
                                         [icon]="m_item.icon"
-                                    ></icon>
+                                    />
                                     <div class="text">
                                         {{ m_item.name | translate }}
                                     </div>
@@ -281,8 +281,7 @@ import { SystemStateService } from './system-state.service';
                             matTooltipPosition="left"
                             (change)="toggleDebug(row)"
                             [class.opacity-30]="!row.running"
-                        >
-                        </mat-checkbox>
+                        />
                     </div>
                 </ng-template>
                 <ng-template #actions_template let-i="index" let-row="row">

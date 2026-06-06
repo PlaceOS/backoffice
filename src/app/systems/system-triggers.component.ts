@@ -55,7 +55,7 @@ export interface TriggerInstanceState {
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading().triggers"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-2xl text-sm"
                     [data]="triggers()"
@@ -95,7 +95,7 @@ export interface TriggerInstanceState {
                         },
                     ]"
                     [empty_message]="'SYSTEMS.TRIGGERS_EMPTY' | translate"
-                ></simple-table>
+                />
                 <ng-template #status_template let-row="row">
                     <i
                         hidden

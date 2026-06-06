@@ -71,7 +71,7 @@ export interface ModuleLike {
             </mat-form-field>
         } @else {
             <div class="flex items-center justify-center space-x-2 p-4">
-                <mat-spinner diameter="32"></mat-spinner>
+                <mat-spinner diameter="32" />
                 <p>{{ 'COMMON.EXECUTE_MODULE_LOADING' | translate }}</p>
             </div>
         }

@@ -82,7 +82,7 @@ interface MethodOption extends PlaceModuleFunction {
             }
         } @else {
             <div class="flex items-center justify-center space-x-2 p-4">
-                <mat-spinner diameter="32"></mat-spinner>
+                <mat-spinner diameter="32" />
                 <p>{{ 'COMMON.EXECUTE_METHOD_LOADING' | translate }}</p>
             </div>
         }

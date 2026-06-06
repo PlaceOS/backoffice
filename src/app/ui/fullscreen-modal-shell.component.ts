@@ -29,7 +29,7 @@ import { TranslatePipe } from './translate.pipe';
             <main
                 class="z-0 mx-auto flex min-h-1/2 w-156 max-w-full flex-1 flex-col space-y-8 p-2"
             >
-                <ng-content></ng-content>
+                <ng-content />
                 @if (!loading() && !hide_confirm()) {
                     <div class="min-h-10 w-full"></div>
                 }
@@ -64,7 +64,7 @@ import { TranslatePipe } from './translate.pipe';
             <div
                 class="flex h-1/2 w-full flex-1 flex-col items-center justify-center p-12"
             >
-                <mat-spinner [diameter]="32"></mat-spinner>
+                <mat-spinner [diameter]="32" />
                 <p class="text-center">{{ loading() }}</p>
             </div>
         </ng-template>

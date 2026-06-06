@@ -83,7 +83,7 @@ import { APIKeyService } from './api-keys.service';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="loading() !== true"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-5xl text-sm"
                     [data]="key_list"
@@ -122,7 +122,7 @@ import { APIKeyService } from './api-keys.service';
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.APP_KEYS_LIST_EMPTY' | translate"
-                ></simple-table>
+                />
                 <div class="h-12 w-full"></div>
             </div>
         </div>

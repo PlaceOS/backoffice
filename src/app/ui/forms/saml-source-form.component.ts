@@ -5,9 +5,7 @@ import {
     WritableSignal,
     input,
 } from '@angular/core';
-import {
-    FormsModule,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
@@ -22,7 +20,7 @@ import { TranslatePipe } from '../translate.pipe';
     selector: 'saml-source-form',
     template: `
         @if (form()) {
-            <form saml-source class="flex flex-col" >
+            <form saml-source class="flex flex-col">
                 <div class="fieldset">
                     @if (form().name) {
                         <div class="field">
@@ -109,9 +107,7 @@ import { TranslatePipe } from '../translate.pipe';
                                     "
                                     [formField]="form().idp_sso_target_url"
                                 />
-                                @if (
-                                    form().idp_sso_target_url().invalid()
-                                ) {
+                                @if (form().idp_sso_target_url().invalid()) {
                                     <mat-error>
                                         {{
                                             'DOMAINS.SAML_IDP_TARGET_URL_REQUIRED'
@@ -127,12 +123,8 @@ import { TranslatePipe } from '../translate.pipe';
                             <label
                                 for="name-identifier-format"
                                 [class.error]="
-                                    form()
-                                        .name_identifier_format()
-                                        .invalid() &&
-                                    form()
-                                        .name_identifier_format()
-                                        .touched()
+                                    form().name_identifier_format().invalid() &&
+                                    form().name_identifier_format().touched()
                                 "
                             >
                                 {{ 'DOMAINS.SAML_NAME_ID_FORMAT' | translate }}:
@@ -147,9 +139,7 @@ import { TranslatePipe } from '../translate.pipe';
                                     [formField]="form().name_identifier_format"
                                 />
                                 @if (
-                                    form()
-                                        .name_identifier_format()
-                                        .invalid()
+                                    form().name_identifier_format().invalid()
                                 ) {
                                     <mat-error>
                                         {{
@@ -176,7 +166,7 @@ import { TranslatePipe } from '../translate.pipe';
                         <object-list-field
                             [formField]="form().request_attributes"
                             [fields]="['name', 'name_format', 'friendly_name']"
-                        ></object-list-field>
+                        />
                         @if (
                             form().request_attributes().invalid() &&
                             form().request_attributes().touched()
@@ -213,7 +203,9 @@ import { TranslatePipe } from '../translate.pipe';
                                     [placeholder]="
                                         'DOMAINS.SAML_ASSERTION_URL' | translate
                                     "
-                                    [formField]="form().assertion_consumer_service_url"
+                                    [formField]="
+                                        form().assertion_consumer_service_url
+                                    "
                                 />
                                 @if (
                                     form()
@@ -318,7 +310,7 @@ import { TranslatePipe } from '../translate.pipe';
                             (ngModelChange)="updateAttributeStatements($event)"
                             [ngModelOptions]="{ standalone: true }"
                             [fields]="['name', 'mappings']"
-                        ></object-list-field>
+                        />
                     </div>
                 }
                 @if (form().idp_sso_target_url_runtime_params) {
@@ -334,7 +326,7 @@ import { TranslatePipe } from '../translate.pipe';
                             (ngModelChange)="updateRuntimeParams($event)"
                             [ngModelOptions]="{ standalone: true }"
                             [fields]="['name', 'mapping']"
-                        ></object-list-field>
+                        />
                     </div>
                 }
                 <div class="fieldset">

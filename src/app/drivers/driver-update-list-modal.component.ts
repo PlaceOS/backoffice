@@ -49,7 +49,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                     [checked]="all_selected()"
                                     [indeterminate]="some_selected()"
                                     (change)="toggleAll($event.checked)"
-                                ></mat-checkbox>
+                                />
                             </th>
                             <th>{{ 'COMMON.FIELD_NAME' | translate }}</th>
                             <th>{{ 'COMMON.VERSION_CURRENT' | translate }}</th>
@@ -74,7 +74,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                                         $event
                                                     )
                                                 "
-                                            ></mat-checkbox>
+                                            />
                                         </td>
                                         <td>{{ driver.name }}</td>
                                         <td>
@@ -119,7 +119,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <div
                 class="flex h-48 w-[20rem] flex-col items-center justify-center space-y-2"
             >
-                <mat-spinner [diameter]="32"></mat-spinner>
+                <mat-spinner [diameter]="32" />
                 <p>{{ 'DRIVERS.LOADING' | translate }}</p>
             </div>
         }

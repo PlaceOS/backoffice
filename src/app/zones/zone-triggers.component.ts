@@ -41,7 +41,7 @@ import { ZonesStateService } from './zones-state.service';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading()"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-lg text-sm"
                     [data]="triggers()"
@@ -65,7 +65,7 @@ import { ZonesStateService } from './zones-state.service';
                         },
                     ]"
                     [empty_message]="'ZONES.TRIGGERS_EMPTY' | translate"
-                ></simple-table>
+                />
                 <ng-template #name_template let-row="row">
                     <div
                         class="flex flex-col items-start px-4 py-2 leading-snug"

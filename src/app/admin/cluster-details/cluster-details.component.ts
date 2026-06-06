@@ -40,7 +40,7 @@ import { AdminClusterNodeComponent } from './cluster-node.component';
                                             node.hostname
                                         ] || []
                                     "
-                                ></admin-cluster-node>
+                                />
                             }
                             <a
                                 btn

@@ -238,9 +238,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 </mat-select>
                                 @if (loading_branches()) {
                                     <div class="suffix ml-2" matSuffix>
-                                        <mat-spinner
-                                            diameter="24"
-                                        ></mat-spinner>
+                                        <mat-spinner diameter="24" />
                                     </div>
                                 }
                                 <mat-error>{{
@@ -329,9 +327,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 </mat-select>
                                 @if (loading_commits()) {
                                     <div class="suffix ml-2" matSuffix>
-                                        <mat-spinner
-                                            diameter="24"
-                                        ></mat-spinner>
+                                        <mat-spinner diameter="24" />
                                     </div>
                                 }
                             </mat-form-field>

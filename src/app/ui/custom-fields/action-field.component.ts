@@ -12,7 +12,7 @@ import { IconComponent } from '../icon.component';
             (keydown.enter)="performAction()"
         >
             <div placeholder class="w-0 flex-1 truncate text-left">
-                <ng-content></ng-content>
+                <ng-content />
             </div>
             <icon class="-mr-2 text-2xl">
                 arrow_drop_{{ show_tooltip ? 'up' : 'down' }}

@@ -37,7 +37,7 @@ import { TranslatePipe } from '../../translate.pipe';
                         status_variable_form;
                         context: { side: 'left' }
                     "
-                ></ng-container>
+                />
                 @if (form().left().touched() && form().left().invalid()) {
                     <div class="error">
                         {{ 'TRIGGERS.COMPARE_VARIABLE_ERROR' | translate }}
@@ -122,7 +122,7 @@ import { TranslatePipe } from '../../translate.pipe';
                             status_variable_form;
                             context: { side: 'right' }
                         "
-                    ></ng-container>
+                    />
                 }
             </div>
         }

@@ -80,7 +80,7 @@ export interface BackofficeExtension {
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading()"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-4xl text-sm"
                     [data]="extensions()"
@@ -117,7 +117,7 @@ export interface BackofficeExtension {
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.EXTENSIONS_LIST_EMPTY' | translate"
-                ></simple-table>
+                />
                 <ng-template #type_template let-row="row">
                     <div class="p-4 font-mono text-xs uppercase">
                         {{ row.type }}

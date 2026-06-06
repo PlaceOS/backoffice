@@ -150,7 +150,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                             @if (!pulling()) {
                                 {{ 'COMMON.GIT_PULL_LATEST' | translate }}
                             } @else {
-                                <mat-spinner diameter="32"></mat-spinner>
+                                <mat-spinner diameter="32" />
                             }
                         </button>
                     }

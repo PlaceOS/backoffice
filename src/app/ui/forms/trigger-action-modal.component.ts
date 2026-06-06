@@ -1,9 +1,9 @@
 import {
     Component,
     EventEmitter,
+    inject,
     OnInit,
     Output,
-    inject,
     signal,
     viewChild,
 } from '@angular/core';
@@ -68,9 +68,7 @@ export interface TriggerActionModalData {
                                 {{ 'TRIGGERS.ACTION_FIELD_TYPE' | translate }}:
                             </label>
                             <mat-form-field appearance="outline">
-                                <mat-select
-                                    [formField]="form.action_type"
-                                >
+                                <mat-select [formField]="form.action_type">
                                     @for (type of action_types; track type) {
                                         <mat-option [value]="type.id">
                                             {{ type.name }}
@@ -187,7 +185,7 @@ export interface TriggerActionModalData {
                                         [formField]="form.method_call"
                                         [system]="system"
                                         [can_execute]="false"
-                                    ></execute-method-field>
+                                    />
                                 </div>
                             }
                         }
@@ -255,9 +253,7 @@ export class TriggerActionModalComponent
     }
 
     public get email_list(): string[] {
-        return (
-            (this.formModel().emails ? this.formModel().emails : null) || []
-        );
+        return (this.formModel().emails ? this.formModel().emails : null) || [];
     }
 
     public ngOnInit() {

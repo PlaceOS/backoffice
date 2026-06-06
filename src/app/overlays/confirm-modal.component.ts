@@ -85,7 +85,7 @@ export async function openConfirmModal(
             <main
                 class="flex w-md max-w-[85vw] flex-col items-center space-y-4 p-4 sm:h-auto"
             >
-                <icon [icon]="icon" class="text-5xl"></icon>
+                <icon [icon]="icon" class="text-5xl" />
                 <p content class="text-center" [innerHTML]="content"></p>
                 <p
                     extra
@@ -98,7 +98,7 @@ export async function openConfirmModal(
                 <div
                     class="flex h-48 w-full flex-col items-center justify-center space-y-4 p-12"
                 >
-                    <mat-spinner diameter="32"></mat-spinner>
+                    <mat-spinner diameter="32" />
                     <p>{{ loading() }}</p>
                 </div>
             </main>

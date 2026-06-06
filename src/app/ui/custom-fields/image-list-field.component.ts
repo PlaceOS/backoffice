@@ -105,7 +105,7 @@ import { TranslatePipe } from '../translate.pipe';
                             [value]="item.progress"
                             [diameter]="64"
                             mode="determinate"
-                        ></mat-progress-spinner>
+                        />
                     }
                     @if (item.error) {
                         <icon class="text-error text-6xl">warning</icon>

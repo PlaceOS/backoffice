@@ -2,22 +2,22 @@ import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
     computed,
+    effect,
     EventEmitter,
+    inject,
     Injector,
     OnInit,
     Output,
-    effect,
-    inject,
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import {
-    PlaceApplication,
-    PlaceResource,
     addApplication,
     cleanObject,
+    PlaceApplication,
+    PlaceResource,
     updateApplication,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -171,12 +171,12 @@ import {
                             class="flex-1"
                             [label]="'DOMAINS.APP_SKIP' | translate"
                             [formField]="form.skip_authorization"
-                        ></settings-toggle>
+                        />
                         <settings-toggle
                             class="flex-1"
                             [label]="'DOMAINS.APP_PRESERVE_ID' | translate"
                             [formField]="form.preserve_client_id"
-                        ></settings-toggle>
+                        />
                     </div>
                     @if (form.redirect_uri) {
                         <div class="field">
@@ -293,10 +293,9 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
                 item.id
-                    ? cleanObject(
-                          { ...item_json, ...this.formModel() },
-                          [undefined],
-                      )
+                    ? cleanObject({ ...item_json, ...this.formModel() }, [
+                          undefined,
+                      ])
                     : { ...item_json, ...this.formModel() }
             ) as Identity;
             const save_item = { ...form_item, uid: this.client_id() };

@@ -100,7 +100,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                 "
                 [data]="list()"
                 [columns]="columns()"
-            ></simple-table>
+            />
         </div>
         @if (show_start_modules()) {
             <label class="mt-4 flex items-center space-x-2 text-sm">

@@ -38,14 +38,14 @@ export interface SelectItemModalData<T = unknown> {
                     [exclude]="filter_fn"
                     [(ngModel)]="item"
                     [display_list]="true"
-                ></item-search-field>
+                />
             </main>
         } @else {
             <main
                 class="flex w-full flex-col items-center justify-center p-16 opacity-30"
             >
                 <div class="icon">
-                    <mat-spinner diameter="32"></mat-spinner>
+                    <mat-spinner diameter="32" />
                 </div>
                 <div class="text">
                     {{ 'COMMON.PROCESSING_REQUEST' | translate }}

@@ -35,7 +35,7 @@ import { ModuleStateService } from './module-state.service';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="loading() !== true"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-lg text-sm"
                     [data]="system_list()"
@@ -61,7 +61,7 @@ import { ModuleStateService } from './module-state.service';
                     ]"
                     [sortable]="true"
                     [empty_message]="'MODULES.SYSTEMS_EMPTY' | translate"
-                ></simple-table>
+                />
                 <ng-template #name_template let-row="row">
                     <div
                         class="flex flex-col items-start px-4 py-2 leading-snug"

@@ -183,12 +183,11 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 yPosition="bottom"
                 xPosition="start"
             >
-                <a-user-avatar
-                    [user]="user"
+                <a-user-avatar [user]="user"
                     [class.sm:pl-2]="compact()"
                     [matTooltip]="compact() ? $safeNavigationMigration(user?.name) : ''"
                     matTooltipPosition="right"
-                ></a-user-avatar>
+                 />
                 <div
                     class="flex w-1/2 flex-1 flex-col leading-tight"
                     [class.sm:hidden]="compact()"

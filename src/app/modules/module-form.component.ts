@@ -1,22 +1,22 @@
 import {
     Component,
+    computed,
     effect,
     EventEmitter,
+    inject,
     OnInit,
     Output,
-    computed,
-    inject,
     signal,
 } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
 import {
+    addModule,
+    addSettings,
+    cleanObject,
     EncryptionLevel,
     PlaceDriverRole,
     PlaceModule,
     PlaceSettings,
-    addModule,
-    addSettings,
-    cleanObject,
     queryDrivers,
     queryEdges,
     querySystems,
@@ -37,7 +37,10 @@ import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { applyModuleFormSchema, generateModuleFormModel } from './modules.utilities';
+import {
+    applyModuleFormSchema,
+    generateModuleFormModel,
+} from './modules.utilities';
 
 @Component({
     selector: 'module-form',
@@ -64,7 +67,7 @@ import { applyModuleFormSchema, generateModuleFormModel } from './modules.utilit
                             <item-search-field
                                 [query_fn]="driver_query_fn"
                                 [formField]="form.driver"
-                            ></item-search-field>
+                            />
                             @if (
                                 form.driver().invalid() &&
                                 form.driver().touched()
@@ -94,7 +97,7 @@ import { applyModuleFormSchema, generateModuleFormModel } from './modules.utilit
                                     <item-search-field
                                         [query_fn]="system_query_fn"
                                         [formField]="form.system"
-                                    ></item-search-field>
+                                    />
                                     @if (
                                         form.system().invalid() &&
                                         form.system().touched()
@@ -243,7 +246,7 @@ import { applyModuleFormSchema, generateModuleFormModel } from './modules.utilit
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
                                     [label]="'COMMON.TLS' | translate"
                                     [formField]="form.tls"
-                                ></settings-toggle>
+                                />
                             }
                             @if (
                                 form.udp &&
@@ -256,28 +259,23 @@ import { applyModuleFormSchema, generateModuleFormModel } from './modules.utilit
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
                                     [label]="'COMMON.UDP' | translate"
                                     [formField]="form.udp"
-                                ></settings-toggle>
+                                />
                             }
-                            @if (
-                                form.makebreak && role() !== 'logic'
-                            ) {
+                            @if (form.makebreak && role() !== 'logic') {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
                                     [label]="'MODULES.MAKEBREAK' | translate"
                                     [formField]="form.makebreak"
-                                ></settings-toggle>
+                                />
                             }
-                            @if (
-                                form.ignore_connected &&
-                                role() !== 'logic'
-                            ) {
+                            @if (form.ignore_connected && role() !== 'logic') {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
                                     [label]="
                                         'MODULES.IGNORE_CONNECTED' | translate
                                     "
                                     [formField]="form.ignore_connected"
-                                ></settings-toggle>
+                                />
                             }
                         </div>
                         @if (form.alert_level) {
@@ -286,9 +284,7 @@ import { applyModuleFormSchema, generateModuleFormModel } from './modules.utilit
                                     {{ 'COMMON.ALERT_LEVEL' | translate }}
                                 </label>
                                 <mat-form-field appearance="outline">
-                                    <mat-select
-                                        [formField]="form.alert_level"
-                                    >
+                                    <mat-select [formField]="form.alert_level">
                                         @for (
                                             level of alert_levels;
                                             track level.id
@@ -344,7 +340,7 @@ import { applyModuleFormSchema, generateModuleFormModel } from './modules.utilit
                                     "
                                     [query_fn]="edge_query_fn"
                                     [formField]="form.edge"
-                                ></item-search-field>
+                                />
                             </div>
                         }
                     }
@@ -375,7 +371,9 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public readonly formModel = signal(generateModuleFormModel(this._data.item));
+    public readonly formModel = signal(
+        generateModuleFormModel(this._data.item),
+    );
     public readonly form = form(this.formModel, applyModuleFormSchema);
     public loading: string;
     public heading = i18n(
@@ -491,10 +489,7 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
             }
             const form_item = (
                 item.id
-                    ? cleanObject(
-                          { ...item_json, ...form_value },
-                          [undefined],
-                      )
+                    ? cleanObject({ ...item_json, ...form_value }, [undefined])
                     : { ...item_json, ...form_value }
             ) as Identity;
             try {

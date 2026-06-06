@@ -61,7 +61,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading()"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-5xl text-sm"
                     [data]="edges()"
@@ -97,7 +97,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.EDGE_LIST_EMPTY' | translate"
-                ></simple-table>
+                />
             </div>
         </div>
         <ng-template #name_template let-row="row">

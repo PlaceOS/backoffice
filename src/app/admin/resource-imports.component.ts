@@ -72,7 +72,7 @@ export interface ExternalResource {
                     mode="indeterminate"
                     class="sticky left-0 w-full"
                     [class.opacity-0]="!loading()"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="mb-4 block min-w-3xl text-sm"
                     [data]="resource_list()"
@@ -103,7 +103,7 @@ export interface ExternalResource {
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.RESOURCE_IMPORTS_EMPTY' | translate"
-                ></simple-table>
+                />
                 <ng-template #email_template let-data="data">
                     <div class="mono p-4 text-xs">{{ data }}</div>
                 </ng-template>

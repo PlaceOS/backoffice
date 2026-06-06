@@ -65,7 +65,7 @@ export interface SystemLogModalData {
                         class="flex w-full flex-col items-center justify-center p-16 opacity-30"
                     >
                         <div class="icon">
-                            <mat-spinner diameter="32"></mat-spinner>
+                            <mat-spinner diameter="32" />
                         </div>
                         <div class="text">Processing request...</div>
                     </div>

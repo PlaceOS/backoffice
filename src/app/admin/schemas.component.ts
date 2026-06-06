@@ -86,7 +86,7 @@ export interface JsonSchema {
                         [(ngModel)]="schema_copy().schema"
                         lang="json"
                         [readonly]="false"
-                    ></settings-form-field>
+                    />
                 } @else {
                     <div
                         class="bg-base-200 absolute inset-x-2 top-2 bottom-5 flex items-center justify-center rounded-xl"

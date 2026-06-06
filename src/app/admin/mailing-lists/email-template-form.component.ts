@@ -26,9 +26,7 @@ export function extractTextFromHTML(html_string: string) {
     selector: 'email-template-form',
     template: `
         <div class="bg-base-100 absolute inset-0 overflow-auto p-4">
-            <form
-                class="mx-auto min-h-full w-3xl max-w-full pt-4"
-            >
+            <form class="mx-auto min-h-full w-3xl max-w-full pt-4">
                 <div class="mb-8 flex items-center space-x-2">
                     <h2 class="text-2xl font-medium">
                         {{ template()?.id ? 'Edit' : 'New' }} Email Template
@@ -135,7 +133,7 @@ export function extractTextFromHTML(html_string: string) {
                     placeholder="Body of the email template"
                     [images_allowed]="true"
                     class="block min-h-[calc(100vh-28rem)]"
-                ></rich-text-input>
+                />
                 <div
                     class="bg-base-100 sticky bottom-0 flex items-center justify-end space-x-2"
                 >
@@ -164,7 +162,7 @@ export function extractTextFromHTML(html_string: string) {
                 <div
                     class="flex h-full w-full flex-col items-center justify-center space-y-2"
                 >
-                    <mat-spinner [diameter]="32"></mat-spinner>
+                    <mat-spinner [diameter]="32" />
                     <p>{{ loading() }}</p>
                 </div>
             </div>
@@ -210,7 +208,9 @@ export class EmailTemplateFormComponent extends AsyncHandler {
         required(p.subject);
         required(p.html);
     });
-    public readonly active_trigger_id = computed(() => this.formModel().trigger);
+    public readonly active_trigger_id = computed(
+        () => this.formModel().trigger,
+    );
     public readonly active_trigger = computed(() =>
         this.definition_list().find((_) => _.id === this.active_trigger_id()),
     );

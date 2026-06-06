@@ -215,11 +215,11 @@ import { SystemStateService } from './system-state.service';
                         [merge]="true"
                         [settings]="$safeNavigationMigration(item()?.settings)"
                         [merge_settings]="other_settings_value || []"
-                    ></a-settings-form>
+                    />
                 </section>
             } @else {
                 <div class="flex flex-col items-center justify-center p-8">
-                    <mat-spinner class="mb-4" [diameter]="32"></mat-spinner>
+                    <mat-spinner class="mb-4" [diameter]="32" />
                     <p>{{ 'SYSTEMS.LOADING_SETTINGS' | translate }}</p>
                 </div>
             }

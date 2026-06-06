@@ -215,7 +215,7 @@ import {
                                 class="w-full"
                                 [label]="'MODULES.IGNORE_CONNECTED' | translate"
                                 [formField]="form.ignore_connected"
-                            ></settings-toggle>
+                            />
                         </div>
                     </div>
                     <label for="alert-level">

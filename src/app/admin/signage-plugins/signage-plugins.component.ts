@@ -45,7 +45,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading()"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-6xl text-sm"
                     [data]="plugins()"
@@ -92,7 +92,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                     [empty_message]="
                         'ADMIN.SIGNAGE_PLUGINS_LIST_EMPTY' | translate
                     "
-                ></simple-table>
+                />
             </div>
         </div>
         <ng-template #mono_template let-data="data">

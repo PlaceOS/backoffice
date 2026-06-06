@@ -193,11 +193,11 @@ import { DriverStateService } from './driver-state.service';
                         [merge]="true"
                         [id]="item().id"
                         [settings]="item().settings"
-                    ></a-settings-form>
+                    />
                 </section>
             } @else {
                 <div class="flex flex-col items-center justify-center">
-                    <mat-spinner class="mb-4" diameter="48"></mat-spinner>
+                    <mat-spinner class="mb-4" diameter="48" />
                     <p>{{ 'DRIVERS.LOADING_SETTINGS' | translate }}</p>
                 </div>
             }

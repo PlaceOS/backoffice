@@ -57,7 +57,7 @@ import { TranslatePipe } from './translate.pipe';
                             [lines]="logs()"
                             [resize]="resize()"
                             class="h-1/2 w-full flex-1"
-                        ></new-terminal>
+                        />
                         <!-- <a-terminal [content]="logs" [resize]="resize"></a-terminal> -->
                         <div
                             class="absolute -top-2 right-0 left-0 h-4 select-none"

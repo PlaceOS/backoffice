@@ -30,7 +30,7 @@ import { ZonesStateService } from './zones-state.service';
                     [clear_on_select]="true"
                     [ngModel]="null"
                     (ngModelChange)="addGroup($event)"
-                ></item-search-field>
+                />
                 <button
                     btn
                     matRipple
@@ -47,7 +47,7 @@ import { ZonesStateService } from './zones-state.service';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="loading() !== true"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-[64rem] text-sm"
                     [data]="groups"
@@ -78,7 +78,7 @@ import { ZonesStateService } from './zones-state.service';
                     ]"
                     [sortable]="true"
                     [empty_message]="'ZONES.GROUPS_EMPTY' | translate"
-                ></simple-table>
+                />
             </section>
         </div>
         <ng-template #group_template let-row="row">

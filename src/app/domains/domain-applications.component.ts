@@ -32,7 +32,7 @@ import { DomainStateService } from './domain-state.service';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="loading() !== true"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-360 text-sm"
                     [data]="applications"
@@ -75,7 +75,7 @@ import { DomainStateService } from './domain-state.service';
                     ]"
                     [sortable]="true"
                     [empty_message]="'DOMAINS.APPLICATIONS_EMPTY' | translate"
-                ></simple-table>
+                />
             </div>
         </div>
         <ng-template #name_template let-row="row">

@@ -140,7 +140,7 @@ export interface SignagePluginModalData {
                                     | translate
                             "
                             [formField]="form.enabled"
-                        ></settings-toggle>
+                        />
                     </div>
                     <!-- Schema / Defaults section -->
                     <div class="field">
@@ -157,7 +157,7 @@ export interface SignagePluginModalData {
                                 <mat-progress-bar
                                     mode="indeterminate"
                                     class="w-48"
-                                ></mat-progress-bar>
+                                />
                                 <span>{{
                                     'ADMIN.SIGNAGE_PLUGINS_SCHEMA_LOADING'
                                         | translate
@@ -242,10 +242,7 @@ export class SignagePluginModalComponent
     public readonly formModel = signal(
         generateSignagePluginFormModel(this._data.item),
     );
-    public readonly form = form(
-        this.formModel,
-        applySignagePluginFormSchema,
-    );
+    public readonly form = form(this.formModel, applySignagePluginFormSchema);
     public loading: string;
 
     public readonly embed_plugin = signal<SignagePlugin>(null);

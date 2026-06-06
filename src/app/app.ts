@@ -42,15 +42,15 @@ import { UploadListComponent } from './ui/upload-list.component';
     template: `
         <div class="flex h-full w-full flex-col overflow-hidden">
             @if (!loading()) {
-                <global-banner></global-banner>
+                <global-banner />
                 <div class="relative h-1/2 w-full flex-1">
-                    <router-outlet></router-outlet>
+                    <router-outlet />
                 </div>
                 <!-- @if (filter()) {
                     <global-search [(search)]="filter"></global-search>
                 } -->
                 @if (!simple()) {
-                    <app-upload-list></app-upload-list>
+                    <app-upload-list />
                 }
             } @else {
                 <div
@@ -63,7 +63,7 @@ import { UploadListComponent } from './ui/upload-list.component';
                         <mat-progress-bar
                             mode="indeterminate"
                             class="scale-150 rounded"
-                        ></mat-progress-bar>
+                        />
                     </div>
                 </div>
             }

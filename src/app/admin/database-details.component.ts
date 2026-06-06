@@ -116,7 +116,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                         {{ 'ADMIN.DATABASE_REINDEX' | translate }}
                     } @else {
                         <div class="my-1 flex w-full justify-center">
-                            <mat-spinner diameter="32"></mat-spinner>
+                            <mat-spinner diameter="32" />
                         </div>
                     }
                 </button>
@@ -138,7 +138,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                         {{ 'ADMIN.DATABASE_BACKFILL' | translate }}
                     } @else {
                         <div class="my-1 flex w-full justify-center">
-                            <mat-spinner diameter="32"></mat-spinner>
+                            <mat-spinner diameter="32" />
                         </div>
                     }
                 </button>
@@ -161,7 +161,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                         Export Zone Tree
                     } @else {
                         <div class="my-1 flex w-full justify-center">
-                            <mat-spinner diameter="32"></mat-spinner>
+                            <mat-spinner diameter="32" />
                         </div>
                     }
                 </button>
@@ -192,7 +192,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                         Import Zone Tree
                     } @else {
                         <div class="my-1 flex w-full justify-center">
-                            <mat-spinner diameter="32"></mat-spinner>
+                            <mat-spinner diameter="32" />
                         </div>
                     }
                 </button>

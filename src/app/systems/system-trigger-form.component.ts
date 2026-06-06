@@ -7,7 +7,7 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { FormField, form, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -130,19 +130,19 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             class="m-2 max-w-[calc(50%-1rem)] min-w-[40%] flex-1"
                             [label]="'SYSTEMS.TRIGGER_ENABLED' | translate"
                             [formField]="form.enabled"
-                        ></settings-toggle>
+                        />
                         <settings-toggle
                             class="m-2 max-w-[calc(50%-1rem)] min-w-[40%] flex-1"
                             [label]="
                                 'SYSTEMS.TRIGGER_EXECUTE_ENABLED' | translate
                             "
                             [formField]="form.exec_enabled"
-                        ></settings-toggle>
+                        />
                         <settings-toggle
                             class="m-2 max-w-[calc(50%-1rem)] min-w-[40%] flex-1"
                             [label]="'SYSTEMS.TRIGGER_IMPORTANT' | translate"
                             [formField]="form.important"
-                        ></settings-toggle>
+                        />
                     </div>
                 </form>
             }

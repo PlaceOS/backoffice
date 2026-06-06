@@ -70,7 +70,7 @@ interface GroupTreeItem {
                         <mat-spinner
                             diameter="24"
                             class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
-                        ></mat-spinner>
+                        />
                     }
                 </div>
                 @if (filter_options()?.length) {

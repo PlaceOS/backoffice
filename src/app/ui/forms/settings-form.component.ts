@@ -64,7 +64,7 @@ type SettingsArray = [
                         @if (!saving()[shown_option().id]) {
                             <icon>delete_sweep</icon>
                         } @else {
-                            <mat-spinner diameter="32"></mat-spinner>
+                            <mat-spinner diameter="32" />
                         }
                     </button>
                     <button
@@ -81,7 +81,7 @@ type SettingsArray = [
                         @if (!saving()[shown_option().id]) {
                             <icon>save</icon>
                         } @else {
-                            <mat-spinner diameter="32"></mat-spinner>
+                            <mat-spinner diameter="32" />
                         }
                     </button>
                 </div>
@@ -104,8 +104,7 @@ type SettingsArray = [
                                     ? ' *'
                                     : '')
                             "
-                        >
-                        </mat-tab>
+                        />
                     }
                 </mat-tab-group>
                 @for (option of levels(); track $index; let i = $index) {
@@ -126,7 +125,7 @@ type SettingsArray = [
                                 [readonly]="
                                     !option.active || this.saving()[option.id]
                                 "
-                            ></settings-form-field>
+                            />
                         </div>
                         @if (settingError(+option.id)) {
                             <div class="error-display">

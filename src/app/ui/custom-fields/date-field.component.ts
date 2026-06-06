@@ -73,7 +73,7 @@ export enum TimezoneDiffRange {
         </button>
         <div class="error text-error h-5 p-1 text-xs">
             @if (has_error) {
-                <span><ng-content></ng-content></span>
+                <span><ng-content /></span>
             }
         </div>
         <ng-template #calendar_picker>
@@ -84,7 +84,7 @@ export enum TimezoneDiffRange {
                     [to]="until"
                     [offset_weekday]="week_start()"
                     (ngModelChange)="setValue($event)"
-                ></date-calendar>
+                />
             </div>
         </ng-template>
     `,

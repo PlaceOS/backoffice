@@ -139,7 +139,7 @@ import { TranslatePipe } from './translate.pipe';
                                 old_setting()?.settings_string
                             )
                         "
-                    ></diff-viewer>
+                    />
                 </div>
             } @else {
                 @if (history()?.length) {

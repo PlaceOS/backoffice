@@ -92,7 +92,7 @@ import { TriggerStateService } from './trigger-state.service';
                 class="w-full"
                 [query_fn]="query_fn"
                 [(ngModel)]="template_system"
-            ></item-search-field>
+            />
         </div>
         <header class="my-4 flex items-center">
             <div class="flex-1 text-lg font-medium">
@@ -130,7 +130,7 @@ import { TriggerStateService } from './trigger-state.service';
                 ]"
                 [sortable]="true"
                 [empty_message]="'TRIGGERS.CONDITION_COMPARE_EMPTY' | translate"
-            ></simple-table>
+            />
             <simple-table
                 class="block w-full min-w-lg text-sm"
                 [data]="time_dependents()"
@@ -150,7 +150,7 @@ import { TriggerStateService } from './trigger-state.service';
                 ]"
                 [sortable]="true"
                 [empty_message]="'TRIGGERS.CONDITION_TIME_EMPTY' | translate"
-            ></simple-table>
+            />
             <ng-template #time_dep_template let-row="row">
                 <div class="mono flex items-center space-x-2 p-4 text-sm">
                     {{ row.type === 'at' ? 'At time' : 'CRON' }}
@@ -226,7 +226,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [can_reorder]="true"
                 (ondrop)="confirmReorder('function', $event)"
                 [empty_message]="'TRIGGERS.ACTION_FN_EMPTY' | translate"
-            ></simple-table>
+            />
             <simple-table
                 class="mb-4 block w-full min-w-lg text-sm"
                 [data]="mailers()"
@@ -247,7 +247,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [can_reorder]="true"
                 (ondrop)="confirmReorder('function', $event)"
                 [empty_message]="'TRIGGERS.ACTION_EMAIL_EMPTY' | translate"
-            ></simple-table>
+            />
             <ng-template #function_call_template let-row="row">
                 <div class="mono flex space-x-2 p-4 text-xs">
                     <div>

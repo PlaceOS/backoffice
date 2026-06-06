@@ -3,9 +3,9 @@ import {
     Component,
     computed,
     EventEmitter,
+    inject,
     OnInit,
     Output,
-    inject,
     signal,
 } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
@@ -15,10 +15,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import {
-    AuthType,
-    PlaceMQTTBroker,
     addBroker,
+    AuthType,
     cleanObject,
+    PlaceMQTTBroker,
     updateBroker,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -152,7 +152,7 @@ import {
                                     class="mt-8 w-full"
                                     [label]="'COMMON.TLS' | translate"
                                     [formField]="form.tls"
-                                ></settings-toggle>
+                                />
                             </div>
                         }
                     </div>
@@ -164,9 +164,7 @@ import {
                                 }}
                             </label>
                             <mat-form-field appearance="outline">
-                                <mat-select
-                                    [formField]="form.auth_type"
-                                >
+                                <mat-select [formField]="form.auth_type">
                                     @for (type of auth_types; track type) {
                                         <mat-option [value]="type.id">
                                             {{ type.name }}
@@ -368,7 +366,9 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public readonly formModel = signal(generateBrokerFormModel(this._data.item));
+    public readonly formModel = signal(
+        generateBrokerFormModel(this._data.item),
+    );
     public readonly form = form(this.formModel, applyBrokerFormSchema);
     public loading: string;
     public heading = i18n(
@@ -411,10 +411,9 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
                 item.id
-                    ? cleanObject(
-                          { ...item_json, ...this.formModel() },
-                          [undefined],
-                      )
+                    ? cleanObject({ ...item_json, ...this.formModel() }, [
+                          undefined,
+                      ])
                     : { ...item_json, ...this.formModel() }
             ) as Identity;
             const result = await (

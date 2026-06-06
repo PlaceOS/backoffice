@@ -36,7 +36,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
         <div
             class="border-base-300 flex w-full items-center justify-center border-b p-2"
         >
-            <ng-content></ng-content>
+            <ng-content />
             <button
                 (click)="open()"
                 class="border-base-300 flex max-w-[calc(100vw-1rem)] flex-1 items-center rounded-lg border sm:max-w-lg sm:flex-auto"
@@ -76,10 +76,9 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                             "
                         />
                         @if (loading()) {
-                            <mat-spinner
-                                diameter="24"
+                            <mat-spinner diameter="24"
                                 class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
-                            ></mat-spinner>
+                             />
                         }
                     </div>
                     <p class="w-full px-4 text-sm opacity-60 text-left">

@@ -1,25 +1,25 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
+    computed,
     effect,
     EventEmitter,
+    inject,
     OnInit,
     Output,
-    computed,
-    inject,
     signal,
 } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
+    addSettings,
+    addSystem,
+    cleanObject,
     EncryptionLevel,
     PlaceResource,
     PlaceSettings,
     PlaceSystem,
-    addSettings,
-    addSystem,
-    cleanObject,
     queryZones,
     updateSystem,
 } from '@placeos/ts-client';
@@ -75,10 +75,9 @@ import {
                             <item-search-field
                                 [query_fn]="query_fn"
                                 [formField]="form.zone"
-                            ></item-search-field>
+                            />
                             @if (
-                                form.zone().invalid() &&
-                                form.zone().touched()
+                                form.zone().invalid() && form.zone().touched()
                             ) {
                                 <div class="error">
                                     {{ 'SYSTEMS.ZONE_REQUIRED' | translate }}
@@ -216,7 +215,7 @@ import {
                                     [formField]="form.installed_ui_devices"
                                     [min]="0"
                                     [max]="999"
-                                ></a-counter>
+                                />
                             </div>
                         }
                         @if (form.capacity) {
@@ -234,7 +233,7 @@ import {
                                     [formField]="form.capacity"
                                     [min]="0"
                                     [max]="999"
-                                ></a-counter>
+                                />
                             </div>
                         }
                     </div>
@@ -243,17 +242,17 @@ import {
                             [label]="'SYSTEMS.BOOKABLE' | translate"
                             class="flex-1"
                             [formField]="form.bookable"
-                        ></settings-toggle>
+                        />
                         <settings-toggle
                             [label]="'SYSTEMS.SIGNAGE' | translate"
                             class="flex-1"
                             [formField]="form.signage"
-                        ></settings-toggle>
+                        />
                         <settings-toggle
                             [label]="'SYSTEMS.PUBLIC' | translate"
                             class="flex-1"
                             [formField]="form.public"
-                        ></settings-toggle>
+                        />
                     </div>
                     @if (form.description) {
                         <div class="field">
@@ -425,9 +424,7 @@ import {
                             <label for="images">{{
                                 'COMMON.IMAGES' | translate
                             }}</label>
-                            <image-list-field
-                                [formField]="form.images"
-                            ></image-list-field>
+                            <image-list-field [formField]="form.images" />
                         </div>
                     }
                     @if (form.timetable_url) {
@@ -534,9 +531,7 @@ import {
                                         addCameraSnapshotUrl($event)
                                     "
                                 />
-                                @if (
-                                    form.camera_snapshot_urls().invalid()
-                                ) {
+                                @if (form.camera_snapshot_urls().invalid()) {
                                     <mat-error>
                                         {{ 'SYSTEMS.URL_VALID' | translate }}
                                     </mat-error>
@@ -614,7 +609,9 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     @Output() public event = new EventEmitter<DialogEvent>();
 
     public readonly timezones = TIMEZONES_IANA;
-    public readonly formModel = signal(generateSystemFormModel(this._data.item));
+    public readonly formModel = signal(
+        generateSystemFormModel(this._data.item),
+    );
     public readonly form = form(this.formModel, applySystemFormSchema);
     public loading: string;
     public heading = i18n(
@@ -669,10 +666,9 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
                 item.id
-                    ? cleanObject(
-                          { ...item_json, ...this.formModel() },
-                          [undefined],
-                      )
+                    ? cleanObject({ ...item_json, ...this.formModel() }, [
+                          undefined,
+                      ])
                     : { ...item_json, ...this.formModel() }
             ) as Identity;
             const processed_item = {
@@ -787,10 +783,7 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     public removeSecurityGroup(group: string): void {
         this.formModel.update((value) => ({
             ...value,
-            security_groups: removeSignalChipItem(
-                value.security_groups,
-                group,
-            ),
+            security_groups: removeSignalChipItem(value.security_groups, group),
         }));
     }
 

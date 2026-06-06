@@ -2,14 +2,14 @@ import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
     EventEmitter,
-    effect,
     OnInit,
     Output,
     computed,
+    effect,
     inject,
     signal,
 } from '@angular/core';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { FormField, form, submit } from '@angular/forms/signals';
 import {
     EncryptionLevel,
     PlaceSettings,
@@ -66,7 +66,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 [query_fn]="query_fn"
                                 [exclude]="exclude"
                                 [formField]="form.parent_zone"
-                            ></item-search-field>
+                            />
                         </div>
                     }
                     <div class="fieldset">
@@ -276,7 +276,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                     [formField]="form.count"
                                     [min]="0"
                                     [max]="999"
-                                ></a-counter>
+                                />
                             </div>
                         }
                         @if (form.capacity) {
@@ -288,7 +288,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                     [formField]="form.capacity"
                                     [min]="0"
                                     [max]="999"
-                                ></a-counter>
+                                />
                             </div>
                         }
                     </div>
@@ -311,9 +311,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                             <label for="images">{{
                                 'COMMON.IMAGES' | translate
                             }}</label>
-                            <image-list-field
-                                [formField]="form.images"
-                            ></image-list-field>
+                            <image-list-field [formField]="form.images" />
                         </div>
                     }
                 </form>
@@ -348,7 +346,9 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
     public readonly formModel = signal(generateZoneFormModel(this._data.item));
     public readonly form = form(this.formModel, applyZoneFormSchema);
     public readonly timezones = TIMEZONES_IANA as string[];
-    public readonly timezone = computed(() => `${this.formModel().timezone || ''}`);
+    public readonly timezone = computed(
+        () => `${this.formModel().timezone || ''}`,
+    );
     public readonly filtered_timezones = computed(() => {
         const search = this.timezone().toLowerCase();
         return this.timezones.filter((_tz) =>
@@ -411,10 +411,9 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
                 item.id
-                    ? cleanObject(
-                          { ...item_json, ...this.formModel() },
-                          [undefined],
-                      )
+                    ? cleanObject({ ...item_json, ...this.formModel() }, [
+                          undefined,
+                      ])
                     : { ...item_json, ...this.formModel() }
             ) as Identity;
             try {

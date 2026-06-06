@@ -208,7 +208,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                             $safeNavigationMigration(item()?.id)
                                         "
                                         [system]="active_system()"
-                                    ></execute-method-field>
+                                    />
                                 }
                             </div>
                         </div>
@@ -240,11 +240,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         [merge]="true"
                         [id]="$safeNavigationMigration(item()?.id)"
                         [settings]="$safeNavigationMigration(item()?.settings)"
-                    ></a-settings-form>
+                    />
                 </section>
             } @else {
                 <div class="flex flex-col items-center p-8">
-                    <mat-spinner class="mb-4" diameter="48"></mat-spinner>
+                    <mat-spinner class="mb-4" diameter="48" />
                     <p>{{ 'ZONES.LOADING_SETTINGS' | translate }}</p>
                 </div>
             }

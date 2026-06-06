@@ -123,7 +123,7 @@ import { TranslatePipe } from './translate.pipe';
                                             class="absolute inset-x-0 bottom-0 mx-0!"
                                             mode="determinate"
                                             [value]="item.progress"
-                                        ></mat-progress-bar>
+                                        />
                                     }
                                 </li>
                             }

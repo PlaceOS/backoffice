@@ -55,7 +55,7 @@ import { IconComponent } from './icon.component';
                     <icon>close</icon>
                 </button>
             }
-            <ng-content></ng-content>
+            <ng-content />
         </div>
     `,
     styles: [

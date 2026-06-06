@@ -39,7 +39,7 @@ export class CustomTooltipData<T = unknown> {
                     @case ('component') {
                         <ng-container
                             *ngComponentOutlet="component(); injector: injector"
-                        ></ng-container>
+                        />
                     }
                     @case ('html') {
                         <div [innerHTML]="html() | sanitize"></div>
@@ -47,7 +47,7 @@ export class CustomTooltipData<T = unknown> {
                     @default {
                         <ng-container
                             *ngTemplateOutlet="template(); context: data()"
-                        ></ng-container>
+                        />
                     }
                 }
             </div>

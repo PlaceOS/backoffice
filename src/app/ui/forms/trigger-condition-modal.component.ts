@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -46,10 +46,7 @@ export interface TriggerConditionData {
             (save)="save()"
         >
             @if (form) {
-                <form
-                    trigger-condition
-                    class="flex flex-col"
-                >
+                <form trigger-condition class="flex flex-col">
                     @if (form.condition_type) {
                         <div class="field">
                             <label for="type">
@@ -58,9 +55,7 @@ export interface TriggerConditionData {
                                 }}
                             </label>
                             <mat-form-field appearance="outline">
-                                <mat-select
-                                    [formField]="form.condition_type"
-                                >
+                                <mat-select [formField]="form.condition_type">
                                     @for (type of condition_types; track type) {
                                         <mat-option [value]="type.id">
                                             {{
@@ -80,12 +75,12 @@ export interface TriggerConditionData {
                             [form]="form"
                             [formModel]="formModel"
                             [system]="system"
-                        ></trigger-condition-comparison-form>
+                        />
                     } @else {
                         <trigger-condition-time-form
                             [form]="form"
                             [formModel]="formModel"
-                        ></trigger-condition-time-form>
+                        />
                     }
                 </form>
             }

@@ -32,7 +32,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
                     [disabled]="disabled()"
                     [(ngModel)]="module"
                     (ngModelChange)="fn.set(null)"
-                ></select-system-module>
+                />
                 @if (module()) {
                     <select-module-method
                         [system]="system()"
@@ -42,7 +42,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
                         (ngModelChange)="
                             fn()?.order?.length === 0 ? postArguments({}) : ''
                         "
-                    ></select-module-method>
+                    />
                 }
                 @if (fn()) {
                     <function-arguments
@@ -51,7 +51,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
                         [ngModel]="arguments()"
                         (valid)="valid.set($event)"
                         (ngModelChange)="postArguments($event)"
-                    ></function-arguments>
+                    />
                 }
                 @if (can_execute()) {
                     <div class="flex w-full items-center space-x-2">
@@ -80,7 +80,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
                     class="absolute -inset-2 flex flex-col items-center justify-center rounded-sm"
                 >
                     <div class="bg-base-100 absolute inset-0 opacity-60"></div>
-                    <mat-spinner diameter="32"></mat-spinner>
+                    <mat-spinner diameter="32" />
                     <p>{{ 'COMMON.EXECUTE_LOADING' | translate }}</p>
                 </div>
             }

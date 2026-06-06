@@ -46,7 +46,7 @@ import { BrokerFormComponent } from './broker-form.component';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading()"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-5xl text-sm"
                     [data]="brokers()"
@@ -93,7 +93,7 @@ import { BrokerFormComponent } from './broker-form.component';
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.BROKER_LIST_EMPTY' | translate"
-                ></simple-table>
+                />
             </div>
         </div>
         <ng-template #mono_template let-data="data">

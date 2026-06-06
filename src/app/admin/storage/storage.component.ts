@@ -52,7 +52,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading()"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-176 text-sm"
                     [data]="storage_list()"
@@ -101,7 +101,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                                       item: domain() ? 'selected' : 'any',
                                   }
                     "
-                ></simple-table>
+                />
             </div>
         </div>
         <ng-template #name_template let-row="row">

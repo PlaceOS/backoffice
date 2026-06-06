@@ -143,7 +143,7 @@ export interface APIKeyModalData {
                                 matPrefix
                                 class="relative -left-1"
                                 [user]="formModel().user"
-                            ></a-user-avatar>
+                            />
                         } @else {
                             <div class="prefix" matPrefix>
                                 <icon class="relative -left-0.5 text-2xl">
@@ -196,7 +196,7 @@ export interface APIKeyModalData {
                                         <a-user-avatar
                                             class="shrink-0"
                                             [user]="item"
-                                        ></a-user-avatar>
+                                        />
                                         <div
                                             class="min-w-0 flex-1 leading-tight"
                                         >

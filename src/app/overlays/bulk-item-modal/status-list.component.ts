@@ -83,7 +83,7 @@ const BATCH_SIZE = 5;
                                 </div>
                             }
                             @if (status[i] === 'loading') {
-                                <mat-spinner diameter="24"></mat-spinner>
+                                <mat-spinner diameter="24" />
                             }
                         </div>
                     </div>

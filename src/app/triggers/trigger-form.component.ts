@@ -6,7 +6,7 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { FormField, form, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -93,13 +93,12 @@ import {
                             <settings-toggle
                                 [label]="'TRIGGERS.ENABLE_WEBHOOK' | translate"
                                 [formField]="form.enable_webhook"
-                            ></settings-toggle>
+                            />
                         </div>
                     }
                     <div class="flex items-center space-x-4">
                         @if (
-                            formModel().enable_webhook &&
-                            form.debounce_period
+                            formModel().enable_webhook && form.debounce_period
                         ) {
                             <div class="field">
                                 <label
@@ -117,12 +116,11 @@ import {
                                     [step]="100"
                                     [max]="24 * 60 * 60"
                                     [render_fn]="render_debounce"
-                                ></a-counter>
+                                />
                             </div>
                         }
                         @if (
-                            formModel().enable_webhook &&
-                            form.supported_methods
+                            formModel().enable_webhook && form.supported_methods
                         ) {
                             <div class="field">
                                 <label for="methods">
@@ -181,7 +179,9 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public readonly formModel = signal(generateTriggerFormModel(this._data.item));
+    public readonly formModel = signal(
+        generateTriggerFormModel(this._data.item),
+    );
     public readonly form = form(this.formModel, applyTriggerFormSchema);
     public loading: string;
     public heading: string;

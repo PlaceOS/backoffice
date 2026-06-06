@@ -41,7 +41,7 @@ import { DriverStateService } from './driver-state.service';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading()"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-lg text-sm"
                     [data]="modules()"
@@ -68,7 +68,7 @@ import { DriverStateService } from './driver-state.service';
                     ]"
                     [sortable]="true"
                     [empty_message]="'DRIVERS.MODULES_EMPTY' | translate"
-                ></simple-table>
+                />
                 <ng-template #state_template let-row="row">
                     @if (row.system) {
                         <i
@@ -144,7 +144,7 @@ import { DriverStateService } from './driver-state.service';
                                 <div
                                     class="flex items-center space-x-2 p-2 text-sm"
                                 >
-                                    <mat-spinner [diameter]="32"></mat-spinner>
+                                    <mat-spinner [diameter]="32" />
                                     <span>{{
                                         'DRIVERS.LOADING_SYSTEMS' | translate
                                     }}</span>

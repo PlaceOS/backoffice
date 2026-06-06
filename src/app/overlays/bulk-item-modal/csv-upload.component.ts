@@ -59,7 +59,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
             <div
                 class="flex h-96 w-132 max-w-full flex-col items-center justify-center space-y-4"
             >
-                <mat-spinner diameter="32"></mat-spinner>
+                <mat-spinner diameter="32" />
                 <div class="text-center">
                     {{ 'COMMON.BULK_DROP_LOADING' | translate }}
                     @if (file_name) {

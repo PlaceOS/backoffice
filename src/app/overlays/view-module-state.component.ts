@@ -93,14 +93,14 @@ export interface ModuleStateModalData {
                         [ngModel]="state"
                         [readonly]="true"
                         [fill]="true"
-                    ></settings-form-field>
+                    />
                 </div>
             </main>
         } @else {
             <main
                 class="flex h-[calc(100vh-6rem)] w-[80vw] flex-col items-center justify-center"
             >
-                <mat-spinner diameter="32"></mat-spinner>
+                <mat-spinner diameter="32" />
                 <div>
                     {{ 'MODULES.STATE_LOADING' | translate }}
                 </div>

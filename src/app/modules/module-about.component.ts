@@ -190,7 +190,7 @@ import { ModuleStateService } from './module-state.service';
                         @if (!stopping()) {
                             <icon>play_arrow</icon>
                         } @else {
-                            <mat-spinner diameter="32"></mat-spinner>
+                            <mat-spinner diameter="32" />
                         }
                     </button>
                     <button
@@ -206,7 +206,7 @@ import { ModuleStateService } from './module-state.service';
                         @if (!stopping()) {
                             <icon>stop</icon>
                         } @else {
-                            <mat-spinner diameter="32"></mat-spinner>
+                            <mat-spinner diameter="32" />
                         }
                     </button>
                 </div>
@@ -220,13 +220,13 @@ import { ModuleStateService } from './module-state.service';
                         [merge]="true"
                         [settings]="item.settings"
                         [merge_settings]="other_settings_value || []"
-                    ></a-settings-form>
+                    />
                 </section>
             } @else {
                 <div
                     class="m-auto flex flex-col items-center justify-center p-8"
                 >
-                    <mat-spinner class="mb-4" diameter="48"></mat-spinner>
+                    <mat-spinner class="mb-4" diameter="48" />
                     <p>{{ 'MODULES.LOADING_SETTINGS' | translate }}</p>
                 </div>
             }

@@ -9,7 +9,7 @@ import { SafePipe } from './pipes/safe.pipe';
             @if (!icon() || icon().type !== 'img') {
                 <i [class]="icon()?.class || className()">
                     {{ icon()?.content }}
-                    <ng-content></ng-content>
+                    <ng-content />
                 </i>
             }
             @if (icon() && icon().type === 'img') {

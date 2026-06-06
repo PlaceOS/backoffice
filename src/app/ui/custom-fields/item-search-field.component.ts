@@ -72,7 +72,7 @@ interface SearchItem {
                 </div>
                 @if (loading()) {
                     <div class="suffix" matSuffix>
-                        <mat-spinner diameter="16"></mat-spinner>
+                        <mat-spinner diameter="16" />
                     </div>
                 }
             </mat-form-field>
@@ -96,7 +96,7 @@ interface SearchItem {
                                             item_option;
                                             context: { option: option }
                                         "
-                                    ></ng-container>
+                                    />
                                 </div>
                             </button>
                         }
@@ -134,7 +134,7 @@ interface SearchItem {
                                 item_option;
                                 context: { option: option }
                             "
-                        ></ng-container>
+                        />
                     </mat-option>
                 }
             </mat-autocomplete>

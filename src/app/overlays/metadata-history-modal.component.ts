@@ -136,7 +136,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         <diff-viewer
                             [modified]="second_details || ''"
                             [original]="first_details || ''"
-                        ></diff-viewer>
+                        />
                     }
                     @if (!(first_details && second_details)) {
                         <div

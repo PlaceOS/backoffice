@@ -27,7 +27,7 @@ import { SystemStateService } from './system-state.service';
                     [clear_on_select]="true"
                     [ngModel]="null"
                     (ngModelChange)="addPendingZone($event)"
-                ></item-search-field>
+                />
             </section>
             <section class="mb-2 flex items-center space-x-2">
                 <button
@@ -73,7 +73,7 @@ import { SystemStateService } from './system-state.service';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading().zones"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-lg text-sm"
                     [data]="show_original ? original_zones() : zones()"
@@ -101,7 +101,7 @@ import { SystemStateService } from './system-state.service';
                     [can_reorder]="true"
                     (ondrop)="reorder($event)"
                     empty_message="No zones for selected system"
-                ></simple-table>
+                />
                 <div class="h-12 w-full"></div>
                 <ng-template #name_template let-row="row">
                     <div

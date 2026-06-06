@@ -193,7 +193,7 @@ function replaceDescTag(inputString, newContent) {
                                             lang="json"
                                             [schema]="schema_map()[item.name]"
                                             [readonly]="false"
-                                        ></settings-form-field>
+                                        />
                                     }
                                 </div>
                             </div>

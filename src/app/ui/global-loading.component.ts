@@ -26,7 +26,7 @@ import { waitForSignalValue } from '../common/signals';
                     <mat-progress-bar
                         mode="indeterminate"
                         class="scale-150 rounded"
-                    ></mat-progress-bar>
+                    />
                 </div>
             </div>
         }

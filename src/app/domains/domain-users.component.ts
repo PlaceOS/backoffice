@@ -14,7 +14,7 @@ import { DomainStateService } from './domain-state.service';
                 mode="indeterminate"
                 class="w-full"
                 [class.opacity-0]="loading() !== true"
-            ></mat-progress-bar>
+            />
             <simple-table
                 class="block min-w-lg text-sm"
                 [data]="users"
@@ -33,7 +33,7 @@ import { DomainStateService } from './domain-state.service';
                 ]"
                 [sortable]="true"
                 [empty_message]="'DOMAINS.USER_LIST_EMPTY' | translate"
-            ></simple-table>
+            />
         </div>
         <ng-template #name_template let-row="row">
             <div class="flex flex-col px-4 py-2">

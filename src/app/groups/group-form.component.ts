@@ -101,7 +101,7 @@ import {
                             [ngModel]="parent_group()"
                             [ngModelOptions]="{ standalone: true }"
                             (ngModelChange)="setParentGroup($event)"
-                        ></item-search-field>
+                        />
                     </div>
                     <div class="field">
                         <label for="group-authority">{{

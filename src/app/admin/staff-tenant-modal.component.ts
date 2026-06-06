@@ -254,8 +254,7 @@ export interface StaffTenantModalData {
                         [label]="'ADMIN.TENANTS_DELEGATED' | translate"
                         class="w-1/2"
                         [formField]="form.delegated"
-                    >
-                    </settings-toggle>
+                    />
                 </div>
                 @for (item of credential_fields(); track item.key) {
                     <div class="flex flex-col" [class.hidden]="item.disabled">
@@ -325,8 +324,7 @@ export interface StaffTenantModalData {
                             class="w-1/2"
                             [(ngModel)]="show_outlook"
                             [ngModelOptions]="{ standalone: true }"
-                        >
-                        </settings-toggle>
+                        />
                     </div>
                 }
                 @if (show_outlook() && formModel().platform === 'office365') {
@@ -373,7 +371,7 @@ export interface StaffTenantModalData {
                         (ngModelChange)="updateBookingLimits($event)"
                         [ngModelOptions]="{ standalone: true }"
                         [fields]="['type', 'amount']"
-                    ></object-list-field>
+                    />
                 </div>
             </form>
         </fullscreen-modal-shell>

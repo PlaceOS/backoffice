@@ -1,9 +1,9 @@
 import {
     Component,
+    input,
     OnChanges,
     OnInit,
     SimpleChanges,
-    input,
     WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -38,7 +38,7 @@ import { TranslatePipe } from '../../translate.pipe';
                         [(ngModel)]="is_cron"
                         (ngModelChange)="toggleCRON($event)"
                         [ngModelOptions]="{ standalone: true }"
-                    ></settings-toggle>
+                    />
                 </div>
                 @if (is_cron) {
                     <div class="field">
@@ -51,7 +51,9 @@ import { TranslatePipe } from '../../translate.pipe';
                                 matInput
                                 [formField]="form().timezone"
                                 (input)="
-                                    updateTimezoneList($any($event.target).value)
+                                    updateTimezoneList(
+                                        $any($event.target).value
+                                    )
                                 "
                                 [placeholder]="'COMMON.TIMEZONE' | translate"
                                 [matAutocomplete]="auto"
@@ -78,9 +80,7 @@ import { TranslatePipe } from '../../translate.pipe';
                                         'TRIGGERS.TIME_FIELD_DATE' | translate
                                     }}
                                 </label>
-                                <a-date-field
-                                    [formField]="form().time"
-                                ></a-date-field>
+                                <a-date-field [formField]="form().time" />
                             </div>
                         }
                         @if (form().time) {
@@ -90,9 +90,7 @@ import { TranslatePipe } from '../../translate.pipe';
                                         'TRIGGERS.TIME_FIELD_TIME' | translate
                                     }}
                                 </label>
-                                <a-time-field
-                                    [formField]="form().time"
-                                ></a-time-field>
+                                <a-time-field [formField]="form().time" />
                             </div>
                         }
                     </div>
@@ -291,7 +289,7 @@ import { TranslatePipe } from '../../translate.pipe';
                             [ngModelOptions]="{
                                 standalone: true,
                             }"
-                        ></cron-input-field>
+                        />
                     }
                 }
             </div>
@@ -318,7 +316,8 @@ export class TriggerConditionTimeFormComponent
     implements OnChanges, OnInit
 {
     /** Signal form fields used for editing the trigger condition */
-    public readonly form = input<FieldTree<TriggerConditionFormModel>>(undefined);
+    public readonly form =
+        input<FieldTree<TriggerConditionFormModel>>(undefined);
     public readonly formModel =
         input<WritableSignal<TriggerConditionFormModel>>(undefined);
     /** List of available periods for scheduled repetition */

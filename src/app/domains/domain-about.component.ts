@@ -81,24 +81,24 @@ import { DomainStateService } from './domain-state.service';
                     [(selectedIndex)]="index"
                     class="border-base-300 border-x border-t"
                 >
-                    <mat-tab [label]="'DOMAINS.SETTINGS_CONFIG' | translate">
-                    </mat-tab>
-                    <mat-tab [label]="'DOMAINS.SETTINGS_INTERNALS' | translate">
-                    </mat-tab>
+                    <mat-tab [label]="'DOMAINS.SETTINGS_CONFIG' | translate" />
+                    <mat-tab
+                        [label]="'DOMAINS.SETTINGS_INTERNALS' | translate"
+                    />
                 </mat-tab-group>
                 @if (index !== 1) {
                     <settings-form-field
                         [formField]="form.config"
                         lang="json"
                         [readonly]="false"
-                    ></settings-form-field>
+                    />
                 }
                 @if (index === 1) {
                     <settings-form-field
                         [formField]="form.internals"
                         lang="json"
                         [readonly]="false"
-                    ></settings-form-field>
+                    />
                 }
             </section>
         }

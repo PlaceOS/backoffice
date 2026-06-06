@@ -197,14 +197,14 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 class="max-w-1/2 flex-1"
                                 [label]="'USERS.ROLE_SUPPORT' | translate"
                                 [formField]="form.support"
-                            ></settings-toggle>
+                            />
                         }
                         @if (form.sys_admin) {
                             <settings-toggle
                                 class="max-w-1/2 flex-1"
                                 [label]="'USERS.ROLE_ADMIN' | translate"
                                 [formField]="form.sys_admin"
-                            ></settings-toggle>
+                            />
                         }
                     </div>
                     <div class="fieldset">
@@ -360,7 +360,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                             [formField]="form.locatable"
                             [label]="'USERS.LOCATABLE' | translate"
                             class="mb-4"
-                        ></settings-toggle>
+                        />
                     }
                 </form>
             }

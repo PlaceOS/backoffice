@@ -25,7 +25,7 @@ import { GroupStateService } from './group-state.service';
                     [clear_on_select]="true"
                     [ngModel]="null"
                     (ngModelChange)="addUser($event)"
-                ></item-search-field>
+                />
                 <button
                     btn
                     matRipple
@@ -42,7 +42,7 @@ import { GroupStateService } from './group-state.service';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="loading() !== true"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-[56rem] text-sm"
                     [data]="users"
@@ -67,7 +67,7 @@ import { GroupStateService } from './group-state.service';
                     ]"
                     [sortable]="true"
                     [empty_message]="'GROUPS.USERS_EMPTY' | translate"
-                ></simple-table>
+                />
             </section>
         </div>
         <ng-template #user_template let-row="row">

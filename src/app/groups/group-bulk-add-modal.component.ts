@@ -53,7 +53,7 @@ export interface GroupBulkAddModalData<T extends GroupBulkAddItem> {
                 </div>
                 @if (loading()) {
                     <div class="suffix" matSuffix>
-                        <mat-spinner diameter="16"></mat-spinner>
+                        <mat-spinner diameter="16" />
                     </div>
                 }
             </mat-form-field>

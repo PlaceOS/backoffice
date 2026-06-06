@@ -25,7 +25,7 @@ import { GroupStateService } from './group-state.service';
                     [clear_on_select]="true"
                     [ngModel]="null"
                     (ngModelChange)="addZone($event)"
-                ></item-search-field>
+                />
                 <button
                     btn
                     matRipple
@@ -42,7 +42,7 @@ import { GroupStateService } from './group-state.service';
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="loading() !== true"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="block min-w-[64rem] text-sm"
                     [data]="zones"
@@ -73,7 +73,7 @@ import { GroupStateService } from './group-state.service';
                     ]"
                     [sortable]="true"
                     [empty_message]="'GROUPS.ZONES_EMPTY' | translate"
-                ></simple-table>
+                />
             </section>
         </div>
         <ng-template #zone_template let-row="row">

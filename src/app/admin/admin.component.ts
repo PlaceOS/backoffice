@@ -19,7 +19,7 @@ import { BackofficeUsersService } from '../users/users.service';
         <div
             class="divide-base-200 bg-base-100 absolute inset-0 flex items-center divide-y sm:divide-x sm:divide-y-0"
         >
-            <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
+            <sidebar-menu [(open)]="open_menu" class="sm:h-full" />
             <div class="flex h-full w-px flex-1 flex-col overflow-hidden">
                 <div class="z-0 flex h-1/2 flex-1">
                     <div
@@ -45,7 +45,7 @@ import { BackofficeUsersService } from '../users/users.service';
                         }
                     </div>
                     <div class="relative z-0 h-full w-1/2 flex-1 overflow-auto">
-                        <router-outlet></router-outlet>
+                        <router-outlet />
                     </div>
                     <button
                         icon
@@ -57,14 +57,11 @@ import { BackofficeUsersService } from '../users/users.service';
                     </button>
                 </div>
                 @if (debug_position() === 'below') {
-                    <app-debug-output below></app-debug-output>
+                    <app-debug-output below />
                 }
             </div>
             @if (debug_position() === 'side') {
-                <app-debug-output
-                    side
-                    class="h-full max-w-120"
-                ></app-debug-output>
+                <app-debug-output side class="h-full max-w-120" />
             }
         </div>
     `,

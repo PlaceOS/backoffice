@@ -65,7 +65,7 @@ export interface DuplicateModalData {
                                     </icon>
                                 }
                                 @if (status[i] === 'loading') {
-                                    <mat-spinner diameter="24"></mat-spinner>
+                                    <mat-spinner diameter="24" />
                                 }
                             </div>
                         </div>

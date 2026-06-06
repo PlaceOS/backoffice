@@ -96,7 +96,7 @@ export interface SignagePluginTestModalData {
                                 <mat-progress-bar
                                     mode="indeterminate"
                                     class="w-full"
-                                ></mat-progress-bar>
+                                />
                             </div>
                         }
                         @if (schema()) {

@@ -46,12 +46,12 @@ import { EmailStateService } from './email-state.service';
                     mode="indeterminate"
                     class="sticky left-0 w-full"
                     [class.opacity-0]="loading() !== true"
-                ></mat-progress-bar>
+                />
                 <simple-table
                     class="mb-4 block min-w-4xl text-sm"
                     [data]="templates"
                     [columns]="[]"
-                ></simple-table>
+                />
             </div>
         </div>
     `,

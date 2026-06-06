@@ -25,7 +25,7 @@ import { IconComponent } from './icon.component';
                 <div class="bg-info absolute inset-0 m-0! opacity-10"></div>
             }
             <div class="ml-2 flex flex-1 items-center space-x-2 text-left">
-                <div>{{ label() }}<ng-content></ng-content></div>
+                <div>{{ label() }}<ng-content /></div>
                 @if (info()) {
                     <icon [matTooltip]="info()">info</icon>
                 }
@@ -34,7 +34,7 @@ import { IconComponent } from './icon.component';
                 [(ngModel)]="value"
                 class="pointer-events-none"
                 [disabled]="disabled()"
-            ></mat-checkbox>
+            />
         </button>
     `,
     styles: [

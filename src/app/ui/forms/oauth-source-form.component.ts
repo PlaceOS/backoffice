@@ -21,7 +21,7 @@ import { TranslatePipe } from '../translate.pipe';
     selector: 'oauth-source-form',
     template: `
         @if (form()) {
-            <form oauth-source class="flex flex-col" >
+            <form oauth-source class="flex flex-col">
                 @if (form().name) {
                     <div class="field">
                         <label
@@ -128,9 +128,7 @@ import { TranslatePipe } from '../translate.pipe';
                                 >{{ 'DOMAINS.OAUTH_TOKEN_METHOD' | translate }}:
                             </label>
                             <mat-form-field appearance="outline">
-                                <mat-select
-                                    [formField]="form().token_method"
-                                >
+                                <mat-select [formField]="form().token_method">
                                     @for (type of token_methods; track type) {
                                         <mat-option [value]="type.id">
                                             {{ type.name }}
@@ -146,9 +144,7 @@ import { TranslatePipe } from '../translate.pipe';
                                 Authentication Scheme:
                             </label>
                             <mat-form-field appearance="outline">
-                                <mat-select
-                                    [formField]="form().auth_scheme"
-                                >
+                                <mat-select [formField]="form().auth_scheme">
                                     @for (type of auth_schemes; track type) {
                                         <mat-option [value]="type.id">
                                             {{
@@ -229,14 +225,11 @@ import { TranslatePipe } from '../translate.pipe';
                         <object-list-field
                             [(ngModel)]="info_mapping_list"
                             (ngModelChange)="
-                                updateMappings(
-                                    $event,
-                                    'info_mappings'
-                                )
+                                updateMappings($event, 'info_mappings')
                             "
                             [ngModelOptions]="{ standalone: true }"
                             [fields]="['PlaceOS', 'Remote']"
-                        ></object-list-field>
+                        />
                     </div>
                 }
                 @if (form().authorize_params) {
@@ -258,7 +251,7 @@ import { TranslatePipe } from '../translate.pipe';
                             "
                             [ngModelOptions]="{ standalone: true }"
                             [fields]="['Parameter', 'Value']"
-                        ></object-list-field>
+                        />
                     </div>
                 }
                 @if (form().ensure_matching) {
@@ -280,7 +273,7 @@ import { TranslatePipe } from '../translate.pipe';
                             "
                             [ngModelOptions]="{ standalone: true }"
                             [fields]="['Parameter', 'Value']"
-                        ></object-list-field>
+                        />
                     </div>
                 }
             </form>

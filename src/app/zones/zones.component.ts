@@ -25,7 +25,7 @@ import { ZonesStateService } from './zones-state.service';
         <div
             class="divide-base-200 bg-base-100 absolute inset-0 flex items-center divide-y sm:divide-x sm:divide-y-0"
         >
-            <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
+            <sidebar-menu [(open)]="open_menu" class="sm:h-full" />
             <div class="flex h-full w-px flex-1 flex-col overflow-hidden">
                 <div class="flex h-px flex-1">
                     <item-sidebar
@@ -33,7 +33,7 @@ import { ZonesStateService } from './zones-state.service';
                         [route]="name"
                         [title]="'ZONES.PLURAL' | translate"
                         [filter_options]="zone_tags()"
-                    ></item-sidebar>
+                    />
                     <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
                         <item-selection
                             class="z-20 sm:hidden"
@@ -51,25 +51,25 @@ import { ZonesStateService } from './zones-state.service';
                         </item-selection>
                         <div class="flex h-1/2 flex-1 flex-col">
                             @if (loading()) {
-                                <item-details-skeleton></item-details-skeleton>
+                                <item-details-skeleton />
                             } @else if (item()?.id) {
                                 <item-details
                                     [can_edit]="true"
                                     [item]="item()"
                                     [type]="'ZONES.SINGULAR' | translate"
-                                ></item-details>
+                                />
                                 <item-tablist
                                     [base]="name"
                                     [tabs]="tab_list()"
                                     [scrolled]="scroll() > 0"
                                     class="z-10"
-                                ></item-tablist>
+                                />
                                 <div
                                     #el
                                     class="relative z-0 h-1/2 w-full flex-1 overflow-auto"
                                     (scroll)="scroll.set(el.scrollTop)"
                                 >
-                                    <router-outlet></router-outlet>
+                                    <router-outlet />
                                 </div>
                             }
                         </div>
@@ -94,14 +94,11 @@ import { ZonesStateService } from './zones-state.service';
                     </div>
                 </div>
                 @if (debug_position() === 'below') {
-                    <app-debug-output below></app-debug-output>
+                    <app-debug-output below />
                 }
             </div>
             @if (debug_position() === 'side') {
-                <app-debug-output
-                    side
-                    class="h-full max-w-120"
-                ></app-debug-output>
+                <app-debug-output side class="h-full max-w-120" />
             }
         </div>
     `,

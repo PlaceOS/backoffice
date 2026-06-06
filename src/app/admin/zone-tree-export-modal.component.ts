@@ -34,7 +34,7 @@ import { IconComponent } from '../ui/icon.component';
                     [exclude]="exclude_fn"
                     [(ngModel)]="selected_zone"
                     [display_list]="true"
-                ></item-search-field>
+                />
             </section>
             <section class="flex min-h-0 flex-col space-y-2">
                 <h4 class="text-sm font-medium">Selected Parents</h4>

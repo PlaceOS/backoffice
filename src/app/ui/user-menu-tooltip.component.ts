@@ -35,7 +35,7 @@ import { TranslatePipe } from './translate.pipe';
                 <p class="w-1/2 flex-1">
                     {{ 'COMMON.DARK_MODE' | translate }}
                 </p>
-                <mat-slide-toggle [(ngModel)]="dark_mode"></mat-slide-toggle>
+                <mat-slide-toggle [(ngModel)]="dark_mode" />
             </div>
             <button
                 matRipple
