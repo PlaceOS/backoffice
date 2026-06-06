@@ -117,7 +117,7 @@
         "MESSAGE_COUNT_N": "{{ count }} messages",
         "DEBUG_DOWNLOAD_MESSAGES": "Download messages",
         "DEBUG_TOGGLE_POSITION": "Toggle Position",
-        "DEBUG_CLEAR_MESSAGES": "Download messages",
+        "DEBUG_CLEAR_MESSAGES": "Clear messages",
         "DEBUG_UNBIND_MODULES": "Unbind Modules",
         "DEBUG_CLOSE_CONSOLE": "Close Console",
         "TRUE": "Yes",

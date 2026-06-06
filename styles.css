@@ -1413,9 +1413,6 @@ input:where([type=button], [type=reset], [type=submit]),
   --tw-border-style: none;
   border-style: none;
 }
-#placeos .border-\[hsl\(0\,0\%\,40\%\)\] {
-  border-color: hsl(0, 0%, 40%);
-}
 #placeos .border-base-100 {
   border-color: var(--base-100);
 }
@@ -1485,12 +1482,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .border-t-info {
   border-top-color: var(--info);
-}
-#placeos .bg-\[hsl\(0\,0\%\,15\%\)\] {
-  background-color: hsl(0, 0%, 15%);
-}
-#placeos .bg-\[hsl\(0\,0\%\,30\%\)\] {
-  background-color: hsl(0, 0%, 30%);
 }
 #placeos .bg-base-100 {
   background-color: var(--base-100);
@@ -2093,6 +2084,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .select-text {
   -webkit-user-select: text;
   user-select: text;
+}
+#placeos .placeholder\:text-base-400::placeholder {
+  color: var(--base-400);
 }
 #placeos .last\:border-b-0:last-child {
   border-bottom-style: var(--tw-border-style);
