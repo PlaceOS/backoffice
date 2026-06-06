@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { DriverStateService } from './driver-state.service';
 
@@ -27,7 +27,7 @@ import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
         </div>
     `,
     styles: [``],
-    imports: [CommonModule, MarkdownPipe, IconComponent],
+    imports: [MarkdownPipe, IconComponent, AsyncPipe],
 })
 export class DriverDocsComponent implements OnInit {
     private _service = inject(DriverStateService);

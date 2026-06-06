@@ -2,7 +2,7 @@ import { Component, effect, inject, signal } from '@angular/core';
 import { PlaceUser } from '@placeos/ts-client';
 import { toSignal } from '../common/signals';
 
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -62,7 +62,7 @@ interface UserLogEntry {
             }
         `,
     ],
-    imports: [TranslatePipe, CommonModule, SimpleTableComponent],
+    imports: [TranslatePipe, SimpleTableComponent, DatePipe],
 })
 export class UserHistoryComponent extends AsyncHandler {
     private _service = inject(ActiveItemService);

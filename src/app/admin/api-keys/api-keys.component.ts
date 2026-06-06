@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -193,7 +193,6 @@ import { APIKeyService } from './api-keys.service';
         DateFromPipe,
         SimpleTableComponent,
         MatProgressBarModule,
-        CommonModule,
         MatFormFieldModule,
         MatSelectModule,
         FormsModule,

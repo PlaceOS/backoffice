@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -234,7 +234,6 @@ import { SystemStateService } from './system-state.service';
         `,
     ],
     imports: [
-        CommonModule,
         TranslatePipe,
         DateFromPipe,
         MarkdownPipe,
@@ -243,6 +242,8 @@ import { SystemStateService } from './system-state.service';
         MatRippleModule,
         MatTooltipModule,
         IconComponent,
+        AsyncPipe,
+        DatePipe,
     ],
 })
 export class SystemAboutComponent {

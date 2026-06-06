@@ -2,7 +2,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, computed, inject, resource } from '@angular/core';
 import { PlaceUser, showDomain } from '@placeos/ts-client';
 
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
@@ -160,12 +160,12 @@ import { TranslatePipe } from '../ui/translate.pipe';
         `,
     ],
     imports: [
-        CommonModule,
         TranslatePipe,
         DateFromPipe,
         MatTooltipModule,
         MatRippleModule,
         RouterLink,
+        DatePipe,
     ],
 })
 export class UserAboutComponent {

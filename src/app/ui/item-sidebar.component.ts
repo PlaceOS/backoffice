@@ -1,5 +1,5 @@
 import { CdkTreeModule } from '@angular/cdk/tree';
-import { CommonModule } from '@angular/common';
+
 import {
     AfterViewInit,
     Component,
@@ -338,7 +338,6 @@ interface GroupTreeItem {
         `,
     ],
     imports: [
-        CommonModule,
         CdkTreeModule,
         TranslatePipe,
         MatTooltipModule,

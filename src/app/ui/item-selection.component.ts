@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
     Component,
@@ -173,7 +172,6 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
         `,
     ],
     imports: [
-        CommonModule,
         TranslatePipe,
         IconComponent,
         VirtualScrollComponent,

@@ -4,7 +4,6 @@ import { copyToClipboard, unique } from '../common/general';
 import { notifyInfo } from '../common/notifications';
 import { toSignal } from '../common/signals';
 
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -206,7 +205,6 @@ export interface TriggerInstanceState {
         MatRippleModule,
         MatTooltipModule,
         DateFromPipe,
-        CommonModule,
         MatFormFieldModule,
         MatInputModule,
         FormsModule,

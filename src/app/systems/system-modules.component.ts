@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -360,7 +359,6 @@ import { SystemStateService } from './system-state.service';
         TranslatePipe,
         MatCheckboxModule,
         MatTooltipModule,
-        CommonModule,
         SimpleTableComponent,
         ExecuteMethodFieldComponent,
         BindingDirective,

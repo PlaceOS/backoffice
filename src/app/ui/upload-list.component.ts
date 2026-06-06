@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -200,7 +200,7 @@ import { TranslatePipe } from './translate.pipe';
         MatRippleModule,
         MatProgressBarModule,
         MatTooltipModule,
-        CommonModule,
+        DecimalPipe,
     ],
 })
 export class UploadListComponent extends AsyncHandler implements OnInit {

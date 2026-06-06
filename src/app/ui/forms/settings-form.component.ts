@@ -23,7 +23,7 @@ import { HashMap, Identity } from '../../common/types';
 import { validateYAML } from '../../systems/systems.utilities';
 import { BackofficeUsersService } from '../../users/users.service';
 
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -212,7 +212,6 @@ type SettingsArray = [
         `,
     ],
     imports: [
-        CommonModule,
         MatProgressSpinnerModule,
         TranslatePipe,
         DateFromPipe,
@@ -223,6 +222,8 @@ type SettingsArray = [
         FormsModule,
         IconComponent,
         UserPipe,
+        AsyncPipe,
+        DatePipe,
     ],
 })
 export class SettingsFormComponent extends AsyncHandler implements OnInit {

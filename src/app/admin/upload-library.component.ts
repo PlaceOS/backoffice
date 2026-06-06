@@ -1,6 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { CommonModule } from '@angular/common';
+
 import {
     Component,
     computed,
@@ -17,13 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-    apiKey,
-    cleanObject,
-    query,
-    remove,
-    token,
-} from '@placeos/ts-client';
+import { apiKey, cleanObject, query, remove, token } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { i18n } from '../common/locale.service';
 import {
@@ -345,7 +339,6 @@ export interface UploadInfo {
         `,
     ],
     imports: [
-        CommonModule,
         IconComponent,
         ScrollingModule,
         TranslatePipe,

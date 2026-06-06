@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -155,10 +155,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
         DiffViewerComponent,
         MatFormFieldModule,
         MatSelectModule,
-        CommonModule,
         FormsModule,
         TranslatePipe,
         IconComponent,
+        DatePipe,
     ],
 })
 export class MetadataHistoryModalComponent implements OnInit {

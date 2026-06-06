@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -194,7 +194,6 @@ import { RepositoriesStateService } from './repositories-state.service';
         `,
     ],
     imports: [
-        CommonModule,
         MarkdownPipe,
         TranslatePipe,
         MatProgressSpinnerModule,
@@ -202,6 +201,8 @@ import { RepositoriesStateService } from './repositories-state.service';
         MatTooltipModule,
         SafePipe,
         DateFromPipe,
+        AsyncPipe,
+        DatePipe,
     ],
 })
 export class RepositoryAboutComponent {

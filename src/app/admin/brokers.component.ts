@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
-import { CommonModule } from '@angular/common';
+import { JsonPipe } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -186,7 +186,7 @@ import { BrokerFormComponent } from './broker-form.component';
         TranslatePipe,
         SimpleTableComponent,
         MatProgressBarModule,
-        CommonModule,
+        JsonPipe,
     ],
 })
 export class AdminBrokersComponent extends AsyncHandler implements OnInit {

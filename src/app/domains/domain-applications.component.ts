@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { PlaceApplication, PlaceDomain } from '@placeos/ts-client';
 
-import { CommonModule } from '@angular/common';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -187,7 +186,6 @@ import { DomainStateService } from './domain-state.service';
         MatChipsModule,
         MatRippleModule,
         MatTooltipModule,
-        CommonModule,
         TranslatePipe,
         MatProgressBarModule,
     ],

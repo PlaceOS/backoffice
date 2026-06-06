@@ -10,7 +10,7 @@ import {
 } from '@placeos/ts-client';
 import { toSignal } from '../common/signals';
 
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -296,7 +296,6 @@ import { TriggerStateService } from './trigger-state.service';
         `,
     ],
     imports: [
-        CommonModule,
         TranslatePipe,
         IconComponent,
         MatRippleModule,
@@ -307,6 +306,9 @@ import { TriggerStateService } from './trigger-state.service';
         FormsModule,
         DateFromPipe,
         MarkdownPipe,
+        AsyncPipe,
+        DatePipe,
+        JsonPipe,
     ],
 })
 export class TriggerAboutComponent extends AsyncHandler {

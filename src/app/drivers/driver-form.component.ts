@@ -1,32 +1,32 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {
     Component,
+    computed,
     effect,
     EventEmitter,
+    inject,
     OnInit,
     Output,
-    computed,
-    inject,
     resource,
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { form, FormField, submit } from '@angular/forms/signals';
 import {
+    addDriver,
+    addSettings,
+    cleanObject,
     EncryptionLevel,
     GitCommitDetails,
+    listRepositoryCommits,
+    listRepositoryDriverDetails,
+    listRepositoryDrivers,
     PlaceDriver,
     PlaceDriverDetails,
     PlaceDriverRole,
     PlaceRepository,
     PlaceRepositoryType,
     PlaceSettings,
-    addDriver,
-    addSettings,
-    cleanObject,
-    listRepositoryCommits,
-    listRepositoryDriverDetails,
-    listRepositoryDrivers,
     queryRepositories,
     showRepository,
     updateDriver,
@@ -51,7 +51,10 @@ import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
-import { applyDriverFormSchema, generateDriverFormModel } from './drivers.utilities';
+import {
+    applyDriverFormSchema,
+    generateDriverFormModel,
+} from './drivers.utilities';
 
 @Component({
     selector: 'driver-form',
@@ -219,9 +222,7 @@ import { applyDriverFormSchema, generateDriverFormModel } from './drivers.utilit
                         {{ 'COMMON.ALERT_LEVEL' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
-                        <mat-select
-                            [formField]="form.alert_level"
-                        >
+                        <mat-select [formField]="form.alert_level">
                             @for (level of alert_levels; track level.id) {
                                 <mat-option [value]="level.id">
                                     {{ level.name | translate }}
@@ -244,7 +245,6 @@ import { applyDriverFormSchema, generateDriverFormModel } from './drivers.utilit
     `,
     styles: [``],
     imports: [
-        CommonModule,
         TranslatePipe,
         MatProgressSpinnerModule,
         SettingsToggleComponent,
@@ -269,7 +269,9 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public readonly formModel = signal(generateDriverFormModel(this._data.item));
+    public readonly formModel = signal(
+        generateDriverFormModel(this._data.item),
+    );
     public readonly form = form(this.formModel, applyDriverFormSchema);
     public saving: string;
     public heading: string;
@@ -451,10 +453,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
             }
             const form_item = (
                 item.id
-                    ? cleanObject(
-                          { ...item_json, ...form_value },
-                          [undefined],
-                      )
+                    ? cleanObject({ ...item_json, ...form_value }, [undefined])
                     : { ...item_json, ...form_value }
             ) as Identity;
             try {

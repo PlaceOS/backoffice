@@ -1,6 +1,5 @@
 import { Component, computed, inject, model } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -99,7 +98,6 @@ import { ModuleStateService } from './module-state.service';
         SimpleTableComponent,
         RouterModule,
         TranslatePipe,
-        CommonModule,
         MatProgressBarModule,
         MatFormFieldModule,
         MatInputModule,

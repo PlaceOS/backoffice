@@ -10,7 +10,7 @@ import {
     resource,
     signal,
 } from '@angular/core';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { FormField, form, submit } from '@angular/forms/signals';
 import {
     PlaceUser,
     addUser,
@@ -19,7 +19,6 @@ import {
     updateUser,
 } from '@placeos/ts-client';
 
-import { CommonModule } from '@angular/common';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -248,9 +247,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 </mat-form-field>
                             </div>
                         }
-                        @if (
-                            form.confirm_password && !hide_password()
-                        ) {
+                        @if (form.confirm_password && !hide_password()) {
                             <div class="field">
                                 <label
                                     for="confirm-password"
@@ -371,7 +368,6 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
     `,
     styles: [``],
     imports: [
-        CommonModule,
         SettingsToggleComponent,
         FormField,
         TranslatePipe,
@@ -394,7 +390,10 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
     @Output() public event = new EventEmitter<DialogEvent>();
 
     public readonly formModel = signal(generateUserFormModel(this._data.item));
-    public readonly form = form(this.formModel, userFormSchema(this._data.item));
+    public readonly form = form(
+        this.formModel,
+        userFormSchema(this._data.item),
+    );
     public loading: string;
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
@@ -460,10 +459,11 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
                 item.id
-                    ? cleanObject(
-                          { ...item_json, ...this.formModel() },
-                          [undefined, null, ''],
-                      )
+                    ? cleanObject({ ...item_json, ...this.formModel() }, [
+                          undefined,
+                          null,
+                          '',
+                      ])
                     : { ...item_json, ...this.formModel() }
             ) as Identity;
             try {

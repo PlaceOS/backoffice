@@ -21,7 +21,7 @@ import {
 
 import { PlaceDriverRole, PlaceModule } from '@placeos/ts-client';
 
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -190,7 +190,6 @@ interface SearchItem {
         },
     ],
     imports: [
-        CommonModule,
         MatAutocompleteModule,
         SanitizePipe,
         MatFormFieldModule,
@@ -198,6 +197,7 @@ interface SearchItem {
         FormsModule,
         MatProgressSpinnerModule,
         IconComponent,
+        NgTemplateOutlet,
     ],
 })
 export class ItemSearchFieldComponent<T extends SearchItem>

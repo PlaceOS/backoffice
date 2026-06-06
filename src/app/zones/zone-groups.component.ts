@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -155,7 +154,6 @@ import { ZonesStateService } from './zones-state.service';
         `,
     ],
     imports: [
-        CommonModule,
         FormsModule,
         IconComponent,
         ItemSearchFieldComponent,

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -8,11 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import {
-    addSystem,
-    query,
-    querySystemsWithEmails,
-} from '@placeos/ts-client';
+import { addSystem, query, querySystemsWithEmails } from '@placeos/ts-client';
 import { i18n } from '../common/locale.service';
 import { notifySuccess, notifyWarn } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -176,7 +171,6 @@ export interface ExternalResource {
         TranslatePipe,
         MatTooltipModule,
         SimpleTableComponent,
-        CommonModule,
         MatFormFieldModule,
         MatSelectModule,
         FormsModule,
@@ -188,14 +182,14 @@ export class ResourceImportsComponent implements OnInit {
     private _admin_data = inject(AdminDataService);
 
     public readonly loading = signal(false);
-    public readonly domain = this._admin_data.selectedDomain('resource-imports');
+    public readonly domain =
+        this._admin_data.selectedDomain('resource-imports');
     public readonly domain_list = this._admin_data.domain_list;
     public readonly resource_list = signal<ExternalResource[]>([]);
 
     public async ngOnInit() {
-        const domain = await this._admin_data.selectDefaultDomain(
-            'resource-imports',
-        );
+        const domain =
+            await this._admin_data.selectDefaultDomain('resource-imports');
         if (!domain) return;
         this.loadResourceList();
     }

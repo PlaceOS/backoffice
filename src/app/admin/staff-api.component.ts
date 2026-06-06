@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -173,7 +173,6 @@ export interface PlaceTenant {
         `,
     ],
     imports: [
-        CommonModule,
         IconComponent,
         MatRippleModule,
         TranslatePipe,
@@ -183,6 +182,7 @@ export interface PlaceTenant {
         MatFormFieldModule,
         MatSelectModule,
         FormsModule,
+        DatePipe,
     ],
 })
 export class PlaceStaffAPIComponent implements OnInit {

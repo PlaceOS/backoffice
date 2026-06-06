@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
@@ -131,12 +131,12 @@ import { GroupStateService } from './group-state.service';
         `,
     ],
     imports: [
-        CommonModule,
         MatTooltipModule,
         TranslatePipe,
         DateFromPipe,
         MarkdownPipe,
         RouterModule,
+        AsyncPipe,
     ],
 })
 export class GroupAboutComponent {

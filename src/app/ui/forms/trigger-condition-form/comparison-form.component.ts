@@ -3,8 +3,8 @@ import {
     OnChanges,
     OnInit,
     SimpleChanges,
-    input,
     WritableSignal,
+    input,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
@@ -17,7 +17,7 @@ import {
     systemModuleState,
 } from '@placeos/ts-client';
 
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -38,9 +38,7 @@ import { TranslatePipe } from '../../translate.pipe';
                         context: { side: 'left' }
                     "
                 ></ng-container>
-                @if (
-                    form().left().touched() && form().left().invalid()
-                ) {
+                @if (form().left().touched() && form().left().invalid()) {
                     <div class="error">
                         {{ 'TRIGGERS.COMPARE_VARIABLE_ERROR' | translate }}
                     </div>
@@ -213,7 +211,6 @@ import { TranslatePipe } from '../../translate.pipe';
         </ng-template>`,
     styles: [``],
     imports: [
-        CommonModule,
         MatFormFieldModule,
         MatInputModule,
         TranslatePipe,
@@ -221,13 +218,15 @@ import { TranslatePipe } from '../../translate.pipe';
         MatSelectModule,
         MatInputModule,
         FormField,
+        NgTemplateOutlet,
     ],
 })
 export class TriggerConditionComparisonFormComponent
     implements OnChanges, OnInit
 {
     /** Signal form fields used for editing the trigger condition */
-    public readonly form = input<FieldTree<TriggerConditionFormModel>>(undefined);
+    public readonly form =
+        input<FieldTree<TriggerConditionFormModel>>(undefined);
     public readonly formModel =
         input<WritableSignal<TriggerConditionFormModel>>(undefined);
     /** Systems used for templating the status variables */

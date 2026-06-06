@@ -11,7 +11,7 @@ import {
 } from '../overlays/changelog-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
 
-import { CommonModule } from '@angular/common';
+import { DatePipe, SlicePipe } from '@angular/common';
 import { format } from 'date-fns';
 import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/locale.service';
@@ -194,7 +194,7 @@ export interface PlaceServiceDetails {
             }
         `,
     ],
-    imports: [TranslatePipe, CommonModule],
+    imports: [TranslatePipe, DatePipe, SlicePipe],
 })
 export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     private _users = inject(BackofficeUsersService);

@@ -10,9 +10,9 @@ import {
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { disabled, form, FormField, submit } from '@angular/forms/signals';
+import { FormField, disabled, form, submit } from '@angular/forms/signals';
 
-import { CommonModule } from '@angular/common';
+import { DatePipe, SlicePipe } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -95,18 +95,14 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                     }
                     <div class="fieldset">
                         @if (
-                            !is_editing() &&
-                            form.repo_type &&
-                            form.folder_name
+                            !is_editing() && form.repo_type && form.folder_name
                         ) {
                             <div class="field">
                                 <label for="type">
                                     {{ 'REPOS.TYPE' | translate }}
                                 </label>
                                 <mat-form-field appearance="outline">
-                                    <mat-select
-                                        [formField]="form.repo_type"
-                                    >
+                                    <mat-select [formField]="form.repo_type">
                                         @for (type of repo_types; track type) {
                                             <mat-option [value]="type.id">
                                                 {{ type.name }}
@@ -395,10 +391,11 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
         TranslatePipe,
         FormsModule,
         MatSelectModule,
-        CommonModule,
         IconComponent,
         SettingsToggleComponent,
         FullscreenModalShellComponent,
+        DatePipe,
+        SlicePipe,
     ],
 })
 export class RepositoryFormComponent extends AsyncHandler implements OnInit {
@@ -497,9 +494,11 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
             if (item.id) {
                 delete form_value.folder_name;
             }
-            const form_item = (item.id
-                ? cleanObject({ ...item_json, ...form_value }, [undefined])
-                : { ...item_json, ...form_value }) as PlaceRepository;
+            const form_item = (
+                item.id
+                    ? cleanObject({ ...item_json, ...form_value }, [undefined])
+                    : { ...item_json, ...form_value }
+            ) as PlaceRepository;
             try {
                 const _item = await (form_item.id
                     ? updateRepository(

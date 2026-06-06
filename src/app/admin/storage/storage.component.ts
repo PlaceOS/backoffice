@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -165,7 +164,6 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
     `,
     styles: [``],
     imports: [
-        CommonModule,
         IconComponent,
         MatRippleModule,
         TranslatePipe,

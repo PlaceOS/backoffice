@@ -1,6 +1,6 @@
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { CdkPortal, PortalModule } from '@angular/cdk/portal';
-import { CommonModule } from '@angular/common';
+import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import {
     Component,
     ElementRef,
@@ -53,7 +53,7 @@ export class CustomTooltipData<T = unknown> {
             </div>
         </ng-template>
     `,
-    imports: [CommonModule, PortalModule, SanitizePipe],
+    imports: [PortalModule, SanitizePipe, NgComponentOutlet, NgTemplateOutlet],
 })
 export class CustomTooltipComponent<T = unknown>
     extends AsyncHandler

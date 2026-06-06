@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { PlaceModule } from '@placeos/ts-client';
 
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -245,7 +245,6 @@ import { ModuleStateService } from './module-state.service';
         `,
     ],
     imports: [
-        CommonModule,
         TranslatePipe,
         MatProgressSpinnerModule,
         SettingsFormComponent,
@@ -255,6 +254,7 @@ import { ModuleStateService } from './module-state.service';
         IconComponent,
         RouterModule,
         DateFromPipe,
+        DatePipe,
     ],
 })
 export class ModuleAboutComponent {

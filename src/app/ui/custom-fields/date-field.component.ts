@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {
     Component,
     forwardRef,
@@ -97,12 +97,12 @@ export enum TimezoneDiffRange {
         },
     ],
     imports: [
-        CommonModule,
         FormsModule,
         DateCalendarComponent,
         IconComponent,
         CustomTooltipComponent,
         TranslatePipe,
+        DatePipe,
     ],
 })
 export class DateFieldComponent

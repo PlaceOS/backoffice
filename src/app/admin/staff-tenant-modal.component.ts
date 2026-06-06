@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
     Component,
     computed,
@@ -389,7 +388,6 @@ export interface StaffTenantModalData {
         `,
     ],
     imports: [
-        CommonModule,
         FullscreenModalShellComponent,
         ObjectListFieldComponent,
         FormField,

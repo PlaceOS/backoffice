@@ -1,5 +1,5 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
     Component,
     Signal,
@@ -257,7 +257,12 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
             }
         `,
     ],
-    imports: [CommonModule, MatCheckboxModule, DragDropModule, IconComponent],
+    imports: [
+        MatCheckboxModule,
+        DragDropModule,
+        IconComponent,
+        NgTemplateOutlet,
+    ],
 })
 export class SimpleTableComponent<T = Record<string, unknown>> {
     // eslint-disable-next-line @angular-eslint/no-input-rename

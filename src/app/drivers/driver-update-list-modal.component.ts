@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { SlicePipe } from '@angular/common';
 import { Component, computed, inject, resource, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -148,7 +148,6 @@ import { TranslatePipe } from '../ui/translate.pipe';
         `,
     ],
     imports: [
-        CommonModule,
         MatDialogModule,
         TranslatePipe,
         IconComponent,
@@ -158,6 +157,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         MatTooltipModule,
         FormsModule,
         DateFromPipe,
+        SlicePipe,
     ],
 })
 export class DriverUpdateListModalComponent {

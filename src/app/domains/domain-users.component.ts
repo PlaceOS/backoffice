@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { PlaceDomain } from '@placeos/ts-client';
 
-import { CommonModule } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -68,12 +67,7 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
-    imports: [
-        SimpleTableComponent,
-        TranslatePipe,
-        CommonModule,
-        MatProgressBarModule,
-    ],
+    imports: [SimpleTableComponent, TranslatePipe, MatProgressBarModule],
 })
 export class DomainUsersComponent {
     private _service = inject(DomainStateService);

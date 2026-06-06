@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -60,7 +59,6 @@ import { EmailStateService } from './email-state.service';
     imports: [
         SimpleTableComponent,
         MatProgressBarModule,
-        CommonModule,
         RouterModule,
         MatFormFieldModule,
         MatSelectModule,

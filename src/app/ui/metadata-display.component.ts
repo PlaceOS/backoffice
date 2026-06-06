@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
     Component,
     computed,
@@ -8,9 +8,7 @@ import {
     signal,
     SimpleChanges,
 } from '@angular/core';
-import {
-    FormsModule,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -220,7 +218,6 @@ function replaceDescTag(inputString, newContent) {
         `,
     ],
     imports: [
-        CommonModule,
         MatProgressSpinnerModule,
         TranslatePipe,
         IconComponent,
@@ -231,6 +228,7 @@ function replaceDescTag(inputString, newContent) {
         MatInputModule,
         DateFromPipe,
         UserPipe,
+        AsyncPipe,
     ],
 })
 export class MetadataDisplayComponent
@@ -373,9 +371,7 @@ export class MetadataDisplayComponent
                 .some((item) => item.name === form.name) ||
             validateJSONString({ value: form.details } as never)
         ) {
-            return notifyError(
-                `JSON for property "${form.name}" is invalid`,
-            );
+            return notifyError(`JSON for property "${form.name}" is invalid`);
         }
         const value = form;
         this.loading.update((m) => ({ ...m, [field.name]: true }));

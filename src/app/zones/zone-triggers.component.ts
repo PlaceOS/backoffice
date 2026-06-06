@@ -1,7 +1,6 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { PlaceZone } from '@placeos/ts-client';
 
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -118,7 +117,6 @@ import { ZonesStateService } from './zones-state.service';
         DateFromPipe,
         RouterModule,
         TranslatePipe,
-        CommonModule,
         MatProgressBarModule,
         FormsModule,
         MatFormFieldModule,

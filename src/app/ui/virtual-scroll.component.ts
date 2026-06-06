@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet, SlicePipe } from '@angular/common';
 import {
     AfterViewInit,
     Component,
@@ -54,7 +54,7 @@ import {
             }
         `,
     ],
-    imports: [CommonModule],
+    imports: [NgTemplateOutlet, SlicePipe],
 })
 export class VirtualScrollComponent implements AfterViewInit, OnDestroy {
     public readonly items = input<unknown[]>([]);

@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { PlaceSystem, PlaceZone, queryZones } from '@placeos/ts-client';
 
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -162,7 +162,6 @@ import { SystemStateService } from './system-state.service';
         `,
     ],
     imports: [
-        CommonModule,
         IconComponent,
         TranslatePipe,
         MatRippleModule,

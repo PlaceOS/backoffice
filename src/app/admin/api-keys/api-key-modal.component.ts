@@ -1,12 +1,12 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { CommonModule } from '@angular/common';
+
 import {
     Component,
+    computed,
     EventEmitter,
+    inject,
     OnInit,
     Output,
-    computed,
-    inject,
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -262,7 +262,6 @@ export interface APIKeyModalData {
     `,
     styles: [``],
     imports: [
-        CommonModule,
         TranslatePipe,
         FormsModule,
         FormField,
@@ -378,7 +377,11 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     }
 
     public selectUser(user: PlaceUser) {
-        this.formModel.update((value) => ({ ...value, user, user_id: user.id }));
+        this.formModel.update((value) => ({
+            ...value,
+            user,
+            user_id: user.id,
+        }));
         this.search_term.set(this._userLabel(user));
     }
 

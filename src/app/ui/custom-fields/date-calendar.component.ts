@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { DatePipe, SlicePipe } from '@angular/common';
 import {
     Component,
     forwardRef,
@@ -115,7 +115,7 @@ interface DateItem {
             multi: true,
         },
     ],
-    imports: [IconComponent, CommonModule],
+    imports: [IconComponent, DatePipe, SlicePipe],
 })
 export class DateCalendarComponent
     extends AsyncHandler

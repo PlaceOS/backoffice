@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -108,7 +107,6 @@ import { DriverStateService } from './driver-state.service';
     `,
     styles: [``],
     imports: [
-        CommonModule,
         DebugOutputComponent,
         IconComponent,
         TranslatePipe,

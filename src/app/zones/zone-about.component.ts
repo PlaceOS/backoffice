@@ -3,7 +3,7 @@ import { PlaceSystem, PlaceZone, showZone } from '@placeos/ts-client';
 
 import { ZonesStateService } from './zones-state.service';
 
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -259,7 +259,6 @@ import { TranslatePipe } from '../ui/translate.pipe';
         `,
     ],
     imports: [
-        CommonModule,
         MatProgressSpinnerModule,
         SettingsFormComponent,
         TranslatePipe,
@@ -271,6 +270,8 @@ import { TranslatePipe } from '../ui/translate.pipe';
         MatSelectModule,
         FormsModule,
         RouterModule,
+        AsyncPipe,
+        DatePipe,
     ],
 })
 export class ZoneAboutComponent extends AsyncHandler {

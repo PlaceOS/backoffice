@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -221,12 +221,13 @@ import { DriverStateService } from './driver-state.service';
         MatRippleModule,
         SettingsFormComponent,
         MatTooltipModule,
-        CommonModule,
         DateFromPipe,
         MarkdownPipe,
         RouterModule,
         SafePipe,
         MatProgressSpinnerModule,
+        AsyncPipe,
+        DatePipe,
     ],
 })
 export class DriverAboutComponent {
