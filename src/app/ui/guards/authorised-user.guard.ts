@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import {
     ActivatedRouteSnapshot,
     Route,
@@ -15,9 +15,7 @@ import {
 } from '../../common/signals';
 import { BackofficeUsersService } from '../../users/users.service';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class AuthorisedUserGuard {
     private _router = inject(Router);
     private _users = inject(BackofficeUsersService);

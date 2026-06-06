@@ -1,12 +1,10 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Service, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
 import { UploadPermissionsModalComponent } from '../ui/upload-permissions-modal.component';
 import { UploadDetails, UploadPermissions, uploadFile } from './uploads';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class UploadsService {
     private _dialog = inject(MatDialog);
 

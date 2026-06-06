@@ -1,5 +1,5 @@
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { Injectable, computed, inject, resource, signal } from '@angular/core';
+import { Service, computed, inject, resource, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceSystem,
@@ -28,9 +28,7 @@ import {
     TriggerConditionModalComponent,
 } from '../ui/forms/trigger-condition-modal.component';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class TriggerStateService {
     private _service = inject(ActiveItemService);
     private _dialog = inject(MatDialog);

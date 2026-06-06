@@ -1,5 +1,5 @@
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { computed, inject, resource, Service, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addSystemModule,
@@ -52,9 +52,7 @@ import {
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 import { SystemTriggerFormComponent } from './system-trigger-form.component';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class SystemStateService extends AsyncHandler {
     private _state = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);

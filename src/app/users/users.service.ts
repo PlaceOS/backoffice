@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Service, inject, signal } from '@angular/core';
 import {
     PlaceUser,
     PlaceUserQueryOptions,
@@ -18,9 +18,7 @@ import { addDays } from 'date-fns';
 
 type ServiceItem = PlaceUser;
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class BackofficeUsersService extends AsyncHandler {
     private _settings = inject(SettingsService);
 

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { computed, inject, resource, Service, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addGroupZone,
@@ -34,9 +34,7 @@ import {
     SelectItemModalData,
 } from '../overlays/select-item-modal.component';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class ZonesStateService {
     private _service = inject(ActiveItemService);
     private _dialog = inject(MatDialog);

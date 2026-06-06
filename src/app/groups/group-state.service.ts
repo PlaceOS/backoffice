@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { computed, inject, resource, Service, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addGroupUser,
@@ -25,9 +25,7 @@ import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { GroupBulkAddModalComponent } from './group-bulk-add-modal.component';
 import { GroupPermissionsModalComponent } from './group-permissions-modal.component';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class GroupStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);

@@ -1,11 +1,9 @@
-import { Injectable, WritableSignal, signal } from '@angular/core';
+import { Service, WritableSignal, signal } from '@angular/core';
 import { PlaceDomain, authority, queryDomains } from '@placeos/ts-client';
 
 export type AdminSortState = [string, boolean];
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class AdminDataService {
     private readonly _domain_list = signal<PlaceDomain[]>([]);
     private readonly _loading_domains = signal(false);

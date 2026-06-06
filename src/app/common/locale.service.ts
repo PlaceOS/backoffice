@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 
 import * as DEFAULT_LOCALE from '../../../public/assets/locale/en-AU.json';
 
@@ -72,9 +72,7 @@ function removeLocalStorageKeysWithSubstring(substring: string): void {
 
 const STORE_KEY = 'APP.locale';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class LocaleService {
     private _default_locale = 'en-AU';
     private _current_locale = this._default_locale;

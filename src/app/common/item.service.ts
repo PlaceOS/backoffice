@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Service, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlaceResource } from '@placeos/ts-client';
@@ -43,9 +43,7 @@ export type ResourceType =
     | 'zones'
     | 'admin';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class ActiveItemService extends AsyncHandler {
     private _router = inject(Router);
     private _settings = inject(SettingsService);

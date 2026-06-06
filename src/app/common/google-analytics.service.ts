@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { log } from './general';
 
@@ -11,9 +11,7 @@ declare global {
     }
 }
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class GoogleAnalyticsService {
     private title = inject(Title);
 

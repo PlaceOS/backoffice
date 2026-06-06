@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { computed, inject, resource, Service, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     create,
@@ -10,17 +10,15 @@ import {
     remove,
     update,
 } from '@placeos/ts-client';
-import { AdminDataService } from '../admin-data.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { waitForEvent } from '../../common/signals';
 import { DialogEvent } from '../../common/types';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
+import { AdminDataService } from '../admin-data.service';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyModalComponent } from './api-key-modal.component';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class APIKeyService {
     private _dialog = inject(MatDialog);
     private _admin_data = inject(AdminDataService);

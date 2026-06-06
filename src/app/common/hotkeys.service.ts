@@ -1,4 +1,4 @@
-import { Injectable, WritableSignal, signal } from '@angular/core';
+import { Service, WritableSignal, signal } from '@angular/core';
 
 import { unique } from '../common/general';
 import { SubscriptionLike } from '../common/signals';
@@ -13,9 +13,7 @@ const INVALID_STANDALONE_KEYS: string[] = [
     'os',
 ];
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class HotkeysService {
     /** Map of signals which store press states of keys */
     private keydown_states: HashMap<WritableSignal<number>> = {};

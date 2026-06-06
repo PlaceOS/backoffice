@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { computed, inject, resource, Service, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     moduleSettings,
@@ -14,9 +14,7 @@ import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class ModuleStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);

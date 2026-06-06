@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { computed, inject, resource, Service, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addApplication,
@@ -35,9 +35,7 @@ export type PlaceAuthSource =
     | PlaceSAMLSource
     | PlaceLDAPSource;
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class DomainStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);

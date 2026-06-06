@@ -1,5 +1,5 @@
 import {
-    Injectable,
+    Service,
     Signal,
     WritableSignal,
     effect,
@@ -27,9 +27,7 @@ declare global {
     }
 }
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class SettingsService extends AsyncHandler {
     private _title = inject(Title);
     private _analytics = inject(GoogleAnalyticsService, { optional: true });

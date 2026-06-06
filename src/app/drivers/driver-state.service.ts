@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { computed, inject, resource, Service, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     driverReadme,
@@ -18,9 +18,7 @@ import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 import { DriverUpdateListModalComponent } from './driver-update-list-modal.component';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class DriverStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);

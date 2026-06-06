@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Service, inject, signal } from '@angular/core';
 import { PlaceDomain } from '@placeos/ts-client';
 import { AdminDataService } from '../admin-data.service';
 
@@ -29,9 +29,7 @@ export interface EmailTemplatesFilters {
     category?: 'internal' | 'external';
 }
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class EmailStateService {
     private _admin_data = inject(AdminDataService);
 

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { computed, inject, resource, Service, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     listRepositoryCommits,
@@ -16,9 +16,7 @@ import { notifyError } from '../common/notifications';
 import { Identity } from '../common/types';
 import { DriverFormComponent } from '../drivers/driver-form.component';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class RepositoriesStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);

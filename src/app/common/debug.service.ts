@@ -1,4 +1,4 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, Service, signal } from '@angular/core';
 import {
     debug,
     debug_events,
@@ -22,9 +22,7 @@ const TERMINAL_COLOURS = {
     fatal: '\u001b[31m',
 };
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class PlaceDebugService extends AsyncHandler {
     private _changed = signal(0);
     /** List of the current state of events */

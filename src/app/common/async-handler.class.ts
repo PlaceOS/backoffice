@@ -1,9 +1,7 @@
-import { Injectable, OnDestroy, signal } from '@angular/core';
+import { OnDestroy, Service, signal } from '@angular/core';
 import { SubscriptionLike } from './signals';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class AsyncHandler implements OnDestroy {
     /** Store for named timers */
     protected _timers: { [name: string]: ReturnType<typeof setTimeout> } = {};
