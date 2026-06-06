@@ -20,141 +20,127 @@ import { TranslatePipe } from './translate.pipe';
 @Component({
     selector: 'app-debug-output',
     template: `
-        @if (is_enabled()) {
-            @if (is_shown()) {
+        @if (is_enabled() && is_shown()) {
+            <div
+                [class]="
+                    debug_position() === 'floating'
+                        ? 'absolute right-2 bottom-2'
+                        : 'h-full w-full'
+                "
+                (window:resize)="onWindowResize()"
+            >
                 <div
-                    [class]="
-                        debug_position() === 'floating'
-                            ? 'absolute right-2 bottom-2'
-                            : 'h-full w-full'
+                    class="animate-fade-in border-base-300 bg-base-100 relative z-10 flex flex-col overflow-hidden border text-white shadow-sm"
+                    content
+                    #content
+                    [style.height]="
+                        debug_position() === 'side' ? '100%' : height() + 'px'
                     "
-                    (window:resize)="onWindowResize()"
+                    [style.width]="
+                        debug_position() === 'below' ? '100%' : width() + 'px'
+                    "
                 >
+                    <div class="p-3 text-sm">
+                        {{
+                            'COMMON.MESSAGE_COUNT'
+                                | translate
+                                    : { count: event_count() }
+                                    : event_count()
+                        }}
+                    </div>
+                    <new-terminal
+                        [lines]="logs()"
+                        [resize]="resize()"
+                        class="h-1/2 w-full flex-1"
+                    />
+                    <!-- <a-terminal [content]="logs" [resize]="resize"></a-terminal> -->
                     <div
-                        class="animate-fade-in relative z-10 flex flex-col overflow-hidden border bg-[hsl(0,0%,15%)] text-white shadow-sm"
-                        content
-                        #content
-                        [style.height]="
-                            debug_position() === 'side'
-                                ? '100%'
-                                : height() + 'px'
-                        "
-                        [style.width]="
-                            debug_position() === 'below'
-                                ? '100%'
-                                : width() + 'px'
-                        "
+                        class="absolute -top-2 right-0 left-0 h-4 select-none"
+                        ns-resize
+                        (mousedown)="startResize($event, 'y')"
+                        (touchstart)="startResize($event, 'y')"
+                    ></div>
+                    <div
+                        class="absolute top-0 bottom-0 -left-2 w-4 select-none"
+                        ew-resize
+                        (mousedown)="startResize($event, 'x')"
+                        (touchstart)="startResize($event, 'x')"
+                    ></div>
+                    <div
+                        class="absolute -top-2 -left-2 h-4 w-4 select-none"
+                        nwse-resize
+                        (mousedown)="startResize($event, 'xy')"
+                        (touchstart)="startResize($event, 'xy')"
+                    ></div>
+                    <div
+                        actions
+                        class="absolute right-2 bottom-2 flex items-center gap-1"
                     >
-                        <div class="p-3 text-sm">
-                            {{
-                                'COMMON.MESSAGE_COUNT'
-                                    | translate
-                                        : { count: event_count() }
-                                        : event_count()
-                            }}
-                        </div>
-                        <new-terminal
-                            [lines]="logs()"
-                            [resize]="resize()"
-                            class="h-1/2 w-full flex-1"
-                        />
-                        <!-- <a-terminal [content]="logs" [resize]="resize"></a-terminal> -->
-                        <div
-                            class="absolute -top-2 right-0 left-0 h-4 select-none"
-                            ns-resize
-                            (mousedown)="startResize($event, 'y')"
-                            (touchstart)="startResize($event, 'y')"
-                        ></div>
-                        <div
-                            class="absolute top-0 bottom-0 -left-2 w-4 select-none"
-                            ew-resize
-                            (mousedown)="startResize($event, 'x')"
-                            (touchstart)="startResize($event, 'x')"
-                        ></div>
-                        <div
-                            class="absolute -top-2 -left-2 h-4 w-4 select-none"
-                            nwse-resize
-                            (mousedown)="startResize($event, 'xy')"
-                            (touchstart)="startResize($event, 'xy')"
-                        ></div>
-                        <div
-                            actions
-                            class="absolute right-2 bottom-2 flex items-center space-x-2"
+                        <button icon default matRipple (click)="downloadLogs()">
+                            <icon
+                                [matTooltip]="
+                                    'COMMON.DEBUG_DOWNLOAD_MESSAGES' | translate
+                                "
+                            >
+                                download
+                            </icon>
+                        </button>
+                        <button
+                            icon
+                            default
+                            matRipple
+                            (click)="toggleDebugPosition()"
                         >
-                            <button
-                                icon
-                                matRipple
-                                class="rounded-full bg-[hsl(0,0%,30%)] text-white shadow-sm"
-                                (click)="downloadLogs()"
-                            >
-                                <icon
-                                    [matTooltip]="
-                                        'COMMON.DEBUG_DOWNLOAD_MESSAGES'
-                                            | translate
-                                    "
-                                >
-                                    download
-                                </icon>
-                            </button>
-                            <button
-                                icon
-                                matRipple
-                                class="rounded-full bg-[hsl(0,0%,30%)] text-white shadow-sm"
-                                (click)="toggleDebugPosition()"
-                            >
-                                <icon
-                                    [matTooltip]="
-                                        'COMMON.DEBUG_TOGGLE_POSITION'
-                                            | translate
-                                    "
-                                    >{{
-                                        debug_position() === 'side'
-                                            ? 'border_bottom'
-                                            : 'border_right'
-                                    }}</icon
-                                >
-                            </button>
-                            <button
-                                icon
-                                matRipple
-                                class="rounded-full bg-[hsl(0,0%,30%)] text-white shadow-sm"
-                                (click)="clearDebugMessages()"
-                            >
-                                <icon
-                                    [matTooltip]="
-                                        'COMMON.DEBUG_CLEAR_MESSAGES'
-                                            | translate
-                                    "
-                                >
-                                    clear_all
-                                </icon>
-                            </button>
-                            <button
-                                icon
-                                matRipple
-                                (click)="clearBindings()"
-                                class="rounded-full bg-[hsl(0,0%,30%)] text-white shadow-sm"
+                            <icon
                                 [matTooltip]="
-                                    'COMMON.DEBUG_UNBIND_MODULES' | translate
+                                    'COMMON.DEBUG_TOGGLE_POSITION' | translate
+                                "
+                                >{{
+                                    debug_position() === 'side'
+                                        ? 'border_bottom'
+                                        : 'border_right'
+                                }}</icon
+                            >
+                        </button>
+                        <button
+                            icon
+                            default
+                            matRipple
+                            (click)="clearDebugMessages()"
+                        >
+                            <icon
+                                [matTooltip]="
+                                    'COMMON.DEBUG_CLEAR_MESSAGES' | translate
                                 "
                             >
-                                <icon>cancel_presentation</icon>
-                            </button>
-                            <button
-                                icon
-                                matRipple
-                                (click)="close()"
-                                class="rounded-full bg-[hsl(0,0%,30%)] text-white shadow-sm"
-                                [matTooltip]="
-                                    'COMMON.DEBUG_CLOSE_CONSOLE' | translate
-                                "
-                            >
-                                <icon>close</icon>
-                            </button>
-                        </div>
+                                clear_all
+                            </icon>
+                        </button>
+                        <button
+                            icon
+                            default
+                            matRipple
+                            (click)="clearBindings()"
+                            [matTooltip]="
+                                'COMMON.DEBUG_UNBIND_MODULES' | translate
+                            "
+                        >
+                            <icon>cancel_presentation</icon>
+                        </button>
+                        <button
+                            icon
+                            default
+                            matRipple
+                            (click)="close()"
+                            [matTooltip]="
+                                'COMMON.DEBUG_CLOSE_CONSOLE' | translate
+                            "
+                        >
+                            <icon>close</icon>
+                        </button>
                     </div>
                 </div>
-            }
+            </div>
         }
     `,
     styles: [

@@ -11,7 +11,7 @@ import { TranslatePipe } from './translate.pipe';
     template: `
         @if (debug_enabled()) {
             <div
-                class="border-base-300 m-2 flex flex-col space-y-2 rounded-xl border p-2"
+                class="border-base-300 m-2 flex flex-col justify-between gap-2 rounded-xl border p-2"
             >
                 @if (compact()) {
                     <div
@@ -31,11 +31,12 @@ import { TranslatePipe } from './translate.pipe';
                         "
                         matTooltipPosition="right"
                     >
-                        <icon
-                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl opacity-10"
-                            >sdk</icon
+                        <icon class="text-4xl opacity-10">sdk</icon>
+                        <div
+                            class="absolute inset-0 flex items-center justify-center"
                         >
-                        <div>{{ debug_module_count() }}</div>
+                            {{ debug_module_count() }}
+                        </div>
                     </div>
                     <div
                         class="relative flex h-10 w-10 items-center justify-center rounded-sm"
@@ -47,11 +48,14 @@ import { TranslatePipe } from './translate.pipe';
                         "
                         matTooltipPosition="right"
                     >
-                        <icon
-                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl opacity-10"
+                        <icon class="text-4xl opacity-10"
                             >business_messages</icon
                         >
-                        <div>{{ debug_message_count() }}</div>
+                        <div
+                            class="absolute inset-0 flex items-center justify-center"
+                        >
+                            {{ debug_message_count() }}
+                        </div>
                     </div>
                 } @else {
                     <div
@@ -75,12 +79,7 @@ import { TranslatePipe } from './translate.pipe';
                     </p>
                 }
                 @if (compact()) {
-                    <button
-                        icon
-                        matRipple
-                        class="border-base-300 bg-base-100 rounded-lg border"
-                        [matMenuTriggerFor]="menu"
-                    >
+                    <button icon default matRipple [matMenuTriggerFor]="menu">
                         <icon>more_horiz</icon>
                     </button>
                     <mat-menu #menu="matMenu">
@@ -106,15 +105,12 @@ import { TranslatePipe } from './translate.pipe';
                         </button>
                     </mat-menu>
                 } @else {
-                    <div
-                        actions
-                        class="flex items-center justify-center space-x-2"
-                    >
+                    <div actions class="flex items-center justify-center gap-1">
                         <button
                             icon
+                            default
                             matRipple
                             (click)="toggleDebugPosition()"
-                            class="bg-base-200"
                         >
                             <icon matTooltip="Toggle Position">{{
                                 debug_position() === 'side'
@@ -124,28 +120,23 @@ import { TranslatePipe } from './translate.pipe';
                         </button>
                         <button
                             icon
+                            default
                             matRipple
                             (click)="clearDebugMessages()"
-                            class="bg-base-200"
                         >
                             <icon matTooltip="Clear Messages">clear_all</icon>
                         </button>
                         <button
                             icon
+                            default
                             matRipple
                             (click)="clearBindings()"
-                            class="bg-base-200"
                         >
                             <icon matTooltip="Unbind Modules"
                                 >hearing_disabled</icon
                             >
                         </button>
-                        <button
-                            icon
-                            matRipple
-                            (click)="openDebug()"
-                            class="bg-base-200"
-                        >
+                        <button icon default matRipple (click)="openDebug()">
                             <icon matTooltip="Open Console"
                                 >open_in_browser</icon
                             >

@@ -29,7 +29,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
             ></div>
         </ng-template>
         <div
-            class="relative flex h-full w-full items-end border-t border-[hsl(0,0%,40%)] bg-[hsl(0,0%,15%)] text-xs text-white"
+            class="bg-base-200 border-base-300 relative flex h-full w-full items-end border-t text-xs text-white"
             #container
         >
             <virtual-scroll
@@ -56,7 +56,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                     >search</icon
                 >
                 <input
-                    class="mono rounded-lg border-none bg-[hsl(0,0%,30%)] px-8 py-1 pr-1 text-sm text-white"
+                    class="mono bg-base-200 placeholder:text-base-400 rounded border-none px-8 py-1 pr-1 text-sm text-white"
                     [(ngModel)]="search"
                     placeholder="Filter output"
                 />
