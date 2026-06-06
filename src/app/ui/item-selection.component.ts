@@ -52,7 +52,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
         @if (show_view()) {
             <button
                 class="bg-base-100/80 absolute inset-0"
-                (click)="show.set(false)"
+                (click)="close()"
             >
                 <button
                     class="bg-base-100 border-base-300 absolute top-2 left-1/2 flex w-lg max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded-sm border shadow-sm"
@@ -123,7 +123,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                     routerLinkActive="active"
                                     [class.bg-base-content/5]="idx % 2 === 1"
                                     class="m-2 block max-w-[calc(100vw-2rem)] rounded-sm p-2 text-left"
-                                    (click)="show.set(false)"
+                                    (click)="close()"
                                 >
                                     <p class="flex-1 truncate">
                                         {{ item.name }}
@@ -217,6 +217,7 @@ export class ItemSelectionComponent
     /** Total number of items in the last request */
     public total = this._service.count;
 
+    private readonly _manual_open = signal(false);
     private readonly _input =
         viewChild<ElementRef<HTMLInputElement>>('search_input');
 
@@ -231,8 +232,11 @@ export class ItemSelectionComponent
             this.subroute.set(this._router.url.split('/')[3] || '');
         });
         effect(() => {
-            this._service.loading();
-            this.show.set(!this._service.active_item);
+            const loading = this._service.loading();
+            const active_item = this._service.active_item$();
+            if (!loading && !this._manual_open()) {
+                this.show.set(!active_item);
+            }
         });
     }
 
@@ -255,8 +259,14 @@ export class ItemSelectionComponent
     }
 
     public open() {
+        this._manual_open.set(true);
         this.show.set(true);
         this.timeout('focus', () => this.focusInput());
+    }
+
+    public close() {
+        this._manual_open.set(false);
+        this.show.set(false);
     }
 
     public focusInput() {
