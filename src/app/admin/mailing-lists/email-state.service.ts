@@ -1,5 +1,6 @@
-import { computed, Injectable, resource, signal } from '@angular/core';
-import { PlaceDomain, queryDomains } from '@placeos/ts-client';
+import { Injectable, inject, signal } from '@angular/core';
+import { PlaceDomain } from '@placeos/ts-client';
+import { AdminDataService } from '../admin-data.service';
 
 export interface EmailTemplate {
     id: string;
@@ -32,9 +33,11 @@ export interface EmailTemplatesFilters {
     providedIn: 'root',
 })
 export class EmailStateService {
+    private _admin_data = inject(AdminDataService);
+
     private _loading = signal(false);
     private _change = signal(0);
-    private _domain = signal<PlaceDomain>(null);
+    private _domain = this._admin_data.selectedDomain('mailing-list');
 
     public readonly template_definitions = signal(
         [] as EmailTemplateDefinition[],
@@ -43,19 +46,14 @@ export class EmailStateService {
     public readonly domain = this._domain.asReadonly();
     public readonly loading = this._loading.asReadonly();
 
-    private readonly _domain_list = resource({
-        loader: async () =>
-            queryDomains({ limit: 100 })
-                .then((r) => r.data)
-                .catch(() => [] as PlaceDomain[]),
-    });
-
-    public readonly domain_list = computed(
-        () => this._domain_list.value() || [],
-    );
+    public readonly domain_list = this._admin_data.domain_list;
 
     public setDomain(domain: PlaceDomain) {
-        this._domain.set(domain);
+        this._admin_data.setDomain('mailing-list', domain);
+    }
+
+    public async selectDefaultDomain() {
+        return this._admin_data.selectDefaultDomain('mailing-list');
     }
 
     public getDomain() {

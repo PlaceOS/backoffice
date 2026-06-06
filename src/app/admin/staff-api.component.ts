@@ -7,13 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-    authority,
-    del,
-    get,
-    PlaceDomain,
-    queryDomains,
-} from '@placeos/ts-client';
+import { del, get, PlaceDomain } from '@placeos/ts-client';
 import { addDays, getUnixTime, startOfDay } from 'date-fns';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
@@ -21,6 +15,7 @@ import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
+import { AdminDataService } from './admin-data.service';
 import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 import { StaffTenantModalComponent } from './staff-tenant-modal.component';
 
@@ -192,13 +187,14 @@ export interface PlaceTenant {
 })
 export class PlaceStaffAPIComponent implements OnInit {
     private _dialog = inject(MatDialog);
+    private _admin_data = inject(AdminDataService);
 
     /** Loading state */
     public readonly loading = signal('');
     /** List of available domains */
-    public readonly domain_list = signal<PlaceDomain[]>([]);
+    public readonly domain_list = this._admin_data.domain_list;
     /** Currently active domain */
-    public readonly domain = signal<PlaceDomain>(null);
+    public readonly domain = this._admin_data.selectedDomain('staff-api');
     public readonly tenants = signal<PlaceTenant[]>([]);
 
     public expiring(tenant: PlaceTenant): boolean {
@@ -215,23 +211,17 @@ export class PlaceStaffAPIComponent implements OnInit {
 
     public async ngOnInit() {
         this.loading.set('Loading domains...');
-        const domain_list = await queryDomains().then((r) => r.data);
-        this.domain_list.set(domain_list || []);
-        const domain = authority();
-        if (!domain_list?.length) {
+        const domain = await this._admin_data.selectDefaultDomain('staff-api');
+        if (!domain) {
             this.loading.set('');
             return;
         }
-        const match = domain_list.find((d) => d.id === domain.id);
-        if (match) {
-            this.domain.set(match);
-            await this.loadTenants();
-        }
+        await this.loadTenants();
         this.loading.set('');
     }
 
     public async setDomain(domain: PlaceDomain) {
-        this.domain.set(domain);
+        this._admin_data.setDomain('staff-api', domain);
         await this.loadTenants();
     }
 

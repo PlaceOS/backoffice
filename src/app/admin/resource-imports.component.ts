@@ -10,10 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import {
     addSystem,
-    authority,
-    PlaceDomain,
     query,
-    queryDomains,
     querySystemsWithEmails,
 } from '@placeos/ts-client';
 import { i18n } from '../common/locale.service';
@@ -22,6 +19,7 @@ import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
+import { AdminDataService } from './admin-data.service';
 
 export interface ExternalResource {
     id: string;
@@ -187,21 +185,18 @@ export interface ExternalResource {
 })
 export class ResourceImportsComponent implements OnInit {
     private _dialog = inject(MatDialog);
+    private _admin_data = inject(AdminDataService);
 
     public readonly loading = signal(false);
-    public readonly domain = signal<PlaceDomain>(null);
-    public readonly domain_list = signal<PlaceDomain[]>([]);
+    public readonly domain = this._admin_data.selectedDomain('resource-imports');
+    public readonly domain_list = this._admin_data.domain_list;
     public readonly resource_list = signal<ExternalResource[]>([]);
 
     public async ngOnInit() {
-        const domain = authority();
-        const domain_list = await queryDomains({ limit: 100 }).then(
-            (_) => _.data,
+        const domain = await this._admin_data.selectDefaultDomain(
+            'resource-imports',
         );
-        if (!domain_list?.length) return;
-        this.domain_list.set(domain_list);
-        const match = domain_list.find((d) => d.id === domain.id);
-        if (match) this.domain.set(match);
+        if (!domain) return;
         this.loadResourceList();
     }
 

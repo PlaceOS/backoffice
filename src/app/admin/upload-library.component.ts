@@ -5,7 +5,6 @@ import {
     Component,
     computed,
     inject,
-    model,
     OnInit,
     resource,
     signal,
@@ -20,11 +19,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     apiKey,
-    authority,
     cleanObject,
-    PlaceDomain,
     query,
-    queryDomains,
     remove,
     token,
 } from '@placeos/ts-client';
@@ -40,6 +36,7 @@ import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
+import { AdminDataService } from './admin-data.service';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 
 function getMimeType(filename: string): string {
@@ -366,12 +363,15 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     private _dialog = inject(MatDialog);
     private _clipboard = inject(Clipboard);
     private _uploads = inject(UploadsService);
+    private _admin_data = inject(AdminDataService);
 
-    public readonly search_term = model('');
-    public readonly domain = model<PlaceDomain>(null);
+    public readonly search_term = this._admin_data.filter(
+        'upload-library:search',
+    );
+    public readonly domain = this._admin_data.selectedDomain('upload-library');
     public readonly refresh = signal(0);
     public readonly loading = signal(false);
-    public readonly sorted_by = signal<[string, boolean]>(['', false]);
+    public readonly sorted_by = this._admin_data.sort('upload-library:uploads');
     public readonly sorted_uploads = computed(() => {
         const [field, asc] = this.sorted_by();
         if (!field) return this.uploads_list();
@@ -387,16 +387,7 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         });
     });
 
-    private readonly _domain_list = resource({
-        loader: async () =>
-            queryDomains({ limit: 100 })
-                .then((r) => r.data)
-                .catch(() => [] as PlaceDomain[]),
-    });
-
-    public readonly domain_list = computed(
-        () => this._domain_list.value() || [],
-    );
+    public readonly domain_list = this._admin_data.domain_list;
 
     private readonly _uploads_list = resource({
         params: () => ({
@@ -428,13 +419,8 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         () => this._uploads_list.value() || [],
     );
 
-    public ngOnInit() {
-        const domain = authority();
-        const domain_list = this.domain_list();
-        if (!domain_list?.length)
-            return this.timeout('init', () => this.ngOnInit());
-        const match = domain_list.find((d) => d.id === domain.id);
-        if (match) this.domain.set(match);
+    public async ngOnInit() {
+        await this._admin_data.selectDefaultDomain('upload-library');
     }
 
     public sizeOf(bytes: number) {
@@ -448,13 +434,7 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     }
 
     public sortBy(new_field: string) {
-        const [field, asc] = this.sorted_by();
-        if (field === new_field) {
-            if (asc) this.sorted_by.set(['', false]);
-            else this.sorted_by.set([new_field, true]);
-        } else {
-            this.sorted_by.set([new_field, false]);
-        }
+        this._admin_data.sortBy('upload-library:uploads', new_field);
     }
 
     public copyLink(upload: UploadInfo) {

@@ -6,12 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-    PlaceDomain,
-    authority,
-    queryDomains,
-    updateDomain,
-} from '@placeos/ts-client';
+import { PlaceDomain, updateDomain } from '@placeos/ts-client';
 import { notifyError } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
@@ -23,6 +18,7 @@ import { IconComponent } from '../ui/icon.component';
 import { SafePipe } from '../ui/pipes/safe.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
+import { AdminDataService } from './admin-data.service';
 import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
 
 export interface BackofficeExtension {
@@ -189,13 +185,14 @@ export interface BackofficeExtension {
 })
 export class PlaceExtensionsComponent implements OnInit {
     private _dialog = inject(MatDialog);
+    private _admin_data = inject(AdminDataService);
 
     public readonly changed = signal(0);
     /** Loading state */
     public readonly loading = signal('');
     /** List of available domains */
-    public readonly domain_list = signal<PlaceDomain[]>([]);
-    public readonly domain = signal<PlaceDomain>(null);
+    public readonly domain_list = this._admin_data.domain_list;
+    public readonly domain = this._admin_data.selectedDomain('extensions');
 
     public readonly extensions = computed(() => {
         if (!this.domain()) return [];
@@ -223,12 +220,7 @@ export class PlaceExtensionsComponent implements OnInit {
 
     public async ngOnInit() {
         this.loading.set('Loading domains...');
-        const domain_list = await queryDomains().then((r) => r.data);
-        this.domain_list.set(domain_list);
-        const domain = authority();
-        if (!this.domain_list()?.length) return;
-        const match = this.domain_list().find((d) => d.id === domain.id);
-        if (match) this.domain.set(match);
+        await this._admin_data.selectDefaultDomain('extensions');
         this.loading.set('');
     }
 
@@ -300,6 +292,6 @@ export class PlaceExtensionsComponent implements OnInit {
             },
         });
         const new_domain = await updateDomain(domain.id, updated);
-        this.domain.set(new_domain);
+        this._admin_data.replaceDomain(new_domain);
     }
 }

@@ -6,11 +6,11 @@ import {
     PlaceDomain,
     PlaceUser,
     query,
-    queryDomains,
     queryUsers,
     remove,
     update,
 } from '@placeos/ts-client';
+import { AdminDataService } from '../admin-data.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { waitForEvent } from '../../common/signals';
 import { DialogEvent } from '../../common/types';
@@ -23,9 +23,10 @@ import { APIKeyModalComponent } from './api-key-modal.component';
 })
 export class APIKeyService {
     private _dialog = inject(MatDialog);
+    private _admin_data = inject(AdminDataService);
 
     private _search = signal('');
-    private _domain = signal<PlaceDomain>(null);
+    private _domain = this._admin_data.selectedDomain('api-keys');
     private _last_key = signal<PlaceAPIKeyDetails>(null);
     private _change = signal(0);
     private _loading = signal(false);
@@ -34,13 +35,7 @@ export class APIKeyService {
     public readonly active_domain = this._domain.asReadonly();
     public readonly loading = this._loading.asReadonly();
 
-    private readonly _available_domains = resource({
-        loader: async () => (await queryDomains({ limit: 500 })).data,
-    });
-
-    public readonly available_domains = computed(
-        () => this._available_domains.value() || [],
-    );
+    public readonly available_domains = this._admin_data.domain_list;
 
     private readonly _available_scopes = resource({
         loader: async () => (await get('/api/engine/v2/scopes')) as string[],
@@ -92,8 +87,11 @@ export class APIKeyService {
     public readonly users = computed(() => this._users.value() || []);
 
     public setDomain(domain: PlaceDomain) {
-        console.log('Setting domain:', domain);
-        this._domain.set(domain);
+        this._admin_data.setDomain('api-keys', domain);
+    }
+
+    public async selectDefaultDomain() {
+        return this._admin_data.selectDefaultDomain('api-keys');
     }
 
     public setSearch(s: string) {

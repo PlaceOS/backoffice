@@ -7,13 +7,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PlaceDomain, queryDomains } from '@placeos/ts-client';
 import { i18n } from '../../common/locale.service';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
 import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
+import { AdminDataService } from '../admin-data.service';
 import { StorageProviderModalComponent } from './storage-provider-modal.component';
 import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
 
@@ -180,11 +180,12 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
 })
 export class StorageComponent implements OnInit {
     private _dialog = inject(MatDialog);
+    private _admin_data = inject(AdminDataService);
 
     public readonly loading = signal('');
     public readonly store_list = signal<PlaceStorage[]>([]);
-    public readonly domain_list = signal<PlaceDomain[]>([]);
-    public readonly domain = signal<PlaceDomain>(null);
+    public readonly domain_list = this._admin_data.domain_list;
+    public readonly domain = this._admin_data.selectedDomain('storage');
 
     public readonly storage_list = computed(() => {
         const stores = this.store_list();
@@ -196,8 +197,7 @@ export class StorageComponent implements OnInit {
 
     public async ngOnInit() {
         this.loading.set('Loading domains...');
-        const domain_list = await queryDomains().then((r) => r.data);
-        this.domain_list.set(domain_list);
+        await this._admin_data.loadDomains();
         this.loadStorage();
         this.loading.set('');
     }

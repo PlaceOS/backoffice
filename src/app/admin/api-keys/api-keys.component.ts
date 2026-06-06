@@ -7,8 +7,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { authority } from '@placeos/ts-client';
-import { AsyncHandler } from '../../common/async-handler.class';
 import { i18n } from '../../common/locale.service';
 import { notifyInfo } from '../../common/notifications';
 import { IconComponent } from '../../ui/icon.component';
@@ -201,7 +199,7 @@ import { APIKeyService } from './api-keys.service';
         FormsModule,
     ],
 })
-export class AdminAPIKeysComponent extends AsyncHandler implements OnInit {
+export class AdminAPIKeysComponent implements OnInit {
     private _service = inject(APIKeyService);
     private _clipboard = inject(Clipboard);
 
@@ -217,13 +215,8 @@ export class AdminAPIKeysComponent extends AsyncHandler implements OnInit {
     public readonly editKey = (k) => this._service.editKey(k);
     public readonly deleteKey = (k) => this._service.removeKey(k);
 
-    public ngOnInit() {
-        const domain = authority();
-        const domain_list = this.domain_list();
-        if (!domain_list?.length)
-            return this.timeout('init', () => this.ngOnInit());
-        const match = domain_list.find((d) => d.id === domain.id);
-        if (match) this.setDomain(match);
+    public async ngOnInit() {
+        await this._service.selectDefaultDomain();
     }
 
     public async copyKey() {
