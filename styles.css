@@ -765,6 +765,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .min-h-80 {
   min-height: calc(var(--spacing) * 80);
 }
+#placeos .min-h-\[calc\(100\%-20rem\)\] {
+  min-height: calc(100% - 20rem);
+}
 #placeos .min-h-\[calc\(100vh-13\.25rem\)\] {
   min-height: calc(100vh - 13.25rem);
 }
@@ -1076,6 +1079,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .min-w-176 {
   min-width: calc(var(--spacing) * 176);
+}
+#placeos .min-w-180 {
+  min-width: calc(var(--spacing) * 180);
 }
 #placeos .min-w-184 {
   min-width: calc(var(--spacing) * 184);
