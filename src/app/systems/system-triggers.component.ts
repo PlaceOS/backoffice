@@ -31,8 +31,8 @@ export interface TriggerInstanceState {
 @Component({
     selector: 'system-triggers',
     template: `
-        <div class="p-4">
-            <section class="mb-4 flex items-center space-x-2">
+        <div class="flex h-full flex-col">
+            <section class="flex items-center space-x-2 p-4">
                 <mat-form-field appearance="outline" class="h-12 flex-1">
                     <div class="prefix" matPrefix>
                         <icon class="relative -left-0.5 text-2xl">
@@ -50,7 +50,7 @@ export interface TriggerInstanceState {
                     {{ 'SYSTEMS.TRIGGER_ADD' | translate }}
                 </button>
             </section>
-            <section class="max-w-full overflow-auto">
+            <section class="h-1/2 max-w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"

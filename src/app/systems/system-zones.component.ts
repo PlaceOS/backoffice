@@ -17,8 +17,8 @@ import { SystemStateService } from './system-state.service';
 @Component({
     selector: 'system-zones',
     template: `
-        <div class="flex h-full w-full flex-col p-4">
-            <section class="mb-2 flex items-center space-x-2">
+        <div class="flex h-full w-full flex-col">
+            <section class="mt-4 mb-2 flex items-center space-x-2 px-4">
                 <item-search-field
                     [placeholder]="'SYSTEMS.ZONE_SEARCH' | translate"
                     class="h-12 flex-1"
@@ -29,7 +29,7 @@ import { SystemStateService } from './system-state.service';
                     (ngModelChange)="addPendingZone($event)"
                 />
             </section>
-            <section class="mb-2 flex items-center space-x-2">
+            <section class="mb-2 flex items-center space-x-2 px-4">
                 <button
                     btn
                     matRipple
@@ -68,14 +68,14 @@ import { SystemStateService } from './system-state.service';
                     {{ zone_issues() }}
                 </div>
             }
-            <section class="h-1/2 w-full flex-1 overflow-auto">
+            <section class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading().zones"
                 />
                 <simple-table
-                    class="block min-w-lg text-sm"
+                    class="block min-w-180 text-sm"
                     [data]="show_original ? original_zones() : zones()"
                     [columns]="[
                         {

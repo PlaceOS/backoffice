@@ -84,7 +84,10 @@ import { SystemStateService } from './system-state.service';
                     {{ 'COMMON.ADD_NEW' | translate }}
                 </button>
             </section>
-            <section device-list class="overflow-y-auto p-4">
+            <section
+                device-list
+                class="min-h-[calc(100%-20rem)] overflow-y-auto p-4"
+            >
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
