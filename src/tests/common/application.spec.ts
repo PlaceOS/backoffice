@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock general.ts log function
 vi.mock('../../app/common/general', () => ({
@@ -6,9 +6,11 @@ vi.mock('../../app/common/general', () => ({
 }));
 
 import {
-    hasNewVersion,
-    setupCache,
     clearCacheCheck,
+    hasNewVersion,
+    isChunkLoadError,
+    reloadApplicationOnChunkLoadError,
+    setupCache,
     updateAvailable,
 } from '../../app/common/application';
 
@@ -22,6 +24,7 @@ describe('application.ts', () => {
 
     afterEach(() => {
         clearCacheCheck();
+        sessionStorage.clear();
     });
 
     describe('hasNewVersion', () => {
@@ -133,6 +136,84 @@ describe('application.ts', () => {
             expect(mock_cache.checkForUpdate).toHaveBeenCalled();
             expect(mock_cache.activateUpdate).not.toHaveBeenCalled();
             expect(updateAvailable()).toBe(true);
+        });
+    });
+
+    describe('isChunkLoadError', () => {
+        it('should detect webpack chunk load errors', () => {
+            const error = new Error('Loading chunk 123 failed.');
+            error.name = 'ChunkLoadError';
+
+            expect(isChunkLoadError(error)).toBe(true);
+        });
+
+        it('should detect dynamic import failures', () => {
+            expect(
+                isChunkLoadError(
+                    'Failed to fetch dynamically imported module: /chunk.js',
+                ),
+            ).toBe(true);
+            expect(isChunkLoadError('Importing a module script failed.')).toBe(
+                true,
+            );
+        });
+
+        it('should detect Angular-wrapped chunk load errors', () => {
+            expect(
+                isChunkLoadError({
+                    ngOriginalError: {
+                        cause: new Error(
+                            'error loading dynamically imported module',
+                        ),
+                    },
+                }),
+            ).toBe(true);
+        });
+
+        it('should ignore non-chunk errors', () => {
+            expect(
+                isChunkLoadError(new Error('Route guard denied access')),
+            ).toBe(false);
+        });
+    });
+
+    describe('reloadApplicationOnChunkLoadError', () => {
+        it('should reload the application for chunk load failures', () => {
+            const reload = vi.fn();
+
+            expect(
+                reloadApplicationOnChunkLoadError(
+                    new Error('Failed to fetch dynamically imported module'),
+                    reload,
+                ),
+            ).toBe(true);
+
+            expect(reload).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not reload for non-chunk navigation failures', () => {
+            const reload = vi.fn();
+
+            expect(
+                reloadApplicationOnChunkLoadError(
+                    new Error('Resolver failed'),
+                    reload,
+                ),
+            ).toBe(false);
+
+            expect(reload).not.toHaveBeenCalled();
+        });
+
+        it('should not repeatedly reload for the same chunk load failure', () => {
+            const reload = vi.fn();
+            const error = new Error(
+                'Failed to fetch dynamically imported module: /chunk.js',
+            );
+
+            expect(reloadApplicationOnChunkLoadError(error, reload)).toBe(true);
+            expect(reloadApplicationOnChunkLoadError(error, reload)).toBe(true);
+
+            expect(reload).toHaveBeenCalledTimes(1);
         });
     });
 });
