@@ -1,6 +1,6 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-MVCQR7NL.js";
+} from "./chunk-2MY4VIFP.js";
 import {
   getUnixTime
 } from "./chunk-GV5KQIK5.js";
@@ -20,8 +20,9 @@ import {
   Router,
   RouterOutlet,
   provideRouter,
-  withHashLocation
-} from "./chunk-3VJIC3YA.js";
+  withHashLocation,
+  withNavigationErrorHandler
+} from "./chunk-TTOMUWPB.js";
 import "./chunk-J5O27MHS.js";
 import "./chunk-CEZ5W4YU.js";
 import {
@@ -33,12 +34,12 @@ import "./chunk-IE6E7XHG.js";
 import "./chunk-V5GEKXNH.js";
 import {
   BackofficeUsersService
-} from "./chunk-FM3IA4KE.js";
+} from "./chunk-FUB4H56B.js";
 import {
   SettingsService,
   currentUser,
   format
-} from "./chunk-BCSV2YPE.js";
+} from "./chunk-LNYPPIOF.js";
 import {
   addDays
 } from "./chunk-XI4ZLZAC.js";
@@ -1961,6 +1962,8 @@ var ServiceWorkerModule = class _ServiceWorkerModule {
 
 // src/app/common/application.ts
 var _timer;
+var _last_chunk_load_reload_key = "";
+var CHUNK_LOAD_RELOAD_KEY = "BACKOFFICE.chunk_load_reload";
 var updateAvailable = signal(
   false,
   ...ngDevMode ? [{ debugName: "updateAvailable" }] : (
@@ -1978,10 +1981,84 @@ function setupCache(cache, interval = 5 * 60 * 1e3) {
     }, interval);
   }
 }
+function isChunkLoadError(error) {
+  const checked = /* @__PURE__ */ new Set();
+  const stack = [error];
+  while (stack.length) {
+    const current = stack.shift();
+    if (!current || checked.has(current))
+      continue;
+    checked.add(current);
+    if (typeof current === "string" && isChunkLoadErrorMessage(current)) {
+      return true;
+    }
+    if (current instanceof Error) {
+      if (isChunkLoadErrorMessage(current.name))
+        return true;
+      if (isChunkLoadErrorMessage(current.message))
+        return true;
+    }
+    if (typeof current === "object") {
+      const record = current;
+      stack.push(record["ngOriginalError"]);
+      stack.push(record["error"]);
+      stack.push(record["cause"]);
+      stack.push(record["message"]);
+      stack.push(record["name"]);
+    }
+  }
+  return false;
+}
+function reloadApplicationOnChunkLoadError(error, reload = () => location.reload()) {
+  if (!isChunkLoadError(error))
+    return false;
+  const reload_key = getChunkLoadReloadKey(error);
+  if (getLastChunkLoadReloadKey() === reload_key) {
+    return true;
+  }
+  setLastChunkLoadReloadKey(reload_key);
+  log("ROUTER", "Lazy route chunk failed to load. Reloading application...");
+  reload();
+  return true;
+}
 async function checkForUpdate(cache) {
   if (cache.isEnabled && await cache.checkForUpdate()) {
     log("CACHE", `Newer application version is available.`);
     updateAvailable.set(true);
+  }
+}
+function isChunkLoadErrorMessage(message) {
+  return /ChunkLoadError|Loading chunk [\w-]+ failed|Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed/i.test(message);
+}
+function getChunkLoadReloadKey(error) {
+  const message = extractErrorMessage(error);
+  return `${location.pathname}${location.search}${location.hash}:${message}`;
+}
+function extractErrorMessage(error) {
+  if (!error)
+    return "unknown";
+  if (typeof error === "string")
+    return error;
+  if (error instanceof Error)
+    return `${error.name}:${error.message}`;
+  if (typeof error === "object") {
+    const record = error;
+    return extractErrorMessage(record["ngOriginalError"] || record["error"] || record["cause"] || record["message"] || record["name"]);
+  }
+  return String(error);
+}
+function getLastChunkLoadReloadKey() {
+  try {
+    return sessionStorage.getItem(CHUNK_LOAD_RELOAD_KEY) || _last_chunk_load_reload_key;
+  } catch {
+    return _last_chunk_load_reload_key;
+  }
+}
+function setLastChunkLoadReloadKey(key) {
+  _last_chunk_load_reload_key = key;
+  try {
+    sessionStorage.setItem(CHUNK_LOAD_RELOAD_KEY, key);
+  } catch {
   }
 }
 
@@ -3143,52 +3220,52 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-MZ5LOP6Q.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-NJ6FPBLP.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-TLSA6VHU.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YGDZDEIN.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-ZKOUBYH4.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-AX33VFAW.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-H3DQYKRN.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-TSZOIEV6.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-CV3KK64E.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-6RODYZA4.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-KDU2OO2G.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YLVLU4NH.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-HXT4A5QM.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-6ODPTIMD.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-CUMNYAC4.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-U5K66CTS.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-GKX5AR52.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-M3A7M72K.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-3YLLEMB5.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-FTJJTTEU.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -3198,7 +3275,7 @@ var appConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(appRoutes, withHashLocation()),
+    provideRouter(appRoutes, withHashLocation(), withNavigationErrorHandler((event) => reloadApplicationOnChunkLoadError(event.error))),
     provideServiceWorker("ngsw-worker.js", {
       enabled: !isDevMode()
       // Disable in development, enable in production
