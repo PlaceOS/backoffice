@@ -25,9 +25,7 @@ import { SystemStateService } from './system-state.service';
                         </div>
                         <a
                             class="truncate underline select-all"
-                            [href]="
-                                $safeNavigationMigration(item()?.support_url)
-                            "
+                            [href]="item()?.support_url"
                             target="_blank"
                         >
                             {{ item()?.support_url }}
@@ -96,10 +94,7 @@ import { SystemStateService } from './system-state.service';
                         </div>
                         <a
                             class="truncate underline select-all"
-                            [href]="
-                                'mailto:' +
-                                $safeNavigationMigration(item()?.email)
-                            "
+                            [href]="'mailto:' + item()?.email"
                             target="_blank"
                             >{{ item()?.email }}</a
                         >
@@ -198,11 +193,7 @@ import { SystemStateService } from './system-state.service';
                     </h3>
                     <div
                         class="markdown w-full overflow-auto p-4 text-sm"
-                        [innerHTML]="
-                            $safeNavigationMigration(item()?.description)
-                                | markdown
-                                | async
-                        "
+                        [innerHTML]="item()?.description | markdown | async"
                     ></div>
                 </div>
             }
@@ -211,9 +202,9 @@ import { SystemStateService } from './system-state.service';
             @if (item()?.settings && other_settings_value) {
                 <section>
                     <a-settings-form
-                        [id]="$safeNavigationMigration(item()?.id)"
+                        [id]="item()?.id"
                         [merge]="true"
-                        [settings]="$safeNavigationMigration(item()?.settings)"
+                        [settings]="item()?.settings"
                         [merge_settings]="other_settings_value || []"
                     />
                 </section>

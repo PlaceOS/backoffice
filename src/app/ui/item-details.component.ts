@@ -65,8 +65,8 @@ export interface DisplayItem {
                         </div>
                     }
                     @if (
-                        $safeNavigationMigration(item()?.running) !== null &&
-                        $safeNavigationMigration(item()?.running) !== undefined
+                        item()?.running !== null &&
+                        item()?.running !== undefined
                     ) {
                         <div
                             class="bg-error text-error-content rounded-xl px-2 py-1 text-xs"
@@ -84,9 +84,7 @@ export interface DisplayItem {
                     @if (item()?.edge_id) {
                         <div
                             class="bg-info text-info-content rounded-xl px-2 py-1 text-xs"
-                            [matTooltip]="
-                                $safeNavigationMigration(item()?.edge_id)
-                            "
+                            [matTooltip]="item()?.edge_id"
                         >
                             {{ 'COMMON.EDGE' | translate }}
                         </div>

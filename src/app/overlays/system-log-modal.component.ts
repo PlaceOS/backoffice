@@ -38,20 +38,10 @@ export interface SystemLogModalData {
                             @for (item of logs; track item.id) {
                                 <tr class="item">
                                     <td>
-                                        {{
-                                            $any(
-                                                $safeNavigationMigration(
-                                                    item?.user
-                                                )
-                                            )?.name
-                                        }}
+                                        {{ $any(item?.user)?.name }}
                                     </td>
                                     <td>
-                                        {{
-                                            $safeNavigationMigration(
-                                                $any(item)?.created_at
-                                            ) | date
-                                        }}
+                                        {{ $any(item)?.created_at | date }}
                                     </td>
                                     <td>{{ $any(item)?.installed_device }}</td>
                                 </tr>

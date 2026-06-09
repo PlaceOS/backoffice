@@ -257,7 +257,7 @@ export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     public async submit() {
         await submit(this.form, async () => {
             const value = {
-                ...this.formModel,
+                ...this.formModel(),
                 conditions: this.formModel().conditions.filter(
                     (c) => c[0] && c[1],
                 ),

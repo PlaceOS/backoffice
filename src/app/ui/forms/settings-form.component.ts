@@ -143,10 +143,7 @@ type SettingsArray = [
                                 <div class="pl-2 text-xs">
                                     {{
                                         (
-                                            $safeNavigationMigration(
-                                                settings()[i - 1]
-                                                    ?.modified_by_id
-                                            )
+                                            settings()[i - 1]?.modified_by_id
                                             | user
                                             | async
                                         )?.name
@@ -161,9 +158,8 @@ type SettingsArray = [
                                 >
                                     {{ 'COMMON.LAST_EDIT' | translate }}:
                                     {{
-                                        $safeNavigationMigration(
-                                            settings()[i - 1]?.updated_at
-                                        ) * 1000 | dateFrom
+                                        settings()[i - 1]?.updated_at * 1000
+                                            | dateFrom
                                     }}
                                 </code>
                             </div>

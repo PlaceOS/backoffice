@@ -43,9 +43,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                     class="mono text-sm underline"
                                     [routerLink]="[
                                         '/zones',
-                                        $safeNavigationMigration(
-                                            item()?.parent_id
-                                        ),
+                                        item()?.parent_id,
                                         'about',
                                     ]"
                                     >{{
@@ -103,9 +101,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             </div>
                             <a
                                 class="truncate underline"
-                                [href]="
-                                    $safeNavigationMigration(item()?.map_id)
-                                "
+                                [href]="item()?.map_id"
                                 >{{ item()?.map_id }}</a
                             >
                         }
@@ -163,9 +159,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 matTooltipPosition="right"
                             >
                                 {{
-                                    $safeNavigationMigration(
-                                        item()?.updated_at
-                                    ) * 1000 | dateFrom
+                                    item()?.updated_at * 1000 | dateFrom
                                 }}
                             </span>
                         </div>
@@ -204,9 +198,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 </mat-form-field>
                                 @if (active_system()?.id) {
                                     <execute-method-field
-                                        [zone]="
-                                            $safeNavigationMigration(item()?.id)
-                                        "
+                                        [zone]="item()?.id"
                                         [system]="active_system()"
                                     />
                                 }
@@ -225,11 +217,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     </h3>
                     <div
                         class="markdown w-full overflow-auto p-4 text-sm"
-                        [innerHTML]="
-                            $safeNavigationMigration(item()?.description)
-                                | markdown
-                                | async
-                        "
+                        [innerHTML]="item()?.description | markdown | async"
                     ></div>
                 </div>
             }
@@ -238,8 +226,8 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 <section>
                     <a-settings-form
                         [merge]="true"
-                        [id]="$safeNavigationMigration(item()?.id)"
-                        [settings]="$safeNavigationMigration(item()?.settings)"
+                        [id]="item()?.id"
+                        [settings]="item()?.settings"
                     />
                 </section>
             } @else {

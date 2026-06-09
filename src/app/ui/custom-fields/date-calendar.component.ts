@@ -46,8 +46,7 @@ interface DateItem {
                         name="schedule-next-month"
                         [disabled]="
                             disabled() ||
-                            $safeNavigationMigration(date_list()[0]?.id) <
-                                from()
+                            date_list()[0]?.id < from()
                         "
                         (click)="changeMonth(-1)"
                     >
@@ -59,7 +58,7 @@ interface DateItem {
                         name="schedule-previous-month"
                         [disabled]="
                             disabled() ||
-                            $safeNavigationMigration(date_list()[34]?.id) > to()
+                            date_list()[34]?.id > to()
                         "
                         (click)="changeMonth(1)"
                     >
@@ -72,7 +71,7 @@ interface DateItem {
             >
                 @for (day of date_list() | slice: 0 : 7; track day) {
                     <div class="flex-1 text-center opacity-60">
-                        {{ $safeNavigationMigration(day?.id) | date: 'EE' }}
+                        {{ day?.id | date: 'EE' }}
                     </div>
                 }
             </div>

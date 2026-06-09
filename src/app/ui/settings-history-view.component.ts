@@ -38,13 +38,11 @@ import { TranslatePipe } from './translate.pipe';
                                     class="pr-2 text-right font-mono text-[0.625rem] leading-tight"
                                 >
                                     {{
-                                        $safeNavigationMigration(
-                                            value?.updated_at
-                                        ) * 1000 | date: 'MMM d, y'
+                                        value?.updated_at * 1000
+                                            | date: 'MMM d, y'
                                     }}<br />{{
-                                        $safeNavigationMigration(
-                                            value?.updated_at
-                                        ) * 1000 | date: 'h:mm a'
+                                        value?.updated_at * 1000
+                                            | date: 'h:mm a'
                                     }}
                                 </div>
                             </div>
@@ -92,13 +90,11 @@ import { TranslatePipe } from './translate.pipe';
                                     class="pr-2 text-right font-mono text-[0.625rem] leading-tight"
                                 >
                                     {{
-                                        $safeNavigationMigration(
-                                            a_value?.updated_at
-                                        ) * 1000 | date: 'MMM d, y'
+                                        a_value?.updated_at * 1000
+                                            | date: 'MMM d, y'
                                     }}<br />{{
-                                        $safeNavigationMigration(
-                                            a_value?.updated_at
-                                        ) * 1000 | date: 'h:mm a'
+                                        a_value?.updated_at * 1000
+                                            | date: 'h:mm a'
                                     }}
                                 </div>
                             </div>
@@ -129,16 +125,8 @@ import { TranslatePipe } from './translate.pipe';
             @if (active_setting() && old_setting()) {
                 <div class="w-full p-4">
                     <diff-viewer
-                        [modified]="
-                            $safeNavigationMigration(
-                                active_setting()?.settings_string
-                            )
-                        "
-                        [original]="
-                            $safeNavigationMigration(
-                                old_setting()?.settings_string
-                            )
-                        "
+                        [modified]="active_setting()?.settings_string"
+                        [original]="old_setting()?.settings_string"
                     />
                 </div>
             } @else {

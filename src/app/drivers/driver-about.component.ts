@@ -178,11 +178,7 @@ import { DriverStateService } from './driver-state.service';
                     </h3>
                     <div
                         class="markdown w-full overflow-auto p-4 text-sm"
-                        [innerHTML]="
-                            $safeNavigationMigration(item()?.description)
-                                | markdown
-                                | async
-                        "
+                        [innerHTML]="item()?.description | markdown | async"
                     ></div>
                 </div>
             }
