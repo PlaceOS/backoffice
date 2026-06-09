@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { PlaceApplication, PlaceDomain } from '@placeos/ts-client';
 
 import { MatChipsModule } from '@angular/material/chips';
@@ -110,21 +110,21 @@ import { DomainStateService } from './domain-state.service';
                     icon
                     default
                     matRipple
-                    (mousedown)="show_secret[row.id] = true"
-                    (touchstart)="show_secret[row.id] = true"
-                    (window:mouseup)="show_secret[row.id] = false"
-                    (window:touchend)="show_secret[row.id] = false"
+                    (mousedown)="setShowSecret(row.id, true)"
+                    (touchstart)="setShowSecret(row.id, true)"
+                    (window:mouseup)="setShowSecret(row.id, false)"
+                    (window:touchend)="setShowSecret(row.id, false)"
                     [matTooltip]="'DOMAINS.VIEW_SECRET' | translate"
                 >
                     <icon>visibility</icon>
                 </button>
                 <div class="font-mono text-xs">
-                    @if (!show_secret[row.id]) {
+                    @if (!show_secret()[row.id]) {
                         <span class="bg-base-200 rounded-sm p-2">{{
                             'DOMAINS.SECRET_HIDDEN' | translate
                         }}</span>
                     }
-                    @if (show_secret[row.id]) {
+                    @if (show_secret()[row.id]) {
                         <span>{{ row.secret }}</span>
                     }
                 </div>
@@ -197,7 +197,7 @@ export class DomainApplicationsComponent {
     public readonly applications = this._service.applications;
     public readonly loading = this._service.loading;
 
-    public show_secret: HashMap<boolean> = {};
+    public readonly show_secret = signal<HashMap<boolean>>({});
 
     public readonly newApplication = () => this._service.editApplication();
     public readonly editApplication = (item) =>
@@ -213,8 +213,12 @@ export class DomainApplicationsComponent {
     }
 
     public copySecret(item: PlaceApplication) {
-        this.show_secret[item.id] = false;
+        this.setShowSecret(item.id, false);
         copyToClipboard(item.secret);
         notifyInfo(i18n('DOMAINS.COPIED_SECRET'));
+    }
+
+    public setShowSecret(id: string, value: boolean): void {
+        this.show_secret.update((state) => ({ ...state, [id]: value }));
     }
 }

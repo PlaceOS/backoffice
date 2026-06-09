@@ -230,7 +230,7 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
         this.loading.set('Saving authentication source...');
         const method: Promise<unknown> = this.updateMethod({
             ...this.item().toJSON(),
-            ...this.activeFormModel()(),
+            ...this.activeFormModel(),
         });
         method.then(
             (item) => {
@@ -282,10 +282,10 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
     private activeFormModel() {
         switch (this.type()) {
             case 'saml':
-                return this.samlFormModel;
+                return this.samlFormModel();
             case 'ldap':
-                return this.ldapFormModel;
+                return this.ldapFormModel();
         }
-        return this.oauthFormModel;
+        return this.oauthFormModel();
     }
 }

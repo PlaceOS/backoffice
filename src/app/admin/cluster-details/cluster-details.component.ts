@@ -33,7 +33,9 @@ import { AdminClusterNodeComponent } from './cluster-node.component';
                                 track node.hostname
                             ) {
                                 <admin-cluster-node
-                                    [show_name]="cluster_nodes.length > 1"
+                                    [show_name]="
+                                        cluster_nodes()[cluster.id].length > 1
+                                    "
                                     [node]="node"
                                     [history]="
                                         (usage_history[cluster.id] || {})[

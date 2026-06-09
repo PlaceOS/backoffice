@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -16,12 +16,12 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                 <label
                     matRipple
                     class="border-base-300 bg-base-100 hover:bg-base-200 relative flex min-h-80 cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-4 border-dashed p-8 text-center transition"
-                    [class.border-info]="dragging"
-                    [class.bg-info]="dragging"
-                    [class.text-info-content]="dragging"
-                    (dragenter)="dragging = true"
-                    (dragleave)="dragging = false"
-                    (dragend)="dragging = false"
+                    [class.border-info]="dragging()"
+                    [class.bg-info]="dragging()"
+                    [class.text-info-content]="dragging()"
+                    (dragenter)="dragging.set(true)"
+                    (dragleave)="dragging.set(false)"
+                    (dragend)="dragging.set(false)"
                     (dragover)="onDragOver($event)"
                     (drop)="onDrop($event)"
                 >
@@ -62,9 +62,9 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                 <mat-spinner diameter="32" />
                 <div class="text-center">
                     {{ 'COMMON.BULK_DROP_LOADING' | translate }}
-                    @if (file_name) {
+                    @if (file_name()) {
                         <div class="text-base-content/60 mt-2 text-sm">
-                            {{ file_name }}
+                            {{ file_name() }}
                         </div>
                     }
                 </div>
@@ -85,11 +85,11 @@ export class CsvUploadComponent {
     /** Emitter for changes to the data displayed */
     public readonly list = output<HashMap<unknown>[]>();
     /** Whether user has dragged item */
-    public dragging: boolean;
+    public readonly dragging = signal<boolean | null>(null);
     /** Whether CSV data is being processed */
     public loading: boolean;
     /** Name of the file currently being processed */
-    public file_name = '';
+    public readonly file_name = signal('');
 
     public onDragOver(event: DragEvent) {
         event.preventDefault();
@@ -99,7 +99,7 @@ export class CsvUploadComponent {
     public onDrop(event: DragEvent) {
         event.preventDefault();
         event.stopPropagation();
-        this.dragging = false;
+        this.dragging.set(false);
         const file = event.dataTransfer?.files?.[0];
         if (file) {
             this.loadFile(file);
@@ -125,7 +125,7 @@ export class CsvUploadComponent {
             notifyError('Upload a CSV or TSV file.');
             return;
         }
-        this.file_name = file.name;
+        this.file_name.set(file.name);
         this.loading = true;
         const reader = new FileReader();
         reader.readAsText(file, 'UTF-8');

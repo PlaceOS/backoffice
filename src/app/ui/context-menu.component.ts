@@ -5,6 +5,7 @@ import {
     HostListener,
     OnInit,
     input,
+    signal,
     viewChild,
 } from '@angular/core';
 import {
@@ -22,8 +23,8 @@ import { AsyncHandler } from '../common/async-handler.class';
             class="pointer-events-none fixed h-px w-px"
             style="opacity: 0; height: 0"
             #container
-            [style.top]="position.top + 'px'"
-            [style.left]="position.left + 'px'"
+            [style.top]="position().top + 'px'"
+            [style.left]="position().left + 'px'"
             [matMenuTriggerFor]="menu()"
         ></div>
     `,
@@ -55,7 +56,9 @@ export class ContextMenuComponent
     /** Whether the context menu should be shown */
     public show: boolean;
     /** Location of the menu */
-    public position: { top: number; left: number };
+    public readonly position = signal<{ top: number; left: number } | null>(
+        null,
+    );
 
     private readonly container =
         viewChild<ElementRef<HTMLDivElement>>('container');
@@ -63,17 +66,17 @@ export class ContextMenuComponent
 
     @HostListener('contextmenu', ['$event']) public onEvent(event) {
         event.preventDefault();
-        this.position = {
+        this.position.set({
             top: event.clientY + this.offset_y(),
             left: event.clientX + this.offset_x(),
-        };
+        });
         const trigger = this.trigger();
         if (trigger) trigger.openMenu();
         this.timeout('update_position', () => this.updatePosition(), 50);
     }
 
     public ngOnInit(): void {
-        this.position = { top: 0, left: 0 };
+        this.position.set({ top: 0, left: 0 });
     }
 
     public ngAfterViewInit() {

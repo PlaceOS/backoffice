@@ -3,9 +3,9 @@ import {
     Component,
     computed,
     EventEmitter,
+    inject,
     OnInit,
     Output,
-    inject,
     signal,
 } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
@@ -14,12 +14,12 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
-    EncryptionLevel,
-    PlaceDomain,
-    PlaceSettings,
     addDomain,
     addSettings,
     cleanObject,
+    EncryptionLevel,
+    PlaceDomain,
+    PlaceSettings,
     updateDomain,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -50,7 +50,7 @@ import {
     template: `
         <fullscreen-modal-shell
             [heading]="heading"
-            [loading]="loading"
+            [loading]="loading()"
             (save)="submit()"
         >
             @if (form) {
@@ -283,9 +283,11 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public readonly formModel = signal(generateDomainFormModel(this._data.item));
+    public readonly formModel = signal(
+        generateDomainFormModel(this._data.item),
+    );
     public readonly form = form(this.formModel, applyDomainFormSchema);
-    public loading: string;
+    public readonly loading = signal<string | null>(null);
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
     );
@@ -322,15 +324,14 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
     public async submit(): Promise<void> {
         await submit(this.form, async () => {
             const item = this._data.item;
-            this.loading = i18n(`${this._name}.SAVING`);
+            this.loading.set(i18n(`${this._name}.SAVING`));
             this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
                 item.id
-                    ? cleanObject(
-                          { ...item_json, ...this.formModel() },
-                          [undefined],
-                      )
+                    ? cleanObject({ ...item_json, ...this.formModel() }, [
+                          undefined,
+                      ])
                     : { ...item_json, ...this.formModel() }
             ) as Identity;
             try {
@@ -345,7 +346,7 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
                 this._dialog_ref.close();
             } catch (err) {
-                this.loading = null;
+                this.loading.set(null);
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
@@ -374,7 +375,7 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
             encryption_level: EncryptionLevel.Support,
         });
         await addSettings(new_settings).catch((err) => {
-            this.loading = null;
+            this.loading.set(null);
             notifyError(
                 `Error saving settings for ${
                     item.name || item.id

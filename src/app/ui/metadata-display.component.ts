@@ -309,7 +309,7 @@ export class MetadataDisplayComponent
                 existing_names: this.metadata()
                     .filter((i) => i.name !== field.name)
                     .map((i) => i.name),
-                change: this.change,
+                change: this.change(),
                 update: (value: MetadataFormModel) =>
                     this.updateMetadataDetails(field.name, value),
             },

@@ -5,8 +5,10 @@ import {
     model,
     OnChanges,
     OnInit,
+    signal,
     SimpleChanges,
     viewChild,
+    WritableSignal,
 } from '@angular/core';
 import {
     ControlValueAccessor,
@@ -37,14 +39,14 @@ import { IconComponent } from '../icon.component';
     template: `
         <mat-form-field
             appearance="outline"
-            [style.display]="show_select ? 'none' : ''"
+            [style.display]="show_select() ? 'none' : ''"
             (keydown.enter)="showSelect()"
         >
             <input
                 matInput
                 type="time"
                 [disabled]="disabled()"
-                [ngModel]="time"
+                [ngModel]="time()"
                 (ngModelChange)="setValue($event)"
             />
             <button
@@ -60,11 +62,11 @@ import { IconComponent } from '../icon.component';
             </button>
             <mat-error><ng-content /></mat-error>
         </mat-form-field>
-        @if (show_select) {
+        @if (show_select()) {
             <mat-form-field appearance="outline">
                 <mat-select
                     #select
-                    [value]="time"
+                    [value]="time()"
                     [disabled]="disabled()"
                     (valueChange)="setValue($event)"
                 >
@@ -113,11 +115,13 @@ export class TimeFieldComponent
     /** String representing the currently set time */
     public date: number = new Date().valueOf();
     /** String representing the currently set time */
-    public time: string = format(new Date(), 'HH:mm');
+    public readonly time: WritableSignal<string> = signal(
+        format(new Date(), 'HH:mm'),
+    );
     /** Available time blocks for the selected date */
     public _time_options: Identity[];
     /** Whether select field should be shown */
-    public show_select: boolean;
+    public readonly show_select = signal<boolean | null>(null);
     /** Form control on change handler */
     private _onChange: (_: number) => void;
     /** Form control on touch handler */
@@ -127,13 +131,13 @@ export class TimeFieldComponent
     private readonly select_field = viewChild<MatSelect>('select');
 
     public ngOnInit(): void {
-        this.show_select = true;
+        this.show_select.set(true);
         this._time_options = this.generateAvailableTimes(
             this.date,
             !this.no_past_times(),
             this.step(),
         );
-        this.timeout('hide', () => (this.show_select = false));
+        this.timeout('hide', () => this.show_select.set(false));
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -148,7 +152,7 @@ export class TimeFieldComponent
 
     /** Available time blocks for the selected date */
     public get time_options() {
-        const time = (this.time || '00:00').split(':');
+        const time = (this.time() || '00:00').split(':');
         const date = set(this.date, { hours: +time[0], minutes: +time[1] });
         if (
             date.getMinutes() % 15 !== 0 &&
@@ -173,9 +177,9 @@ export class TimeFieldComponent
      */
     public setValue(new_value: string): void {
         if (this.disabled()) return;
-        this.time = new_value;
+        this.time.set(new_value);
         if (this._onChange) {
-            const time = (this.time || '00:00').split(':');
+            const time = (this.time() || '00:00').split(':');
             const date = startOfMinute(
                 set(this.date, { hours: +time[0], minutes: +time[1] }),
             );
@@ -192,7 +196,7 @@ export class TimeFieldComponent
         this.date = value || this.date;
         let date = startOfMinute(this.date);
         date = roundToNearestMinutes(date, { nearestTo: 5 });
-        this.time = format(date, 'HH:mm');
+        this.time.set(format(date, 'HH:mm'));
         this._time_options = this.generateAvailableTimes(
             this.date,
             !this.no_past_times(),
@@ -225,7 +229,7 @@ export class TimeFieldComponent
      */
     public showSelect() {
         if (this.disabled()) return;
-        this.show_select = true;
+        this.show_select.set(true);
         this.timeout('on_shown', () => {
             const select_field = this.select_field();
             if (select_field) {
@@ -235,7 +239,7 @@ export class TimeFieldComponent
                     'listen_close',
                     select_field.openedChange.subscribe((state) => {
                         if (!state) {
-                            this.show_select = false;
+                            this.show_select.set(false);
                         }
                     }),
                 );

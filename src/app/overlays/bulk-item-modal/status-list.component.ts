@@ -53,36 +53,36 @@ const BATCH_SIZE = 5;
                     >
                         <div class="flex flex-1 flex-col justify-center px-2">
                             <div class="name flex-1">{{ item.name }}</div>
-                            @if (status[i] && status[i] !== 'done') {
+                            @if (status()[i] && status()[i] !== 'done') {
                                 <div class="text-error text-xs">
-                                    {{ status[i] }}
+                                    {{ status()[i] }}
                                 </div>
                             }
                         </div>
                         <div class="status">
-                            @if (status[i] && status[i] !== 'loading') {
+                            @if (status()[i] && status()[i] !== 'loading') {
                                 <div
                                     class="flex h-8 w-8 items-center justify-center rounded-full text-2xl shadow-sm"
-                                    [class.bg-error]="status[i] !== 'done'"
+                                    [class.bg-error]="status()[i] !== 'done'"
                                     [class.text-error-content]="
-                                        status[i] !== 'done'
+                                        status()[i] !== 'done'
                                     "
-                                    [class.bg-success]="status[i] === 'done'"
+                                    [class.bg-success]="status()[i] === 'done'"
                                     [class.text-success-content]="
-                                        status[i] === 'done'
+                                        status()[i] === 'done'
                                     "
-                                    [matTooltip]="status[i]"
+                                    [matTooltip]="status()[i]"
                                 >
                                     <icon>
                                         {{
-                                            status[i] === 'done'
+                                            status()[i] === 'done'
                                                 ? 'done'
                                                 : 'close'
                                         }}
                                     </icon>
                                 </div>
                             }
-                            @if (status[i] === 'loading') {
+                            @if (status()[i] === 'loading') {
                                 <mat-spinner diameter="24" />
                             }
                         </div>
@@ -127,7 +127,7 @@ export class StatusListComponent implements OnChanges {
     /** Emitter to close the modal once the user has reviewed results */
     public readonly close_modal = output<void>();
     /** Status of each of the items to be created */
-    public status: Record<string, string> = {};
+    public readonly status = signal<Record<string, string>>({});
     /** Whether all items have been processed */
     public readonly is_done = signal(false);
     /** Count of successfully completed items */
@@ -163,19 +163,19 @@ export class StatusListComponent implements OnChanges {
                 const batch = items.slice(i, i + BATCH_SIZE);
                 const batch_promises = batch.map(async (item, batch_index) => {
                     const index = i + batch_index;
-                    this.status[index] = 'loading';
+                    this.setStatus(index, 'loading');
                     try {
                         const saved_item = await this.save()({
                             ...item,
                             id: '',
                         });
-                        this.status[index] = 'done';
+                        this.setStatus(index, 'done');
                         success_count++;
                         this.completed_count.set(success_count);
                         results[index] = saved_item;
                     } catch (err) {
                         const message = this.formatError(err);
-                        this.status[index] = message;
+                        this.setStatus(index, message);
                         console.error(`Failed to save item ${index}:`, err);
                         notifyError(message);
                         fail_count++;
@@ -191,6 +191,10 @@ export class StatusListComponent implements OnChanges {
         } catch (e) {
             console.error(e);
         }
+    }
+
+    private setStatus(index: number, value: string): void {
+        this.status.update((status) => ({ ...status, [index]: value }));
     }
 
     private formatError(err: unknown): string {

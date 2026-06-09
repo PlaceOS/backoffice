@@ -3,18 +3,20 @@ import { CdkPortal, PortalModule } from '@angular/cdk/portal';
 import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import {
     Component,
+    computed,
     ElementRef,
     HostListener,
+    inject,
     Injector,
+    input,
     OnChanges,
     OnDestroy,
+    signal,
     SimpleChanges,
     TemplateRef,
     Type,
-    computed,
-    inject,
-    input,
     viewChild,
+    WritableSignal,
 } from '@angular/core';
 import { AsyncHandler } from '../common/async-handler.class';
 import { SanitizePipe } from './pipes/sanitise.pipe';
@@ -35,7 +37,7 @@ export class CustomTooltipData<T = unknown> {
 
         <ng-template cdkPortal>
             <div custom-tooltip class="relative print:hidden">
-                @switch (type) {
+                @switch (type()) {
                     @case ('component') {
                         <ng-container
                             *ngComponentOutlet="component(); injector: injector"
@@ -80,7 +82,8 @@ export class CustomTooltipComponent<T = unknown>
     /** Delay time in milliseconds to close after hover */
     public readonly delay = input(0);
     /** Type of content to render */
-    public type: 'template' | 'component' | 'html' = 'template';
+    public readonly type: WritableSignal<'template' | 'component' | 'html'> =
+        signal('template');
     public readonly template = computed(
         () => this.content() as TemplateRef<unknown>,
     );
@@ -175,12 +178,13 @@ export class CustomTooltipComponent<T = unknown>
 
     private _updateType() {
         const content = this.content();
-        this.type =
+        this.type.set(
             typeof content === 'string'
                 ? 'html'
                 : content instanceof TemplateRef
                   ? 'template'
-                  : 'component';
+                  : 'component',
+        );
     }
 
     private _updateInjector() {

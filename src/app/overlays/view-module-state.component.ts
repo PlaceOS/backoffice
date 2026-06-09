@@ -72,7 +72,7 @@ export interface ModuleStateModalData {
                             {{ module?.custom_name || module?.name }}
                         </div>
                         <div class="text-xs opacity-30">
-                            {{ device_classes[module?.id] }}
+                            {{ device_classes()[module?.id] }}
                         </div>
                     </div>
                     <div class="w-px flex-1"></div>
@@ -90,7 +90,7 @@ export interface ModuleStateModalData {
                 <div class="flex min-h-0 flex-1">
                     <settings-form-field
                         class="min-h-0 flex-1"
-                        [ngModel]="state"
+                        [ngModel]="state()"
                         [readonly]="true"
                         [fill]="true"
                     />
@@ -127,13 +127,13 @@ export class ViewModuleStateModalComponent
     private _data = inject<ModuleStateModalData>(MAT_DIALOG_DATA);
 
     /** Current state of the selected module */
-    public state: string;
+    public readonly state = signal<string | null>(null);
     /** Whether the module state is being loaded */
     public loading = signal(false);
     /** Whether the modal is closing */
     public closing = signal(false);
     /** Mapping of devices to the module bindings */
-    public device_classes: HashMap<string> = {};
+    public readonly device_classes = signal<HashMap<string>>({});
 
     /** System of the selected module */
     public get system(): PlaceSystem {
@@ -165,7 +165,10 @@ export class ViewModuleStateModalComponent
             if (!counter[name]) {
                 counter[name] = 0;
             }
-            this.device_classes[device.id] = `${name}_${++counter[name]}`;
+            this.device_classes.update((classes) => ({
+                ...classes,
+                [device.id]: `${name}_${++counter[name]}`,
+            }));
         }
     }
 
@@ -174,7 +177,7 @@ export class ViewModuleStateModalComponent
         if (!this.system || !this.module) {
             return;
         }
-        const class_name = this.device_classes[this.module.id];
+        const class_name = this.device_classes()[this.module.id];
         if (!class_name) {
             return;
         }
@@ -194,7 +197,7 @@ export class ViewModuleStateModalComponent
             Object.keys(pre_state).forEach((key) => {
                 pre_state[key] = JSON.parse(pre_state[key]);
             });
-            this.state = JSON.stringify(pre_state, undefined, 4);
+            this.state.set(JSON.stringify(pre_state, undefined, 4));
         } catch (err) {
             notifyError(JSON.stringify(err.response || err.message || err));
         } finally {

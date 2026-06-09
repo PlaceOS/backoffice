@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
@@ -20,7 +20,7 @@ export interface ViewResponseModalData {
             <div class="flex min-h-full flex-1 flex-col">
                 <settings-form-field
                     class="min-h-0 flex-1"
-                    [ngModel]="content_string"
+                    [ngModel]="content_string()"
                     [readonly]="true"
                     [fill]="true"
                 />
@@ -39,7 +39,7 @@ export class ViewResponseModalComponent {
     private _data = inject<ViewResponseModalData>(MAT_DIALOG_DATA);
 
     public readonly title = this._data.title || '';
-    public content_string: string;
+    public readonly content_string = signal<string | null>(null);
 
     constructor() {
         this.updateContentString();
@@ -47,20 +47,20 @@ export class ViewResponseModalComponent {
 
     public updateContentString() {
         if (typeof this._data.content === 'object') {
-            this.content_string = JSON.stringify(
-                this._data.content,
-                undefined,
-                4,
+            this.content_string.set(
+                JSON.stringify(this._data.content, undefined, 4),
             );
         } else {
             try {
-                this.content_string = JSON.stringify(
-                    JSON.parse(this._data.content as string),
-                    undefined,
-                    4,
+                this.content_string.set(
+                    JSON.stringify(
+                        JSON.parse(this._data.content as string),
+                        undefined,
+                        4,
+                    ),
                 );
             } catch {
-                this.content_string = this._data.content as string;
+                this.content_string.set(this._data.content as string);
             }
         }
     }

@@ -18,7 +18,7 @@ import { TranslatePipe } from '../translate.pipe';
     template: `
         @if (fields() && fields().length) {
             <div class="object-list">
-                @if (active_list && active_list.length) {
+                @if (active_list().length) {
                     <div class="header row h-6 text-sm">
                         @for (field of fields(); track field) {
                             <div class="field capitalize" [attr.name]="field">
@@ -28,7 +28,7 @@ import { TranslatePipe } from '../translate.pipe';
                         <div class="w-10"></div>
                     </div>
                 }
-                @for (item of active_list; track item) {
+                @for (item of active_list(); track item) {
                     <div class="row">
                         @for (field of fields(); track field) {
                             <div class="field" [attr.name]="field">
@@ -39,7 +39,9 @@ import { TranslatePipe } from '../translate.pipe';
                                         [placeholder]="field"
                                         [disabled]="disabled()"
                                         [(ngModel)]="item[field]"
-                                        (ngModelChange)="setValue(active_list)"
+                                        (ngModelChange)="
+                                            setValue(active_list())
+                                        "
                                     />
                                 </mat-form-field>
                             </div>
@@ -138,7 +140,7 @@ export class ObjectListFieldComponent
     public readonly fields = input<string[]>(undefined);
     public readonly disabled = signal(false);
     /** List of objects */
-    public active_list: HashMap[] = [];
+    public readonly active_list = signal<HashMap[]>([]);
 
     /** Form control on change handler */
     private _onChange: (_: HashMap[]) => void;
@@ -148,11 +150,8 @@ export class ObjectListFieldComponent
     /** Add a new item the the active list */
     public addRow() {
         if (this.disabled()) return;
-        if (!this.active_list) {
-            this.active_list = [];
-        }
-        this.active_list.push({});
-        this.setValue(this.active_list);
+        this.active_list.update((list) => [...list, {}]);
+        this.setValue(this.active_list());
     }
 
     /**
@@ -161,11 +160,13 @@ export class ObjectListFieldComponent
      */
     public removeRow(item: HashMap) {
         if (this.disabled()) return;
-        const index = this.active_list.indexOf(item);
+        const index = this.active_list().indexOf(item);
         if (index >= 0) {
-            this.active_list.splice(index, 1);
+            this.active_list.update((list) =>
+                list.filter((_, item_index) => item_index !== index),
+            );
         }
-        this.setValue(this.active_list);
+        this.setValue(this.active_list());
     }
 
     /**
@@ -185,7 +186,7 @@ export class ObjectListFieldComponent
      * @param value The new value for the component
      */
     public writeValue(value: HashMap[]) {
-        this.active_list = value || [];
+        this.active_list.set(value || []);
     }
 
     /**

@@ -8,6 +8,7 @@ import {
     OnInit,
     signal,
     SimpleChanges,
+    WritableSignal,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
@@ -36,7 +37,7 @@ interface DateItem {
         <div class="p-2">
             <div class="flex items-center justify-between">
                 <div class="pr-2 pl-1.5 font-medium">
-                    {{ date_list[6]?.id || date | date: 'LLLL YYYY' }}
+                    {{ date_list()[6]?.id || date() | date: 'LLLL YYYY' }}
                 </div>
                 <div class="flex items-center">
                     <button
@@ -45,7 +46,8 @@ interface DateItem {
                         name="schedule-next-month"
                         [disabled]="
                             disabled() ||
-                            $safeNavigationMigration(date_list[0]?.id) < from()
+                            $safeNavigationMigration(date_list()[0]?.id) <
+                                from()
                         "
                         (click)="changeMonth(-1)"
                     >
@@ -57,7 +59,7 @@ interface DateItem {
                         name="schedule-previous-month"
                         [disabled]="
                             disabled() ||
-                            $safeNavigationMigration(date_list[34]?.id) > to()
+                            $safeNavigationMigration(date_list()[34]?.id) > to()
                         "
                         (click)="changeMonth(1)"
                     >
@@ -68,24 +70,26 @@ interface DateItem {
             <div
                 class="border-base-200 mb-2 flex items-center border-b pb-2 text-sm"
             >
-                @for (day of date_list | slice: 0 : 7; track day) {
+                @for (day of date_list() | slice: 0 : 7; track day) {
                     <div class="flex-1 text-center opacity-60">
                         {{ $safeNavigationMigration(day?.id) | date: 'EE' }}
                     </div>
                 }
             </div>
             <div class="flex flex-wrap items-center justify-between">
-                @for (day of date_list; track day) {
+                @for (day of date_list(); track day) {
                     <button
                         icon
                         name="schedule-set-date"
                         class="relative my-0.5 h-9 w-9 min-w-[14%] overflow-visible"
-                        [class.hover:bg-base-100]="day.id !== active_date"
+                        [class.hover:bg-base-100]="day.id !== active_date()"
                         [class.text-base-300!]="!day.is_month"
-                        [class.text-secondary-content]="day.id === active_date"
-                        [class.text-base-content]="day.id !== active_date"
-                        [class.bg-secondary]="day.id === active_date"
-                        [class.font-normal]="day.id !== active_date"
+                        [class.text-secondary-content]="
+                            day.id === active_date()
+                        "
+                        [class.text-base-content]="day.id !== active_date()"
+                        [class.bg-secondary]="day.id === active_date()"
+                        [class.font-normal]="day.id !== active_date()"
                         (click)="setValue(day.id)"
                         [disabled]="
                             disabled() || day.id < from() || day.id > to()
@@ -128,10 +132,12 @@ export class DateCalendarComponent
     public readonly offset_weekday = input(0);
     public readonly disabled = signal(false);
     public readonly today = startOfDay(Date.now()).valueOf();
-    public date: number = Date.now();
-    public active_date: number = startOfDay(Date.now()).valueOf();
+    public readonly date: WritableSignal<number> = signal(Date.now());
+    public readonly active_date: WritableSignal<number> = signal(
+        startOfDay(Date.now()).valueOf(),
+    );
     public offset = 0;
-    public date_list: DateItem[] = [];
+    public readonly date_list: WritableSignal<DateItem[]> = signal([]);
 
     /** Form control on change handler */
     private _onChange: (_: number) => void;
@@ -152,19 +158,21 @@ export class DateCalendarComponent
         if (this.disabled()) return;
         if (new_value < this.from() || new_value >= this.to()) return;
         const date = new Date(new_value);
-        this.date = set(this.date, {
-            date: date.getDate(),
-            month: date.getMonth(),
-            year: date.getFullYear(),
-        }).valueOf();
-        this.active_date = startOfDay(this.date).valueOf();
+        this.date.set(
+            set(this.date(), {
+                date: date.getDate(),
+                month: date.getMonth(),
+                year: date.getFullYear(),
+            }).valueOf(),
+        );
+        this.active_date.set(startOfDay(this.date()).valueOf());
         if (this._onChange) this._onChange(new_value);
         this._onTouch?.(new_value);
     }
 
     public writeValue(value: number) {
-        this.date = value;
-        this.active_date = startOfDay(value).valueOf();
+        this.date.set(value);
+        this.active_date.set(startOfDay(value).valueOf());
         this.offset = 0;
         this.generateDates();
     }
@@ -187,7 +195,7 @@ export class DateCalendarComponent
     public generateDates() {
         const offset =
             this._settings.get('app.week_start') || this.offset_weekday();
-        const date = addMonths(this.date, this.offset);
+        const date = addMonths(this.date(), this.offset);
         let start = startOfWeek(startOfMonth(date), {
             weekStartsOn: offset as 0 | 1 | 2 | 3 | 4 | 5 | 6,
         });
@@ -201,6 +209,6 @@ export class DateCalendarComponent
             });
             start = addDays(start, 1);
         }
-        this.date_list = list;
+        this.date_list.set(list);
     }
 }

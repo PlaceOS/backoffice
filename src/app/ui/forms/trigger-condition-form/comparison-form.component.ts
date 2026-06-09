@@ -5,6 +5,7 @@ import {
     SimpleChanges,
     WritableSignal,
     input,
+    signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
@@ -56,7 +57,7 @@ import { TranslatePipe } from '../../translate.pipe';
                                 "
                             >
                                 @for (
-                                    operation of compare_types;
+                                    operation of compare_types();
                                     track operation
                                 ) {
                                     <mat-option [value]="operation.id">
@@ -84,7 +85,7 @@ import { TranslatePipe } from '../../translate.pipe';
                                 "
                                 [ngModelOptions]="{ standalone: true }"
                             >
-                                @for (type of right_var_type; track type) {
+                                @for (type of right_var_type(); track type) {
                                     <mat-option [value]="type.id">
                                         {{ type.name }}
                                     </mat-option>
@@ -93,7 +94,7 @@ import { TranslatePipe } from '../../translate.pipe';
                         </mat-form-field>
                     </div>
                 }
-                @if (rhs_type === 'constant') {
+                @if (rhs_type() === 'constant') {
                     <div class="field">
                         <label for="constant" hidden>{{
                             'TRIGGERS.COMPARE_TO' | translate
@@ -145,7 +146,7 @@ import { TranslatePipe } from '../../translate.pipe';
                                     'TRIGGERS.COMPARE_MODULE_SELECT' | translate
                                 "
                             >
-                                @for (mod of module_list; track mod) {
+                                @for (mod of module_list(); track mod) {
                                     <mat-option [value]="mod.name">
                                         {{ mod.name }}
                                     </mat-option>
@@ -234,13 +235,14 @@ export class TriggerConditionComparisonFormComponent
     /** List of modules associated with the template system */
     public modules: PlaceModule[] = [];
     /** List of status variables associated with the selected module */
-    public module_list: Identity[] = [];
+    public readonly module_list = signal<Identity[]>([]);
     /** List of status variables associated with the selected module */
     public left_status_variables: Identity[] = [];
     /** List of status variables associated with the selected module */
     public right_status_variables: Identity[] = [];
     /** Type of value to compare the left hand side to */
-    public rhs_type: 'constant' | 'status_var' = 'constant';
+    public readonly rhs_type: WritableSignal<'constant' | 'status_var'> =
+        signal('constant');
     /** Type of value to compare the left hand side to */
     public rhs_value: string;
     /** Status variable details for the left side of the comparison */
@@ -253,10 +255,10 @@ export class TriggerConditionComparisonFormComponent
     };
 
     /** Types of trigger conditions */
-    public right_var_type: Identity[] = [];
+    public readonly right_var_type: WritableSignal<Identity[]> = signal([]);
 
     /** Allowed comparison operators */
-    public compare_types: Identity[] = [];
+    public readonly compare_types: WritableSignal<Identity[]> = signal([]);
 
     public get left_keys(): string {
         return this.left_side?.keys?.join(',') || '';
@@ -266,11 +268,11 @@ export class TriggerConditionComparisonFormComponent
     }
 
     public ngOnInit() {
-        this.right_var_type = [
+        this.right_var_type.set([
             { id: 'constant', name: i18n('TRIGGERS.COMPARE_CONSTANT') },
             { id: 'status_var', name: i18n('TRIGGERS.COMPARE_VARIABLE') },
-        ];
-        this.compare_types = [
+        ]);
+        this.compare_types.set([
             {
                 id: TriggerConditionOperator.EQ,
                 name: i18n('TRIGGERS.COMPARE_OP_EQUAL'),
@@ -307,7 +309,7 @@ export class TriggerConditionComparisonFormComponent
                 id: TriggerConditionOperator.XOR,
                 name: i18n('TRIGGERS.COMPARE_OP_XOR'),
             },
-        ];
+        ]);
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -384,15 +386,17 @@ export class TriggerConditionComparisonFormComponent
         this.modules.sort(
             (a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id),
         );
-        this.module_list = this.modules.map((mod) => {
-            const name = mod.custom_name || mod.name || 'Blank';
-            const index = calculateModuleIndex(this.modules, mod);
-            return {
-                id: mod.id,
-                name: `${name}_${index}`,
-                keys: [],
-            };
-        });
+        this.module_list.set(
+            this.modules.map((mod) => {
+                const name = mod.custom_name || mod.name || 'Blank';
+                const index = calculateModuleIndex(this.modules, mod);
+                return {
+                    id: mod.id,
+                    name: `${name}_${index}`,
+                    keys: [],
+                };
+            }),
+        );
         this.addExistingModules();
     }
 
@@ -404,12 +408,15 @@ export class TriggerConditionComparisonFormComponent
         const model = this.formModel()();
         if (form.left && model.left) {
             const module = (model.left as TriggerStatusVariable).mod;
-            if (!this.module_list.find((mod) => mod.name === module)) {
-                this.module_list.unshift({
-                    id: 'old_left_value',
-                    name: module,
-                    keys: [],
-                });
+            if (!this.module_list().find((mod) => mod.name === module)) {
+                this.module_list.update((list) => [
+                    {
+                        id: 'old_left_value',
+                        name: module,
+                        keys: [],
+                    },
+                    ...list,
+                ]);
             }
             this.loadSystemStatusVariables(module, 'left');
             this.left_side = model.left as TriggerStatusVariable;
@@ -419,14 +426,17 @@ export class TriggerConditionComparisonFormComponent
             model.right &&
             (model.right as TriggerStatusVariable).mod
         ) {
-            this.rhs_type = 'status_var';
+            this.rhs_type.set('status_var');
             const module = (model.right as TriggerStatusVariable).mod;
-            if (!this.module_list.find((mod) => mod.name === module)) {
-                this.module_list.unshift({
-                    id: 'old_right_value',
-                    name: module,
-                    keys: [],
-                });
+            if (!this.module_list().find((mod) => mod.name === module)) {
+                this.module_list.update((list) => [
+                    {
+                        id: 'old_right_value',
+                        name: module,
+                        keys: [],
+                    },
+                    ...list,
+                ]);
             }
             this.loadSystemStatusVariables(module, 'right');
             this.right_side = model.right as TriggerStatusVariable;

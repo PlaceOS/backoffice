@@ -12,6 +12,7 @@ import {
     signal,
     SimpleChanges,
     viewChild,
+    WritableSignal,
 } from '@angular/core';
 import {
     ControlValueAccessor,
@@ -107,7 +108,7 @@ interface SearchItem {
                     >
                         <p class="text-sm">
                             {{
-                                search_str?.length
+                                search_str()?.length
                                     ? 'No matching ' +
                                       (label() || 'item') +
                                       ' for search string'
@@ -142,7 +143,7 @@ interface SearchItem {
                 <div class="flex h-5 items-center justify-between">
                     <div
                         name
-                        [innerHTML]="item_name[option.id] | sanitize"
+                        [innerHTML]="item_name()[option.id] | sanitize"
                     ></div>
                     @if (option.notes) {
                         <code class="truncate text-xs!">{{
@@ -286,7 +287,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
     }
 
     /** Map of item names to their IDs */
-    public item_name: HashMap<string> = {};
+    public readonly item_name: WritableSignal<HashMap<string>> = signal({});
 
     constructor() {
         super();
@@ -408,6 +409,6 @@ export class ItemSearchFieldComponent<T extends SearchItem>
                     '<Unnamed>';
             }
         }
-        this.item_name = map;
+        this.item_name.set(map);
     }
 }

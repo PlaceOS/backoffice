@@ -51,7 +51,7 @@ export interface SignagePluginModalData {
                     : 'ADMIN.SIGNAGE_PLUGINS_NEW'
                 ) | translate
             "
-            [loading]="loading"
+            [loading]="loading()"
             (save)="submit()"
         >
             @if (form) {
@@ -243,7 +243,7 @@ export class SignagePluginModalComponent
         generateSignagePluginFormModel(this._data.item),
     );
     public readonly form = form(this.formModel, applySignagePluginFormSchema);
-    public loading: string;
+    public readonly loading = signal<string | null>(null);
 
     public readonly embed_plugin = signal<SignagePlugin>(null);
     public readonly schema = signal<Record<string, unknown>>(null);
@@ -332,11 +332,11 @@ export class SignagePluginModalComponent
             return notifyError(i18n('ADMIN.SIGNAGE_PLUGINS_DEFAULTS_INVALID'));
         }
         await submit(this.form, async () => {
-            this.loading = i18n('ADMIN.SIGNAGE_PLUGINS_SAVING');
+            this.loading.set(i18n('ADMIN.SIGNAGE_PLUGINS_SAVING'));
             this._dialog_ref.disableClose = true;
             const payload: Partial<SignagePlugin> = {
                 ...this._data.item,
-                ...this.formModel(),
+                ...this.formModel,
                 params: this.schema() || this._data.item?.params || {},
             };
             try {
@@ -352,7 +352,7 @@ export class SignagePluginModalComponent
                     metadata: { item: result },
                 });
             } catch (err) {
-                this.loading = null;
+                this.loading.set(null);
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_ERROR', {

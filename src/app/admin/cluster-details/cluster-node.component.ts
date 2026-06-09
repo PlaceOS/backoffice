@@ -1,12 +1,14 @@
 import {
     Component,
+    computed,
     ElementRef,
+    input,
     OnChanges,
     OnInit,
+    signal,
     SimpleChanges,
-    computed,
-    input,
     viewChild,
+    WritableSignal,
 } from '@angular/core';
 import { humanReadableByteCount } from '@placeos/ts-client';
 
@@ -43,7 +45,7 @@ export interface PlaceClusterUsageStamp {
             <h4>{{ node()?.hostname }}</h4>
         }
         <div class="border-base-300 mb-2 h-36 w-full rounded-sm border p-2">
-            <div basic-line-graph [lines]="lines" class="h-full w-full"></div>
+            <div basic-line-graph [lines]="lines()" class="h-full w-full"></div>
         </div>
         <div class="memory-utilisation">
             <div class="flex space-x-2">
@@ -87,7 +89,7 @@ export class AdminClusterNodeComponent implements OnChanges, OnInit {
     /** Store for the chart data object */
     // private _chart: Chart;
     /**  */
-    public lines: Point[][] = [];
+    public readonly lines: WritableSignal<Point[][]> = signal([]);
 
     public readonly used_memory = computed(() => {
         return humanReadableByteCount((this.node()?.memory_usage || 0) * 1024)
@@ -122,9 +124,9 @@ export class AdminClusterNodeComponent implements OnChanges, OnInit {
     }
 
     public generateCharts(): void {
-        this.lines = [
+        this.lines.set([
             this.history().map(({ cpu }, idx) => ({ x: idx, y: cpu })),
             this.history().map(({ memory }, idx) => ({ x: idx, y: memory })),
-        ];
+        ]);
     }
 }

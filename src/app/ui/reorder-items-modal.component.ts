@@ -4,7 +4,7 @@ import {
     moveItemInArray,
 } from '@angular/cdk/drag-drop';
 
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { IconComponent } from './icon.component';
@@ -39,7 +39,7 @@ export interface ReorderItemsOptions {
                             {{ i + 1 }}
                         </div>
                         <div class="flex-1 px-2">{{ item.name }}</div>
-                        @if (changed.length) {
+                        @if (changed().length) {
                             <div></div>
                         }
                         <div
@@ -57,8 +57,8 @@ export interface ReorderItemsOptions {
                 btn
                 matRipple
                 class="w-40"
-                [disabled]="!changed.length"
-                [mat-dialog-close]="[changed, order]"
+                [disabled]="!changed().length"
+                [mat-dialog-close]="[changed(), order()]"
             >
                 Apply Order
             </button>
@@ -74,14 +74,19 @@ export class ReorderItemsModalComponent {
         this._data.items,
     );
     public type: string = this._data.type;
-    public changed: string[] = [];
-    public order: string[] = this._data.items.map((i) => i.id);
+    public readonly changed = signal<string[]>([]);
+    public readonly order: WritableSignal<string[]> = signal(
+        this._data.items.map((i) => i.id),
+    );
 
     public drop(event: CdkDragDrop<string[]>) {
         const list = [...this.items()];
         moveItemInArray(list, event.previousIndex, event.currentIndex);
-        this.changed.push(list[event.currentIndex].id);
-        this.order = list.map((i) => i.id);
+        this.changed.update((changed) => [
+            ...changed,
+            list[event.currentIndex].id,
+        ]);
+        this.order.set(list.map((i) => i.id));
         this.items.set(list);
     }
 }

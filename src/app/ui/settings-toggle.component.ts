@@ -1,4 +1,4 @@
-import { Component, forwardRef, input, model } from '@angular/core';
+import { Component, forwardRef, input, model, signal } from '@angular/core';
 import {
     ControlValueAccessor,
     FormsModule,
@@ -15,13 +15,13 @@ import { IconComponent } from './icon.component';
         <button
             matRipple
             class="relative flex min-h-12 flex-1 items-center space-x-2 overflow-hidden rounded-sm border px-2"
-            [class.border-base-300]="!value"
-            [class.border-info]="value"
+            [class.border-base-300]="!value()"
+            [class.border-info]="value()"
             [disabled]="disabled()"
             [class.opacity-30]="disabled()"
-            (click)="setValue(!value)"
+            (click)="setValue(!value())"
         >
-            @if (value) {
+            @if (value()) {
                 <div class="bg-info absolute inset-0 m-0! opacity-10"></div>
             }
             <div class="ml-2 flex flex-1 items-center space-x-2 text-left">
@@ -64,7 +64,7 @@ export class SettingsToggleComponent implements ControlValueAccessor {
     public readonly info = input<string>(undefined);
     public readonly disabled = model(false);
 
-    public value: boolean;
+    public readonly value = signal<boolean | null>(null);
 
     /** Form control on change handler */
     private _onChange: (_: boolean) => void;
@@ -80,7 +80,7 @@ export class SettingsToggleComponent implements ControlValueAccessor {
      */
     public setValue(new_value: boolean): void {
         if (this.disabled()) return;
-        this.value = new_value;
+        this.value.set(new_value);
         /* istanbul ignore else */
         if (this._onChange) this._onChange(new_value);
         this._onTouch?.(new_value);
@@ -92,7 +92,7 @@ export class SettingsToggleComponent implements ControlValueAccessor {
      * @param value The new value for the component
      */
     public writeValue(value: boolean) {
-        this.value = value;
+        this.value.set(value);
     }
 
     public setDisabledState(disabled: boolean) {

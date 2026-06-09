@@ -41,7 +41,7 @@ import {
     template: `
         <fullscreen-modal-shell
             [heading]="heading"
-            [loading]="loading"
+            [loading]="loading()"
             (save)="submit()"
         >
             @if (form) {
@@ -370,7 +370,7 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
         generateBrokerFormModel(this._data.item),
     );
     public readonly form = form(this.formModel, applyBrokerFormSchema);
-    public loading: string;
+    public readonly loading = signal<string | null>(null);
     public heading = i18n(
         `${this._name}_${this._data.item.id ? 'EDIT' : 'NEW'}`,
     );
@@ -406,7 +406,7 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
     public async submit(): Promise<void> {
         await submit(this.form, async () => {
             const item = this._data.item;
-            this.loading = i18n(`${this._name}.SAVING`);
+            this.loading.set(i18n(`${this._name}.SAVING`));
             this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
@@ -424,7 +424,7 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
                       )
                     : addBroker(form_item as unknown as PlaceMQTTBroker)
             ).catch(async (err) => {
-                this.loading = null;
+                this.loading.set(null);
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {

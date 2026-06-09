@@ -154,12 +154,12 @@ import { DriverStateService } from './driver-state.service';
                                                 | translate
                                         }}</span>
                                     </div>
-                                } @else if (systems[row.id]?.length) {
+                                } @else if (systems()[row.id]?.length) {
                                     <div
                                         class="max-h-80 min-w-72 overflow-auto"
                                     >
                                         @for (
-                                            system of systems[row.id] || [];
+                                            system of systems()[row.id] || [];
                                             track system.id
                                         ) {
                                             <a
@@ -267,7 +267,7 @@ export class DriverModulesComponent {
     /** Currently active driver */
     public readonly item = this._service.item;
     /** List of systems associated with modules */
-    public readonly systems: Record<string, PlaceSystem[]> = {};
+    public readonly systems = signal<Record<string, PlaceSystem[]>>({});
     /** List of modules */
     public readonly module_list = toSignal(this._service.modules, {
         initialValue: [] as PlaceModule[],
@@ -286,14 +286,17 @@ export class DriverModulesComponent {
 
     public readonly removeModule = (d) => this._service.removeModule(d);
     public readonly systemCount = (module_id: string) =>
-        this.systems[module_id]?.length || 0;
+        this.systems()[module_id]?.length || 0;
 
     public async loadSystems(mod: PlaceModule) {
         this.loading_systems.set(mod.id);
-        this.systems[mod.id] = [];
+        this.systems.update((state) => ({ ...state, [mod.id]: [] }));
         try {
             const { data: systems } = await querySystems({ module_id: mod.id });
-            this.systems[mod.id] = systems || [];
+            this.systems.update((state) => ({
+                ...state,
+                [mod.id]: systems || [],
+            }));
         } finally {
             this.loading_systems.set('');
         }

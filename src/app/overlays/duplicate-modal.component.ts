@@ -1,4 +1,10 @@
-import { Component, inject, output } from '@angular/core';
+import {
+    Component,
+    inject,
+    output,
+    signal,
+    WritableSignal,
+} from '@angular/core';
 import {
     MAT_DIALOG_DATA,
     MatDialogModule,
@@ -25,7 +31,7 @@ export interface DuplicateModalData {
             <h3 mat-dialog-title>Duplicate Item</h3>
         </header>
         <mat-dialog-content>
-            @if (!loading) {
+            @if (!loading()) {
                 <div class="body">
                     <div class="content">
                         <p>
@@ -46,25 +52,25 @@ export interface DuplicateModalData {
                 </div>
             } @else {
                 <div class="body">
-                    @if (!done) {
+                    @if (!done()) {
                         <div class="info">Creating item duplicates...</div>
                     }
-                    @for (itm of temp; track itm.id; let i = $index) {
+                    @for (itm of temp(); track itm.id; let i = $index) {
                         <div class="item">
                             <div class="name">
                                 {{ item.name }} ({{ i + 1 }})
                             </div>
                             <div class="status">
-                                @if (status[i] !== 'loading') {
-                                    <icon [class]="status[i]">
+                                @if (status()[i] !== 'loading') {
+                                    <icon [class]="status()[i]">
                                         {{
-                                            status[i] === 'done'
+                                            status()[i] === 'done'
                                                 ? 'done'
                                                 : 'close'
                                         }}
                                     </icon>
                                 }
-                                @if (status[i] === 'loading') {
+                                @if (status()[i] === 'loading') {
                                     <mat-spinner diameter="24" />
                                 }
                             </div>
@@ -73,7 +79,7 @@ export interface DuplicateModalData {
                 </div>
             }
         </mat-dialog-content>
-        @if (!loading) {
+        @if (!loading()) {
             <mat-dialog-actions>
                 <button btn class="inverse" mat-dialog-close>Cancel</button>
                 <button
@@ -170,13 +176,13 @@ export class DuplicateModalComponent {
     /** Number of times to duplicate the given item */
     public times = 1;
     /** Number of times to duplicate the given item */
-    public status: HashMap<string> = {};
+    public readonly status = signal<HashMap<string>>({});
     /** Whether request is loading */
-    public loading = false;
+    public readonly loading = signal(false);
     /** Temporary array for generating UI elements */
-    public temp: HashMap[] = [];
+    public readonly temp: WritableSignal<HashMap[]> = signal([]);
     /** Whether duplication has completed */
-    public done = false;
+    public readonly done = signal(false);
 
     /** Item selected to be duplicated */
     public get item() {
@@ -187,27 +193,27 @@ export class DuplicateModalComponent {
      * Create the specified number of duplicate items
      */
     public async duplicate() {
-        this.loading = true;
+        this.loading.set(true);
         const ItemConstructor = this.item.constructor as new (
             data: HashMap,
         ) => HashMap;
         const item = this._data.item;
         const list = [];
-        this.temp = new Array(this.times).fill({});
+        this.temp.set(new Array(this.times).fill({}));
         for (let i = 0; i < this.times; i++) {
             const new_item = new ItemConstructor({
                 ...item,
                 id: '',
                 name: `${item.name} (${i + 1})`,
             });
-            this.status[i] = 'loading';
+            this.setStatus(i, 'loading');
             const saved_item = await this._data.save(new_item).catch((err) => {
-                this.status[i] = `Error: ${err.message || err}`;
-                notifyError(this.status[i]);
+                this.setStatus(i, `Error: ${err.message || err}`);
+                notifyError(this.status()[i]);
             });
             list.push(saved_item);
-            if (this.status[i] === 'loading') {
-                this.status[i] = 'done';
+            if (this.status()[i] === 'loading') {
+                this.setStatus(i, 'done');
             }
         }
         const clean_list = list.filter((item) => !!item);
@@ -215,7 +221,11 @@ export class DuplicateModalComponent {
             reason: 'done',
             metadata: clean_list,
         } as DialogEvent);
-        this.done = true;
+        this.done.set(true);
         setTimeout(() => this._dialog_ref.close(), 5000);
+    }
+
+    private setStatus(index: number, value: string): void {
+        this.status.update((status) => ({ ...status, [index]: value }));
     }
 }

@@ -1,4 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+    Component,
+    inject,
+    OnInit,
+    signal,
+    WritableSignal,
+} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 
 import { DatePipe } from '@angular/common';
@@ -66,7 +72,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             [(ngModel)]="first"
                             placeholder="Select metadata version"
                         >
-                            @for (item of history; track item.updated_at) {
+                            @for (item of history(); track item.updated_at) {
                                 <mat-option
                                     [value]="item"
                                     (click)="select(0, item)"
@@ -98,7 +104,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             [(ngModel)]="second"
                             placeholder="Compare with"
                         >
-                            @for (item of history; track item.updated_at) {
+                            @for (item of history(); track item.updated_at) {
                                 @if (item !== first) {
                                     <mat-option
                                         [value]="item"
@@ -124,18 +130,18 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 }
                             }
                         </mat-select>
-                        @if (second) {
+                        @if (second()) {
                             <mat-hint class="truncate">{{
-                                second.description
+                                second()?.description
                             }}</mat-hint>
                         }
                     </mat-form-field>
                 </div>
                 <div class="relative w-full flex-1 px-4">
-                    @if (first_details || second_details) {
+                    @if (first_details() || second_details()) {
                         <diff-viewer
-                            [modified]="second_details || ''"
-                            [original]="first_details || ''"
+                            [modified]="second_details() || ''"
+                            [original]="first_details() || ''"
                         />
                     }
                     @if (!(first_details && second_details)) {
@@ -172,30 +178,30 @@ export class MetadataHistoryModalComponent implements OnInit {
     public readonly parent_name = this._data.parent_name;
     public readonly name = this._data.name;
 
-    public history: PlaceMetadata[] = [];
+    public readonly history: WritableSignal<PlaceMetadata[]> = signal([]);
 
     public first = null;
-    public second = null;
-    public first_details = '';
-    public second_details = '';
+    public readonly second = signal(null);
+    public readonly first_details = signal('');
+    public readonly second_details = signal('');
 
     public async ngOnInit() {
         const history = await listMetadataHistory(this._data.id, {
             name: this._data.name,
             limit: 5000,
         });
-        this.history = history;
+        this.history.set(history);
     }
 
     public select(idx: 0 | 1, item: PlaceMetadata) {
         if (idx === 0) {
-            this.first_details = JSON.stringify(item.details, undefined, 4);
-            if (this.first === this.second) {
-                this.second = null;
-                this.second_details = '';
+            this.first_details.set(JSON.stringify(item.details, undefined, 4));
+            if (this.first === this.second()) {
+                this.second.set(null);
+                this.second_details.set('');
             }
         } else {
-            this.second_details = JSON.stringify(item.details, undefined, 4);
+            this.second_details.set(JSON.stringify(item.details, undefined, 4));
         }
     }
 }

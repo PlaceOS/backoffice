@@ -4,6 +4,7 @@ import {
     SimpleChanges,
     WritableSignal,
     input,
+    signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
@@ -404,9 +405,13 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
         input<WritableSignal<SAMLSourceFormModel>>(undefined);
 
     /** List of attribute statement pairs */
-    public attribute_statement_mappings: Record<string, unknown>[] = [];
+    public readonly attribute_statement_mappings: WritableSignal<
+        Record<string, unknown>[]
+    > = signal([]);
     /** List of runtime param pairs */
-    public runtime_param_list: Record<string, unknown>[] = [];
+    public readonly runtime_param_list: WritableSignal<
+        Record<string, unknown>[]
+    > = signal([]);
 
     public ngOnChanges(changes: SimpleChanges): void {
         const form = this.form();
@@ -414,17 +419,19 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
             const model = this.formModel()();
             if (form.attribute_statements) {
                 const map = model.attribute_statements || {};
-                this.attribute_statement_mappings = Object.keys(map).map(
-                    (key) => {
+                this.attribute_statement_mappings.set(
+                    Object.keys(map).map((key) => {
                         return { name: key, mappings: map[key].join(',') };
-                    },
+                    }),
                 );
             }
             if (form.idp_sso_target_url_runtime_params) {
                 const map = model.idp_sso_target_url_runtime_params || {};
-                this.runtime_param_list = Object.keys(map).map((key) => {
-                    return { name: key, mapping: map[key] };
-                });
+                this.runtime_param_list.set(
+                    Object.keys(map).map((key) => {
+                        return { name: key, mapping: map[key] };
+                    }),
+                );
             }
         }
     }

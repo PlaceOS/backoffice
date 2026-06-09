@@ -4,6 +4,7 @@ import {
     SimpleChanges,
     WritableSignal,
     input,
+    signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
@@ -316,11 +317,17 @@ export class OauthSourceFormComponent
         { id: 'basic_auth', name: 'Basic Auth' },
     ];
     /** List of info mapping pairs */
-    public info_mapping_list: Record<string, unknown>[] = [];
+    public readonly info_mapping_list: WritableSignal<
+        Record<string, unknown>[]
+    > = signal([]);
     /** List of authorize params pairs */
-    public auth_params_list: Record<string, unknown>[] = [];
+    public readonly auth_params_list: WritableSignal<
+        Record<string, unknown>[]
+    > = signal([]);
     /** List of ensure_matching pairs */
-    public ensure_matching_list: Record<string, unknown>[] = [];
+    public readonly ensure_matching_list: WritableSignal<
+        Record<string, unknown>[]
+    > = signal([]);
 
     public ngOnChanges(changes: SimpleChanges): void {
         const form = this.form();
@@ -328,25 +335,33 @@ export class OauthSourceFormComponent
             const model = this.formModel()();
             if (form.info_mappings) {
                 const map = model.info_mappings || {};
-                this.info_mapping_list = Object.keys(map).map((key) => {
-                    return { PlaceOS: key, Remote: map[key] };
-                });
+                this.info_mapping_list.set(
+                    Object.keys(map).map((key) => {
+                        return { PlaceOS: key, Remote: map[key] };
+                    }),
+                );
             }
             if (form.authorize_params) {
                 const map = model.authorize_params || {};
-                this.auth_params_list = Object.keys(map).map((key) => {
-                    return { Parameter: key, Value: map[key] };
-                });
+                this.auth_params_list.set(
+                    Object.keys(map).map((key) => {
+                        return { Parameter: key, Value: map[key] };
+                    }),
+                );
             }
             if (form.ensure_matching) {
                 const map = model.ensure_matching || {};
-                this.ensure_matching_list = Object.keys(map).map((key) => {
-                    const value = map[key];
-                    return {
-                        Parameter: key,
-                        Value: Array.isArray(value) ? value.join(',') : value,
-                    };
-                });
+                this.ensure_matching_list.set(
+                    Object.keys(map).map((key) => {
+                        const value = map[key];
+                        return {
+                            Parameter: key,
+                            Value: Array.isArray(value)
+                                ? value.join(',')
+                                : value,
+                        };
+                    }),
+                );
             }
         }
     }

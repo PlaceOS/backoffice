@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 
 import { MatRippleModule } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
@@ -25,7 +25,7 @@ import { BackofficeUsersService } from '../users/users.service';
                     <div
                         class="border-base-200 relative z-10 h-full space-y-2 overflow-auto border-r px-2 pt-10 sm:w-56 sm:py-4"
                     >
-                        @for (item of tab_list; track item.id) {
+                        @for (item of tab_list(); track item.id) {
                             <a
                                 btn
                                 matRipple
@@ -95,7 +95,7 @@ export class PlaceComponent extends AsyncHandler implements OnInit {
     private _users = inject(BackofficeUsersService);
     private _debug = inject(PlaceDebugService);
 
-    public tab_list = [];
+    public readonly tab_list = signal([]);
     public open_menu = false;
     public readonly debug_position = this._debug.position;
 
@@ -108,88 +108,90 @@ export class PlaceComponent extends AsyncHandler implements OnInit {
     }
 
     public updateTabList() {
-        this.tab_list = [
-            {
-                id: 'about',
-                name: i18n('ADMIN.TAB_ABOUT'),
-                icon: { value: 'info' },
-            },
-            {
-                id: 'database',
-                name: i18n('ADMIN.TAB_DATABASE'),
-                icon: { value: 'database' },
-            },
-            {
-                id: 'clusters',
-                name: i18n('ADMIN.TAB_CLUSTERS'),
-                icon: { value: 'dns' },
-            },
-            {
-                id: 'edge',
-                name: i18n('ADMIN.TAB_EDGES'),
-                icon: { value: 'network_node' },
-            },
-            {
-                id: 'interfaces',
-                name: i18n('ADMIN.TAB_INTERFACES'),
-                icon: { value: 'web' },
-            },
-            {
-                id: 'brokers',
-                name: i18n('ADMIN.TAB_MQTT_BROKERS'),
-                icon: { value: 'sensors' },
-            },
-            {
-                id: 'staff-api',
-                name: i18n('ADMIN.TAB_TENANT_CONFIG'),
-                icon: { value: 'api' },
-            },
-            {
-                id: 'resource-imports',
-                name: i18n('ADMIN.TAB_RESOURCE_IMPORTS'),
-                icon: { value: 'publish' },
-            },
-            {
-                id: 'extensions',
-                name: i18n('ADMIN.TAB_EXTENSIONS'),
-                icon: { value: 'webhook' },
-            },
-            {
-                id: 'api-keys',
-                name: i18n('ADMIN.TAB_API_KEYS'),
-                icon: { value: 'key' },
-            },
-            {
-                id: 'schemas',
-                name: i18n('ADMIN.TAB_CUSTOM_SCHEMAS'),
-                icon: { value: 'list' },
-            },
-            {
-                id: 'upload-storage',
-                name: i18n('ADMIN.TAB_UPLOAD_STORAGE'),
-                icon: { value: 'cloud_upload' },
-            },
-            {
-                id: 'upload-library',
-                name: i18n('ADMIN.TAB_UPLOADS_LIBRARY'),
-                icon: { value: 'photo_album' },
-            },
-            {
-                id: 'signage-plugins',
-                name: i18n('ADMIN.TAB_SIGNAGE_PLUGINS'),
-                icon: { value: 'display_settings' },
-            },
-            {
-                id: 'build-jobs',
-                name: i18n('ADMIN.TAB_BUILD_JOBS'),
-                icon: { value: 'laps' },
-            },
-            // {
-            //     id: 'mailing-list',
-            //     name: 'Email Templates',
-            //     icon: { value: 'email' },
-            // },
-        ].concat(this.extensions);
+        this.tab_list.set(
+            [
+                {
+                    id: 'about',
+                    name: i18n('ADMIN.TAB_ABOUT'),
+                    icon: { value: 'info' },
+                },
+                {
+                    id: 'database',
+                    name: i18n('ADMIN.TAB_DATABASE'),
+                    icon: { value: 'database' },
+                },
+                {
+                    id: 'clusters',
+                    name: i18n('ADMIN.TAB_CLUSTERS'),
+                    icon: { value: 'dns' },
+                },
+                {
+                    id: 'edge',
+                    name: i18n('ADMIN.TAB_EDGES'),
+                    icon: { value: 'network_node' },
+                },
+                {
+                    id: 'interfaces',
+                    name: i18n('ADMIN.TAB_INTERFACES'),
+                    icon: { value: 'web' },
+                },
+                {
+                    id: 'brokers',
+                    name: i18n('ADMIN.TAB_MQTT_BROKERS'),
+                    icon: { value: 'sensors' },
+                },
+                {
+                    id: 'staff-api',
+                    name: i18n('ADMIN.TAB_TENANT_CONFIG'),
+                    icon: { value: 'api' },
+                },
+                {
+                    id: 'resource-imports',
+                    name: i18n('ADMIN.TAB_RESOURCE_IMPORTS'),
+                    icon: { value: 'publish' },
+                },
+                {
+                    id: 'extensions',
+                    name: i18n('ADMIN.TAB_EXTENSIONS'),
+                    icon: { value: 'webhook' },
+                },
+                {
+                    id: 'api-keys',
+                    name: i18n('ADMIN.TAB_API_KEYS'),
+                    icon: { value: 'key' },
+                },
+                {
+                    id: 'schemas',
+                    name: i18n('ADMIN.TAB_CUSTOM_SCHEMAS'),
+                    icon: { value: 'list' },
+                },
+                {
+                    id: 'upload-storage',
+                    name: i18n('ADMIN.TAB_UPLOAD_STORAGE'),
+                    icon: { value: 'cloud_upload' },
+                },
+                {
+                    id: 'upload-library',
+                    name: i18n('ADMIN.TAB_UPLOADS_LIBRARY'),
+                    icon: { value: 'photo_album' },
+                },
+                {
+                    id: 'signage-plugins',
+                    name: i18n('ADMIN.TAB_SIGNAGE_PLUGINS'),
+                    icon: { value: 'display_settings' },
+                },
+                {
+                    id: 'build-jobs',
+                    name: i18n('ADMIN.TAB_BUILD_JOBS'),
+                    icon: { value: 'laps' },
+                },
+                // {
+                //     id: 'mailing-list',
+                //     name: 'Email Templates',
+                //     icon: { value: 'email' },
+                // },
+            ].concat(this.extensions),
+        );
     }
 
     public async ngOnInit() {

@@ -6,6 +6,7 @@ import {
     Output,
     signal,
     viewChild,
+    WritableSignal,
 } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
@@ -69,7 +70,7 @@ export interface TriggerActionModalData {
                             </label>
                             <mat-form-field appearance="outline">
                                 <mat-select [formField]="form.action_type">
-                                    @for (type of action_types; track type) {
+                                    @for (type of action_types(); track type) {
                                         <mat-option [value]="type.id">
                                             {{ type.name }}
                                         </mat-option>
@@ -235,7 +236,7 @@ export class TriggerActionModalComponent
     private readonly chip_list = viewChild<MatChipGrid>('chipList');
 
     /** List of available trigger action types */
-    public action_types: Identity[] = [];
+    public readonly action_types: WritableSignal<Identity[]> = signal([]);
 
     /** Whether the triggers is new or not */
     public get is_new(): boolean {
@@ -257,10 +258,10 @@ export class TriggerActionModalComponent
     }
 
     public ngOnInit() {
-        this.action_types = [
+        this.action_types.set([
             { id: 'function', name: i18n('TRIGGERS.ACTION_EXECUTE') },
             { id: 'emails', name: i18n('TRIGGERS.ACTION_EMAIL') },
-        ];
+        ]);
     }
 
     /**

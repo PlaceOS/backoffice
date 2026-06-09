@@ -1,11 +1,13 @@
 import {
     Component,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
     input,
     model,
+    OnChanges,
+    OnInit,
     output,
+    signal,
+    SimpleChanges,
+    WritableSignal,
 } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
@@ -32,7 +34,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                     Source columns
                 </div>
                 <div class="text-lg font-medium">
-                    {{ source_fields.length }}
+                    {{ source_fields().length }}
                 </div>
             </div>
             <div>
@@ -59,11 +61,12 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                     <mat-form-field appearance="outline" class="no-subscript">
                         <mat-select
                             [name]="'' + field.id"
-                            [(ngModel)]="field_mapping[field.id]"
+                            [ngModel]="field_mapping()[field.id]"
+                            (ngModelChange)="setFieldMapping(field.id, $event)"
                             placeholder="Skip field"
                         >
                             <mat-option value="">Skip field</mat-option>
-                            @for (type of source_fields; track type.id) {
+                            @for (type of source_fields(); track type.id) {
                                 <mat-option [value]="type.id">
                                     {{ type.name }}
                                 </mat-option>
@@ -117,17 +120,17 @@ export class MatchFieldsComponent implements OnChanges, OnInit {
     /** Emitter for changes to user selected field mappings */
     public readonly new_mappings = output<Record<string, string>>();
     /** List of fields available to be selected */
-    public source_fields: Identity[] = [];
+    public readonly source_fields: WritableSignal<Identity[]> = signal([]);
     /** Mapping of raw data fields ids to item fields ids */
-    public field_mapping: HashMap<string> = {};
+    public readonly field_mapping = signal<HashMap<string>>({});
 
     public ngOnInit() {
         const mappings = this.mappings();
         if (mappings) {
-            this.field_mapping = {
-                ...this.field_mapping,
+            this.field_mapping.set({
+                ...this.field_mapping(),
                 ...mappings,
-            };
+            });
         }
     }
 
@@ -135,25 +138,27 @@ export class MatchFieldsComponent implements OnChanges, OnInit {
         const mappings = this.mappings();
         const list = this.list();
         if (changes.list && list && list.length) {
-            this.source_fields = Object.keys(list[0]).map((i) => ({
-                id: i,
-                name: i.split('_').join(' '),
-            }));
-            this.source_fields.forEach((field) => {
+            this.source_fields.set(
+                Object.keys(list[0]).map((i) => ({
+                    id: i,
+                    name: i.split('_').join(' '),
+                })),
+            );
+            this.source_fields().forEach((field) => {
                 const field_id = this.normaliseFieldId(field.id);
                 if (this.field_list().find((i) => i.id === field_id)) {
-                    this.field_mapping[field_id] = `${field.id}`;
+                    this.setFieldMapping(field_id, `${field.id}`);
                 }
             });
             if (mappings) {
-                this.field_mapping = {
-                    ...this.field_mapping,
+                this.field_mapping.set({
+                    ...this.field_mapping(),
                     ...mappings,
-                };
+                });
             }
         }
         if (changes.mappings && mappings) {
-            this.field_mapping = { ...this.field_mapping, ...mappings };
+            this.field_mapping.set({ ...this.field_mapping(), ...mappings });
         }
     }
 
@@ -163,13 +168,20 @@ export class MatchFieldsComponent implements OnChanges, OnInit {
             const mapped_item: Record<string, unknown> = {};
             for (const field of this.field_list()) {
                 const id = `${field.id}`;
-                mapped_item[id] = item[this.field_mapping[id]];
+                mapped_item[id] = item[this.field_mapping()[id]];
             }
             return mapped_item;
         });
-        this.mappings.set({ ...this.field_mapping });
+        this.mappings.set({ ...this.field_mapping() });
         this.new_mappings.emit(this.mappings());
         this.mapping_done.emit(mapped_list);
+    }
+
+    public setFieldMapping(field_id: string | number, value: string): void {
+        this.field_mapping.update((mapping) => ({
+            ...mapping,
+            [field_id]: value,
+        }));
     }
 
     public mappedFieldCount(): number {

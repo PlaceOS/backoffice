@@ -39,7 +39,7 @@ import { TranslatePipe } from '../translate.pipe';
             <div
                 image
                 class="hover:bg-base-content/10 :bg-base-100/10 border-base-200 relative flex h-32 w-36 shrink-0 cursor-pointer flex-col items-center justify-center rounded-sm border-2 border-dashed"
-                [style.transform]="'translate(-' + offset + '00%)'"
+                [style.transform]="'translate(-' + offset() + '00%)'"
                 [class.pointer-events-none]="disabled()"
                 [class.opacity-30]="disabled()"
             >
@@ -58,7 +58,7 @@ import { TranslatePipe } from '../translate.pipe';
                 <div
                     image
                     class="border-base-300 bg-base-200 relative h-32 w-36 shrink-0 overflow-hidden rounded-sm border"
-                    [style.transform]="'translate(-' + offset + '00%)'"
+                    [style.transform]="'translate(-' + offset() + '00%)'"
                 >
                     <img
                         auth
@@ -96,7 +96,7 @@ import { TranslatePipe } from '../translate.pipe';
                 <button
                     image
                     class="border-base-content/10 /5 bg-base-200 flex h-32 w-36 shrink-0 items-center justify-center rounded-sm border bg-cover bg-center"
-                    [style.transform]="'translate(-' + offset + '00%)'"
+                    [style.transform]="'translate(-' + offset() + '00%)'"
                     [matTooltip]="item.error"
                     (click)="retryUpload(item)"
                 >

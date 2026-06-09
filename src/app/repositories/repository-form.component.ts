@@ -4,6 +4,7 @@ import {
     Injector,
     OnInit,
     Output,
+    WritableSignal,
     computed,
     effect,
     inject,
@@ -61,8 +62,8 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
     selector: 'repository-form',
     template: `
         <fullscreen-modal-shell
-            [heading]="heading"
-            [loading]="saving"
+            [heading]="heading()"
+            [loading]="saving()"
             (save)="submit()"
         >
             @if (form) {
@@ -103,7 +104,10 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 </label>
                                 <mat-form-field appearance="outline">
                                     <mat-select [formField]="form.repo_type">
-                                        @for (type of repo_types; track type) {
+                                        @for (
+                                            type of repo_types();
+                                            track type
+                                        ) {
                                             <mat-option [value]="type.id">
                                                 {{ type.name }}
                                             </mat-option>
@@ -263,7 +267,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                         >
                                             <div class="flex-1 truncate">
                                                 {{
-                                                    base_commit?.subject ||
+                                                    base_commit()?.subject ||
                                                         'Latest commit'
                                                 }}
                                             </div>
@@ -289,7 +293,9 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                                     formModel().commit_hash ===
                                                     commit.hash
                                                 "
-                                                (click)="base_commit = commit"
+                                                (click)="
+                                                    base_commit.set(commit)
+                                                "
                                             >
                                                 <div
                                                     class="flex w-1/2 flex-1 flex-col truncate leading-tight"
@@ -409,8 +415,8 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     public readonly formModel = signal(
         generateRepositoryFormModel(this._data.item),
     );
-    public saving: string;
-    public heading: string;
+    public readonly saving = signal<string | null>(null);
+    public readonly heading = signal('');
 
     /** List of commits available for repository */
     public commit_list = signal<RepositoryCommit[]>([]);
@@ -421,11 +427,11 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     /** Whether repository's commits are being loaded */
     public readonly loading_commits = signal(false);
     /** Currently selected commit for the repository */
-    public base_commit: RepositoryCommit;
+    public readonly base_commit = signal<RepositoryCommit | null>(null);
     /** Whether to follow the latest branch commits(Auto-update) */
     public readonly follow_latest = signal(false);
     /** List of available types of repositories */
-    public repo_types: Identity[] = [];
+    public readonly repo_types: WritableSignal<Identity[]> = signal([]);
     public readonly show_password = signal(false);
     public date_pipe = new DateFromPipe();
     public readonly is_editing = signal(false);
@@ -457,14 +463,14 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     public ngOnInit(): void {
         const item = this._data.item;
         const edit = !!item.id;
-        this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
-        this.repo_types = [
+        this.heading.set(i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`));
+        this.repo_types.set([
             { id: PlaceRepositoryType.Driver, name: i18n('REPOS.TYPE_DRIVER') },
             {
                 id: PlaceRepositoryType.Interface,
                 name: i18n('REPOS.TYPE_INTERFACE'),
             },
-        ];
+        ]);
         this.follow_latest.set(this.formModel().commit_hash === 'HEAD');
         this.is_editing.set(!!this.formModel().id);
         this._setupBranchAndCommitStreams();
@@ -477,7 +483,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     public async submit(): Promise<void> {
         await submit(this.form, async () => {
             const item = this._data.item;
-            this.saving = i18n(`${this._name}.SAVING`);
+            this.saving.set(i18n(`${this._name}.SAVING`));
             this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_value = { ...this.formModel() };
@@ -507,7 +513,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
                 this._dialog_ref.close();
             } catch (err) {
-                this.saving = null;
+                this.saving.set(null);
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
@@ -657,10 +663,11 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
                 ...list.map((commit) => this._normaliseCommit(commit)),
             ];
             this.commit_list.set(commit_list);
-            this.base_commit =
+            this.base_commit.set(
                 commit_list.find(
                     (commit) => commit.hash === this.formModel().commit_hash,
-                ) || commit_list[0];
+                ) || commit_list[0],
+            );
         } finally {
             this.loading_commits.set(false);
         }
@@ -681,7 +688,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
             encryption_level: EncryptionLevel.Support,
         });
         await addSettings(new_settings).catch((err) => {
-            this.saving = null;
+            this.saving.set(null);
             notifyError(
                 `Error saving settings for ${
                     item.name || item.id

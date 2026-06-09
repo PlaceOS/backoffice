@@ -48,8 +48,8 @@ import {
     selector: 'application-form',
     template: `
         <fullscreen-modal-shell
-            [heading]="heading"
-            [loading]="loading"
+            [heading]="heading()"
+            [loading]="loading()"
             (save)="submit()"
         >
             @if (form) {
@@ -237,8 +237,8 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
         generateApplicationFormModel(this._data.item),
     );
     public readonly form = form(this.formModel, applyApplicationFormSchema);
-    public loading: string;
-    public heading: string;
+    public readonly loading = signal<string | null>(null);
+    public readonly heading = signal('');
     public default_redirect_uri: string;
     public readonly client_id = signal('');
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
@@ -258,7 +258,7 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
     public ngOnInit(): void {
         const item = this._data.item;
         const edit = !!item.id;
-        this.heading = i18n(`DOMAINS.APPLICATION_${edit ? 'EDIT' : 'NEW'}`);
+        this.heading.set(i18n(`DOMAINS.APPLICATION_${edit ? 'EDIT' : 'NEW'}`));
         const { redirect_uri } = this.formModel();
         this.default_redirect_uri = redirect_uri || '';
         effect(
@@ -288,7 +288,7 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
     public async submit(): Promise<void> {
         await submit(this.form, async () => {
             const item = this._data.item as unknown as PlaceResource;
-            this.loading = i18n(`${this._name}_SAVING`);
+            this.loading.set(i18n(`${this._name}_SAVING`));
             this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
@@ -312,7 +312,7 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
                 notifySuccess(i18n(`${this._name}_SAVE_SUCCESS`));
                 this._dialog_ref.close();
             } catch (err) {
-                this.loading = null;
+                this.loading.set(null);
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}_SAVE_ERROR`, {

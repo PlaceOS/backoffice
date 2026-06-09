@@ -74,13 +74,13 @@ const validateType = (type: string, raw_value: unknown) => {
                         </mat-form-field>
                         <div
                             class="w-16 rounded-sm px-2 py-1 text-center text-xs"
-                            [class.bg-success]="required[key]"
-                            [class.text-success-content]="required[key]"
-                            [class.bg-base-200]="!required[key]"
-                            [class.text-base-content]="!required[key]"
+                            [class.bg-success]="required()[key]"
+                            [class.text-success-content]="required()[key]"
+                            [class.bg-base-200]="!required()[key]"
+                            [class.text-base-content]="!required()[key]"
                         >
                             {{
-                                (required[key]
+                                (required()[key]
                                     ? 'COMMON.EXECUTE_REQUIRED'
                                     : 'COMMON.EXECUTE_OPTIONAL'
                                 ) | translate
@@ -111,12 +111,7 @@ const validateType = (type: string, raw_value: unknown) => {
             multi: true,
         },
     ],
-    imports: [
-        TranslatePipe,
-        MatFormFieldModule,
-        MatInputModule,
-        FormsModule,
-    ],
+    imports: [TranslatePipe, MatFormFieldModule, MatInputModule, FormsModule],
 })
 export class FunctionArgumentComponent
     extends AsyncHandler
@@ -130,7 +125,7 @@ export class FunctionArgumentComponent
 
     public value: HashMap<unknown>;
 
-    public required: HashMap<boolean> = {};
+    public readonly required = signal<HashMap<boolean>>({});
     public defaults: HashMap<unknown> = {};
 
     /** Form control on change handler */
@@ -152,7 +147,10 @@ export class FunctionArgumentComponent
                 unknown
             >;
             const optional = 'default' in prop_details;
-            this.required[prop] = !optional;
+            this.required.update((required) => ({
+                ...required,
+                [prop]: !optional,
+            }));
             form_values[prop] = (this.value ? this.value[prop] : '') || '';
             if (optional) {
                 try {
@@ -186,7 +184,7 @@ export class FunctionArgumentComponent
      */
     public writeValue(value: HashMap<unknown>) {
         this.value = value || {};
-        if (!value || !this.form) return;
+        if (!value || !this.form()) return;
         this.form.set({ ...this.form(), ...value });
     }
 

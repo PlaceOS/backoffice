@@ -60,8 +60,8 @@ import {
     selector: 'driver-form',
     template: `
         <fullscreen-modal-shell
-            [heading]="heading"
-            [loading]="saving"
+            [heading]="heading()"
+            [loading]="saving()"
             (save)="submit()"
         >
             @if (!is_editing()) {
@@ -273,8 +273,8 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         generateDriverFormModel(this._data.item),
     );
     public readonly form = form(this.formModel, applyDriverFormSchema);
-    public saving: string;
-    public heading: string;
+    public readonly saving = signal<string | null>(null);
+    public readonly heading = signal('');
 
     public readonly is_editing = computed(() => !!this.formModel().id);
     public readonly loading = signal('');
@@ -361,7 +361,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
     public ngOnInit(): void {
         const item = this._data.item;
         const edit = !!item.id;
-        this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
+        this.heading.set(i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`));
         this._loadDetailsFromForm();
         this.subscription(
             'save_item_key',
@@ -443,7 +443,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
     public async submit(): Promise<void> {
         await submit(this.form, async () => {
             const item = this._data.item;
-            this.saving = i18n(`${this._name}.SAVING`);
+            this.saving.set(i18n(`${this._name}.SAVING`));
             this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_value = { ...this.formModel() };
@@ -477,7 +477,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
                 }
                 this._dialog_ref.close();
             } catch (err) {
-                this.saving = null;
+                this.saving.set(null);
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
@@ -569,7 +569,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
             encryption_level: EncryptionLevel.Support,
         });
         await addSettings(new_settings).catch((err) => {
-            this.saving = null;
+            this.saving.set(null);
             notifyError(
                 `Error saving settings for ${
                     item.name || item.id

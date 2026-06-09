@@ -14,7 +14,7 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
             heading="Edit Tenant Booking Limits
         "
             [loading]="
-                loading ? 'Saving booking limits for Staff API tenant...' : ''
+                loading() ? 'Saving booking limits for Staff API tenant...' : ''
             "
             (save)="save()"
         >
@@ -47,7 +47,7 @@ export class BookingLimitsModalComponent {
     });
     public readonly form = form(this.formModel);
 
-    public loading = false;
+    public readonly loading = signal(false);
 
     constructor() {
         const limits = this.tenant?.booking_limits || {};
@@ -62,7 +62,7 @@ export class BookingLimitsModalComponent {
     public async save() {
         await submit(this.form, async () => {
             this._dialog_ref.disableClose = true;
-            this.loading = true;
+            this.loading.set(true);
             const limits = this.formModel().booking_limits || [];
             const booking_limits = {};
             for (const { type, amount } of limits) {
@@ -73,7 +73,7 @@ export class BookingLimitsModalComponent {
                 booking_limits,
             );
             const resp = await call.catch(() => null);
-            this.loading = false;
+            this.loading.set(false);
             this._dialog_ref.disableClose = false;
             if (!resp) return notifyError('Error adding new tenant.');
             notifySuccess('Successfully added new tenant.');

@@ -23,7 +23,7 @@ import { IconComponent } from './icon.component';
                 matRipple
                 type="button"
                 class="border-secondary text-secondary z-10 h-12 w-12 rounded-l rounded-r-none border"
-                [disabled]="disabled() || !value || value === min()"
+                [disabled]="disabled() || !value() || value() === min()"
                 (click)="remove()"
             >
                 <icon>remove</icon>
@@ -34,7 +34,10 @@ import { IconComponent } from './icon.component';
             >
                 @if (!focused) {
                     <span>
-                        {{ (render_fn() ? render_fn()(value) : value) || '0' }}
+                        {{
+                            (render_fn() ? render_fn()(value()) : value()) ||
+                                '0'
+                        }}
                     </span>
                 }
                 <input
@@ -43,7 +46,7 @@ import { IconComponent } from './icon.component';
                     [disabled]="disabled()"
                     [(ngModel)]="value"
                     (focus)="focused = true"
-                    (blur)="setValue(+value); focused = false"
+                    (blur)="setValue(+value()); focused = false"
                     limitInput
                 />
             </div>
@@ -53,7 +56,7 @@ import { IconComponent } from './icon.component';
                 matRipple
                 type="button"
                 class="border-secondary text-secondary z-10 h-12 w-12 rounded-l-none rounded-r border"
-                [disabled]="disabled() || value === max()"
+                [disabled]="disabled() || value() === max()"
                 (click)="add()"
             >
                 <icon>add</icon>
@@ -82,7 +85,7 @@ export class CounterComponent implements ControlValueAccessor {
     public readonly render_fn = input<(v: number) => string>(undefined);
     public readonly disabled = signal(false);
     /** Current value of the counter */
-    public value: number;
+    public readonly value = signal<number | null>(null);
     /** Whether shift key is being held by the user */
     public shift_key: boolean;
     /** Whether control key is being held by the user */
@@ -111,37 +114,37 @@ export class CounterComponent implements ControlValueAccessor {
      */
     public add() {
         if (this.disabled()) return;
-        if (!this.value) {
-            this.value = this.min() || 0;
+        if (!this.value()) {
+            this.value.set(this.min() || 0);
         }
         const step = this.ctrl_key
             ? 100 * this.step()
             : this.shift_key
               ? 10 * this.step()
               : this.step() || 1;
-        this.value += step;
-        if (this.value > this.max()) {
-            this.value = this.max() || 10;
+        this.value.set(this.value() + step);
+        if (this.value() > this.max()) {
+            this.value.set(this.max() || 10);
         }
-        this.setValue(this.value);
+        this.setValue(this.value());
     }
 
     /** Remove the `step` from the current value */
     public remove() {
         if (this.disabled()) return;
-        if (!this.value) {
-            this.value = this.min() || 0;
+        if (!this.value()) {
+            this.value.set(this.min() || 0);
         }
         const step = this.ctrl_key
             ? 100 * this.step()
             : this.shift_key
               ? 10 * this.step()
               : this.step() || 1;
-        this.value -= step;
-        if (this.value < this.min()) {
-            this.value = this.min() || 0;
+        this.value.set(this.value() - step);
+        if (this.value() < this.min()) {
+            this.value.set(this.min() || 0);
         }
-        this.setValue(this.value);
+        this.setValue(this.value());
     }
 
     /**
@@ -156,7 +159,7 @@ export class CounterComponent implements ControlValueAccessor {
             new_value =
                 Math.round(new_value * (1 / this.step())) / (1 / this.step());
         }
-        this.value = new_value;
+        this.value.set(new_value);
         /* istanbul ignore else */
         if (this._onChange) {
             this._onChange(new_value);
@@ -169,7 +172,7 @@ export class CounterComponent implements ControlValueAccessor {
      * @param value The new value for the component
      */
     public writeValue(value: number) {
-        this.value = value;
+        this.value.set(value);
     }
 
     /* istanbul ignore next */

@@ -57,7 +57,7 @@ import { TranslatePipe } from './translate.pipe';
                 <icon class="text-2xl">schedule</icon>
                 {{ 'COMMON.UPLOAD_HISTORY' | translate }}
             </button>
-            @if (languages.length > 1) {
+            @if (languages().length > 1) {
                 <button matRipple type="button" [matMenuTriggerFor]="lang_menu">
                     <icon class="text-2xl">language</icon>
                     <div class="flex-1 text-left">
@@ -71,7 +71,7 @@ import { TranslatePipe } from './translate.pipe';
                 </button>
             }
             <mat-menu #lang_menu="matMenu" xPosition="after" yPosition="above">
-                @for (language of languages; track language) {
+                @for (language of languages(); track language) {
                     <button
                         mat-menu-item
                         class="w-60"
@@ -154,11 +154,11 @@ export class UserMenuTooltipComponent implements OnInit {
     }
 
     public lang = 'en';
-    public languages = [];
+    public readonly languages = signal([]);
 
     public get active_lang() {
         return (
-            this.languages.find((_) => _.id === this.lang) || {
+            this.languages().find((_) => _.id === this.lang) || {
                 id: 'en',
                 name: 'English',
             }
@@ -178,13 +178,13 @@ export class UserMenuTooltipComponent implements OnInit {
 
     public ngOnInit() {
         this.lang = this._locale.locale;
-        this.languages = [
+        this.languages.set([
             { id: 'en', name: i18n('COMMON.LANG_ENGLISH'), flag: '🇬🇧' },
             { id: 'jp', name: i18n('COMMON.LANG_JAPANESE'), flag: '🇯🇵' },
             { id: 'fr', name: i18n('COMMON.LANG_FRENCH'), flag: '🇫🇷' },
             { id: 'es', name: i18n('COMMON.LANG_SPANISH'), flag: '🇪🇸' },
             { id: 'ar', name: i18n('COMMON.LANG_ARABIC'), flag: '' },
-        ];
+        ]);
         this.github_icon.set(
             this._settings.get('theme') === 'dark'
                 ? 'assets/img/GitHub_dark.svg'
@@ -195,13 +195,13 @@ export class UserMenuTooltipComponent implements OnInit {
     public setLanguage(lang: string) {
         this._locale.setLocale(lang);
         localStorage.setItem('BACKOFFICE.locale', lang);
-        this.languages = [
+        this.languages.set([
             { id: 'en', name: i18n('COMMON.LANG_ENGLISH'), flag: '🇬🇧' },
             { id: 'jp', name: i18n('COMMON.LANG_JAPANESE'), flag: '🇯🇵' },
             { id: 'fr', name: i18n('COMMON.LANG_FRENCH'), flag: '🇫🇷' },
             { id: 'es', name: i18n('COMMON.LANG_SPANISH'), flag: '🇪🇸' },
             { id: 'ar', name: i18n('COMMON.LANG_ARABIC'), flag: '' },
-        ];
+        ]);
         setTimeout(() => location.reload(), 100);
     }
 

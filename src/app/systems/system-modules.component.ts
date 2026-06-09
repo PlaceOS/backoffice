@@ -612,7 +612,7 @@ export class SystemModulesComponent extends AsyncHandler {
     }
 
     public addModule() {
-        if (!this.new_module) return;
+        if (!this.new_module()) return;
         this.joinModule(this.new_module());
         this.new_module.set('');
     }

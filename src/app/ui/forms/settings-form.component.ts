@@ -7,6 +7,7 @@ import {
     model,
     OnInit,
     signal,
+    WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -115,7 +116,7 @@ type SettingsArray = [
                         <div [class.error-border]="settingError(+option.id)">
                             <settings-form-field
                                 [decorations]="
-                                    +option.id === 4 ? merge_decorations : []
+                                    +option.id === 4 ? merge_decorations() : []
                                 "
                                 [ngModel]="settingValue(+option.id)"
                                 (ngModelChange)="
@@ -268,7 +269,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         return index >= 0 ? index : 0;
     });
     /** List of decorations to apply to the merge settings */
-    public merge_decorations: HashMap[] = [];
+    public readonly merge_decorations: WritableSignal<HashMap[]> = signal([]);
 
     public readonly user = this._users.currentSignal();
     /** Whether user is admin */
@@ -628,10 +629,12 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         const settings_string = Object.keys(merged_settings).length
             ? yaml.dump(merged_settings, { strict: true })
             : '';
-        this.merge_decorations = this._decorationForSettings(
-            settings_string,
-            merge_settings.concat(settings),
-            remote_settings.concat(local_settings),
+        this.merge_decorations.set(
+            this._decorationForSettings(
+                settings_string,
+                merge_settings.concat(settings),
+                remote_settings.concat(local_settings),
+            ),
         );
         return new PlaceSettings({
             id: 'merged',

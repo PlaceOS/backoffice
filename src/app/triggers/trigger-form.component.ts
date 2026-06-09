@@ -39,8 +39,8 @@ import {
     selector: 'trigger-form',
     template: `
         <fullscreen-modal-shell
-            [heading]="heading"
-            [loading]="loading"
+            [heading]="heading()"
+            [loading]="loading()"
             (save)="submit()"
         >
             @if (form) {
@@ -183,15 +183,15 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
         generateTriggerFormModel(this._data.item),
     );
     public readonly form = form(this.formModel, applyTriggerFormSchema);
-    public loading: string;
-    public heading: string;
+    public readonly loading = signal<string | null>(null);
+    public readonly heading = signal('');
 
     public readonly render_debounce = (v: number) => `${v} ms`;
 
     public ngOnInit(): void {
         const item = this._data.item;
         const edit = !!item.id;
-        this.heading = i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`);
+        this.heading.set(i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`));
         this.subscription(
             'save_item_key',
             this._hotkey.listen(['KeyS'], () => this.submit()),
@@ -208,7 +208,7 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
             );
         }
         const item = this._data.item;
-        this.loading = i18n(`${this._name}.SAVING`);
+        this.loading.set(i18n(`${this._name}.SAVING`));
         this._dialog_ref.disableClose = true;
         const item_json = item.toJSON ? item.toJSON() : item;
         const form_item = (
@@ -227,7 +227,7 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
             notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
             this._dialog_ref.close();
         } catch (err) {
-            this.loading = null;
+            this.loading.set(null);
             this._dialog_ref.disableClose = false;
             notifyError(
                 i18n(`${this._name}.SAVE_ERROR`, {
@@ -248,7 +248,7 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
             encryption_level: EncryptionLevel.Support,
         });
         await addSettings(new_settings).catch((err) => {
-            this.loading = null;
+            this.loading.set(null);
             notifyError(
                 `Error saving settings for ${
                     item.name || item.id
