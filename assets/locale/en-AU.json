@@ -481,7 +481,7 @@
         "LOADING_SETTINGS": "Loading driver settings...",
         "MODULES_EMPTY": "No modules created for driver",
         "VIEW_SYSTEMS": "View module's systems",
-        "SYSTEM_COUNT_N": "{{ count }} systems",
+        "SYSTEM_COUNT": "{{ count }} systems",
         "SYSTEM_COUNT_1": "{{ count }} system",
         "LOADING_SYSTEMS": "Loading module systems...",
         "DRIVER_LIST_ERROR": "Failed to load driver list. Error: {{ error }}",
