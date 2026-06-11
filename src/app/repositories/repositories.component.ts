@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { PlaceRepositoryType } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -105,10 +106,19 @@ export class RepositoriesComponent {
 
     public readonly item = this._service.item;
     public readonly loading = this._item.loading;
+    public readonly driver_list_loading = this._service.loading;
     public readonly driver_list = this._service.driver_list;
+    public readonly driver_list_error = this._service.driver_list_error;
     public readonly driver_count = computed(() => {
         const list = this.driver_list();
         return list ? list.length : -1;
+    });
+    public readonly is_driver_repo = computed(() => {
+        const item = this.item();
+        return (
+            item?.repo_type === PlaceRepositoryType.Driver ||
+            item?.type === PlaceRepositoryType.Driver
+        );
     });
     public readonly extensions = computed(() =>
         extensionsForItem(this.item(), this.name),
@@ -118,10 +128,11 @@ export class RepositoriesComponent {
             id: string;
             name: string;
             count?: number;
+            loading?: boolean;
             icon: { content: string };
         }[]
     >(() =>
-        (this.driver_count() < 0 || !this.driver_count()
+        (!this.is_driver_repo()
             ? [
                   {
                       id: 'about',
@@ -138,7 +149,8 @@ export class RepositoriesComponent {
                   {
                       id: 'drivers',
                       name: i18n('REPOS.TAB_DRIVERS'),
-                      count: this.driver_count(),
+                      count: Math.max(this.driver_count(), 0),
+                      loading: this.driver_list_loading(),
                       icon: { content: 'meeting_room' },
                   },
               ]

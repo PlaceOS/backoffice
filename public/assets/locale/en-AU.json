@@ -528,6 +528,8 @@
         "URI": "Repository URI",
         "AVAILABLE_DRIVERS": "Available Drivers",
         "DRIVER_LIST_EMPTY": "No available drivers in repository",
+        "DRIVER_LIST_LOAD_ERROR": "Failed to load repository drivers",
+        "COMMIT_LOAD_ERROR": "Failed to load latest commit details",
         "GIT_PULL_ERROR": "Error pulling latest commit. Error: {{ error }}",
         "GIT_PULL_TIMEOUT": "Pull timed out",
         "USERNAME": "Repository Username",

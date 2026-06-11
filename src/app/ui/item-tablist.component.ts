@@ -28,6 +28,7 @@ export interface ItemTab {
     name: string;
     icon: ApplicationIcon;
     count?: number | string;
+    loading?: boolean;
     query?: Record<string, string>;
 }
 
@@ -59,7 +60,9 @@ export interface ItemTab {
                                 <div
                                     class="mono bg-base-200 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[0.625rem]"
                                 >
-                                    @if (isRouteLoading(link.id)) {
+                                    @if (
+                                        link.loading || isRouteLoading(link.id)
+                                    ) {
                                         <span
                                             role="status"
                                             aria-label="Loading tab"

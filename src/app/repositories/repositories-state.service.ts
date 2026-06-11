@@ -22,8 +22,12 @@ export class RepositoriesStateService {
     private _dialog = inject(MatDialog);
 
     private _loading = signal(false);
+    private _driver_list_error = signal('');
+    private _commit_error = signal('');
 
     public readonly loading = this._loading.asReadonly();
+    public readonly driver_list_error = this._driver_list_error.asReadonly();
+    public readonly commit_error = this._commit_error.asReadonly();
     /** Active repository */
     public readonly item = computed(
         () => this._state.item() as unknown as PlaceRepository,
@@ -38,10 +42,12 @@ export class RepositoriesStateService {
             )
                 return [] as string[];
             this._loading.set(true);
+            this._driver_list_error.set('');
             try {
-                return listRepositoryDrivers(item.id, { limit: 2000 }).catch(
-                    () => [],
-                );
+                return await listRepositoryDrivers(item.id, { limit: 2000 });
+            } catch (err) {
+                this._driver_list_error.set(this._errorMessage(err));
+                return [];
             } finally {
                 this._loading.set(false);
             }
@@ -56,9 +62,15 @@ export class RepositoriesStateService {
         params: () => this.item(),
         loader: async ({ params: item }) => {
             if (!(item instanceof PlaceRepository)) return 'HEAD';
-            const details = await listRepositoryCommits(item.id, {
-                count: 1,
-            } as Record<string, unknown>).catch(() => []);
+            this._commit_error.set('');
+            let details = [];
+            try {
+                details = await listRepositoryCommits(item.id, {
+                    count: 1,
+                } as Record<string, unknown>);
+            } catch (err) {
+                this._commit_error.set(this._errorMessage(err));
+            }
             return details[0]?.commit || 'HEAD';
         },
     });
@@ -99,5 +111,12 @@ export class RepositoriesStateService {
                 }),
             },
         });
+    }
+
+    private _errorMessage(err: unknown): string {
+        if (err instanceof Response) return `${err.status} ${err.statusText}`;
+        if (err instanceof Error) return err.message;
+        const error = err as { response?: unknown; message?: unknown };
+        return JSON.stringify(error?.response || error?.message || err);
     }
 }

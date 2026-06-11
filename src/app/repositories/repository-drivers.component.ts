@@ -23,6 +23,23 @@ import { RepositoriesStateService } from './repositories-state.service';
             class="w-full"
             [class.opacity-0]="!loading()"
         />
+        @if (driver_list_error()) {
+            <div
+                class="border-error bg-error/10 text-error my-4 rounded-sm border p-3 text-sm"
+            >
+                <div class="flex items-start space-x-2">
+                    <icon class="text-xl">error</icon>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-medium">
+                            {{ 'REPOS.DRIVER_LIST_LOAD_ERROR' | translate }}
+                        </div>
+                        <div class="mt-1 font-mono text-xs break-words">
+                            {{ driver_list_error() }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
         <simple-table
             class="block min-w-lg text-sm"
             [data]="driver_list"
@@ -91,6 +108,7 @@ export class RepositoryDriversComponent extends AsyncHandler implements OnInit {
     public readonly loading = this._service.loading;
     /** List of drivers available in the repository */
     public readonly driver_list = this._service.driver_list;
+    public readonly driver_list_error = this._service.driver_list_error;
 
     public get item(): PlaceRepository {
         return this._service.active_item as PlaceRepository;
@@ -101,7 +119,9 @@ export class RepositoryDriversComponent extends AsyncHandler implements OnInit {
     constructor() {
         super();
         effect(() => {
-            if (this.driver_list()?.length) this.clearTimeout('has_drivers');
+            if (this.driver_list()?.length || this.driver_list_error()) {
+                this.clearTimeout('has_drivers');
+            }
         });
     }
 
@@ -111,6 +131,8 @@ export class RepositoryDriversComponent extends AsyncHandler implements OnInit {
             () => this._router.navigate(['/repositories', this.item.id]),
             3000,
         );
-        if (this.driver_list()?.length) this.clearTimeout('has_drivers');
+        if (this.driver_list()?.length || this.driver_list_error()) {
+            this.clearTimeout('has_drivers');
+        }
     }
 }

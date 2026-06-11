@@ -4,6 +4,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceRepositoryType } from '@placeos/ts-client';
+import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { SafePipe } from '../ui/pipes/safe.pipe';
@@ -139,6 +140,23 @@ import { RepositoriesStateService } from './repositories-state.service';
                             }
                         </code>
                     </div>
+                    @if (commit_error()) {
+                        <div
+                            class="border-error bg-error/10 text-error col-span-2 flex items-start space-x-2 rounded-sm border p-2 text-xs"
+                        >
+                            <icon class="text-lg">error</icon>
+                            <div class="min-w-0 flex-1">
+                                <div class="mt-0.75 font-medium">
+                                    {{ 'REPOS.COMMIT_LOAD_ERROR' | translate }}
+                                </div>
+                                <div
+                                    class="mt-2 font-mono text-[0.625rem] break-words"
+                                >
+                                    {{ commit_error() }}
+                                </div>
+                            </div>
+                        </div>
+                    }
                     @if (is_interface()) {
                         <button
                             btn
@@ -199,6 +217,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         DateFromPipe,
         AsyncPipe,
         DatePipe,
+        IconComponent,
     ],
 })
 export class RepositoryAboutComponent {
@@ -207,6 +226,7 @@ export class RepositoryAboutComponent {
     /** Whether the latest commit is being pulled on the server */
     public readonly pulling = signal(false);
     public readonly commit = this._service.commit;
+    public readonly commit_error = this._service.commit_error;
     public readonly item = this._service.item;
 
     public readonly local_url = computed(() =>
