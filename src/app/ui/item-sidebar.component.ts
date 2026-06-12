@@ -27,7 +27,6 @@ import {
     PlaceZone,
     queryGroups,
 } from '@placeos/ts-client';
-import { isBefore } from 'date-fns';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { toSignal } from '../common/signals';
@@ -504,7 +503,7 @@ export class ItemSidebarComponent
         const last_check = this.last_check;
         return (
             this.last_total !== this._service.list_items().length ||
-            isBefore(now, last_check + 60 * 1000)
+            now - last_check > 60 * 1000
         );
     }
     public async atBottom([_start, end]: [number, number]) {

@@ -383,7 +383,18 @@ export class ActiveItemService extends AsyncHandler {
                     next = () => this.actions.query(this._search());
                     this._list.set([]);
                 }
-                const resp = await next();
+                const resp = await next().catch((err) => {
+                    log('Service', `Error loading ${type} list.`, [err], 'warn');
+                    return null;
+                });
+                if (!resp) {
+                    if (type === this._type) {
+                        this._next_query.set(null);
+                        this._loading_list.set(false);
+                        notifyError(`Error loading ${type} list.`);
+                    }
+                    return;
+                }
                 if (type === this._type) {
                     this._next_query.set(
                         resp.next ||
