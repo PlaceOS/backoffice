@@ -113,7 +113,7 @@ jobs:
                   BRANCH: build/${{ needs.build.outputs.deploy_branch }}
                   FOLDER: dist/backoffice/browser
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  MESSAGE: 'build(backoffice): CI build from {sha}'
+                  MESSAGE: 'build(backoffice): [{sha}] CI build'
 
             - name: Update Pipeline Chat Status
               uses: fjogeleit/http-request-action@master
