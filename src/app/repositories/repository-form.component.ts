@@ -19,6 +19,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     EncryptionLevel,
     GitCommitDetails,
@@ -298,9 +299,14 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                                 "
                                             >
                                                 <div
-                                                    class="flex w-1/2 flex-1 flex-col truncate leading-tight"
+                                                    class="flex w-px flex-1 flex-col truncate leading-tight"
                                                 >
-                                                    <div class="truncate">
+                                                    <div
+                                                        class="truncate text-sm"
+                                                        [matTooltip]="
+                                                            commit.subject
+                                                        "
+                                                    >
                                                         {{ commit.subject }}
                                                     </div>
                                                     <div
@@ -393,6 +399,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
         TranslatePipe,
         FormsModule,
         MatSelectModule,
+        MatTooltipModule,
         IconComponent,
         SettingsToggleComponent,
         FullscreenModalShellComponent,
