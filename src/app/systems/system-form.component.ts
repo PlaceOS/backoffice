@@ -664,12 +664,13 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
             this.loading.set(i18n(`${this._name}.SAVING`));
             this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
+            // `zone` is UI-only; the backend uses `zones`, which the effect
+            // keeps in sync. Strip it so we never POST `zone: null`.
+            const { zone: _zone, ...form_value } = this.formModel();
             const form_item = (
                 item.id
-                    ? cleanObject({ ...item_json, ...this.formModel() }, [
-                          undefined,
-                      ])
-                    : { ...item_json, ...this.formModel() }
+                    ? cleanObject({ ...item_json, ...form_value }, [undefined])
+                    : { ...item_json, ...form_value }
             ) as Identity;
             const processed_item = {
                 ...form_item,

@@ -64,7 +64,7 @@ export interface SystemFormModel {
     images: string[];
     map_id: string;
     timezone: string;
-    zone?: PlaceZone;
+    zone?: PlaceZone | null;
     zones: string[];
 }
 
@@ -95,7 +95,9 @@ export function generateSystemFormModel(system?: PlaceSystem): SystemFormModel {
         images: [...(system.images || [])],
         map_id: system.map_id || '',
         timezone: system.timezone || '',
-        zone: undefined,
+        // `null` (not `undefined`) so signal forms materialise the field;
+        // otherwise `form.zone` is undefined and its picker never renders.
+        zone: null,
         zones: [...(system.zones || [])],
     };
 }

@@ -6,7 +6,7 @@ export interface ZoneFormModel {
     name: string;
     tags: string[];
     description: string;
-    parent_zone?: PlaceZone;
+    parent_zone?: PlaceZone | null;
     parent_id: string;
     location: string;
     display_name: string;
@@ -25,7 +25,9 @@ export function generateZoneFormModel(zone?: PlaceZone): ZoneFormModel {
         name: zone?.name || '',
         tags: zone?.tags || [],
         description: zone?.description || '',
-        parent_zone: undefined,
+        // `null` (not `undefined`) so signal forms materialise the field;
+        // otherwise `form.parent_zone` is undefined and the picker never renders.
+        parent_zone: null,
         parent_id: zone?.parent_id || '',
         location: zone?.location || '',
         display_name: zone?.display_name || '',
