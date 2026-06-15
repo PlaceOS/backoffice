@@ -78,7 +78,7 @@ import {
                             }
                         </div>
                     }
-                    @if (!form.driver || formModel().driver) {
+                    @if (formModel().id || formModel().driver) {
                         @if (form.system && role() === 'logic') {
                             <div class="field">
                                 <label
@@ -482,11 +482,11 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
             this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_value = { ...this.formModel() };
-            if (item.id) {
-                delete form_value.system;
-                delete form_value.driver;
-                delete form_value.edge;
-            }
+            // UI-only fields; the backend uses the `*_id` values which are kept
+            // in sync by effects. Strip them so we never POST `driver: null`.
+            delete form_value.system;
+            delete form_value.driver;
+            delete form_value.edge;
             const form_item = (
                 item.id
                     ? cleanObject({ ...item_json, ...form_value }, [undefined])

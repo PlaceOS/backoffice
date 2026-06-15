@@ -28,12 +28,12 @@ export interface ModuleFormModel {
     notes: string;
     name: string;
     custom_name: string;
-    system?: PlaceSystem;
+    system?: PlaceSystem | null;
     control_system_id: string;
     role: PlaceDriverRole;
-    driver?: PlaceDriver;
+    driver?: PlaceDriver | null;
     driver_id: string;
-    edge?: PlaceEdge;
+    edge?: PlaceEdge | null;
     edge_id: string;
 }
 
@@ -51,12 +51,15 @@ export function generateModuleFormModel(mod?: PlaceModule): ModuleFormModel {
         notes: mod?.notes || '',
         name: mod?.name || '',
         custom_name: mod?.custom_name || '',
-        system: mod?.system,
+        // `null` (not `undefined`) so signal forms materialise the field,
+        // otherwise `form.driver`/`form.system`/`form.edge` are undefined and
+        // their template controls never render for new modules.
+        system: mod?.system ?? null,
         control_system_id: mod?.control_system_id || '',
         role: mod?.role || PlaceDriverRole.Logic,
-        driver: undefined,
+        driver: null,
         driver_id: mod?.driver_id || '',
-        edge: undefined,
+        edge: null,
         edge_id: mod?.edge_id || '',
     };
 }
