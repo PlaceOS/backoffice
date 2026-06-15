@@ -8,11 +8,13 @@ import {
     query,
     queryUsers,
     remove,
+    showUser,
     update,
 } from '@placeos/ts-client';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { waitForEvent } from '../../common/signals';
 import { DialogEvent } from '../../common/types';
+import { currentUser } from '../../common/user-state';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
 import { AdminDataService } from '../admin-data.service';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
@@ -129,6 +131,45 @@ export class APIKeyService {
         ref.close();
     }
 
+    public async quickCreateKey() {
+        const domain = this._domain();
+        if (!domain) return;
+        this._loading.set(true);
+        try {
+            const user = await this._currentUser();
+            if (!user?.id) {
+                notifyError('Unable to load current user details.');
+                return;
+            }
+            const scopes = await this._scopes();
+            if (!scopes.length) {
+                notifyError('Unable to load API key scopes.');
+                return;
+            }
+            const key = await create({
+                query_params: {},
+                fn: (d) => new PlaceAPIKeyDetails(d),
+                path: 'api_keys',
+                form_data: {
+                    name: `${this._userLabel(user)} API Key`,
+                    description: `Created for ${this._userLabel(user)}`,
+                    scopes,
+                    user_id: user.id,
+                    permissions: this._userPermissions(user),
+                    authority_id: domain.id,
+                },
+            }).catch((_) => {
+                notifyError(_);
+                throw _;
+            });
+            this._last_key.set(key as PlaceAPIKeyDetails);
+            this._change.set(Date.now());
+            notifySuccess('Successfully created new API key.');
+        } finally {
+            this._loading.set(false);
+        }
+    }
+
     public async editKey(key: PlaceAPIKeyDetails) {
         const ref = this._dialog.open(APIKeyModalComponent, {
             data: { domain: this._domain(), key },
@@ -183,5 +224,27 @@ export class APIKeyService {
         details.close();
         notifySuccess('Successfully removed API key.');
         this._change.set(Date.now());
+    }
+
+    private async _currentUser() {
+        const cached_user = currentUser();
+        if (cached_user?.id) return cached_user;
+        return showUser('current').catch(() => null);
+    }
+
+    private async _scopes() {
+        const scopes = this.available_scopes();
+        if (scopes.length) return scopes;
+        return get('/api/engine/v2/scopes').catch(() => []) as Promise<
+            string[]
+        >;
+    }
+
+    private _userLabel(user: PlaceUser) {
+        return user?.name || user?.email || 'Current User';
+    }
+
+    private _userPermissions(user: PlaceUser): 'user' | 'support' | 'admin' {
+        return user?.sys_admin ? 'admin' : user?.support ? 'support' : 'user';
     }
 }

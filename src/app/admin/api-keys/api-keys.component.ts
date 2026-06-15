@@ -47,6 +47,15 @@ import { APIKeyService } from './api-keys.service';
                     >
                         {{ 'ADMIN.APP_KEYS_ADD' | translate }}
                     </button>
+                    <button
+                        btn
+                        matRipple
+                        class="w-36"
+                        [disabled]="domain() === null || loading() === true"
+                        (click)="quickCreateKey()"
+                    >
+                        {{ 'ADMIN.APP_KEYS_QUICK_CREATE' | translate }}
+                    </button>
                 </div>
             </div>
             @if (last_key()) {
@@ -211,6 +220,7 @@ export class AdminAPIKeysComponent implements OnInit {
 
     public readonly setDomain = (d) => this._service.setDomain(d);
     public readonly newKey = () => this._service.newKey();
+    public readonly quickCreateKey = () => this._service.quickCreateKey();
     public readonly editKey = (k) => this._service.editKey(k);
     public readonly deleteKey = (k) => this._service.removeKey(k);
 
