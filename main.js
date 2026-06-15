@@ -1,6 +1,6 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-22VGKQ3V.js";
+} from "./chunk-ADEPGM47.js";
 import {
   getUnixTime
 } from "./chunk-GV5KQIK5.js";
@@ -10,7 +10,7 @@ import {
 } from "./chunk-GEMSQ6RP.js";
 import {
   UploadsService
-} from "./chunk-UJSGWSKQ.js";
+} from "./chunk-RSXXMA3P.js";
 import {
   tr
 } from "./chunk-XAS7GUY2.js";
@@ -34,12 +34,14 @@ import "./chunk-IE6E7XHG.js";
 import "./chunk-V5GEKXNH.js";
 import {
   BackofficeUsersService
-} from "./chunk-6GEUKQV2.js";
+} from "./chunk-UTAIAEYL.js";
 import {
   SettingsService,
-  currentUser,
   format
-} from "./chunk-ICXB34UJ.js";
+} from "./chunk-RY7PKWXB.js";
+import {
+  currentUser
+} from "./chunk-HYP637G2.js";
 import {
   addDays
 } from "./chunk-XI4ZLZAC.js";
@@ -81,7 +83,7 @@ import {
   LocaleService,
   TranslatePipe,
   setTranslationService
-} from "./chunk-FJCFBSIQ.js";
+} from "./chunk-ZZM2ZLWR.js";
 import {
   IconComponent
 } from "./chunk-YUNY6RXQ.js";
@@ -3220,52 +3222,52 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-JCFPMWMD.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-FD6R2WDF.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-DZZXAIUY.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-O7W5LNDN.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-3MTN2DEV.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-3Z74SDJK.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-343BVICD.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QNELBCPB.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-GUC2DIUC.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-2AGVWSSX.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-X7Y5LCBL.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-2WU3WIPN.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-T6QJJ6WU.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-MN3D4UZI.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-PPH22XOQ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-TNNXQ3MU.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-SMDQFEMG.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-H2QHF7D5.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-UMBOFUKB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-7KR3LZDC.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
