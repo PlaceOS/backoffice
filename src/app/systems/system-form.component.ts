@@ -61,7 +61,7 @@ import {
         >
             @if (form) {
                 <form system class="flex w-full flex-col">
-                    @if (form.zone && !formModel().zones.length) {
+                    @if (form.zone && !item().id) {
                         <div class="field">
                             <label
                                 for="zone"
@@ -605,6 +605,7 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     );
     private readonly _name = 'SYSTEMS';
     private _hotkey = inject(HotkeysService);
+    public readonly item = signal(this._data.item);
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
