@@ -27,11 +27,11 @@ import { TranslatePipe } from './translate.pipe';
                 }
             </header>
             <main
-                class="z-0 mx-auto flex min-h-1/2 w-156 max-w-full flex-1 flex-col space-y-8 p-2"
+                class="z-0 mx-auto flex min-h-1/2 w-156 max-w-full flex-1 flex-col p-2"
             >
                 <ng-content />
                 @if (!loading() && !hide_confirm()) {
-                    <div class="min-h-10 w-full"></div>
+                    <div class="min-h-16 w-full"></div>
                 }
             </main>
             @if (!loading() && !hide_confirm()) {
