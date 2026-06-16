@@ -641,8 +641,12 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     constructor() {
         super();
         effect(() => {
-            const zone = this.formModel().zone;
-            if (zone?.id) {
+            const model = this.formModel();
+            const zone = model.zone;
+            if (
+                zone?.id &&
+                (model.zones.length !== 1 || model.zones[0] !== zone.id)
+            ) {
                 this.formModel.update((value) => ({
                     ...value,
                     zones: [zone.id],

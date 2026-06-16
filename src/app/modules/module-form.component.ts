@@ -434,11 +434,12 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
             }
         });
         effect(() => {
-            const system = this.formModel().system;
-            if (system?.id !== this.formModel().control_system_id) {
+            const model = this.formModel();
+            const system_id = model.system?.id || '';
+            if (system_id !== model.control_system_id) {
                 this.formModel.update((value) => ({
                     ...value,
-                    control_system_id: system?.id || '',
+                    control_system_id: system_id,
                 }));
             }
         });
@@ -452,8 +453,29 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
             }
         });
         effect(() => {
-            const driver = this.formModel().driver;
+            const model = this.formModel();
+            const driver = model.driver;
             if (!driver?.id) return;
+            const role = driver.role || PlaceDriverRole.Logic;
+            const udp =
+                driver.role === PlaceDriverRole.Service ||
+                driver.role === PlaceDriverRole.Websocket
+                    ? false
+                    : model.udp;
+            const system =
+                driver.role === PlaceDriverRole.Logic ? model.system : undefined;
+            if (
+                model.driver_id === driver.id &&
+                model.name === (driver.name || driver.module_name) &&
+                model.uri === (driver.default_uri || '') &&
+                model.port === (driver.default_port || 1) &&
+                model.alert_level === (driver.alert_level || 'medium') &&
+                model.role === role &&
+                model.udp === udp &&
+                model.system === system
+            ) {
+                return;
+            }
             this.formModel.update((value) => ({
                 ...value,
                 driver_id: driver.id,
@@ -461,16 +483,9 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
                 uri: driver.default_uri || '',
                 port: driver.default_port || 1,
                 alert_level: driver.alert_level || 'medium',
-                role: driver.role || PlaceDriverRole.Logic,
-                udp:
-                    driver.role === PlaceDriverRole.Service ||
-                    driver.role === PlaceDriverRole.Websocket
-                        ? false
-                        : value.udp,
-                system:
-                    driver.role === PlaceDriverRole.Logic
-                        ? value.system
-                        : undefined,
+                role,
+                udp,
+                system,
             }));
         });
     }
