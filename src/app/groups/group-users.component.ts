@@ -90,7 +90,7 @@ import { GroupStateService } from './group-state.service';
                 }
                 @if (!permissionLabels(row.permissions).length) {
                     <span class="opacity-30">{{
-                        'COMMON.DEFAULT' | translate
+                        'COMMON.NONE' | translate
                     }}</span>
                 }
             </div>

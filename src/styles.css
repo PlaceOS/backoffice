@@ -1310,6 +1310,20 @@ nav {
         max-width: none !important;
     }
 
+    @media (max-width: 640px) {
+        .cdk-overlay-pane.bulk-add-dialog {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+        }
+
+        .bulk-add-dialog .mat-mdc-dialog-surface,
+        .bulk-add-dialog .mdc-dialog__surface {
+            border-radius: 0 !important;
+        }
+    }
+
     .mat-mdc-select-value,
     .mat-mdc-select-arrow {
         color: var(--base-content);

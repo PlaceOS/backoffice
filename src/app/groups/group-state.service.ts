@@ -124,13 +124,14 @@ export class GroupStateService {
     }
 
     public async bulkAddUsers(existing_users: PlaceGroupUser[] = []) {
-        const users = await waitForEvent(
+        const result = await waitForEvent(
             this._dialog
                 .open(GroupBulkAddModalComponent<PlaceUser>, {
                     data: {
                         title: 'GROUPS.USERS_BULK',
                         placeholder: 'GROUPS.USER_SEARCH',
                         empty_message: 'GROUPS.USERS_BULK_EMPTY',
+                        show_permissions: true,
                         query_fn: (query: string) =>
                             queryUsers({
                                 q: query,
@@ -148,6 +149,7 @@ export class GroupStateService {
                             );
                         },
                     },
+                    panelClass: 'bulk-add-dialog',
                     height: 'auto',
                     width: 'auto',
                     maxHeight: 'calc(100vh - 2em)',
@@ -155,13 +157,16 @@ export class GroupStateService {
                 })
                 .afterClosed(),
         );
+        const users = result?.items;
         if (!users?.length) return;
+        const permissions = +result.permissions || 0;
         this._loading.set(true);
         const results = await Promise.allSettled(
             users.map((user) =>
                 addGroupUser({
                     group_id: this.active_item.id,
                     user_id: user.id,
+                    permissions,
                 }),
             ),
         );
@@ -178,7 +183,7 @@ export class GroupStateService {
     }
 
     public async bulkAddZones(existing_zones: PlaceGroupZone[] = []) {
-        const zones = await waitForEvent(
+        const result = await waitForEvent(
             this._dialog
                 .open(GroupBulkAddModalComponent<PlaceZone>, {
                     data: {
@@ -208,6 +213,7 @@ export class GroupStateService {
                             );
                         },
                     },
+                    panelClass: 'bulk-add-dialog',
                     height: 'auto',
                     width: 'auto',
                     maxHeight: 'calc(100vh - 2em)',
@@ -215,6 +221,7 @@ export class GroupStateService {
                 })
                 .afterClosed(),
         );
+        const zones = result?.items;
         if (!zones?.length) return;
         this._loading.set(true);
         const results = await Promise.allSettled(
