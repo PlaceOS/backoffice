@@ -111,6 +111,7 @@ export interface APIKeyModalData {
                                 [matChipInputSeparatorKeyCodes]="separators"
                                 [matChipInputAddOnBlur]="true"
                                 (matChipInputTokenEnd)="addScope($event)"
+                                (input)="scope_search.set($any($event.target).value)"
                                 [matAutocomplete]="auto"
                             />
                         </mat-chip-grid>
@@ -118,7 +119,7 @@ export interface APIKeyModalData {
                             'ADMIN.APP_KEYS_SCOPES_REQUIRED' | translate
                         }}</mat-error>
                         <mat-autocomplete #auto="matAutocomplete">
-                            @for (option of scopes(); track option) {
+                            @for (option of filtered_scopes(); track option) {
                                 <mat-option
                                     (click)="
                                         addScope({
@@ -309,13 +310,33 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
 
     public readonly loading = signal('');
     public readonly search_term = signal('');
+    public readonly scope_search = signal('');
     public readonly domain = signal<PlaceDomain>(null);
     public readonly user_list = signal<PlaceUser[]>([]);
     public readonly user_list_loading = signal(false);
     public readonly permissions = computed(() => this.formModel().permissions);
+    public readonly filtered_scopes = computed(() => {
+        const search = this.scope_search().trim().toLowerCase();
+        const selected = this.formModel().scopes;
+        return this.scopes().filter(
+            (scope) =>
+                !selected.includes(scope) &&
+                (!search || scope.toLowerCase().includes(search)),
+        );
+    });
     public readonly users = computed(() => {
-        return [...this.user_list()].sort((a, b) =>
-            a.name?.localeCompare(b.name),
+        const search = this.search_term().trim().toLowerCase();
+        const list = [...this.user_list()].sort((a, b) =>
+            (a.name || '').localeCompare(b.name || ''),
+        );
+        // The selected user's label fills the input; don't filter it away.
+        if (!search || search === this._userLabel(this.formModel().user).toLowerCase()) {
+            return list;
+        }
+        return list.filter((user) =>
+            `${user.name || ''} ${user.email || ''}`
+                .toLowerCase()
+                .includes(search),
         );
     });
     /** List of separator characters for tags */
@@ -338,6 +359,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                 : [...model.scopes, value],
         }));
         e.input.value = '';
+        this.scope_search.set('');
     };
     public readonly removeScope = (i: string) =>
         this.formModel.update((model) => ({
