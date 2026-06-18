@@ -1,4 +1,5 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
+import { format, fromUnixTime, getUnixTime } from 'date-fns';
 
 import {
     Component,
@@ -258,6 +259,59 @@ export interface APIKeyModalData {
                         </mat-select>
                     </mat-form-field>
                 </div>
+                <div class="flex flex-col">
+                    <label for="expires_at">{{
+                        'ADMIN.APP_KEYS_FIELD_EXPIRES_AT' | translate
+                    }}</label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            id="expires_at"
+                            matInput
+                            type="datetime-local"
+                            [ngModel]="expires_at_input()"
+                            (ngModelChange)="setExpiry($event)"
+                            [ngModelOptions]="{ standalone: true }"
+                        />
+                        @if (formModel().expires_at) {
+                            <button
+                                icon
+                                matSuffix
+                                type="button"
+                                (click)="setExpiry('')"
+                            >
+                                <icon>close</icon>
+                            </button>
+                        }
+                    </mat-form-field>
+                </div>
+                @if (!editing) {
+                    <div class="flex flex-col">
+                        <label for="ttl">{{
+                            'ADMIN.APP_KEYS_FIELD_TTL' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                id="ttl"
+                                data-testid="api-key-ttl"
+                                [placeholder]="
+                                    'ADMIN.APP_KEYS_FIELD_TTL_HINT' | translate
+                                "
+                                [ngModel]="formModel().ttl"
+                                (ngModelChange)="setTTL($event)"
+                                [ngModelOptions]="{ standalone: true }"
+                            >
+                                <mat-option [value]="null">{{
+                                    'ADMIN.APP_KEYS_TTL_NONE' | translate
+                                }}</mat-option>
+                                @for (preset of ttl_presets; track preset.seconds) {
+                                    <mat-option [value]="preset.seconds">{{
+                                        preset.label | translate
+                                    }}</mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                }
             </form>
         </fullscreen-modal-shell>
     `,
@@ -293,6 +347,8 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         description: string;
         scopes: string[];
         permissions: string | null;
+        expires_at: number | null;
+        ttl: number | null;
     }>({
         id: '',
         name: '',
@@ -300,6 +356,8 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         description: '',
         scopes: [],
         permissions: null,
+        expires_at: null,
+        ttl: null,
     });
     public readonly form = form(this.formModel, (p) => {
         required(p.name);
@@ -315,6 +373,24 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     public readonly user_list = signal<PlaceUser[]>([]);
     public readonly user_list_loading = signal(false);
     public readonly permissions = computed(() => this.formModel().permissions);
+    /** `expires_at` epoch (seconds) formatted for the datetime-local input */
+    public readonly expires_at_input = computed(() => {
+        const ts = this.formModel().expires_at;
+        return ts ? format(fromUnixTime(ts), "yyyy-MM-dd'T'HH:mm") : '';
+    });
+
+    public readonly setExpiry = (value: string) => {
+        const ts = value ? getUnixTime(new Date(value)) : null;
+        this.formModel.update((model) => ({ ...model, expires_at: ts }));
+    };
+
+    public readonly setTTL = (value: string | number) => {
+        const ttl = value === '' || value == null ? null : Number(value);
+        this.formModel.update((model) => ({
+            ...model,
+            ttl: ttl == null || isNaN(ttl) ? null : ttl,
+        }));
+    };
     public readonly filtered_scopes = computed(() => {
         const search = this.scope_search().trim().toLowerCase();
         const selected = this.formModel().scopes;
@@ -341,6 +417,16 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     });
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
+    /** Selectable TTL presets, value in seconds from creation */
+    public readonly ttl_presets: { label: string; seconds: number }[] = [
+        { label: 'ADMIN.APP_KEYS_TTL_HOUR', seconds: 3600 },
+        { label: 'ADMIN.APP_KEYS_TTL_6_HOURS', seconds: 21600 },
+        { label: 'ADMIN.APP_KEYS_TTL_DAY', seconds: 86400 },
+        { label: 'ADMIN.APP_KEYS_TTL_WEEK', seconds: 604800 },
+        { label: 'ADMIN.APP_KEYS_TTL_MONTH', seconds: 2592000 },
+        { label: 'ADMIN.APP_KEYS_TTL_90_DAYS', seconds: 7776000 },
+        { label: 'ADMIN.APP_KEYS_TTL_YEAR', seconds: 31536000 },
+    ];
 
     public readonly setSearch = (term = '') => {
         this.search_term.set(term);
@@ -382,6 +468,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                     undefined,
                 user_id: key.user_id,
                 permissions: key.permissions || null,
+                expires_at: key.expires_at ?? null,
             }));
         } else {
             this.timeout(
@@ -430,7 +517,11 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
 
     public async save() {
         await submit(this.form, async () => {
-            this.event.emit({ reason: 'done', metadata: this.formModel() });
+            const metadata = { ...this.formModel() };
+            // `ttl` is only valid on create; drop it (and empty values) otherwise
+            if (this.editing || metadata.ttl == null) delete metadata.ttl;
+            if (metadata.expires_at == null) delete metadata.expires_at;
+            this.event.emit({ reason: 'done', metadata });
         });
         if (this.form().invalid()) {
             return notifyError(

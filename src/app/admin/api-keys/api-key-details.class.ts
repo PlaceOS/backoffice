@@ -10,6 +10,9 @@ export class PlaceAPIKeyDetails {
     public readonly permissions: null | 'user' | 'support' | 'admin';
     public readonly created_at: number;
     public readonly updated_at: number;
+    public readonly expires_at?: number;
+    /** Write-only: seconds from creation until the key expires */
+    public readonly ttl?: number;
     public readonly secret?: string;
     public readonly x_api_key?: string;
 
@@ -22,6 +25,8 @@ export class PlaceAPIKeyDetails {
         this.permissions = _data.permissions || 'user';
         this.created_at = _data.created_at || getUnixTime(new Date());
         this.updated_at = _data.updated_at || getUnixTime(new Date());
+        this.expires_at = _data.expires_at ?? undefined;
+        this.ttl = _data.ttl ?? undefined;
         this.secret = _data.secret;
         this.x_api_key = _data.x_api_key || '';
         this.scopes = _data.scopes || [];

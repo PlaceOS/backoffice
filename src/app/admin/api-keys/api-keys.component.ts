@@ -39,22 +39,26 @@ import { APIKeyService } from './api-keys.service';
                         </mat-select>
                     </mat-form-field>
                     <button
-                        btn
+                        icon
+                        default
                         matRipple
-                        class="w-32"
+                        class="text-xl"
                         [disabled]="domain() === null"
                         (click)="newKey()"
+                        [matTooltip]="'ADMIN.APP_KEYS_ADD' | translate"
                     >
-                        {{ 'ADMIN.APP_KEYS_ADD' | translate }}
+                        <icon>add</icon>
                     </button>
                     <button
-                        btn
+                        icon
+                        default
                         matRipple
-                        class="w-36"
+                        class="text-xl"
                         [disabled]="domain() === null || loading() === true"
                         (click)="quickCreateKey()"
+                        [matTooltip]="'ADMIN.APP_KEYS_QUICK_CREATE' | translate"
                     >
-                        {{ 'ADMIN.APP_KEYS_QUICK_CREATE' | translate }}
+                        <icon>more_time</icon>
                     </button>
                 </div>
             </div>
@@ -94,7 +98,7 @@ import { APIKeyService } from './api-keys.service';
                     [class.opacity-0]="loading() !== true"
                 />
                 <simple-table
-                    class="block min-w-5xl text-sm"
+                    class="block min-w-7xl text-sm"
                     [data]="key_list"
                     [columns]="[
                         { key: 'name', name: 'COMMON.FIELD_NAME' | translate },
@@ -120,6 +124,12 @@ import { APIKeyService } from './api-keys.service';
                             name: 'COMMON.CREATED_AT' | translate,
                             content: data_from_template,
                             size: '8rem',
+                        },
+                        {
+                            key: 'expires_at',
+                            name: 'ADMIN.APP_KEYS_FIELD_EXPIRES_AT' | translate,
+                            content: expires_template,
+                            size: '9rem',
                         },
                         {
                             key: 'actions',
@@ -167,6 +177,19 @@ import { APIKeyService } from './api-keys.service';
         <ng-template #data_from_template let-data="data">
             <div class="p-4">
                 {{ +data * 1000 | dateFrom }}
+            </div>
+        </ng-template>
+        <ng-template #expires_template let-data="data">
+            <div class="p-4">
+                @if (data) {
+                    <span [class.text-error]="isExpired(data)">
+                        {{ +data * 1000 | dateFrom }}
+                    </span>
+                } @else {
+                    <span class="opacity-30">{{
+                        'ADMIN.APP_KEYS_TTL_NONE' | translate
+                    }}</span>
+                }
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
@@ -226,6 +249,11 @@ export class AdminAPIKeysComponent implements OnInit {
 
     public async ngOnInit() {
         await this._service.selectDefaultDomain();
+    }
+
+    /** Whether the given `expires_at` epoch (seconds) is in the past */
+    public isExpired(expires_at: number): boolean {
+        return !!expires_at && +expires_at * 1000 < Date.now();
     }
 
     public async copyKey() {

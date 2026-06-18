@@ -141,12 +141,12 @@ export class APIKeyService {
                 notifyError('Unable to load current user details.');
                 return;
             }
-            const scopes = await this._scopes();
+            const scopes = ['public'];
             if (!scopes.length) {
                 notifyError('Unable to load API key scopes.');
                 return;
             }
-            const key = await create({
+            const key = await create<PlaceAPIKeyDetails>({
                 query_params: {},
                 fn: (d) => new PlaceAPIKeyDetails(d),
                 path: 'api_keys',
@@ -157,6 +157,7 @@ export class APIKeyService {
                     user_id: user.id,
                     permissions: this._userPermissions(user),
                     authority_id: domain.id,
+                    ttl: 86400, // expire 1 day from creation
                 },
             }).catch((_) => {
                 notifyError(_);

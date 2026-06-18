@@ -52,7 +52,7 @@
         "@nx/web": "22.7.5",
         "@nx/workspace": "22.7.5",
         "@placeos/cloud-uploads": "^1.1.1",
-        "@placeos/ts-client": "^5.0.0",
+        "@placeos/ts-client": "^5.0.2",
         "@playwright/test": "^1.36.0",
         "@schematics/angular": "22.0.0",
         "@sentry/browser": "^10.25.0",

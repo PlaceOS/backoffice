@@ -94,6 +94,7 @@ describe('APIKeyService', () => {
                     user_id: 'user-1',
                     permissions: 'admin',
                     authority_id: 'authority-1',
+                    ttl: 86400,
                 },
             }),
         );
