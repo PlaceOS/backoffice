@@ -75,13 +75,14 @@ import { TranslatePipe } from '../translate.pipe';
                             actions
                             class="absolute top-0 right-0 left-0 flex items-center justify-center space-x-2 opacity-0"
                         >
-                            <button icon (click)="copyLink(url)">
+                            <button type="button" icon (click)="copyLink(url)">
                                 <icon>link</icon>
                             </button>
-                            <button icon (click)="viewImage(url)">
+                            <button type="button" icon (click)="viewImage(url)">
                                 <icon>visibility</icon>
                             </button>
                             <button
+                                type="button"
                                 icon
                                 [disabled]="disabled()"
                                 (click)="removeImage(url)"
@@ -94,6 +95,7 @@ import { TranslatePipe } from '../translate.pipe';
             }
             @for (item of uploads(); track item.id; let i = $index) {
                 <button
+                    type="button"
                     image
                     class="border-base-content/10 /5 bg-base-200 flex h-32 w-36 shrink-0 items-center justify-center rounded-sm border bg-cover bg-center"
                     [style.transform]="'translate(-' + offset() + '00%)'"
@@ -122,6 +124,7 @@ import { TranslatePipe } from '../translate.pipe';
             }
             @if (length() > view_space()) {
                 <button
+                    type="button"
                     icon
                     matRipple
                     [disabled]="offset() === 0"
@@ -131,6 +134,7 @@ import { TranslatePipe } from '../translate.pipe';
                     <icon>chevron_left</icon>
                 </button>
                 <button
+                    type="button"
                     icon
                     matRipple
                     [disabled]="offset() >= length() - view_space()"
@@ -147,6 +151,7 @@ import { TranslatePipe } from '../translate.pipe';
                     <mat-chip-row (removed)="removeImage(item)">
                         <div class="max-w-md truncate">{{ item }}</div>
                         <button
+                            type="button"
                             matChipRemove
                             [attr.aria-label]="'Remove ' + item"
                             [disabled]="disabled()"

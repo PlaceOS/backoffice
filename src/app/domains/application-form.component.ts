@@ -121,6 +121,7 @@ import {
                                                 {{ item }}
                                             </div>
                                             <button
+                                                type="button"
                                                 matChipRemove
                                                 [attr.aria-label]="
                                                     'COMMON.ITEM_REMOVE'

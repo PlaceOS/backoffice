@@ -207,6 +207,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                         (blur)="markCredentialsBlur()"
                                     />
                                     <button
+                                        type="button"
                                         matSuffix
                                         (click)="togglePassword()"
                                     >

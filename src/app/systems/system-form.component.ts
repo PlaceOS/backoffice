@@ -294,6 +294,7 @@ import {
                                                 {{ item }}
                                             </div>
                                             <button
+                                                type="button"
                                                 matChipRemove
                                                 [attr.aria-label]="
                                                     'SYSTEMS.REMOVE_ITEM'
@@ -348,6 +349,7 @@ import {
                                                 {{ item }}
                                             </div>
                                             <button
+                                                type="button"
                                                 matChipRemove
                                                 [attr.aria-label]="
                                                     'SYSTEMS.REMOVE_ITEM'
@@ -506,6 +508,7 @@ import {
                                                 {{ item }}
                                             </div>
                                             <button
+                                                type="button"
                                                 matChipRemove
                                                 [attr.aria-label]="
                                                     'SYSTEMS.REMOVE_ITEM'

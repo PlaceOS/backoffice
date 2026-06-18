@@ -122,6 +122,7 @@ export interface TriggerActionModalData {
                                                         {{ item }}
                                                     </div>
                                                     <button
+                                                        type="button"
                                                         matChipRemove
                                                         [attr.aria-label]="
                                                             'COMMON.REMOVE_ITEM'

@@ -301,6 +301,7 @@ import {
                                         >
                                             {{ filter }}
                                             <button
+                                                type="button"
                                                 matChipRemove
                                                 [attr.aria-label]="
                                                     'COMMON.REMOVE_ITEM'

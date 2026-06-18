@@ -158,6 +158,7 @@ import { BackofficeExtension } from '../extensions.component';
                                 </mat-form-field>
                             </div>
                             <button
+                                type="button"
                                 icon
                                 matRipple
                                 class="border-error text-error h-12 w-12 rounded-sm border"
@@ -168,6 +169,7 @@ import { BackofficeExtension } from '../extensions.component';
                         </div>
                     }
                     <button
+                        type="button"
                         btn
                         matRipple
                         class="w-full"

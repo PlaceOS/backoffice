@@ -64,6 +64,7 @@ export function extractTextFromHTML(html_string: string) {
                         </mat-form-field>
                     </div>
                     <button
+                        type="button"
                         btn
                         matRipple
                         class="my-4 w-1/4 flex-1"
@@ -79,6 +80,7 @@ export function extractTextFromHTML(html_string: string) {
                             track field
                         ) {
                             <button
+                                type="button"
                                 mat-menu-item
                                 (click)="copyField(field.name)"
                             >
@@ -93,7 +95,11 @@ export function extractTextFromHTML(html_string: string) {
                             </button>
                         }
                         @if (!(active_trigger()?.fields || []).length) {
-                            <button mat-menu-item [disabled]="true">
+                            <button
+                                type="button"
+                                mat-menu-item
+                                [disabled]="true"
+                            >
                                 No placeholders available
                             </button>
                         }
