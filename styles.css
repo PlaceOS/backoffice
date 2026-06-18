@@ -727,9 +727,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .max-h-96 {
   max-height: calc(var(--spacing) * 96);
 }
-#placeos .max-h-\[45vh\] {
-  max-height: 45vh;
-}
 #placeos .max-h-\[65vh\] {
   max-height: 65vh;
 }
@@ -1113,9 +1110,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .min-w-\[22rem\] {
   min-width: 22rem;
-}
-#placeos .min-w-\[24rem\] {
-  min-width: 24rem;
 }
 #placeos .min-w-\[40\%\] {
   min-width: 40%;
@@ -2310,6 +2304,11 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (width >= 40rem) {
+  #placeos .sm\:h-\[45vh\] {
+    height: 45vh;
+  }
+}
+@media (width >= 40rem) {
   #placeos .sm\:h-auto {
     height: auto;
   }
@@ -2392,6 +2391,11 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (width >= 40rem) {
+  #placeos .sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (width >= 40rem) {
   #placeos .sm\:flex-row {
     flex-direction: row;
   }
@@ -2457,6 +2461,12 @@ input:where([type=button], [type=reset], [type=submit]),
   #placeos .sm\:text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+}
+@media (width >= 40rem) {
+  #placeos .sm\:text-xl {
+    font-size: var(--text-xl);
+    line-height: var(--tw-leading, var(--text-xl--line-height));
   }
 }
 @media (width >= 40rem) {
@@ -3577,6 +3587,18 @@ nav .mdc-tab-link {
 }
 #placeos .cdk-overlay-pane {
   max-width: none !important;
+}
+@media (max-width: 640px) {
+  #placeos .cdk-overlay-pane.bulk-add-dialog {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+  }
+  #placeos .bulk-add-dialog .mat-mdc-dialog-surface,
+  #placeos .bulk-add-dialog .mdc-dialog__surface {
+    border-radius: 0 !important;
+  }
 }
 #placeos .mat-mdc-select-value,
 #placeos .mat-mdc-select-arrow {

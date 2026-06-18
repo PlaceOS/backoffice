@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["group-bulk-add-modal.component.ts"],
+  "sourcesContent": ["\n            :host {\n                display: flex;\n                flex-direction: column;\n                width: 32rem;\n                max-width: calc(100vw - 1rem);\n                max-height: calc(100vh - 2em);\n                overflow: hidden;\n            }\n\n            @media (max-width: 640px) {\n                :host {\n                    width: 100%;\n                    height: 100%;\n                    max-width: 100%;\n                    max-height: 100%;\n                }\n            }\n        "],
+  "mappings": ";AACY;AACI,WAAA;AACA,kBAAA;AACA,SAAA;AACA,aAAA,KAAA,MAAA,EAAA;AACA,cAAA,KAAA,MAAA,EAAA;AACA,YAAA;AACJ;AAEA,QAAA,WAAA;AACI;AACI,WAAA;AACA,YAAA;AACA,eAAA;AACA,gBAAA;AACJ;AACJ;",
+  "names": []
+}
