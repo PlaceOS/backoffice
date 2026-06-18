@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/common/user-state.ts"],
-  "sourcesContent": ["import { signal } from '@angular/core';\nimport { PlaceUser, showUser } from '@placeos/ts-client';\n\nconst EMPTY_USER = new PlaceUser();\n\nconst _current_user = signal<PlaceUser>(null);\n\nexport const current_user = _current_user.asReadonly();\n\ndeclare let jest;\n\nsetTimeout(async () => {\n    try {\n        if (jest) return;\n    } catch {\n        // jest not defined, continue\n    }\n    for (let i = 0; i < 10; i++) {\n        await new Promise((resolve) => setTimeout(resolve, 1000));\n        const user = await showUser('current').catch(() => null);\n        if (user) {\n            _current_user.set(user);\n            return;\n        }\n    }\n}, 300);\n\n/** Get the current user details */\nexport function currentUser() {\n    return _current_user() || EMPTY_USER;\n}\n"],
-  "mappings": ";;;;;;;AAGA,IAAM,aAAa,IAAI,GAAS;AAEhC,IAAM,gBAAgB;EAAkB;;;;;;AAEjC,IAAM,eAAe,cAAc,WAAU;AAIpD,WAAW,YAAW;AAClB,MAAI;AACA,QAAI;AAAM;EACd,QAAQ;EAER;AACA,WAAS,IAAI,GAAG,IAAI,IAAI,KAAK;AACzB,UAAM,IAAI,QAAQ,CAAC,YAAY,WAAW,SAAS,GAAI,CAAC;AACxD,UAAM,OAAO,MAAM,GAAS,SAAS,EAAE,MAAM,MAAM,IAAI;AACvD,QAAI,MAAM;AACN,oBAAc,IAAI,IAAI;AACtB;IACJ;EACJ;AACJ,GAAG,GAAG;AAGA,SAAU,cAAW;AACvB,SAAO,cAAa,KAAM;AAC9B;",
-  "names": []
-}
