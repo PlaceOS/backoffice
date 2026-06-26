@@ -1,6 +1,6 @@
 import {
   AuthorisedAdminGuard
-} from "./chunk-B5BWJN4H.js";
+} from "./chunk-XDJSZQWD.js";
 import {
   getUnixTime
 } from "./chunk-GV5KQIK5.js";
@@ -34,10 +34,10 @@ import "./chunk-RAEUAH5O.js";
 import "./chunk-NFDUIW5Q.js";
 import {
   BackofficeUsersService
-} from "./chunk-YB7ZWJN5.js";
+} from "./chunk-GDSY7GFK.js";
 import {
   SettingsService
-} from "./chunk-ZSXEMKDU.js";
+} from "./chunk-S2FO5G4C.js";
 import {
   currentUser,
   format
@@ -3165,55 +3165,57 @@ var UnauthorisedComponent = class _UnauthorisedComponent {
   static \u0275fac = function UnauthorisedComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _UnauthorisedComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _UnauthorisedComponent, selectors: [["app-unauthorised"]], decls: 12, vars: 9, consts: [[1, "unauthorised", "bg-base-100", "text-base-content", "m-4", "rounded-sm", "border", "border-gray-300", "px-8", "pt-2", "pb-8", "text-center"]], template: function UnauthorisedComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _UnauthorisedComponent, selectors: [["app-unauthorised"]], decls: 13, vars: 9, consts: [["unauthorised", "", 1, "absolute", "inset-0"], [1, "border-base-300", "bg-base-100", "text-base-content", "mx-auto", "my-4", "w-104", "max-w-[calc(100%-1rem)]", "rounded-xl", "border", "p-4", "text-center", "shadow-lg"], [1, "text-4xl"], [1, "py-4"]], template: function UnauthorisedComponent_Template(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275domElementStart(0, "div", 0)(1, "h1");
-      \u0275\u0275text(2, "403");
+      \u0275\u0275domElementStart(0, "div", 0)(1, "div", 1)(2, "h1", 2);
+      \u0275\u0275text(3, "403");
       \u0275\u0275domElementEnd();
-      \u0275\u0275domElementStart(3, "h3");
-      \u0275\u0275text(4);
-      \u0275\u0275pipe(5, "translate");
+      \u0275\u0275domElementStart(4, "h3");
+      \u0275\u0275text(5);
+      \u0275\u0275pipe(6, "translate");
       \u0275\u0275domElementEnd();
-      \u0275\u0275domElementStart(6, "p");
-      \u0275\u0275text(7);
-      \u0275\u0275pipe(8, "translate");
+      \u0275\u0275domElementStart(7, "p", 3);
+      \u0275\u0275text(8);
+      \u0275\u0275pipe(9, "translate");
       \u0275\u0275domElementEnd();
-      \u0275\u0275domElementStart(9, "p");
-      \u0275\u0275text(10);
-      \u0275\u0275pipe(11, "translate");
-      \u0275\u0275domElementEnd()();
+      \u0275\u0275domElementStart(10, "p");
+      \u0275\u0275text(11);
+      \u0275\u0275pipe(12, "translate");
+      \u0275\u0275domElementEnd()()();
     }
     if (rf & 2) {
-      \u0275\u0275advance(4);
-      \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(5, 3, "COMMON.FORBIDDEN"));
+      \u0275\u0275advance(5);
+      \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(6, 3, "COMMON.FORBIDDEN"));
       \u0275\u0275advance(3);
-      \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(8, 5, "COMMON.INVALID_PAGE_PERMISSIONS"), " ");
+      \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(9, 5, "COMMON.INVALID_PAGE_PERMISSIONS"), " ");
       \u0275\u0275advance(3);
-      \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(11, 7, "COMMON.CONTACT_ADMIN"), " ");
+      \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(12, 7, "COMMON.CONTACT_ADMIN"), " ");
     }
-  }, dependencies: [TranslatePipe], styles: ["\n[_nghost-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.unauthorised[_ngcontent-%COMP%] {\n  width: 24em;\n}\n@media (prefers-color-scheme: dark) {\n  .unauthorised[_ngcontent-%COMP%] {\n    background-color: #262626 !important;\n    color: #fff !important;\n  }\n}\n/*# sourceMappingURL=unauthorised.component.css.map */"] });
+  }, dependencies: [TranslatePipe], styles: ["\n[_nghost-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n[unauthorised][_ngcontent-%COMP%] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=unauthorised.component.css.map */"] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(UnauthorisedComponent, [{
     type: Component,
     args: [{ selector: "app-unauthorised", template: `
-        <div
-            class="unauthorised bg-base-100 text-base-content m-4 rounded-sm border border-gray-300 px-8 pt-2 pb-8 text-center"
-        >
-            <h1>403</h1>
-            <h3>{{ 'COMMON.FORBIDDEN' | translate }}</h3>
-            <p>
-                {{ 'COMMON.INVALID_PAGE_PERMISSIONS' | translate }}
-            </p>
-            <p>
-                {{ 'COMMON.CONTACT_ADMIN' | translate }}
-            </p>
+        <div unauthorised class="absolute inset-0">
+            <div
+                class="border-base-300 bg-base-100 text-base-content mx-auto my-4 w-104 max-w-[calc(100%-1rem)] rounded-xl border p-4 text-center shadow-lg"
+            >
+                <h1 class="text-4xl">403</h1>
+                <h3>{{ 'COMMON.FORBIDDEN' | translate }}</h3>
+                <p class="py-4">
+                    {{ 'COMMON.INVALID_PAGE_PERMISSIONS' | translate }}
+                </p>
+                <p>
+                    {{ 'COMMON.CONTACT_ADMIN' | translate }}
+                </p>
+            </div>
         </div>
-    `, imports: [TranslatePipe], styles: ["/* angular:styles/component:css;24d451efdbb17a5cdfb8e05cfb2d1569ac686a3100bfa8038bda8ba81662895a;/home/runner/work/backoffice/backoffice/src/app/ui/unauthorised.component.ts */\n:host {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.unauthorised {\n  width: 24em;\n}\n@media (prefers-color-scheme: dark) {\n  .unauthorised {\n    background-color: #262626 !important;\n    color: #fff !important;\n  }\n}\n/*# sourceMappingURL=unauthorised.component.css.map */\n"] }]
+    `, imports: [TranslatePipe], styles: ["/* angular:styles/component:css;9e56e45d1ecd17d612bec636f553ceddd9b98cd2552edbd57d59534065beeefe;/home/runner/work/backoffice/backoffice/src/app/ui/unauthorised.component.ts */\n:host {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n[unauthorised] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=unauthorised.component.css.map */\n"] }]
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(UnauthorisedComponent, { className: "UnauthorisedComponent", filePath: "src/app/ui/unauthorised.component.ts", lineNumber: 42 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(UnauthorisedComponent, { className: "UnauthorisedComponent", filePath: "src/app/ui/unauthorised.component.ts", lineNumber: 41 });
 })();
 
 // src/app/app.routes.ts
@@ -3222,52 +3224,52 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-ZXH2CDTB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-BFRFV4PO.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-T5ZR47H3.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-R62JYSKZ.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-KT2N3T6W.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-5Y3NDGSU.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-P34CAJKA.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-JXZ3PUWD.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-ZFM33RUR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-6KKZDUBM.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-FKMRGFMI.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-OY6ULJVI.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-RXD67FTO.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-N3XNPFV3.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-IDX62M43.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-EZ3B6AFR.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-L7WQ4V4M.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-G44MB566.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-VABUKRHX.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-BNHGYAWP.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];

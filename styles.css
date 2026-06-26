@@ -880,6 +880,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .w-96 {
   width: calc(var(--spacing) * 96);
 }
+#placeos .w-104 {
+  width: calc(var(--spacing) * 104);
+}
 #placeos .w-132 {
   width: calc(var(--spacing) * 132);
 }
@@ -1720,9 +1723,6 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .pb-4 {
   padding-bottom: calc(var(--spacing) * 4);
-}
-#placeos .pb-8 {
-  padding-bottom: calc(var(--spacing) * 8);
 }
 #placeos .pb-24 {
   padding-bottom: calc(var(--spacing) * 24);
