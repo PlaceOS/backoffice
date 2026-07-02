@@ -2163,6 +2163,11 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (hover: hover) {
+  #placeos .hover\:bg-base-100\!:hover {
+    background-color: var(--base-100) !important;
+  }
+}
+@media (hover: hover) {
   #placeos .hover\:bg-base-200:hover {
     background-color: var(--base-200);
   }
@@ -2193,21 +2198,16 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (hover: hover) {
-  #placeos .hover\:bg-transparent\!:hover {
-    background-color: transparent !important;
-  }
-}
-@media (hover: hover) {
   #placeos .hover\:bg-white\/10:hover {
     background-color: rgba(255, 255, 255, 0.1);
   }
 }
-#placeos .focus\:bg-base-200\/30:focus {
-  background-color: var(--base-200);
+#placeos .focus\:bg-info\/10:focus {
+  background-color: var(--info);
 }
 @supports (color: color-mix(in lab, red, red)) {
-  #placeos .focus\:bg-base-200\/30:focus {
-    background-color: color-mix(in oklab, var(--base-200) 30%, transparent);
+  #placeos .focus\:bg-info\/10:focus {
+    background-color: color-mix(in oklab, var(--info) 10%, transparent);
   }
 }
 #placeos .focus\:opacity-100:focus {
