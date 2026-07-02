@@ -11,6 +11,7 @@ import {
     showUser,
     update,
 } from '@placeos/ts-client';
+import { addDays, getUnixTime } from 'date-fns';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { waitForEvent } from '../../common/signals';
 import { DialogEvent } from '../../common/types';
@@ -112,12 +113,17 @@ export class APIKeyService {
         if (details?.reason !== 'done') return;
         ref.componentInstance.loading.set('Creating new API key...');
         const domain = this._domain();
+        const api_key = details.metadata;
         const key = await create({
             query_params: {},
             fn: (d) => new PlaceAPIKeyDetails(d),
             path: 'api_keys',
             form_data: {
-                ...details.metadata,
+                ...api_key,
+                expires_at:
+                    (api_key.expires_at ?? api_key.ttl)
+                        ? getUnixTime(Date.now() + api_key.ttl)
+                        : undefined,
                 authority_id: domain.id,
             },
         }).catch((_) => {
@@ -141,7 +147,7 @@ export class APIKeyService {
                 notifyError('Unable to load current user details.');
                 return;
             }
-            const scopes = ['public'];
+            const scopes = await this._scopes();
             if (!scopes.length) {
                 notifyError('Unable to load API key scopes.');
                 return;
@@ -155,9 +161,9 @@ export class APIKeyService {
                     description: `Created for ${this._userLabel(user)}`,
                     scopes,
                     user_id: user.id,
-                    permissions: this._userPermissions(user),
+                    permissions: 'user',
                     authority_id: domain.id,
-                    ttl: 86400, // expire 1 day from creation
+                    expires_at: getUnixTime(addDays(Date.now(), 1)), // expire 1 day from creation
                 },
             }).catch((_) => {
                 notifyError(_);
@@ -243,9 +249,5 @@ export class APIKeyService {
 
     private _userLabel(user: PlaceUser) {
         return user?.name || user?.email || 'Current User';
-    }
-
-    private _userPermissions(user: PlaceUser): 'user' | 'support' | 'admin' {
-        return user?.sys_admin ? 'admin' : user?.support ? 'support' : 'user';
     }
 }

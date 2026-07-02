@@ -183,7 +183,11 @@ import { APIKeyService } from './api-keys.service';
             <div class="p-4">
                 @if (data) {
                     <span [class.text-error]="isExpired(data)">
-                        {{ +data * 1000 | dateFrom }}
+                        {{
+                            isExpired(data)
+                                ? 'Expired'
+                                : (+data * 1000 | dateFrom)
+                        }}
                     </span>
                 } @else {
                     <span class="opacity-30">{{

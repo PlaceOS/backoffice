@@ -92,7 +92,7 @@ describe('APIKeyService', () => {
                     description: 'Created for Ada Lovelace',
                     scopes: ['public', 'admin'],
                     user_id: 'user-1',
-                    permissions: 'admin',
+                    permissions: 'user',
                     authority_id: 'authority-1',
                     ttl: 86400,
                 },
