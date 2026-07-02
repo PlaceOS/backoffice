@@ -45,7 +45,7 @@ export interface ModuleLike {
                     (ngModelChange)="setValue($event)"
                     (openedChange)="setOpen($event)"
                 >
-                    <mat-option class="relative hover:bg-transparent!">
+                    <mat-option class="bg-base-100 sticky -top-2 z-20">
                         <input
                             #module_search
                             matInput
@@ -55,7 +55,7 @@ export interface ModuleLike {
                             (mousedown)="$event.stopPropagation()"
                             (click)="$event.stopPropagation()"
                             (keydown)="$event.stopPropagation()"
-                            class="module-search-input pointer-event-auto focus:bg-base-200/30 absolute inset-1 h-auto w-[calc(100%-0.5rem)] cursor-text rounded-sm p-4"
+                            class="module-search-input pointer-event-auto focus:bg-info/10 absolute inset-1 h-auto w-[calc(100%-0.5rem)] cursor-text rounded-sm p-4"
                             [placeholder]="
                                 'COMMON.SEARCH_FOR'
                                     | translate: { name: 'modules' }

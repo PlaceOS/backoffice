@@ -49,17 +49,16 @@ interface MethodOption extends PlaceModuleFunction {
                         (ngModelChange)="setValue($event)"
                         (openedChange)="setOpen($event)"
                     >
-                        <mat-option class="relative hover:bg-transparent!">
+                        <mat-option class="hover:bg-base-100! sticky -top-2">
                             <input
                                 #method_search
-                                matInput
                                 name="method-search"
                                 [ngModel]="method_filter()"
                                 (ngModelChange)="method_filter.set($event)"
                                 (mousedown)="$event.stopPropagation()"
                                 (click)="$event.stopPropagation()"
                                 (keydown)="$event.stopPropagation()"
-                                class="method-search-input pointer-event-auto focus:bg-base-200/30 absolute inset-1 h-auto w-[calc(100%-0.5rem)] cursor-text rounded-sm p-4"
+                                class="method-search-input pointer-event-auto focus:bg-info/10 absolute inset-1 h-auto w-[calc(100%-0.5rem)] cursor-text rounded-sm p-4"
                                 [placeholder]="
                                     'COMMON.SEARCH_FOR'
                                         | translate: { name: 'methods' }
