@@ -90,7 +90,7 @@ describe('APIKeyService', () => {
                 form_data: {
                     name: 'Ada Lovelace API Key',
                     description: 'Created for Ada Lovelace',
-                    scopes: ['public', 'admin'],
+                    scopes: ['public'],
                     user_id: 'user-1',
                     permissions: 'user',
                     authority_id: 'authority-1',
