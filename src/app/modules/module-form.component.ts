@@ -20,6 +20,7 @@ import {
     queryDrivers,
     queryEdges,
     querySystems,
+    showSystem,
     updateModule,
 } from '@placeos/ts-client';
 
@@ -151,10 +152,7 @@ import {
                         <div class="fieldset">
                             @if (
                                 form.ip &&
-                                !(
-                                    role() === 'service' ||
-                                    role() === 'websocket'
-                                )
+                                (role() === 'ssh' || role() === 'device')
                             ) {
                                 <div class="field">
                                     <label
@@ -165,12 +163,7 @@ import {
                                         "
                                     >
                                         {{ 'MODULES.FIELD_IP' | translate }}
-                                        @if (
-                                            role() === 'ssh' ||
-                                            role() === 'device'
-                                        ) {
-                                            <span> * </span>
-                                        }
+                                        <span> * </span>
                                     </label>
                                     <mat-form-field appearance="outline">
                                         <input
@@ -191,10 +184,7 @@ import {
                             }
                             @if (
                                 form.port &&
-                                !(
-                                    role() === 'service' ||
-                                    role() === 'websocket'
-                                )
+                                (role() === 'ssh' || role() === 'device')
                             ) {
                                 <div class="field">
                                     <label
@@ -205,12 +195,7 @@ import {
                                         "
                                     >
                                         {{ 'MODULES.PORT_NUMBER' | translate }}
-                                        @if (
-                                            role() === 'ssh' ||
-                                            role() === 'device'
-                                        ) {
-                                            <span> * </span>
-                                        }
+                                        <span> * </span>
                                     </label>
                                     <mat-form-field appearance="outline">
                                         <input
@@ -237,10 +222,7 @@ import {
                         <div class="-mx-2 mb-4 flex flex-wrap items-center">
                             @if (
                                 form.tls &&
-                                !(
-                                    role() === 'service' ||
-                                    role() === 'websocket'
-                                )
+                                (role() === 'ssh' || role() === 'device')
                             ) {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
@@ -250,10 +232,7 @@ import {
                             }
                             @if (
                                 form.udp &&
-                                !(
-                                    role() === 'service' ||
-                                    role() === 'websocket'
-                                )
+                                (role() === 'ssh' || role() === 'device')
                             ) {
                                 <settings-toggle
                                     class="m-2 max-w-1/2 min-w-[40%] flex-1"
@@ -419,6 +398,13 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
             'save_item_key',
             this._hotkey.listen(['KeyS'], () => this.submit()),
         );
+        const { system, control_system_id } = this.formModel();
+        if (control_system_id && !system) {
+            showSystem(control_system_id).then(
+                (sys) => this.formModel.update((v) => ({ ...v, system: sys })),
+                () => null,
+            );
+        }
     }
 
     constructor() {
@@ -435,20 +421,21 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
         });
         effect(() => {
             const model = this.formModel();
-            const system_id = model.system?.id || '';
-            if (system_id !== model.control_system_id) {
+            // `system` is a UI-only object; `null` means "not loaded yet",
+            // not "cleared" — so only sync the id from a real selection.
+            if (model.system && model.system.id !== model.control_system_id) {
                 this.formModel.update((value) => ({
                     ...value,
-                    control_system_id: system_id,
+                    control_system_id: model.system.id,
                 }));
             }
         });
         effect(() => {
             const edge = this.formModel().edge;
-            if ((edge?.id || '') !== this.formModel().edge_id) {
+            if (edge && edge.id !== this.formModel().edge_id) {
                 this.formModel.update((value) => ({
                     ...value,
-                    edge_id: edge?.id || '',
+                    edge_id: edge.id,
                 }));
             }
         });
@@ -463,7 +450,9 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
                     ? false
                     : model.udp;
             const system =
-                driver.role === PlaceDriverRole.Logic ? model.system : undefined;
+                driver.role === PlaceDriverRole.Logic
+                    ? model.system
+                    : undefined;
             if (
                 model.driver_id === driver.id &&
                 model.name === (driver.name || driver.module_name) &&

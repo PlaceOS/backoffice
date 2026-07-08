@@ -6,13 +6,7 @@ import {
     PlaceSystem,
 } from '@placeos/ts-client';
 
-import {
-    max,
-    min,
-    required,
-    SchemaFn,
-    validate,
-} from '@angular/forms/signals';
+import { max, min, required, SchemaFn, validate } from '@angular/forms/signals';
 import { validateIpAddress, validateURI } from '../common/validation';
 
 export interface ModuleFormModel {
@@ -54,7 +48,9 @@ export function generateModuleFormModel(mod?: PlaceModule): ModuleFormModel {
         // `null` (not `undefined`) so signal forms materialise the field,
         // otherwise `form.driver`/`form.system`/`form.edge` are undefined and
         // their template controls never render for new modules.
-        system: mod?.system ?? null,
+        // NOTE: PlaceModule always constructs `system`, even when the API
+        // omitted it — an empty id means "not loaded", not "no system".
+        system: mod?.system?.id ? mod.system : null,
         control_system_id: mod?.control_system_id || '',
         role: mod?.role || PlaceDriverRole.Logic,
         driver: null,
@@ -66,8 +62,24 @@ export function generateModuleFormModel(mod?: PlaceModule): ModuleFormModel {
 
 export const applyModuleFormSchema: SchemaFn<ModuleFormModel> = (path) => {
     required(path.driver_id);
-    min(path.port, 1);
-    max(path.port, 65535);
+    // Only device/ssh modules expose the port field, so only they should be
+    // blocked by an out-of-range value (new modules default to port 0)
+    min(path.port, 1, {
+        when({ valueOf }) {
+            const role = valueOf(path.role);
+            return (
+                role === PlaceDriverRole.Device || role === PlaceDriverRole.SSH
+            );
+        },
+    });
+    max(path.port, 65535, {
+        when({ valueOf }) {
+            const role = valueOf(path.role);
+            return (
+                role === PlaceDriverRole.Device || role === PlaceDriverRole.SSH
+            );
+        },
+    });
     validate(path.ip, ({ value }) =>
         validateIpAddress({ value: value() })
             ? { kind: 'pattern', message: 'Invalid IP address' }
@@ -90,13 +102,17 @@ export const applyModuleFormSchema: SchemaFn<ModuleFormModel> = (path) => {
     required(path.ip, {
         when({ valueOf }) {
             const role = valueOf(path.role);
-            return role === PlaceDriverRole.Device || role === PlaceDriverRole.SSH;
+            return (
+                role === PlaceDriverRole.Device || role === PlaceDriverRole.SSH
+            );
         },
     });
     required(path.port, {
         when({ valueOf }) {
             const role = valueOf(path.role);
-            return role === PlaceDriverRole.Device || role === PlaceDriverRole.SSH;
+            return (
+                role === PlaceDriverRole.Device || role === PlaceDriverRole.SSH
+            );
         },
     });
     required(path.system, {

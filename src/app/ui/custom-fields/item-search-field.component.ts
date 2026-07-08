@@ -306,9 +306,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
     }
 
     public ngOnInit(): void {
-        this.timeout('init', () => {
-            this.search_str.set('');
-        });
+        this.timeout('init', () => this.resetSearchString());
     }
 
     public ngOnChanges(changes: SimpleChanges): void {

@@ -207,7 +207,9 @@ export class ActiveItemService extends AsyncHandler {
                 Object.values(ACTIONS).find(
                     (v) => item instanceof v.itemConstructor,
                 ) || this.actions;
-            if (item.id) {
+            // The active item was already fully loaded by `setItem`; only
+            // reload items passed in from lists (partial `fields` queries)
+            if (item.id && item !== this._active_item()) {
                 item = (await actions.show(item.id)) as T;
             }
             return new Promise<T>((resolve) => {
