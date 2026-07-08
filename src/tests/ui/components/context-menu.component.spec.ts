@@ -37,14 +37,14 @@ describe('ContextMenuComponent', () => {
         it('should have position undefined before ngOnInit', () => {
             const new_component = TestBed.createComponent(ContextMenuComponent)
                 .componentInstance;
-            expect(new_component.position).toBeUndefined();
+            expect(new_component.position()).toBeNull();
         });
     });
 
     describe('ngOnInit', () => {
         it('should initialize position to { top: 0, left: 0 }', () => {
             component.ngOnInit();
-            expect(component.position).toEqual({ top: 0, left: 0 });
+            expect(component.position()).toEqual({ top: 0, left: 0 });
         });
     });
 
@@ -72,8 +72,8 @@ describe('ContextMenuComponent', () => {
 
             component.onEvent(event);
 
-            expect(component.position.left).toBe(100);
-            expect(component.position.top).toBe(150);
+            expect(component.position()?.left).toBe(100);
+            expect(component.position()?.top).toBe(150);
         });
 
         it('should apply offset_x to position', () => {
@@ -89,7 +89,7 @@ describe('ContextMenuComponent', () => {
 
             component.onEvent(event);
 
-            expect(component.position.left).toBe(110);
+            expect(component.position()?.left).toBe(110);
         });
 
         it('should apply offset_y to position', () => {
@@ -105,7 +105,7 @@ describe('ContextMenuComponent', () => {
 
             component.onEvent(event);
 
-            expect(component.position.top).toBe(170);
+            expect(component.position()?.top).toBe(170);
         });
     });
 
@@ -114,7 +114,7 @@ describe('ContextMenuComponent', () => {
             component.ngOnInit();
             // updatePosition will schedule a timeout if container is missing
             component.updatePosition();
-            expect(component.position).toEqual({ top: 0, left: 0 });
+            expect(component.position()).toEqual({ top: 0, left: 0 });
         });
     });
 

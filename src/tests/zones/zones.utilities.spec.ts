@@ -9,7 +9,7 @@ describe('zones.utilities', () => {
                 name: '',
                 tags: [],
                 description: '',
-                parent_zone: undefined,
+                parent_zone: null,
                 parent_id: '',
                 location: '',
                 display_name: '',

@@ -42,7 +42,7 @@ describe('systems.utilities', () => {
                 images: [],
                 map_id: '',
                 timezone: '',
-                zone: undefined,
+                zone: null,
                 zones: [],
             });
         });
