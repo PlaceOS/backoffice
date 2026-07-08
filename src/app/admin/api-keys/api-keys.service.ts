@@ -159,7 +159,7 @@ export class APIKeyService {
                 form_data: {
                     name: `${this._userLabel(user)} API Key`,
                     description: `Created for ${this._userLabel(user)}`,
-                    scopes,
+                    scopes: ['public'],
                     user_id: user.id,
                     permissions: 'user',
                     authority_id: domain.id,
