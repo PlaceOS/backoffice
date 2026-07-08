@@ -1,1 +1,0 @@
-function r(t,n){if(!t)return;let i=n.input,e=(n.value||"").trim(),o=t.value;e&&(o.push(e),t.setValue(o)),i&&(i.value="")}function u(t,n){if(!t)return;let i=t.value,e=i.indexOf(n);e>=0&&(i.splice(e,1),t.setValue(i))}export{r as a,u as b};

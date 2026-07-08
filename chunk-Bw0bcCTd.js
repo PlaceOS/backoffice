@@ -1,0 +1,1 @@
+import {ed as LU,f0 as ED}from'./main-LE72K5L5.js';var n=[],m=class a{async transform(e){if(!e)return {};let r=n.find(s=>s.id===e||s.email===e||s.card_number===e);return r||(r=await LU(e),n.push(r)),r}static \u0275fac=function(r){return new(r||a)};static \u0275pipe=ED({name:"user",type:a,pure:true})};export{m};

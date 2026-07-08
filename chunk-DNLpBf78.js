@@ -1,0 +1,1 @@
+import {c3 as Y,c4 as I}from'./main-LE72K5L5.js';function u(t,e,o){let i=Y(t,o?.in);return i.setTime(i.getTime()+e*I),i}function p(t,e,o){return u(t,-e,o)}export{p,u};
