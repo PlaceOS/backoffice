@@ -265,7 +265,9 @@ export class AdminPage extends BasePage {
      * Get the API key add button
      */
     get apiKeyAddButton(): Locator {
-        return this.page.locator('button:has-text("Add App Key")').first();
+        return this.page
+            .locator('admin-api-keys button:has(icon:has-text("add"))')
+            .first();
     }
 
     /**

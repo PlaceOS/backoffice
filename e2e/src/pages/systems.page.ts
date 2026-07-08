@@ -166,10 +166,8 @@ export class SystemsPage extends BasePage {
      * Select a zone from the autocomplete combobox
      */
     async selectZone(zoneName: string): Promise<void> {
-        const zoneInput = this.page
-            .locator(
-                'input[placeholder*="zone" i], combobox[placeholder*="zone" i]',
-            )
+        const zoneInput = this.dialog
+            .locator('item-search-field input[name="item-search"]')
             .first();
         await zoneInput.click();
         await zoneInput.fill(zoneName);
@@ -185,10 +183,8 @@ export class SystemsPage extends BasePage {
      * Select the first available zone from the dropdown
      */
     async selectFirstZone(): Promise<void> {
-        const zoneInput = this.page
-            .locator(
-                'input[placeholder*="zone" i], combobox[placeholder*="zone" i]',
-            )
+        const zoneInput = this.dialog
+            .locator('item-search-field input[name="item-search"]')
             .first();
         await zoneInput.click();
         await this.page.waitForTimeout(500);
