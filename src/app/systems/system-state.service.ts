@@ -65,6 +65,7 @@ export class SystemStateService extends AsyncHandler {
 
     private _loading = signal<HashMap<boolean>>({});
     private _modules = signal<PlaceModule[]>([]);
+    private _last_module_system = '';
     private _change = signal(0);
 
     private readonly _associated_settings = resource({
@@ -126,8 +127,14 @@ export class SystemStateService extends AsyncHandler {
         params: () => ({ item: this.item(), changed: this._change() }),
         loader: async ({ params }) => {
             const { item } = params;
-            this._modules.set([]);
-            if (!(item instanceof PlaceSystem)) return [] as PlaceModule[];
+            if (!(item instanceof PlaceSystem)) {
+                this._last_module_system = '';
+                this._modules.set([]);
+                return [] as PlaceModule[];
+            }
+            // ponytail: only clear when switching systems so refreshes keep the old list visible
+            if (item.id !== this._last_module_system) this._modules.set([]);
+            this._last_module_system = item.id;
             this.setLoading('modules', true);
             try {
                 const response = await queryModules({
@@ -161,9 +168,10 @@ export class SystemStateService extends AsyncHandler {
         },
     });
     /** Signal for modules associated with system */
-    public readonly modules = computed(
-        () => this._module_resource.value() || [],
-    );
+    public readonly modules = computed(() => {
+        this._module_resource.value(); // keep resource live; _modules holds the last loaded list
+        return this._modules();
+    });
 
     /** Signal for debug state of the active modules */
     public readonly debug_state = computed(() => {

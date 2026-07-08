@@ -124,7 +124,12 @@ import { SystemStateService } from './system-state.service';
                         }
                     }
                 </mat-menu>
-                <div [context-menu]="context_menu" class="flex">
+                <div
+                    [context-menu]="context_menu"
+                    class="flex"
+                    [class.pointer-events-none]="loading().modules"
+                    [class.opacity-60]="loading().modules"
+                >
                     <simple-table
                         class="block min-w-312 text-sm"
                         [data]="modules"
