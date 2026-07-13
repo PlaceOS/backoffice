@@ -1,66 +1,82 @@
 # PlaceOS Backoffice
 
-![PROD](https://github.com/PlaceOS/backoffice/workflows/PROD/badge.svg)
-![UAT](https://github.com/PlaceOS/backoffice/workflows/UAT/badge.svg)
-[![CodeFactor](https://www.codefactor.io/repository/github/PlaceOS/backoffice/badge/master)](https://www.codefactor.io/repository/github/PlaceOS/backoffice/overview/master)
+[![Build](https://github.com/PlaceOS/backoffice/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/PlaceOS/backoffice/actions/workflows/build.yml)
+[![Test](https://github.com/PlaceOS/backoffice/actions/workflows/test.yml/badge.svg?branch=develop)](https://github.com/PlaceOS/backoffice/actions/workflows/test.yml)
 
-An Angular 20 admin UI for managing PlaceOS building automation systems. Built with standalone components, zoneless change detection with signals, and PlaceOS backend API integration.
+The PlaceOS administration interface for managing systems, modules, drivers,
+zones, users, domains, repositories, triggers, and cluster settings.
 
-## Tech Stack
+Backoffice is built with Angular 22, standalone components, signals, zoneless
+change detection, and the PlaceOS TypeScript client.
 
-- **Framework**: Angular 20 with standalone components and signals
-- **Build**: Nx 22 + Vite 7 + @analogjs/vite-plugin-angular
-- **Testing**: Vitest (unit) + Playwright (E2E)
-- **Styling**: Tailwind CSS 4
-- **Backend**: @placeos/ts-client for PlaceOS REST API integration
-- **Real-time**: MQTT for dashboard updates
+## Requirements
 
-## Setup
+- [Bun 1.3.11](https://bun.sh/)
+- A PlaceOS backend (the development proxy uses `placeos-dev.aca.im` by default)
 
-1. Install [Bun](https://bun.sh/)
-2. Run `bun install` in the root folder
-
-## Development
+## Getting started
 
 ```bash
-bun run start               # Dev server at localhost:4200
+bun install
+bun run start
 ```
 
-The dev server proxies requests to the configured PlaceOS backend (see `config/proxy.conf.js`).
+Open [http://localhost:4200](http://localhost:4200). `bun install` also generates
+the local version metadata used by the application.
 
-## Build
+To use another PlaceOS backend, update `domain`, `secure`, and `valid_ssl` in
+[`config/proxy.conf.js`](config/proxy.conf.js), then restart the development
+server.
+
+## Commands
 
 ```bash
-bun run build               # Production build
+bun run start      # Start the development server on port 4200
+bun run build      # Create a production build
+bun run lint       # Run ESLint
+bun run test       # Run the Vitest unit tests
+bun run test:ci    # Run the unit-test command used in CI
 ```
 
-Production builds output to `dist/backoffice/browser`.
+Production builds are written to `dist/backoffice/browser`.
 
-## Testing
+Install the Playwright browsers once before running the end-to-end tests:
 
 ```bash
-bun run test                # Unit tests (Vitest)
-bun run test:ci             # Unit tests in CI mode
 bunx playwright install --with-deps
-bun run e2e                 # E2E tests (Playwright)
+bun run e2e
 ```
 
-## Linting
+See [`e2e/README.md`](e2e/README.md) for browser selection, live-environment
+configuration, and focused test commands.
 
-```bash
-bun run lint                # ESLint
-```
+## Project layout
 
-## Project Structure
-
-```
+```text
 src/app/
-├── common/           # Shared utilities and services
-├── ui/               # Shared UI components and guards
-├── overlays/         # Modal/dialog components
-└── [features]/       # Feature modules (systems, domains, drivers,
-                      # modules, repositories, triggers, users, zones, etc.)
+├── common/       Shared services, API setup, signals, and utilities
+├── ui/           Reusable components, form controls, pipes, and guards
+├── overlays/     Shared dialogs and overlays
+├── admin/        Cluster and platform administration
+└── <feature>/    Feature routes, components, utilities, and state services
+
+src/tests/        Vitest unit tests
+e2e/             Playwright tests and page objects
+user-stories/    Feature behaviour and acceptance criteria
+config/          Development proxy and build metadata scripts
 ```
+
+Most feature areas are lazy-loaded from `src/app/app.routes.ts`. The application
+uses hash-based routing and enables its service worker only in production.
+
+## Stack
+
+- Angular 22 and Angular Material
+- Nx 22 with the Angular application builder
+- Vitest and Playwright
+- Tailwind CSS 4
+- `@placeos/ts-client` for PlaceOS APIs
+- MQTT for real-time updates
 
 ## License
 
