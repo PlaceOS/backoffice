@@ -145,7 +145,7 @@ const modules: ItemActions<PlaceModule> = {
     query: (_) =>
         queryModules({
             q: _,
-            fields: ['id', 'name', 'module_name'].join(','),
+            fields: ['id', 'name', 'custom_name', 'module_name'].join(','),
         }),
     show: (_) => showModule(_),
     save: (item) => (item.id ? updateModule(item.id, item) : addModule(item)),

@@ -14,7 +14,7 @@ const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
     if (q.q) {
         match =
             match &&
-            `${item.name || ''}`
+            `${item.name || ''} ${item.custom_name || ''}`
                 .toLowerCase()
                 .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
     }

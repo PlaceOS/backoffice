@@ -237,7 +237,7 @@ describe('actions.ts', () => {
             ACTIONS.modules.query('test');
             expect(client.queryModules).toHaveBeenCalledWith({
                 q: 'test',
-                fields: 'id,name,module_name',
+                fields: 'id,name,custom_name,module_name',
             });
         });
 
