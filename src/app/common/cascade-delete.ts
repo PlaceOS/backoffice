@@ -358,10 +358,9 @@ export async function planDomainCascade(
     }
 
     const zone_plan = await planZoneCascade(org_zone_id);
-    plan.scope.push(
-        i18n('CASCADE.SCOPE_ORG_ZONE', { name: org_zone.name }),
-        ...zone_plan.scope,
-    );
+    // The org zone line already says "and everything beneath it", so the zone
+    // plan's own scope line would just repeat it.
+    plan.scope.push(i18n('CASCADE.SCOPE_ORG_ZONE', { name: org_zone.name }));
     plan.summary.push(...zone_plan.summary, i18n('CASCADE.REMOVE_ORG_ZONE'));
     plan.warnings.push(...zone_plan.warnings);
     plan.steps.push(...zone_plan.steps, {

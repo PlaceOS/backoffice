@@ -392,6 +392,10 @@ describe('cascade-delete', () => {
             );
 
             expect(plan.summary).toContain('CASCADE.REMOVE_ORG_ZONE');
+            // one scope line, not the org zone's plus the zone plan's own
+            expect(plan.scope).toEqual([
+                'CASCADE.SCOPE_ORG_ZONE:{"name":"ORG Acme"}',
+            ]);
             expect(plan.steps.length).toBe(2);
             // systems must go before the zone they belong to
             await plan.steps[0].run();
