@@ -346,7 +346,7 @@
         "ADD": "Add zone",
         "EDIT": "Edit zone",
         "DELETE": "Delete zone",
-        "DELETE_MSG": "<p>Are you sure you want delete this zone?</p><p>Deleting this zone will <strong>immediately</strong> remove systems without another zone</p>",
+        "DELETE_MSG": "<p>Are you sure you want delete this zone?</p><p>Zones beneath it, its triggers, metadata and settings are removed <strong>immediately</strong>. Systems in this zone are kept unless you also remove associated resources.</p>",
         "DELETE_LOADING": "Deleting zone...",
         "DELETE_SUCCESS": "Successfully deleted zone.",
         "DELETE_ERROR": "Failed to delete zone. Error: {{ error }}",
@@ -385,7 +385,9 @@
         "TRIGGERS_EMPTY": "No triggers for selected zone",
         "PARENT_ZONE": "Parent Zone",
         "NAME_REQUIRED": "A unique zone name is required",
-        "DISPLAY_NAME": "Display name"
+        "DISPLAY_NAME": "Display name",
+        "DELETE_CASCADE": "Also delete associated resources",
+        "DELETE_CASCADE_DESC": "Removes systems that would be left without any zone, along with the modules, triggers and settings belonging to them."
     },
     "DRIVERS": {
         "SINGULAR": "Driver",
@@ -645,7 +647,7 @@
         "BULK": "Bulk add domains",
         "REMOVE": "Remove domain",
         "DELETE": "Delete domain",
-        "DELETE_MSG": "<p>Are you sure you want delete this domain?</p><p>The domain will be deleted <strong>immediately.</strong></p>",
+        "DELETE_MSG": "<p>Are you sure you want delete this domain?</p><p>Its users, auth sources and groups are removed <strong>immediately</strong>.</p>",
         "DELETE_LOADING": "Deleting domain...",
         "DELETE_SUCCESS": "Successfully deleted domain.",
         "DELETE_ERROR": "Failed to delete domain. Error: {{ error }}",
@@ -750,7 +752,9 @@
         "APP_SCOPES": "Access Scopes",
         "APP_SUBSYSTEMS": "Subsystems",
         "APP_REDIRECT_URL": "Redirect URL",
-        "APP_REDIRECT_URL_REQUIRED": "A valid URL is required"
+        "APP_REDIRECT_URL_REQUIRED": "A valid URL is required",
+        "DELETE_CASCADE": "Also delete associated resources",
+        "DELETE_CASCADE_DESC": "Removes this domain's OAuth applications and staff API tenant, plus its org zone tree when no other domain uses it."
     },
     "ADMIN": {
         "TITLE": "Admin",
@@ -990,5 +994,35 @@
         "UPLOADS_LIB_FIELD_TYPE": "File Type",
         "UPLOADS_LIB_FIELD_SIZE": "Size",
         "UPLOADS_LIB_LIST_EMPTY": "No uploads for the selected domain"
+    },
+    "CASCADE": {
+        "RESOLVING": "Working out what would be removed...",
+        "NOTHING": "Nothing else to remove.",
+        "SCOPE_ZONES": "Scope: this zone and {{ count }} zones beneath it.",
+        "SCOPE_ZONES_1": "Scope: this zone and {{ count }} zone beneath it.",
+        "SCOPE_ORG_ZONE": "Scope: org zone \"{{ name }}\" and everything beneath it.",
+        "REMOVE_SYSTEMS": "{{ count }} systems left without a zone",
+        "REMOVE_SYSTEMS_1": "{{ count }} system left without a zone",
+        "REMOVE_MODULES": "{{ count }} modules in those systems (any also used by a system being kept will remain)",
+        "REMOVE_MODULES_1": "{{ count }} module in those systems (kept if another system also uses it)",
+        "REMOVE_APPLICATIONS": "{{ count }} OAuth applications",
+        "REMOVE_APPLICATIONS_1": "{{ count }} OAuth application",
+        "REMOVE_TENANTS": "{{ count }} staff API tenants, with their bookings, guests and survey data",
+        "REMOVE_TENANTS_1": "{{ count }} staff API tenant, with its bookings, guests and survey data",
+        "REMOVE_ORG_ZONE": "the org zone and every zone beneath it",
+        "KEEP_SYSTEMS": "{{ count }} systems also belong to zones outside this one and will be kept.",
+        "KEEP_SYSTEMS_1": "{{ count }} system also belongs to a zone outside this one and will be kept.",
+        "NO_ORG_ZONE": "This domain has no \"org_zone\" configured, so no zones can be matched to it. Delete its zones from the Zones page instead.",
+        "ORG_ZONE_SHARED": "The org zone is also used by {{ names }}, so it will be left alone. Delete it from the Zones page if that is what you want.",
+        "ORG_ZONE_MISSING": "The configured org zone ({{ id }}) no longer exists, so no zones will be removed.",
+        "REMOVING_SYSTEM": "Removing system \"{{ name }}\"",
+        "REMOVING_APPLICATION": "Removing application \"{{ name }}\"",
+        "REMOVING_TENANT": "Removing staff API tenant \"{{ name }}\"",
+        "REMOVING_ZONE": "Removing zone \"{{ name }}\"",
+        "PROGRESS": "{{ step }} ({{ index }} of {{ total }})",
+        "SUCCESS": "Removed {{ count }} associated resources.",
+        "SUCCESS_1": "Removed {{ count }} associated resource.",
+        "FAILED": "Failed to remove {{ count }} associated resources, so nothing further was deleted. Error: {{ error }}",
+        "FAILED_1": "Failed to remove {{ count }} associated resource, so nothing further was deleted. Error: {{ error }}"
     }
 }

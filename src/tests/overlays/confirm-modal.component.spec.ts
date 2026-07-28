@@ -212,6 +212,155 @@ describe('ConfirmModalComponent', () => {
         });
     });
 
+    describe('with options', () => {
+        let details: ReturnType<typeof vi.fn>;
+        let resolve_details: (value: unknown) => void;
+
+        const build = async (option_overrides = {}) => {
+            await TestBed.resetTestingModule();
+            await TestBed.configureTestingModule({
+                imports: [
+                    ConfirmModalComponent,
+                    MatDialogModule,
+                    NoopAnimationsModule,
+                ],
+                providers: [
+                    { provide: MatDialogRef, useValue: dialog_ref_mock },
+                    {
+                        provide: MAT_DIALOG_DATA,
+                        useValue: {
+                            ...default_data,
+                            options: [
+                                {
+                                    id: 'cascade',
+                                    label: 'Also delete associated resources',
+                                    description: 'Removes orphaned systems',
+                                    details,
+                                    ...option_overrides,
+                                },
+                            ],
+                        },
+                    },
+                ],
+            })
+                .overrideComponent(ConfirmModalComponent, {
+                    remove: { imports: [IconComponent] },
+                    add: { imports: [mockComponent(IconComponent)] },
+                })
+                .compileComponents();
+            fixture = TestBed.createComponent(ConfirmModalComponent);
+            component = fixture.componentInstance;
+            fixture.detectChanges();
+        };
+
+        beforeEach(async () => {
+            details = vi.fn(
+                () =>
+                    new Promise((resolve) => {
+                        resolve_details = resolve;
+                    }),
+            );
+            await build();
+        });
+
+        it('should start with the option disabled', () => {
+            expect(component.isSelected('cascade')).toBe(false);
+        });
+
+        it('should honour an option that defaults to enabled', async () => {
+            await build({ enabled: true });
+            expect(component.isSelected('cascade')).toBe(true);
+        });
+
+        it('should not resolve details until the option is enabled', () => {
+            expect(details).not.toHaveBeenCalled();
+        });
+
+        it('should resolve details when the option is enabled', async () => {
+            component.toggleOption(component.options[0], true);
+            expect(details).toHaveBeenCalledOnce();
+            expect(component.isLoadingDetails('cascade')).toBe(true);
+            expect(component.resolving()).toBe(true);
+
+            resolve_details({ summary: ['2 systems'], warnings: [] });
+            await Promise.resolve();
+            await Promise.resolve();
+
+            expect(component.resolving()).toBe(false);
+            expect(component.detailsFor('cascade')).toEqual({
+                summary: ['2 systems'],
+                warnings: [],
+            });
+        });
+
+        it('should only resolve details once', async () => {
+            component.toggleOption(component.options[0], true);
+            resolve_details({ summary: [] });
+            await Promise.resolve();
+            await Promise.resolve();
+            component.toggleOption(component.options[0], false);
+            component.toggleOption(component.options[0], true);
+            expect(details).toHaveBeenCalledOnce();
+        });
+
+        it('should surface a failure to resolve details', async () => {
+            details.mockImplementation(() =>
+                Promise.reject(new Error('lookup failed')),
+            );
+            await build();
+            component.toggleOption(component.options[0], true);
+            await Promise.resolve();
+            await Promise.resolve();
+            await Promise.resolve();
+            expect(component.detailsError('cascade')).toBe('lookup failed');
+            expect(component.resolving()).toBe(false);
+        });
+
+        it('should block confirmation while details are resolving', () => {
+            const event_spy = vi.fn();
+            component.event.subscribe(event_spy);
+            component.toggleOption(component.options[0], true);
+
+            component.onConfirm();
+
+            expect(event_spy).not.toHaveBeenCalled();
+        });
+
+        it('should report the selection on confirmation', () => {
+            const event_spy = vi.fn();
+            component.event.subscribe(event_spy);
+
+            component.onConfirm();
+
+            expect(event_spy).toHaveBeenCalledWith({
+                reason: 'done',
+                metadata: { options: { cascade: false } },
+            });
+        });
+
+        it('should report an enabled selection on confirmation', async () => {
+            await build({ enabled: true, details: undefined });
+            const event_spy = vi.fn();
+            component.event.subscribe(event_spy);
+
+            component.onConfirm();
+
+            expect(event_spy).toHaveBeenCalledWith({
+                reason: 'done',
+                metadata: { options: { cascade: true } },
+            });
+        });
+
+        it('should render the option checkbox', () => {
+            const option_el =
+                fixture.nativeElement.querySelector('[confirm-option]');
+            expect(option_el).toBeTruthy();
+            expect(option_el.textContent).toContain(
+                'Also delete associated resources',
+            );
+        });
+    });
+
     describe('disableClose/enableClose', () => {
         it('should set disableClose to true when calling disableClose', () => {
             expect(dialog_ref_mock.disableClose).toBe(false);

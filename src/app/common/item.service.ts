@@ -26,10 +26,14 @@ import { DuplicateModalComponent } from '../overlays/duplicate-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
 import { ACTIONS, ItemActions } from './actions';
 import { AsyncHandler } from './async-handler.class';
+import { CascadePlan, runCascade } from './cascade-delete';
 import { log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
 import { waitForEvent } from './signals';
+
+/** Id the "also delete associated resources" toggle is reported under */
+const CASCADE_OPTION = 'cascade';
 
 export type ResourceType =
     | 'domains'
@@ -246,57 +250,108 @@ export class ActiveItemService extends AsyncHandler {
     public async delete() {
         if (!this._user.current().sys_admin) return;
         const item = this._active_item();
-        if (item) {
-            const ref = this._dialog.open<
-                ConfirmModalComponent,
-                ConfirmModalData
-            >(ConfirmModalComponent, {
+        if (!item) return;
+        const actions = this.actions;
+        const cascade = actions.cascade;
+        // Resolved lazily, only if the user enables the option — a cascade
+        // plan walks the whole zone subtree, which is not free.
+        let plan: CascadePlan | null = null;
+        const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+            ConfirmModalComponent,
+            {
                 ...CONFIRM_METADATA,
                 data: {
-                    title: i18n(`${this.actions.name}.DELETE`),
-                    content: i18n(`${this.actions.name}.DELETE_MSG`, {
+                    title: i18n(`${actions.name}.DELETE`),
+                    content: i18n(`${actions.name}.DELETE_MSG`, {
                         name:
                             (item as PlaceResource & { display_name?: string })
                                 .display_name || item.name,
                     }),
-                    extra: this.actions.delete_extra
-                        ? await this.actions.delete_extra(item)
+                    extra: actions.delete_extra
+                        ? await actions.delete_extra(item)
                         : null,
+                    options: cascade
+                        ? [
+                              {
+                                  id: CASCADE_OPTION,
+                                  label: i18n(cascade.label),
+                                  description: i18n(cascade.description),
+                                  details: async () => {
+                                      plan = await cascade.plan(item);
+                                      const { scope, summary, warnings } =
+                                          plan;
+                                      return { scope, summary, warnings };
+                                  },
+                              },
+                          ]
+                        : undefined,
                     icon: { type: 'icon', content: 'delete' },
                 },
-            });
-            waitForEvent(
-                ref.componentInstance.event,
-                (e: DialogEvent) => e.reason === 'done',
-            ).then(async () => {
-                ref.componentInstance.loading.set(
-                    i18n(`${this.actions.name}.DELETE_LOADING`),
+            },
+        );
+        waitForEvent(
+            ref.componentInstance.event,
+            (e: DialogEvent) => e.reason === 'done',
+        ).then(async (event: DialogEvent<{ options?: HashMap<boolean> }>) => {
+            ref.componentInstance.loading.set(
+                i18n(`${actions.name}.DELETE_LOADING`),
+            );
+            if (event.metadata?.options?.[CASCADE_OPTION] && plan) {
+                const outcome = await runCascade(plan, (message) =>
+                    ref.componentInstance.loading.set(message),
                 );
-                await this.actions
-                    .remove(item)
-                    .then(() => {
-                        notifySuccess(
-                            i18n(`${this.actions.name}.DELETE_SUCCESS`, {
-                                name: item.name,
-                            }),
-                        );
-                        this._active_item.set(null);
-                        this.removeItem(item);
-                        this._router.navigate([`/${this._type}`, '-', 'about']);
-                        ref.close();
-                    })
-                    .catch((err) => {
-                        ref.componentInstance.loading.set('');
-                        notifyError(
-                            i18n(`${this.actions.name}.DELETE_ERROR`, {
-                                error: JSON.stringify(
-                                    err.response || err.message || err,
-                                ),
-                            }),
-                        );
-                    });
-            });
-        }
+                if (outcome.failures.length) {
+                    ref.componentInstance.loading.set('');
+                    return notifyError(
+                        i18n(
+                            'CASCADE.FAILED',
+                            {
+                                count: outcome.failures.length,
+                                error:
+                                    (outcome.failures[0].error as Error)
+                                        ?.message || outcome.failures[0].label,
+                            },
+                            outcome.failures.length,
+                        ),
+                    );
+                }
+                if (outcome.removed) {
+                    notifySuccess(
+                        i18n(
+                            'CASCADE.SUCCESS',
+                            { count: outcome.removed },
+                            outcome.removed,
+                        ),
+                    );
+                }
+                ref.componentInstance.loading.set(
+                    i18n(`${actions.name}.DELETE_LOADING`),
+                );
+            }
+            await actions
+                .remove(item)
+                .then(() => {
+                    notifySuccess(
+                        i18n(`${actions.name}.DELETE_SUCCESS`, {
+                            name: item.name,
+                        }),
+                    );
+                    this._active_item.set(null);
+                    this.removeItem(item);
+                    this._router.navigate([`/${this._type}`, '-', 'about']);
+                    ref.close();
+                })
+                .catch((err) => {
+                    ref.componentInstance.loading.set('');
+                    notifyError(
+                        i18n(`${actions.name}.DELETE_ERROR`, {
+                            error: JSON.stringify(
+                                err.response || err.message || err,
+                            ),
+                        }),
+                    );
+                });
+        });
     }
 
     public duplicate() {

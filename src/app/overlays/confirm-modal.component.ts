@@ -3,6 +3,7 @@ import {
     EventEmitter,
     OnInit,
     Output,
+    computed,
     inject,
     signal,
 } from '@angular/core';
@@ -13,6 +14,7 @@ import {
     MatDialogRef,
 } from '@angular/material/dialog';
 
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { lastValueFrom } from 'rxjs';
@@ -22,6 +24,37 @@ import { ApplicationIcon, DialogEvent } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
+/** Breakdown of what enabling a `ConfirmModalOption` would do */
+export interface ConfirmModalOptionDetails {
+    /** Lines describing the scope the option was resolved over */
+    scope?: string[];
+    /** Lines describing what will additionally be removed */
+    summary?: string[];
+    /** Lines describing what will deliberately be left alone */
+    warnings?: string[];
+}
+
+/** Opt-in toggle offered alongside the confirmation */
+export interface ConfirmModalOption {
+    /** Identifier the selection is reported under */
+    id: string;
+    /** Label displayed beside the checkbox */
+    label: string;
+    /** Explanatory text displayed under the checkbox */
+    description?: string;
+    /** Whether the option starts enabled. Defaults to `false` */
+    enabled?: boolean;
+    /**
+     * Resolves a breakdown of the option's effect. Run the first time the
+     * option is enabled so the cost is only paid when the user asks for it.
+     * Confirmation is blocked until it settles.
+     */
+    details?: () => Promise<ConfirmModalOptionDetails>;
+}
+
+/** Options selected on confirmation, keyed by `ConfirmModalOption.id` */
+export type ConfirmModalSelection = Record<string, boolean>;
+
 export interface ConfirmModalData {
     /** Title of the modal */
     title: string;
@@ -29,6 +62,8 @@ export interface ConfirmModalData {
     content: string;
     /** Contents of the modal */
     extra?: [string, string];
+    /** Opt-in toggles offered alongside the confirmation */
+    options?: ConfirmModalOption[];
     /** Text displaed on the confirmation button */
     confirm_text?: string;
     /** Text displaed on the confirmation button */
@@ -45,6 +80,7 @@ export const CONFIRM_METADATA = {
 
 export interface ConfirmRepsonse {
     reason: 'done' | '' | null;
+    metadata?: { options?: ConfirmModalSelection };
     loading: (_: string) => void;
     close: () => void;
 }
@@ -92,6 +128,81 @@ export async function openConfirmModal(
                     [class]="'text-' + extra[0] + ' text-center text-sm'"
                     [innerHTML]="extra[1]"
                 ></p>
+                @for (option of options; track option.id) {
+                    <div
+                        confirm-option
+                        class="border-base-200 bg-base-200/40 w-full space-y-2 rounded-sm border p-3"
+                        [attr.data-option]="option.id"
+                    >
+                        <mat-checkbox
+                            [name]="option.id"
+                            [checked]="isSelected(option.id)"
+                            (change)="toggleOption(option, $event.checked)"
+                        >
+                            {{ option.label }}
+                        </mat-checkbox>
+                        @if (option.description) {
+                            <p class="pl-8 text-xs opacity-60">
+                                {{ option.description }}
+                            </p>
+                        }
+                        @if (isSelected(option.id)) {
+                            <div class="pl-8 text-sm">
+                                @if (isLoadingDetails(option.id)) {
+                                    <div
+                                        details-loading
+                                        class="flex items-center space-x-2 opacity-60"
+                                    >
+                                        <mat-spinner diameter="16" />
+                                        <span>
+                                            {{
+                                                'CASCADE.RESOLVING' | translate
+                                            }}
+                                        </span>
+                                    </div>
+                                } @else if (detailsError(option.id)) {
+                                    <p class="text-error text-xs">
+                                        {{ detailsError(option.id) }}
+                                    </p>
+                                } @else if (detailsFor(option.id); as detail) {
+                                    @for (line of detail.scope; track line) {
+                                        <p class="text-xs opacity-60">
+                                            {{ line }}
+                                        </p>
+                                    }
+                                    @if (detail.summary?.length) {
+                                        <ul
+                                            details-summary
+                                            class="list-disc pl-4"
+                                        >
+                                            @for (
+                                                line of detail.summary;
+                                                track line
+                                            ) {
+                                                <li>{{ line }}</li>
+                                            }
+                                        </ul>
+                                    } @else {
+                                        <p
+                                            details-empty
+                                            class="text-xs opacity-60"
+                                        >
+                                            {{ 'CASCADE.NOTHING' | translate }}
+                                        </p>
+                                    }
+                                    @for (line of detail.warnings; track line) {
+                                        <p
+                                            details-warning
+                                            class="text-warning mt-1 text-xs"
+                                        >
+                                            {{ line }}
+                                        </p>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                }
             </main>
         } @else {
             <main loading>
@@ -120,6 +231,7 @@ export async function openConfirmModal(
                     matRipple
                     name="accept"
                     class="flex-1"
+                    [disabled]="resolving()"
                     (click)="onConfirm()"
                 >
                     {{ confirm_text | translate }}
@@ -130,6 +242,7 @@ export async function openConfirmModal(
     styles: [``],
     imports: [
         MatProgressSpinnerModule,
+        MatCheckboxModule,
         TranslatePipe,
         IconComponent,
         MatRippleModule,
@@ -162,6 +275,66 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
         class: 'material-symbols-rounded',
         content: 'done',
     };
+    /** Opt-in toggles offered alongside the confirmation */
+    public readonly options: ConfirmModalOption[] = this._data.options || [];
+
+    /** Currently enabled options, keyed by option id */
+    private readonly _selected = signal<ConfirmModalSelection>(
+        Object.fromEntries(
+            (this._data.options || []).map((option) => [
+                option.id,
+                !!option.enabled,
+            ]),
+        ),
+    );
+    /** Resolved breakdowns, keyed by option id */
+    private readonly _details = signal<
+        Record<string, ConfirmModalOptionDetails>
+    >({});
+    /** Options currently resolving their breakdown */
+    private readonly _resolving = signal<Record<string, boolean>>({});
+    /** Failures from resolving a breakdown, keyed by option id */
+    private readonly _errors = signal<Record<string, string>>({});
+
+    /** Whether any option is still resolving its breakdown */
+    public readonly resolving = computed(() =>
+        Object.values(this._resolving()).some((value) => value),
+    );
+
+    public readonly isSelected = (id: string) => !!this._selected()[id];
+    public readonly isLoadingDetails = (id: string) => !!this._resolving()[id];
+    public readonly detailsFor = (id: string) => this._details()[id];
+    public readonly detailsError = (id: string) => this._errors()[id];
+
+    /** Enable or disable an option, resolving its breakdown on first enable */
+    public toggleOption(option: ConfirmModalOption, enabled: boolean) {
+        this._selected.update((state) => ({ ...state, [option.id]: enabled }));
+        if (!enabled || !option.details || this._details()[option.id]) return;
+        this._errors.update((state) => ({ ...state, [option.id]: '' }));
+        this._resolving.update((state) => ({ ...state, [option.id]: true }));
+        option
+            .details()
+            .then((details) =>
+                this._details.update((state) => ({
+                    ...state,
+                    [option.id]: details,
+                })),
+            )
+            .catch((error) =>
+                this._errors.update((state) => ({
+                    ...state,
+                    [option.id]: `${
+                        (error as Error)?.message || error || 'Unknown error'
+                    }`,
+                })),
+            )
+            .finally(() =>
+                this._resolving.update((state) => ({
+                    ...state,
+                    [option.id]: false,
+                })),
+            );
+    }
     /** Prevent user from closing the modal */
     public readonly disableClose = () => (this._dialog_ref.disableClose = true);
     /** Allow the user to close the modal */
@@ -179,6 +352,13 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
 
     /** User confirmation of the content of the modal */
     public onConfirm() {
-        this.event.emit({ reason: 'done' });
+        if (this.resolving()) return;
+        // Only carry metadata when options were offered, so existing callers
+        // keep seeing the exact event they always have.
+        this.event.emit(
+            this.options.length
+                ? { reason: 'done', metadata: { options: this._selected() } }
+                : { reason: 'done' },
+        );
     }
 }

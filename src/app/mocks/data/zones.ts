@@ -305,6 +305,7 @@ export const ZONES = [
         triggers: [],
         created_at: 1543374809,
         id: 'zone-iIdF20naW0',
+        parent_id: 'zone-LEHeo501Er',
     },
     {
         name: 'L31 Activity Spaces',
@@ -389,6 +390,7 @@ export const ZONES = [
         triggers: ['trigger-WzXonXrB4G'],
         created_at: 1519368108,
         id: 'zone-WjDE_sLQy8',
+        parent_id: 'zone-QjLXbYUxuC',
     },
     {
         name: 'L31 Multifunction: 31.22',
@@ -446,6 +448,7 @@ export const ZONES = [
         triggers: [],
         created_at: 1529567548,
         id: 'zone-beI-19FMdl',
+        parent_id: 'zone-QjLXbYUxuC',
     },
     {
         name: 'L31 R7 Activity Space',
@@ -530,6 +533,7 @@ export const ZONES = [
         triggers: [],
         created_at: 1547438444,
         id: 'zone-kG8cn_fkH9',
+        parent_id: 'zone-QjLXbYUxuC',
     },
     {
         name: 'Level 30',
@@ -539,6 +543,7 @@ export const ZONES = [
         triggers: [],
         created_at: 1495599360,
         id: 'zone-LEHeo501Er',
+        parent_id: 'zone-Kl0HN~nDwc',
     },
     {
         name: 'Level 31',
@@ -548,6 +553,7 @@ export const ZONES = [
         triggers: [],
         created_at: 1506945022,
         id: 'zone-QjLXbYUxuC',
+        parent_id: 'zone-Kl0HN~nDwc',
     },
     {
         name: 'New Zone',
@@ -811,5 +817,6 @@ export const ZONES = [
         triggers: [],
         created_at: 1494571187,
         id: 'zone-Kl0HN~nDwc',
+        parent_id: 'zone-Kl0E0HmCJ3',
     },
 ];
