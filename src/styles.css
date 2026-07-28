@@ -1055,8 +1055,17 @@ a[icon] {
 
 /* Checkboxes & Radio */
 mat-checkbox {
+    /* Material resolves these from the prebuilt (light) palette, so both the
+       label and the empty box outline come out near-black — invisible on the
+       dark theme. The rules below on `.mdc-checkbox__background` never won
+       against Material's own selectors, so the colours are set at the token
+       layer instead. `currentColor` follows whichever theme is active. */
+    --mat-checkbox-label-text-color: currentColor;
+    --mat-checkbox-unselected-icon-color: currentColor;
+    --mat-checkbox-unselected-hover-icon-color: currentColor;
+    --mat-checkbox-unselected-focus-icon-color: currentColor;
+
     .mdc-checkbox__background {
-        border-color: var(--neutral);
         svg {
             color: var(--info-content);
         }

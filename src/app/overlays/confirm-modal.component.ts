@@ -142,7 +142,7 @@ export async function openConfirmModal(
                             {{ option.label }}
                         </mat-checkbox>
                         @if (option.description) {
-                            <p class="pl-8 text-xs opacity-60">
+                            <p class="pl-8 text-xs opacity-70">
                                 {{ option.description }}
                             </p>
                         }
@@ -166,7 +166,7 @@ export async function openConfirmModal(
                                     </p>
                                 } @else if (detailsFor(option.id); as detail) {
                                     @for (line of detail.scope; track line) {
-                                        <p class="text-xs opacity-60">
+                                        <p class="text-xs opacity-70">
                                             {{ line }}
                                         </p>
                                     }
@@ -191,9 +191,13 @@ export async function openConfirmModal(
                                         </p>
                                     }
                                     @for (line of detail.warnings; track line) {
+                                        <!-- The warn colour is a yellow that
+                                             only reads on a dark background,
+                                             so it tints the block rather than
+                                             the text. -->
                                         <p
                                             details-warning
-                                            class="text-warning mt-1 text-xs"
+                                            class="border-warning bg-warning/10 mt-2 rounded-sm border-l-2 py-1 pr-1 pl-2 text-xs"
                                         >
                                             {{ line }}
                                         </p>
