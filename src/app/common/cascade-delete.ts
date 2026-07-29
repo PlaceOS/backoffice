@@ -42,10 +42,38 @@ const MAX_PAGES = 100;
 /** Concurrent requests issued while resolving a plan. */
 const READ_CONCURRENCY = 8;
 
+/** Kinds of resource a cascade can remove directly. */
+export type CascadeResourceType =
+    | 'system'
+    | 'zone'
+    | 'application'
+    | 'tenant'
+    | 'domain';
+
+/** A resource a cascade removed, or is about to. */
+export interface CascadeResource {
+    type: CascadeResourceType;
+    id: string;
+    name: string;
+}
+
+/** i18n key for the progress message of each resource type */
+const REMOVING_KEY: Record<CascadeResourceType, string> = {
+    system: 'CASCADE.REMOVING_SYSTEM',
+    zone: 'CASCADE.REMOVING_ZONE',
+    application: 'CASCADE.REMOVING_APPLICATION',
+    tenant: 'CASCADE.REMOVING_TENANT',
+    domain: 'CASCADE.REMOVING_DOMAIN',
+};
+
+/** Progress message shown while `resource` is being removed. */
+export const removingLabel = (resource: CascadeResource) =>
+    i18n(REMOVING_KEY[resource.type], { name: resource.name });
+
 /** A single removal performed as part of a cascade. */
 export interface CascadeStep {
-    /** Progress message shown while the step runs */
-    label: string;
+    /** What the step removes, reported back once it has run */
+    resource: CascadeResource;
     /** Performs the removal. Rejects on failure. */
     run: () => Promise<unknown>;
 }
@@ -64,10 +92,10 @@ export interface CascadePlan {
 
 /** Result of executing a `CascadePlan`. */
 export interface CascadeOutcome {
-    /** Number of steps that completed */
-    removed: number;
+    /** Resources that were removed, in the order they went */
+    removed: CascadeResource[];
     /** Steps that threw, kept so the caller can report them */
-    failures: { label: string; error: unknown }[];
+    failures: { resource: CascadeResource; error: unknown }[];
 }
 
 const emptyPlan = (): CascadePlan => ({
@@ -242,7 +270,11 @@ export async function planZoneCascade(zone_id: string): Promise<CascadePlan> {
         );
     }
     plan.steps = orphaned.map((system) => ({
-        label: i18n('CASCADE.REMOVING_SYSTEM', { name: system.name }),
+        resource: {
+            type: 'system' as const,
+            id: system.id,
+            name: system.name,
+        },
         run: () => removeSystem(system.id),
     }));
     return plan;
@@ -304,9 +336,11 @@ export async function planDomainCascade(
         );
         plan.steps.push(
             ...applications.map((application) => ({
-                label: i18n('CASCADE.REMOVING_APPLICATION', {
+                resource: {
+                    type: 'application' as const,
+                    id: `${application.id}`,
                     name: application.name,
-                }),
+                },
                 run: () => removeApplication(application.id),
             })),
         );
@@ -322,9 +356,11 @@ export async function planDomainCascade(
         );
         plan.steps.push(
             ...tenants.map((tenant) => ({
-                label: i18n('CASCADE.REMOVING_TENANT', {
+                resource: {
+                    type: 'tenant' as const,
+                    id: `${tenant.id}`,
                     name: tenant.name || tenant.domain,
-                }),
+                },
                 run: () => del(`/api/staff/v1/tenants/${tenant.id}`),
             })),
         );
@@ -364,7 +400,11 @@ export async function planDomainCascade(
     plan.summary.push(...zone_plan.summary, i18n('CASCADE.REMOVE_ORG_ZONE'));
     plan.warnings.push(...zone_plan.warnings);
     plan.steps.push(...zone_plan.steps, {
-        label: i18n('CASCADE.REMOVING_ZONE', { name: org_zone.name }),
+        resource: {
+            type: 'zone' as const,
+            id: org_zone_id,
+            name: org_zone.name,
+        },
         run: () => removeZone(org_zone_id),
     });
     return plan;
@@ -379,21 +419,21 @@ export async function runCascade(
     plan: CascadePlan,
     progress: (message: string) => void = () => undefined,
 ): Promise<CascadeOutcome> {
-    const outcome: CascadeOutcome = { removed: 0, failures: [] };
+    const outcome: CascadeOutcome = { removed: [], failures: [] };
     const total = plan.steps.length;
     for (const [index, step] of plan.steps.entries()) {
         progress(
             i18n('CASCADE.PROGRESS', {
-                step: step.label,
+                step: removingLabel(step.resource),
                 index: index + 1,
                 total,
             }),
         );
         try {
             await step.run();
-            outcome.removed += 1;
+            outcome.removed.push(step.resource);
         } catch (error) {
-            outcome.failures.push({ label: step.label, error });
+            outcome.failures.push({ resource: step.resource, error });
         }
     }
     return outcome;

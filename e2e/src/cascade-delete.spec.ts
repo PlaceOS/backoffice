@@ -108,13 +108,64 @@ test.describe('Cascade delete', () => {
         expect(expected).toBeGreaterThan(0);
 
         await zonesPage.acceptButton.click();
-        await page.waitForURL(/#\/zones\/-/, { timeout: 30000 });
+        await page.waitForSelector('confirm-modal [result-items]', {
+            timeout: 60000,
+        });
+        await page.locator('confirm-modal button[name="close"]').click();
 
         // Every system lived inside this org zone, so the systems list empties
         await page.goto('/?mock=true#/systems');
         await zonesPage.waitForLoad();
         await page.waitForTimeout(1000);
         await expect(zonesPage.sidebarItems).toHaveCount(0);
+    });
+
+    test('lists what was removed, with ids, once it has run', async ({
+        page,
+    }) => {
+        await openZone(page, 'zone-Kl0E0HmCJ3');
+        await zonesPage.openDeleteConfirmation();
+        await zonesPage.enableCascade();
+
+        const summary = await zonesPage.cascadeSummary.innerText();
+        const systems = Number(summary.match(/(\d+) systems? left/)?.[1] || 0);
+
+        await zonesPage.acceptButton.click();
+        await page.waitForSelector('confirm-modal [result-items]', {
+            timeout: 60000,
+        });
+
+        // one row per system, plus the zone itself
+        const rows = page.locator('confirm-modal [result-items] li');
+        await expect(rows).toHaveCount(systems + 1);
+
+        const receipt = await page
+            .locator('confirm-modal [result-items]')
+            .innerText();
+        expect(receipt).toContain('zone-Kl0E0HmCJ3');
+        expect(receipt).toContain('Place Technology');
+        // every row carries an id
+        for (const row of await rows.all()) {
+            expect(await row.innerText()).toMatch(/(sys|zone)-\S+/);
+        }
+
+        // the confirmation buttons are replaced by a single close
+        await expect(zonesPage.acceptButton).toHaveCount(0);
+        await expect(
+            page.locator('confirm-modal button[name="close"]'),
+        ).toBeVisible();
+    });
+
+    test('shows no receipt for a delete without the option', async ({
+        page,
+    }) => {
+        await openZone(page, 'zone-lmhh_hVfz0');
+        await zonesPage.openDeleteConfirmation();
+        await zonesPage.acceptButton.click();
+
+        // unchanged behaviour: the dialog closes itself, no receipt
+        await page.waitForURL(/#\/zones\/-/, { timeout: 30000 });
+        await expect(page.locator('confirm-modal')).toHaveCount(0);
     });
 
     test('leaves systems alone when the option is left off', async ({

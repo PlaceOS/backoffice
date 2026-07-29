@@ -60,6 +60,7 @@ import {
 } from '@placeos/ts-client';
 import {
     CascadePlan,
+    CascadeResourceType,
     planDomainCascade,
     planZoneCascade,
 } from './cascade-delete';
@@ -83,6 +84,8 @@ export interface ItemCascade<T> {
     label: string;
     /** i18n key for the text shown under the checkbox */
     description: string;
+    /** Type of the item itself, so it can be labelled on the receipt */
+    resource_type: CascadeResourceType;
     /** Resolves what would be removed alongside the item */
     plan: (_: T) => Promise<CascadePlan>;
 }
@@ -115,6 +118,7 @@ const domains: ItemActions<PlaceDomain> = {
     cascade: {
         label: 'DOMAINS.DELETE_CASCADE',
         description: 'DOMAINS.DELETE_CASCADE_DESC',
+        resource_type: 'domain',
         plan: (item) => planDomainCascade(item),
     },
     name: 'DOMAINS',
@@ -347,6 +351,7 @@ const zones: ItemActions<PlaceZone> = {
     cascade: {
         label: 'ZONES.DELETE_CASCADE',
         description: 'ZONES.DELETE_CASCADE_DESC',
+        resource_type: 'zone',
         plan: (item) => planZoneCascade(item.id),
     },
     name: 'ZONES',

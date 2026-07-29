@@ -247,6 +247,11 @@ describe('cascade-delete', () => {
             const plan = await planZoneCascade('zone-a');
 
             expect(plan.steps.length).toBe(1);
+            expect(plan.steps[0].resource).toEqual({
+                type: 'system',
+                id: 'sys-inside',
+                name: 'sys-inside',
+            });
             await plan.steps[0].run();
             expect(removeSystem).toHaveBeenCalledExactlyOnceWith('sys-inside');
 
@@ -302,6 +307,11 @@ describe('cascade-delete', () => {
             expect(plan.summary).toContain(
                 'CASCADE.REMOVE_APPLICATIONS:{"count":1}',
             );
+            expect(plan.steps[0].resource).toEqual({
+                type: 'application',
+                id: '7',
+                name: 'Workplace',
+            });
             await plan.steps[0].run();
             expect(removeApplication).toHaveBeenCalledExactlyOnceWith('7');
         });
@@ -317,6 +327,11 @@ describe('cascade-delete', () => {
             expect(plan.summary).toContain(
                 'CASCADE.REMOVE_TENANTS:{"count":1}',
             );
+            expect(plan.steps[0].resource).toEqual({
+                type: 'tenant',
+                id: '1',
+                name: 'Acme',
+            });
             await plan.steps[0].run();
             expect(del).toHaveBeenCalledExactlyOnceWith(
                 '/api/staff/v1/tenants/1',
@@ -398,6 +413,15 @@ describe('cascade-delete', () => {
             ]);
             expect(plan.steps.length).toBe(2);
             // systems must go before the zone they belong to
+            expect(plan.steps.map((_) => _.resource.type)).toEqual([
+                'system',
+                'zone',
+            ]);
+            expect(plan.steps[1].resource).toEqual({
+                type: 'zone',
+                id: 'zone-org',
+                name: 'ORG Acme',
+            });
             await plan.steps[0].run();
             expect(removeSystem).toHaveBeenCalledExactlyOnceWith('sys-1');
             await plan.steps[1].run();
@@ -415,13 +439,21 @@ describe('cascade-delete', () => {
                 warnings: [],
                 steps: [
                     {
-                        label: 'first',
+                        resource: {
+                            type: 'system' as const,
+                            id: 'sys-1',
+                            name: 'first',
+                        },
                         run: async () => {
                             order.push('first');
                         },
                     },
                     {
-                        label: 'second',
+                        resource: {
+                            type: 'zone' as const,
+                            id: 'zone-1',
+                            name: 'second',
+                        },
                         run: async () => {
                             order.push('second');
                         },
@@ -430,7 +462,11 @@ describe('cascade-delete', () => {
             };
             const outcome = await runCascade(plan, (m) => messages.push(m));
             expect(order).toEqual(['first', 'second']);
-            expect(outcome.removed).toBe(2);
+            // the receipt needs the id and name of everything that went
+            expect(outcome.removed).toEqual([
+                { type: 'system', id: 'sys-1', name: 'first' },
+                { type: 'zone', id: 'zone-1', name: 'second' },
+            ]);
             expect(outcome.failures).toEqual([]);
             expect(messages[0]).toContain('"index":1');
             expect(messages[0]).toContain('"total":2');
@@ -443,16 +479,27 @@ describe('cascade-delete', () => {
                 warnings: [],
                 steps: [
                     {
-                        label: 'broken',
+                        resource: {
+                            type: 'system' as const,
+                            id: 'sys-broken',
+                            name: 'broken',
+                        },
                         run: () => Promise.reject(new Error('boom')),
                     },
-                    { label: 'ok', run: () => Promise.resolve() },
+                    {
+                        resource: {
+                            type: 'system' as const,
+                            id: 'sys-ok',
+                            name: 'ok',
+                        },
+                        run: () => Promise.resolve(),
+                    },
                 ],
             };
             const outcome = await runCascade(plan);
-            expect(outcome.removed).toBe(1);
+            expect(outcome.removed.map((_) => _.id)).toEqual(['sys-ok']);
             expect(outcome.failures.length).toBe(1);
-            expect(outcome.failures[0].label).toBe('broken');
+            expect(outcome.failures[0].resource.id).toBe('sys-broken');
         });
     });
 });

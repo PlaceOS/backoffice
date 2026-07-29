@@ -14,11 +14,14 @@ import {
     MatDialogRef,
 } from '@angular/material/dialog';
 
+import { Clipboard } from '@angular/cdk/clipboard';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { lastValueFrom } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
+import { i18n } from '../common/locale.service';
+import { notifyInfo } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
@@ -55,6 +58,31 @@ export interface ConfirmModalOption {
 /** Options selected on confirmation, keyed by `ConfirmModalOption.id` */
 export type ConfirmModalSelection = Record<string, boolean>;
 
+/** A resource listed in the post-action receipt */
+export interface ConfirmModalResultItem {
+    /** Short type label, e.g. "System" */
+    type: string;
+    /** Resource id, so the removal can be traced afterwards */
+    id: string;
+    /** Resource name at the time it was removed */
+    name: string;
+}
+
+/**
+ * Replaces the modal body once the action has run, so the user gets a receipt
+ * of what actually happened rather than a transient notification.
+ */
+export interface ConfirmModalResult {
+    /** Heading above the list */
+    title: string;
+    /** Resources that were removed */
+    items: ConfirmModalResultItem[];
+    /** Resources that could not be removed */
+    failed?: ConfirmModalResultItem[];
+    /** Explanatory line under the list */
+    note?: string;
+}
+
 export interface ConfirmModalData {
     /** Title of the modal */
     title: string;
@@ -72,6 +100,24 @@ export interface ConfirmModalData {
     icon: ApplicationIcon;
     /** Delay before closing the modal */
     close_delay?: number;
+}
+
+/**
+ * Renders a receipt as tab separated rows, for pasting into a ticket or
+ * spreadsheet. Failed rows are marked so a partial run is not mistaken for a
+ * complete one.
+ */
+export function receiptToTsv(result: ConfirmModalResult): string {
+    const rows = [
+        ...result.items.map((item) => [item.type, item.name, item.id]),
+        ...(result.failed || []).map((item) => [
+            item.type,
+            item.name,
+            item.id,
+            'FAILED',
+        ]),
+    ];
+    return rows.map((row) => row.join('\t')).join('\n');
 }
 
 export const CONFIRM_METADATA = {
@@ -115,9 +161,80 @@ export async function openConfirmModal(
         <header
             class="bg-base-200 sticky top-0 z-10 m-2 flex h-14 w-[calc(100%-1rem)] min-w-[20rem] items-center rounded-sm border-none p-2"
         >
-            <h2 class="px-2 text-xl font-medium">{{ title }}</h2>
+            <h2 class="px-2 text-xl font-medium">
+                {{ result() ? result().title : title }}
+            </h2>
         </header>
-        @if (!loading()) {
+        @if (result(); as receipt) {
+            <main
+                result
+                class="flex w-md max-w-[85vw] flex-col space-y-3 p-4 sm:h-auto"
+            >
+                @if (receipt.items.length) {
+                    <ul
+                        result-items
+                        class="divide-base-200 border-base-200 max-h-80 divide-y overflow-auto rounded-sm border"
+                    >
+                        @for (item of receipt.items; track item.id) {
+                            <li class="flex items-center space-x-2 px-3 py-2">
+                                <span
+                                    class="bg-base-200 shrink-0 rounded-xl px-2 py-1 text-xs uppercase"
+                                >
+                                    {{ item.type }}
+                                </span>
+                                <span class="flex-1 truncate text-sm">
+                                    {{ item.name }}
+                                </span>
+                                <button
+                                    class="mono shrink-0 text-xs opacity-70 hover:opacity-100"
+                                    [attr.data-id]="item.id"
+                                    (click)="copyId(item.id)"
+                                >
+                                    {{ item.id }}
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                }
+                @if (receipt.failed?.length) {
+                    <div
+                        result-failed
+                        class="border-error/40 bg-error/10 space-y-1 rounded-sm border p-2"
+                    >
+                        <p class="text-xs font-medium">
+                            {{ 'CASCADE.RECEIPT_FAILED' | translate }}
+                        </p>
+                        @for (item of receipt.failed; track item.id) {
+                            <p class="text-xs">
+                                {{ item.type }} — {{ item.name }}
+                                <span class="mono opacity-70">
+                                    {{ item.id }}
+                                </span>
+                            </p>
+                        }
+                    </div>
+                }
+                @if (receipt.note) {
+                    <p class="text-xs opacity-70">{{ receipt.note }}</p>
+                }
+                <button btn matRipple class="w-full" (click)="copyAll()">
+                    {{ 'CASCADE.RECEIPT_COPY' | translate }}
+                </button>
+            </main>
+            <footer
+                class="bg-base-200 sticky bottom-0 m-2 flex items-center justify-center rounded-sm border-none p-2"
+            >
+                <button
+                    btn
+                    matRipple
+                    name="close"
+                    class="flex-1"
+                    mat-dialog-close
+                >
+                    {{ 'COMMON.CLOSE' | translate }}
+                </button>
+            </footer>
+        } @else if (!loading()) {
             <main
                 class="flex w-md max-w-[85vw] flex-col items-center space-y-4 p-4 sm:h-auto"
             >
@@ -218,7 +335,7 @@ export async function openConfirmModal(
                 </div>
             </main>
         }
-        @if (!loading()) {
+        @if (!loading() && !result()) {
             <footer
                 class="bg-base-200 sticky bottom-0 m-2 flex items-center justify-center space-x-2 rounded-sm border-none p-2"
             >
@@ -257,9 +374,16 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
     private _dialog_ref =
         inject<MatDialogRef<ConfirmModalComponent>>(MatDialogRef);
     private _data = inject<ConfirmModalData>(MAT_DIALOG_DATA);
+    private _clipboard = inject(Clipboard);
 
     /** Loading state */
     public readonly loading = signal('');
+    /**
+     * Receipt of what the action removed. While set the modal shows the list
+     * instead of the confirmation, so the user can read (and copy) the ids
+     * rather than watch a notification disappear.
+     */
+    public readonly result = signal<ConfirmModalResult | null>(null);
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Title of the confirm modal */
@@ -352,6 +476,22 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
                 this._data.close_delay,
             );
         }
+    }
+
+    /** Copy a single resource id to the clipboard */
+    public copyId(id: string) {
+        this._clipboard.copy(id);
+        notifyInfo(i18n('COMMON.COPIED_ID'));
+    }
+
+    /** Copy the whole receipt as TSV, for pasting into a ticket */
+    public copyAll() {
+        const receipt = this.result();
+        if (!receipt) return;
+        const count =
+            receipt.items.length + (receipt.failed || []).length;
+        this._clipboard.copy(receiptToTsv(receipt));
+        notifyInfo(i18n('CASCADE.RECEIPT_COPIED', { count }, count));
     }
 
     /** User confirmation of the content of the modal */

@@ -26,7 +26,12 @@ import { DuplicateModalComponent } from '../overlays/duplicate-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
 import { ACTIONS, ItemActions } from './actions';
 import { AsyncHandler } from './async-handler.class';
-import { CascadePlan, runCascade } from './cascade-delete';
+import {
+    CascadeOutcome,
+    CascadePlan,
+    CascadeResource,
+    runCascade,
+} from './cascade-delete';
 import { log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
@@ -34,6 +39,14 @@ import { waitForEvent } from './signals';
 
 /** Id the "also delete associated resources" toggle is reported under */
 const CASCADE_OPTION = 'cascade';
+
+/** Turns removed resources into the receipt rows the confirm modal renders. */
+const receiptItems = (resources: CascadeResource[]) =>
+    resources.map((resource) => ({
+        type: i18n(`CASCADE.TYPE_${resource.type.toUpperCase()}`),
+        id: resource.id,
+        name: resource.name,
+    }));
 
 export type ResourceType =
     | 'domains'
@@ -296,12 +309,25 @@ export class ActiveItemService extends AsyncHandler {
             ref.componentInstance.loading.set(
                 i18n(`${actions.name}.DELETE_LOADING`),
             );
+            let outcome: CascadeOutcome | null = null;
             if (event.metadata?.options?.[CASCADE_OPTION] && plan) {
-                const outcome = await runCascade(plan, (message) =>
+                outcome = await runCascade(plan, (message) =>
                     ref.componentInstance.loading.set(message),
                 );
                 if (outcome.failures.length) {
+                    // Something is still referencing the item, so leave it in
+                    // place and show what did and did not go.
                     ref.componentInstance.loading.set('');
+                    ref.componentInstance.result.set({
+                        title: i18n('CASCADE.RECEIPT_PARTIAL_TITLE'),
+                        items: receiptItems(outcome.removed),
+                        failed: receiptItems(
+                            outcome.failures.map((_) => _.resource),
+                        ),
+                        note: i18n('CASCADE.RECEIPT_PARTIAL_NOTE', {
+                            name: item.name,
+                        }),
+                    });
                     return notifyError(
                         i18n(
                             'CASCADE.FAILED',
@@ -309,18 +335,10 @@ export class ActiveItemService extends AsyncHandler {
                                 count: outcome.failures.length,
                                 error:
                                     (outcome.failures[0].error as Error)
-                                        ?.message || outcome.failures[0].label,
+                                        ?.message ||
+                                    outcome.failures[0].resource.name,
                             },
                             outcome.failures.length,
-                        ),
-                    );
-                }
-                if (outcome.removed) {
-                    notifySuccess(
-                        i18n(
-                            'CASCADE.SUCCESS',
-                            { count: outcome.removed },
-                            outcome.removed,
                         ),
                     );
                 }
@@ -331,14 +349,31 @@ export class ActiveItemService extends AsyncHandler {
             await actions
                 .remove(item)
                 .then(() => {
+                    this._active_item.set(null);
+                    this.removeItem(item);
+                    this._router.navigate([`/${this._type}`, '-', 'about']);
+                    if (outcome) {
+                        // A cascade removed more than the item itself, so show
+                        // the receipt rather than closing on a notification.
+                        ref.componentInstance.result.set({
+                            title: i18n('CASCADE.RECEIPT_TITLE'),
+                            items: receiptItems([
+                                ...outcome.removed,
+                                {
+                                    type: cascade.resource_type,
+                                    id: `${item.id}`,
+                                    name: item.name,
+                                },
+                            ]),
+                            note: i18n('CASCADE.RECEIPT_NOTE'),
+                        });
+                        return;
+                    }
                     notifySuccess(
                         i18n(`${actions.name}.DELETE_SUCCESS`, {
                             name: item.name,
                         }),
                     );
-                    this._active_item.set(null);
-                    this.removeItem(item);
-                    this._router.navigate([`/${this._type}`, '-', 'about']);
                     ref.close();
                 })
                 .catch((err) => {

@@ -21,10 +21,19 @@ vi.mock('@placeos/ts-client', () => {
     };
 });
 
+// The receipt's copy helpers raise notifications; the snackbar is not wired up
+// in unit tests.
+vi.mock('../../app/common/notifications', () => ({
+    notifyInfo: vi.fn(),
+    notifyError: vi.fn(),
+    notifySuccess: vi.fn(),
+}));
+
 import {
     ConfirmModalComponent,
     ConfirmModalData,
     CONFIRM_METADATA,
+    receiptToTsv,
 } from '../../app/overlays/confirm-modal.component';
 import { mockComponent } from '../test-helpers';
 import { IconComponent } from '../../app/ui/icon.component';
@@ -113,7 +122,7 @@ describe('ConfirmModalComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
-                    { provide: MAT_DIALOG_DATA, useValue: {} },
+                        { provide: MAT_DIALOG_DATA, useValue: {} },
                 ],
             })
                 .overrideComponent(ConfirmModalComponent, {
@@ -166,7 +175,7 @@ describe('ConfirmModalComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
-                    {
+                        {
                         provide: MAT_DIALOG_DATA,
                         useValue: {
                             ...default_data,
@@ -226,7 +235,7 @@ describe('ConfirmModalComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
-                    {
+                        {
                         provide: MAT_DIALOG_DATA,
                         useValue: {
                             ...default_data,
@@ -283,10 +292,9 @@ describe('ConfirmModalComponent', () => {
             expect(component.resolving()).toBe(true);
 
             resolve_details({ summary: ['2 systems'], warnings: [] });
-            await Promise.resolve();
-            await Promise.resolve();
-
-            expect(component.resolving()).toBe(false);
+            await vi.waitFor(() =>
+                expect(component.resolving()).toBe(false),
+            );
             expect(component.detailsFor('cascade')).toEqual({
                 summary: ['2 systems'],
                 warnings: [],
@@ -296,8 +304,9 @@ describe('ConfirmModalComponent', () => {
         it('should only resolve details once', async () => {
             component.toggleOption(component.options[0], true);
             resolve_details({ summary: [] });
-            await Promise.resolve();
-            await Promise.resolve();
+            await vi.waitFor(() =>
+                expect(component.resolving()).toBe(false),
+            );
             component.toggleOption(component.options[0], false);
             component.toggleOption(component.options[0], true);
             expect(details).toHaveBeenCalledOnce();
@@ -309,10 +318,9 @@ describe('ConfirmModalComponent', () => {
             );
             await build();
             component.toggleOption(component.options[0], true);
-            await Promise.resolve();
-            await Promise.resolve();
-            await Promise.resolve();
-            expect(component.detailsError('cascade')).toBe('lookup failed');
+            await vi.waitFor(() =>
+                expect(component.detailsError('cascade')).toBe('lookup failed'),
+            );
             expect(component.resolving()).toBe(false);
         });
 
@@ -361,6 +369,94 @@ describe('ConfirmModalComponent', () => {
         });
     });
 
+    describe('result receipt', () => {
+        const receipt = {
+            title: 'Removed',
+            items: [
+                { type: 'System', id: 'sys-1', name: 'Boardroom' },
+                { type: 'Zone', id: 'zone-1', name: 'Level 1' },
+            ],
+            note: 'Modules went with them.',
+        };
+
+        it('should start with no receipt', () => {
+            expect(component.result()).toBe(null);
+        });
+
+        it('should show the confirmation, not a receipt, before the action', () => {
+            expect(
+                fixture.nativeElement.querySelector('main[result]'),
+            ).toBeFalsy();
+            expect(
+                fixture.nativeElement.querySelector('button[name="accept"]'),
+            ).toBeTruthy();
+        });
+
+        it('should replace the body with the receipt once set', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+
+            const main = fixture.nativeElement.querySelector('main[result]');
+            expect(main).toBeTruthy();
+            expect(main.textContent).toContain('Boardroom');
+            expect(main.textContent).toContain('sys-1');
+            expect(main.textContent).toContain('Level 1');
+            expect(main.textContent).toContain('zone-1');
+            expect(main.textContent).toContain('Modules went with them.');
+        });
+
+        it('should use the receipt title in the header', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelector('header').textContent,
+            ).toContain('Removed');
+        });
+
+        it('should list one row per resource', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelectorAll('[result-items] li')
+                    .length,
+            ).toBe(2);
+        });
+
+        it('should swap the confirm buttons for a close button', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelector('button[name="accept"]'),
+            ).toBeFalsy();
+            expect(
+                fixture.nativeElement.querySelector('button[name="close"]'),
+            ).toBeTruthy();
+        });
+
+        it('should render failures separately when present', () => {
+            component.result.set({
+                ...receipt,
+                failed: [{ type: 'System', id: 'sys-9', name: 'Stuck' }],
+            });
+            fixture.detectChanges();
+
+            const failed =
+                fixture.nativeElement.querySelector('[result-failed]');
+            expect(failed).toBeTruthy();
+            expect(failed.textContent).toContain('Stuck');
+            expect(failed.textContent).toContain('sys-9');
+        });
+
+        it('should not render the failure block when nothing failed', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelector('[result-failed]'),
+            ).toBeFalsy();
+        });
+
+    });
+
     describe('disableClose/enableClose', () => {
         it('should set disableClose to true when calling disableClose', () => {
             expect(dialog_ref_mock.disableClose).toBe(false);
@@ -389,7 +485,7 @@ describe('ConfirmModalComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
-                    {
+                        {
                         provide: MAT_DIALOG_DATA,
                         useValue: {
                             ...default_data,
@@ -480,6 +576,34 @@ describe('ConfirmModalComponent', () => {
             const footer = fixture.nativeElement.querySelector('footer');
             expect(footer).toBeFalsy();
         });
+    });
+});
+
+describe('receiptToTsv', () => {
+    it('renders one tab separated row per resource', () => {
+        expect(
+            receiptToTsv({
+                title: 'Removed',
+                items: [
+                    { type: 'System', id: 'sys-1', name: 'Boardroom' },
+                    { type: 'Zone', id: 'zone-1', name: 'Level 1' },
+                ],
+            }),
+        ).toBe('System\tBoardroom\tsys-1\nZone\tLevel 1\tzone-1');
+    });
+
+    it('marks failed rows so a partial run is obvious', () => {
+        expect(
+            receiptToTsv({
+                title: 'Partly removed',
+                items: [],
+                failed: [{ type: 'System', id: 'sys-9', name: 'Stuck' }],
+            }),
+        ).toBe('System\tStuck\tsys-9\tFAILED');
+    });
+
+    it('renders an empty receipt as an empty string', () => {
+        expect(receiptToTsv({ title: 'Removed', items: [] })).toBe('');
     });
 });
 
