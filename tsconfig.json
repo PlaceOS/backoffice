@@ -11,7 +11,11 @@
         "noImplicitAny": false,
         "strictNullChecks": false,
         "strictPropertyInitialization": false,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "noUncheckedSideEffectImports": false,
+        "types": ["*"],
+        "esModuleInterop": false,
+        "ignoreDeprecations": "6.0"
     },
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,

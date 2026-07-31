@@ -26,7 +26,7 @@ bun run lint                           # ESLint
 ## Tech Stack
 
 - **Framework**: Angular 20 with standalone components and signals
-- **Build**: Nx 22 + Vite 7 + @analogjs/vite-plugin-angular
+- **Build**: Nx 23 + Vite 8 + @analogjs/vite-plugin-angular
 - **Testing**: Vitest + Playwright
 - **Styling**: Tailwind CSS 3.4 with custom CSS variables
 - **Backend**: @placeos/ts-client for PlaceOS REST API integration
