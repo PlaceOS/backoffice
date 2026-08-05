@@ -310,7 +310,17 @@ export class ActiveItemService extends AsyncHandler {
                 i18n(`${actions.name}.DELETE_LOADING`),
             );
             let outcome: CascadeOutcome | null = null;
-            if (event.metadata?.options?.[CASCADE_OPTION] && plan) {
+            const cascade_selected =
+                !!event.metadata?.options?.[CASCADE_OPTION];
+            if (cascade_selected && !plan) {
+                // The breakdown never resolved, so there is nothing to run.
+                // Falling through here would delete the item on its own and
+                // orphan everything the cascade existed to take with it. The
+                // modal blocks this too; this is the second line of defence.
+                ref.componentInstance.loading.set('');
+                return notifyError(i18n('CASCADE.PLAN_UNAVAILABLE'));
+            }
+            if (cascade_selected && plan) {
                 outcome = await runCascade(plan, (message) =>
                     ref.componentInstance.loading.set(message),
                 );
@@ -324,6 +334,7 @@ export class ActiveItemService extends AsyncHandler {
                         failed: receiptItems(
                             outcome.failures.map((_) => _.resource),
                         ),
+                        skipped: receiptItems(outcome.skipped),
                         note: i18n('CASCADE.RECEIPT_PARTIAL_NOTE', {
                             name: item.name,
                         }),

@@ -1,7 +1,6 @@
 import {
     del,
     get,
-    PlaceApplication,
     PlaceDomain,
     PlaceSystem,
     PlaceZone,
@@ -96,6 +95,8 @@ export interface CascadeOutcome {
     removed: CascadeResource[];
     /** Steps that threw, kept so the caller can report them */
     failures: { resource: CascadeResource; error: unknown }[];
+    /** Steps never attempted because an earlier one failed */
+    skipped: CascadeResource[];
 }
 
 const emptyPlan = (): CascadePlan => ({
@@ -130,7 +131,15 @@ async function collectPages<T>(request: QueryResponse<T>): Promise<T[]> {
     let page = await request;
     items.push(...page.data);
     let pages = 1;
-    while (page.next && pages < MAX_PAGES) {
+    while (page.next) {
+        // A truncated list would be indistinguishable from a complete one, and
+        // every caller uses this to decide what a delete will take with it. So
+        // running out of pages has to be an error rather than a short answer.
+        if (pages >= MAX_PAGES) {
+            throw new Error(
+                `Listing did not complete within ${MAX_PAGES} pages of ${PAGE_SIZE}`,
+            );
+        }
         const next_page = page.next();
         if (!next_page) break;
         page = await next_page;
@@ -193,10 +202,11 @@ export async function splitZoneSystems(
         (system.zones || []).every((id) => subtree.has(id));
 
     const found = new Map<string, PlaceSystem>();
+    // Not caught, for the same reason as the domain listings: a zone whose
+    // systems cannot be listed would contribute nothing to the plan, and the
+    // zone would then be deleted with those systems still inside it.
     const pages = await mapLimit(zone_ids, READ_CONCURRENCY, (zone_id) =>
-        collectPages(querySystems({ zone_id, limit: PAGE_SIZE })).catch(
-            () => [] as PlaceSystem[],
-        ),
+        collectPages(querySystems({ zone_id, limit: PAGE_SIZE })),
     );
     for (const list of pages) {
         for (const system of list) if (system?.id) found.set(system.id, system);
@@ -314,15 +324,19 @@ export async function planDomainCascade(
 ): Promise<CascadePlan> {
     const plan = emptyPlan();
     const org_zone_id = orgZoneId(domain);
+    // None of these are caught. A failed or truncated listing used to read as
+    // "nothing found", which is the dangerous direction: an unavailable
+    // ownership list makes a shared org zone look unshared, and this function
+    // would then plan to delete another domain's zone tree. Letting the
+    // rejection through means the caller cannot offer a cascade it has not
+    // been able to size.
     const [applications, tenants, all_domains] = await Promise.all([
         collectPages(
             queryApplications({ authority_id: domain.id, limit: PAGE_SIZE }),
-        ).catch(() => [] as PlaceApplication[]),
+        ),
         domainTenants(domain.domain),
         org_zone_id
-            ? collectPages(queryDomains({ limit: PAGE_SIZE })).catch(
-                  () => [] as PlaceDomain[],
-              )
+            ? collectPages(queryDomains({ limit: PAGE_SIZE }))
             : Promise.resolve([] as PlaceDomain[]),
     ]);
 
@@ -414,14 +428,24 @@ export async function planDomainCascade(
  * Executes a plan's steps in order. Steps run sequentially — each system
  * removal cascades work on the server, and sequential execution gives honest
  * progress and lets a partial failure be reported precisely.
+ *
+ * The run stops at the first failure. Steps are ordered so that later ones
+ * depend on earlier ones having gone: `planDomainCascade` appends the org zone
+ * after the systems inside it, so carrying on past a failed system removal
+ * would delete the zone out from under it. Everything after the failure is
+ * reported as skipped rather than attempted.
  */
 export async function runCascade(
     plan: CascadePlan,
     progress: (message: string) => void = () => undefined,
 ): Promise<CascadeOutcome> {
-    const outcome: CascadeOutcome = { removed: [], failures: [] };
+    const outcome: CascadeOutcome = { removed: [], failures: [], skipped: [] };
     const total = plan.steps.length;
     for (const [index, step] of plan.steps.entries()) {
+        if (outcome.failures.length) {
+            outcome.skipped.push(step.resource);
+            continue;
+        }
         progress(
             i18n('CASCADE.PROGRESS', {
                 step: removingLabel(step.resource),

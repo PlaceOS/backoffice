@@ -1036,6 +1036,8 @@
         "RECEIPT_PARTIAL_TITLE": "Partly removed",
         "RECEIPT_PARTIAL_NOTE": "\"{{ name }}\" was left in place because not everything associated with it could be removed. Resolve the failures above and try again.",
         "RECEIPT_FAILED": "Could not be removed",
+        "RECEIPT_SKIPPED": "Not attempted",
+        "PLAN_UNAVAILABLE": "Could not work out what else would be removed, so nothing was deleted. Try again in a moment.",
         "RECEIPT_COPY": "Copy list",
         "RECEIPT_COPIED": "Copied {{ count }} rows to the clipboard.",
         "RECEIPT_COPIED_1": "Copied {{ count }} row to the clipboard."

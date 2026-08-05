@@ -216,13 +216,14 @@ describe('cascade-delete', () => {
             expect(split.retained).toEqual([]);
         });
 
-        it('treats a failed lookup as no systems rather than failing', async () => {
+        it('fails rather than reporting a zone as having no systems', async () => {
+            // Reporting no systems would let the zone be deleted with its
+            // systems still inside it, which is the outcome this whole flow
+            // exists to prevent.
             (querySystems as Query).mockImplementation(() =>
                 Promise.reject(new Error('nope')),
             );
-            const split = await splitZoneSystems(['zone-a']);
-            expect(split.orphaned).toEqual([]);
-            expect(split.retained).toEqual([]);
+            await expect(splitZoneSystems(['zone-a'])).rejects.toThrow('nope');
         });
     });
 
@@ -370,6 +371,51 @@ describe('cascade-delete', () => {
             expect(showZone).not.toHaveBeenCalled();
         });
 
+        it('fails rather than planning an org zone it could not check ownership of', async () => {
+            // The check above is the only thing standing between this flow and
+            // deleting another domain's zone tree. If the domain list is
+            // unavailable, "no other domain shares it" is not something we
+            // know — so no plan may be produced at all.
+            (queryDomains as Query).mockImplementation(() =>
+                Promise.reject(new Error('gateway')),
+            );
+            await expect(
+                planDomainCascade(domain({ org_zone: 'zone-org' })),
+            ).rejects.toThrow('gateway');
+            expect(removeZone).not.toHaveBeenCalled();
+        });
+
+        it('fails rather than planning an ownership check it could only read part of', async () => {
+            // A list that stops early is indistinguishable from a short one,
+            // and a sharing domain could be sitting on any unread page.
+            let served = 0;
+            (queryDomains as Query).mockImplementation(() => {
+                const next = () => {
+                    served += 1;
+                    return (queryDomains as Query)();
+                };
+                return Promise.resolve({
+                    data: [domain({ org_zone: 'zone-other' })],
+                    total: 100000,
+                    next,
+                });
+            });
+            await expect(
+                planDomainCascade(domain({ org_zone: 'zone-org' })),
+            ).rejects.toThrow(/did not complete/);
+            expect(served).toBeGreaterThan(1);
+            expect(removeZone).not.toHaveBeenCalled();
+        });
+
+        it('fails rather than reporting a domain as having no applications', async () => {
+            (queryApplications as Query).mockImplementation(() =>
+                Promise.reject(new Error('gateway')),
+            );
+            await expect(planDomainCascade(domain())).rejects.toThrow(
+                'gateway',
+            );
+        });
+
         it('warns when the configured org zone no longer exists', async () => {
             (queryDomains as Query).mockImplementation(() =>
                 page([domain({ org_zone: 'zone-org' })]),
@@ -472,7 +518,11 @@ describe('cascade-delete', () => {
             expect(messages[0]).toContain('"total":2');
         });
 
-        it('continues past a failing step and reports it', async () => {
+        it('stops at the first failure and skips the rest', async () => {
+            // Steps are ordered by dependency — a domain plan puts the org zone
+            // after the systems inside it — so carrying on past a failure would
+            // delete a zone out from under a system that is still there.
+            const later = vi.fn(() => Promise.resolve());
             const plan = {
                 scope: [],
                 summary: [],
@@ -488,18 +538,20 @@ describe('cascade-delete', () => {
                     },
                     {
                         resource: {
-                            type: 'system' as const,
-                            id: 'sys-ok',
-                            name: 'ok',
+                            type: 'zone' as const,
+                            id: 'zone-after',
+                            name: 'after',
                         },
-                        run: () => Promise.resolve(),
+                        run: later,
                     },
                 ],
             };
             const outcome = await runCascade(plan);
-            expect(outcome.removed.map((_) => _.id)).toEqual(['sys-ok']);
+            expect(later).not.toHaveBeenCalled();
+            expect(outcome.removed).toEqual([]);
             expect(outcome.failures.length).toBe(1);
             expect(outcome.failures[0].resource.id).toBe('sys-broken');
+            expect(outcome.skipped.map((_) => _.id)).toEqual(['zone-after']);
         });
     });
 });

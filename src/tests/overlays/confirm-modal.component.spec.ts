@@ -324,6 +324,65 @@ describe('ConfirmModalComponent', () => {
             expect(component.resolving()).toBe(false);
         });
 
+        it('should block confirmation when a selected option has no breakdown', async () => {
+            // Confirming here would run the action *without* the option, which
+            // for a cascade delete removes the parent and orphans everything
+            // the cascade was there to take with it.
+            details.mockImplementation(() =>
+                Promise.reject(new Error('lookup failed')),
+            );
+            await build();
+            const event_spy = vi.fn();
+            component.event.subscribe(event_spy);
+            component.toggleOption(component.options[0], true);
+            await vi.waitFor(() =>
+                expect(component.detailsError('cascade')).toBe('lookup failed'),
+            );
+
+            expect(component.blocked()).toBe(true);
+            component.onConfirm();
+            expect(event_spy).not.toHaveBeenCalled();
+        });
+
+        it('should stop blocking once the option is turned back off', async () => {
+            details.mockImplementation(() =>
+                Promise.reject(new Error('lookup failed')),
+            );
+            await build();
+            component.toggleOption(component.options[0], true);
+            await vi.waitFor(() => expect(component.blocked()).toBe(true));
+
+            component.toggleOption(component.options[0], false);
+
+            expect(component.blocked()).toBe(false);
+            const event_spy = vi.fn();
+            component.event.subscribe(event_spy);
+            component.onConfirm();
+            expect(event_spy).toHaveBeenCalledWith({
+                reason: 'done',
+                metadata: { options: { cascade: false } },
+            });
+        });
+
+        it('should resolve the breakdown of an option that starts enabled', async () => {
+            // Otherwise it counts as selected with no details and holds the
+            // confirm button disabled for good.
+            await build({ enabled: true });
+            expect(details).toHaveBeenCalledOnce();
+            // While it is in flight `resolving` holds the button; `blocked` is
+            // for a breakdown that has finished without producing one.
+            expect(component.resolving()).toBe(true);
+            expect(component.blocked()).toBe(false);
+
+            resolve_details({ summary: ['2 systems'], warnings: [] });
+            await vi.waitFor(() => expect(component.resolving()).toBe(false));
+            expect(component.blocked()).toBe(false);
+            expect(component.detailsFor('cascade')).toEqual({
+                summary: ['2 systems'],
+                warnings: [],
+            });
+        });
+
         it('should block confirmation while details are resolving', () => {
             const event_spy = vi.fn();
             component.event.subscribe(event_spy);

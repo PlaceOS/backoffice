@@ -79,6 +79,8 @@ export interface ConfirmModalResult {
     items: ConfirmModalResultItem[];
     /** Resources that could not be removed */
     failed?: ConfirmModalResultItem[];
+    /** Resources never attempted, because an earlier step failed */
+    skipped?: ConfirmModalResultItem[];
     /** Explanatory line under the list */
     note?: string;
 }
@@ -115,6 +117,12 @@ export function receiptToTsv(result: ConfirmModalResult): string {
             item.name,
             item.id,
             'FAILED',
+        ]),
+        ...(result.skipped || []).map((item) => [
+            item.type,
+            item.name,
+            item.id,
+            'SKIPPED',
         ]),
     ];
     return rows.map((row) => row.join('\t')).join('\n');
@@ -205,6 +213,24 @@ export async function openConfirmModal(
                             {{ 'CASCADE.RECEIPT_FAILED' | translate }}
                         </p>
                         @for (item of receipt.failed; track item.id) {
+                            <p class="text-xs">
+                                {{ item.type }} — {{ item.name }}
+                                <span class="mono opacity-70">
+                                    {{ item.id }}
+                                </span>
+                            </p>
+                        }
+                    </div>
+                }
+                @if (receipt.skipped?.length) {
+                    <div
+                        result-skipped
+                        class="border-base-300 bg-base-200 space-y-1 rounded-sm border p-2"
+                    >
+                        <p class="text-xs font-medium">
+                            {{ 'CASCADE.RECEIPT_SKIPPED' | translate }}
+                        </p>
+                        @for (item of receipt.skipped; track item.id) {
                             <p class="text-xs">
                                 {{ item.type }} — {{ item.name }}
                                 <span class="mono opacity-70">
@@ -352,7 +378,7 @@ export async function openConfirmModal(
                     matRipple
                     name="accept"
                     class="flex-1"
-                    [disabled]="resolving()"
+                    [disabled]="resolving() || blocked()"
                     (click)="onConfirm()"
                 >
                     {{ confirm_text | translate }}
@@ -429,6 +455,24 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
         Object.values(this._resolving()).some((value) => value),
     );
 
+    /**
+     * Whether confirmation has to be withheld because a selected option has no
+     * usable breakdown. An option that offers `details` is promising to say
+     * what it will do; if that resolution failed there is nothing to act on,
+     * and confirming would run whatever the caller does *without* the option —
+     * which for a cascade delete means removing the parent and orphaning
+     * everything the cascade was there to take with it.
+     */
+    public readonly blocked = computed(() =>
+        this.options.some(
+            (option) =>
+                !!option.details &&
+                this._selected()[option.id] &&
+                !this._resolving()[option.id] &&
+                !this._details()[option.id],
+        ),
+    );
+
     public readonly isSelected = (id: string) => !!this._selected()[id];
     public readonly isLoadingDetails = (id: string) => !!this._resolving()[id];
     public readonly detailsFor = (id: string) => this._details()[id];
@@ -437,7 +481,13 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
     /** Enable or disable an option, resolving its breakdown on first enable */
     public toggleOption(option: ConfirmModalOption, enabled: boolean) {
         this._selected.update((state) => ({ ...state, [option.id]: enabled }));
-        if (!enabled || !option.details || this._details()[option.id]) return;
+        if (!enabled) return;
+        this._resolveDetails(option);
+    }
+
+    /** Resolves an option's breakdown, once */
+    private _resolveDetails(option: ConfirmModalOption) {
+        if (!option.details || this._details()[option.id]) return;
         this._errors.update((state) => ({ ...state, [option.id]: '' }));
         this._resolving.update((state) => ({ ...state, [option.id]: true }));
         option
@@ -469,6 +519,12 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
     public readonly enableClose = () => (this._dialog_ref.disableClose = false);
 
     public ngOnInit() {
+        // An option that starts enabled has never been toggled, so nothing has
+        // asked it for a breakdown. Without this it would count as selected
+        // with no details and hold the confirm button disabled for good.
+        for (const option of this.options) {
+            if (this._selected()[option.id]) this._resolveDetails(option);
+        }
         if (this._data.close_delay) {
             this.timeout(
                 'close',
@@ -489,14 +545,16 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
         const receipt = this.result();
         if (!receipt) return;
         const count =
-            receipt.items.length + (receipt.failed || []).length;
+            receipt.items.length +
+            (receipt.failed || []).length +
+            (receipt.skipped || []).length;
         this._clipboard.copy(receiptToTsv(receipt));
         notifyInfo(i18n('CASCADE.RECEIPT_COPIED', { count }, count));
     }
 
     /** User confirmation of the content of the modal */
     public onConfirm() {
-        if (this.resolving()) return;
+        if (this.resolving() || this.blocked()) return;
         // Only carry metadata when options were offered, so existing callers
         // keep seeing the exact event they always have.
         this.event.emit(
