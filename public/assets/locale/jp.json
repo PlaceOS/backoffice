@@ -673,7 +673,6 @@
         "COPIED_SECRET": "クライアントシークレットをクリップボードにコピーしました",
         "VIEW_SECRET": "シークレットを見る",
         "SECRET_HIDDEN": "非表示",
-
         "USER_LIST_EMPTY": "このドメインに関連付けられたユーザーはいません",
         "NAME_REQUIRED": "ドメイン名が必要です",
         "DOMAIN_REQUIRED": "有効なドメインが必要です",
@@ -683,7 +682,6 @@
         "LOGOUT_URL_REQUIRED": "有効なログアウトURLが必要です",
         "CLIENT_ID": "クライアントID",
         "CLIENT_SECRET": "クライアントシークレット",
-
         "AUTHENTICATION_NEW": "新規認証方法",
         "AUTHENTICATION_EDIT": "認証方法を編集",
         "AUTHENTICATION_REMOVE": "認証方法を削除",
@@ -693,7 +691,6 @@
         "AUTHENTICATION_SAVE_ERROR": "認証ソースの更新に成功しました",
         "AUTHENTICATION_SAVE_SUCCESS": "認証ソースの更新に失敗しました。エラー：{{ error }}",
         "AUTHENTICATION_NAME_REQUIRED": "認証ソース名が必要です",
-
         "OAUTH_SITE": "サイト",
         "OAUTH_SITE_PLACEHOLDER": "SSOプロバイダのURL",
         "OAUTH_SCOPES": "スコープ",
@@ -707,7 +704,6 @@
         "OAUTH_INFO_MAPPINGS": "情報マッピング",
         "OAUTH_AUTHORISE_PARAMS": "認可パラメータ",
         "OAUTH_ENSURE_MATCHING": "マッチングを保証",
-
         "LDAP_HOST": "ホスト",
         "LDAP_HOST_REQUIRED": "ホスト名が必要です",
         "LDAP_PORT": "ポート番号",
@@ -717,7 +713,6 @@
         "LDAP_BASE_REQUIRED": "ベースが必要です",
         "LDAP_BIND_DN": "バインドDN",
         "LDAP_FILTER": "フィルタ",
-
         "SAML_ISSUER": "イシューア",
         "SAML_ISSUER_REQUIRED": "イシューアが必要です",
         "SAML_IDP_TARGET_URL": "IdPターゲットURL",
@@ -736,7 +731,6 @@
         "SAML_IDP_SSO_RUNTIME_PARAMS": "IdP SSOランタイムパラメータ",
         "SAML_IDP_SLO_TARGET_URL": "IdP SLOターゲットURL",
         "SAML_SLO_DEFAULT_RELAY_STATE": "SLOデフォルトリレーステート",
-
         "APP_SKIP": "認可をスキップ",
         "APP_NAME_REQUIRED": "アプリケーション名が必要です",
         "APP_PRESERVE_ID": "クライアントIDを保持",
@@ -771,14 +765,8 @@
         "COPIED": "{{ name }}をクリップボードにコピーしました",
         "ALL_DOMAINS": "すべてのドメイン",
         "SELECT_DOMAIN": "ドメインを選択...",
-
         "BACKEND_SERVICES_EMPTY": "利用可能なAPIサービス詳細はありません。",
         "BACKEND_SERVICES_ERROR": "API詳細の読み込みに失敗しました。エラー：{{ error }}",
-        "DATABASE_REINDEX": "再インデックス",
-        "DATABASE_REINDEX_MSG": "データベースの現在の状態でElasticsearchを再インデックスします",
-        "DATABASE_BACKFILL": "バックフィル",
-        "DATABASE_BACKFILL_MSG": "データベースの現在の状態でElasticsearchにバックフィルします",
-
         "CLUSTERS": "PlaceOSクラスター",
         "CLUSTERS_VIEW_PROCESSES": "プロセスを見る",
         "CLUSTERS_LIST_EMPTY": "クラスター詳細がありません",
@@ -795,7 +783,6 @@
         "CLUSTER_PROCESS_KILL_MSG": "<p>\"{{ id }}\"のプロセスを強制終了してよろしいですか？</p><p>プロセスは<strong>即時</strong>に終了されます。しばらくして再起動される場合があります。</p>",
         "CLUSTER_PROCESS_KILL_LOADING": "プロセスを終了中。お待ちください...",
         "CLUSTER_PROCESS_KILL_ERROR": "プロセスの強制終了に失敗しました。エラー：{{ error }}",
-
         "EDGE_HEADER": "PlaceOSエッジノード",
         "EDGE_ADD": "エッジノードを追加",
         "EDGE_NEW": "新規エッジノード",
@@ -811,7 +798,6 @@
         "EDGE_LIST_EMPTY": "このクラスターにはエッジがありません",
         "INTERFACES_HEADER": "PlaceOSインターフェース",
         "INTERFACES_COMMIT_EMPTY": "コミットハッシュなし",
-
         "BROKERS_HEADER": "MQTTブローカー",
         "BROKERS_ADD": "MQTTブローカーを追加",
         "BROKERS_NEW": "新規MQTTブローカー",
@@ -836,7 +822,6 @@
         "BROKERS_PASSWORD_REQUIRED": "有効なパスワードが必要です",
         "BROKERS_CERT": "証明書",
         "BROKERS_CERT_REQUIRED": "有効な証明書が必要です",
-
         "TENANTS_HEADER": "スタッフAPIテナント",
         "TENANTS_ADD": "テナントを追加",
         "TENANTS_NEW": "新規テナント",
@@ -873,7 +858,6 @@
         "TENANTS_MINUTES_HOURS": "{{ hour }}時間{{ minute }}分",
         "TENANTS_SAVE_ERROR": "テナントの更新に失敗しました。",
         "TENANTS_SAVE_SUCCESS": "テナントを正常に更新しました。",
-
         "RESOURCE_IMPORTS_HEADER": "リソースインポート",
         "RESOURCE_IMPORTS_ALL": "すべてインポート",
         "RESOURCE_IMPORTS_IMPORTED": "インポート済み",
@@ -886,7 +870,6 @@
         "RESOURCE_IMPORTS_ALL_LOADING": "不足しているリソースをインポート中...",
         "RESOURCE_IMPORTS_ALL_SUCCESS": "{{ count }}個のリソースを正常にインポートしました。",
         "RESOURCE_IMPORTS_SUCCESS": "リソース{{ name }}を正常にインポートしました。",
-
         "EXTENSIONS_HEADER": "拡張機能",
         "EXTENSIONS_ADD": "拡張機能を追加",
         "EXTENSIONS_NEW": "新規拡張機能",
@@ -907,7 +890,6 @@
         "EXTENSIONS_CONDITION_VALUE": "条件値",
         "EXTENSIONS_CONDITION_OP": "演算子",
         "EXTENSIONS_CONDITION_FIELD": "条件フィールド",
-
         "APP_KEYS_HEADER": "PlaceOSアプリケーションキー",
         "APP_KEYS_ADD": "アプリケーションキーを追加",
         "APP_KEYS_NEW": "新規アプリケーションキー",
@@ -926,14 +908,12 @@
         "PERMISSIONS_SUPPORT": "サポート",
         "PERMISSIONS_USER": "ユーザー",
         "PERMISSIONS_NONE": "なし",
-
         "SCHEMA_HEADER": "カスタムスキーマ",
         "SCHEMA_SELECT": "スキーマを選択...",
         "SCHEMA_ADD": "スキーマを追加",
         "SCHEMA_NAME": "スキーマ名",
         "SCHEMA_NEW": "新規スキーマ",
         "SCHEMA_SELECT_MSG": "編集するスキーマを選択",
-
         "STORAGE_HEADER": "PlaceOSデータストア",
         "STORAGE_ADD": "プロバイダを追加",
         "STORAGE_NEW": "新規ストレージプロバイダ",
@@ -961,7 +941,6 @@
         "STORAGE_ALLOWED_MIME_LABEL": "許可されるMIMEタイプ",
         "STORAGE_ALLOW_ALL_EXTENSIONS": "すべてのファイル拡張子を許可",
         "STORAGE_ALLOW_ALL_MIME": "すべてのMIMEタイプを許可",
-
         "UPLOADS_LIB_HEADER": "アップロードライブラリ",
         "UPLOADS_LIB_DOWNLOAD": "アップロードをダウンロード",
         "UPLOADS_LIB_DOWNLOAD_ERROR": "アップロードのダウンロードに失敗しました。エラー：{{ error }}",
