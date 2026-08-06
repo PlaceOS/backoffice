@@ -58,6 +58,12 @@ import {
     updateUser,
     updateZone,
 } from '@placeos/ts-client';
+import {
+    CascadePlan,
+    CascadeResourceType,
+    planDomainCascade,
+    planZoneCascade,
+} from './cascade-delete';
 import { DomainFormComponent } from '../domains/domain-form.component';
 import { DriverFormComponent } from '../drivers/driver-form.component';
 import { GroupFormComponent } from '../groups/group-form.component';
@@ -68,6 +74,22 @@ import { TriggerFormComponent } from '../triggers/trigger-form.component';
 import { UserFormComponent } from '../users/user-form.component';
 import { ZoneFormComponent } from '../zones/zone-form.component';
 
+/**
+ * Optional "also remove the things associated with this item" behaviour,
+ * surfaced as a checkbox on the delete confirmation. Off by default — deleting
+ * an item without touching its associated resources stays the default.
+ */
+export interface ItemCascade<T> {
+    /** i18n key for the checkbox label */
+    label: string;
+    /** i18n key for the text shown under the checkbox */
+    description: string;
+    /** Type of the item itself, so it can be labelled on the receipt */
+    resource_type: CascadeResourceType;
+    /** Resolves what would be removed alongside the item */
+    plan: (_: T) => Promise<CascadePlan>;
+}
+
 export interface ItemActions<T> {
     query: (_?: string) => QueryResponse<T>;
     show: (_: string) => Promise<T>;
@@ -77,6 +99,7 @@ export interface ItemActions<T> {
     modalComponent: Type<unknown>;
     delete_message: string;
     delete_extra?: (_: T) => Promise<[string, string]>;
+    cascade?: ItemCascade<T>;
     name: string;
 }
 
@@ -92,6 +115,12 @@ const domains: ItemActions<PlaceDomain> = {
     itemConstructor: PlaceDomain,
     modalComponent: DomainFormComponent,
     delete_message: ``,
+    cascade: {
+        label: 'DOMAINS.DELETE_CASCADE',
+        description: 'DOMAINS.DELETE_CASCADE_DESC',
+        resource_type: 'domain',
+        plan: (item) => planDomainCascade(item),
+    },
     name: 'DOMAINS',
 };
 
@@ -319,6 +348,12 @@ const zones: ItemActions<PlaceZone> = {
     itemConstructor: PlaceZone,
     modalComponent: ZoneFormComponent,
     delete_message: ``,
+    cascade: {
+        label: 'ZONES.DELETE_CASCADE',
+        description: 'ZONES.DELETE_CASCADE_DESC',
+        resource_type: 'zone',
+        plan: (item) => planZoneCascade(item.id),
+    },
     name: 'ZONES',
 };
 

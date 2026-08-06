@@ -14,8 +14,16 @@ const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
                 .toLowerCase()
                 .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
     }
-    if (q.parent) {
-        match = match && item.parent_id === q.parent;
+    if (q.parent_id) {
+        // Matches the API: a comma separated list of parents, plus the
+        // special `root` value for zones without one.
+        const parents = `${q.parent_id}`.split(',').filter((_) => !!_);
+        const parent_id = `${item.parent_id || ''}`;
+        match =
+            match &&
+            parents.some((parent) =>
+                parent === 'root' ? !parent_id : parent === parent_id,
+            );
     }
     if (q.control_system_id) {
         const system = endpointData(`${API}/systems`).find(

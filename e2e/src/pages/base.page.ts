@@ -234,6 +234,57 @@ export abstract class BasePage {
     }
 
     /**
+     * Get the "also delete associated resources" checkbox on the delete
+     * confirmation
+     */
+    get cascadeCheckbox(): Locator {
+        return this.page.locator(
+            'confirm-modal [confirm-option] input[type="checkbox"]',
+        );
+    }
+
+    /** Get the resolved list of what the cascade would remove */
+    get cascadeSummary(): Locator {
+        return this.page.locator('confirm-modal [details-summary]');
+    }
+
+    /** Get the "nothing else to remove" message */
+    get cascadeEmpty(): Locator {
+        return this.page.locator('confirm-modal [details-empty]');
+    }
+
+    /** Get the lines describing what the cascade will leave alone */
+    get cascadeWarnings(): Locator {
+        return this.page.locator('confirm-modal [details-warning]');
+    }
+
+    /** Get the confirmation dialog's accept button */
+    get acceptButton(): Locator {
+        return this.page.locator('confirm-modal button[name="accept"]');
+    }
+
+    /**
+     * Open the delete confirmation without confirming it
+     */
+    async openDeleteConfirmation(): Promise<void> {
+        await this.page.waitForSelector('item-details', { timeout: 10000 });
+        await this.openActionMenu();
+        await this.deleteButton.click();
+        await this.page.waitForSelector('confirm-modal', { timeout: 5000 });
+    }
+
+    /**
+     * Enable the cascade option and wait for its breakdown to resolve
+     */
+    async enableCascade(): Promise<void> {
+        await this.cascadeCheckbox.click();
+        await this.page.waitForSelector(
+            'confirm-modal [details-summary], confirm-modal [details-empty]',
+            { timeout: 20000 },
+        );
+    }
+
+    /**
      * Click delete and confirm (requires opening action menu first)
      */
     async deleteItem(): Promise<void> {

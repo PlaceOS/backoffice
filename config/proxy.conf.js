@@ -1,5 +1,7 @@
-const domain = 'placeos-dev.aca.im';
-const secure = true;
+// Override to develop against another environment, e.g. the local PlaceOS
+// stack: `PLACEOS_DOMAIN=localhost:8443 bun run start`
+const domain = process.env.PLACEOS_DOMAIN || 'placeos-dev.aca.im';
+const secure = process.env.PLACEOS_INSECURE !== 'true';
 const valid_ssl = false;
 
 const PROXY_CONFIG = {};

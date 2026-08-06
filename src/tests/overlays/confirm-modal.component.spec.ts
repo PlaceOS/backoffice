@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import {
     MAT_DIALOG_DATA,
     MatDialogModule,
     MatDialogRef,
 } from '@angular/material/dialog';
-import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the ts-client - factory must be self-contained
 vi.mock('@placeos/ts-client', () => {
@@ -21,13 +21,23 @@ vi.mock('@placeos/ts-client', () => {
     };
 });
 
+// The receipt's copy helpers raise notifications; the snackbar is not wired up
+// in unit tests.
+vi.mock('../../app/common/notifications', () => ({
+    notifyInfo: vi.fn(),
+    notifyError: vi.fn(),
+    notifySuccess: vi.fn(),
+}));
+
 import {
+    CONFIRM_METADATA,
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA,
+    describeError,
+    receiptToTsv,
 } from '../../app/overlays/confirm-modal.component';
-import { mockComponent } from '../test-helpers';
 import { IconComponent } from '../../app/ui/icon.component';
+import { mockComponent } from '../test-helpers';
 
 describe('ConfirmModalComponent', () => {
     let component: ConfirmModalComponent;
@@ -212,6 +222,348 @@ describe('ConfirmModalComponent', () => {
         });
     });
 
+    describe('with options', () => {
+        let details: ReturnType<typeof vi.fn>;
+        let resolve_details: (value: unknown) => void;
+
+        const build = async (option_overrides = {}) => {
+            await TestBed.resetTestingModule();
+            await TestBed.configureTestingModule({
+                imports: [
+                    ConfirmModalComponent,
+                    MatDialogModule,
+                    NoopAnimationsModule,
+                ],
+                providers: [
+                    { provide: MatDialogRef, useValue: dialog_ref_mock },
+                    {
+                        provide: MAT_DIALOG_DATA,
+                        useValue: {
+                            ...default_data,
+                            options: [
+                                {
+                                    id: 'cascade',
+                                    label: 'Also delete associated resources',
+                                    description: 'Removes orphaned systems',
+                                    details,
+                                    ...option_overrides,
+                                },
+                            ],
+                        },
+                    },
+                ],
+            })
+                .overrideComponent(ConfirmModalComponent, {
+                    remove: { imports: [IconComponent] },
+                    add: { imports: [mockComponent(IconComponent)] },
+                })
+                .compileComponents();
+            fixture = TestBed.createComponent(ConfirmModalComponent);
+            component = fixture.componentInstance;
+            fixture.detectChanges();
+        };
+
+        beforeEach(async () => {
+            details = vi.fn(
+                () =>
+                    new Promise((resolve) => {
+                        resolve_details = resolve;
+                    }),
+            );
+            await build();
+        });
+
+        it('should start with the option disabled', () => {
+            expect(component.isSelected('cascade')).toBe(false);
+        });
+
+        it('should honour an option that defaults to enabled', async () => {
+            await build({ enabled: true });
+            expect(component.isSelected('cascade')).toBe(true);
+        });
+
+        it('should not resolve details until the option is enabled', () => {
+            expect(details).not.toHaveBeenCalled();
+        });
+
+        it('should resolve details when the option is enabled', async () => {
+            component.toggleOption(component.options[0], true);
+            expect(details).toHaveBeenCalledOnce();
+            expect(component.isLoadingDetails('cascade')).toBe(true);
+            expect(component.resolving()).toBe(true);
+
+            resolve_details({ summary: ['2 systems'], warnings: [] });
+            await vi.waitFor(() => expect(component.resolving()).toBe(false));
+            expect(component.detailsFor('cascade')).toEqual({
+                summary: ['2 systems'],
+                warnings: [],
+            });
+        });
+
+        it('should only resolve details once', async () => {
+            component.toggleOption(component.options[0], true);
+            resolve_details({ summary: [] });
+            await vi.waitFor(() => expect(component.resolving()).toBe(false));
+            component.toggleOption(component.options[0], false);
+            component.toggleOption(component.options[0], true);
+            expect(details).toHaveBeenCalledOnce();
+        });
+
+        it('should surface a failure to resolve details', async () => {
+            details.mockImplementation(() =>
+                Promise.reject(new Error('lookup failed')),
+            );
+            await build();
+            component.toggleOption(component.options[0], true);
+            await vi.waitFor(() =>
+                expect(component.detailsError('cascade')).toBe('lookup failed'),
+            );
+            expect(component.resolving()).toBe(false);
+        });
+
+        it('should block confirmation when a selected option has no breakdown', async () => {
+            // Confirming here would run the action *without* the option, which
+            // for a cascade delete removes the parent and orphans everything
+            // the cascade was there to take with it.
+            details.mockImplementation(() =>
+                Promise.reject(new Error('lookup failed')),
+            );
+            await build();
+            const event_spy = vi.fn();
+            component.event.subscribe(event_spy);
+            component.toggleOption(component.options[0], true);
+            await vi.waitFor(() =>
+                expect(component.detailsError('cascade')).toBe('lookup failed'),
+            );
+
+            expect(component.blocked()).toBe(true);
+            component.onConfirm();
+            expect(event_spy).not.toHaveBeenCalled();
+        });
+
+        it('should stop blocking once the option is turned back off', async () => {
+            details.mockImplementation(() =>
+                Promise.reject(new Error('lookup failed')),
+            );
+            await build();
+            component.toggleOption(component.options[0], true);
+            await vi.waitFor(() => expect(component.blocked()).toBe(true));
+
+            component.toggleOption(component.options[0], false);
+
+            expect(component.blocked()).toBe(false);
+            const event_spy = vi.fn();
+            component.event.subscribe(event_spy);
+            component.onConfirm();
+            expect(event_spy).toHaveBeenCalledWith({
+                reason: 'done',
+                metadata: { options: { cascade: false } },
+            });
+        });
+
+        it('should resolve the breakdown of an option that starts enabled', async () => {
+            // Otherwise it counts as selected with no details and holds the
+            // confirm button disabled for good.
+            await build({ enabled: true });
+            expect(details).toHaveBeenCalledOnce();
+            // While it is in flight `resolving` holds the button; `blocked` is
+            // for a breakdown that has finished without producing one.
+            expect(component.resolving()).toBe(true);
+            expect(component.blocked()).toBe(false);
+
+            resolve_details({ summary: ['2 systems'], warnings: [] });
+            await vi.waitFor(() => expect(component.resolving()).toBe(false));
+            expect(component.blocked()).toBe(false);
+            expect(component.detailsFor('cascade')).toEqual({
+                summary: ['2 systems'],
+                warnings: [],
+            });
+        });
+
+        it('should release the confirm button when an option is unticked mid-resolve', () => {
+            // The breakdown of a large zone can take tens of seconds. Holding
+            // confirm disabled for a request nobody is waiting on any more
+            // just looks broken.
+            component.toggleOption(component.options[0], true);
+            expect(component.resolving()).toBe(true);
+
+            component.toggleOption(component.options[0], false);
+
+            expect(component.resolving()).toBe(false);
+            expect(component.blocked()).toBe(false);
+        });
+
+        it('should not start a second resolution while one is in flight', async () => {
+            // Whichever settles last wins, so a stale rejection could
+            // overwrite a good breakdown.
+            component.toggleOption(component.options[0], true);
+            component.toggleOption(component.options[0], false);
+            component.toggleOption(component.options[0], true);
+
+            expect(details).toHaveBeenCalledOnce();
+        });
+
+        it('should block confirmation while details are resolving', () => {
+            const event_spy = vi.fn();
+            component.event.subscribe(event_spy);
+            component.toggleOption(component.options[0], true);
+
+            component.onConfirm();
+
+            expect(event_spy).not.toHaveBeenCalled();
+        });
+
+        it('should report the selection on confirmation', () => {
+            const event_spy = vi.fn();
+            component.event.subscribe(event_spy);
+
+            component.onConfirm();
+
+            expect(event_spy).toHaveBeenCalledWith({
+                reason: 'done',
+                metadata: { options: { cascade: false } },
+            });
+        });
+
+        it('should report an enabled selection on confirmation', async () => {
+            await build({ enabled: true, details: undefined });
+            const event_spy = vi.fn();
+            component.event.subscribe(event_spy);
+
+            component.onConfirm();
+
+            expect(event_spy).toHaveBeenCalledWith({
+                reason: 'done',
+                metadata: { options: { cascade: true } },
+            });
+        });
+
+        it('should render the option checkbox', () => {
+            const option_el =
+                fixture.nativeElement.querySelector('[confirm-option]');
+            expect(option_el).toBeTruthy();
+            expect(option_el.textContent).toContain(
+                'Also delete associated resources',
+            );
+        });
+    });
+
+    describe('result receipt', () => {
+        const receipt = {
+            title: 'Removed',
+            items: [
+                { type: 'System', id: 'sys-1', name: 'Boardroom' },
+                { type: 'Zone', id: 'zone-1', name: 'Level 1' },
+            ],
+            note: 'Modules went with them.',
+        };
+
+        it('should start with no receipt', () => {
+            expect(component.result()).toBe(null);
+        });
+
+        it('should show the confirmation, not a receipt, before the action', () => {
+            expect(
+                fixture.nativeElement.querySelector('main[result]'),
+            ).toBeFalsy();
+            expect(
+                fixture.nativeElement.querySelector('button[name="accept"]'),
+            ).toBeTruthy();
+        });
+
+        it('should replace the body with the receipt once set', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+
+            const main = fixture.nativeElement.querySelector('main[result]');
+            expect(main).toBeTruthy();
+            expect(main.textContent).toContain('Boardroom');
+            expect(main.textContent).toContain('sys-1');
+            expect(main.textContent).toContain('Level 1');
+            expect(main.textContent).toContain('zone-1');
+            expect(main.textContent).toContain('Modules went with them.');
+        });
+
+        it('should use the receipt title in the header', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelector('header').textContent,
+            ).toContain('Removed');
+        });
+
+        it('should list one row per resource', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelectorAll('[result-items] li')
+                    .length,
+            ).toBe(2);
+        });
+
+        it('should swap the confirm buttons for a close button', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelector('button[name="accept"]'),
+            ).toBeFalsy();
+            expect(
+                fixture.nativeElement.querySelector('button[name="close"]'),
+            ).toBeTruthy();
+        });
+
+        it('should render failures separately when present', () => {
+            component.result.set({
+                ...receipt,
+                failed: [{ type: 'System', id: 'sys-9', name: 'Stuck' }],
+            });
+            fixture.detectChanges();
+
+            const failed =
+                fixture.nativeElement.querySelector('[result-failed]');
+            expect(failed).toBeTruthy();
+            expect(failed.textContent).toContain('Stuck');
+            expect(failed.textContent).toContain('sys-9');
+        });
+
+        it('should not render the failure block when nothing failed', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelector('[result-failed]'),
+            ).toBeFalsy();
+        });
+
+        it('should render what was never attempted after a failure', () => {
+            // A run that stops early leaves resources untouched. Showing only
+            // "3 removed, 1 failed" reads as though the other 8 were fine.
+            component.result.set({
+                ...receipt,
+                failed: [{ type: 'System', id: 'sys-9', name: 'Stuck' }],
+                skipped: [
+                    { type: 'Zone', id: 'zone-3', name: 'Level 3' },
+                    { type: 'Zone', id: 'zone-4', name: 'Level 4' },
+                ],
+            });
+            fixture.detectChanges();
+
+            const skipped =
+                fixture.nativeElement.querySelector('[result-skipped]');
+            expect(skipped).toBeTruthy();
+            expect(skipped.textContent).toContain('Level 3');
+            expect(skipped.textContent).toContain('zone-3');
+            expect(skipped.textContent).toContain('Level 4');
+        });
+
+        it('should not render the skipped block when everything was attempted', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelector('[result-skipped]'),
+            ).toBeFalsy();
+        });
+    });
+
     describe('disableClose/enableClose', () => {
         it('should set disableClose to true when calling disableClose', () => {
             expect(dialog_ref_mock.disableClose).toBe(false);
@@ -300,8 +652,7 @@ describe('ConfirmModalComponent', () => {
         });
 
         it('should render content text', () => {
-            const content_el =
-                fixture.nativeElement.querySelector('[content]');
+            const content_el = fixture.nativeElement.querySelector('[content]');
             expect(content_el).toBeTruthy();
             expect(content_el.innerHTML).toContain('Test Content');
         });
@@ -334,8 +685,76 @@ describe('ConfirmModalComponent', () => {
     });
 });
 
+describe('receiptToTsv', () => {
+    it('renders one tab separated row per resource', () => {
+        expect(
+            receiptToTsv({
+                title: 'Removed',
+                items: [
+                    { type: 'System', id: 'sys-1', name: 'Boardroom' },
+                    { type: 'Zone', id: 'zone-1', name: 'Level 1' },
+                ],
+            }),
+        ).toBe('System\tBoardroom\tsys-1\nZone\tLevel 1\tzone-1');
+    });
+
+    it('marks failed rows so a partial run is obvious', () => {
+        expect(
+            receiptToTsv({
+                title: 'Partly removed',
+                items: [],
+                failed: [{ type: 'System', id: 'sys-9', name: 'Stuck' }],
+            }),
+        ).toBe('System\tStuck\tsys-9\tFAILED');
+    });
+
+    it('marks rows that were never attempted', () => {
+        expect(
+            receiptToTsv({
+                title: 'Partly removed',
+                items: [],
+                failed: [{ type: 'System', id: 'sys-9', name: 'Stuck' }],
+                skipped: [{ type: 'Zone', id: 'zone-3', name: 'Level 3' }],
+            }),
+        ).toBe('System\tStuck\tsys-9\tFAILED\nZone\tLevel 3\tzone-3\tSKIPPED');
+    });
+
+    it('renders an empty receipt as an empty string', () => {
+        expect(receiptToTsv({ title: 'Removed', items: [] })).toBe('');
+    });
+});
+
 describe('CONFIRM_METADATA', () => {
     it('should have height set to auto', () => {
         expect(CONFIRM_METADATA.height).toBe('auto');
+    });
+});
+
+describe('describeError', () => {
+    it('turns a ts-client Response rejection into something readable', () => {
+        // ts-client throws the raw Response for any non-OK status, and
+        // interpolating that gives "[object Response]" — which is what the
+        // user would otherwise be told is the reason they cannot continue.
+        expect(describeError(new Response('', { status: 403 }))).toContain(
+            '403',
+        );
+        expect(describeError(new Response('', { status: 403 }))).not.toContain(
+            'object Response',
+        );
+    });
+
+    it('uses an Error message when there is one', () => {
+        expect(describeError(new Error('gateway'))).toBe('gateway');
+    });
+
+    it('falls back to a status shape without a message', () => {
+        expect(describeError({ status: 502, statusText: 'Bad Gateway' })).toBe(
+            '502 Bad Gateway',
+        );
+    });
+
+    it('never renders an empty reason', () => {
+        expect(describeError(undefined)).toBe('Unknown error');
+        expect(describeError({})).toBe('Unknown error');
     });
 });
