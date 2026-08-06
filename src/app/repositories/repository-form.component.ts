@@ -1,5 +1,6 @@
 import {
     Component,
+    ElementRef,
     EventEmitter,
     Injector,
     OnInit,
@@ -9,6 +10,7 @@ import {
     effect,
     inject,
     signal,
+    viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FormField, disabled, form, submit } from '@angular/forms/signals';
@@ -232,9 +234,42 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 <mat-select
                                     [formField]="form.branch"
                                     [placeholder]="'Select Branch'"
+                                    (openedChange)="setBranchOpen($event)"
                                 >
+                                    <mat-option
+                                        class="bg-base-100 sticky -top-2 z-20"
+                                    >
+                                        <input
+                                            #branch_search
+                                            type="search"
+                                            name="branch-search"
+                                            [ngModel]="branch_filter()"
+                                            [ngModelOptions]="{
+                                                standalone: true,
+                                            }"
+                                            (ngModelChange)="
+                                                branch_filter.set($event)
+                                            "
+                                            (mousedown)="
+                                                $event.stopPropagation()
+                                            "
+                                            (click)="$event.stopPropagation()"
+                                            (keydown)="$event.stopPropagation()"
+                                            class="option-search-input focus:bg-info/10 pointer-events-auto absolute inset-1 h-auto cursor-text rounded-sm p-4"
+                                            [placeholder]="
+                                                'COMMON.SEARCH_FOR'
+                                                    | translate
+                                                        : { name: 'branches' }
+                                            "
+                                            [attr.aria-label]="
+                                                'COMMON.SEARCH_FOR'
+                                                    | translate
+                                                        : { name: 'branches' }
+                                            "
+                                        />
+                                    </mat-option>
                                     @for (
-                                        branch of branch_list();
+                                        branch of filtered_branch_list();
                                         track branch
                                     ) {
                                         <mat-option [value]="branch">
@@ -262,6 +297,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 <mat-select
                                     [formField]="form.commit_hash"
                                     placeholder="Select commit"
+                                    (openedChange)="setCommitOpen($event)"
                                 >
                                     <mat-select-trigger>
                                         <div
@@ -283,8 +319,40 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                             </div>
                                         </div>
                                     </mat-select-trigger>
+                                    <mat-option
+                                        class="bg-base-100 sticky -top-2 z-20"
+                                    >
+                                        <input
+                                            #commit_search
+                                            type="search"
+                                            name="commit-search"
+                                            [ngModel]="commit_filter()"
+                                            [ngModelOptions]="{
+                                                standalone: true,
+                                            }"
+                                            (ngModelChange)="
+                                                commit_filter.set($event)
+                                            "
+                                            (mousedown)="
+                                                $event.stopPropagation()
+                                            "
+                                            (click)="$event.stopPropagation()"
+                                            (keydown)="$event.stopPropagation()"
+                                            class="option-search-input focus:bg-info/10 pointer-events-auto absolute inset-1 h-auto cursor-text rounded-sm p-4"
+                                            [placeholder]="
+                                                'COMMON.SEARCH_FOR'
+                                                    | translate
+                                                        : { name: 'commits' }
+                                            "
+                                            [attr.aria-label]="
+                                                'COMMON.SEARCH_FOR'
+                                                    | translate
+                                                        : { name: 'commits' }
+                                            "
+                                        />
+                                    </mat-option>
                                     @for (
-                                        commit of commit_list();
+                                        commit of filtered_commit_list();
                                         track commit
                                     ) {
                                         <mat-option [value]="commit.hash">
@@ -391,7 +459,19 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
             }
         </fullscreen-modal-shell>
     `,
-    styles: [``],
+    styles: [
+        `
+            .option-search-input {
+                width: calc(100% - 0.5rem);
+                outline: none;
+            }
+
+            .option-search-input::placeholder {
+                color: var(--base-400, currentColor);
+                opacity: 0.65;
+            }
+        `,
+    ],
     imports: [
         MatFormFieldModule,
         MatInputModule,
@@ -423,13 +503,50 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     public readonly formModel = signal(
         generateRepositoryFormModel(this._data.item),
     );
+    private readonly _repository_uri = computed(() => this.formModel().uri);
+    private readonly _repository_branch = computed(
+        () => this.formModel().branch,
+    );
+    private readonly _repository_commit = computed(
+        () => this.formModel().commit_hash,
+    );
     public readonly saving = signal<string | null>(null);
     public readonly heading = signal('');
 
     /** List of commits available for repository */
     public commit_list = signal<RepositoryCommit[]>([]);
+    public readonly commit_filter = signal('');
+    public readonly filtered_commit_list = computed(() => {
+        const search = this.commit_filter().trim().toLowerCase();
+        if (!search) return this.commit_list();
+        const selected = this._repository_commit();
+        return this.commit_list()
+            .filter(
+                (commit) =>
+                    commit.hash === selected ||
+                    `${commit.subject} ${commit.hash} ${commit.author || ''}`
+                        .toLowerCase()
+                        .includes(search),
+            )
+            .sort((a, b) =>
+                a.hash === selected ? -1 : b.hash === selected ? 1 : 0,
+            );
+    });
     /** List of branches available for repository */
     public branch_list = signal<string[]>([]);
+    public readonly branch_filter = signal('');
+    public readonly filtered_branch_list = computed(() => {
+        const search = this.branch_filter().trim().toLowerCase();
+        if (!search) return this.branch_list();
+        const selected = this._repository_branch();
+        return this.branch_list()
+            .filter(
+                (branch) =>
+                    branch === selected ||
+                    branch.toLowerCase().includes(search),
+            )
+            .sort((a, b) => (a === selected ? -1 : b === selected ? 1 : 0));
+    });
     /** Whether repository's branches are being loaded */
     public readonly loading_branches = signal(false);
     /** Whether repository's commits are being loaded */
@@ -445,6 +562,11 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     public readonly is_editing = signal(false);
     /** Emits when URI, username, or password fields lose focus */
     public readonly credentials_blur = signal(0);
+
+    private readonly _branch_search_el =
+        viewChild<ElementRef<HTMLInputElement>>('branch_search');
+    private readonly _commit_search_el =
+        viewChild<ElementRef<HTMLInputElement>>('commit_search');
 
     public readonly form = form(this.formModel, (path) => {
         applyRepositoryFormSchema(path);
@@ -566,10 +688,26 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         this.show_password.update((value) => !value);
     }
 
+    public setBranchOpen(open: boolean): void {
+        if (!open) return;
+        this.branch_filter.set('');
+        this.timeout('focus_branch_search', () =>
+            this._branch_search_el()?.nativeElement.focus(),
+        );
+    }
+
+    public setCommitOpen(open: boolean): void {
+        if (!open) return;
+        this.commit_filter.set('');
+        this.timeout('focus_commit_search', () =>
+            this._commit_search_el()?.nativeElement.focus(),
+        );
+    }
+
     private _setupBranchAndCommitStreams() {
         effect(
             () => {
-                void this.formModel().uri;
+                void this._repository_uri();
                 void this.credentials_blur();
                 this.timeout(
                     'repository_branches',
@@ -581,8 +719,8 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         );
         effect(
             () => {
-                void this.formModel().uri;
-                void this.formModel().branch;
+                void this._repository_uri();
+                void this._repository_branch();
                 void this.credentials_blur();
                 this.timeout(
                     'repository_commits',
