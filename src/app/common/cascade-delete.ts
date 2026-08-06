@@ -4,9 +4,9 @@ import {
     PlaceDomain,
     PlaceSystem,
     PlaceZone,
-    QueryResponse,
     queryApplications,
     queryDomains,
+    QueryResponse,
     querySystems,
     queryZones,
     removeApplication,
@@ -160,7 +160,16 @@ export async function zoneSubtreeIds(zone_id: string): Promise<string[]> {
     const found = [zone_id];
     const seen = new Set(found);
     let level = [zone_id];
-    while (level.length && found.length < MAX_ZONES) {
+    while (level.length) {
+        // Truncating here would understate the tree, which decides both what
+        // gets deleted and whether another domain shares it. Same reasoning as
+        // `collectPages`: an incomplete answer must not look like a complete
+        // one.
+        if (found.length >= MAX_ZONES) {
+            throw new Error(
+                `Zone tree beneath ${zone_id} exceeds ${MAX_ZONES} zones`,
+            );
+        }
         const children = await collectPages(
             queryZones({ parent_id: level.join(','), limit: PAGE_SIZE }),
         );
@@ -198,8 +207,14 @@ export async function splitZoneSystems(
     zone_ids: string[],
 ): Promise<ZoneSystemSplit> {
     const subtree = new Set(zone_ids);
-    const inside = (system: PlaceSystem) =>
-        (system.zones || []).every((id) => subtree.has(id));
+    // A system with no zones at all is not "entirely inside" the subtree — it
+    // has no relationship to it. `[].every()` is `true`, so without the length
+    // check a system whose zones were just cleared, and which the search index
+    // still lists under this zone, would be treated as orphaned and deleted.
+    const inside = (system: PlaceSystem) => {
+        const zones = system.zones || [];
+        return zones.length > 0 && zones.every((id) => subtree.has(id));
+    };
 
     const found = new Map<string, PlaceSystem>();
     // Not caught, for the same reason as the domain listings: a zone whose
@@ -237,9 +252,13 @@ export async function splitZoneSystems(
  * for a zone delete that is the caller's existing `remove` action, and for a
  * domain delete `planDomainCascade` appends it.
  */
-export async function planZoneCascade(zone_id: string): Promise<CascadePlan> {
+export async function planZoneCascade(
+    zone_id: string,
+    /** Subtree ids, when the caller has already walked them. */
+    subtree_ids?: string[],
+): Promise<CascadePlan> {
     const plan = emptyPlan();
-    const zone_ids = await zoneSubtreeIds(zone_id);
+    const zone_ids = subtree_ids ?? (await zoneSubtreeIds(zone_id));
     if (!zone_ids.length) return plan;
     const { orphaned, retained } = await splitZoneSystems(zone_ids);
     const module_count = new Set(
@@ -290,12 +309,20 @@ export async function planZoneCascade(zone_id: string): Promise<CascadePlan> {
     return plan;
 }
 
-/** Tenants configured in the staff API against `domain`. */
+/**
+ * Tenants configured in the staff API against `domain`.
+ *
+ * Not caught. This listing crosses a service boundary — staff API is separate
+ * and its tenants index is admin gated — so it fails for reasons that have
+ * nothing to do with the domain having no tenant: a restart, an ingress 502, a
+ * token that PlaceOS accepts but staff API does not. Returning an empty list
+ * for those made the plan say "Nothing else to remove", which is a positive
+ * claim of absence, and the tenant would then survive the domain that owned it
+ * still holding its encrypted calendar credentials.
+ */
 async function domainTenants(domain: string): Promise<PlaceTenant[]> {
     if (!domain) return [];
-    const tenants = (await get('/api/staff/v1/tenants').catch(
-        () => [],
-    )) as PlaceTenant[];
+    const tenants = (await get('/api/staff/v1/tenants')) as PlaceTenant[];
     return (tenants || []).filter((tenant) => tenant?.domain === domain);
 }
 
@@ -385,9 +412,18 @@ export async function planDomainCascade(
         return plan;
     }
 
-    const sharing = all_domains.filter(
-        (other) => other.id !== domain.id && orgZoneId(other) === org_zone_id,
-    );
+    // Deleting the org zone destroys every zone beneath it as well — `Zone`
+    // declares its children `dependent: :destroy`. So another domain is
+    // affected not only when it points at this exact zone, but when it points
+    // at anything inside the tree that is about to go. Comparing ids alone let
+    // a domain whose org zone was a *child* of this one be silently destroyed.
+    const org_subtree_ids = await zoneSubtreeIds(org_zone_id);
+    const org_subtree = new Set(org_subtree_ids);
+    const sharing = all_domains.filter((other) => {
+        if (other.id === domain.id) return false;
+        const other_zone = orgZoneId(other);
+        return !!other_zone && org_subtree.has(other_zone);
+    });
     if (sharing.length) {
         plan.warnings.push(
             i18n('CASCADE.ORG_ZONE_SHARED', {
@@ -407,7 +443,8 @@ export async function planDomainCascade(
         return plan;
     }
 
-    const zone_plan = await planZoneCascade(org_zone_id);
+    // Reuse the walk done for the sharing check rather than repeating it.
+    const zone_plan = await planZoneCascade(org_zone_id, org_subtree_ids);
     // The org zone line already says "and everything beneath it", so the zone
     // plan's own scope line would just repeat it.
     plan.scope.push(i18n('CASCADE.SCOPE_ORG_ZONE', { name: org_zone.name }));

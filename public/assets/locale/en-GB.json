@@ -1021,8 +1021,6 @@
         "REMOVING_TENANT": "Removing staff API tenant \"{{ name }}\"",
         "REMOVING_ZONE": "Removing zone \"{{ name }}\"",
         "PROGRESS": "{{ step }} ({{ index }} of {{ total }})",
-        "SUCCESS": "Removed {{ count }} associated resources.",
-        "SUCCESS_1": "Removed {{ count }} associated resource.",
         "FAILED": "Failed to remove {{ count }} associated resources, so nothing further was deleted. Error: {{ error }}",
         "FAILED_1": "Failed to remove {{ count }} associated resource, so nothing further was deleted. Error: {{ error }}",
         "TYPE_SYSTEM": "System",

@@ -49,10 +49,15 @@ import {
 type Query = ReturnType<typeof vi.fn>;
 
 const page = (data: unknown[], next: unknown = null) =>
-    Promise.resolve({ data, total: data.length, next: next ? () => next : null });
+    Promise.resolve({
+        data,
+        total: data.length,
+        next: next ? () => next : null,
+    });
 
 /** Zones keyed by their `parent_id`, matching the API's comma separated filter */
-const zonesByParent = (tree: Record<string, { id: string }[]>) =>
+const zonesByParent =
+    (tree: Record<string, { id: string }[]>) =>
     (params: { parent_id?: string }) => {
         const parents = (params?.parent_id || '').split(',').filter((_) => !!_);
         return page(parents.flatMap((parent) => tree[parent] || []));
@@ -169,6 +174,19 @@ describe('cascade-delete', () => {
             const split = await splitZoneSystems(['zone-a', 'zone-b']);
             expect(split.orphaned.map((_) => _.id)).toEqual(['sys-1']);
             expect(split.retained).toEqual([]);
+        });
+
+        it('does not orphan a system that has no zones at all', async () => {
+            // `[].every()` is true, so an empty `zones` array would otherwise
+            // read as "entirely inside this subtree". A system whose zones
+            // were just cleared, still listed here by the lagging search
+            // index, has no relationship to the zone being deleted.
+            (querySystems as Query).mockImplementation(
+                systemsByZone({ 'zone-a': [system('sys-detached', [])] }),
+            );
+            const split = await splitZoneSystems(['zone-a']);
+            expect(split.orphaned).toEqual([]);
+            expect(split.retained.map((_) => _.id)).toEqual(['sys-detached']);
         });
 
         it('retains a system that also lives outside the subtree', async () => {
@@ -414,6 +432,48 @@ describe('cascade-delete', () => {
             await expect(planDomainCascade(domain())).rejects.toThrow(
                 'gateway',
             );
+        });
+
+        it('fails rather than reporting a domain as having no staff API tenants', async () => {
+            // The tenant listing crosses a service boundary, so it fails for
+            // reasons unrelated to the domain having no tenant. Reporting none
+            // deletes the domain and leaves the tenant holding its encrypted
+            // calendar credentials.
+            (get as Query).mockImplementation(() =>
+                Promise.reject(new Error('502 Bad Gateway')),
+            );
+            await expect(planDomainCascade(domain())).rejects.toThrow('502');
+            expect(del).not.toHaveBeenCalled();
+        });
+
+        it('leaves the org zone alone when another domain points inside its subtree', async () => {
+            // Deleting the org zone destroys everything beneath it, so a
+            // domain whose own org zone is a CHILD of this one is just as
+            // affected as one pointing at the same id.
+            (queryZones as Query).mockImplementation(
+                zonesByParent({ 'zone-org': [{ id: 'zone-bldg2' }] }),
+            );
+            (queryDomains as Query).mockImplementation(() =>
+                page([
+                    domain({ org_zone: 'zone-org' }),
+                    {
+                        id: 'authority-2',
+                        name: 'Beta',
+                        domain: 'beta.example.com',
+                        config: { org_zone: 'zone-bldg2' },
+                    },
+                ]),
+            );
+            const plan = await planDomainCascade(
+                domain({ org_zone: 'zone-org' }),
+            );
+            expect(
+                plan.warnings.some((line) =>
+                    line.startsWith('CASCADE.ORG_ZONE_SHARED'),
+                ),
+            ).toBe(true);
+            expect(plan.warnings[0]).toContain('Beta');
+            expect(plan.steps).toEqual([]);
         });
 
         it('warns when the configured org zone no longer exists', async () => {

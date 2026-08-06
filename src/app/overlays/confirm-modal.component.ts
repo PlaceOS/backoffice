@@ -109,6 +109,30 @@ export interface ConfirmModalData {
  * spreadsheet. Failed rows are marked so a partial run is not mistaken for a
  * complete one.
  */
+/**
+ * Readable text for whatever an option's `details()` rejected with.
+ *
+ * ts-client throws the raw `Response` for any non-OK status, and interpolating
+ * that yields "[object Response]" — which is what the user would otherwise be
+ * shown as the reason they cannot continue.
+ */
+export function describeError(error: unknown): string {
+    if (!error) return 'Unknown error';
+    if (typeof error === 'string') return error;
+    if (typeof Response !== 'undefined' && error instanceof Response) {
+        return `${error.status} ${error.statusText || 'request failed'}`.trim();
+    }
+    const message = (error as Error)?.message;
+    if (message) return message;
+    const status = (error as { status?: number; statusText?: string })?.status;
+    if (status) {
+        return `${status} ${
+            (error as { statusText?: string }).statusText || 'request failed'
+        }`.trim();
+    }
+    return 'Unknown error';
+}
+
 export function receiptToTsv(result: ConfirmModalResult): string {
     const rows = [
         ...result.items.map((item) => [item.type, item.name, item.id]),
@@ -450,9 +474,17 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
     /** Failures from resolving a breakdown, keyed by option id */
     private readonly _errors = signal<Record<string, string>>({});
 
-    /** Whether any option is still resolving its breakdown */
+    /**
+     * Whether a *selected* option is still resolving its breakdown. Scoped to
+     * the selection on purpose: unticking an option whose lookup is still in
+     * flight must release the confirm button rather than hold it until a
+     * request nobody is waiting on finally settles.
+     */
     public readonly resolving = computed(() =>
-        Object.values(this._resolving()).some((value) => value),
+        this.options.some(
+            (option) =>
+                this._selected()[option.id] && this._resolving()[option.id],
+        ),
     );
 
     /**
@@ -488,6 +520,10 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
     /** Resolves an option's breakdown, once */
     private _resolveDetails(option: ConfirmModalOption) {
         if (!option.details || this._details()[option.id]) return;
+        // Already in flight. Without this, unticking and re-ticking starts a
+        // second resolution, and whichever settles last wins — so a stale
+        // rejection can overwrite a good breakdown, or vice versa.
+        if (this._resolving()[option.id]) return;
         this._errors.update((state) => ({ ...state, [option.id]: '' }));
         this._resolving.update((state) => ({ ...state, [option.id]: true }));
         option
@@ -501,9 +537,7 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
             .catch((error) =>
                 this._errors.update((state) => ({
                     ...state,
-                    [option.id]: `${
-                        (error as Error)?.message || error || 'Unknown error'
-                    }`,
+                    [option.id]: describeError(error),
                 })),
             )
             .finally(() =>

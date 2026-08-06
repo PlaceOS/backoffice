@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import {
     MAT_DIALOG_DATA,
     MatDialogModule,
     MatDialogRef,
 } from '@angular/material/dialog';
-import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the ts-client - factory must be self-contained
 vi.mock('@placeos/ts-client', () => {
@@ -30,13 +30,14 @@ vi.mock('../../app/common/notifications', () => ({
 }));
 
 import {
+    CONFIRM_METADATA,
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA,
+    describeError,
     receiptToTsv,
 } from '../../app/overlays/confirm-modal.component';
-import { mockComponent } from '../test-helpers';
 import { IconComponent } from '../../app/ui/icon.component';
+import { mockComponent } from '../test-helpers';
 
 describe('ConfirmModalComponent', () => {
     let component: ConfirmModalComponent;
@@ -122,7 +123,7 @@ describe('ConfirmModalComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
-                        { provide: MAT_DIALOG_DATA, useValue: {} },
+                    { provide: MAT_DIALOG_DATA, useValue: {} },
                 ],
             })
                 .overrideComponent(ConfirmModalComponent, {
@@ -175,7 +176,7 @@ describe('ConfirmModalComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
-                        {
+                    {
                         provide: MAT_DIALOG_DATA,
                         useValue: {
                             ...default_data,
@@ -235,7 +236,7 @@ describe('ConfirmModalComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
-                        {
+                    {
                         provide: MAT_DIALOG_DATA,
                         useValue: {
                             ...default_data,
@@ -292,9 +293,7 @@ describe('ConfirmModalComponent', () => {
             expect(component.resolving()).toBe(true);
 
             resolve_details({ summary: ['2 systems'], warnings: [] });
-            await vi.waitFor(() =>
-                expect(component.resolving()).toBe(false),
-            );
+            await vi.waitFor(() => expect(component.resolving()).toBe(false));
             expect(component.detailsFor('cascade')).toEqual({
                 summary: ['2 systems'],
                 warnings: [],
@@ -304,9 +303,7 @@ describe('ConfirmModalComponent', () => {
         it('should only resolve details once', async () => {
             component.toggleOption(component.options[0], true);
             resolve_details({ summary: [] });
-            await vi.waitFor(() =>
-                expect(component.resolving()).toBe(false),
-            );
+            await vi.waitFor(() => expect(component.resolving()).toBe(false));
             component.toggleOption(component.options[0], false);
             component.toggleOption(component.options[0], true);
             expect(details).toHaveBeenCalledOnce();
@@ -381,6 +378,29 @@ describe('ConfirmModalComponent', () => {
                 summary: ['2 systems'],
                 warnings: [],
             });
+        });
+
+        it('should release the confirm button when an option is unticked mid-resolve', () => {
+            // The breakdown of a large zone can take tens of seconds. Holding
+            // confirm disabled for a request nobody is waiting on any more
+            // just looks broken.
+            component.toggleOption(component.options[0], true);
+            expect(component.resolving()).toBe(true);
+
+            component.toggleOption(component.options[0], false);
+
+            expect(component.resolving()).toBe(false);
+            expect(component.blocked()).toBe(false);
+        });
+
+        it('should not start a second resolution while one is in flight', async () => {
+            // Whichever settles last wins, so a stale rejection could
+            // overwrite a good breakdown.
+            component.toggleOption(component.options[0], true);
+            component.toggleOption(component.options[0], false);
+            component.toggleOption(component.options[0], true);
+
+            expect(details).toHaveBeenCalledOnce();
         });
 
         it('should block confirmation while details are resolving', () => {
@@ -514,6 +534,34 @@ describe('ConfirmModalComponent', () => {
             ).toBeFalsy();
         });
 
+        it('should render what was never attempted after a failure', () => {
+            // A run that stops early leaves resources untouched. Showing only
+            // "3 removed, 1 failed" reads as though the other 8 were fine.
+            component.result.set({
+                ...receipt,
+                failed: [{ type: 'System', id: 'sys-9', name: 'Stuck' }],
+                skipped: [
+                    { type: 'Zone', id: 'zone-3', name: 'Level 3' },
+                    { type: 'Zone', id: 'zone-4', name: 'Level 4' },
+                ],
+            });
+            fixture.detectChanges();
+
+            const skipped =
+                fixture.nativeElement.querySelector('[result-skipped]');
+            expect(skipped).toBeTruthy();
+            expect(skipped.textContent).toContain('Level 3');
+            expect(skipped.textContent).toContain('zone-3');
+            expect(skipped.textContent).toContain('Level 4');
+        });
+
+        it('should not render the skipped block when everything was attempted', () => {
+            component.result.set(receipt);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelector('[result-skipped]'),
+            ).toBeFalsy();
+        });
     });
 
     describe('disableClose/enableClose', () => {
@@ -544,7 +592,7 @@ describe('ConfirmModalComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
-                        {
+                    {
                         provide: MAT_DIALOG_DATA,
                         useValue: {
                             ...default_data,
@@ -604,8 +652,7 @@ describe('ConfirmModalComponent', () => {
         });
 
         it('should render content text', () => {
-            const content_el =
-                fixture.nativeElement.querySelector('[content]');
+            const content_el = fixture.nativeElement.querySelector('[content]');
             expect(content_el).toBeTruthy();
             expect(content_el.innerHTML).toContain('Test Content');
         });
@@ -661,6 +708,17 @@ describe('receiptToTsv', () => {
         ).toBe('System\tStuck\tsys-9\tFAILED');
     });
 
+    it('marks rows that were never attempted', () => {
+        expect(
+            receiptToTsv({
+                title: 'Partly removed',
+                items: [],
+                failed: [{ type: 'System', id: 'sys-9', name: 'Stuck' }],
+                skipped: [{ type: 'Zone', id: 'zone-3', name: 'Level 3' }],
+            }),
+        ).toBe('System\tStuck\tsys-9\tFAILED\nZone\tLevel 3\tzone-3\tSKIPPED');
+    });
+
     it('renders an empty receipt as an empty string', () => {
         expect(receiptToTsv({ title: 'Removed', items: [] })).toBe('');
     });
@@ -669,5 +727,34 @@ describe('receiptToTsv', () => {
 describe('CONFIRM_METADATA', () => {
     it('should have height set to auto', () => {
         expect(CONFIRM_METADATA.height).toBe('auto');
+    });
+});
+
+describe('describeError', () => {
+    it('turns a ts-client Response rejection into something readable', () => {
+        // ts-client throws the raw Response for any non-OK status, and
+        // interpolating that gives "[object Response]" — which is what the
+        // user would otherwise be told is the reason they cannot continue.
+        expect(describeError(new Response('', { status: 403 }))).toContain(
+            '403',
+        );
+        expect(describeError(new Response('', { status: 403 }))).not.toContain(
+            'object Response',
+        );
+    });
+
+    it('uses an Error message when there is one', () => {
+        expect(describeError(new Error('gateway'))).toBe('gateway');
+    });
+
+    it('falls back to a status shape without a message', () => {
+        expect(describeError({ status: 502, statusText: 'Bad Gateway' })).toBe(
+            '502 Bad Gateway',
+        );
+    });
+
+    it('never renders an empty reason', () => {
+        expect(describeError(undefined)).toBe('Unknown error');
+        expect(describeError({})).toBe('Unknown error');
     });
 });

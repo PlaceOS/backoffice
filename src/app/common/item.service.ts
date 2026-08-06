@@ -21,6 +21,7 @@ import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
     ConfirmModalData,
+    describeError,
 } from '../overlays/confirm-modal.component';
 import { DuplicateModalComponent } from '../overlays/duplicate-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
@@ -291,8 +292,7 @@ export class ActiveItemService extends AsyncHandler {
                                   description: i18n(cascade.description),
                                   details: async () => {
                                       plan = await cascade.plan(item);
-                                      const { scope, summary, warnings } =
-                                          plan;
+                                      const { scope, summary, warnings } = plan;
                                       return { scope, summary, warnings };
                                   },
                               },
@@ -305,99 +305,150 @@ export class ActiveItemService extends AsyncHandler {
         waitForEvent(
             ref.componentInstance.event,
             (e: DialogEvent) => e.reason === 'done',
-        ).then(async (event: DialogEvent<{ options?: HashMap<boolean> }>) => {
-            ref.componentInstance.loading.set(
-                i18n(`${actions.name}.DELETE_LOADING`),
-            );
-            let outcome: CascadeOutcome | null = null;
-            const cascade_selected =
-                !!event.metadata?.options?.[CASCADE_OPTION];
-            if (cascade_selected && !plan) {
-                // The breakdown never resolved, so there is nothing to run.
-                // Falling through here would delete the item on its own and
-                // orphan everything the cascade existed to take with it. The
-                // modal blocks this too; this is the second line of defence.
-                ref.componentInstance.loading.set('');
-                return notifyError(i18n('CASCADE.PLAN_UNAVAILABLE'));
-            }
-            if (cascade_selected && plan) {
-                outcome = await runCascade(plan, (message) =>
-                    ref.componentInstance.loading.set(message),
-                );
-                if (outcome.failures.length) {
-                    // Something is still referencing the item, so leave it in
-                    // place and show what did and did not go.
-                    ref.componentInstance.loading.set('');
-                    ref.componentInstance.result.set({
-                        title: i18n('CASCADE.RECEIPT_PARTIAL_TITLE'),
-                        items: receiptItems(outcome.removed),
-                        failed: receiptItems(
-                            outcome.failures.map((_) => _.resource),
-                        ),
-                        skipped: receiptItems(outcome.skipped),
-                        note: i18n('CASCADE.RECEIPT_PARTIAL_NOTE', {
-                            name: item.name,
-                        }),
-                    });
-                    return notifyError(
-                        i18n(
-                            'CASCADE.FAILED',
-                            {
-                                count: outcome.failures.length,
-                                error:
-                                    (outcome.failures[0].error as Error)
-                                        ?.message ||
-                                    outcome.failures[0].resource.name,
-                            },
-                            outcome.failures.length,
-                        ),
+        )
+            .then(
+                async (event: DialogEvent<{ options?: HashMap<boolean> }>) => {
+                    ref.componentInstance?.loading.set(
+                        i18n(`${actions.name}.DELETE_LOADING`),
                     );
-                }
-                ref.componentInstance.loading.set(
-                    i18n(`${actions.name}.DELETE_LOADING`),
-                );
-            }
-            await actions
-                .remove(item)
-                .then(() => {
-                    this._active_item.set(null);
-                    this.removeItem(item);
-                    this._router.navigate([`/${this._type}`, '-', 'about']);
-                    if (outcome) {
-                        // A cascade removed more than the item itself, so show
-                        // the receipt rather than closing on a notification.
-                        ref.componentInstance.result.set({
-                            title: i18n('CASCADE.RECEIPT_TITLE'),
-                            items: receiptItems([
-                                ...outcome.removed,
-                                {
-                                    type: cascade.resource_type,
-                                    id: `${item.id}`,
-                                    name: item.name,
-                                },
-                            ]),
-                            note: i18n('CASCADE.RECEIPT_NOTE'),
-                        });
-                        return;
+                    let outcome: CascadeOutcome | null = null;
+                    const cascade_selected =
+                        !!event.metadata?.options?.[CASCADE_OPTION];
+                    if (cascade_selected && !plan) {
+                        // The breakdown never resolved, so there is nothing to run.
+                        // Falling through here would delete the item on its own and
+                        // orphan everything the cascade existed to take with it. The
+                        // modal blocks this too; this is the second line of defence.
+                        ref.componentInstance?.loading.set('');
+                        return notifyError(i18n('CASCADE.PLAN_UNAVAILABLE'));
                     }
-                    notifySuccess(
-                        i18n(`${actions.name}.DELETE_SUCCESS`, {
-                            name: item.name,
-                        }),
-                    );
-                    ref.close();
-                })
-                .catch((err) => {
-                    ref.componentInstance.loading.set('');
-                    notifyError(
-                        i18n(`${actions.name}.DELETE_ERROR`, {
-                            error: JSON.stringify(
-                                err.response || err.message || err,
-                            ),
-                        }),
-                    );
-                });
-        });
+                    if (cascade_selected && plan) {
+                        // Each step is its own request, so a large cascade runs for
+                        // tens of seconds with only a spinner on screen — the footer
+                        // is hidden while loading, which leaves Escape and the
+                        // backdrop as the only things to press. Dismissing mid-run
+                        // tears down the component this callback writes to and
+                        // abandons the rest of an irreversible operation with no
+                        // record of what already went.
+                        ref.componentInstance?.disableClose();
+                        outcome = await runCascade(plan, (message) =>
+                            ref.componentInstance?.loading.set(message),
+                        );
+                        ref.componentInstance?.enableClose();
+                        if (outcome.failures.length) {
+                            // Something is still referencing the item, so leave it in
+                            // place and show what did and did not go.
+                            ref.componentInstance?.loading.set('');
+                            ref.componentInstance?.result.set({
+                                title: i18n('CASCADE.RECEIPT_PARTIAL_TITLE'),
+                                items: receiptItems(outcome.removed),
+                                failed: receiptItems(
+                                    outcome.failures.map((_) => _.resource),
+                                ),
+                                skipped: receiptItems(outcome.skipped),
+                                note: i18n('CASCADE.RECEIPT_PARTIAL_NOTE', {
+                                    name: item.name,
+                                }),
+                            });
+                            return notifyError(
+                                i18n(
+                                    'CASCADE.FAILED',
+                                    {
+                                        count: outcome.failures.length,
+                                        error:
+                                            (outcome.failures[0].error as Error)
+                                                ?.message ||
+                                            outcome.failures[0].resource.name,
+                                    },
+                                    outcome.failures.length,
+                                ),
+                            );
+                        }
+                        ref.componentInstance?.loading.set(
+                            i18n(`${actions.name}.DELETE_LOADING`),
+                        );
+                    }
+                    await actions
+                        .remove(item)
+                        .then(() => {
+                            this._active_item.set(null);
+                            this.removeItem(item);
+                            this._router.navigate([
+                                `/${this._type}`,
+                                '-',
+                                'about',
+                            ]);
+                            if (outcome) {
+                                // A cascade removed more than the item itself, so show
+                                // the receipt rather than closing on a notification.
+                                ref.componentInstance?.result.set({
+                                    title: i18n('CASCADE.RECEIPT_TITLE'),
+                                    items: receiptItems([
+                                        ...outcome.removed,
+                                        {
+                                            type: cascade.resource_type,
+                                            id: `${item.id}`,
+                                            name: item.name,
+                                        },
+                                    ]),
+                                    note: i18n('CASCADE.RECEIPT_NOTE'),
+                                });
+                                return;
+                            }
+                            notifySuccess(
+                                i18n(`${actions.name}.DELETE_SUCCESS`, {
+                                    name: item.name,
+                                }),
+                            );
+                            ref.close();
+                        })
+                        .catch((err) => {
+                            ref.componentInstance?.loading.set('');
+                            if (outcome?.removed.length) {
+                                // The cascade succeeded and only the item itself
+                                // failed. Its removals are irreversible and this
+                                // receipt is the only record of them, so show it
+                                // rather than closing on a toast that reads as though
+                                // nothing happened.
+                                ref.componentInstance?.result.set({
+                                    title: i18n(
+                                        'CASCADE.RECEIPT_PARTIAL_TITLE',
+                                    ),
+                                    items: receiptItems(outcome.removed),
+                                    failed: receiptItems([
+                                        {
+                                            type: cascade.resource_type,
+                                            id: `${item.id}`,
+                                            name: item.name,
+                                        },
+                                    ]),
+                                    note: i18n('CASCADE.RECEIPT_PARTIAL_NOTE', {
+                                        name: item.name,
+                                    }),
+                                });
+                            }
+                            notifyError(
+                                i18n(`${actions.name}.DELETE_ERROR`, {
+                                    error: JSON.stringify(
+                                        err.response || err.message || err,
+                                    ),
+                                }),
+                            );
+                        });
+                },
+            )
+            .catch((err: unknown) => {
+                // Nothing above may fail silently. This chain runs an irreversible
+                // operation, and an unhandled rejection here would leave the user
+                // with a spinner and no idea whether anything happened.
+                log('ITEM', 'Delete flow failed', err, 'error');
+                ref.componentInstance?.loading.set('');
+                notifyError(
+                    i18n(`${actions.name}.DELETE_ERROR`, {
+                        error: describeError(err),
+                    }),
+                );
+            });
     }
 
     public duplicate() {
@@ -487,7 +538,12 @@ export class ActiveItemService extends AsyncHandler {
                     this._list.set([]);
                 }
                 const resp = await next().catch((err) => {
-                    log('Service', `Error loading ${type} list.`, [err], 'warn');
+                    log(
+                        'Service',
+                        `Error loading ${type} list.`,
+                        [err],
+                        'warn',
+                    );
                     return null;
                 });
                 if (!resp) {

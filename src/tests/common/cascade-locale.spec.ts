@@ -37,8 +37,6 @@ describe('cascade locale strings', () => {
         ],
         ['CASCADE.REMOVE_APPLICATIONS', 1, '1 OAuth application'],
         ['CASCADE.REMOVE_APPLICATIONS', 2, '2 OAuth applications'],
-        ['CASCADE.SUCCESS', 1, 'Removed 1 associated resource.'],
-        ['CASCADE.SUCCESS', 5, 'Removed 5 associated resources.'],
     ])('renders %s for a count of %i', (key, count, expected) => {
         expect(get(key as string, count as number)).toBe(expected);
     });
