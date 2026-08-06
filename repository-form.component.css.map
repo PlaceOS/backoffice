@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["repository-form.component.ts"],
+  "sourcesContent": ["\n            .option-search-input {\n                width: calc(100% - 0.5rem);\n                outline: none;\n            }\n\n            .option-search-input::placeholder {\n                color: var(--base-400, currentColor);\n                opacity: 0.65;\n            }\n        "],
+  "mappings": ";AACY,CAAA;AACI,SAAA,KAAA,KAAA,EAAA;AACA,WAAA;AACJ;AAEA,CALA,mBAKA;AACI,SAAA,IAAA,UAAA,EAAA;AACA,WAAA;AACJ;",
+  "names": []
+}
