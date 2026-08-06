@@ -441,7 +441,12 @@ export class ActiveItemService extends AsyncHandler {
                 // Nothing above may fail silently. This chain runs an irreversible
                 // operation, and an unhandled rejection here would leave the user
                 // with a spinner and no idea whether anything happened.
-                log('ITEM', 'Delete flow failed', err, 'error');
+                log(
+                    'ITEM',
+                    'Delete flow failed',
+                    [describeError(err)],
+                    'error',
+                );
                 ref.componentInstance?.loading.set('');
                 notifyError(
                     i18n(`${actions.name}.DELETE_ERROR`, {
