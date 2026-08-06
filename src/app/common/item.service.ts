@@ -355,10 +355,17 @@ export class ActiveItemService extends AsyncHandler {
                                     'CASCADE.FAILED',
                                     {
                                         count: outcome.failures.length,
-                                        error:
-                                            (outcome.failures[0].error as Error)
-                                                ?.message ||
-                                            outcome.failures[0].resource.name,
+                                        // The status is what tells an admin
+                                        // why an irreversible run stopped.
+                                        // ts-client rejects with a raw
+                                        // Response, which has no `.message`,
+                                        // so the old fallback printed the
+                                        // resource name as if it were the
+                                        // reason — and the receipt already
+                                        // names the resource anyway.
+                                        error: describeError(
+                                            outcome.failures[0].error,
+                                        ),
                                     },
                                     outcome.failures.length,
                                 ),

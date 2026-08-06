@@ -154,6 +154,18 @@ describe('cascade-delete', () => {
             ]);
         });
 
+        it('fails rather than returning a tree it could only walk part of', async () => {
+            // A truncated subtree understates both what gets deleted and
+            // whether another domain shares it, so it must not look complete.
+            let next = 0;
+            (queryZones as Query).mockImplementation(() =>
+                page([{ id: `zone-${next++}` }]),
+            );
+            await expect(zoneSubtreeIds('zone-root')).rejects.toThrow(
+                /exceeds/,
+            );
+        });
+
         it('follows pagination', async () => {
             (queryZones as Query).mockImplementation(() =>
                 page([{ id: 'zone-b' }], page([{ id: 'zone-c' }])),
