@@ -1261,6 +1261,11 @@ input:where([type=button], [type=reset], [type=submit]),
   margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
   margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
 }
+:where(#placeos .space-y-3 > :not(:last-child)) {
+  --tw-space-y-reverse: 0;
+  margin-block-start: calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));
+  margin-block-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)));
+}
 :where(#placeos .space-y-4 > :not(:last-child)) {
   --tw-space-y-reverse: 0;
   margin-block-start: calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));
@@ -1487,6 +1492,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .border-transparent {
   border-color: transparent;
 }
+#placeos .border-warning {
+  border-color: var(--warn);
+}
 #placeos .border-warning\/40 {
   border-color: var(--warn);
 }
@@ -1514,6 +1522,14 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .bg-base-200 {
   background-color: var(--base-200);
+}
+#placeos .bg-base-200\/40 {
+  background-color: var(--base-200);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .bg-base-200\/40 {
+    background-color: color-mix(in oklab, var(--base-200) 40%, transparent);
+  }
 }
 #placeos .bg-base-200\/50 {
   background-color: var(--base-200);
@@ -1732,6 +1748,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .pl-2 {
   padding-left: calc(var(--spacing) * 2);
+}
+#placeos .pl-4 {
+  padding-left: calc(var(--spacing) * 4);
 }
 #placeos .pl-8 {
   padding-left: calc(var(--spacing) * 8);
@@ -2204,6 +2223,11 @@ input:where([type=button], [type=reset], [type=submit]),
 @media (hover: hover) {
   #placeos .hover\:bg-white\/10:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+@media (hover: hover) {
+  #placeos .hover\:opacity-100:hover {
+    opacity: 100%;
   }
 }
 #placeos .focus\:bg-info\/10:focus {
@@ -3407,8 +3431,11 @@ a[icon][disabled] {
   color: var(--warn-content);
   background-color: var(--warn);
 }
-mat-checkbox .mdc-checkbox__background {
-  border-color: var(--neutral);
+mat-checkbox {
+  --mat-checkbox-label-text-color: currentColor;
+  --mat-checkbox-unselected-icon-color: currentColor;
+  --mat-checkbox-unselected-hover-icon-color: currentColor;
+  --mat-checkbox-unselected-focus-icon-color: currentColor;
 }
 mat-checkbox .mdc-checkbox__background svg {
   color: var(--info-content);

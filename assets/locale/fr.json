@@ -340,7 +340,6 @@
         "ADD": "Ajouter une zone",
         "EDIT": "Modifier la zone",
         "DELETE": "Supprimer la zone",
-        "DELETE_MSG": "<p>Êtes-vous sûr de vouloir supprimer cette zone ?</p><p>La suppression de cette zone va <strong>immédiatement</strong> retirer les systèmes sans une autre zone</p>",
         "DELETE_LOADING": "Suppression de la zone...",
         "DELETE_SUCCESS": "Zone supprimée avec succès.",
         "DELETE_ERROR": "Échec de la suppression de la zone. Erreur : {{ error }}",
