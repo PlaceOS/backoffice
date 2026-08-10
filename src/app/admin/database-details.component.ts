@@ -1,10 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-    addZone,
-    PlaceZone,
-    queryZones,
-    showZone,
-} from '@placeos/ts-client';
+import { addZone, PlaceZone, queryZones, showZone } from '@placeos/ts-client';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -15,7 +10,6 @@ import {
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
-import { TranslatePipe } from '../ui/translate.pipe';
 import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component';
 
 type ZoneTreeExportItem = Record<string, unknown> & {
@@ -162,12 +156,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
             }
         `,
     ],
-    imports: [
-        MatProgressSpinnerModule,
-        TranslatePipe,
-        MatRippleModule,
-        MatDialogModule,
-    ],
+    imports: [MatProgressSpinnerModule, MatRippleModule, MatDialogModule],
 })
 export class PlaceDatabaseDetailsComponent {
     private readonly _dialog = inject(MatDialog);
