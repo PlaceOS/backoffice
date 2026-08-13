@@ -844,7 +844,6 @@
         "SECRET_HIDDEN": "Hidden",
         "AZURE_INTEGRATION": "Integrate Azure",
         "AZURE_INTEGRATION_ERROR": "Failed to start Azure integration. Error: {{ error }}",
-
         "USER_LIST_EMPTY": "No users associated with this domain",
         "NAME_REQUIRED": "A name is required for this domain",
         "DOMAIN_REQUIRED": "A valid domain is required",
@@ -854,7 +853,6 @@
         "LOGOUT_URL_REQUIRED": "A valid logout URL is required",
         "CLIENT_ID": "Client ID",
         "CLIENT_SECRET": "Client Secret",
-
         "AUTHENTICATION_NEW": "New Auth Method",
         "AUTHENTICATION_EDIT": "Edit Auth Method",
         "AUTHENTICATION_REMOVE": "Remove Auth Method",
@@ -864,7 +862,6 @@
         "AUTHENTICATION_SAVE_ERROR": "Successfully updated authentication source",
         "AUTHENTICATION_SAVE_SUCCESS": "Failed to update authentication source. Error: {{ error }}",
         "AUTHENTICATION_NAME_REQUIRED": "An auth source name is required",
-
         "OAUTH_SITE": "Site",
         "OAUTH_SITE_PLACEHOLDER": "URL of the SSO provider",
         "OAUTH_SCOPES": "Scopes",
@@ -878,7 +875,6 @@
         "OAUTH_INFO_MAPPINGS": "Info Mappings",
         "OAUTH_AUTHORISE_PARAMS": "Authorise Parameters",
         "OAUTH_ENSURE_MATCHING": "Ensure Matching",
-
         "LDAP_HOST": "Host",
         "LDAP_HOST_REQUIRED": "A hostname is required",
         "LDAP_PORT": "Port number",
@@ -888,7 +884,6 @@
         "LDAP_BASE_REQUIRED": "A base is required",
         "LDAP_BIND_DN": "Bind DN",
         "LDAP_FILTER": "Filter",
-
         "SAML_ISSUER": "Issuer",
         "SAML_ISSUER_REQUIRED": "An issuer is required",
         "SAML_IDP_TARGET_URL": "IdP Target URL",
@@ -907,7 +902,6 @@
         "SAML_IDP_SSO_RUNTIME_PARAMS": "IdP SSO Runtime Params",
         "SAML_IDP_SLO_TARGET_URL": "IdP SLO Target URL",
         "SAML_SLO_DEFAULT_RELAY_STATE": "SLO Default Relay State",
-
         "APP_SKIP": "Skip Authorisation",
         "APP_NAME_REQUIRED": "An application name is required",
         "APP_PRESERVE_ID": "Preserve Client ID",
@@ -945,14 +939,8 @@
         "COPIED": "Copied {{ name }} to clipboard",
         "ALL_DOMAINS": "All Domains",
         "SELECT_DOMAIN": "Select domain...",
-
         "BACKEND_SERVICES_EMPTY": "No API service details available.",
         "BACKEND_SERVICES_ERROR": "Failed to load API details. Error: {{ error }}",
-        "DATABASE_REINDEX": "Re-index",
-        "DATABASE_REINDEX_MSG": "Re-index elasticsearch for the current state of the database",
-        "DATABASE_BACKFILL": "Backfill",
-        "DATABASE_BACKFILL_MSG": "Backfill elasticsearch with the current state of the database",
-
         "CLUSTERS": "PlaceOS Clusters",
         "CLUSTERS_VIEW_PROCESSES": "View Processes",
         "CLUSTERS_LIST_EMPTY": "No cluster details available",
@@ -969,7 +957,6 @@
         "CLUSTER_PROCESS_KILL_MSG": "<p>Are you sure you want kill the process for \"{{ id }}\"?</p><p>The process will be terminated <strong>immediately</strong>.The process may be restarted after a short while.</p>",
         "CLUSTER_PROCESS_KILL_LOADING": "Terminating process. Please wait...",
         "CLUSTER_PROCESS_KILL_ERROR": "Failed to kill process. Error: {{ error }}",
-
         "EDGE_HEADER": "PlaceOS Edge Nodes",
         "EDGE_ADD": "Add Edge node",
         "EDGE_NEW": "New Edge node",
@@ -985,7 +972,6 @@
         "EDGE_LIST_EMPTY": "No edges available on this cluster",
         "INTERFACES_HEADER": "PlaceOS Interfaces",
         "INTERFACES_COMMIT_EMPTY": "No commit hash",
-
         "BROKERS_HEADER": "MQTT Brokers",
         "BROKERS_ADD": "Add MQTT Broker",
         "BROKERS_NEW": "New MQTT Broker",
@@ -1010,7 +996,6 @@
         "BROKERS_PASSWORD_REQUIRED": "A valid password is required ",
         "BROKERS_CERT": "Certificate",
         "BROKERS_CERT_REQUIRED": "A valid certificate is required ",
-
         "TENANTS_HEADER": "Staff API Tenants",
         "TENANTS_ADD": "Add Tenant",
         "TENANTS_NEW": "New Tenant",
@@ -1047,7 +1032,6 @@
         "TENANTS_MINUTES_HOURS": "{{ hour }} hours {{ minute }} minutes",
         "TENANTS_SAVE_ERROR": "Failed to update tenant.",
         "TENANTS_SAVE_SUCCESS": "Successfully updated tenant.",
-
         "RESOURCE_IMPORTS_HEADER": "Resource Imports",
         "RESOURCE_IMPORTS_ALL": "Import All",
         "RESOURCE_IMPORTS_IMPORTED": "Imported",
@@ -1060,7 +1044,6 @@
         "RESOURCE_IMPORTS_ALL_LOADING": "Importing missing resources...",
         "RESOURCE_IMPORTS_ALL_SUCCESS": "Successfully imported {{ count }} resources.",
         "RESOURCE_IMPORTS_SUCCESS": "Successfully imported resource {{ name }}.",
-
         "EXTENSIONS_HEADER": "Extensions",
         "EXTENSIONS_ADD": "Add Extension",
         "EXTENSIONS_NEW": "New Extension",
@@ -1081,7 +1064,6 @@
         "EXTENSIONS_CONDITION_VALUE": "Condition value",
         "EXTENSIONS_CONDITION_OP": "Operation",
         "EXTENSIONS_CONDITION_FIELD": "Condition Field",
-
         "APP_KEYS_HEADER": "PlaceOS Application Keys",
         "APP_KEYS_ADD": "Add App Key",
         "APP_KEYS_QUICK_CREATE": "Quick Create",
@@ -1113,14 +1095,12 @@
         "PERMISSIONS_SUPPORT": "Support",
         "PERMISSIONS_USER": "User",
         "PERMISSIONS_NONE": "None",
-
         "SCHEMA_HEADER": "Custom Schemas",
         "SCHEMA_SELECT": "Select Schema...",
         "SCHEMA_ADD": "Add Schema",
         "SCHEMA_NAME": "Schema Name",
         "SCHEMA_NEW": "New Schema",
         "SCHEMA_SELECT_MSG": "Select a schema to edit",
-
         "STORAGE_HEADER": "PlaceOS Data Stores",
         "STORAGE_ADD": "Add Provider",
         "STORAGE_NEW": "New Storage Provider",
@@ -1150,7 +1130,6 @@
         "STORAGE_ALLOW_ALL_EXTENSIONS": "Allow all file extensions",
         "STORAGE_ALLOW_ALL_MIME": "Allow all MIME types",
         "STORAGE_IS_DEFAULT_LABEL": "Is Default",
-
         "UPLOADS_LIB_HEADER": "Uploads Library",
         "UPLOADS_LIB_DOWNLOAD": "Download Upload",
         "UPLOADS_LIB_DOWNLOAD_ERROR": "Failed to download upload. Error: {{ error }}",
@@ -1162,7 +1141,6 @@
         "UPLOADS_LIB_FIELD_SIZE": "Size",
         "UPLOADS_LIB_LIST_EMPTY": "No uploads for the selected domain",
         "UPLOADS_LIB_COPY": "Copy Upload URL",
-
         "TAB_SIGNAGE_PLUGINS": "Signage Plugins",
         "SIGNAGE_PLUGINS_HEADER": "Signage Plugins",
         "SIGNAGE_PLUGINS_ADD": "Add Plugin",
@@ -1197,7 +1175,6 @@
         "SIGNAGE_PLUGINS_TEST_NO_SCHEMA": "This plugin does not provide a configuration schema.",
         "SIGNAGE_PLUGINS_TEST_SEND": "Send Config",
         "SIGNAGE_PLUGINS_TEST_PLAY": "Play",
-
         "BUILD_LIST_HEADER": "Build Service Jobs",
         "BUILD_LIST_EMPTY": "No build jobs available to monitor",
         "BUILD_LIST_REMOVE": "Cancel Build Job",

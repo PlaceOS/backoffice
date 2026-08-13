@@ -967,9 +967,6 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .max-w-24 {
   max-width: calc(var(--spacing) * 24);
 }
-#placeos .max-w-64 {
-  max-width: calc(var(--spacing) * 64);
-}
 #placeos .max-w-72 {
   max-width: calc(var(--spacing) * 72);
 }
