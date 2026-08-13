@@ -198,10 +198,12 @@ export interface ZoneSystemSplit {
  * `GET /systems?zone_id=` ANDs its zone list server side, so "in any of these
  * zones" needs one query per zone, deduplicated by system id.
  *
- * The index is Elasticsearch backed and can lag the database. Since a stale
- * `zones` array here would mean deleting a system that still belongs
- * somewhere, every removal candidate is re-read through `showSystem` (which
- * reads the database) and re-checked before it makes the list.
+ * Listing results can be stale by the time they are acted on — a concurrent
+ * edit can race this walk, and older backends serve the listing from a
+ * lagging search index. Since a stale `zones` array here would mean deleting
+ * a system that still belongs somewhere, every removal candidate is re-read
+ * through `showSystem` (which reads the database) and re-checked before it
+ * makes the list.
  */
 export async function splitZoneSystems(
     zone_ids: string[],

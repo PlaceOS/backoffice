@@ -1,12 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-    addZone,
-    apiEndpoint,
-    PlaceZone,
-    post,
-    queryZones,
-    showZone,
-} from '@placeos/ts-client';
+import { addZone, PlaceZone, queryZones, showZone } from '@placeos/ts-client';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -17,7 +10,6 @@ import {
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
-import { TranslatePipe } from '../ui/translate.pipe';
 import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component';
 
 type ZoneTreeExportItem = Record<string, unknown> & {
@@ -72,16 +64,6 @@ function zoneToImportItem(
     return data as Partial<PlaceZone>;
 }
 
-function reindex(backfill = true) {
-    const url = `${apiEndpoint()}/reindex${backfill ? '?backfill=true' : ''}`;
-    return post(url, null);
-}
-
-function backfill() {
-    const url = `${apiEndpoint()}/backfill`;
-    return post(url, null);
-}
-
 async function queryAllZones(query_params: Record<string, unknown> = {}) {
     let response = await queryZones({ ...query_params, limit: 500 });
     const zones = [...response.data];
@@ -99,50 +81,6 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
             <div class="text-2xl">PlaceOS Database</div>
         </div>
         <div class="grid w-full grid-cols-1 gap-4 p-4 md:grid-cols-2">
-            <div
-                class="border-base-200 flex flex-col space-y-2 rounded-sm border p-2"
-            >
-                <p class="mx-auto max-w-64 p-2 text-center">
-                    {{ 'ADMIN.DATABASE_REINDEX_MSG' | translate }}
-                </p>
-                <button
-                    btn
-                    matRipple
-                    class="w-[calc(100%-0.5rem)]"
-                    [disabled]="reindexing()"
-                    (click)="reindex()"
-                >
-                    @if (!reindexing()) {
-                        {{ 'ADMIN.DATABASE_REINDEX' | translate }}
-                    } @else {
-                        <div class="my-1 flex w-full justify-center">
-                            <mat-spinner diameter="32" />
-                        </div>
-                    }
-                </button>
-            </div>
-            <div
-                class="border-base-200 flex flex-col space-y-2 rounded-sm border p-2"
-            >
-                <p class="mx-auto max-w-64 p-2 text-center">
-                    {{ 'ADMIN.DATABASE_BACKFILL_MSG' | translate }}
-                </p>
-                <button
-                    btn
-                    matRipple
-                    class="w-[calc(100%-0.5rem)]"
-                    [disabled]="backfilling()"
-                    (click)="backfill()"
-                >
-                    @if (!backfilling()) {
-                        {{ 'ADMIN.DATABASE_BACKFILL' | translate }}
-                    } @else {
-                        <div class="my-1 flex w-full justify-center">
-                            <mat-spinner diameter="32" />
-                        </div>
-                    }
-                </button>
-            </div>
             <div
                 class="border-base-200 flex flex-col space-y-2 rounded-sm border p-2"
             >
@@ -218,48 +156,15 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
             }
         `,
     ],
-    imports: [
-        MatProgressSpinnerModule,
-        TranslatePipe,
-        MatRippleModule,
-        MatDialogModule,
-    ],
+    imports: [MatProgressSpinnerModule, MatRippleModule, MatDialogModule],
 })
 export class PlaceDatabaseDetailsComponent {
     private readonly _dialog = inject(MatDialog);
 
-    /** Whether backend is reindexing the database */
-    public readonly reindexing = signal(false);
-    /** Whether backend is reindexing the database */
-    public readonly backfilling = signal(false);
     /** Whether zones are being exported */
     public readonly exporting_zones = signal(false);
     /** Whether zones are being imported */
     public readonly importing_zones = signal(false);
-
-    public async reindex() {
-        this.reindexing.set(true);
-        await reindex().catch((err) => {
-            notifyError(
-                `Error reindexing database. Error: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
-            );
-        });
-        this.reindexing.set(false);
-    }
-
-    public async backfill() {
-        this.backfilling.set(true);
-        await backfill().catch((err) => {
-            notifyError(
-                `Error backfilling database. Error: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
-            );
-        });
-        this.backfilling.set(false);
-    }
 
     public exportZoneTree() {
         const dialog_ref = this._dialog.open(ZoneTreeExportModalComponent, {
