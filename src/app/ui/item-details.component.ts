@@ -31,7 +31,7 @@ export interface DisplayItem {
     template: `
         <div class="flex items-center justify-between px-4 py-2">
             <div class="flex flex-col space-y-2">
-                <div name class="text-2xl">
+                <div name class="text-2xl select-text">
                     {{
                         item()?.display_name ||
                             item()?.custom_name ||

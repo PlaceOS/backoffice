@@ -44,7 +44,7 @@ import { DriverStateService } from './driver-state.service';
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'DRIVERS.DEFAULT_PORT' | translate }}
                             </div>
-                            <div class="mono text-sm">
+                            <div class="mono text-sm select-text">
                                 {{ item().default_port }}
                             </div>
                         }
@@ -58,7 +58,7 @@ import { DriverStateService } from './driver-state.service';
                                     item().repository_id,
                                     'about',
                                 ]"
-                                class="mono text-sm underline"
+                                class="mono text-sm underline select-text"
                             >
                                 {{ item().repository_id }}</a
                             >
@@ -66,7 +66,7 @@ import { DriverStateService } from './driver-state.service';
                         <div class="flex items-center text-sm font-medium">
                             {{ 'DRIVERS.MODULE_NAME' | translate }}
                         </div>
-                        <div class="mono truncate text-sm">
+                        <div class="mono truncate text-sm select-text">
                             {{ item()?.module_name }}
                         </div>
                         <div class="flex items-center text-sm font-medium">
@@ -74,6 +74,7 @@ import { DriverStateService } from './driver-state.service';
                         </div>
                         <div class="flex items-center">
                             <span
+                                class="select-text"
                                 [matTooltip]="
                                     (item().created_at * 1000
                                         | date: 'mediumDate') +
@@ -91,6 +92,7 @@ import { DriverStateService } from './driver-state.service';
                         </div>
                         <div class="flex items-center">
                             <span
+                                class="select-text"
                                 [matTooltip]="
                                     (item().updated_at * 1000
                                         | date: 'mediumDate') +
@@ -128,7 +130,7 @@ import { DriverStateService } from './driver-state.service';
                         </div>
                         <div class="flex items-center overflow-hidden">
                             <div
-                                class="mono truncate text-sm"
+                                class="mono truncate text-sm select-text"
                                 [matTooltip]="item().file_name"
                             >
                                 {{ item().file_name }}
@@ -177,7 +179,7 @@ import { DriverStateService } from './driver-state.service';
                         {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                     </h3>
                     <div
-                        class="markdown w-full overflow-auto p-4 text-sm"
+                        class="markdown selectable w-full overflow-auto p-4 text-sm"
                         [innerHTML]="item()?.description | markdown | async"
                     ></div>
                 </div>

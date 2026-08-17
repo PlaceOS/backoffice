@@ -40,7 +40,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             </div>
                             <div>
                                 <a
-                                    class="mono text-sm underline"
+                                    class="mono text-sm underline select-text"
                                     [routerLink]="[
                                         '/zones',
                                         item()?.parent_id,
@@ -61,37 +61,41 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'ZONES.LOCATION' | translate }}
                             </div>
-                            <div>{{ item()?.location }}</div>
+                            <div class="select-text">
+                                {{ item()?.location }}
+                            </div>
                         }
                         @if (item()?.code) {
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'ZONES.CODE' | translate }}
                             </div>
-                            <div>{{ item()?.code }}</div>
+                            <div class="select-text">{{ item()?.code }}</div>
                         }
                         @if (item()?.type) {
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'ZONES.TYPE' | translate }}&nbsp;
                             </div>
-                            <div>{{ item()?.type }}</div>
+                            <div class="select-text">{{ item()?.type }}</div>
                         }
                         @if (item()?.count) {
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'ZONES.COUNT' | translate }}
                             </div>
-                            <div>{{ item()?.count }}</div>
+                            <div class="select-text">{{ item()?.count }}</div>
                         }
                         @if (item()?.capacity) {
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'ZONES.CAPACITY' | translate }}
                             </div>
-                            <div>{{ item()?.capacity }}</div>
+                            <div class="select-text">
+                                {{ item()?.capacity }}
+                            </div>
                         }
                         @if (item()?.timezone) {
                             <div class="flex items-center text-sm font-medium">
                                 {{ 'COMMON.TIMEZONE' | translate }}
                             </div>
-                            <div class="mono text-sm">
+                            <div class="mono text-sm select-text">
                                 {{ item()?.timezone }}
                             </div>
                         }
@@ -100,7 +104,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 {{ 'ZONES.MAP_URL' | translate }}
                             </div>
                             <a
-                                class="truncate underline"
+                                class="truncate underline select-text"
                                 [href]="item()?.map_id"
                                 >{{ item()?.map_id }}</a
                             >
@@ -115,7 +119,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             <div class="-mx-1 flex flex-1 flex-wrap">
                                 @for (tag of tag_list(); track tag) {
                                     <div
-                                        class="mono bg-base-200 m-1 h-6 rounded-sm px-2 py-1 text-[0.625rem]"
+                                        class="mono bg-base-200 m-1 h-6 rounded-sm px-2 py-1 text-[0.625rem] select-text"
                                     >
                                         {{ tag }}
                                     </div>
@@ -132,6 +136,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         </div>
                         <div class="flex items-center">
                             <span
+                                class="select-text"
                                 [matTooltip]="
                                     (item().created_at * 1000
                                         | date: 'mediumDate') +
@@ -149,6 +154,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         </div>
                         <div class="flex items-center">
                             <span
+                                class="select-text"
                                 [matTooltip]="
                                     (item().updated_at * 1000
                                         | date: 'mediumDate') +
@@ -216,7 +222,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                     </h3>
                     <div
-                        class="markdown w-full overflow-auto p-4 text-sm"
+                        class="markdown selectable w-full overflow-auto p-4 text-sm"
                         [innerHTML]="item()?.description | markdown | async"
                     ></div>
                 </div>

@@ -29,7 +29,7 @@ import { DomainStateService } from './domain-state.service';
                     {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                 </h3>
                 <div
-                    class="markdown w-full overflow-auto p-4 text-sm"
+                    class="markdown selectable w-full overflow-auto p-4 text-sm"
                     [innerHTML]="item?.description | markdown | async"
                 ></div>
             </div>
@@ -47,7 +47,7 @@ import { DomainStateService } from './domain-state.service';
                 @for (domain of item?.email_domains; track domain) {
                     <button
                         matRipple
-                        class="mono hover:bg-base-200 rounded-sm p-2 text-left text-sm"
+                        class="mono hover:bg-base-200 rounded-sm p-2 text-left text-sm select-text"
                         (click)="copyEmailDomain(domain)"
                     >
                         {{ domain }}

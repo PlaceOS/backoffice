@@ -35,7 +35,7 @@ import { SystemStateService } from './system-state.service';
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.BOOKABLE' | translate }}
                         </div>
-                        <div>
+                        <div class="select-text">
                             {{
                                 (item()?.bookable
                                     ? 'COMMON.TRUE'
@@ -48,7 +48,7 @@ import { SystemStateService } from './system-state.service';
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.SIGNAGE' | translate }}
                         </div>
-                        <div>
+                        <div class="select-text">
                             {{ 'COMMON.TRUE' | translate }}
                         </div>
                     }
@@ -56,7 +56,7 @@ import { SystemStateService } from './system-state.service';
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.PUBLIC' | translate }}
                         </div>
-                        <div>
+                        <div class="select-text">
                             {{
                                 (item()?.public
                                     ? 'COMMON.TRUE'
@@ -69,7 +69,7 @@ import { SystemStateService } from './system-state.service';
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.CODE' | translate }}
                         </div>
-                        <div>{{ item()?.code }}</div>
+                        <div class="select-text">{{ item()?.code }}</div>
                     }
                     @if (item()?.security_groups?.length) {
                         <div class="flex items-center text-sm font-medium">
@@ -81,7 +81,7 @@ import { SystemStateService } from './system-state.service';
                                 track group
                             ) {
                                 <span
-                                    class="bg-base-200 rounded px-2 py-1 text-xs font-medium"
+                                    class="bg-base-200 rounded px-2 py-1 text-xs font-medium select-text"
                                 >
                                     {{ group }}
                                 </span>
@@ -103,31 +103,36 @@ import { SystemStateService } from './system-state.service';
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.CAPACITY' | translate }}
                         </div>
-                        <div>{{ item()?.capacity }}</div>
+                        <div class="select-text">{{ item()?.capacity }}</div>
                     }
                     @if (item()?.map_id) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.MAP_ID' | translate }}
                         </div>
-                        <div class="value mono">{{ item()?.map_id }}</div>
+                        <div class="value mono select-text">
+                            {{ item()?.map_id }}
+                        </div>
                     }
                     @if (item()?.installed_ui_devices) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.PANEL_COUNT' | translate }}
                         </div>
-                        <div>{{ item()?.installed_ui_devices }}</div>
+                        <div class="select-text">
+                            {{ item()?.installed_ui_devices }}
+                        </div>
                     }
                     @if (item()?.timezone) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'COMMON.TIMEZONE' | translate }}
                         </div>
-                        <div>{{ item()?.timezone }}</div>
+                        <div class="select-text">{{ item()?.timezone }}</div>
                     }
                     <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.CREATED_AT' | translate }}
                     </div>
                     <div class="flex items-center">
                         <span
+                            class="select-text"
                             [matTooltip]="
                                 (item().created_at * 1000
                                     | date: 'mediumDate') +
@@ -144,6 +149,7 @@ import { SystemStateService } from './system-state.service';
                     </div>
                     <div class="flex items-center">
                         <span
+                            class="select-text"
                             [matTooltip]="
                                 (item().updated_at * 1000
                                     | date: 'mediumDate') +
@@ -192,7 +198,7 @@ import { SystemStateService } from './system-state.service';
                         {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                     </h3>
                     <div
-                        class="markdown w-full overflow-auto p-4 text-sm"
+                        class="markdown selectable w-full overflow-auto p-4 text-sm"
                         [innerHTML]="item()?.description | markdown | async"
                     ></div>
                 </div>

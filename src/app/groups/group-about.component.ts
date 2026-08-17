@@ -28,7 +28,7 @@ import { GroupStateService } from './group-state.service';
                             {{ 'GROUPS.AUTHORITY_ID' | translate }}
                         </div>
                         <a
-                            class="text-sm underline"
+                            class="text-sm underline select-text"
                             [routerLink]="[
                                 '/domains',
                                 item()?.authority_id,
@@ -43,7 +43,7 @@ import { GroupStateService } from './group-state.service';
                             {{ 'GROUPS.PARENT_ID' | translate }}
                         </div>
                         <a
-                            class="text-sm underline"
+                            class="text-sm underline select-text"
                             [routerLink]="[
                                 '/groups',
                                 item()?.parent_id,
@@ -62,7 +62,7 @@ import { GroupStateService } from './group-state.service';
                             track subsystem
                         ) {
                             <div
-                                class="mono bg-base-200 m-1 h-6 rounded-sm px-2 py-1 text-[0.625rem]"
+                                class="mono bg-base-200 m-1 h-6 rounded-sm px-2 py-1 text-[0.625rem] select-text"
                             >
                                 {{ subsystem }}
                             </div>
@@ -76,12 +76,17 @@ import { GroupStateService } from './group-state.service';
                     <div class="flex items-center text-sm font-medium">
                         {{ 'GROUPS.CHILDREN_COUNT' | translate }}
                     </div>
-                    <div>{{ item()?.children_count || 0 }}</div>
+                    <div class="select-text">
+                        {{ item()?.children_count || 0 }}
+                    </div>
                     <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.CREATED_AT' | translate }}
                     </div>
                     <div class="flex items-center">
-                        <span [matTooltip]="item()?.created_at">
+                        <span
+                            class="select-text"
+                            [matTooltip]="item()?.created_at"
+                        >
                             {{ created_at() * 1000 | dateFrom }}
                         </span>
                     </div>
@@ -89,7 +94,10 @@ import { GroupStateService } from './group-state.service';
                         {{ 'COMMON.UPDATED_AT' | translate }}
                     </div>
                     <div class="flex items-center">
-                        <span [matTooltip]="item()?.updated_at">
+                        <span
+                            class="select-text"
+                            [matTooltip]="item()?.updated_at"
+                        >
                             {{ updated_at() * 1000 | dateFrom }}
                         </span>
                     </div>
@@ -104,7 +112,7 @@ import { GroupStateService } from './group-state.service';
                     {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                 </h3>
                 <div
-                    class="markdown w-full overflow-auto p-4 text-sm"
+                    class="markdown selectable w-full overflow-auto p-4 text-sm"
                     [innerHTML]="item()?.description | markdown | async"
                 ></div>
             </div>

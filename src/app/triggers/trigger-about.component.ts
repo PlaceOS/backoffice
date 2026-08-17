@@ -37,6 +37,7 @@ import { TriggerStateService } from './trigger-state.service';
                 </div>
                 <div class="flex items-center">
                     <span
+                        class="select-text"
                         [matTooltip]="
                             (item.created_at * 1000 | date: 'mediumDate') +
                             ', ' +
@@ -52,6 +53,7 @@ import { TriggerStateService } from './trigger-state.service';
                 </div>
                 <div class="flex items-center">
                     <span
+                        class="select-text"
                         [matTooltip]="
                             (item.updated_at * 1000 | date: 'mediumDate') +
                             ', ' +
@@ -73,7 +75,7 @@ import { TriggerStateService } from './trigger-state.service';
                     {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                 </h3>
                 <div
-                    class="markdown w-full overflow-auto p-4 text-sm"
+                    class="markdown selectable w-full overflow-auto p-4 text-sm"
                     [innerHTML]="item.description | markdown | async"
                 ></div>
             </div>
@@ -152,18 +154,20 @@ import { TriggerStateService } from './trigger-state.service';
                 [empty_message]="'TRIGGERS.CONDITION_TIME_EMPTY' | translate"
             />
             <ng-template #time_dep_template let-row="row">
-                <div class="mono flex items-center space-x-2 p-4 text-sm">
+                <div
+                    class="mono flex items-center space-x-2 p-4 text-sm select-text"
+                >
                     {{ row.type === 'at' ? 'At time' : 'CRON' }}
                     {{ row.type === 'at' ? row.time : row.cron }}
                 </div>
             </ng-template>
             <ng-template #comparison_template let-row="row">
                 <div class="mono flex items-center space-x-4 p-4 text-xs">
-                    <pre>{{ row.left | json }}</pre>
-                    <code class="bg-success text-success-content">
+                    <pre class="select-text">{{ row.left | json }}</pre>
+                    <code class="bg-success text-success-content select-text">
                         {{ row.operator }}
                     </code>
-                    <pre>{{ row.right | json }}</pre>
+                    <pre class="select-text">{{ row.right | json }}</pre>
                 </div>
             </ng-template>
             <ng-template #actions_template let-row="row">
@@ -251,13 +255,15 @@ import { TriggerStateService } from './trigger-state.service';
             <ng-template #function_call_template let-row="row">
                 <div class="mono flex space-x-2 p-4 text-xs">
                     <div>
-                        <code>{{ row.mod }}</code>
+                        <code class="select-text">{{ row.mod }}</code>
                     </div>
-                    <pre>{{ row.method }}({{ row.args | json }})</pre>
+                    <pre class="select-text"
+                        >{{ row.method }}({{ row.args | json }})</pre
+                    >
                 </div>
             </ng-template>
             <ng-template #email_call_template let-row="row">
-                <div class="flex items-center space-x-2 p-4">
+                <div class="flex items-center space-x-2 p-4 select-text">
                     <span [matTooltip]="row.emails | formatList"
                         >{{ row.emails.length }} Address(es)</span
                     >&nbsp; | Body Length: {{ row.content.length }}

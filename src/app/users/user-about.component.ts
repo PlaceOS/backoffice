@@ -21,7 +21,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             >
                 <div class="px-2">{{ 'USERS.ROLE_SUPPORT' | translate }}</div>
                 <div
-                    class="rounded-2xl px-2 py-1 text-xs"
+                    class="rounded-2xl px-2 py-1 text-xs select-text"
                     [class.bg-success]="item?.support === true"
                     [class.text-success-content]="item?.support === true"
                     [class.bg-error]="item?.support !== true"
@@ -40,7 +40,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             >
                 <div class="px-2">{{ 'USERS.ROLE_ADMIN' | translate }}</div>
                 <div
-                    class="rounded-2xl px-2 py-1 text-xs"
+                    class="rounded-2xl px-2 py-1 text-xs select-text"
                     [class.bg-success]="item?.sys_admin === true"
                     [class.text-success-content]="item?.sys_admin === true"
                     [class.bg-error]="item?.sys_admin !== true"
@@ -65,7 +65,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 </div>
                 <div>
                     <a
-                        class="mono truncate text-sm underline"
+                        class="mono truncate text-sm underline select-text"
                         [href]="'mailto:' + item?.email"
                     >
                         {{ item?.email }}
@@ -75,7 +75,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     <div class="flex items-center text-sm font-medium">
                         {{ 'USERS.FIELD_DEPARTMENT' | translate }}
                     </div>
-                    <div>{{ item?.department }}</div>
+                    <div class="select-text">{{ item?.department }}</div>
                 }
                 @let domain_value = domain();
                 @if (domain_value) {
@@ -88,7 +88,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 '/domains',
                                 item?.authority_id,
                             ]"
-                            class="underline"
+                            class="underline select-text"
                         >
                             {{ domain_value.name }} ({{ domain_value.domain }})
                         </a>
@@ -102,7 +102,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         @for (group of item.groups; track group) {
                             <button
                                 matRipple
-                                class="mono bg-base-200 m-1 rounded-sm px-2 py-1 text-[0.625rem]"
+                                class="mono bg-base-200 m-1 rounded-sm px-2 py-1 text-[0.625rem] select-text"
                                 (click)="copyGroup(group)"
                             >
                                 {{ group }}
@@ -119,6 +119,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 </div>
                 <div class="flex items-center">
                     <span
+                        class="select-text"
                         [matTooltip]="
                             (item.created_at * 1000 | date: 'mediumDate') +
                             ', ' +
@@ -135,6 +136,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     </div>
                     <div class="flex items-center">
                         <span
+                            class="select-text"
                             [matTooltip]="
                                 (item.updated_at * 1000 | date: 'mediumDate') +
                                 ', ' +

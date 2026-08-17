@@ -28,19 +28,19 @@ import { ModuleStateService } from './module-state.service';
                         <div class="flex items-center text-sm font-medium">
                             {{ 'MODULES.NOTES' | translate }}
                         </div>
-                        <div>{{ item.notes }}</div>
+                        <div class="select-text">{{ item.notes }}</div>
                     }
                     @if (item.ip) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'MODULES.IP_ADDRESS' | translate }}
                         </div>
-                        <div class="mono">{{ item.ip }}</div>
+                        <div class="mono select-text">{{ item.ip }}</div>
                     }
                     @if (item.port > 1) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'MODULES.PORT_NUMBER' | translate }}
                         </div>
-                        <div class="mono">{{ item.port }}</div>
+                        <div class="mono select-text">{{ item.port }}</div>
                     }
                     @if (item.tls || item.udp) {
                         <div class="flex items-center text-sm font-medium">
@@ -48,12 +48,16 @@ import { ModuleStateService } from './module-state.service';
                         </div>
                         <div class="flex items-center">
                             @if (item.tls) {
-                                <code class="bg-success text-base-100">
+                                <code
+                                    class="bg-success text-base-100 select-text"
+                                >
                                     TLS
                                 </code>
                             }
                             @if (item.udp) {
-                                <code class="bg-success text-base-100">
+                                <code
+                                    class="bg-success text-base-100 select-text"
+                                >
                                     UDP
                                 </code>
                             }
@@ -65,7 +69,7 @@ import { ModuleStateService } from './module-state.service';
                             {{ 'DRIVERS.SINGULAR' | translate }}
                         </div>
                         <a
-                            class="truncate underline"
+                            class="truncate underline select-text"
                             [routerLink]="['/drivers', item.driver_id]"
                         >
                             {{
@@ -82,7 +86,7 @@ import { ModuleStateService } from './module-state.service';
                             {{ 'SYSTEMS.SINGULAR' | translate }}
                         </div>
                         <a
-                            class="truncate underline"
+                            class="truncate underline select-text"
                             [routerLink]="[
                                 '/systems',
                                 system_value.id,
@@ -99,7 +103,7 @@ import { ModuleStateService } from './module-state.service';
                         </div>
                         <div class="flex items-center">
                             <a
-                                class="truncate underline"
+                                class="truncate underline select-text"
                                 [routerLink]="['/admin', 'edge', edge_value.id]"
                             >
                                 {{ edge_value.name }}
@@ -138,6 +142,7 @@ import { ModuleStateService } from './module-state.service';
                     </div>
                     <div class="flex items-center">
                         <span
+                            class="select-text"
                             [matTooltip]="
                                 (item.created_at * 1000 | date: 'mediumDate') +
                                 ', ' +
@@ -153,6 +158,7 @@ import { ModuleStateService } from './module-state.service';
                     </div>
                     <div class="flex items-center">
                         <span
+                            class="select-text"
                             [matTooltip]="
                                 (item.updated_at * 1000 | date: 'mediumDate') +
                                 ', ' +

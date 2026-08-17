@@ -23,7 +23,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     <div class="flex items-center text-sm font-medium">
                         {{ 'REPOS.FIELD_TYPE' | translate }}
                     </div>
-                    <div>
+                    <div class="select-text">
                         {{
                             (is_interface()
                                 ? 'REPOS.INTERFACE_REPO'
@@ -53,7 +53,9 @@ import { RepositoriesStateService } from './repositories-state.service';
                     <div class="flex items-center text-sm font-medium">
                         {{ 'REPOS.ROOT_PATH' | translate }}
                     </div>
-                    <div class="flex items-center font-mono text-sm">
+                    <div
+                        class="flex items-center font-mono text-sm select-text"
+                    >
                         {{ item().root_path }}
                         @if (item().root_path === '') {
                             <span class="opacity-30">Not set</span>
@@ -64,6 +66,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </div>
                     <div class="flex items-center">
                         <span
+                            class="select-text"
                             [matTooltip]="
                                 (item().created_at * 1000
                                     | date: 'mediumDate') +
@@ -80,6 +83,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </div>
                     <div class="flex items-center">
                         <span
+                            class="select-text"
                             [matTooltip]="
                                 (item().updated_at * 1000
                                     | date: 'mediumDate') +
@@ -114,7 +118,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </div>
                     <div class="flex items-center overflow-hidden">
                         <code
-                            class="inline-block max-w-full truncate text-xs"
+                            class="inline-block max-w-full truncate text-xs select-text"
                             [matTooltip]="item().branch"
                         >
                             {{ item().branch }}
@@ -125,7 +129,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </div>
                     <div class="flex items-center overflow-hidden">
                         <code
-                            class="inline-block max-w-full truncate text-xs"
+                            class="inline-block max-w-full truncate text-xs select-text"
                             [matTooltip]="
                                 commit() && commit() !== item().commit_hash
                                     ? commit()
@@ -150,7 +154,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                                     {{ 'REPOS.COMMIT_LOAD_ERROR' | translate }}
                                 </div>
                                 <div
-                                    class="mt-2 font-mono text-[0.625rem] break-words"
+                                    class="mt-2 font-mono text-[0.625rem] break-words select-text"
                                 >
                                     {{ commit_error() }}
                                 </div>
@@ -184,7 +188,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                 </h3>
                 <div
-                    class="markdown w-full overflow-auto p-4 text-sm"
+                    class="markdown selectable w-full overflow-auto p-4 text-sm"
                     [innerHTML]="item()?.description | markdown | async"
                 ></div>
             </div>
