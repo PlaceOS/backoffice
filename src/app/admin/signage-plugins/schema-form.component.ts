@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 import {
     ControlValueAccessor,
-    NG_VALUE_ACCESSOR,
     FormsModule,
+    NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -108,7 +108,7 @@ export function buildFormFromFields(
                             <div class="field">
                                 <label [for]="field.key">
                                     {{ field.label }}
-                                    @if (field.required) {
+                                    @if (field.required && enforce_required()) {
                                         <span>*</span>
                                     }
                                 </label>
@@ -147,7 +147,7 @@ export function buildFormFromFields(
                             <div class="field">
                                 <label [for]="field.key">
                                     {{ field.label }}
-                                    @if (field.required) {
+                                    @if (field.required && enforce_required()) {
                                         <span>*</span>
                                     }
                                 </label>
@@ -180,7 +180,7 @@ export function buildFormFromFields(
                             <div class="field">
                                 <label [for]="field.key">
                                     {{ field.label }}
-                                    @if (field.required) {
+                                    @if (field.required && enforce_required()) {
                                         <span>*</span>
                                     }
                                 </label>
@@ -231,6 +231,8 @@ export function buildFormFromFields(
 })
 export class SchemaFormComponent implements ControlValueAccessor {
     public readonly schema = input<JsonSchema>(null);
+    /** Whether schema-required fields must have values in this form context. */
+    public readonly enforce_required = input(true);
     public readonly disabled = signal(false);
 
     public readonly fields = computed(() => {
@@ -289,6 +291,7 @@ export class SchemaFormComponent implements ControlValueAccessor {
 
     /** Returns true if the generated defaults form is valid. */
     public isValid(): boolean {
+        if (!this.enforce_required()) return true;
         const value = this.defaults_form() || {};
         return this.fields().every((field) => {
             if (!field.required) return true;

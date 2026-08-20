@@ -201,6 +201,7 @@ export interface SignagePluginModalData {
                                 <schema-form
                                     #schema_form_el
                                     [schema]="schema()"
+                                    [enforce_required]="false"
                                     [formField]="form.defaults"
                                 />
                             </div>
