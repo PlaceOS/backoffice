@@ -14,6 +14,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 import { SignagePlugin } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../../common/async-handler.class';
@@ -89,6 +90,27 @@ export interface SignagePluginModalData {
                                 "
                                 [formField]="form.description"
                             ></textarea>
+                        </mat-form-field>
+                    </div>
+                    <div class="field">
+                        <label for="plugin-type">
+                            {{ 'ADMIN.SIGNAGE_PLUGINS_FIELD_TYPE' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <mat-select [formField]="form.plugin_type">
+                                <mat-option value="plugin">
+                                    {{
+                                        'ADMIN.SIGNAGE_PLUGINS_TYPE_PLUGIN'
+                                            | translate
+                                    }}
+                                </mat-option>
+                                <mat-option value="widget">
+                                    {{
+                                        'ADMIN.SIGNAGE_PLUGINS_TYPE_WIDGET'
+                                            | translate
+                                    }}
+                                </mat-option>
+                            </mat-select>
                         </mat-form-field>
                     </div>
                     <div class="field">
@@ -218,6 +240,7 @@ export interface SignagePluginModalData {
         MatFormFieldModule,
         MatInputModule,
         MatProgressBarModule,
+        MatSelectModule,
         SchemaFormComponent,
         SettingsToggleComponent,
         SignagePluginEmbedComponent,
@@ -336,7 +359,7 @@ export class SignagePluginModalComponent
             this._dialog_ref.disableClose = true;
             const payload: Partial<SignagePlugin> = {
                 ...this._data.item,
-                ...this.formModel,
+                ...this.formModel(),
                 params: this.schema() || this._data.item?.params || {},
             };
             try {
