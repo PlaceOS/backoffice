@@ -267,6 +267,7 @@ export class SignagePluginModalComponent
     );
     public readonly form = form(this.formModel, applySignagePluginFormSchema);
     public readonly loading = signal<string | null>(null);
+    public readonly plugin_uri = computed(() => this.formModel().uri);
 
     public readonly embed_plugin = signal<SignagePlugin>(null);
     public readonly schema = signal<Record<string, unknown>>(null);
@@ -288,7 +289,7 @@ export class SignagePluginModalComponent
     constructor() {
         super();
         effect(() => {
-            const uri = this.formModel().uri;
+            const uri = this.plugin_uri();
             this.timeout(
                 'uri_debounce',
                 () => {
@@ -314,11 +315,6 @@ export class SignagePluginModalComponent
     public ngOnInit(): void {
         this.edit = !!this._data.item?.id;
         this.playback_type.set(this.formModel().playback_type || 'static');
-
-        // If editing and we already have a URI, load the plugin to get schema
-        if (this._data.item?.uri) {
-            this._loadPlugin(this._data.item.uri);
-        }
 
         this.subscription(
             'save_key',
