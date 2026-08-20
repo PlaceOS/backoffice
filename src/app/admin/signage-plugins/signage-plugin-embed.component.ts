@@ -1,7 +1,9 @@
+import { DOCUMENT } from '@angular/common';
 import {
     Component,
     computed,
     ElementRef,
+    inject,
     input,
     model,
     OnChanges,
@@ -15,6 +17,19 @@ import { AsyncHandler } from '../../common/async-handler.class';
 import { SafePipe } from '../../ui/pipes/safe.pipe';
 
 const API_VERSION = 'signage-plugin/v1';
+
+/** Resolve a plugin URI the same way as the iframe element. */
+export function resolveSignagePluginUrl(
+    uri: string,
+    base_uri: string,
+): URL | null {
+    if (!uri) return null;
+    try {
+        return new URL(uri, base_uri);
+    } catch {
+        return null;
+    }
+}
 
 export type SignagePluginMessageType =
     | 'loaded'
@@ -67,12 +82,12 @@ export type PluginErrorPayload = {
 @Component({
     selector: 'signage-plugin-embed',
     template: `
-        @if (plugin()?.uri) {
+        @if (plugin_url(); as plugin_url) {
             <iframe
                 #plugin_el
                 sandbox="allow-scripts allow-same-origin"
                 referrerpolicy="no-referrer"
-                [src]="plugin().uri | safe: 'resource'"
+                [src]="plugin_url.href | safe: 'resource'"
             >
             </iframe>
         }
@@ -84,6 +99,8 @@ export class SignagePluginEmbedComponent
     extends AsyncHandler
     implements OnChanges, OnInit
 {
+    private readonly _document = inject(DOCUMENT);
+
     public readonly plugin = input<SignagePlugin>(null);
     public readonly config = input<PluginConfigPayload>(null);
     public readonly play = input<number>(0);
@@ -96,15 +113,12 @@ export class SignagePluginEmbedComponent
     private readonly _plugin_el =
         viewChild<ElementRef<HTMLIFrameElement>>('plugin_el');
 
-    public readonly plugin_origin = computed(() => {
-        try {
-            const uri = this.plugin()?.uri;
-            if (!uri) return '';
-            return new URL(uri).origin;
-        } catch {
-            return '';
-        }
-    });
+    public readonly plugin_url = computed(() =>
+        resolveSignagePluginUrl(this.plugin()?.uri, this._document.baseURI),
+    );
+    public readonly plugin_origin = computed(
+        () => this.plugin_url()?.origin || '',
+    );
 
     private _handle_messages = (e) => this._handleMessage(e);
 

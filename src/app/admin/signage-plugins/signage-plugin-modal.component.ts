@@ -406,7 +406,7 @@ export class SignagePluginModalComponent
             () => {
                 if (this.schema_loading()) {
                     this.schema_loading.set(false);
-                    // Not an error - plugin may simply not provide a schema
+                    this.schema_error.set(true);
                 }
             },
             10000,
