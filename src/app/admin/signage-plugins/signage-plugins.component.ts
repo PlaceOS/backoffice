@@ -60,6 +60,13 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                             content: description_template,
                         },
                         {
+                            key: 'plugin_type',
+                            name:
+                                'ADMIN.SIGNAGE_PLUGINS_FIELD_TYPE' | translate,
+                            content: type_template,
+                            size: '7rem',
+                        },
+                        {
                             key: 'uri',
                             name: 'ADMIN.SIGNAGE_PLUGINS_FIELD_URI' | translate,
                             content: mono_template,
@@ -69,7 +76,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                             name:
                                 'ADMIN.SIGNAGE_PLUGINS_FIELD_PLAYBACK_TYPE'
                                 | translate,
-                            content: playback_type_template,
+                            content: type_template,
                             size: '8rem',
                         },
                         {
@@ -110,7 +117,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                 }
             </div>
         </ng-template>
-        <ng-template #playback_type_template let-data="data">
+        <ng-template #type_template let-data="data">
             <div class="p-4 text-xs uppercase">{{ data }}</div>
         </ng-template>
         <ng-template #enabled_template let-data="data">
