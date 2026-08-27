@@ -246,8 +246,10 @@ export class SignageAIProviderModalComponent {
             name: model.name,
             provider: model.provider,
             authority_id: model.authority_id || null,
-            endpoint: model.endpoint || null,
-            default_model: model.default_model || null,
+            // sent as an empty string rather than null when cleared: null means
+            // "leave it alone", empty means "unset it"
+            endpoint: model.endpoint,
+            default_model: model.default_model,
             enabled: model.enabled,
             is_default: model.is_default,
             quotas: {
