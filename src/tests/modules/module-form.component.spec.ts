@@ -7,6 +7,11 @@ import { ModuleFormComponent } from '../../app/modules/module-form.component';
 
 let resolve_system: (system: unknown) => void;
 
+const mocks = vi.hoisted(() => ({
+    addModule: vi.fn(),
+    addSettings: vi.fn(),
+}));
+
 // Mock the ts-client to avoid CJS/ESM issues and control network calls
 vi.mock('@placeos/ts-client', () => ({
     PlaceDriverRole: { SSH: 0, Device: 1, Service: 2, Websocket: 3, Logic: 99 },
@@ -14,9 +19,9 @@ vi.mock('@placeos/ts-client', () => ({
     PlaceSettings: class PlaceSettings {},
     EncryptionLevel: { Support: 2 },
     cleanObject: (obj: unknown) => obj,
-    addModule: vi.fn(),
+    addModule: mocks.addModule,
     updateModule: vi.fn(),
-    addSettings: vi.fn(),
+    addSettings: mocks.addSettings,
     showMetadata: vi.fn(() => Promise.resolve({})),
     queryDrivers: vi.fn(() => Promise.resolve({ data: [] })),
     querySystems: vi.fn(() => Promise.resolve({ data: [] })),
@@ -24,6 +29,11 @@ vi.mock('@placeos/ts-client', () => ({
     showSystem: vi.fn(
         () => new Promise((resolve) => (resolve_system = resolve)),
     ),
+}));
+
+vi.mock('../../app/common/notifications', () => ({
+    notifyError: vi.fn(),
+    notifySuccess: vi.fn(),
 }));
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -90,5 +100,53 @@ describe('ModuleFormComponent', () => {
         expect(fixture.componentInstance.formModel().control_system_id).toBe(
             'sys-1',
         );
+    });
+});
+
+describe('creating a module', () => {
+    let fixture: ComponentFixture<ModuleFormComponent>;
+
+    const item = {
+        id: '',
+        name: '',
+        role: 99,
+        driver_id: 'driver-1',
+        control_system_id: 'sys-1',
+        system: { id: 'sys-1', name: 'Test System' },
+        toJSON: () => ({
+            settings: [
+                { encryption_level: 0 },
+                { encryption_level: 1 },
+                { encryption_level: 2 },
+                { encryption_level: 3 },
+            ],
+        }),
+    };
+
+    beforeEach(async () => {
+        vi.clearAllMocks();
+        mocks.addModule.mockResolvedValue({
+            id: 'mod-1',
+            name: 'New module',
+        });
+        mocks.addSettings.mockResolvedValue({});
+        await TestBed.configureTestingModule({
+            imports: [ModuleFormComponent],
+            providers: [
+                provideZonelessChangeDetection(),
+                provideNoopAnimations(),
+                { provide: MatDialogRef, useValue: { close: vi.fn() } },
+                { provide: MAT_DIALOG_DATA, useValue: { item } },
+            ],
+        }).compileComponents();
+        fixture = TestBed.createComponent(ModuleFormComponent);
+    });
+
+    it('should not create settings from the module settings collection', async () => {
+        await fixture.whenStable();
+        await fixture.componentInstance.submit();
+
+        expect(mocks.addModule).toHaveBeenCalledOnce();
+        expect(mocks.addSettings).not.toHaveBeenCalled();
     });
 });

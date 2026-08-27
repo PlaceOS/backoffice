@@ -11,12 +11,9 @@ import {
 import { form, FormField, submit } from '@angular/forms/signals';
 import {
     addModule,
-    addSettings,
     cleanObject,
-    EncryptionLevel,
     PlaceDriverRole,
     PlaceModule,
-    PlaceSettings,
     queryDrivers,
     queryEdges,
     querySystems,
@@ -506,12 +503,6 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
                 this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item: _item } });
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                if (!this.formModel().id && form_item.settings) {
-                    await this.newSettings(
-                        _item as unknown as Identity,
-                        form_item.settings as string,
-                    );
-                }
                 this._dialog_ref.close();
             } catch (err) {
                 this.loading.set(null);
@@ -534,23 +525,5 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
                 }),
             );
         }
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch((err) => {
-            this.loading.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
-            );
-        });
     }
 }
