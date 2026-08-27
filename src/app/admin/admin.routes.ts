@@ -108,6 +108,13 @@ export const ROUTES: Routes = [
                     ),
             },
             {
+                path: 'signage-ai',
+                loadComponent: () =>
+                    import('./signage-ai/signage-ai.component').then(
+                        (m) => m.SignageAIComponent,
+                    ),
+            },
+            {
                 path: 'upload-library',
                 loadComponent: () =>
                     import('./upload-library.component').then(
