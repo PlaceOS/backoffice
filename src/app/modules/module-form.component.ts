@@ -38,6 +38,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 import {
     applyModuleFormSchema,
     generateModuleFormModel,
+    type ModuleFormModel,
 } from './modules.utilities';
 
 @Component({
@@ -482,12 +483,18 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
             this.loading.set(i18n(`${this._name}.SAVING`));
             this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
-            const form_value = { ...this.formModel() };
+            const form_value: Partial<ModuleFormModel> = {
+                ...this.formModel(),
+            };
             // UI-only fields; the backend uses the `*_id` values which are kept
             // in sync by effects. Strip them so we never POST `driver: null`.
             delete form_value.system;
             delete form_value.driver;
             delete form_value.edge;
+            // Only logic modules can belong to a control system.
+            if (form_value.role !== PlaceDriverRole.Logic) {
+                delete form_value.control_system_id;
+            }
             const form_item = (
                 item.id
                     ? cleanObject({ ...item_json, ...form_value }, [undefined])

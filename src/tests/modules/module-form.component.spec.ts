@@ -2,6 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { PlaceDriverRole, type PlaceDriver } from '@placeos/ts-client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ModuleFormComponent } from '../../app/modules/module-form.component';
 
@@ -148,5 +149,25 @@ describe('creating a module', () => {
 
         expect(mocks.addModule).toHaveBeenCalledOnce();
         expect(mocks.addSettings).not.toHaveBeenCalled();
+    });
+
+    it('should not associate a device module with a control system', async () => {
+        fixture.componentInstance.formModel.update((value) => ({
+            ...value,
+            driver: {
+                id: 'driver-device',
+                name: 'Device driver',
+                role: PlaceDriverRole.Device,
+            } as PlaceDriver,
+            ip: '10.0.0.2',
+            port: 4999,
+        }));
+        await fixture.whenStable();
+
+        await fixture.componentInstance.submit();
+
+        expect(mocks.addModule).toHaveBeenCalledWith(
+            expect.not.objectContaining({ control_system_id: 'sys-1' }),
+        );
     });
 });
