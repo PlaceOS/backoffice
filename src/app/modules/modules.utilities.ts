@@ -51,7 +51,8 @@ export function generateModuleFormModel(mod?: PlaceModule): ModuleFormModel {
         // NOTE: PlaceModule always constructs `system`, even when the API
         // omitted it — an empty id means "not loaded", not "no system".
         system: mod?.system?.id ? mod.system : null,
-        control_system_id: mod?.control_system_id || '',
+        control_system_id:
+            mod?.control_system_id || mod?.system?.id || '',
         role: mod?.role || PlaceDriverRole.Logic,
         driver: null,
         driver_id: mod?.driver_id || '',
