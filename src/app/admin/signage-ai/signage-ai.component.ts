@@ -19,8 +19,8 @@ import {
     querySignageAIProviders,
     removeSignageAIProvider,
     SignageAIProvider,
-    SignageAIUsageRow,
     signageAIUsage,
+    SignageAIUsageRow,
     testSignageAIProvider,
 } from './signage-ai.fn';
 
@@ -29,27 +29,18 @@ import {
     template: `
         <div class="flex h-full w-full flex-col">
             <div class="my-4 flex items-center justify-between space-x-2 px-4">
-                <div class="text-2xl">
-                    {{ 'ADMIN.AI_PROVIDERS_HEADER' | translate }}
+                <div>
+                    <div class="text-2xl">
+                        {{ 'ADMIN.AI_PROVIDERS_HEADER' | translate }}
+                    </div>
+                    <!-- there is no domain picker: the API answers for the
+                         domain this Backoffice is served from, and a row from
+                         another customer is deliberately not reachable -->
+                    <p class="text-sm opacity-60">
+                        {{ 'ADMIN.AI_PROVIDERS_SCOPE' | translate }}
+                    </p>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <mat-form-field class="h-12" appearance="outline">
-                        <mat-select
-                            name="domain"
-                            [(ngModel)]="domain"
-                            (ngModelChange)="load()"
-                            [placeholder]="'ADMIN.ALL_DOMAINS' | translate"
-                        >
-                            <mat-option [value]="{}">{{
-                                'ADMIN.ALL_DOMAINS' | translate
-                            }}</mat-option>
-                            @for (option of domain_list(); track option.id) {
-                                <mat-option [value]="option">
-                                    {{ option.name }}
-                                </mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
                     <button btn matRipple class="w-40" (click)="edit()">
                         {{ 'ADMIN.AI_PROVIDER_ADD' | translate }}
                     </button>
@@ -108,9 +99,7 @@ import {
                         },
                     ]"
                     [sortable]="true"
-                    [empty_message]="
-                        'ADMIN.AI_PROVIDERS_EMPTY' | translate
-                    "
+                    [empty_message]="'ADMIN.AI_PROVIDERS_EMPTY' | translate"
                 />
 
                 <div class="mt-8 mb-2 text-xl">
@@ -162,7 +151,9 @@ import {
             </div>
         </ng-template>
         <ng-template #code_template let-data="data">
-            <div class="p-4"><code>{{ data }}</code></div>
+            <div class="p-4">
+                <code>{{ data }}</code>
+            </div>
         </ng-template>
         <ng-template #plain_template let-data="data">
             <div class="p-4">{{ data }}</div>
@@ -189,6 +180,7 @@ import {
                     icon
                     default
                     matRipple
+                    [disabled]="!!testing()"
                     [matTooltip]="'ADMIN.AI_PROVIDER_TEST' | translate"
                     (click)="test(row)"
                 >
@@ -263,10 +255,33 @@ export class SignageAIComponent implements OnInit {
         ref.afterClosed().subscribe(() => this.load());
     }
 
+    public readonly testing = signal('');
+
+    /**
+     * Testing a provider asks the vendor for a real image, which is billed.
+     * The button had no disabled state and no confirmation, so a second click
+     * on a slow answer spent again.
+     */
     public async test(item: SignageAIProvider) {
+        if (this.testing()) return;
+        const resp = await openConfirmModal(
+            {
+                title: i18n('ADMIN.AI_PROVIDER_TEST_TITLE'),
+                content: i18n('ADMIN.AI_PROVIDER_TEST_MSG', {
+                    name: item.name,
+                }),
+                icon: { content: 'bolt' },
+            },
+            this._dialog,
+        );
+        if (resp.reason !== 'done') return;
+        resp.close();
+
+        this.testing.set(item.id);
         this.loading.set(i18n('ADMIN.AI_PROVIDER_TESTING'));
         const result = await testSignageAIProvider(item.id).catch(() => null);
         this.loading.set('');
+        this.testing.set('');
         if (result?.ok) {
             notifySuccess(
                 i18n('ADMIN.AI_PROVIDER_TEST_OK', {
@@ -274,9 +289,7 @@ export class SignageAIComponent implements OnInit {
                 }),
             );
         } else {
-            notifyError(
-                result?.error || i18n('ADMIN.AI_PROVIDER_TEST_FAILED'),
-            );
+            notifyError(result?.error || i18n('ADMIN.AI_PROVIDER_TEST_FAILED'));
         }
     }
 
@@ -293,17 +306,25 @@ export class SignageAIComponent implements OnInit {
         );
         if (resp.reason !== 'done') return;
         resp.loading(i18n('ADMIN.AI_PROVIDER_REMOVING'));
-        await removeSignageAIProvider(item.id);
+        try {
+            await removeSignageAIProvider(item.id);
+        } catch (error) {
+            // without this the modal span forever on any failure
+            resp.close();
+            notifyError(
+                (error as any)?.message ||
+                    i18n('ADMIN.AI_PROVIDER_REMOVE_FAILED'),
+            );
+            return;
+        }
         resp.close();
         this.load();
     }
 
     public async load() {
         this.loading.set(i18n('ADMIN.AI_PROVIDERS_LOADING'));
-        const authority_id = this.domain()?.id;
-        this.providers.set(
-            await querySignageAIProviders({ authority_id }).catch(() => []),
-        );
+        this.providers.set(await querySignageAIProviders().catch(() => []));
+        // usage is per domain server side, the same domain the rows above are
         this.usage.set(await signageAIUsage().catch(() => []));
         this.loading.set('');
     }

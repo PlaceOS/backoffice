@@ -130,6 +130,20 @@ import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
                         <input matInput [formField]="form.endpoint" />
                     </mat-form-field>
                 </div>
+                <!-- Google Vertex needs a region; without it the adapter has
+                     nowhere to send the request and the row cannot be used -->
+                <div class="flex flex-col">
+                    <label for="location">{{
+                        'ADMIN.AI_PROVIDER_LOCATION' | translate
+                    }}</label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            [formField]="form.location"
+                            placeholder="us-central1"
+                        />
+                    </mat-form-field>
+                </div>
                 <div class="flex flex-col">
                     <label for="model">{{
                         'ADMIN.AI_PROVIDER_MODEL' | translate
@@ -188,9 +202,7 @@ export class SignageAIProviderModalComponent {
     private _data = inject<{ item?: SignageAIProvider; domain?: string }>(
         MAT_DIALOG_DATA,
     );
-    private _dialog_ref = inject(
-        MatDialogRef<SignageAIProviderModalComponent>,
-    );
+    private _dialog_ref = inject(MatDialogRef<SignageAIProviderModalComponent>);
 
     public readonly item = this._data.item;
     public readonly loading = signal('');
@@ -201,6 +213,7 @@ export class SignageAIProviderModalComponent {
         name: this._data.item?.name || '',
         provider: this._data.item?.provider || 'OPENAI',
         endpoint: this._data.item?.endpoint || '',
+        location: this._data.item?.location || '',
         default_model: this._data.item?.default_model || 'gpt-image-2',
         enabled: this._data.item?.enabled ?? true,
         is_default: this._data.item?.is_default ?? false,
@@ -249,6 +262,7 @@ export class SignageAIProviderModalComponent {
             // sent as an empty string rather than null when cleared: null means
             // "leave it alone", empty means "unset it"
             endpoint: model.endpoint,
+            location: model.location,
             default_model: model.default_model,
             enabled: model.enabled,
             is_default: model.is_default,

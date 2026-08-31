@@ -42,14 +42,19 @@ export interface SignageAITestResult {
 
 function query(params: Record<string, any>) {
     const pairs = Object.entries(params)
-        .filter(([, value]) => value !== undefined && value !== null && value !== '')
+        .filter(
+            ([, value]) =>
+                value !== undefined && value !== null && value !== '',
+        )
         .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
     return pairs.length ? `?${pairs.join('&')}` : '';
 }
 
-export async function querySignageAIProviders(params: {
-    authority_id?: string;
-} = {}): Promise<SignageAIProvider[]> {
+export async function querySignageAIProviders(
+    params: {
+        authority_id?: string;
+    } = {},
+): Promise<SignageAIProvider[]> {
     const list = (await get(
         `${PATH()}/providers${query(params)}`,
     )) as unknown as Partial<SignageAIProvider>[];
@@ -79,7 +84,7 @@ export function testSignageAIProvider(id: string) {
 }
 
 export function signageAIUsage(params: { from?: number; to?: number } = {}) {
-    return get(
-        `${PATH()}/usage${query(params)}`,
-    ) as unknown as Promise<SignageAIUsageRow[]>;
+    return get(`${PATH()}/usage${query(params)}`) as unknown as Promise<
+        SignageAIUsageRow[]
+    >;
 }
