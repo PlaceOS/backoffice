@@ -254,7 +254,9 @@ export class SignageAIProviderModalComponent {
         this.loading.set(i18n('ADMIN.AI_PROVIDER_SAVING'));
         this._dialog_ref.disableClose = true;
 
-        const body: any = {
+        const body: Partial<SignageAIProvider> & {
+            credentials?: Record<string, unknown>;
+        } = {
             id: model.id || undefined,
             name: model.name,
             provider: model.provider,

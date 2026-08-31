@@ -1,5 +1,7 @@
 import { apiEndpoint, del, get, patch, post } from '@placeos/ts-client';
 
+import { toQueryString } from '../../common/api';
+
 const PATH = () => `${apiEndpoint()}/signage/ai`;
 
 export class SignageAIProvider {
@@ -40,14 +42,10 @@ export interface SignageAITestResult {
     kind?: string;
 }
 
-function query(params: Record<string, any>) {
-    const pairs = Object.entries(params)
-        .filter(
-            ([, value]) =>
-                value !== undefined && value !== null && value !== '',
-        )
-        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
-    return pairs.length ? `?${pairs.join('&')}` : '';
+/** the repo's query builder, which already drops null and undefined */
+function search(params: Record<string, unknown>) {
+    const query = toQueryString(params);
+    return query ? `?${query}` : '';
 }
 
 export async function querySignageAIProviders(
@@ -56,19 +54,21 @@ export async function querySignageAIProviders(
     } = {},
 ): Promise<SignageAIProvider[]> {
     const list = (await get(
-        `${PATH()}/providers${query(params)}`,
+        `${PATH()}/providers${search(params)}`,
     )) as unknown as Partial<SignageAIProvider>[];
     return (list || []).map((item) => new SignageAIProvider(item));
 }
 
 export async function saveSignageAIProvider(
-    item: Partial<SignageAIProvider> & { credentials?: Record<string, any> },
+    item: Partial<SignageAIProvider> & {
+        credentials?: Record<string, unknown>;
+    },
 ): Promise<SignageAIProvider> {
     const { id, ...body } = item;
     const result = id
         ? await patch(`${PATH()}/providers/${encodeURIComponent(id)}`, body)
         : await post(`${PATH()}/providers`, body);
-    return new SignageAIProvider(result as any);
+    return new SignageAIProvider(result as Partial<SignageAIProvider>);
 }
 
 export function removeSignageAIProvider(id: string) {
@@ -84,7 +84,7 @@ export function testSignageAIProvider(id: string) {
 }
 
 export function signageAIUsage(params: { from?: number; to?: number } = {}) {
-    return get(`${PATH()}/usage${query(params)}`) as unknown as Promise<
+    return get(`${PATH()}/usage${search(params)}`) as unknown as Promise<
         SignageAIUsageRow[]
     >;
 }

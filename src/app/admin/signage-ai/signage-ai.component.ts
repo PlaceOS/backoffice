@@ -225,7 +225,6 @@ export class SignageAIComponent implements OnInit {
     public readonly usage = signal<SignageAIUsageRow[]>([]);
     public readonly domain_list = this._admin_data.domain_list;
 
-
     public readonly provider_list = computed(() =>
         this.providers().map((provider) => ({
             ...provider,
@@ -252,9 +251,8 @@ export class SignageAIComponent implements OnInit {
     public readonly testing = signal('');
 
     /**
-     * Testing a provider asks the vendor for a real image, which is billed.
-     * The button had no disabled state and no confirmation, so a second click
-     * on a slow answer spent again.
+     * Testing a provider asks the vendor for a real image, which is billed, so
+     * it confirms first and refuses a second run while one is in flight.
      */
     public async test(item: SignageAIProvider) {
         if (this.testing()) return;
@@ -303,10 +301,10 @@ export class SignageAIComponent implements OnInit {
         try {
             await removeSignageAIProvider(item.id);
         } catch (error) {
-            // without this the modal span forever on any failure
+            // the confirm modal owns its own spinner, so it has to be told
             resp.close();
             notifyError(
-                (error as any)?.message ||
+                (error as Error)?.message ||
                     i18n('ADMIN.AI_PROVIDER_REMOVE_FAILED'),
             );
             return;
