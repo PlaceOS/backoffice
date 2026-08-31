@@ -1,10 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
@@ -216,9 +213,6 @@ import {
         MatTooltipModule,
         SimpleTableComponent,
         MatProgressBarModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        FormsModule,
         DateFromPipe,
     ],
 })
@@ -230,7 +224,7 @@ export class SignageAIComponent implements OnInit {
     public readonly providers = signal<SignageAIProvider[]>([]);
     public readonly usage = signal<SignageAIUsageRow[]>([]);
     public readonly domain_list = this._admin_data.domain_list;
-    public readonly domain = this._admin_data.selectedDomain('signage-ai');
+
 
     public readonly provider_list = computed(() =>
         this.providers().map((provider) => ({
@@ -250,7 +244,7 @@ export class SignageAIComponent implements OnInit {
 
     public edit(item?: SignageAIProvider) {
         const ref = this._dialog.open(SignageAIProviderModalComponent, {
-            data: { item, domain: this.domain()?.id },
+            data: { item },
         });
         ref.afterClosed().subscribe(() => this.load());
     }
