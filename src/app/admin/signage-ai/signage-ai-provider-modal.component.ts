@@ -9,7 +9,28 @@ import { notifyError, notifySuccess } from '../../common/notifications';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../../ui/settings-toggle.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
-import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
+import {
+    saveSignageAIProvider,
+    SignageAIProvider,
+    SignageAIProviderType,
+} from './signage-ai.fn';
+
+type SignageAICredentialField =
+    | 'api_key'
+    | 'deployment'
+    | 'api_version'
+    | 'project_id'
+    | 'client_email'
+    | 'private_key';
+
+const SIGNAGE_AI_CREDENTIAL_FIELDS: Record<
+    SignageAIProviderType,
+    readonly SignageAICredentialField[]
+> = {
+    OPENAI: ['api_key'],
+    AZURE_OPENAI: ['api_key', 'deployment', 'api_version'],
+    GOOGLE_VERTEX: ['project_id', 'client_email', 'private_key'],
+};
 
 /**
  * Credentials differ per vendor, so the form swaps the middle section rather
@@ -17,7 +38,7 @@ import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
  * on an edit the boxes start empty and staying empty keeps what is stored.
  */
 @Component({
-    selector: 'signage-ai-provider-modal',
+    selector: 'app-signage-ai-provider-modal',
     template: `
         <fullscreen-modal-shell
             [heading]="
@@ -29,10 +50,10 @@ import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
         >
             <form class="w-full">
                 <div class="flex flex-col">
-                    <label for="name">{{
-                        'ADMIN.AI_PROVIDER_NAME' | translate
-                    }}</label>
                     <mat-form-field appearance="outline">
+                        <mat-label>{{
+                            'ADMIN.AI_PROVIDER_NAME' | translate
+                        }}</mat-label>
                         <input matInput [formField]="form.name" />
                         <mat-error>{{
                             'ADMIN.AI_PROVIDER_NAME_REQUIRED' | translate
@@ -40,10 +61,10 @@ import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
                     </mat-form-field>
                 </div>
                 <div class="flex flex-col">
-                    <label for="provider">{{
-                        'ADMIN.AI_PROVIDER_VENDOR' | translate
-                    }}</label>
                     <mat-form-field appearance="outline">
+                        <mat-label>{{
+                            'ADMIN.AI_PROVIDER_VENDOR' | translate
+                        }}</mat-label>
                         <mat-select [formField]="form.provider">
                             <mat-option value="OPENAI">OpenAI</mat-option>
                             <mat-option value="AZURE_OPENAI"
@@ -58,26 +79,26 @@ import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
 
                 @if (is_google()) {
                     <div class="flex flex-col">
-                        <label for="project">{{
-                            'ADMIN.AI_PROVIDER_PROJECT' | translate
-                        }}</label>
                         <mat-form-field appearance="outline">
+                            <mat-label>{{
+                                'ADMIN.AI_PROVIDER_PROJECT' | translate
+                            }}</mat-label>
                             <input matInput [formField]="form.project_id" />
                         </mat-form-field>
                     </div>
                     <div class="flex flex-col">
-                        <label for="client-email">{{
-                            'ADMIN.AI_PROVIDER_CLIENT_EMAIL' | translate
-                        }}</label>
                         <mat-form-field appearance="outline">
+                            <mat-label>{{
+                                'ADMIN.AI_PROVIDER_CLIENT_EMAIL' | translate
+                            }}</mat-label>
                             <input matInput [formField]="form.client_email" />
                         </mat-form-field>
                     </div>
                     <div class="flex flex-col">
-                        <label for="private-key">{{
-                            'ADMIN.AI_PROVIDER_PRIVATE_KEY' | translate
-                        }}</label>
                         <mat-form-field appearance="outline">
+                            <mat-label>{{
+                                'ADMIN.AI_PROVIDER_PRIVATE_KEY' | translate
+                            }}</mat-label>
                             <textarea
                                 matInput
                                 rows="4"
@@ -85,22 +106,39 @@ import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
                             ></textarea>
                         </mat-form-field>
                     </div>
+                    <div class="flex flex-col">
+                        <mat-form-field appearance="outline">
+                            <mat-label>{{
+                                'ADMIN.AI_PROVIDER_LOCATION' | translate
+                            }}</mat-label>
+                            <input
+                                matInput
+                                [formField]="form.location"
+                                placeholder="us-central1"
+                            />
+                            <mat-error>{{
+                                'ADMIN.AI_PROVIDER_LOCATION_REQUIRED'
+                                    | translate
+                            }}</mat-error>
+                        </mat-form-field>
+                    </div>
                 } @else {
                     <div class="flex flex-col">
-                        <label for="api-key">{{
-                            'ADMIN.AI_PROVIDER_API_KEY' | translate
-                        }}</label>
                         <mat-form-field appearance="outline">
+                            <mat-label>{{
+                                'ADMIN.AI_PROVIDER_API_KEY' | translate
+                            }}</mat-label>
                             <input matInput [formField]="form.api_key" />
                         </mat-form-field>
                     </div>
                     @if (is_azure()) {
                         <div class="flex space-x-2">
                             <div class="flex flex-1 flex-col">
-                                <label for="deployment">{{
-                                    'ADMIN.AI_PROVIDER_DEPLOYMENT' | translate
-                                }}</label>
                                 <mat-form-field appearance="outline">
+                                    <mat-label>{{
+                                        'ADMIN.AI_PROVIDER_DEPLOYMENT'
+                                            | translate
+                                    }}</mat-label>
                                     <input
                                         matInput
                                         [formField]="form.deployment"
@@ -108,10 +146,11 @@ import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
                                 </mat-form-field>
                             </div>
                             <div class="flex flex-1 flex-col">
-                                <label for="api-version">{{
-                                    'ADMIN.AI_PROVIDER_API_VERSION' | translate
-                                }}</label>
                                 <mat-form-field appearance="outline">
+                                    <mat-label>{{
+                                        'ADMIN.AI_PROVIDER_API_VERSION'
+                                            | translate
+                                    }}</mat-label>
                                     <input
                                         matInput
                                         [formField]="form.api_version"
@@ -123,41 +162,27 @@ import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
                 }
 
                 <div class="flex flex-col">
-                    <label for="endpoint">{{
-                        'ADMIN.AI_PROVIDER_ENDPOINT' | translate
-                    }}</label>
                     <mat-form-field appearance="outline">
+                        <mat-label>{{
+                            'ADMIN.AI_PROVIDER_ENDPOINT' | translate
+                        }}</mat-label>
                         <input matInput [formField]="form.endpoint" />
                     </mat-form-field>
                 </div>
-                <!-- Google Vertex needs a region; without it the adapter has
-                     nowhere to send the request and the row cannot be used -->
                 <div class="flex flex-col">
-                    <label for="location">{{
-                        'ADMIN.AI_PROVIDER_LOCATION' | translate
-                    }}</label>
                     <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            [formField]="form.location"
-                            placeholder="us-central1"
-                        />
-                    </mat-form-field>
-                </div>
-                <div class="flex flex-col">
-                    <label for="model">{{
-                        'ADMIN.AI_PROVIDER_MODEL' | translate
-                    }}</label>
-                    <mat-form-field appearance="outline">
+                        <mat-label>{{
+                            'ADMIN.AI_PROVIDER_MODEL' | translate
+                        }}</mat-label>
                         <input matInput [formField]="form.default_model" />
                     </mat-form-field>
                 </div>
                 <div class="flex space-x-2">
                     <div class="flex flex-1 flex-col">
-                        <label for="user-quota">{{
-                            'ADMIN.AI_PROVIDER_USER_QUOTA' | translate
-                        }}</label>
                         <mat-form-field appearance="outline">
+                            <mat-label>{{
+                                'ADMIN.AI_PROVIDER_USER_QUOTA' | translate
+                            }}</mat-label>
                             <input
                                 matInput
                                 type="number"
@@ -166,10 +191,10 @@ import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
                         </mat-form-field>
                     </div>
                     <div class="flex flex-1 flex-col">
-                        <label for="domain-quota">{{
-                            'ADMIN.AI_PROVIDER_DOMAIN_QUOTA' | translate
-                        }}</label>
                         <mat-form-field appearance="outline">
+                            <mat-label>{{
+                                'ADMIN.AI_PROVIDER_DOMAIN_QUOTA' | translate
+                            }}</mat-label>
                             <input
                                 matInput
                                 type="number"
@@ -199,17 +224,15 @@ import { saveSignageAIProvider, SignageAIProvider } from './signage-ai.fn';
     ],
 })
 export class SignageAIProviderModalComponent {
-    private _data = inject<{ item?: SignageAIProvider; domain?: string }>(
-        MAT_DIALOG_DATA,
-    );
+    private _data = inject<{ item?: SignageAIProvider }>(MAT_DIALOG_DATA);
     private _dialog_ref = inject(MatDialogRef<SignageAIProviderModalComponent>);
 
     public readonly item = this._data.item;
     public readonly loading = signal('');
 
-    public readonly formModel = signal({
+    public readonly form_model = signal({
         id: this._data.item?.id || '',
-        authority_id: this._data.item?.authority_id ?? this._data.domain ?? '',
+        authority_id: this._data.item?.authority_id ?? '',
         name: this._data.item?.name || '',
         provider: this._data.item?.provider || 'OPENAI',
         endpoint: this._data.item?.endpoint || '',
@@ -228,23 +251,29 @@ export class SignageAIProviderModalComponent {
         private_key: '',
     });
 
-    public readonly form = form(this.formModel, (path) => {
+    public readonly form = form(this.form_model, (path) => {
         required(path.name);
         required(path.provider);
+        required(path.location, {
+            when: ({ valueOf }) => valueOf(path.provider) === 'GOOGLE_VERTEX',
+        });
     });
 
-    public readonly is_google = computed(
-        () => this.formModel().provider === 'GOOGLE_VERTEX',
+    private readonly _credential_fields = computed(
+        () => SIGNAGE_AI_CREDENTIAL_FIELDS[this.form_model().provider],
     );
-    public readonly is_azure = computed(
-        () => this.formModel().provider === 'AZURE_OPENAI',
+    public readonly is_google = computed(() =>
+        this._credential_fields().includes('project_id'),
+    );
+    public readonly is_azure = computed(() =>
+        this._credential_fields().includes('deployment'),
     );
 
     public async save() {
         await submit(this.form, async () => undefined);
         if (this.form().invalid()) return;
 
-        const model = this.formModel();
+        const model = this.form_model();
         const credentials = this._credentials(model);
         if (!model.id && !Object.keys(credentials).length) {
             notifyError(i18n('ADMIN.AI_PROVIDER_CREDENTIALS_REQUIRED'));
@@ -289,16 +318,10 @@ export class SignageAIProviderModalComponent {
         this._dialog_ref.close(true);
     }
 
-    private _credentials(model: ReturnType<typeof this.formModel>) {
+    private _credentials(model: ReturnType<typeof this.form_model>) {
         const out: Record<string, string> = {};
-        if (model.provider === 'GOOGLE_VERTEX') {
-            if (model.project_id) out.project_id = model.project_id;
-            if (model.client_email) out.client_email = model.client_email;
-            if (model.private_key) out.private_key = model.private_key;
-        } else {
-            if (model.api_key) out.api_key = model.api_key;
-            if (model.deployment) out.deployment = model.deployment;
-            if (model.api_version) out.api_version = model.api_version;
+        for (const field of SIGNAGE_AI_CREDENTIAL_FIELDS[model.provider]) {
+            if (model[field]) out[field] = model[field];
         }
         return out;
     }

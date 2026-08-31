@@ -1,14 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-
-vi.mock('@placeos/ts-client', () => ({
-    apiEndpoint: vi.fn(() => '/api/engine/v2'),
-    del: vi.fn(() => Promise.resolve({})),
-    get: vi.fn(() => Promise.resolve([])),
-    patch: vi.fn(() => Promise.resolve({})),
-    post: vi.fn(() => Promise.resolve({})),
-}));
-
-import * as client from '@placeos/ts-client';
 import {
     querySignageAIProviders,
     removeSignageAIProvider,
@@ -17,6 +7,20 @@ import {
     signageAIUsage,
     testSignageAIProvider,
 } from '../../app/admin/signage-ai/signage-ai.fn';
+
+const client_mock = vi.hoisted(() => ({
+    apiEndpoint: vi.fn(() => '/api/engine/v2'),
+    del: vi.fn<(url: string) => Promise<unknown>>(() => Promise.resolve({})),
+    get: vi.fn<(url: string) => Promise<unknown>>(() => Promise.resolve([])),
+    patch: vi.fn<(url: string, body: unknown) => Promise<unknown>>(() =>
+        Promise.resolve({}),
+    ),
+    post: vi.fn<(url: string, body: unknown) => Promise<unknown>>(() =>
+        Promise.resolve({}),
+    ),
+}));
+
+vi.mock('@placeos/ts-client', () => client_mock);
 
 describe('signage-ai.fn', () => {
     beforeEach(() => {
@@ -46,21 +50,19 @@ describe('signage-ai.fn', () => {
 
         it('should never carry credentials, which the API does not return', () => {
             const provider = new SignageAIProvider({ id: 'provider-1' });
-            expect(
-                (provider as Record<string, unknown>).credentials,
-            ).toBeUndefined();
+            expect('credentials' in provider).toBe(false);
         });
     });
 
     describe('querySignageAIProviders', () => {
         it('should ask for the providers and wrap each row', async () => {
-            vi.mocked(client.get).mockResolvedValueOnce([
+            client_mock.get.mockResolvedValueOnce([
                 { id: 'provider-1', name: 'OpenAI' },
-            ] as any);
+            ]);
 
             const list = await querySignageAIProviders();
 
-            expect(client.get).toHaveBeenCalledWith(
+            expect(client_mock.get).toHaveBeenCalledWith(
                 '/api/engine/v2/signage/ai/providers',
             );
             expect(list).toHaveLength(1);
@@ -70,24 +72,24 @@ describe('signage-ai.fn', () => {
 
         it('should pass through the shared row flag', async () => {
             await querySignageAIProviders({ include_shared: false });
-            expect(client.get).toHaveBeenCalledWith(
+            expect(client_mock.get).toHaveBeenCalledWith(
                 '/api/engine/v2/signage/ai/providers?include_shared=false',
             );
         });
 
         it('should survive an empty answer', async () => {
-            vi.mocked(client.get).mockResolvedValueOnce(null as any);
+            client_mock.get.mockResolvedValueOnce(null);
             await expect(querySignageAIProviders()).resolves.toEqual([]);
         });
     });
 
     describe('saveSignageAIProvider', () => {
         it('should post a row that has no id', async () => {
-            vi.mocked(client.post).mockResolvedValueOnce({ id: 'new' } as any);
+            client_mock.post.mockResolvedValueOnce({ id: 'new' });
 
             const saved = await saveSignageAIProvider({ name: 'OpenAI' });
 
-            expect(client.post).toHaveBeenCalledWith(
+            expect(client_mock.post).toHaveBeenCalledWith(
                 '/api/engine/v2/signage/ai/providers',
                 { name: 'OpenAI' },
             );
@@ -95,22 +97,22 @@ describe('signage-ai.fn', () => {
         });
 
         it('should patch a row that has one, with the id in the path only', async () => {
-            vi.mocked(client.patch).mockResolvedValueOnce({ id: 'p1' } as any);
+            client_mock.patch.mockResolvedValueOnce({ id: 'p1' });
 
             await saveSignageAIProvider({ id: 'p1', name: 'Renamed' });
 
-            expect(client.patch).toHaveBeenCalledWith(
+            expect(client_mock.patch).toHaveBeenCalledWith(
                 '/api/engine/v2/signage/ai/providers/p1',
                 { name: 'Renamed' },
             );
-            expect(client.post).not.toHaveBeenCalled();
+            expect(client_mock.post).not.toHaveBeenCalled();
         });
     });
 
     describe('removeSignageAIProvider', () => {
         it('should delete by id', async () => {
             await removeSignageAIProvider('p1');
-            expect(client.del).toHaveBeenCalledWith(
+            expect(client_mock.del).toHaveBeenCalledWith(
                 '/api/engine/v2/signage/ai/providers/p1',
             );
         });
@@ -119,7 +121,7 @@ describe('signage-ai.fn', () => {
     describe('testSignageAIProvider', () => {
         it('should post to the test action for the row', async () => {
             await testSignageAIProvider('p1');
-            expect(client.post).toHaveBeenCalledWith(
+            expect(client_mock.post).toHaveBeenCalledWith(
                 '/api/engine/v2/signage/ai/providers/p1/test',
                 {},
             );
@@ -129,14 +131,14 @@ describe('signage-ai.fn', () => {
     describe('signageAIUsage', () => {
         it('should ask for usage with no window by default', async () => {
             await signageAIUsage();
-            expect(client.get).toHaveBeenCalledWith(
+            expect(client_mock.get).toHaveBeenCalledWith(
                 '/api/engine/v2/signage/ai/usage',
             );
         });
 
         it('should pass a window through as query parameters', async () => {
             await signageAIUsage({ from: 100, to: 200 });
-            expect(client.get).toHaveBeenCalledWith(
+            expect(client_mock.get).toHaveBeenCalledWith(
                 '/api/engine/v2/signage/ai/usage?from=100&to=200',
             );
         });

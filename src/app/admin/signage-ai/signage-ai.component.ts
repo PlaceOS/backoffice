@@ -49,8 +49,16 @@ import {
                     class="w-full"
                     [class.opacity-0]="!loading()"
                 />
+                @if (provider_error()) {
+                    <div
+                        class="text-error/60 bg-base-200 w-full rounded-lg p-8 text-center"
+                    >
+                        {{ provider_error() }}
+                    </div>
+                }
                 <simple-table
                     class="block min-w-176 text-sm"
+                    [class.hidden]="provider_error()"
                     [data]="provider_list()"
                     [columns]="[
                         {
@@ -105,8 +113,16 @@ import {
                 <p class="mb-2 text-sm opacity-60">
                     {{ 'ADMIN.AI_USAGE_HINT' | translate }}
                 </p>
+                @if (usage_error()) {
+                    <div
+                        class="text-error/60 bg-base-200 w-full rounded-lg p-8 text-center"
+                    >
+                        {{ usage_error() }}
+                    </div>
+                }
                 <simple-table
                     class="mb-8 block min-w-176 text-sm"
+                    [class.hidden]="usage_error()"
                     [data]="usage()"
                     [columns]="[
                         {
@@ -223,6 +239,8 @@ export class SignageAIComponent implements OnInit {
     public readonly loading = signal('');
     public readonly providers = signal<SignageAIProvider[]>([]);
     public readonly usage = signal<SignageAIUsageRow[]>([]);
+    public readonly provider_error = signal('');
+    public readonly usage_error = signal('');
     public readonly domain_list = this._admin_data.domain_list;
 
     public readonly provider_list = computed(() =>
@@ -315,9 +333,23 @@ export class SignageAIComponent implements OnInit {
 
     public async load() {
         this.loading.set(i18n('ADMIN.AI_PROVIDERS_LOADING'));
-        this.providers.set(await querySignageAIProviders().catch(() => []));
-        // usage is per domain server side, the same domain the rows above are
-        this.usage.set(await signageAIUsage().catch(() => []));
+        this.provider_error.set('');
+        this.usage_error.set('');
+
+        const [provider_result, usage_result] = await Promise.allSettled([
+            querySignageAIProviders(),
+            signageAIUsage(),
+        ]);
+        if (provider_result.status === 'fulfilled') {
+            this.providers.set(provider_result.value);
+        } else {
+            this.provider_error.set(i18n('ADMIN.AI_PROVIDERS_LOAD_FAILED'));
+        }
+        if (usage_result.status === 'fulfilled') {
+            this.usage.set(usage_result.value);
+        } else {
+            this.usage_error.set(i18n('ADMIN.AI_USAGE_LOAD_FAILED'));
+        }
         this.loading.set('');
     }
 }

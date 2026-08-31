@@ -1187,6 +1187,7 @@
         "BUILD_LIST_REMOVE_SUCCESS": "Successfully cancelled build job.",
         "AI_PROVIDERS_EMPTY": "No AI provider is configured. Signage image generation stays hidden until one is added.",
         "AI_PROVIDERS_HEADER": "Signage AI providers",
+        "AI_PROVIDERS_LOAD_FAILED": "The AI providers could not be loaded.",
         "AI_PROVIDERS_LOADING": "Loading providers...",
         "AI_PROVIDERS_SCOPE": "Providers and usage for this domain. A provider belonging to another domain is not shown here.",
         "AI_PROVIDER_ADD": "Add provider",
@@ -1201,6 +1202,7 @@
         "AI_PROVIDER_ENDPOINT": "Endpoint (optional)",
         "AI_PROVIDER_IS_DEFAULT": "Default",
         "AI_PROVIDER_LOCATION": "Region (Google Vertex only)",
+        "AI_PROVIDER_LOCATION_REQUIRED": "A region is required for Google Vertex",
         "AI_PROVIDER_MODEL": "Default model",
         "AI_PROVIDER_NAME": "Name",
         "AI_PROVIDER_NAME_REQUIRED": "A name is required",
@@ -1228,6 +1230,7 @@
         "AI_USAGE_HEADER": "Usage, last 30 days",
         "AI_USAGE_HINT": "What this domain has asked for, per vendor and model.",
         "AI_USAGE_JOBS": "Requests",
+        "AI_USAGE_LOAD_FAILED": "AI usage could not be loaded.",
         "AI_USAGE_MADE": "Images made",
         "TAB_SIGNAGE_AI": "Signage AI"
     },

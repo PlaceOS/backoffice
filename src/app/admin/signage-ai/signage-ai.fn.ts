@@ -4,11 +4,12 @@ import { toQueryString } from '../../common/api';
 
 const PATH = () => `${apiEndpoint()}/signage/ai`;
 
+export type SignageAIProviderType = 'OPENAI' | 'AZURE_OPENAI' | 'GOOGLE_VERTEX';
+
 export class SignageAIProvider {
     public readonly id: string;
     public readonly name: string;
-    /** OPENAI | AZURE_OPENAI | GOOGLE_VERTEX */
-    public readonly provider: string;
+    public readonly provider: SignageAIProviderType;
     public readonly authority_id: string | null;
     public readonly endpoint: string | null;
     public readonly location: string | null;
@@ -51,6 +52,7 @@ function search(params: Record<string, unknown>) {
 export async function querySignageAIProviders(
     params: {
         authority_id?: string;
+        include_shared?: boolean;
     } = {},
 ): Promise<SignageAIProvider[]> {
     const list = (await get(
