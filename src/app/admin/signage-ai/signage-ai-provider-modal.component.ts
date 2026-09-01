@@ -32,11 +32,6 @@ const SIGNAGE_AI_CREDENTIAL_FIELDS: Record<
     GOOGLE_VERTEX: ['project_id', 'client_email', 'private_key'],
 };
 
-/**
- * Credentials differ per vendor, so the form swaps the middle section rather
- * than showing every field at once. They are only ever sent, never returned:
- * on an edit the boxes start empty and staying empty keeps what is stored.
- */
 @Component({
     selector: 'app-signage-ai-provider-modal',
     template: `

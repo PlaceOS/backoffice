@@ -30,9 +30,6 @@ import {
                     <div class="text-2xl">
                         {{ 'ADMIN.AI_PROVIDERS_HEADER' | translate }}
                     </div>
-                    <!-- there is no domain picker: the API answers for the
-                         domain this Backoffice is served from, and a row from
-                         another customer is deliberately not reachable -->
                     <p class="text-sm opacity-60">
                         {{ 'ADMIN.AI_PROVIDERS_SCOPE' | translate }}
                     </p>
@@ -268,10 +265,6 @@ export class SignageAIComponent implements OnInit {
 
     public readonly testing = signal('');
 
-    /**
-     * Testing a provider asks the vendor for a real image, which is billed, so
-     * it confirms first and refuses a second run while one is in flight.
-     */
     public async test(item: SignageAIProvider) {
         if (this.testing()) return;
         const resp = await openConfirmModal(

@@ -43,7 +43,6 @@ export interface SignageAITestResult {
     kind?: string;
 }
 
-/** the repo's query builder, which already drops null and undefined */
 function search(params: Record<string, unknown>) {
     const query = toQueryString(params);
     return query ? `?${query}` : '';
