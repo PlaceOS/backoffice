@@ -176,6 +176,11 @@ export class PlaceComponent extends AsyncHandler implements OnInit {
                     icon: { value: 'photo_album' },
                 },
                 {
+                    id: 'signage-ai',
+                    name: i18n('ADMIN.TAB_SIGNAGE_AI'),
+                    icon: { value: 'auto_awesome' },
+                },
+                {
                     id: 'signage-plugins',
                     name: i18n('ADMIN.TAB_SIGNAGE_PLUGINS'),
                     icon: { value: 'display_settings' },
