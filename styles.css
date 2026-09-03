@@ -1920,6 +1920,14 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .text-error-content {
   color: var(--error-content);
 }
+#placeos .text-error\/60 {
+  color: var(--error);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos .text-error\/60 {
+    color: color-mix(in oklab, var(--error) 60%, transparent);
+  }
+}
 #placeos .text-info {
   color: var(--info);
 }
