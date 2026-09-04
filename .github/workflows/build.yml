@@ -19,6 +19,8 @@ jobs:
             is_production: ${{ steps.build_ext.outputs.is_production }}
         steps:
             - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
 
             - name: Cache Bun dependencies
               id: cache
@@ -48,6 +50,16 @@ jobs:
 
             - name: Setup version
               run: bun run postinstall
+
+            - name: Install git-cliff
+              uses: taiki-e/install-action@v2
+              with:
+                  tool: git-cliff@2.13.1
+
+            - name: Generate application changelog
+              env:
+                  GITHUB_REPO: ${{ github.repository }}
+              run: git-cliff --config cliff.toml --output "${RUNNER_TEMP}/CHANGELOG.md"
 
             - name: Extract branch name
               id: branch_name
@@ -83,6 +95,9 @@ jobs:
 
             - name: Build application
               run: bun run build -- --verbose --configuration=${{ steps.build_ext.outputs.configuration }}
+
+            - name: Add application changelog to build
+              run: cp "${RUNNER_TEMP}/CHANGELOG.md" dist/backoffice/browser/CHANGELOG.md
 
             - name: Upload build artifact
               uses: actions/upload-artifact@v4
