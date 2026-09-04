@@ -23,6 +23,13 @@ export const ROUTES: Routes = [
                     ),
             },
             {
+                path: 'changelog',
+                loadComponent: () =>
+                    import('./repository-changelog.component').then(
+                        (m) => m.RepositoryChangelogComponent,
+                    ),
+            },
+            {
                 path: 'extend/:id',
                 loadComponent: () =>
                     import('../ui/extension-outlet.component').then(

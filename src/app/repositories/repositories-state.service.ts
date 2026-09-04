@@ -58,6 +58,39 @@ export class RepositoriesStateService {
         () => this._driver_list.value() || [],
     );
 
+    private readonly _changelog = resource({
+        params: () => {
+            const item = this.item();
+            if (
+                !(item instanceof PlaceRepository) ||
+                item.repo_type !== PlaceRepositoryType.Interface ||
+                !item.folder_name
+            ) {
+                return undefined;
+            }
+            return item.folder_name.replace(/^\/+|\/+$/g, '') || undefined;
+        },
+        loader: async ({ params: folder_name, abortSignal }) => {
+            try {
+                const response = await fetch(`/${folder_name}/CHANGELOG.md`, {
+                    cache: 'no-cache',
+                    signal: abortSignal,
+                });
+                return response.ok ? await response.text() : null;
+            } catch {
+                return null;
+            }
+        },
+    });
+    /** Changelog loaded from the folder that serves the active interface. */
+    public readonly changelog = computed(() => this._changelog.value() || '');
+    /** Whether the active interface has a loadable CHANGELOG.md file. */
+    public readonly has_changelog = computed(() => {
+        const changelog = this._changelog.value();
+        return changelog !== undefined && changelog !== null;
+    });
+    public readonly changelog_loading = this._changelog.isLoading;
+
     private readonly _commit = resource({
         params: () => this.item(),
         loader: async ({ params: item }) => {

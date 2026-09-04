@@ -109,6 +109,7 @@ export class RepositoriesComponent {
     public readonly driver_list_loading = this._service.loading;
     public readonly driver_list = this._service.driver_list;
     public readonly driver_list_error = this._service.driver_list_error;
+    public readonly has_changelog = this._service.has_changelog;
     public readonly driver_count = computed(() => {
         const list = this.driver_list();
         return list ? list.length : -1;
@@ -139,6 +140,15 @@ export class RepositoriesComponent {
                       name: i18n('REPOS.TAB_ABOUT'),
                       icon: { content: 'info' },
                   },
+                  ...(this.has_changelog()
+                      ? [
+                            {
+                                id: 'changelog',
+                                name: i18n('COMMON.CHANGELOG'),
+                                icon: { content: 'history' },
+                            },
+                        ]
+                      : []),
               ]
             : [
                   {
