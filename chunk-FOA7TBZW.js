@@ -10,8 +10,8 @@ import "./chunk-2JVXWOZG.js";
 import {
   TranslatePipe
 } from "./chunk-MLQ2ZCKY.js";
-import "./chunk-Z4IGVH3U.js";
 import "./chunk-Y2VDX4KN.js";
+import "./chunk-Z4IGVH3U.js";
 import "./chunk-FFJ3WN6R.js";
 import "./chunk-5GIP5KW2.js";
 import "./chunk-J2PUVZQM.js";
