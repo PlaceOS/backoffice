@@ -230,8 +230,9 @@ export class ActiveItemService extends AsyncHandler {
             if (item.id && item !== this._active_item()) {
                 item = (await actions.show(item.id)) as T;
             }
+            const component = await actions.loadModal();
             return new Promise<T>((resolve) => {
-                const ref = this._dialog.open(actions.modalComponent, {
+                const ref = this._dialog.open(component, {
                     data: {
                         item: new actions.itemConstructor({ ...item }),
                         ...options,

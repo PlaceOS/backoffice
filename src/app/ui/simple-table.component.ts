@@ -1,4 +1,8 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import {
+    CdkVirtualScrollViewport,
+    ScrollingModule,
+} from '@angular/cdk/scrolling';
 import { NgTemplateOutlet } from '@angular/common';
 import {
     Component,
@@ -10,6 +14,7 @@ import {
     linkedSignal,
     output,
     signal,
+    viewChild,
 } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Subscribable } from '../common/signals';
@@ -33,6 +38,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
     template: `
         <button
             role="table"
+            [class.virtual-table]="virtual_enabled()"
             class="border-base-200 grid overflow-visible border text-left"
             [style.gridTemplateColumns]="column_template()"
             (click)="onclick.emit(0)"
@@ -105,54 +111,90 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                     }
                 </button>
             }
-            @for (
-                row of paginated_data();
-                track row['id'] || $index;
-                let i = $index
-            ) {
-                @if (can_reorder()) {
+            @if (virtual_enabled()) {
+                <cdk-virtual-scroll-viewport
+                    [itemSize]="virtual_row_height()"
+                    [minBufferPx]="virtual_row_height() * 4"
+                    [maxBufferPx]="virtual_row_height() * 8"
+                    style="grid-column: 1 / -1; min-height: 0; height: 100%"
+                >
                     <div
-                        class="grid"
-                        cdkDrag
-                        [style.gridArea]="i + 2 + '/1/' + (i + 2) + '/' + -1"
+                        *cdkVirtualFor="
+                            let row of data_view();
+                            let i = index;
+                            trackBy: trackRow
+                        "
+                        role="row"
+                        class="grid overflow-hidden"
+                        [style.height.px]="virtual_row_height()"
                         [style.gridTemplateColumns]="column_template()"
+                        [attr.aria-rowindex]="i + 2"
                     >
-                        <div
-                            *cdkDragPlaceholder
-                            class="border-base-300 bg-base-200 h-16 w-full border-2 border-dashed"
-                            [style.gridArea]="
-                                i + 2 + '/1/' + (i + 2) + '/' + column_count()
+                        <ng-container
+                            *ngTemplateOutlet="
+                                row_template;
+                                context: { row, index: i }
                             "
-                        ></div>
+                        />
+                    </div>
+                </cdk-virtual-scroll-viewport>
+            } @else {
+                @for (
+                    row of paginated_data();
+                    track row['id'] || $index;
+                    let i = $index
+                ) {
+                    @if (can_reorder()) {
                         <div
-                            class="border-base-200 z-0 flex min-h-full items-center justify-center border-r px-2"
-                            [style.gridArea]="gridSquare(2 + i, 1)"
-                            [class.border-b]="i !== data_length() - 1"
-                            [style.background]="color()[i]"
+                            class="grid"
+                            cdkDrag
+                            [style.gridArea]="
+                                i + 2 + '/1/' + (i + 2) + '/' + -1
+                            "
+                            [style.gridTemplateColumns]="column_template()"
                         >
-                            <button
-                                icon
-                                matRipple
-                                class="h-full w-full rounded-none"
-                                cdkDragHandle
+                            <div
+                                *cdkDragPlaceholder
+                                class="border-base-300 bg-base-200 h-16 w-full border-2 border-dashed"
+                                [style.gridArea]="
+                                    i +
+                                    2 +
+                                    '/1/' +
+                                    (i + 2) +
+                                    '/' +
+                                    column_count()
+                                "
+                            ></div>
+                            <div
+                                class="border-base-200 z-0 flex min-h-full items-center justify-center border-r px-2"
+                                [style.gridArea]="gridSquare(2 + i, 1)"
+                                [class.border-b]="i !== data_length() - 1"
+                                [style.background]="color()[i]"
                             >
-                                <icon class="text-2xl">unfold_more</icon>
-                            </button>
+                                <button
+                                    icon
+                                    matRipple
+                                    class="h-full w-full rounded-none"
+                                    cdkDragHandle
+                                >
+                                    <icon class="text-2xl">unfold_more</icon>
+                                </button>
+                            </div>
+                            <ng-container
+                                *ngTemplateOutlet="
+                                    row_template;
+                                    context: { row: row, index: i }
+                                "
+                            />
                         </div>
+                    } @else {
                         <ng-container
                             *ngTemplateOutlet="
                                 row_template;
                                 context: { row: row, index: i }
                             "
                         />
-                    </div>
-                } @else {
-                    <ng-container
-                        *ngTemplateOutlet="
-                            row_template;
-                            context: { row: row, index: i }
-                        "
-                    />
+                    }
                 }
             }
             @if (!paginated_data()?.length) {
@@ -170,7 +212,10 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                 <div
                     class="border-base-200 z-0 flex min-h-full items-center justify-between border-r px-2"
                     [style.gridArea]="
-                        gridSquare(2 + i, 1 + (can_reorder() ? 1 : 0))
+                        gridSquare(
+                            virtual_enabled() ? 1 : 2 + i,
+                            1 + (can_reorder() ? 1 : 0)
+                        )
                     "
                     [class.border-b]="i !== data_length() - 1"
                     [style.background]="color()[i]"
@@ -188,7 +233,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                     class="border-base-200 relative z-0 flex min-h-full items-center justify-between"
                     [style.gridArea]="
                         gridSquare(
-                            2 + i,
+                            virtual_enabled() ? 1 : 2 + i,
                             1 +
                                 j +
                                 (selectable() ? 1 : 0) +
@@ -243,6 +288,16 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                 overflow: hidden;
             }
 
+            :host:has(.virtual-table) {
+                display: block;
+                height: 100%;
+                min-height: 0;
+            }
+            .virtual-table {
+                height: 100%;
+                width: 100%;
+                grid-template-rows: auto minmax(0, 1fr);
+            }
             [header] icon {
                 opacity: 0;
             }
@@ -258,6 +313,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
         `,
     ],
     imports: [
+        ScrollingModule,
         MatCheckboxModule,
         DragDropModule,
         IconComponent,
@@ -276,6 +332,13 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
     public readonly sortable = input(false);
     public readonly can_reorder = input(false);
     public readonly page_size = input(0);
+    /** Fixed row height in pixels. Zero keeps the standard table layout. */
+    public readonly virtual_row_height = input(0);
+    public readonly virtual_enabled = computed(
+        () => this.virtual_row_height() > 0 && !this.can_reorder(),
+    );
+    private readonly _viewport = viewChild(CdkVirtualScrollViewport);
+    public readonly trackRow = (index: number, row: T) => row['id'] ?? index;
     public readonly color = input<Record<number, string>>({});
     public readonly empty_message = input('No data to list');
     public readonly filter_on = input<string[]>([]);
@@ -354,6 +417,16 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
     }
 
     constructor() {
+        // Flex layouts can gain their final height after the viewport is created.
+        effect((onCleanup) => {
+            const viewport = this._viewport();
+            if (!viewport || typeof ResizeObserver === 'undefined') return;
+            const observer = new ResizeObserver(() =>
+                viewport.checkViewportSize(),
+            );
+            observer.observe(viewport.elementRef.nativeElement);
+            onCleanup(() => observer.disconnect());
+        });
         // Handle signal, subscribable, or array data input.
         effect((onCleanup) => {
             const data = this.data();
@@ -395,6 +468,7 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
 
             this.selected.set([]);
             this.page.set(0);
+            this._viewport()?.scrollToIndex(0);
 
             if (page_size_value) {
                 this.total_count.set(data.length);
@@ -417,7 +491,11 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
     // Computed column template
     public readonly column_template = computed(() => {
         let template = this.active_columns()
-            .map((_) => _.size || 'auto')
+            .map(
+                (_) =>
+                    _.size ||
+                    (this.virtual_enabled() ? 'minmax(0, 1fr)' : 'auto'),
+            )
             .join(' ');
         template = this.selectable() ? `3.5rem ${template}` : template;
         template = this.can_reorder() ? `3.5rem ${template}` : template;

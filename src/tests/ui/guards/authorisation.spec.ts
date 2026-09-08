@@ -6,7 +6,12 @@ import { AuthorisedAdminGuard } from '../../../app/ui/guards/authorised-admin.gu
 import { AuthorisedUserGuard } from '../../../app/ui/guards/authorised-user.guard';
 import { BackofficeUsersService } from '../../../app/users/users.service';
 
-const connection = vi.hoisted(() => ({ value: true }));
+const connection = await vi.hoisted(async () => {
+    const { createSignal } = await import(
+        '@placeos/ts-client/dist/index.es.js'
+    );
+    return createSignal(true);
+});
 vi.mock('@placeos/ts-client', () => ({ onlineState: () => connection }));
 vi.mock('../../../app/users/users.service', () => ({
     BackofficeUsersService: class {},
@@ -38,7 +43,7 @@ describe.each([
     const user = signal<{ sys_admin: boolean; support: boolean } | null>(null);
 
     beforeEach(() => {
-        connection.value = true;
+        connection.set(true);
         user.set(null);
         TestBed.configureTestingModule({
             providers: [
@@ -83,7 +88,7 @@ describe.each([
 
     it('waits for the connection and user before deciding access', async () => {
         vi.useFakeTimers();
-        connection.value = false;
+        connection.set(false);
         const router = TestBed.inject(Router);
         const settled = vi.fn();
         const result = TestBed.inject<
@@ -96,7 +101,7 @@ describe.each([
             .then(settled);
         await vi.advanceTimersByTimeAsync(100);
         expect(settled).not.toHaveBeenCalled();
-        connection.value = true;
+        connection.set(true);
         await vi.advanceTimersByTimeAsync(100);
         expect(settled).not.toHaveBeenCalled();
         expect(router.navigate).not.toHaveBeenCalled();

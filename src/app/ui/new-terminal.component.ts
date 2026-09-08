@@ -92,24 +92,45 @@ export class NewTerminalComponent extends AsyncHandler implements OnChanges {
 
     public readonly old_count = signal(0);
     public readonly line_length = signal(80);
+    private _format_width = 0;
+    private _format_cache = new Map<
+        string,
+        { search: string; lines: string[] }
+    >();
+    private readonly _formatted_events = computed(() => {
+        const width = this.line_length();
+        if (width !== this._format_width) this._format_cache.clear();
+        this._format_width = width;
+        const next = new Map<string, { search: string; lines: string[] }>();
+        const events = this.lines().map((event) => {
+            const formatted = next.get(event) ||
+                this._format_cache.get(event) || {
+                    search: event.toLowerCase(),
+                    lines: event
+                        ? event
+                              .split('\n')
+                              .flatMap((line) => this._formatLineWithHTML(line))
+                        : [],
+                };
+            next.set(event, formatted);
+            return formatted;
+        });
+        // Keep only the current history, including entries hidden by the filter.
+        this._format_cache = next;
+        return events;
+    });
     private readonly _filtered_events = computed(() => {
-        const s = this.search().toLowerCase();
-        return this.lines().filter((event) => event.toLowerCase().includes(s));
+        const search = this.search().toLowerCase();
+        return this._formatted_events().filter((event) =>
+            event.search.includes(search),
+        );
     });
     public readonly search_count = computed(
         () => this._filtered_events().length,
     );
-    public readonly displayed_lines = computed(() => {
-        const out_lines: string[] = [];
-        for (const event of this._filtered_events()) {
-            if (!event) continue;
-            // Split event into individual lines, then format each
-            for (const ln of event.split('\n')) {
-                out_lines.push(...this._formatLineWithHTML(ln));
-            }
-        }
-        return out_lines;
-    });
+    public readonly displayed_lines = computed(() =>
+        this._filtered_events().flatMap((event) => event.lines),
+    );
     public readonly item_count = computed(() => this.displayed_lines().length);
 
     private readonly _scroll_viewport = viewChild(VirtualScrollComponent);
@@ -139,6 +160,7 @@ export class NewTerminalComponent extends AsyncHandler implements OnChanges {
     }
 
     private _updateLineLength() {
+        if (!this._container_el()) return;
         this.line_length.set(
             Math.max(
                 40,

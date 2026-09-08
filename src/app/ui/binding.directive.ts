@@ -14,7 +14,6 @@ import {
 import { authority, getModule, onlineState } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../common/async-handler.class';
-import { waitForClientSignalValue } from '../common/signals';
 
 @Directive({
     selector: 'i[bind], [binding], co-bind',
@@ -54,8 +53,14 @@ export class BindingDirective<T = unknown>
     private _old_model: T | null = null;
 
     public ngOnInit(): void {
-        waitForClientSignalValue(onlineState(), (_) => _).then(() =>
-            this.bindVariable(),
+        this.subscription(
+            'online',
+            onlineState().subscribe(
+                (online) => {
+                    if (online) this.bindVariable();
+                },
+                { emitCurrent: true },
+            ),
         );
     }
 
@@ -88,6 +93,7 @@ export class BindingDirective<T = unknown>
     /** Bind to set status variable */
     private bindVariable() {
         if (
+            onlineState().value &&
             authority() &&
             this.bind() &&
             this.sys() &&

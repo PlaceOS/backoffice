@@ -9,14 +9,15 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'domain-users',
     template: `
-        <div class="h-full w-full overflow-auto">
+        <div class="flex h-full min-h-0 w-full flex-col">
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
                 [class.opacity-0]="loading() !== true"
             />
             <simple-table
-                class="block min-w-lg text-sm"
+                class="block min-h-0 w-full flex-1 text-sm"
+                [virtual_row_height]="64"
                 [data]="users"
                 [columns]="[
                     {
@@ -36,9 +37,13 @@ import { DomainStateService } from './domain-state.service';
             />
         </div>
         <ng-template #name_template let-row="row">
-            <div class="flex flex-col px-4 py-2">
-                <div class="text-sm">{{ row.name }}</div>
-                <div class="text-xs opacity-30">{{ row.email }}</div>
+            <div class="flex min-w-0 flex-col px-4 py-2">
+                <div class="truncate text-sm" [title]="row.name">
+                    {{ row.name }}
+                </div>
+                <div class="truncate text-xs opacity-30" [title]="row.email">
+                    {{ row.email }}
+                </div>
             </div>
         </ng-template>
         <ng-template #role_template let-row="row">

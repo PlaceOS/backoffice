@@ -42,23 +42,30 @@ export class PlaceDebugService extends AsyncHandler {
     public readonly is_listening = computed(
         () => this.enabled() && this.bound_modules().length > 0,
     );
-    /** Get terminal display strings for all events (one string per event) */
-    public readonly terminal_lines = computed(() => {
-        return this.events().map(
-            (event) =>
-                `${
-                    TERMINAL_COLOURS[event.level?.toLowerCase()] ||
-                    TERMINAL_COLOURS.debug
-                }${format(Date.now(), 'h:mm a')}, ${
-                    this._module_names[event.mod_id] ||
-                    event.mod_id ||
-                    '<UNKNOWN>'
-                }, [${event.level.toUpperCase()}]\u001b[0m ${event.message
-                    .split('\n')
-                    .reverse()
-                    .join('\n')}`,
+    private readonly _formatted_events = new WeakMap<PlaceDebugEvent, string>();
+    private _pending_events: PlaceDebugEvent[] = [];
+
+    /** Reuse each event's display text until it leaves the retained history. */
+    public readonly terminal_lines = computed(() =>
+        this.events().map((event) => this.formatEvent(event)),
+    );
+
+    private formatEvent(event: PlaceDebugEvent) {
+        const cached = this._formatted_events.get(event);
+        if (cached !== undefined) return cached;
+        const line = `${TERMINAL_COLOURS[event.level?.toLowerCase()] || TERMINAL_COLOURS.debug}${format(Date.now(), 'h:mm a')}, ${this._module_names[event.mod_id] || event.mod_id || '<UNKNOWN>'}, [${event.level.toUpperCase()}]\u001b[0m ${event.message.split('\n').reverse().join('\n')}`;
+        this._formatted_events.set(event, line);
+        return line;
+    }
+
+    /** Publish at most once per frame, with a bounded queue during bursts. */
+    private flushEvents() {
+        this.clearTimeout('flush_debug');
+        this.events.update((events) =>
+            [...events, ...this._pending_events].slice(-2000),
         );
-    });
+        this._pending_events = [];
+    }
 
     public readonly changed = this._changed.asReadonly();
 
@@ -79,12 +86,17 @@ export class PlaceDebugService extends AsyncHandler {
                 if (
                     this.bound_modules().find((mod) => mod.id === event.mod_id)
                 ) {
-                    let event_list = [...this.events(), event];
-                    if (event_list.length > 2000) {
-                        const [_first, ...events] = event_list;
-                        event_list = events;
+                    this.formatEvent(event);
+                    this._pending_events.push(event);
+                    if (this._pending_events.length >= 2000) {
+                        this.flushEvents();
+                    } else if (!this._timers['flush_debug']) {
+                        this.timeout(
+                            'flush_debug',
+                            () => this.flushEvents(),
+                            16,
+                        );
                     }
-                    this.events.set(event_list);
                 }
             }),
         );
@@ -92,6 +104,8 @@ export class PlaceDebugService extends AsyncHandler {
 
     /** Clear existing events */
     public clearEvents() {
+        this.clearTimeout('flush_debug');
+        this._pending_events = [];
         this.events.set([]);
     }
 

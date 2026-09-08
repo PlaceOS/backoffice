@@ -92,20 +92,15 @@ export function waitForSignalValue<T>(
     });
 }
 
+/** Wait for a client signal without scheduling repeated timer checks. */
 export function waitForClientSignalValue<T>(
     source: ClientSignal<T>,
     predicate: (value: T) => boolean = () => true,
-    delay = 50,
 ): Promise<T> {
-    return new Promise<T>((resolve) => {
-        const check = () => {
-            const value = source.value;
-            if (predicate(value)) {
-                resolve(value);
-            } else {
-                setTimeout(check, delay);
-            }
-        };
-        check();
-    });
+    return waitForEvent(
+        {
+            subscribe: (next) => source.subscribe(next, { emitCurrent: true }),
+        },
+        predicate,
+    );
 }

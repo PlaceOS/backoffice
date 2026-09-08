@@ -101,6 +101,13 @@ describe('actions.ts', () => {
         vi.clearAllMocks();
     });
 
+    it('loads the selected form on demand', async () => {
+        const { SystemFormComponent } = await import(
+            '../../app/systems/system-form.component'
+        );
+        expect(await ACTIONS.systems.loadModal()).toBe(SystemFormComponent);
+    });
+
     describe('ACTIONS object', () => {
         it('should have domains action', () => {
             expect(ACTIONS.domains).toBeDefined();

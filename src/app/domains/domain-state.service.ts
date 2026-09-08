@@ -1,5 +1,14 @@
-import { computed, inject, resource, Service, signal } from '@angular/core';
+import {
+    computed,
+    inject,
+    linkedSignal,
+    resource,
+    Service,
+    signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
+import { NavigationEnd, Router } from '@angular/router';
 import {
     addApplication,
     get,
@@ -21,6 +30,7 @@ import {
     updateApplication,
     updateDomain,
 } from '@placeos/ts-client';
+import { filter, map } from 'rxjs';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -40,7 +50,17 @@ export class DomainStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _loading = signal(false);
+    private readonly _router = inject(Router);
+    private readonly _url = toSignal(
+        this._router.events.pipe(
+            filter(
+                (event): event is NavigationEnd =>
+                    event instanceof NavigationEnd,
+            ),
+            map((event) => event.urlAfterRedirects),
+        ),
+        { initialValue: this._router.url },
+    );
 
     private _changed = signal(0);
 
@@ -48,109 +68,135 @@ export class DomainStateService {
         () => this._state.item() as unknown as PlaceDomain,
     );
 
-    public readonly loading = this._loading.asReadonly();
+    private readonly _domain_id = computed(() => {
+        const item = this.item();
+        return item instanceof PlaceDomain ? item.id : undefined;
+    });
+    private readonly _tab = computed(
+        () => this._url().split(/[?#]/)[0].split('/')[3],
+    );
+    // Once opened, retain a tab's data until the user selects another domain.
+    private readonly _opened_tabs = linkedSignal<
+        { id: string | undefined; tab: string },
+        { id: string | undefined; tabs: Set<string> }
+    >({
+        source: () => ({ id: this._domain_id(), tab: this._tab() }),
+        computation: ({ id, tab }, previous) => ({
+            id,
+            tabs: new Set<string>([
+                ...(previous && previous.value.id === id
+                    ? previous.value.tabs
+                    : []),
+                tab,
+            ]),
+        }),
+    });
+    private readonly _load_users = computed(() =>
+        this._opened_tabs().tabs.has('users'),
+    );
+    private readonly _load_auth = computed(() =>
+        this._opened_tabs().tabs.has('authentication'),
+    );
+    private readonly _load_applications = computed(() =>
+        this._opened_tabs().tabs.has('applications'),
+    );
 
     private readonly _users = resource({
-        params: () => ({ item: this.item(), changed: this._changed() }),
+        params: () =>
+            this._domain_id()
+                ? {
+                      id: this._domain_id(),
+                      changed: this._changed(),
+                      full: this._load_users(),
+                  }
+                : undefined,
         loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceDomain)) return [] as PlaceUser[];
             const response = await queryUsers({
-                authority_id: item.id,
-                limit: 1000,
-            } as Record<string, unknown>).catch(() => ({ data: [] }));
-            return response.data.sort((a, b) => a.name.localeCompare(b.name));
-        },
-    });
-
-    public readonly users = computed(() => this._users.value() || []);
-
-    private readonly _auth_sources = resource({
-        params: () => ({ item: this.item(), changed: this._changed() }),
-        loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceDomain)) return [] as PlaceAuthSource[];
-            const q = { authority_id: item.id };
-            const [saml, oauth, ldap] = await Promise.all([
-                querySAMLSources(q as Record<string, unknown>).then(
-                    (response) => response.data,
-                ),
-                queryOAuthSources(q as Record<string, unknown>).then(
-                    (response) => response.data,
-                ),
-                queryLDAPSources(q as Record<string, unknown>).then(
-                    (response) => response.data,
-                ),
-            ]).catch(() => [[], [], []]);
-            return [...saml, ...oauth, ...ldap] as PlaceAuthSource[];
-        },
-    });
-
-    public readonly auth_sources = computed(
-        () => this._auth_sources.value() || [],
-    );
-
-    private readonly _applications = resource({
-        params: () => ({ item: this.item(), changed: this._changed() }),
-        loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceDomain)) return [] as PlaceApplication[];
-            const response = await queryApplications({
-                authority_id: item.id,
-            } as Record<string, unknown>).catch(() => ({ data: [] }));
-            return response.data.sort((a, b) => a.name.localeCompare(b.name));
-        },
-    });
-
-    public readonly applications = computed(
-        () => this._applications.value() || [],
-    );
-
-    private readonly _counts = resource({
-        params: () => ({ item: this.item(), changed: this._changed() }),
-        loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceDomain)) return {};
-            const q = { authority_id: item?.id };
-            const details = await Promise.all([
-                queryApplications(q as Record<string, unknown>)
-                    .then((response) => response.total)
-                    .catch(() => 0),
-                Promise.all([
-                    querySAMLSources(q as Record<string, unknown>),
-                    queryOAuthSources(q as Record<string, unknown>),
-                    queryLDAPSources(q as Record<string, unknown>),
-                ])
-                    .then(
-                        ([saml, oauth, ldap]) =>
-                            saml.total + oauth.total + ldap.total,
-                    )
-                    .catch(() => 0),
-                queryUsers(q as Record<string, unknown>)
-                    .then((response) => response.total)
-                    .catch(() => 0),
-            ]);
-            const [applications, auth_sources, users] = details;
+                authority_id: params.id,
+                limit: params.full ? 1000 : 1,
+            }).catch(() => ({ data: [] as PlaceUser[], total: 0 }));
             return {
-                applications,
-                auth_sources: auth_sources || 0,
-                users,
+                ...response,
+                data: [...response.data].sort((a, b) =>
+                    a.name.localeCompare(b.name),
+                ),
             };
         },
     });
-
-    public readonly counts = computed<{
-        applications?: number;
-        auth_sources?: number;
-        users?: number;
-    }>(
-        () =>
-            this._counts.value() || {
-                applications: 0,
-                auth_sources: 0,
-                users: 0,
-            },
+    public readonly users = computed(() =>
+        this._load_users() ? this._users.value()?.data || [] : [],
     );
+
+    private readonly _auth_sources = resource({
+        params: () =>
+            this._domain_id()
+                ? {
+                      id: this._domain_id(),
+                      changed: this._changed(),
+                      full: this._load_auth(),
+                  }
+                : undefined,
+        loader: async ({ params }) => {
+            const q = {
+                authority_id: params.id,
+                ...(params.full ? {} : { limit: 1 }),
+            };
+            const responses = await Promise.all([
+                querySAMLSources(q),
+                queryOAuthSources(q),
+                queryLDAPSources(q),
+            ]).catch(() => []);
+            return {
+                data: responses.flatMap(
+                    (response): PlaceAuthSource[] => response.data,
+                ),
+                total: responses
+                    .map((response) => response.total)
+                    .reduce((total, count) => total + count, 0),
+            };
+        },
+    });
+    public readonly auth_sources = computed(() =>
+        this._load_auth() ? this._auth_sources.value()?.data || [] : [],
+    );
+
+    private readonly _applications = resource({
+        params: () =>
+            this._domain_id()
+                ? {
+                      id: this._domain_id(),
+                      changed: this._changed(),
+                      full: this._load_applications(),
+                  }
+                : undefined,
+        loader: async ({ params }) => {
+            const response = await queryApplications({
+                authority_id: params.id,
+                ...(params.full ? {} : { limit: 1 }),
+            }).catch(() => ({ data: [] as PlaceApplication[], total: 0 }));
+            return {
+                ...response,
+                data: [...response.data].sort((a, b) =>
+                    a.name.localeCompare(b.name),
+                ),
+            };
+        },
+    });
+    public readonly applications = computed(() =>
+        this._load_applications() ? this._applications.value()?.data || [] : [],
+    );
+
+    public readonly loading = computed(
+        () =>
+            this._users.isLoading() ||
+            this._auth_sources.isLoading() ||
+            this._applications.isLoading(),
+    );
+    public readonly counts = computed(() => ({
+        applications: this._applications.value()?.total || 0,
+        auth_sources: this._auth_sources.value()?.total || 0,
+        users: this._users.value()?.total || 0,
+    }));
 
     public get active_item() {
         return this._state.active_item;

@@ -58,15 +58,6 @@ import {
     updateUser,
     updateZone,
 } from '@placeos/ts-client';
-import { DomainFormComponent } from '../domains/domain-form.component';
-import { DriverFormComponent } from '../drivers/driver-form.component';
-import { GroupFormComponent } from '../groups/group-form.component';
-import { ModuleFormComponent } from '../modules/module-form.component';
-import { RepositoryFormComponent } from '../repositories/repository-form.component';
-import { SystemFormComponent } from '../systems/system-form.component';
-import { TriggerFormComponent } from '../triggers/trigger-form.component';
-import { UserFormComponent } from '../users/user-form.component';
-import { ZoneFormComponent } from '../zones/zone-form.component';
 import {
     CascadePlan,
     CascadeResourceType,
@@ -96,7 +87,7 @@ export interface ItemActions<T> {
     save: (_: T) => Promise<T>;
     remove: (_: T) => Promise<unknown>;
     itemConstructor: Type<T>;
-    modalComponent: Type<unknown>;
+    loadModal: () => Promise<Type<unknown>>;
     delete_message: string;
     delete_extra?: (_: T) => Promise<[string, string]>;
     cascade?: ItemCascade<T>;
@@ -113,7 +104,10 @@ const domains: ItemActions<PlaceDomain> = {
     save: (item) => (item.id ? updateDomain(item.id, item) : addDomain(item)),
     remove: (item) => removeDomain(item.id),
     itemConstructor: PlaceDomain,
-    modalComponent: DomainFormComponent,
+    loadModal: () =>
+        import('../domains/domain-form.component').then(
+            (m) => m.DomainFormComponent,
+        ),
     delete_message: ``,
     cascade: {
         label: 'DOMAINS.DELETE_CASCADE',
@@ -134,7 +128,10 @@ const drivers: ItemActions<PlaceDriver> = {
     save: (item) => (item.id ? updateDriver(item.id, item) : addDriver(item)),
     remove: (item) => removeDriver(item.id),
     itemConstructor: PlaceDriver,
-    modalComponent: DriverFormComponent,
+    loadModal: () =>
+        import('../drivers/driver-form.component').then(
+            (m) => m.DriverFormComponent,
+        ),
     delete_message: ``,
     delete_extra: async (_) => {
         const query: Record<string, string | number> = {
@@ -165,7 +162,10 @@ const groups: ItemActions<PlaceGroup> = {
     save: (item) => (item.id ? updateGroup(item.id, item) : addGroup(item)),
     remove: (item) => removeGroup(item.id),
     itemConstructor: PlaceGroup,
-    modalComponent: GroupFormComponent,
+    loadModal: () =>
+        import('../groups/group-form.component').then(
+            (m) => m.GroupFormComponent,
+        ),
     delete_message: ``,
     name: 'GROUPS',
 };
@@ -180,7 +180,10 @@ const modules: ItemActions<PlaceModule> = {
     save: (item) => (item.id ? updateModule(item.id, item) : addModule(item)),
     remove: (item) => removeModule(item.id),
     itemConstructor: PlaceModule,
-    modalComponent: ModuleFormComponent,
+    loadModal: () =>
+        import('../modules/module-form.component').then(
+            (m) => m.ModuleFormComponent,
+        ),
     delete_message: ``,
     name: 'MODULES',
 };
@@ -196,7 +199,10 @@ const repositories: ItemActions<PlaceRepository> = {
         item.id ? updateRepository(item.id, item) : addRepository(item),
     remove: (item) => removeRepository(item.id),
     itemConstructor: PlaceRepository,
-    modalComponent: RepositoryFormComponent,
+    loadModal: () =>
+        import('../repositories/repository-form.component').then(
+            (m) => m.RepositoryFormComponent,
+        ),
     delete_message: `'`,
     name: 'REPOS',
 };
@@ -211,7 +217,10 @@ const systems: ItemActions<PlaceSystem> = {
     save: saveSystem,
     remove: (item) => removeSystem(item.id),
     itemConstructor: PlaceSystem,
-    modalComponent: SystemFormComponent,
+    loadModal: () =>
+        import('../systems/system-form.component').then(
+            (m) => m.SystemFormComponent,
+        ),
     delete_message: ``,
     name: 'SYSTEMS',
 };
@@ -308,7 +317,10 @@ const triggers: ItemActions<PlaceTrigger> = {
     save: (item) => (item.id ? updateTrigger(item.id, item) : addTrigger(item)),
     remove: (item) => removeTrigger(item.id),
     itemConstructor: PlaceTrigger,
-    modalComponent: TriggerFormComponent,
+    loadModal: () =>
+        import('../triggers/trigger-form.component').then(
+            (m) => m.TriggerFormComponent,
+        ),
     delete_message: ``,
     name: 'TRIGGERS',
 };
@@ -323,7 +335,8 @@ const users: ItemActions<PlaceUser> = {
     save: (item) => (item.id ? updateUser(item.id, item) : addUser(item)),
     remove: (item) => removeUser(item.id),
     itemConstructor: PlaceUser,
-    modalComponent: UserFormComponent,
+    loadModal: () =>
+        import('../users/user-form.component').then((m) => m.UserFormComponent),
     delete_message: ``,
     name: 'USERS',
 };
@@ -338,7 +351,8 @@ const zones: ItemActions<PlaceZone> = {
     save: (item) => (item.id ? updateZone(item.id, item) : addZone(item)),
     remove: (item) => removeZone(item.id),
     itemConstructor: PlaceZone,
-    modalComponent: ZoneFormComponent,
+    loadModal: () =>
+        import('../zones/zone-form.component').then((m) => m.ZoneFormComponent),
     delete_message: ``,
     cascade: {
         label: 'ZONES.DELETE_CASCADE',

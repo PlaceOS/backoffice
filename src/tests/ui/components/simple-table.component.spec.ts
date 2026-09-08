@@ -1,7 +1,9 @@
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     SimpleTableComponent,
     TableColumn,
@@ -21,6 +23,51 @@ describe('SimpleTableComponent', () => {
         fixture = TestBed.createComponent(SimpleTableComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+    });
+
+    afterEach(() => vi.restoreAllMocks());
+
+    it('renders a bounded window with full-list row indices', async () => {
+        vi.spyOn(
+            CdkVirtualScrollViewport.prototype,
+            'scrollToIndex',
+        ).mockImplementation(() => undefined);
+        fixture.componentRef.setInput(
+            'data',
+            Array.from({ length: 1000 }, (_, i) => ({
+                id: `user-${i}`,
+                name: `User ${i}`,
+            })),
+        );
+        fixture.componentRef.setInput('columns', [
+            { key: 'name', name: 'Name' },
+        ]);
+        fixture.componentRef.setInput('virtual_row_height', 64);
+        fixture.componentRef.setInput('selectable', true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const viewport = fixture.debugElement.query(
+            By.directive(CdkVirtualScrollViewport),
+        ).componentInstance as CdkVirtualScrollViewport;
+        viewport.setRenderedRange({ start: 500, end: 512 });
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const rows = fixture.nativeElement.querySelectorAll(
+            '[role="row"]',
+        ) as NodeListOf<HTMLElement>;
+        expect(rows.length).toBe(12);
+        expect(rows[0].textContent).toContain('User 500');
+        expect(rows[0].getAttribute('aria-rowindex')).toBe('502');
+        rows[0]
+            .querySelector<HTMLInputElement>('input[type="checkbox"]')
+            ?.click();
+        fixture.detectChanges();
+        expect(component.selected()).toEqual([500]);
+        component.setSort('name');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(component.data_view()).toHaveLength(1000);
+        expect(component.selected()).toEqual([]);
     });
 
     describe('default state', () => {

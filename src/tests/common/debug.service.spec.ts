@@ -26,6 +26,7 @@ vi.mock('date-fns', () => ({
 }));
 
 import { debug_events } from '@placeos/ts-client';
+import { format } from 'date-fns';
 import { PlaceDebugService } from '../../app/common/debug.service';
 
 // Mock PlaceModule interface
@@ -348,7 +349,7 @@ describe('PlaceDebugService', () => {
                 message: 'Test event',
             });
 
-            expect(service.events().length).toBe(1);
+            await vi.waitFor(() => expect(service.events().length).toBe(1));
             expect(service.events()[0].message).toBe('Test event');
         });
 
@@ -392,10 +393,52 @@ describe('PlaceDebugService', () => {
             });
 
             expect(service.events().length).toBe(2000);
-            // First event should be removed
-            expect(service.events()[0].message).toBe('Event 1');
+            // First event should be removed after the batch is published.
+            await vi.waitFor(() =>
+                expect(service.events()[0].message).toBe('Event 1'),
+            );
             expect(service.events()[1999].message).toBe('New event');
         });
+    });
+
+    it('batches a burst and formats each event only once', async () => {
+        vi.useFakeTimers();
+        try {
+            const module = { id: 'mod-1', system_id: 'sys-1' };
+            await service.bind(
+                module as Parameters<typeof service.bind>[0],
+                'Test_1',
+            );
+            const emit = debug_events as unknown as {
+                next(event: {
+                    mod_id: string;
+                    level: string;
+                    message: string;
+                }): void;
+            };
+            for (let i = 0; i < 100; i++) {
+                emit.next({
+                    mod_id: 'mod-1',
+                    level: 'info',
+                    message: `Event ${i}`,
+                });
+            }
+            expect(service.event_count()).toBe(0);
+            vi.advanceTimersByTime(16);
+            expect(service.event_count()).toBe(100);
+            const first = service.terminal_lines()[0];
+            expect(format).toHaveBeenCalledTimes(100);
+            emit.next({ mod_id: 'mod-1', level: 'info', message: 'Next' });
+            vi.advanceTimersByTime(16);
+            expect(service.terminal_lines()[0]).toBe(first);
+            expect(format).toHaveBeenCalledTimes(101);
+            emit.next({ mod_id: 'mod-1', level: 'info', message: 'Clear me' });
+            service.clearEvents();
+            vi.advanceTimersByTime(16);
+            expect(service.events()).toEqual([]);
+        } finally {
+            vi.useRealTimers();
+        }
     });
 
     describe('position signal', () => {
