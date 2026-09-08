@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - Send a cleared provider field as empty, not null
 - Signage AI provider tab defects
 - Harden signage AI provider setup
+- Unify header actions and fix signage AI table overflow
 
 #### Modules
 

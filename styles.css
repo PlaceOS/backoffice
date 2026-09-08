@@ -490,6 +490,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .-mx-2 {
   margin-inline: calc(var(--spacing) * -2);
 }
+#placeos .-mx-4 {
+  margin-inline: calc(var(--spacing) * -4);
+}
 #placeos .mx-0\! {
   margin-inline: calc(var(--spacing) * 0) !important;
 }
@@ -934,6 +937,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .w-lg {
   width: var(--container-lg);
 }
+#placeos .w-max {
+  width: max-content;
+}
 #placeos .w-md {
   width: var(--container-md);
 }
@@ -1328,6 +1334,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .overflow-visible {
   overflow: visible;
+}
+#placeos .overflow-x-auto {
+  overflow-x: auto;
 }
 #placeos .overflow-y-auto {
   overflow-y: auto;
