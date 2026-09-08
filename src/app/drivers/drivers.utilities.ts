@@ -36,7 +36,7 @@ export function generateDriverFormModel(driver?: PlaceDriver): DriverFormModel {
         file_name: driver?.file_name || '',
         commit: driver?.commit || '',
         name: driver?.name || '',
-        role: driver?.role || PlaceDriverRole.Logic,
+        role: driver?.role ?? PlaceDriverRole.Logic,
         module_name: driver?.module_name || '',
         default_uri: driver?.default_uri || '',
         default_port: driver?.default_port || 1,

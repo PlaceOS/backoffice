@@ -53,7 +53,7 @@ export function generateModuleFormModel(mod?: PlaceModule): ModuleFormModel {
         system: mod?.system?.id ? mod.system : null,
         control_system_id:
             mod?.control_system_id || mod?.system?.id || '',
-        role: mod?.role || PlaceDriverRole.Logic,
+        role: mod?.role ?? PlaceDriverRole.Logic,
         driver: null,
         driver_id: mod?.driver_id || '',
         edge: null,

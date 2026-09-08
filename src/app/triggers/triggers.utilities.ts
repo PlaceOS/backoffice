@@ -97,11 +97,11 @@ export function generateTriggerConditionFormModel(
         left:
             typeof left === 'object'
                 ? { ...(left as TriggerStatusVariable) }
-                : left || ({} as TriggerStatusVariable),
+                : left ?? ({} as TriggerStatusVariable),
         operator:
             (condition as TriggerComparison).operator ||
             TriggerConditionOperator.EQ,
-        right: (right || undefined) as TriggerStatusVariable | string,
+        right: right ?? undefined,
         time_type: (condition as TriggerTimeCondition).type || 'at',
         time:
             (+(condition as TriggerAtTimeCondition).time || 0) * 1000 ||
