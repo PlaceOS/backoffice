@@ -1,7 +1,6 @@
 import { Service, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
-import { UploadPermissionsModalComponent } from '../ui/upload-permissions-modal.component';
 import { UploadDetails, UploadPermissions, uploadFile } from './uploads';
 
 @Service()
@@ -27,7 +26,10 @@ export class UploadsService {
         this._upload_list.set(in_progress_list);
     }
 
-    public uploadFileWithPermissions(file: File) {
+    public async uploadFileWithPermissions(file: File) {
+        const { UploadPermissionsModalComponent } = await import(
+            '../ui/upload-permissions-modal.component'
+        );
         return new Promise<number>((resolve, reject) => {
             const ref = this._dialog.open(UploadPermissionsModalComponent, {
                 data: { file },

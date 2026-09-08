@@ -2,10 +2,19 @@ import { Pipe, PipeTransform, inject } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Marked, type Tokens } from 'marked';
 import {
-    bundledLanguages,
-    codeToHtml,
-    type BundledLanguage,
-} from 'shiki/bundle/web';
+    createBundledHighlighter,
+    createSingletonShorthands,
+} from 'shiki/core';
+import { createOnigurumaEngine } from 'shiki/engine/oniguruma';
+import { markdownLanguages } from './markdown-languages';
+
+// Keep existing language support, but package only the theme we render.
+const createHighlighter = createBundledHighlighter({
+    langs: markdownLanguages,
+    themes: { 'github-dark': () => import('shiki/themes/github-dark.mjs') },
+    engine: () => createOnigurumaEngine(import('shiki/wasm')),
+});
+const { codeToHtml } = createSingletonShorthands(createHighlighter);
 
 const MARKED = new Marked({
     gfm: true,
@@ -23,11 +32,11 @@ function escapeHTML(value = ''): string {
     return value.replace(/[&<>"']/g, (char) => HTML_ENTITIES[char]);
 }
 
-function normaliseLanguage(lang = ''): BundledLanguage {
+function normaliseLanguage(lang = ''): keyof typeof markdownLanguages | 'text' {
     const language = lang.trim().split(/\s+/)[0].toLowerCase();
-    return (language && language in bundledLanguages
-        ? language
-        : 'text') as BundledLanguage;
+    return (language && language in markdownLanguages ? language : 'text') as
+        | keyof typeof markdownLanguages
+        | 'text';
 }
 
 function safeURL(href = ''): string | null {

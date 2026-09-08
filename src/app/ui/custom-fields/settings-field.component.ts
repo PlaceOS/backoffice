@@ -2,6 +2,7 @@
 
 import {
     Component,
+    DestroyRef,
     ElementRef,
     forwardRef,
     inject,
@@ -16,14 +17,20 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { AsyncHandler } from '../../common/async-handler.class';
+import { loadMonaco } from '../../common/monaco';
 import { SettingsService } from '../../common/settings.service';
 import { HashMap } from '../../common/types';
-
-let MODEL: HashMap<monaco.editor.ITextModel> = {};
+import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'settings-form-field,[settings-field]',
     template: `
+        @if (load_error()) {
+            <p role="alert">{{ 'COMMON.EDITOR_LOAD_ERROR' | translate }}</p>
+            <button type="button" (click)="resizeEditor()">
+                {{ 'COMMON.RETRY' | translate }}
+            </button>
+        }
         <div
             class="border-base-300 relative w-full border"
             [class.h-128]="!fill()"
@@ -49,13 +56,16 @@ let MODEL: HashMap<monaco.editor.ITextModel> = {};
             multi: true,
         },
     ],
-    imports: [],
+    imports: [TranslatePipe],
 })
 export class SettingsFieldComponent
     extends AsyncHandler
     implements OnInit, OnChanges, OnDestroy, ControlValueAccessor
 {
     private _settings = inject(SettingsService);
+    private _destroy_ref = inject(DestroyRef);
+    private _load_id = 0;
+    public readonly load_error = signal(false);
 
     /** Whether form field is readonly */
     public readonly readonly = input(true);
@@ -84,24 +94,6 @@ export class SettingsFieldComponent
     private readonly element = viewChild<ElementRef>('editor');
     /** API object for the monaco editor */
     private editor: monaco.editor.IStandaloneCodeEditor | undefined;
-
-    constructor() {
-        super();
-        if (!MODEL) {
-            MODEL = {
-                json: monaco.editor.createModel(
-                    '',
-                    'json',
-                    monaco.Uri.parse(`http://backoffice/schema.json`),
-                ),
-                yaml: monaco.editor.createModel(
-                    '',
-                    'yaml',
-                    monaco.Uri.parse(`http://backoffice/schema.yaml`),
-                ),
-            };
-        }
-    }
 
     public ngOnInit(): void {
         this.timeout('resize', () => this.createEditor(), 100);
@@ -146,10 +138,13 @@ export class SettingsFieldComponent
         }
     }
 
-    public ngOnDestroy() {
+    public override ngOnDestroy() {
+        super.ngOnDestroy();
         if (this.editor) {
             try {
+                const model = this.editor.getModel();
                 this.editor.dispose();
+                model?.dispose();
             } catch {
                 // Ignore dispose errors - editor may already be disposed
             }
@@ -219,18 +214,30 @@ export class SettingsFieldComponent
     /**
      * Create and render the monaco editor to the component
      */
-    private createEditor() {
+    private async createEditor() {
+        const load_id = ++this._load_id;
+        this.load_error.set(false);
+        try {
+            await loadMonaco();
+        } catch {
+            if (!this._destroy_ref.destroyed && load_id === this._load_id) {
+                this.load_error.set(true);
+            }
+            return;
+        }
+        if (this._destroy_ref.destroyed || load_id !== this._load_id) return;
         const element = this.element();
         if (element && element.nativeElement) {
             if (this.editor) {
+                const model = this.editor.getModel();
                 this.editor.dispose();
+                model?.dispose();
                 this.editor = null;
             }
             // monaco.languages.register(monaco_yaml);
             this.editor = monaco.editor.create(element.nativeElement, {
                 value: this.settings_string || '',
                 language: this.lang() || 'yaml',
-                model: MODEL[this.lang() || 'yaml'],
                 fontFamily: `"Fira Code", monospace`,
                 lineNumbers: 'on',
                 roundedSelection: false,
@@ -240,6 +247,7 @@ export class SettingsFieldComponent
                 theme:
                     this._settings.get('theme') !== 'dark' ? 'vs' : 'vs-dark',
             });
+            if (this.schema()) this.setSchema(this.schema());
             this.editor.onDidChangeModelContent((e) => {
                 this.setValue(this.editor.getValue());
                 if (e.changes[0]?.text === '""') {
