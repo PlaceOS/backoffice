@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["simple-table.component.ts"],
-  "sourcesContent": ["\n            :host,\n            :host > button {\n                min-width: 100%;\n                overflow: hidden;\n            }\n\n            [header] icon {\n                opacity: 0;\n            }\n            [header]:hover icon {\n                opacity: 0.3;\n            }\n            [header]:hover.pointer-events-none icon {\n                opacity: 0;\n            }\n            [header].active icon {\n                opacity: 1;\n            }\n        "],
-  "mappings": ";AACY;;AAEI,aAAA;AACA,YAAA;AACJ;AAEA,CAAA,QAAA;AACI,WAAA;AACJ;AACA,CAAA,OAAA,OAAA;AACI,WAAA;AACJ;AACA,CAAA,OAAA,MAAA,CAAA,oBAAA;AACI,WAAA;AACJ;AACA,CAAA,OAAA,CAAA,OAAA;AACI,WAAA;AACJ;",
+  "sourcesContent": ["\n            :host,\n            :host > button {\n                min-width: 100%;\n                overflow: hidden;\n            }\n\n            :host:has(.virtual-table) {\n                display: block;\n                height: 100%;\n                min-height: 0;\n            }\n            .virtual-table {\n                height: 100%;\n                width: 100%;\n                grid-template-rows: auto minmax(0, 1fr);\n            }\n            [header] icon {\n                opacity: 0;\n            }\n            [header]:hover icon {\n                opacity: 0.3;\n            }\n            [header]:hover.pointer-events-none icon {\n                opacity: 0;\n            }\n            [header].active icon {\n                opacity: 1;\n            }\n        "],
+  "mappings": ";AACY;;AAEI,aAAA;AACA,YAAA;AACJ;AAEA,KAAA,KAAA,CAAA;AACI,WAAA;AACA,UAAA;AACA,cAAA;AACJ;AACA,CALA;AAMI,UAAA;AACA,SAAA;AACA,sBAAA,KAAA,OAAA,CAAA,EAAA;AACJ;AACA,CAAA,QAAA;AACI,WAAA;AACJ;AACA,CAAA,OAAA,OAAA;AACI,WAAA;AACJ;AACA,CAAA,OAAA,MAAA,CAAA,oBAAA;AACI,WAAA;AACJ;AACA,CAAA,OAAA,CAAA,OAAA;AACI,WAAA;AACJ;",
   "names": []
 }
