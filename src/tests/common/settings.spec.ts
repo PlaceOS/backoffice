@@ -51,136 +51,6 @@ import { DEFAULT_SETTINGS } from '../../app/common/settings';
 import { SettingsService } from '../../app/common/settings.service';
 
 describe('DEFAULT_SETTINGS', () => {
-    describe('root settings', () => {
-        it('should have env property', () => {
-            expect(DEFAULT_SETTINGS).toHaveProperty('env');
-            expect(typeof DEFAULT_SETTINGS.env).toBe('string');
-        });
-
-        it('should have debug property', () => {
-            expect(DEFAULT_SETTINGS).toHaveProperty('debug');
-            expect(typeof DEFAULT_SETTINGS.debug).toBe('boolean');
-        });
-
-        it('should have mock property', () => {
-            expect(DEFAULT_SETTINGS).toHaveProperty('mock');
-            expect(typeof DEFAULT_SETTINGS.mock).toBe('boolean');
-        });
-
-        it('should have composer settings', () => {
-            expect(DEFAULT_SETTINGS).toHaveProperty('composer');
-            expect(DEFAULT_SETTINGS.composer).toHaveProperty('domain');
-            expect(DEFAULT_SETTINGS.composer).toHaveProperty('route');
-            expect(DEFAULT_SETTINGS.composer).toHaveProperty('protocol');
-            expect(DEFAULT_SETTINGS.composer).toHaveProperty('use_domain');
-            expect(DEFAULT_SETTINGS.composer).toHaveProperty('local_login');
-        });
-
-        it('should have app settings', () => {
-            expect(DEFAULT_SETTINGS).toHaveProperty('app');
-        });
-    });
-
-    describe('app settings', () => {
-        const app = DEFAULT_SETTINGS.app;
-
-        it('should have title', () => {
-            expect(app).toHaveProperty('title');
-            expect(typeof app.title).toBe('string');
-        });
-
-        it('should have name', () => {
-            expect(app).toHaveProperty('name');
-            expect(typeof app.name).toBe('string');
-        });
-
-        it('should have description', () => {
-            expect(app).toHaveProperty('description');
-            expect(typeof app.description).toBe('string');
-        });
-
-        it('should have short_name', () => {
-            expect(app).toHaveProperty('short_name');
-            expect(typeof app.short_name).toBe('string');
-        });
-
-        it('should have code', () => {
-            expect(app).toHaveProperty('code');
-            expect(typeof app.code).toBe('string');
-        });
-
-        it('should have copyright', () => {
-            expect(app).toHaveProperty('copyright');
-            expect(typeof app.copyright).toBe('string');
-        });
-
-        it('should have login settings', () => {
-            expect(app).toHaveProperty('login');
-            expect(app.login).toHaveProperty('forgot');
-        });
-
-        it('should have analytics settings', () => {
-            expect(app).toHaveProperty('analytics');
-            expect(app.analytics).toHaveProperty('enabled');
-            expect(app.analytics).toHaveProperty('tracking_id');
-        });
-
-        it('should have logo_light settings', () => {
-            expect(app).toHaveProperty('logo_light');
-            expect(app.logo_light).toHaveProperty('type');
-            expect(app.logo_light).toHaveProperty('src');
-        });
-    });
-
-    describe('feature settings', () => {
-        const app = DEFAULT_SETTINGS.app;
-
-        it('should have general settings', () => {
-            expect(app).toHaveProperty('general');
-            expect(app.general).toHaveProperty('global_search');
-        });
-
-        it('should have systems settings', () => {
-            expect(app).toHaveProperty('systems');
-            expect(app.systems).toHaveProperty('can_create');
-        });
-
-        it('should have modules settings', () => {
-            expect(app).toHaveProperty('modules');
-            expect(app.modules).toHaveProperty('can_create');
-        });
-
-        it('should have zones settings', () => {
-            expect(app).toHaveProperty('zones');
-            expect(app.zones).toHaveProperty('can_create');
-        });
-
-        it('should have drivers settings', () => {
-            expect(app).toHaveProperty('drivers');
-            expect(app.drivers).toHaveProperty('can_create');
-        });
-
-        it('should have users settings', () => {
-            expect(app).toHaveProperty('users');
-            expect(app.users).toHaveProperty('can_create');
-        });
-
-        it('should have domains settings', () => {
-            expect(app).toHaveProperty('domains');
-            expect(app.domains).toHaveProperty('can_create');
-        });
-
-        it('should have triggers settings', () => {
-            expect(app).toHaveProperty('triggers');
-            expect(app.triggers).toHaveProperty('can_create');
-        });
-
-        it('should have repositories settings', () => {
-            expect(app).toHaveProperty('repositories');
-            expect(app.repositories).toHaveProperty('can_create');
-        });
-    });
-
     describe('composer settings', () => {
         const composer = DEFAULT_SETTINGS.composer;
 
@@ -234,10 +104,6 @@ describe('SettingsService', () => {
     });
 
     describe('initialization', () => {
-        it('should be created', () => {
-            expect(service).toBeTruthy();
-        });
-
         it('should have app_name property', () => {
             expect(service.app_name).toBeDefined();
             expect(typeof service.app_name).toBe('string');
@@ -333,20 +199,24 @@ describe('SettingsService', () => {
     });
 
     describe('overrides setter', () => {
-        it('should accept override settings', () => {
-            // Should not throw
+        it('should read an overridden setting', () => {
             service.overrides = [{ custom: 'value' }];
-            expect(true).toBe(true);
+            expect(service.get('app.custom')).toBe('value');
         });
 
-        it('should accept empty overrides array', () => {
+        it('should restore defaults when overrides are cleared', () => {
+            service.overrides = [{ name: 'Override' }];
             service.overrides = [];
-            expect(true).toBe(true);
+            expect(service.get('app.name')).toBe(DEFAULT_SETTINGS.app.name);
         });
 
-        it('should accept multiple overrides', () => {
-            service.overrides = [{ first: 'override' }, { second: 'override' }];
-            expect(true).toBe(true);
+        it('should use the first matching override', () => {
+            service.overrides = [
+                { name: 'First' },
+                { name: 'Second', custom: 'fallback' },
+            ];
+            expect(service.get('app.name')).toBe('First');
+            expect(service.get('app.custom')).toBe('fallback');
         });
     });
 
@@ -459,19 +329,18 @@ describe('SettingsService', () => {
         });
 
         it('should accept any setting name', () => {
-            // Should not throw
             service.saveUserSetting('custom_setting', 'custom_value');
-            expect(true).toBe(true);
+            expect(service.get('custom_setting')).toBe('custom_value');
         });
 
         it('should accept numeric values', () => {
             service.saveUserSetting('numeric_setting', 42);
-            expect(true).toBe(true);
+            expect(service.get('numeric_setting')).toBe(42);
         });
 
         it('should accept object values', () => {
             service.saveUserSetting('object_setting', { key: 'value' });
-            expect(true).toBe(true);
+            expect(service.get('object_setting')).toEqual({ key: 'value' });
         });
     });
 });

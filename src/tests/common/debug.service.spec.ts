@@ -51,10 +51,6 @@ describe('PlaceDebugService', () => {
     });
 
     describe('initial state', () => {
-        it('should be created', () => {
-            expect(service).toBeTruthy();
-        });
-
         it('should have empty bound_modules initially', () => {
             expect(service.bound_modules()).toEqual([]);
         });
@@ -187,9 +183,7 @@ describe('PlaceDebugService', () => {
 
     describe('unbind', () => {
         it('should not unbind null module', () => {
-            service.unbind(null as any);
-            // Should not throw
-            expect(true).toBe(true);
+            expect(() => service.unbind(null)).not.toThrow();
         });
 
         it('should remove module from bound_modules', async () => {

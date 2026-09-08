@@ -8,10 +8,6 @@ export default defineConfig(() => ({
     root: __dirname,
     cacheDir: './node_modules/.vite/backoffice',
     plugins: [angular(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
-    // Uncomment this if you are using workers.
-    // worker: {
-    //  plugins: [ nxViteTsPaths() ],
-    // },
     test: {
         name: 'backoffice',
         watch: false,

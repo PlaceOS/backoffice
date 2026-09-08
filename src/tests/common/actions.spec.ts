@@ -518,51 +518,6 @@ describe('actions.ts', () => {
         });
     });
 
-    describe('ItemActions interface', () => {
-        it('all actions should have query function', () => {
-            Object.values(ACTIONS).forEach((action) => {
-                expect(typeof action.query).toBe('function');
-            });
-        });
-
-        it('all actions should have show function', () => {
-            Object.values(ACTIONS).forEach((action) => {
-                expect(typeof action.show).toBe('function');
-            });
-        });
-
-        it('all actions should have save function', () => {
-            Object.values(ACTIONS).forEach((action) => {
-                expect(typeof action.save).toBe('function');
-            });
-        });
-
-        it('all actions should have remove function', () => {
-            Object.values(ACTIONS).forEach((action) => {
-                expect(typeof action.remove).toBe('function');
-            });
-        });
-
-        it('all actions should have itemConstructor', () => {
-            Object.values(ACTIONS).forEach((action) => {
-                expect(action.itemConstructor).toBeDefined();
-            });
-        });
-
-        it('all actions should have name', () => {
-            Object.values(ACTIONS).forEach((action) => {
-                expect(typeof action.name).toBe('string');
-                expect(action.name.length).toBeGreaterThan(0);
-            });
-        });
-
-        it('all actions should have delete_message', () => {
-            Object.values(ACTIONS).forEach((action) => {
-                expect(typeof action.delete_message).toBe('string');
-            });
-        });
-    });
-
     describe('processURL via systems.save', () => {
         // The processURL function is internal, but we can test it through systems.save
 

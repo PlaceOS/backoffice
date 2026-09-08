@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { IconComponent } from '../../../app/ui/icon.component';
 import { ApplicationIcon } from '../../../app/common/types';
+import { IconComponent } from '../../../app/ui/icon.component';
 
 describe('IconComponent', () => {
     let component: IconComponent;
@@ -15,10 +15,6 @@ describe('IconComponent', () => {
         fixture = TestBed.createComponent(IconComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
     });
 
     describe('default state', () => {

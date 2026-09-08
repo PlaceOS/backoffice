@@ -58,12 +58,6 @@ import {
     updateUser,
     updateZone,
 } from '@placeos/ts-client';
-import {
-    CascadePlan,
-    CascadeResourceType,
-    planDomainCascade,
-    planZoneCascade,
-} from './cascade-delete';
 import { DomainFormComponent } from '../domains/domain-form.component';
 import { DriverFormComponent } from '../drivers/driver-form.component';
 import { GroupFormComponent } from '../groups/group-form.component';
@@ -73,6 +67,12 @@ import { SystemFormComponent } from '../systems/system-form.component';
 import { TriggerFormComponent } from '../triggers/trigger-form.component';
 import { UserFormComponent } from '../users/user-form.component';
 import { ZoneFormComponent } from '../zones/zone-form.component';
+import {
+    CascadePlan,
+    CascadeResourceType,
+    planDomainCascade,
+    planZoneCascade,
+} from './cascade-delete';
 
 /**
  * Optional "also remove the things associated with this item" behaviour,
@@ -208,7 +208,7 @@ const systems: ItemActions<PlaceSystem> = {
             fields: ['id', 'name', 'display_name'].join(','),
         }),
     show: (_) => showSystem(_),
-    save: (item) => saveSystem(item),
+    save: saveSystem,
     remove: (item) => removeSystem(item.id),
     itemConstructor: PlaceSystem,
     modalComponent: SystemFormComponent,
@@ -233,17 +233,9 @@ async function saveSystem(item: PlaceSystem): Promise<PlaceSystem> {
     }
     if (item.id) return updateSystem(item.id, form_data);
     const system = await addSystem(form_data);
-    await finishSystemBulkAdd(system, driver_ids, !!start_modules);
-    return system;
-}
-
-async function finishSystemBulkAdd(
-    system: PlaceSystem,
-    driver_ids: string[],
-    start_modules: boolean,
-) {
     await addLogicDriverModules(system, driver_ids);
     if (start_modules) await startSystem(system.id);
+    return system;
 }
 
 async function addLogicDriverModules(

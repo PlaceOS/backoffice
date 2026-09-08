@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MockDirective } from 'ng-mocks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { UserAvatarComponent } from '../../../app/ui/user-avatar.component';
-import { mockDirective } from '../../test-helpers';
 import { AuthenticatedImageDirective } from '../../../app/ui/authenticated-image.directive';
+import { UserAvatarComponent } from '../../../app/ui/user-avatar.component';
 
 // Mock the ts-client to avoid CJS/ESM issues
 vi.mock('@placeos/ts-client', () => ({
@@ -27,22 +27,18 @@ describe('UserAvatarComponent', () => {
         await TestBed.configureTestingModule({
             imports: [
                 UserAvatarComponent,
-                mockDirective(AuthenticatedImageDirective),
+                MockDirective(AuthenticatedImageDirective),
             ],
         })
             .overrideComponent(UserAvatarComponent, {
                 remove: { imports: [AuthenticatedImageDirective] },
-                add: { imports: [mockDirective(AuthenticatedImageDirective)] },
+                add: { imports: [MockDirective(AuthenticatedImageDirective)] },
             })
             .compileComponents();
 
         fixture = TestBed.createComponent(UserAvatarComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
     });
 
     describe('default state', () => {
@@ -94,7 +90,10 @@ describe('UserAvatarComponent', () => {
         });
 
         it('should handle names with parentheses', () => {
-            const user = { name: 'John (Staff) Smith', id: '1' } as MockPlaceUser;
+            const user = {
+                name: 'John (Staff) Smith',
+                id: '1',
+            } as MockPlaceUser;
             fixture.componentRef.setInput('user', user);
             fixture.detectChanges();
 

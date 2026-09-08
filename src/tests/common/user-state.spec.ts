@@ -1,79 +1,62 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Mock @placeos/ts-client - must use inline class to avoid hoisting issues
 vi.mock('@placeos/ts-client', () => ({
     PlaceUser: class {
-        id?: string;
-        name?: string;
-        email?: string;
-        constructor(data: Record<string, any> = {}) {
-            Object.assign(this, data);
-        }
+        id = '';
     },
-    showUser: vi.fn(() =>
-        Promise.resolve({
-            id: 'user-123',
-            name: 'Test User',
-            email: 'test@example.com',
-        }),
-    ),
+    showUser: vi.fn(),
 }));
 
-import { showUser } from '@placeos/ts-client';
-import { current_user, currentUser } from '../../app/common/user-state';
-
-describe('user-state.ts', () => {
+describe('current user', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        vi.useFakeTimers();
+        vi.resetModules();
     });
 
-    describe('current_user signal', () => {
-        it('should be defined', () => {
-            expect(current_user).toBeDefined();
-        });
-
-        it('should be a signal', () => {
-            expect(typeof current_user).toBe('function');
-        });
-
-        it('should expose the current value', () => {
-            const value = current_user();
-            // Initial value may be null or a user
-            expect(value === null || typeof value === 'object').toBe(true);
-        });
+    afterEach(() => {
+        vi.clearAllTimers();
+        vi.useRealTimers();
+        vi.resetAllMocks();
     });
 
-    describe('currentUser function', () => {
-        it('should be defined', () => {
-            expect(currentUser).toBeDefined();
-            expect(typeof currentUser).toBe('function');
-        });
+    it('returns a stable empty user until the current user loads', async () => {
+        const { current_user, currentUser } = await import(
+            '../../app/common/user-state'
+        );
 
-        it('should return a user object', () => {
-            const user = currentUser();
-            expect(user).toBeDefined();
-            expect(typeof user).toBe('object');
-        });
-
-        it('should be callable multiple times', () => {
-            const user1 = currentUser();
-            const user2 = currentUser();
-            // Should return the same user reference
-            expect(user1).toBe(user2);
-        });
+        expect(current_user()).toBeNull();
+        expect(currentUser().id).toBe('');
+        expect(currentUser()).toBe(currentUser());
     });
 
-    describe('user loading behavior', () => {
-        it('should have showUser function available', () => {
-            expect(showUser).toBeDefined();
-            expect(typeof showUser).toBe('function');
-        });
+    it('publishes the loaded user and stops polling', async () => {
+        const { PlaceUser, showUser } = await import('@placeos/ts-client');
+        const user = new PlaceUser();
+        vi.mocked(showUser).mockResolvedValue(user);
+        const { current_user, currentUser } = await import(
+            '../../app/common/user-state'
+        );
+
+        await vi.advanceTimersByTimeAsync(11_000);
+
+        expect(showUser).toHaveBeenCalledExactlyOnceWith('current');
+        expect(current_user()).toBe(user);
+        expect(currentUser()).toBe(user);
+        expect(vi.getTimerCount()).toBe(0);
     });
 
-    describe('EMPTY_USER fallback', () => {
-        it('should return an object when called', () => {
-            const user = currentUser();
-            expect(typeof user).toBe('object');
-        });
+    it('stops after ten failed requests and keeps the empty user', async () => {
+        const { showUser } = await import('@placeos/ts-client');
+        vi.mocked(showUser).mockRejectedValue(new Error('Unavailable'));
+        const { current_user, currentUser } = await import(
+            '../../app/common/user-state'
+        );
+
+        await vi.advanceTimersByTimeAsync(11_000);
+
+        expect(showUser).toHaveBeenCalledTimes(10);
+        expect(current_user()).toBeNull();
+        expect(currentUser().id).toBe('');
+        expect(vi.getTimerCount()).toBe(0);
     });
 });

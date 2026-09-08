@@ -17,10 +17,6 @@ describe('ContextMenuComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
     describe('default state', () => {
         it('should have undefined menu by default', () => {
             expect(component.menu()).toBeUndefined();
@@ -35,8 +31,8 @@ describe('ContextMenuComponent', () => {
         });
 
         it('should have position undefined before ngOnInit', () => {
-            const new_component = TestBed.createComponent(ContextMenuComponent)
-                .componentInstance;
+            const new_component =
+                TestBed.createComponent(ContextMenuComponent).componentInstance;
             expect(new_component.position()).toBeNull();
         });
     });
@@ -119,12 +115,6 @@ describe('ContextMenuComponent', () => {
     });
 
     describe('template rendering', () => {
-        it('should render ng-content slot', () => {
-            const ng_content = fixture.nativeElement.querySelector('ng-content');
-            // ng-content is projected, the slot exists
-            expect(fixture.nativeElement).toBeTruthy();
-        });
-
         it('should have container div with correct classes', () => {
             const container = fixture.nativeElement.querySelector('div');
             expect(container).toBeTruthy();

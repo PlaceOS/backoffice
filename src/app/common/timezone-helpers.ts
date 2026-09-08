@@ -1,27 +1,4 @@
-import { addMilliseconds } from 'date-fns';
-import { getTimezoneOffset } from 'date-fns-tz';
 import { padLength } from './general';
-
-export const LOCAL_TIMEZONE =
-    Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone || 'Australia/Sydney';
-
-export function localToTimezone(
-    date: Date | number,
-    tz: string = LOCAL_TIMEZONE,
-) {
-    const offset_diff =
-        getTimezoneOffset(tz) - getTimezoneOffset(LOCAL_TIMEZONE);
-    return addMilliseconds(date, offset_diff).valueOf();
-}
-
-export function timezoneToLocal(
-    date: Date | number,
-    tz: string = LOCAL_TIMEZONE,
-) {
-    const offset_diff =
-        getTimezoneOffset(LOCAL_TIMEZONE) - getTimezoneOffset(tz);
-    return addMilliseconds(date, offset_diff).valueOf();
-}
 
 const TIMZONE_OFFSET_STRINGS = {};
 
@@ -62,16 +39,4 @@ export function getTimezoneOffsetInMinutes(timeZone, date = new Date()) {
     const minutes = offsetMatch[3] ? parseInt(offsetMatch[3], 10) : 0;
 
     return sign * (hours * 60 + minutes);
-}
-
-export function getTimezoneDifferenceInHours(
-    src_tz: string,
-    dest_tz: string = LOCAL_TIMEZONE,
-    date: Date = new Date(),
-) {
-    const offset1 = getTimezoneOffsetInMinutes(src_tz, date);
-    const offset2 = getTimezoneOffsetInMinutes(dest_tz, date);
-
-    // Calculate the difference in hours
-    return (offset1 - offset2) / 60;
 }

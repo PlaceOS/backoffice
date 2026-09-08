@@ -23,10 +23,6 @@ describe('SimpleTableComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
     describe('default state', () => {
         it('should have empty selected array', () => {
             expect(component.selected()).toEqual([]);

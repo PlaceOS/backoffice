@@ -1,8 +1,3 @@
-import {
-    UntypedFormControl,
-    UntypedFormGroup,
-    Validators,
-} from '@angular/forms';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     copyToClipboard,
@@ -11,7 +6,6 @@ import {
     downloadFile,
     eventToPoint,
     flatten,
-    getInvalidFields,
     getItemWithKeys,
     issueDescription,
     jsonToCsv,
@@ -19,8 +13,6 @@ import {
     numberToPosition,
     padLength,
     parseCSV,
-    parseJWT,
-    predictableRandomInt,
     randomInt,
     unique,
 } from '../../app/common/general';
@@ -215,25 +207,6 @@ describe('general.ts utilities', () => {
 
         it('should return floor when ceil equals floor', () => {
             expect(randomInt(5, 5)).toBe(5);
-        });
-    });
-
-    describe('predictableRandomInt', () => {
-        it('should generate consistent sequence of numbers', () => {
-            // Predictable random should return the same sequence
-            const first = predictableRandomInt(100);
-            const second = predictableRandomInt(100);
-            // These will be different from each other but consistent across runs
-            expect(typeof first).toBe('number');
-            expect(typeof second).toBe('number');
-        });
-
-        it('should respect floor and ceil bounds', () => {
-            for (let i = 0; i < 50; i++) {
-                const result = predictableRandomInt(100, 50);
-                expect(result).toBeGreaterThanOrEqual(50);
-                expect(result).toBeLessThan(100);
-            }
         });
     });
 
@@ -482,27 +455,6 @@ describe('general.ts utilities', () => {
         });
     });
 
-    describe('parseJWT', () => {
-        it('should parse valid JWT payload', () => {
-            // JWT with payload: { "sub": "1234567890", "name": "John Doe", "iat": 1516239022 }
-            const token =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-            const result = parseJWT(token);
-            expect(result).toEqual({
-                sub: '1234567890',
-                name: 'John Doe',
-                iat: 1516239022,
-            });
-        });
-
-        it('should handle JWT with URL-safe base64 characters', () => {
-            // JWT uses base64url encoding which may contain - and _
-            const token =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-            expect(() => parseJWT(token)).not.toThrow();
-        });
-    });
-
     describe('flatten', () => {
         it('should flatten nested arrays', () => {
             const arr = [1, [2, 3], [4, [5, 6]]];
@@ -530,50 +482,6 @@ describe('general.ts utilities', () => {
         it('should handle mixed types', () => {
             const arr = [1, ['a', 'b'], [true, false]];
             expect(flatten(arr)).toEqual([1, 'a', 'b', true, false]);
-        });
-    });
-
-    describe('getInvalidFields', () => {
-        it('should return empty array for valid form', () => {
-            const form = new UntypedFormGroup({
-                name: new UntypedFormControl('John'),
-                email: new UntypedFormControl('john@test.com'),
-            });
-            expect(getInvalidFields(form)).toEqual([]);
-        });
-
-        it('should return invalid field names', () => {
-            const form = new UntypedFormGroup({
-                name: new UntypedFormControl('', Validators.required),
-                email: new UntypedFormControl('john@test.com'),
-            });
-            expect(getInvalidFields(form)).toEqual(['name']);
-        });
-
-        it('should handle nested form groups', () => {
-            const form = new UntypedFormGroup({
-                user: new UntypedFormGroup({
-                    name: new UntypedFormControl('', Validators.required),
-                }),
-            });
-            expect(getInvalidFields(form)).toEqual(['user.name']);
-        });
-
-        it('should handle multiple invalid fields', () => {
-            const form = new UntypedFormGroup({
-                name: new UntypedFormControl('', Validators.required),
-                email: new UntypedFormControl('', Validators.required),
-            });
-            const invalid = getInvalidFields(form);
-            expect(invalid).toContain('name');
-            expect(invalid).toContain('email');
-        });
-
-        it('should use custom prefix', () => {
-            const form = new UntypedFormGroup({
-                name: new UntypedFormControl('', Validators.required),
-            });
-            expect(getInvalidFields(form, 'form.')).toEqual(['form.name']);
         });
     });
 

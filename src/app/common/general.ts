@@ -1,4 +1,3 @@
-import { UntypedFormGroup } from '@angular/forms';
 import { HashMap, Point } from './types';
 
 /** Available console output streams. */
@@ -336,20 +335,6 @@ export function downloadFile(filename: string, contents: string) {
     document.body.removeChild(element);
 }
 
-export function parseJWT(token: string) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-        atob(base64)
-            .split('')
-            .map((c) => {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join(''),
-    );
-    return JSON.parse(jsonPayload);
-}
-
 /* istanbul ignore next */
 /**
  * Flatten nested array
@@ -370,44 +355,6 @@ export function flatten<T = unknown>(an_array: T[]) {
     }
     // reverse to restore input order
     return res.reverse();
-}
-
-const seed = xmur3('PlaceOS');
-const rand = sfc32(0x9e3779b9, 0x243f6a88, 0xb7e15162, seed());
-
-export function predictableRandomInt(ceil = 100, floor = 0) {
-    return Math.floor(rand() * (ceil - floor)) + floor;
-}
-
-// https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
-function xmur3(str) {
-    let h = 1779033703 ^ str.length;
-    for (let i = 0; i < str.length; i++) {
-        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
-        h = (h << 13) | (h >>> 19);
-    }
-    return function () {
-        h = Math.imul(h ^ (h >>> 16), 2246822507);
-        h = Math.imul(h ^ (h >>> 13), 3266489909);
-        return (h ^= h >>> 16) >>> 0;
-    };
-}
-
-function sfc32(a, b, c, d) {
-    return function () {
-        a >>>= 0;
-        b >>>= 0;
-        c >>>= 0;
-        d >>>= 0;
-        let t = (a + b) | 0;
-        a = b ^ (b >>> 9);
-        b = (c + (c << 3)) | 0;
-        c = (c << 21) | (c >>> 11);
-        d = (d + 1) | 0;
-        t = (t + d) | 0;
-        c = (c + t) | 0;
-        return (t >>> 0) / 4294967296;
-    };
 }
 
 export const issueDescription = (hash, date) => `
@@ -443,24 +390,6 @@ If applicable, add screenshots to help explain your problem.
 **Hash:** ${hash}
 **Built:** ${date}
 `;
-
-export function getInvalidFields(form: UntypedFormGroup, prefix = '') {
-    let invalid = [];
-    for (const key in form.controls) {
-        if (form.controls[key] instanceof UntypedFormGroup) {
-            invalid = [
-                ...invalid,
-                ...getInvalidFields(
-                    form.controls[key] as UntypedFormGroup,
-                    `${key}.`,
-                ),
-            ];
-        } else if (!form.controls[key].valid) {
-            invalid.push(`${prefix}${key}`);
-        }
-    }
-    return invalid;
-}
 
 /**
  * Pad the start of a string or number with given character

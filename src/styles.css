@@ -839,7 +839,6 @@ form {
 
     mat-form-field,
     a-date-field,
-    an-action-field,
     editor {
         flex: 1;
         min-width: 50%;

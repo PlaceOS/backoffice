@@ -1,11 +1,4 @@
-import {
-    Service,
-    Signal,
-    WritableSignal,
-    effect,
-    inject,
-    signal,
-} from '@angular/core';
+import { Service, Signal, WritableSignal, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { showMetadata, updateMetadata } from '@placeos/ts-client';
 import { format, isSameDay } from 'date-fns';
@@ -93,7 +86,6 @@ export class SettingsService extends AsyncHandler {
             : format(time, 'do MMM yyyy, h:mma');
         log('CORE', `${VERSION.semver}`, null, 'debug', true);
         log('APP', `${VERSION.hash} | Built: ${built}`, null, 'debug', true);
-        effect(() => this._applyUserSettings(this._user_settings()));
         this.init();
     }
 
@@ -218,12 +210,6 @@ export class SettingsService extends AsyncHandler {
             ...this._pending_settings,
         } as HashMap);
         this._pending_settings = {};
-    }
-
-    private async _applyUserSettings(settings: HashMap) {
-        if (settings.font_size) {
-            // TODO: Apply font size settings when implemented
-        }
     }
 
     private _setFontSize() {

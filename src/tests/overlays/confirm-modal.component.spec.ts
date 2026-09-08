@@ -29,6 +29,7 @@ vi.mock('../../app/common/notifications', () => ({
     notifySuccess: vi.fn(),
 }));
 
+import { MockComponent } from 'ng-mocks';
 import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
@@ -37,7 +38,6 @@ import {
     receiptToTsv,
 } from '../../app/overlays/confirm-modal.component';
 import { IconComponent } from '../../app/ui/icon.component';
-import { mockComponent } from '../test-helpers';
 
 describe('ConfirmModalComponent', () => {
     let component: ConfirmModalComponent;
@@ -72,17 +72,13 @@ describe('ConfirmModalComponent', () => {
         })
             .overrideComponent(ConfirmModalComponent, {
                 remove: { imports: [IconComponent] },
-                add: { imports: [mockComponent(IconComponent)] },
+                add: { imports: [MockComponent(IconComponent)] },
             })
             .compileComponents();
 
         fixture = TestBed.createComponent(ConfirmModalComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
     });
 
     describe('default state', () => {
@@ -128,7 +124,7 @@ describe('ConfirmModalComponent', () => {
             })
                 .overrideComponent(ConfirmModalComponent, {
                     remove: { imports: [IconComponent] },
-                    add: { imports: [mockComponent(IconComponent)] },
+                    add: { imports: [MockComponent(IconComponent)] },
                 })
                 .compileComponents();
 
@@ -189,7 +185,7 @@ describe('ConfirmModalComponent', () => {
             })
                 .overrideComponent(ConfirmModalComponent, {
                     remove: { imports: [IconComponent] },
-                    add: { imports: [mockComponent(IconComponent)] },
+                    add: { imports: [MockComponent(IconComponent)] },
                 })
                 .compileComponents();
 
@@ -255,7 +251,7 @@ describe('ConfirmModalComponent', () => {
             })
                 .overrideComponent(ConfirmModalComponent, {
                     remove: { imports: [IconComponent] },
-                    add: { imports: [mockComponent(IconComponent)] },
+                    add: { imports: [MockComponent(IconComponent)] },
                 })
                 .compileComponents();
             fixture = TestBed.createComponent(ConfirmModalComponent);
@@ -603,7 +599,7 @@ describe('ConfirmModalComponent', () => {
             })
                 .overrideComponent(ConfirmModalComponent, {
                     remove: { imports: [IconComponent] },
-                    add: { imports: [mockComponent(IconComponent)] },
+                    add: { imports: [MockComponent(IconComponent)] },
                 })
                 .compileComponents();
 
