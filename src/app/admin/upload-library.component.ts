@@ -110,15 +110,24 @@ export interface UploadInfo {
                             }
                         </mat-select>
                     </mat-form-field>
-                    <button btn matRipple class="relative h-12 w-32">
-                        <input
-                            class="pointer-events-auto absolute inset-0 w-full opacity-0"
-                            type="file"
-                            multiple
-                            (change)="handleFileEvent($event)"
-                        />
-                        {{ 'COMMON.UPLOAD_FILE' | translate }}
+                    <button
+                        icon
+                        default
+                        matRipple
+                        class="relative text-xl"
+                        [matTooltip]="'COMMON.UPLOAD_FILE' | translate"
+                        [attr.aria-label]="'COMMON.UPLOAD_FILE' | translate"
+                        (click)="upload_file.click()"
+                    >
+                        <icon>upload</icon>
                     </button>
+                    <input
+                        #upload_file
+                        hidden
+                        type="file"
+                        multiple
+                        (change)="handleFileEvent($event)"
+                    />
                 </div>
             </div>
             <div class="mb-4 flex items-center justify-end space-x-2 px-4">

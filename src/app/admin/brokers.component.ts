@@ -31,13 +31,16 @@ import { BrokerFormComponent } from './broker-form.component';
                     {{ 'ADMIN.BROKERS_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button btn matRipple (click)="newBroker()">
-                        <div class="flex items-center">
-                            <icon class="text-2xl">add</icon>
-                            <div class="text">
-                                {{ 'ADMIN.BROKERS_ADD' | translate }}
-                            </div>
-                        </div>
+                    <button
+                        icon
+                        default
+                        matRipple
+                        class="text-xl"
+                        (click)="newBroker()"
+                        [matTooltip]="'ADMIN.BROKERS_ADD' | translate"
+                        [attr.aria-label]="'ADMIN.BROKERS_ADD' | translate"
+                    >
+                        <icon>add</icon>
                     </button>
                 </div>
             </div>

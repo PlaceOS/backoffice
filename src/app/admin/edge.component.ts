@@ -51,8 +51,16 @@ import { EdgeModalComponent } from './edge-modal.component';
                     {{ 'ADMIN.EDGE_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button btn class="w-40" (click)="edit()">
-                        {{ 'ADMIN.EDGE_ADD' | translate }}
+                    <button
+                        icon
+                        default
+                        matRipple
+                        class="text-xl"
+                        (click)="edit()"
+                        [matTooltip]="'ADMIN.EDGE_ADD' | translate"
+                        [attr.aria-label]="'ADMIN.EDGE_ADD' | translate"
+                    >
+                        <icon>add</icon>
                     </button>
                 </div>
             </div>

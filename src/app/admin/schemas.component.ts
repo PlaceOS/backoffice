@@ -1,10 +1,13 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { create, query, update } from '@placeos/ts-client';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
+import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface JsonSchema {
@@ -48,12 +51,15 @@ export interface JsonSchema {
                         </mat-select>
                     </mat-form-field>
                     <button
-                        btn
+                        icon
+                        default
                         matRipple
-                        class="h-12 w-40"
+                        class="text-xl"
                         (click)="newSchema()"
+                        [matTooltip]="'ADMIN.SCHEMA_ADD' | translate"
+                        [attr.aria-label]="'ADMIN.SCHEMA_ADD' | translate"
                     >
-                        {{ 'ADMIN.SCHEMA_ADD' | translate }}
+                        <icon>add</icon>
                     </button>
                 </div>
             </div>
@@ -113,6 +119,9 @@ export interface JsonSchema {
         `,
     ],
     imports: [
+        MatRippleModule,
+        MatTooltipModule,
+        IconComponent,
         TranslatePipe,
         SettingsFieldComponent,
         MatFormFieldModule,

@@ -60,12 +60,15 @@ export interface PlaceTenant {
                         </mat-select>
                     </mat-form-field>
                     <button
-                        btn
+                        icon
+                        default
                         matRipple
-                        class="h-12 w-32"
+                        class="text-xl"
                         (click)="editTenant()"
+                        [matTooltip]="'ADMIN.TENANTS_ADD' | translate"
+                        [attr.aria-label]="'ADMIN.TENANTS_ADD' | translate"
                     >
-                        {{ 'ADMIN.TENANTS_ADD' | translate }}
+                        <icon>add</icon>
                     </button>
                 </div>
             </div>

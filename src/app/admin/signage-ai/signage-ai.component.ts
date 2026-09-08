@@ -35,8 +35,16 @@ import {
                     </p>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button btn matRipple class="w-40" (click)="edit()">
-                        {{ 'ADMIN.AI_PROVIDER_ADD' | translate }}
+                    <button
+                        icon
+                        default
+                        matRipple
+                        class="text-xl"
+                        (click)="edit()"
+                        [matTooltip]="'ADMIN.AI_PROVIDER_ADD' | translate"
+                        [attr.aria-label]="'ADMIN.AI_PROVIDER_ADD' | translate"
+                    >
+                        <icon>add</icon>
                     </button>
                 </div>
             </div>
@@ -53,56 +61,59 @@ import {
                         {{ provider_error() }}
                     </div>
                 }
-                <simple-table
-                    class="block min-w-176 text-sm"
-                    [class.hidden]="provider_error()"
-                    [data]="provider_list()"
-                    [columns]="[
-                        {
-                            key: 'name',
-                            name: 'ADMIN.AI_PROVIDER_NAME' | translate,
-                            content: name_template,
-                        },
-                        {
-                            key: 'provider',
-                            name: 'ADMIN.AI_PROVIDER_VENDOR' | translate,
-                            content: code_template,
-                            size: '10rem',
-                        },
-                        {
-                            key: 'default_model',
-                            name: 'ADMIN.AI_PROVIDER_MODEL' | translate,
-                            content: code_template,
-                        },
-                        {
-                            key: 'updated_at',
-                            name: 'COMMON.UPDATED_AT' | translate,
-                            content: date_from_template,
-                            size: '10rem',
-                        },
-                        {
-                            key: 'enabled',
-                            name: 'ADMIN.AI_PROVIDER_ENABLED' | translate,
-                            content: bool_template,
-                            size: '5.5rem',
-                        },
-                        {
-                            key: 'is_default',
-                            name: 'ADMIN.AI_PROVIDER_IS_DEFAULT' | translate,
-                            content: bool_template,
-                            size: '5.5rem',
-                        },
-                        {
-                            key: 'actions',
-                            name: ' ',
-                            content: actions_template,
-                            size: '9rem',
-                            sortable: false,
-                        },
-                    ]"
-                    [sortable]="true"
-                    [empty_message]="'ADMIN.AI_PROVIDERS_EMPTY' | translate"
-                />
+                <div class="-mx-4 overflow-x-auto px-4">
+                    <simple-table
+                        class="block w-max min-w-full text-sm"
+                        [class.hidden]="provider_error()"
+                        [data]="provider_list()"
+                        [columns]="[
+                            {
+                                key: 'name',
+                                name: 'ADMIN.AI_PROVIDER_NAME' | translate,
+                                content: name_template,
+                            },
+                            {
+                                key: 'provider',
+                                name: 'ADMIN.AI_PROVIDER_VENDOR' | translate,
+                                content: code_template,
+                                size: '10rem',
+                            },
+                            {
+                                key: 'default_model',
+                                name: 'ADMIN.AI_PROVIDER_MODEL' | translate,
+                                content: code_template,
+                            },
+                            {
+                                key: 'updated_at',
+                                name: 'COMMON.UPDATED_AT' | translate,
+                                content: date_from_template,
+                                size: '10rem',
+                            },
+                            {
+                                key: 'enabled',
+                                name: 'ADMIN.AI_PROVIDER_ENABLED' | translate,
+                                content: bool_template,
+                                size: '5.5rem',
+                            },
+                            {
+                                key: 'is_default',
+                                name:
+                                    'ADMIN.AI_PROVIDER_IS_DEFAULT' | translate,
+                                content: bool_template,
+                                size: '5.5rem',
+                            },
+                            {
+                                key: 'actions',
+                                name: ' ',
+                                content: actions_template,
+                                size: '9rem',
+                                sortable: false,
+                            },
+                        ]"
+                        [sortable]="true"
+                        [empty_message]="'ADMIN.AI_PROVIDERS_EMPTY' | translate"
+                    />
+                </div>
 
                 <div class="mt-8 mb-2 text-xl">
                     {{ 'ADMIN.AI_USAGE_HEADER' | translate }}
@@ -117,39 +128,41 @@ import {
                         {{ usage_error() }}
                     </div>
                 }
-                <simple-table
-                    class="mb-8 block min-w-176 text-sm"
-                    [class.hidden]="usage_error()"
-                    [data]="usage()"
-                    [columns]="[
-                        {
-                            key: 'provider',
-                            name: 'ADMIN.AI_PROVIDER_VENDOR' | translate,
-                            content: code_template,
-                        },
-                        {
-                            key: 'model',
-                            name: 'ADMIN.AI_PROVIDER_MODEL' | translate,
-                            content: code_template,
-                        },
-                        {
-                            key: 'jobs',
-                            name: 'ADMIN.AI_USAGE_JOBS' | translate,
-                            content: plain_template,
-                        },
-                        {
-                            key: 'candidates',
-                            name: 'ADMIN.AI_USAGE_ASKED' | translate,
-                            content: plain_template,
-                        },
-                        {
-                            key: 'images_produced',
-                            name: 'ADMIN.AI_USAGE_MADE' | translate,
-                            content: plain_template,
-                        },
-                    ]"
-                    [empty_message]="'ADMIN.AI_USAGE_EMPTY' | translate"
-                />
+                <div class="-mx-4 mb-8 overflow-x-auto px-4">
+                    <simple-table
+                        class="block w-max min-w-full text-sm"
+                        [class.hidden]="usage_error()"
+                        [data]="usage()"
+                        [columns]="[
+                            {
+                                key: 'provider',
+                                name: 'ADMIN.AI_PROVIDER_VENDOR' | translate,
+                                content: code_template,
+                            },
+                            {
+                                key: 'model',
+                                name: 'ADMIN.AI_PROVIDER_MODEL' | translate,
+                                content: code_template,
+                            },
+                            {
+                                key: 'jobs',
+                                name: 'ADMIN.AI_USAGE_JOBS' | translate,
+                                content: plain_template,
+                            },
+                            {
+                                key: 'candidates',
+                                name: 'ADMIN.AI_USAGE_ASKED' | translate,
+                                content: plain_template,
+                            },
+                            {
+                                key: 'images_produced',
+                                name: 'ADMIN.AI_USAGE_MADE' | translate,
+                                content: plain_template,
+                            },
+                        ]"
+                        [empty_message]="'ADMIN.AI_USAGE_EMPTY' | translate"
+                    />
+                </div>
             </div>
         </div>
         <ng-template #name_template let-row="row">

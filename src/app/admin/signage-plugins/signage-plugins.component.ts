@@ -30,13 +30,18 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                     {{ 'ADMIN.SIGNAGE_PLUGINS_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button btn matRipple (click)="newPlugin()">
-                        <div class="flex items-center">
-                            <icon class="text-2xl">add</icon>
-                            <div class="text">
-                                {{ 'ADMIN.SIGNAGE_PLUGINS_ADD' | translate }}
-                            </div>
-                        </div>
+                    <button
+                        icon
+                        default
+                        matRipple
+                        class="text-xl"
+                        (click)="newPlugin()"
+                        [matTooltip]="'ADMIN.SIGNAGE_PLUGINS_ADD' | translate"
+                        [attr.aria-label]="
+                            'ADMIN.SIGNAGE_PLUGINS_ADD' | translate
+                        "
+                    >
+                        <icon>add</icon>
                     </button>
                 </div>
             </div>

@@ -57,13 +57,18 @@ export interface ExternalResource {
                         </mat-select>
                     </mat-form-field>
                     <button
-                        btn
+                        icon
+                        default
                         matRipple
-                        class="w-40"
+                        class="text-xl"
                         [disabled]="!domain() || !resource_list()?.length"
                         (click)="importMissingResources()"
+                        [matTooltip]="'ADMIN.RESOURCE_IMPORTS_ALL' | translate"
+                        [attr.aria-label]="
+                            'ADMIN.RESOURCE_IMPORTS_ALL' | translate
+                        "
                     >
-                        {{ 'ADMIN.RESOURCE_IMPORTS_ALL' | translate }}
+                        <icon>download</icon>
                     </button>
                 </div>
             </div>

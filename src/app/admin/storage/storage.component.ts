@@ -42,8 +42,16 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                             }
                         </mat-select>
                     </mat-form-field>
-                    <button btn matRipple class="w-40" (click)="edit()">
-                        {{ 'ADMIN.STORAGE_ADD' | translate }}
+                    <button
+                        icon
+                        default
+                        matRipple
+                        class="text-xl"
+                        (click)="edit()"
+                        [matTooltip]="'ADMIN.STORAGE_ADD' | translate"
+                        [attr.aria-label]="'ADMIN.STORAGE_ADD' | translate"
+                    >
+                        <icon>add</icon>
                     </button>
                 </div>
             </div>

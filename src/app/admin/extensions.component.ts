@@ -65,8 +65,16 @@ export interface BackofficeExtension {
                             }
                         </mat-select>
                     </mat-form-field>
-                    <button btn matRipple (click)="editExtension()">
-                        {{ 'ADMIN.EXTENSIONS_ADD' | translate }}
+                    <button
+                        icon
+                        default
+                        matRipple
+                        class="text-xl"
+                        (click)="editExtension()"
+                        [matTooltip]="'ADMIN.EXTENSIONS_ADD' | translate"
+                        [attr.aria-label]="'ADMIN.EXTENSIONS_ADD' | translate"
+                    >
+                        <icon>add</icon>
                     </button>
                 </div>
             </div>
