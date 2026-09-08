@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["terminal.component.ts"],
-  "sourcesContent": ["\n            :host > div {\n                background-color: #263238;\n            }\n        "],
-  "mappings": ";AACY,MAAA,EAAA;AACI,oBAAA;AACJ;",
-  "names": []
-}

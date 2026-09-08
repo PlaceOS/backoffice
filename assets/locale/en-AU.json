@@ -63,6 +63,7 @@
         "LINK": "Link",
         "COPY_LINK": "Copy Link",
         "RETRY": "Retry",
+        "EDITOR_LOAD_ERROR": "Could not load the editor. Check your connection and retry.",
         "IMAGES": "Images",
         "NEW_ITEM": "New item",
         "ITEM_ADD": "Add {{ item }}",

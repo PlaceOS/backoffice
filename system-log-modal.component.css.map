@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["system-log-modal.component.ts"],
-  "sourcesContent": ["\n            .body {\n                display: flex;\n                align-items: center;\n                flex-direction: column;\n                padding: 2em;\n            }\n\n            .content {\n                width: 16rem;\n                text-align: center;\n                font-size: 0.8em;\n            }\n        "],
-  "mappings": ";AACY,CAAA;AACI,WAAA;AACA,eAAA;AACA,kBAAA;AACA,WAAA;AACJ;AAEA,CAAA;AACI,SAAA;AACA,cAAA;AACA,aAAA;AACJ;",
-  "names": []
-}

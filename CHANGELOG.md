@@ -36,6 +36,8 @@ All notable changes to this project will be documented in this file.
 
 - Add interface changelog tab
 
+### Performance
+
 ### Refactor
 
 #### Admin

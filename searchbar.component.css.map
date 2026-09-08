@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["searchbar.component.ts"],
-  "sourcesContent": ["\n            .active {\n                color: var(--pending);\n            }\n\n            input::placeholder {\n                color: rgba(255, 255, 255, 0.35);\n            }\n\n            .bg-opacity-100 input::placeholder {\n                color: rgba(0, 0, 0, 0.35);\n            }\n\n            [widget] {\n                transition:\n                    color 200ms,\n                    background-color 200ms,\n                    width 200ms;\n            }\n        "],
-  "mappings": ";AACY,CAAA;AACI,SAAA,IAAA;AACJ;AAEA,KAAA;AACI,SAAA,KAAA,GAAA,EAAA,GAAA,EAAA,GAAA,EAAA;AACJ;AAEA,CAAA,eAAA,KAAA;AACI,SAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AACJ;AAEA,CAAA;AACI;;;;AAIJ;",
-  "names": []
-}
