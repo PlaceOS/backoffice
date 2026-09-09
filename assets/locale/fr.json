@@ -948,5 +948,11 @@
         "UPLOADS_LIB_FIELD_TYPE": "Type de fichier",
         "UPLOADS_LIB_FIELD_SIZE": "Taille",
         "UPLOADS_LIB_LIST_EMPTY": "Aucun téléversement pour le domaine sélectionné"
+    },
+    "GROUPS": {
+        "SWITCH_GROUP": "Changer de groupe",
+        "ALL_GROUPS": "Tous les groupes",
+        "SEARCH_GROUPS": "Rechercher des groupes",
+        "NO_MATCHING_GROUPS": "Aucun groupe correspondant"
     }
 }

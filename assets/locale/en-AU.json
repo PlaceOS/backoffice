@@ -658,6 +658,7 @@
         "SUPPORTED_METHODS": "Supported Methods"
     },
     "USERS": {
+        "INCLUDE_DELETED": "Include deleted users",
         "SINGULAR": "User",
         "PLURAL": "Users",
         "SEARCH": "Search for users...",
@@ -794,7 +795,11 @@
         "ZONE_REMOVE_MSG": "<p>Are you sure you want remove {{ name }} from this group?</p>",
         "ZONE_REMOVE_LOADING": "Removing zone from group...",
         "ZONE_REMOVE_SUCCESS": "Successfully removed zone from group.",
-        "ZONE_REMOVE_ERROR": "Failed to remove zone from group. Error: {{ error }}"
+        "ZONE_REMOVE_ERROR": "Failed to remove zone from group. Error: {{ error }}",
+        "SWITCH_GROUP": "Switch group",
+        "ALL_GROUPS": "All groups",
+        "SEARCH_GROUPS": "Search groups",
+        "NO_MATCHING_GROUPS": "No matching groups"
     },
     "DOMAINS": {
         "SINGULAR": "Domain",

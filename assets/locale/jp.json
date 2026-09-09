@@ -951,5 +951,11 @@
         "UPLOADS_LIB_FIELD_TYPE": "ファイルタイプ",
         "UPLOADS_LIB_FIELD_SIZE": "サイズ",
         "UPLOADS_LIB_LIST_EMPTY": "選択されたドメインにはアップロードがありません"
+    },
+    "GROUPS": {
+        "SWITCH_GROUP": "グループを切り替え",
+        "ALL_GROUPS": "すべてのグループ",
+        "SEARCH_GROUPS": "グループを検索",
+        "NO_MATCHING_GROUPS": "一致するグループがありません"
     }
 }
