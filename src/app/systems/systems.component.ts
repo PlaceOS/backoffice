@@ -7,6 +7,7 @@ import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import { isSubsystemUser } from '../common/support-access';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
@@ -74,6 +75,7 @@ import { SystemStateService } from './system-state.service';
                             [matTooltip]="'SYSTEMS.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
+                            [disabled]="!canCreate()"
                             (click)="newItem()"
                         >
                             <icon class="text-3xl">add</icon>
@@ -83,6 +85,7 @@ import { SystemStateService } from './system-state.service';
                             [matTooltip]="'SYSTEMS.BULK' | translate"
                             matTooltipPosition="right"
                             matRipple
+                            [disabled]="!canCreate()"
                             (click)="bulkAdd()"
                         >
                             <icon class="text-2xl">playlist_add</icon>
@@ -168,9 +171,14 @@ export class SystemsComponent {
                     icon: { content: 'schedule' },
                 },
             ] as ItemTab[]
-        ).concat(this.extensions()),
+        )
+            .concat(this.extensions())
+            .filter(
+                (tab) => !isSubsystemUser() || !['history'].includes(tab.id),
+            ),
     );
     public readonly debug_position = this._debug.position;
+    public readonly canCreate = () => this._item.canMutate(2);
     public readonly newItem = () => this._item.create();
     public readonly bulkAdd = () => this._item.bulkAdd();
 }

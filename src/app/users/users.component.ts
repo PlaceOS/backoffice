@@ -8,6 +8,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { toSignal } from '../common/signals';
+import { isSubsystemUser } from '../common/support-access';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
 import { ItemDetailsComponent } from '../ui/item-details.component';
@@ -74,6 +75,7 @@ import { UsersStateService } from './users-state.service';
                     [matTooltip]="'USERS.NEW' | translate"
                     matTooltipPosition="right"
                     matRipple
+                    [disabled]="!canCreate()"
                     (click)="newItem()"
                 >
                     <icon class="text-3xl">add</icon>
@@ -83,6 +85,7 @@ import { UsersStateService } from './users-state.service';
                     [matTooltip]="'USERS.BULK' | translate"
                     matTooltipPosition="right"
                     matRipple
+                    [disabled]="!canCreate()"
                     (click)="bulkAdd()"
                 >
                     <icon class="text-2xl">playlist_add</icon>
@@ -122,6 +125,7 @@ export class UsersComponent extends AsyncHandler {
         initialValue: {} as { metadata?: number; groups?: number },
     });
 
+    public readonly canCreate = () => this._service.canMutate(2);
     public readonly newItem = () => this._service.create();
     public readonly bulkAdd = () => this._service.bulkAdd();
     public readonly tab_list = computed(() =>
@@ -147,6 +151,12 @@ export class UsersComponent extends AsyncHandler {
                 name: i18n('USERS.TAB_HISTORY'),
                 icon: { content: 'history' },
             },
-        ].concat(extensionsForItem(this.item(), this.name)),
+        ]
+            .concat(extensionsForItem(this.item(), this.name))
+            .filter(
+                (tab) =>
+                    !isSubsystemUser() ||
+                    !['groups', 'history'].includes(tab.id),
+            ),
     );
 }

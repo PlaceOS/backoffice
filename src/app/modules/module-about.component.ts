@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { PlaceModule } from '@placeos/ts-client';
+import { hasSupportRole } from '../common/support-access';
 
 import { DatePipe } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
@@ -169,7 +170,7 @@ import { ModuleStateService } from './module-state.service';
                             {{ item.updated_at * 1000 | dateFrom }}
                         </span>
                     </div>
-                    @if (item.has_runtime_error) {
+                    @if (item.has_runtime_error && hasSupportRole()) {
                         <button
                             btn
                             matRipple
@@ -264,6 +265,7 @@ import { ModuleStateService } from './module-state.service';
     ],
 })
 export class ModuleAboutComponent {
+    public readonly hasSupportRole = hasSupportRole;
     private _service = inject(ModuleStateService);
     private _dialog = inject(MatDialog);
 

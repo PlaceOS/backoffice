@@ -17,10 +17,10 @@ import {
     addSettings,
     addZone as addZoneRequest,
     cleanObject,
-    queryZones,
     showZone,
     updateZone as updateZoneRequest,
 } from '@placeos/ts-client';
+import { querySupportZones as queryZones } from '../common/support-access';
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';

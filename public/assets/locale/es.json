@@ -961,5 +961,11 @@
         "UPLOADS_LIB_FIELD_TYPE": "Tipo de archivo",
         "UPLOADS_LIB_FIELD_SIZE": "Tamaño",
         "UPLOADS_LIB_LIST_EMPTY": "No hay cargas para el dominio seleccionado"
+    },
+    "GROUPS": {
+        "SWITCH_GROUP": "Cambiar de grupo",
+        "ALL_GROUPS": "Todos los grupos",
+        "SEARCH_GROUPS": "Buscar grupos",
+        "NO_MATCHING_GROUPS": "No hay grupos coincidentes"
     }
 }

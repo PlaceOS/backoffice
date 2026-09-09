@@ -14,10 +14,12 @@ import { FormField, form, submit } from '@angular/forms/signals';
 import {
     PlaceUser,
     addUser,
+    authority,
     cleanObject,
     queryDomains,
     updateUser,
 } from '@placeos/ts-client';
+import { isSubsystemUser } from '../common/support-access';
 
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -192,14 +194,14 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                         }
                     </div>
                     <div class="mb-4 flex items-center space-x-4">
-                        @if (form.support) {
+                        @if (form.support && !isSubsystemUser()) {
                             <settings-toggle
                                 class="max-w-1/2 flex-1"
                                 [label]="'USERS.ROLE_SUPPORT' | translate"
                                 [formField]="form.support"
                             />
                         }
-                        @if (form.sys_admin) {
+                        @if (form.sys_admin && !isSubsystemUser()) {
                             <settings-toggle
                                 class="max-w-1/2 flex-1"
                                 [label]="'USERS.ROLE_ADMIN' | translate"
@@ -284,7 +286,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                             </div>
                         }
                     </div>
-                    @if (form.groups) {
+                    @if (form.groups && !isSubsystemUser()) {
                         <div class="field">
                             <label
                                 for="groups"
@@ -381,6 +383,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
     ],
 })
 export class UserFormComponent extends AsyncHandler implements OnInit {
+    public readonly isSubsystemUser = isSubsystemUser;
     private _dialog_ref = inject<MatDialogRef<UserFormComponent>>(MatDialogRef);
     private _data = inject<{ item: PlaceUser; readonly?: string }>(
         MAT_DIALOG_DATA,
@@ -393,7 +396,7 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
     public readonly formModel = signal(generateUserFormModel(this._data.item));
     public readonly form = form(
         this.formModel,
-        userFormSchema(this._data.item),
+        userFormSchema(this._data.item, isSubsystemUser()),
     );
     public readonly loading = signal<string | null>(null);
     public heading = i18n(
@@ -405,7 +408,10 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
     public readonly show_confirm = signal(false);
     /** List of available domains */
     private readonly _domain_list = resource({
-        loader: async () => (await queryDomains()).data,
+        loader: async () =>
+            isSubsystemUser()
+                ? [authority()].filter(Boolean)
+                : (await queryDomains()).data,
     });
     public readonly domain_list = computed(
         () => this._domain_list.value() || [],
@@ -467,6 +473,16 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
                       ])
                     : { ...item_json, ...this.formModel() }
             ) as Identity;
+            if (isSubsystemUser()) {
+                for (const key of [
+                    'sys_admin',
+                    'support',
+                    'groups',
+                    'login_name',
+                ])
+                    delete form_item[key];
+                form_item.authority_id = authority()?.id;
+            }
             try {
                 const _item = await (form_item.id
                     ? updateUser(

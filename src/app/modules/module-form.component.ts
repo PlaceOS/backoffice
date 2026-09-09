@@ -16,10 +16,13 @@ import {
     PlaceModule,
     queryDrivers,
     queryEdges,
-    querySystems,
     showSystem,
     updateModule,
 } from '@placeos/ts-client';
+import {
+    isSubsystemUser,
+    querySupportSystems as querySystems,
+} from '../common/support-access';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -365,9 +368,12 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
     ];
 
     public readonly driver_query_fn = (_: string) =>
-        queryDrivers({ q: _ } as Record<string, unknown>).then(
-            (resp) => resp.data,
-        );
+        queryDrivers({
+            q: _,
+            ...(isSubsystemUser() && !this.formModel().id
+                ? { role: 'logic' as const }
+                : {}),
+        }).then((resp) => resp.data);
 
     public readonly system_query_fn = (_: string) =>
         querySystems({ q: _ }).then((resp) => resp.data);

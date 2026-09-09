@@ -53,6 +53,14 @@ describe('user form validation', () => {
         expect(fields().valid()).toBe(true);
     });
 
+    it('locks the authority when a subsystem user creates an account', () => {
+        const { fields } = createTestForm(
+            generateUserFormModel(new PlaceUser({ authority_id: 'domain-1' })),
+            userFormSchema(undefined, true),
+        );
+        expect(fields.authority_id().disabled()).toBe(true);
+    });
+
     it('rejects an invalid email or image URL and permits no image', () => {
         const { fields } = createTestForm(
             generateUserFormModel(user),

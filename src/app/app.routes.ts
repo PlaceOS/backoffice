@@ -19,6 +19,7 @@ export const appRoutes: Route[] = [
     },
     {
         path: 'drivers',
+        data: { role_only: true },
         canActivate: [AuthorisedUserGuard],
         loadChildren: () =>
             import('./drivers/drivers.routes').then((m) => m.ROUTES),
@@ -43,12 +44,14 @@ export const appRoutes: Route[] = [
     },
     {
         path: 'triggers',
+        data: { role_only: true },
         canActivate: [AuthorisedUserGuard],
         loadChildren: () =>
             import('./triggers/triggers.routes').then((m) => m.ROUTES),
     },
     {
         path: 'users',
+        data: { allow_subsystem: true },
         canActivate: [AuthorisedAdminGuard],
         loadChildren: () =>
             import('./users/users.routes').then((m) => m.ROUTES),

@@ -13,6 +13,7 @@ import {
     waitForClientSignalValue,
     waitForSignalValue,
 } from '../../common/signals';
+import { hasSupportSubsystem } from '../../common/support-access';
 import { BackofficeUsersService } from '../../users/users.service';
 
 @Service()
@@ -29,7 +30,11 @@ export class AuthorisedUserGuard {
             this._users.user,
             (_) => !!_,
         );
-        const can_activate = user && (user.sys_admin || user.support);
+        const can_activate =
+            !!user &&
+            (user.sys_admin ||
+                user.support ||
+                (!_next.data?.['role_only'] && hasSupportSubsystem()));
         if (!can_activate) {
             this._router.navigate(['/unauthorised']);
         }
@@ -45,7 +50,11 @@ export class AuthorisedUserGuard {
             this._users.user,
             (_) => !!_,
         );
-        const can_activate = user && (user.sys_admin || user.support);
+        const can_activate =
+            !!user &&
+            (user.sys_admin ||
+                user.support ||
+                (!_route.data?.['role_only'] && hasSupportSubsystem()));
         if (!can_activate) {
             this._router.navigate(['/unauthorised']);
         }

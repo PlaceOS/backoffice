@@ -106,7 +106,7 @@ export interface DisplayItem {
             </button>
         </div>
         <mat-menu #action_menu="matMenu" class="min-w-88">
-            @if (can_edit()) {
+            @if (can_edit() && canMutate(4)) {
                 <button
                     mat-menu-item
                     class="flex items-center space-x-2"
@@ -171,7 +171,7 @@ export interface DisplayItem {
                     }
                 </button>
             }
-            @if (can_edit()) {
+            @if (can_edit() && canMutate(8)) {
                 <button
                     mat-menu-item
                     class="flex items-center space-x-2"
@@ -214,6 +214,9 @@ export class ItemDetailsComponent {
     public readonly create = output<boolean>();
     public readonly edit = output();
     public readonly delete = output();
+
+    public readonly canMutate = (permission: number) =>
+        this._service.canMutate(permission);
 
     public readonly copyID = () => {
         this._clipboard.copy(this.item()?.id || '');

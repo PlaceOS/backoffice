@@ -6,6 +6,11 @@ import { AuthorisedAdminGuard } from '../../../app/ui/guards/authorised-admin.gu
 import { AuthorisedUserGuard } from '../../../app/ui/guards/authorised-user.guard';
 import { BackofficeUsersService } from '../../../app/users/users.service';
 
+const subsystem = vi.hoisted(() => ({ allowed: false }));
+vi.mock('../../../app/common/support-access', () => ({
+    hasSupportSubsystem: () => subsystem.allowed,
+}));
+
 const connection = await vi.hoisted(async () => {
     const { createSignal } = await import(
         '@placeos/ts-client/dist/index.es.js'
@@ -43,6 +48,7 @@ describe.each([
     const user = signal<{ sys_admin: boolean; support: boolean } | null>(null);
 
     beforeEach(() => {
+        subsystem.allowed = false;
         connection.set(true);
         user.set(null);
         TestBed.configureTestingModule({
@@ -85,6 +91,46 @@ describe.each([
             },
         );
     }
+
+    it('admits subsystem members only on subsystem routes', async () => {
+        user.set({ sys_admin: false, support: false });
+        subsystem.allowed = true;
+        const instance = TestBed.inject<
+            AuthorisedAdminGuard | AuthorisedUserGuard
+        >(guard);
+        expect(await instance.canLoad({}, [])).toBe(
+            guard === AuthorisedUserGuard,
+        );
+        const route = new ActivatedRouteSnapshot();
+        route.data = { role_only: true };
+        expect(
+            await instance.canActivate(
+                route,
+                TestBed.inject(Router).routerState.snapshot,
+            ),
+        ).toBe(false);
+        expect(await instance.canLoad({ data: { role_only: true } }, [])).toBe(
+            false,
+        );
+    });
+
+    it('requires an explicit route opt-in for admin routes', async () => {
+        if (guard !== AuthorisedAdminGuard) return;
+        user.set({ sys_admin: false, support: false });
+        subsystem.allowed = true;
+        const instance = TestBed.inject(AuthorisedAdminGuard);
+        expect(
+            await instance.canLoad({ data: { allow_subsystem: true } }, []),
+        ).toBe(true);
+        const child = new ActivatedRouteSnapshot();
+        child.data = { allow_subsystem: true };
+        expect(
+            await instance.canActivate(
+                child,
+                TestBed.inject(Router).routerState.snapshot,
+            ),
+        ).toBe(false);
+    });
 
     it('waits for the connection and user before deciding access', async () => {
         vi.useFakeTimers();

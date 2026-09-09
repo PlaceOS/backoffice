@@ -56,7 +56,10 @@ export function generateUserFormModel(user: PlaceUser): UserFormModel {
     };
 }
 
-export function userFormSchema(user?: PlaceUser): SchemaFn<UserFormModel> {
+export function userFormSchema(
+    user?: PlaceUser,
+    lock_authority = false,
+): SchemaFn<UserFormModel> {
     return (path) => {
         required(path.authority_id);
         required(path.first_name);
@@ -78,6 +81,6 @@ export function userFormSchema(user?: PlaceUser): SchemaFn<UserFormModel> {
                 ? undefined
                 : { kind: 'url', message: 'Invalid URL' },
         );
-        disabled(path.authority_id, () => !!user?.id);
+        disabled(path.authority_id, () => !!user?.id || lock_authority);
     };
 }

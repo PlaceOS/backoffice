@@ -36,7 +36,16 @@ import {
 import { log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
-import { waitForEvent } from './signals';
+import { waitForEvent, waitForSignalValue } from './signals';
+import {
+    canAccessSection,
+    canUseSupportAction,
+    hasSupportRole,
+    hasSupportSubsystem,
+    isSubsystemUser,
+    selectSupportGroup,
+    selected_support_group_id,
+} from './support-access';
 
 /** Id the "also delete associated resources" toggle is reported under */
 const CASCADE_OPTION = 'cascade';
@@ -89,6 +98,7 @@ export class ActiveItemService extends AsyncHandler {
     private _type: ResourceType;
     /** Number of items */
     private _count = signal(0);
+    private _scope_version = 0;
 
     public readonly count = this._count.asReadonly();
 
@@ -123,6 +133,33 @@ export class ActiveItemService extends AsyncHandler {
         return this._type;
     }
 
+    public canMutate(permission: number) {
+        if (this._user.current()?.sys_admin) return true;
+        return (
+            ['systems', 'modules', 'zones', 'users'].includes(this.type) &&
+            isSubsystemUser() &&
+            canUseSupportAction(permission)
+        );
+    }
+
+    public switchGroup(id: string) {
+        if (id === selected_support_group_id() || !selectSupportGroup(id))
+            return;
+        this._scope_version++;
+        this._active_item.set(null);
+        this._next_query.set(null);
+        this._list.set([]);
+        this._count.set(0);
+        this._search.set('');
+        this._loading.set(false);
+        this._loading_list.set(false);
+        const section = canAccessSection(this.type)
+            ? this.type
+            : ['systems', 'modules', 'zones', 'users'].find(canAccessSection);
+        this._router.navigate(['/', section || 'systems', '-']);
+        if (section === this.type) this.updateList();
+    }
+
     public moreItems() {
         this.updateList();
     }
@@ -149,6 +186,9 @@ export class ActiveItemService extends AsyncHandler {
 
     /** Update the active item */
     public async setItem(id: string) {
+        await waitForSignalValue(this._user.user, (user) => !!user);
+        if (!hasSupportRole() && !hasSupportSubsystem()) return;
+        const scope_version = this._scope_version;
         if (
             (!this.active_item || this.active_item.id !== id) &&
             id.length > 2
@@ -162,6 +202,7 @@ export class ActiveItemService extends AsyncHandler {
             const item = await this.actions
                 .show(id)
                 .catch(() => notifyError(`Error loading ${id}`));
+            if (scope_version !== this._scope_version) return;
             this._active_item.set(item as PlaceResource);
             const name = this._type[0].toUpperCase() + this._type.slice(1);
             this._name.set(name);
@@ -177,7 +218,7 @@ export class ActiveItemService extends AsyncHandler {
     }
 
     public create(item?: PlaceResource, copy = false) {
-        if (!this._user.current().sys_admin) return;
+        if (!this.canMutate(2)) return;
         item = item || this._active_item();
         const actions =
             Object.values(ACTIONS).find(
@@ -195,7 +236,7 @@ export class ActiveItemService extends AsyncHandler {
     }
 
     public bulkAdd() {
-        if (!this._user.current().sys_admin) return;
+        if (!this.canMutate(2)) return;
         const actions = this.actions;
         this._settings.post('disable_uploads', true);
         const ref = this._dialog.open(BulkItemModalComponent, {
@@ -218,7 +259,7 @@ export class ActiveItemService extends AsyncHandler {
         item?: T,
         options: HashMap = {},
     ) {
-        if (!this._user.current().sys_admin) return;
+        if (!this.canMutate((item || this.active_item)?.id ? 4 : 2)) return;
         item = item || (this._active_item() as T);
         if (item) {
             const actions =
@@ -263,11 +304,13 @@ export class ActiveItemService extends AsyncHandler {
     }
 
     public async delete() {
-        if (!this._user.current().sys_admin) return;
+        if (!this.canMutate(8)) return;
         const item = this._active_item();
         if (!item) return;
         const actions = this.actions;
-        const cascade = actions.cascade;
+        const cascade = this._user.current()?.sys_admin
+            ? actions.cascade
+            : undefined;
         // Resolved lazily, only if the user enables the option — a cascade
         // plan walks the whole zone subtree, which is not free.
         let plan: CascadePlan | null = null;
@@ -540,10 +583,22 @@ export class ActiveItemService extends AsyncHandler {
     private updateList() {
         const type = this._type;
         const search = this._search();
+        const scope_version = this._scope_version;
         this.timeout(
             'update',
             async () => {
                 if (!this.actions) return;
+                await waitForSignalValue(this._user.user, (user) => !!user);
+                if (
+                    type !== this._type ||
+                    scope_version !== this._scope_version ||
+                    (!hasSupportRole() && !hasSupportSubsystem())
+                )
+                    return;
+                if (!canAccessSection(type)) {
+                    this._loading_list.set(false);
+                    return;
+                }
                 this._loading_list.set(true);
                 let next = this._next_query();
                 if (!next) {
@@ -559,6 +614,7 @@ export class ActiveItemService extends AsyncHandler {
                     );
                     return null;
                 });
+                if (scope_version !== this._scope_version) return;
                 if (!resp) {
                     if (type === this._type) {
                         this._next_query.set(null);
@@ -604,6 +660,7 @@ export class ActiveItemService extends AsyncHandler {
         const item = this.active_item;
         if (item && (item as PlaceResource & { settings?: unknown }).settings) {
             let settings = (await querySettings({ parent_id: item.id })).data;
+            if (item !== this.active_item) return;
             // Remove duplicate encryption_level
             settings = new Array(5).fill(0).map(
                 (_, idx) =>

@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import {
     moduleSettings,
     PlaceModule,
-    querySystems,
     showDriver,
     showEdge,
     showSystem,
@@ -12,6 +11,7 @@ import {
 } from '@placeos/ts-client';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { querySupportSystems as querySystems } from '../common/support-access';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 
 @Service()

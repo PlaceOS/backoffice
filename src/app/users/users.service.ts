@@ -11,6 +11,7 @@ import { Md5 } from 'ts-md5';
 
 import { AsyncHandler } from '../common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
+import { loadSupportAccess } from '../common/support-access';
 import { FilterFn } from '../common/types';
 
 import * as Sentry from '@sentry/browser';
@@ -90,7 +91,7 @@ export class BackofficeUsersService extends AsyncHandler {
         return new Promise((resolve) => {
             this.state.set('loading');
             currentUser()
-                .then((user) => {
+                .then(async (user) => {
                     if (!user) {
                         this.timeout(
                             'load',
@@ -99,6 +100,7 @@ export class BackofficeUsersService extends AsyncHandler {
                         );
                         return;
                     }
+                    await loadSupportAccess(user);
                     this._user.set(user);
                     Sentry.withScope((scope) =>
                         scope.setUser({ email: user.email }),

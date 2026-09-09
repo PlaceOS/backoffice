@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { PlaceSystem, PlaceZone, queryZones } from '@placeos/ts-client';
+import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
+import { querySupportZones as queryZones } from '../common/support-access';
 
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 

@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { AuthorisedAdminGuard } from '../ui/guards/authorised-admin.guard';
+import { AuthorisedUserGuard } from '../ui/guards/authorised-user.guard';
 
 export const ROUTES: Routes = [
     {
@@ -22,6 +24,8 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'triggers',
+                canActivate: [AuthorisedUserGuard],
+                data: { role_only: true },
                 loadComponent: () =>
                     import('./zone-triggers.component').then(
                         (m) => m.ZoneTriggersComponent,
@@ -43,6 +47,7 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'groups',
+                canActivate: [AuthorisedAdminGuard],
                 loadComponent: () =>
                     import('./zone-groups.component').then(
                         (m) => m.ZoneGroupsComponent,
@@ -57,6 +62,7 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'history',
+                canActivate: [AuthorisedAdminGuard],
                 loadComponent: () =>
                     import('../ui/settings-history-view.component').then(
                         (m) => m.SettingsHistoryViewComponent,

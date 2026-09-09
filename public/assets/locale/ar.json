@@ -948,5 +948,11 @@
         "UPLOADS_LIB_FIELD_TYPE": "نوع الملف",
         "UPLOADS_LIB_FIELD_SIZE": "الحجم",
         "UPLOADS_LIB_LIST_EMPTY": "لا توجد تحميلات للمجال المحدد"
+    },
+    "GROUPS": {
+        "SWITCH_GROUP": "تبديل المجموعة",
+        "ALL_GROUPS": "كل المجموعات",
+        "SEARCH_GROUPS": "البحث عن مجموعات",
+        "NO_MATCHING_GROUPS": "لا توجد مجموعات مطابقة"
     }
 }

@@ -10,11 +10,18 @@ import {
 } from '@angular/router';
 
 import { MatRippleModule } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { authority, queryApplications } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
+import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
+import {
+    canAccessSection,
+    selected_support_group,
+    support_groups,
+} from '../common/support-access';
 import { ApplicationIcon } from '../common/types';
 import { BackofficeUsersService } from '../users/users.service';
 import { ApplicationPickerTooltipComponent } from './application-picker-tooltip.component';
@@ -24,6 +31,7 @@ import {
 } from './custom-tooltip.component';
 import { DebugInfoComponent } from './debug-info.component';
 import { IconComponent } from './icon.component';
+import { SupportGroupPickerComponent } from './support-group-picker.component';
 import { TranslatePipe } from './translate.pipe';
 import { UserAvatarComponent } from './user-avatar.component';
 import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
@@ -173,6 +181,21 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     </div>
                 </button>
             }
+            @if (support_groups().length) {
+                <button matRipple type="button"
+                    class="hover:bg-base-100 flex min-h-14 items-center gap-2 border-t border-base-300 p-3 text-left"
+                    [class.justify-center]="compact()"
+                    [attr.aria-label]="'GROUPS.SWITCH_GROUP' | translate"
+                    [matTooltip]="selected_group()?.group.name || ('GROUPS.ALL_GROUPS' | translate)"
+                    matTooltipPosition="right"
+                    (click)="switchGroup()">
+                    <icon class="text-2xl">groups</icon>
+                    <span class="min-w-0 flex-1 truncate" [class.sm:hidden]="compact()">
+                        {{ selected_group()?.group.name || ('GROUPS.ALL_GROUPS' | translate) }}
+                    </span>
+                    <icon [class.sm:hidden]="compact()">unfold_more</icon>
+                </button>
+            }
             <debug-info [compact]="compact()" />
             <button
                 matRipple
@@ -253,6 +276,10 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     private _users = inject(BackofficeUsersService);
     private _hotkey = inject(HotkeysService);
     private _router = inject(Router);
+    private _dialog = inject(MatDialog);
+    private _items = inject(ActiveItemService);
+    public readonly support_groups = support_groups;
+    public readonly selected_group = selected_support_group;
 
     public readonly open = model(true);
     public readonly compact = signal(false);
@@ -261,29 +288,59 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     public readonly application_picker = ApplicationPickerTooltipComponent;
     public readonly user_controls = UserMenuTooltipComponent;
     public readonly links = [
-        { name: 'COMMON.SYSTEMS', route: '/systems', icon: 'meeting_room' },
-        { name: 'COMMON.MODULES', route: '/modules', icon: 'tablet' },
-        { name: 'COMMON.ZONES', route: '/zones', icon: 'meeting_room' },
-        { name: 'COMMON.DRIVERS', route: '/drivers', icon: 'construction' },
-        { name: 'COMMON.REPOS', route: '/repositories', icon: 'inventory_2' },
-        { name: 'COMMON.TRIGGERS', route: '/triggers', icon: 'timer' },
+        {
+            name: 'COMMON.SYSTEMS',
+            route: '/systems',
+            icon: 'meeting_room',
+            show_on: () => canAccessSection('systems'),
+        },
+        {
+            name: 'COMMON.MODULES',
+            route: '/modules',
+            icon: 'tablet',
+            show_on: () => canAccessSection('modules'),
+        },
+        {
+            name: 'COMMON.ZONES',
+            route: '/zones',
+            icon: 'meeting_room',
+            show_on: () => canAccessSection('zones'),
+        },
+        {
+            name: 'COMMON.DRIVERS',
+            route: '/drivers',
+            show_on: () => canAccessSection('drivers'),
+            icon: 'construction',
+        },
+        {
+            name: 'COMMON.REPOS',
+            route: '/repositories',
+            show_on: () => this.is_admin,
+            icon: 'inventory_2',
+        },
+        {
+            name: 'COMMON.TRIGGERS',
+            route: '/triggers',
+            show_on: () => canAccessSection('triggers'),
+            icon: 'timer',
+        },
         {
             name: 'COMMON.ALERTS',
             icon: 'notifications_active',
-            show_on: () => !!this.alerts_url,
+            show_on: () => !!this.alerts_url && canAccessSection('alerts'),
             external: () => this.alerts_url,
         },
         {
             name: 'COMMON.METRICS',
             icon: 'monitoring',
-            show_on: () => !!this.metrics_url,
+            show_on: () => !!this.metrics_url && canAccessSection('metrics'),
             external: () => this.metrics_url,
         },
         {
             name: 'COMMON.USERS',
             route: '/users',
             icon: 'group',
-            show_on: () => this.is_support || this.is_admin,
+            show_on: () => canAccessSection('users'),
         },
         {
             name: 'COMMON.GROUPS',
@@ -314,11 +371,11 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     }
 
     public get is_admin() {
-        return this._users.current().sys_admin;
+        return this._users.current()?.sys_admin;
     }
 
     public get is_support() {
-        return this._users.current().support;
+        return this._users.current()?.support;
     }
 
     public get alerts_url(): string {
@@ -330,6 +387,20 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     }
 
     public readonly close = () => this._tooltip?.close();
+
+    public switchGroup() {
+        this._dialog
+            .open<SupportGroupPickerComponent, undefined, string>(
+                SupportGroupPickerComponent,
+                {
+                    maxWidth: 'calc(100vw - 2rem)',
+                },
+            )
+            .afterClosed()
+            .subscribe((id) => {
+                if (id !== undefined) this._items.switchGroup(id);
+            });
+    }
 
     public toggleCompactMode() {
         this.compact.update((s) => !s);

@@ -8,6 +8,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import { isSubsystemUser } from '../common/support-access';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
@@ -78,6 +79,7 @@ import { ZonesStateService } from './zones-state.service';
                             [matTooltip]="'ZONES.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
+                            [disabled]="!canCreate()"
                             (click)="newItem()"
                         >
                             <icon class="text-3xl">add</icon>
@@ -87,6 +89,7 @@ import { ZonesStateService } from './zones-state.service';
                             [matTooltip]="'ZONES.BULK' | translate"
                             matTooltipPosition="right"
                             matRipple
+                            [disabled]="!canCreate()"
                             (click)="bulkAdd()"
                         >
                             <icon class="text-2xl">playlist_add</icon>
@@ -179,9 +182,16 @@ export class ZonesComponent extends AsyncHandler {
                     icon: { content: 'schedule' },
                 },
             ] as ItemTab[]
-        ).concat(extensionsForItem(this.item(), this.name));
+        )
+            .concat(extensionsForItem(this.item(), this.name))
+            .filter(
+                (tab) =>
+                    !isSubsystemUser() ||
+                    !['history', 'triggers', 'groups'].includes(tab.id),
+            );
     });
 
+    public readonly canCreate = () => this._item.canMutate(2);
     public readonly newItem = () => this._item.create();
     public readonly bulkAdd = () => this._item.bulkAdd();
     private readonly _zone_tags = resource({

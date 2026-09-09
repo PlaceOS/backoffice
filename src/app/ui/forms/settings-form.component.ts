@@ -326,7 +326,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             {
                 id: EncryptionLevel.Support,
                 name: i18n('COMMON.SETTINGS_SUPPORT'),
-                active: this.is_support,
+                active: this.is_support(),
             },
             {
                 id: EncryptionLevel.Admin,
@@ -336,7 +336,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             {
                 id: EncryptionLevel.NeverDisplay,
                 name: i18n('COMMON.SETTINGS_ENCRYPTED'),
-                active: this.is_admin,
+                active: this.is_admin(),
             },
         ];
         if (this.merge()) {

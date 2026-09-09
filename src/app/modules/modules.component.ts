@@ -1,11 +1,15 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { PlaceModule, querySystems } from '@placeos/ts-client';
+import { PlaceModule } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import {
+    isSubsystemUser,
+    querySupportSystems as querySystems,
+} from '../common/support-access';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
@@ -74,6 +78,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             [matTooltip]="'MODULES.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
+                            [disabled]="!canCreate()"
                             (click)="newItem()"
                         >
                             <icon class="text-3xl">add</icon>
@@ -119,6 +124,7 @@ export class ModulesComponent {
     public readonly open_menu = signal(false);
     public readonly scroll = signal(0);
     public readonly debug_position = this._debug.position;
+    public readonly canCreate = () => this._service.canMutate(2);
     public readonly newItem = () => this._service.create();
     public readonly extensions = computed(() =>
         extensionsForItem(this.item(), this.name),
@@ -142,7 +148,11 @@ export class ModulesComponent {
                 name: i18n('MODULES.TAB_SETTINGS_HISTORY'),
                 icon: { content: 'schedule' },
             },
-        ].concat(this.extensions()),
+        ]
+            .concat(this.extensions())
+            .filter(
+                (tab) => !isSubsystemUser() || !['history'].includes(tab.id),
+            ),
     );
 
     constructor() {

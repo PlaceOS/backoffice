@@ -13,9 +13,7 @@ import {
     PlaceZone,
     queryGroups,
     queryGroupZones,
-    querySystems,
     queryTriggers,
-    queryZones,
     removeGroupZone,
     updateGroupZone,
     updateZone,
@@ -25,6 +23,11 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
+import {
+    isSubsystemUser,
+    querySupportSystems as querySystems,
+    querySupportZones as queryZones,
+} from '../common/support-access';
 import { DialogEvent, Identity } from '../common/types';
 import { GroupBulkAddModalComponent } from '../groups/group-bulk-add-modal.component';
 import { GroupPermissionsModalComponent } from '../groups/group-permissions-modal.component';
@@ -59,7 +62,10 @@ export class ZonesStateService {
                     querySystems({ zone_id: item.id, limit: 1 })
                         .then((d) => d.total)
                         .catch(() => 0),
-                    listZoneTriggers(item.id)
+                    (isSubsystemUser()
+                        ? Promise.resolve({ data: [], total: 0 })
+                        : listZoneTriggers(item.id)
+                    )
                         .then((d) => d.total)
                         .catch(() => 0),
                     listMetadata(item.id)
@@ -122,7 +128,11 @@ export class ZonesStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceZone)) return [] as PlaceTrigger[];
-            const response = await listZoneTriggers(item.id).catch(() => ({
+            const response = await (
+                isSubsystemUser()
+                    ? Promise.resolve({ data: [], total: 0 })
+                    : listZoneTriggers(item.id)
+            ).catch(() => ({
                 data: [],
             }));
             return response.data;

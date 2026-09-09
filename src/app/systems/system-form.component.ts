@@ -20,9 +20,9 @@ import {
     PlaceResource,
     PlaceSettings,
     PlaceSystem,
-    queryZones,
     updateSystem,
 } from '@placeos/ts-client';
+import { querySupportZones as queryZones } from '../common/support-access';
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';

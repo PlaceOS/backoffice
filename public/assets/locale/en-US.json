@@ -1015,5 +1015,11 @@
         "RECEIPT_COPY": "Copy list",
         "RECEIPT_COPIED": "Copied {{ count }} rows to the clipboard.",
         "RECEIPT_COPIED_1": "Copied {{ count }} row to the clipboard."
+    },
+    "GROUPS": {
+        "SWITCH_GROUP": "Switch group",
+        "ALL_GROUPS": "All groups",
+        "SEARCH_GROUPS": "Search groups",
+        "NO_MATCHING_GROUPS": "No matching groups"
     }
 }

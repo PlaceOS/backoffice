@@ -14,11 +14,12 @@ import {
     PlaceZone,
     put,
     queryModules,
-    querySystems,
+    querySettings,
     queryTriggers,
     removeSystemModule,
     removeSystemTrigger,
     showSystem,
+    showZone,
     startModule,
     startSystem,
     stopModule,
@@ -31,6 +32,10 @@ import { calculateModuleIndex } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { unique } from '../common/general';
+import {
+    isSubsystemUser,
+    querySupportSystems as querySystems,
+} from '../common/support-access';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -73,7 +78,11 @@ export class SystemStateService extends AsyncHandler {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceSystem)) return [];
-            return systemSettings(item.id).catch(() => []);
+            return isSubsystemUser()
+                ? querySettings({ parent_id: item.id })
+                      .then((response) => response.data)
+                      .catch(() => [])
+                : systemSettings(item.id).catch(() => []);
         },
     });
     /** Signal for associated settings of the active item */
@@ -199,9 +208,15 @@ export class SystemStateService extends AsyncHandler {
             if (!(item instanceof PlaceSystem)) return [] as PlaceZone[];
             this.setLoading('zones', true);
             try {
-                const response = await listSystemZones(item.id).catch(() => ({
-                    data: [],
-                }));
+                const response = isSubsystemUser()
+                    ? {
+                          data: await Promise.all(
+                              item.zones.map((id) => showZone(id)),
+                          ),
+                      }
+                    : await listSystemZones(item.id).catch(() => ({
+                          data: [],
+                      }));
                 const zones = [...response.data];
                 zones.sort(
                     (a, b) =>

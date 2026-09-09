@@ -25,10 +25,8 @@ import {
     queryModules,
     queryRepositories,
     QueryResponse,
-    querySystems,
     queryTriggers,
     queryUsers,
-    queryZones,
     removeDomain,
     removeDriver,
     removeGroup,
@@ -64,6 +62,11 @@ import {
     planDomainCascade,
     planZoneCascade,
 } from './cascade-delete';
+import {
+    querySupportModules,
+    querySupportSystems as querySystems,
+    querySupportZones as queryZones,
+} from './support-access';
 
 /**
  * Optional "also remove the things associated with this item" behaviour,
@@ -172,7 +175,7 @@ const groups: ItemActions<PlaceGroup> = {
 
 const modules: ItemActions<PlaceModule> = {
     query: (_) =>
-        queryModules({
+        querySupportModules({
             q: _,
             fields: ['id', 'name', 'custom_name', 'module_name'].join(','),
         }),
