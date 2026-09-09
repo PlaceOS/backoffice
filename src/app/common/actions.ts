@@ -85,7 +85,10 @@ export interface ItemCascade<T> {
 }
 
 export interface ItemActions<T> {
-    query: (_?: string) => QueryResponse<T>;
+    query: (
+        _?: string,
+        options?: { include_deleted?: boolean },
+    ) => QueryResponse<T>;
     show: (_: string) => Promise<T>;
     save: (_: T) => Promise<T>;
     remove: (_: T) => Promise<unknown>;
@@ -329,8 +332,9 @@ const triggers: ItemActions<PlaceTrigger> = {
 };
 
 const users: ItemActions<PlaceUser> = {
-    query: (_) =>
+    query: (_, options) =>
         queryUsers({
+            ...options,
             q: _,
             fields: ['id', 'name', 'email', 'authority_id', 'groups'].join(','),
         }),

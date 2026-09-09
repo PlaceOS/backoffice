@@ -18,7 +18,10 @@ vi.mock('@placeos/ts-client', () =>
     vi.importActual('@placeos/ts-client/dist/index.es.js'),
 );
 vi.mock('../../app/common/actions', () => ({
-    ACTIONS: { systems: { query: mocks.query, show: mocks.show } },
+    ACTIONS: {
+        systems: { query: mocks.query, show: mocks.show },
+        users: { query: mocks.query, show: mocks.show },
+    },
 }));
 vi.mock('../../app/common/support-access', () => ({
     hasSupportRole: () => false,
@@ -55,13 +58,11 @@ it('clears the active resource and ignores old list and detail responses after s
         next: null;
     }>();
     const old_item = Promise.withResolvers<{ id: string; name: string }>();
-    mocks.query
-        .mockReturnValueOnce(old_list.promise)
-        .mockResolvedValue({
-            data: [{ id: 'sys-new', name: 'New room' }],
-            total: 1,
-            next: null,
-        });
+    mocks.query.mockReturnValueOnce(old_list.promise).mockResolvedValue({
+        data: [{ id: 'sys-new', name: 'New room' }],
+        total: 1,
+        next: null,
+    });
     mocks.show.mockReturnValue(old_item.promise);
     const events = new Subject<NavigationEnd>();
     const router = {
@@ -109,5 +110,67 @@ it('clears the active resource and ignores old list and detail responses after s
     expect(service.list()).toEqual([{ id: 'sys-new', name: 'New room' }]);
     expect(service.count()).toBe(1);
     expect(service.active_item).toBeNull();
+    service.ngOnDestroy();
+});
+
+it('reloads users with the deleted filter and ignores an older response', async () => {
+    vi.useFakeTimers();
+    mocks.query.mockReset();
+    const old_list = Promise.withResolvers<{
+        data: { id: string; name: string }[];
+        total: number;
+        next: null;
+    }>();
+    mocks.query.mockResolvedValue({ data: [], total: 0, next: null });
+    const user = signal({ sys_admin: true });
+    TestBed.configureTestingModule({
+        providers: [
+            ActiveItemService,
+            {
+                provide: Router,
+                useValue: {
+                    url: '/users/-',
+                    events: new Subject<NavigationEnd>(),
+                },
+            },
+            { provide: MatDialog, useValue: {} },
+            { provide: SettingsService, useValue: {} },
+            {
+                provide: HotkeysService,
+                useValue: { listen: () => () => undefined },
+            },
+            {
+                provide: BackofficeUsersService,
+                useValue: { user, current: user },
+            },
+        ],
+    });
+    const service = TestBed.inject(ActiveItemService);
+    await vi.advanceTimersByTimeAsync(350);
+    expect(service.include_deleted()).toBe(false);
+    expect(mocks.query).toHaveBeenLastCalledWith('', {
+        include_deleted: false,
+    });
+    service.setSearch('alex');
+    await vi.advanceTimersByTimeAsync(350);
+    mocks.query.mockReturnValueOnce(old_list.promise);
+    service.setIncludeDeleted(true);
+    await vi.advanceTimersByTimeAsync(350);
+    expect(mocks.query).toHaveBeenLastCalledWith('alex', {
+        include_deleted: true,
+    });
+    service.setIncludeDeleted(false);
+    await vi.advanceTimersByTimeAsync(350);
+    expect(mocks.query).toHaveBeenLastCalledWith('alex', {
+        include_deleted: false,
+    });
+    old_list.resolve({
+        data: [{ id: 'user-deleted', name: 'Alex' }],
+        total: 1,
+        next: null,
+    });
+    await vi.advanceTimersByTimeAsync(1);
+    expect(service.list()).toEqual([]);
+    expect(service.count()).toBe(0);
     service.ngOnDestroy();
 });

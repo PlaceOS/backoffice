@@ -16,6 +16,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule } from '@angular/router';
 import {
@@ -31,6 +32,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { toSignal } from '../common/signals';
 import { IconComponent } from './icon.component';
+import { SettingsToggleComponent } from './settings-toggle.component';
 import { TranslatePipe } from './translate.pipe';
 import { VirtualScrollComponent } from './virtual-scroll.component';
 
@@ -108,6 +110,15 @@ interface GroupTreeItem {
                     </div>
                 }
             </div>
+            @if (route() === 'users') {
+                <settings-toggle
+                    class="px-1"
+                    [ngModel]="include_deleted()"
+                    (ngModelChange)="setIncludeDeleted($event)"
+                >
+                    {{ 'USERS.INCLUDE_DELETED' | translate }}
+                </settings-toggle>
+            }
             <p class="w-full px-2 text-sm opacity-60">
                 @let t = total();
                 {{ 'COMMON.TOTAL_ITEMS' | translate: { count: t } : t }}
@@ -343,11 +354,13 @@ interface GroupTreeItem {
         IconComponent,
         RouterModule,
         FormsModule,
+        MatSlideToggleModule,
         MatProgressSpinnerModule,
         MatFormFieldModule,
         MatSelectModule,
         VirtualScrollComponent,
         MatRippleModule,
+        SettingsToggleComponent,
     ],
 })
 export class ItemSidebarComponent
@@ -366,6 +379,10 @@ export class ItemSidebarComponent
     public readonly show = signal(true);
     public readonly group_hierarchy = signal<PlaceGroup[]>([]);
     public readonly expanded_groups = signal<Record<string, boolean>>({});
+
+    public readonly include_deleted = this._service.include_deleted;
+    public readonly setIncludeDeleted = (include: boolean) =>
+        this._service.setIncludeDeleted(include);
 
     public last_total = 0;
     public last_check = 0;

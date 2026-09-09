@@ -593,6 +593,7 @@
         "SUPPORTED_METHODS": "Supported Methods"
     },
     "USERS": {
+        "INCLUDE_DELETED": "Include deleted users",
         "SINGULAR": "User",
         "PLURAL": "Users",
         "SEARCH": "Search for users...",

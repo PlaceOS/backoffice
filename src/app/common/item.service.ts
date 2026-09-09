@@ -84,6 +84,9 @@ export class ActiveItemService extends AsyncHandler {
     private _show_options = signal(false);
     /** Whether item list should show on mobile */
     private _search = signal('');
+    private _include_deleted = signal(false);
+    private _list_version = 0;
+    public readonly include_deleted = this._include_deleted.asReadonly();
     /** Currently active item */
     private _active_item = signal<PlaceResource>(null);
     /** Currently active item */
@@ -164,7 +167,15 @@ export class ActiveItemService extends AsyncHandler {
         this.updateList();
     }
 
+    public setIncludeDeleted(include: boolean) {
+        if (this.type !== 'users' || include === this._include_deleted())
+            return;
+        this._include_deleted.set(include);
+        this.setSearch(this._search());
+    }
+
     public setSearch(str: string) {
+        this._list_version++;
         this._search.set(str);
         this._loading_list.set(true);
         this._next_query.set(null);
@@ -562,6 +573,8 @@ export class ActiveItemService extends AsyncHandler {
         const old_type = this._type;
         this._type = url[1] as ResourceType;
         if (old_type !== this._type) {
+            this._include_deleted.set(false);
+            this._list_version++;
             log('Service', `Item type set to ${this._type}`);
             this._next_query.set(null);
             this._active_item.set(null);
@@ -583,6 +596,7 @@ export class ActiveItemService extends AsyncHandler {
     private updateList() {
         const type = this._type;
         const search = this._search();
+        const list_version = this._list_version;
         const scope_version = this._scope_version;
         this.timeout(
             'update',
@@ -590,6 +604,7 @@ export class ActiveItemService extends AsyncHandler {
                 if (!this.actions) return;
                 await waitForSignalValue(this._user.user, (user) => !!user);
                 if (
+                    list_version !== this._list_version ||
                     type !== this._type ||
                     scope_version !== this._scope_version ||
                     (!hasSupportRole() && !hasSupportSubsystem())
@@ -602,7 +617,13 @@ export class ActiveItemService extends AsyncHandler {
                 this._loading_list.set(true);
                 let next = this._next_query();
                 if (!next) {
-                    next = () => this.actions.query(this._search());
+                    next = () =>
+                        this.actions.query(
+                            search,
+                            type === 'users'
+                                ? { include_deleted: this._include_deleted() }
+                                : undefined,
+                        );
                     this._list.set([]);
                 }
                 const resp = await next().catch((err) => {
@@ -614,7 +635,11 @@ export class ActiveItemService extends AsyncHandler {
                     );
                     return null;
                 });
-                if (scope_version !== this._scope_version) return;
+                if (
+                    scope_version !== this._scope_version ||
+                    list_version !== this._list_version
+                )
+                    return;
                 if (!resp) {
                     if (type === this._type) {
                         this._next_query.set(null);

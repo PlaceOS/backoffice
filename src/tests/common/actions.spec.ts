@@ -464,6 +464,18 @@ describe('actions.ts', () => {
             });
         });
 
+        it.each([true, false])(
+            'passes include_deleted=%s to the users API',
+            (include_deleted) => {
+                ACTIONS.users.query('alex', { include_deleted });
+                expect(client.queryUsers).toHaveBeenCalledWith({
+                    q: 'alex',
+                    include_deleted,
+                    fields: 'id,name,email,authority_id,groups',
+                });
+            },
+        );
+
         it('should call showUser for show', () => {
             ACTIONS.users.show('user-123');
             expect(client.showUser).toHaveBeenCalledWith('user-123');

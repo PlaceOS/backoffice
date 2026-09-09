@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Router, RouterModule } from '@angular/router';
 import {
     PlaceDriverRole,
@@ -81,6 +82,15 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                              />
                         }
                     </div>
+                    @if (route() === 'users') {
+                        <mat-slide-toggle
+                            class="px-2"
+                            [checked]="include_deleted()"
+                            (change)="setIncludeDeleted($event.checked)"
+                        >
+                            {{ 'USERS.INCLUDE_DELETED' | translate }}
+                        </mat-slide-toggle>
+                    }
                     <p class="w-full px-4 text-sm opacity-60 text-left">
                         {{
                             'COMMON.TOTAL_ITEMS'
@@ -177,6 +187,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
         RouterModule,
         MatProgressSpinnerModule,
         FormsModule,
+        MatSlideToggleModule,
     ],
 })
 export class ItemSelectionComponent
@@ -194,6 +205,10 @@ export class ItemSelectionComponent
     public readonly title = input(undefined);
     public readonly route = input('systems');
     public readonly subroute = signal('');
+
+    public readonly include_deleted = this._service.include_deleted;
+    public readonly setIncludeDeleted = (include: boolean) =>
+        this._service.setIncludeDeleted(include);
 
     public last_total = 0;
     public last_check = 0;
