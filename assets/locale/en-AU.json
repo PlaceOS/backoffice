@@ -658,13 +658,13 @@
         "SUPPORTED_METHODS": "Supported Methods"
     },
     "USERS": {
-        "FORCE_DELETE": "Force delete user",
-        "FORCE_DELETE_MSG": "Permanently delete \"{name}\"? This cannot be undone.",
+        "FORCE_DELETE": "Permanently delete user",
+        "FORCE_DELETE_MSG": "Permanently delete \"{{ name }}\"? This cannot be undone.",
         "REVIVE": "Restore user",
-        "REVIVE_MSG": "Restore \"{name}\" and make this user active again?",
+        "REVIVE_MSG": "Restore \"{{ name }}\" and make this user active again?",
         "REVIVE_LOADING": "Restoring user...",
         "REVIVE_SUCCESS": "User restored.",
-        "REVIVE_ERROR": "Could not restore user. Error: {error}",
+        "REVIVE_ERROR": "Could not restore user. Error: {{ error }}",
         "INCLUDE_DELETED": "Include deleted users",
         "SINGULAR": "User",
         "PLURAL": "Users",
