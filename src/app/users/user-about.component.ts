@@ -15,7 +15,14 @@ import { TranslatePipe } from '../ui/translate.pipe';
 @Component({
     selector: 'user-about',
     template: `
-        <section class="mb-4 flex items-center space-x-2 px-4 py-4">
+        <section class="mb-4 flex flex-wrap items-center gap-2 px-4 py-4">
+            @if (item?.deleted) {
+                <span
+                    class="bg-error text-error-content rounded-full px-3 py-1 text-sm"
+                >
+                    {{ 'USERS.DELETED' | translate }}
+                </span>
+            }
             <div
                 class="border-base-300 flex items-center space-x-2 rounded-3xl border p-2"
             >

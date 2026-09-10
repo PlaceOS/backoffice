@@ -665,6 +665,7 @@
         "REVIVE_LOADING": "Restoring user...",
         "REVIVE_SUCCESS": "User restored.",
         "REVIVE_ERROR": "Could not restore user. Error: {{ error }}",
+        "DELETED": "Deleted",
         "INCLUDE_DELETED": "Include deleted users",
         "SINGULAR": "User",
         "PLURAL": "Users",

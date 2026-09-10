@@ -133,9 +133,18 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                                     class="m-2 block max-w-[calc(100vw-2rem)] rounded-sm p-2 text-left"
                                     (click)="close()"
                                 >
-                                    <p class="flex-1 truncate">
-                                        {{ item.name }}
-                                    </p>
+                                    <div class="flex min-w-0 items-center gap-2">
+                                        <p class="min-w-0 flex-1 truncate">
+                                            {{ item.name }}
+                                        </p>
+                                        @if (route() === 'users' && item.deleted) {
+                                            <span
+                                                class="bg-error text-error-content shrink-0 rounded-full px-2 py-0.5 text-xs"
+                                            >
+                                                {{ 'USERS.DELETED' | translate }}
+                                            </span>
+                                        }
+                                    </div>
                                     @if (item.extra) {
                                         <div
                                             class="inline-block w-full overflow-hidden"

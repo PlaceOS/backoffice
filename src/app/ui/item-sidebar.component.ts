@@ -267,9 +267,18 @@ interface GroupTreeItem {
                             class="border-base-100 hover:border-info relative m-1 flex h-16 w-92 max-w-[calc(100%-0.5rem)] flex-col justify-center rounded-sm border px-2 py-1"
                             (click)="show.set(false)"
                         >
-                            <p class="w-full truncate">
-                                {{ item.name }}
-                            </p>
+                            <div class="flex min-w-0 items-center gap-2">
+                                <p class="min-w-0 flex-1 truncate">
+                                    {{ item.name }}
+                                </p>
+                                @if (route() === 'users' && item.deleted) {
+                                    <span
+                                        class="bg-error text-error-content shrink-0 rounded-full px-2 py-0.5 text-xs"
+                                    >
+                                        {{ 'USERS.DELETED' | translate }}
+                                    </span>
+                                }
+                            </div>
                             <div class="flex w-full">
                                 @if (item.extra) {
                                     <div
