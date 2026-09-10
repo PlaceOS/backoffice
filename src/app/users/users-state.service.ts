@@ -9,6 +9,7 @@ import {
     queryGroups,
     queryGroupUsers,
     removeGroupUser,
+    reviveUser,
     updateGroupUser,
 } from '@placeos/ts-client';
 import { ActiveItemService } from '../common/item.service';
@@ -219,6 +220,37 @@ export class UsersStateService {
         );
         if (!result) return;
         await this.updateGroup({ ...item, permissions: result.permissions });
+    }
+
+    /** Restore the selected user after confirmation. */
+    public async revive() {
+        const item = this.active_item;
+        if (!item?.id || !item.deleted || !this._service.canMutate(4)) return;
+        const details = await openConfirmModal(
+            {
+                title: i18n('USERS.REVIVE'),
+                content: i18n('USERS.REVIVE_MSG', { name: item.name }),
+                confirm_text: i18n('USERS.REVIVE'),
+                icon: { type: 'icon', content: 'restore_from_trash' },
+            },
+            this._dialog,
+        );
+        if (details.reason !== 'done') return;
+        details.loading(i18n('USERS.REVIVE_LOADING'));
+        try {
+            await reviveUser(item.id);
+            if (this._service.active_item === item) {
+                this._service.replaceItem(
+                    new PlaceUser({ ...item, deleted: false }),
+                );
+            }
+            this.changed();
+            notifySuccess(i18n('USERS.REVIVE_SUCCESS'));
+        } catch (error) {
+            notifyError(i18n('USERS.REVIVE_ERROR', { error }));
+        } finally {
+            details.close();
+        }
     }
 
     private changed() {

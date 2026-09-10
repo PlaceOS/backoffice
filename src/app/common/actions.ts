@@ -336,7 +336,14 @@ const users: ItemActions<PlaceUser> = {
         queryUsers({
             ...options,
             q: _,
-            fields: ['id', 'name', 'email', 'authority_id', 'groups'].join(','),
+            fields: [
+                'id',
+                'name',
+                'email',
+                'authority_id',
+                'groups',
+                'deleted',
+            ].join(','),
         }),
     show: (_) => showUser(_),
     save: (item) => (item.id ? updateUser(item.id, item) : addUser(item)),

@@ -7,6 +7,7 @@ import {
     PlaceSettings,
     QueryResponse,
     querySettings,
+    removeUser,
 } from '@placeos/ts-client';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
@@ -314,7 +315,8 @@ export class ActiveItemService extends AsyncHandler {
         }
     }
 
-    public async delete() {
+    public async delete(force_removal = false) {
+        if (force_removal && this.type !== 'users') return;
         if (!this.canMutate(8)) return;
         const item = this._active_item();
         if (!item) return;
@@ -330,12 +332,24 @@ export class ActiveItemService extends AsyncHandler {
             {
                 ...CONFIRM_METADATA,
                 data: {
-                    title: i18n(`${actions.name}.DELETE`),
-                    content: i18n(`${actions.name}.DELETE_MSG`, {
-                        name:
-                            (item as PlaceResource & { display_name?: string })
-                                .display_name || item.name,
-                    }),
+                    title: i18n(
+                        force_removal
+                            ? 'USERS.FORCE_DELETE'
+                            : `${actions.name}.DELETE`,
+                    ),
+                    content: i18n(
+                        force_removal
+                            ? 'USERS.FORCE_DELETE_MSG'
+                            : `${actions.name}.DELETE_MSG`,
+                        {
+                            name:
+                                (
+                                    item as PlaceResource & {
+                                        display_name?: string;
+                                    }
+                                ).display_name || item.name,
+                        },
+                    ),
                     extra: actions.delete_extra
                         ? await actions.delete_extra(item)
                         : null,
@@ -430,8 +444,11 @@ export class ActiveItemService extends AsyncHandler {
                             i18n(`${actions.name}.DELETE_LOADING`),
                         );
                     }
-                    await actions
-                        .remove(item)
+                    await (
+                        force_removal
+                            ? removeUser(item.id, { force_removal: true })
+                            : actions.remove(item)
+                    )
                         .then(() => {
                             this._active_item.set(null);
                             this.removeItem(item);

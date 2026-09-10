@@ -460,7 +460,7 @@ describe('actions.ts', () => {
             ACTIONS.users.query('test');
             expect(client.queryUsers).toHaveBeenCalledWith({
                 q: 'test',
-                fields: 'id,name,email,authority_id,groups',
+                fields: 'id,name,email,authority_id,groups,deleted',
             });
         });
 
@@ -471,7 +471,7 @@ describe('actions.ts', () => {
                 expect(client.queryUsers).toHaveBeenCalledWith({
                     q: 'alex',
                     include_deleted,
-                    fields: 'id,name,email,authority_id,groups',
+                    fields: 'id,name,email,authority_id,groups,deleted',
                 });
             },
         );

@@ -162,7 +162,11 @@ export interface DisplayItem {
                     class="flex items-center space-x-2"
                     (click)="item.action()"
                 >
-                    <icon class="text-2xl">{{ item.icon }}</icon>
+                    <icon
+                        class="text-2xl"
+                        [class.text-error]="item.destructive"
+                        >{{ item.icon }}</icon
+                    >
                     <div class="flex-1">
                         {{ item.label | translate }}
                     </div>
@@ -209,6 +213,7 @@ export class ItemDetailsComponent {
             action: () => void;
             icon: string;
             keycap?: string;
+            destructive?: boolean;
         }[]
     >([]);
     public readonly create = output<boolean>();

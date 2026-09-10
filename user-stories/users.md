@@ -157,6 +157,18 @@ The Users section allows administrators to manage platform users, their roles, p
 
 ---
 
+## Force delete and restore users
+
+- The user action menu includes "Force delete user" for users with delete permission.
+- Force delete requires confirmation and permanently removes the selected user. It cannot be undone.
+- The existing Delete action keeps the domain's deletion policy.
+- To find a soft deleted user, enable "Include deleted users" in the user list.
+- Select the user and choose "Restore user". Users with update permission can confirm the restoration.
+- Restore is available only for soft deleted users. After restoration, the user is active and the Restore action is hidden.
+- Cancelling either confirmation sends no request. A failed request shows an error.
+
+---
+
 ## US-USR-006: Bulk Import Users
 
 **As a** system administrator,

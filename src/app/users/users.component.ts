@@ -52,6 +52,7 @@ import { UsersStateService } from './users-state.service';
                     } @else if (item()?.id) {
                         <item-details
                             [can_edit]="true"
+                            [extra_actions]="userActions()"
                             [item]="item()"
                             [type]="'USERS.SINGULAR' | translate"
                         />
@@ -124,6 +125,33 @@ export class UsersComponent extends AsyncHandler {
     public readonly counts = toSignal(this._state.counts, {
         initialValue: {} as { metadata?: number; groups?: number },
     });
+
+    public userActions() {
+        const item = this.item();
+        return [
+            ...(item instanceof PlaceUser &&
+            item.deleted &&
+            this._service.canMutate(4)
+                ? [
+                      {
+                          label: 'USERS.REVIVE',
+                          icon: 'restore_from_trash',
+                          action: () => this._state.revive(),
+                      },
+                  ]
+                : []),
+            ...(this._service.canMutate(8)
+                ? [
+                      {
+                          label: 'USERS.FORCE_DELETE',
+                          icon: 'delete_forever',
+                          destructive: true,
+                          action: () => this._service.delete(true),
+                      },
+                  ]
+                : []),
+        ];
+    }
 
     public readonly canCreate = () => this._service.canMutate(2);
     public readonly newItem = () => this._service.create();
