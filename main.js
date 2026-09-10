@@ -3,26 +3,26 @@ import {
 } from "./chunk-GV5KQIK5.js";
 import {
   AuthorisedUserGuard
-} from "./chunk-KYXV2CLS.js";
+} from "./chunk-AJIBVXLK.js";
 import {
   AuthorisedAdminGuard
-} from "./chunk-IV4R5XJB.js";
+} from "./chunk-ODA5MLRX.js";
 import {
   MatProgressBar,
   MatProgressBarModule
-} from "./chunk-WIRMERC2.js";
+} from "./chunk-522VD7AP.js";
 import {
   BackofficeUsersService
-} from "./chunk-XBHEJBLP.js";
+} from "./chunk-DE6WUI2H.js";
 import {
   addDays
 } from "./chunk-XI4ZLZAC.js";
 import {
   SettingsService
-} from "./chunk-WRLTJCLW.js";
+} from "./chunk-6E3FUNTM.js";
 import {
   currentUser
-} from "./chunk-FTY3EIHT.js";
+} from "./chunk-LGCOJQOV.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -31,10 +31,10 @@ import {
   provideRouter,
   withHashLocation,
   withNavigationErrorHandler
-} from "./chunk-DVQI66VA.js";
+} from "./chunk-5XY3WE42.js";
 import {
   waitForSignalValue
-} from "./chunk-UBLR53FR.js";
+} from "./chunk-UPJHMA72.js";
 import {
   format
 } from "./chunk-BQISQ53F.js";
@@ -42,25 +42,25 @@ import "./chunk-HT5GXKXQ.js";
 import "./chunk-TPDHL3PI.js";
 import {
   UploadsService
-} from "./chunk-DAGGB6MU.js";
+} from "./chunk-ABI3MEB6.js";
 import {
   tr
 } from "./chunk-J2NWBVJP.js";
-import "./chunk-6IWBYUDE.js";
+import "./chunk-PKJVK52W.js";
 import {
   MatTooltip,
   MatTooltipModule
-} from "./chunk-6HM5H6UH.js";
+} from "./chunk-QWPPAGOZ.js";
 import {
   notifyInfo,
   setNotifyOutlet
 } from "./chunk-IQ5P3T5K.js";
 import {
   AsyncHandler
-} from "./chunk-BYWH3GLU.js";
+} from "./chunk-Q2BV2GZB.js";
 import {
   MatDialog
-} from "./chunk-3GQLVTAP.js";
+} from "./chunk-4XBU66YH.js";
 import {
   BasePortalOutlet,
   CdkPortalOutlet,
@@ -71,22 +71,22 @@ import {
   TemplatePortal,
   createGlobalPositionStrategy,
   createOverlayRef
-} from "./chunk-U4DS3ATP.js";
+} from "./chunk-BTIO7C57.js";
 import {
   MatRippleLoader
-} from "./chunk-A5D2ZFG3.js";
+} from "./chunk-NL7TX5FO.js";
 import {
   MatRippleModule
-} from "./chunk-EITG46SC.js";
-import "./chunk-EFIMJKOP.js";
+} from "./chunk-O5B6FUTE.js";
+import "./chunk-JCXXAJP2.js";
 import {
   LocaleService,
   TranslatePipe,
   setTranslationService
-} from "./chunk-32YXDKI3.js";
+} from "./chunk-N557G3HM.js";
 import {
   IconComponent
-} from "./chunk-KWINWSBN.js";
+} from "./chunk-ETM3LPJ2.js";
 import {
   BidiModule,
   BreakpointObserver,
@@ -99,7 +99,7 @@ import {
   _IdGenerator,
   _StructuralStylesLoader,
   _animationsDisabled
-} from "./chunk-UV7WJQ5D.js";
+} from "./chunk-ISKFUBZN.js";
 import {
   copyToClipboard,
   detectIE,
@@ -108,40 +108,40 @@ import {
 import {
   DecimalPipe,
   bootstrapApplication
-} from "./chunk-7XKIGCHY.js";
+} from "./chunk-U7MJINT7.js";
 import {
   ApplicationRef,
-  Br,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   DOCUMENT,
   Directive,
   ElementRef,
+  En,
   Injectable,
   InjectionToken,
   Injector,
   Input,
-  It,
+  J,
+  Mt,
   NEVER,
   NgModule,
   NgZone,
   Observable,
-  Pn,
-  Qr,
   Renderer2,
+  Rn,
   RuntimeError,
   Service,
   Subject,
   TemplateRef,
-  Un,
   ViewChild,
   ViewEncapsulation,
-  X,
-  Zr,
+  Vr,
+  Xr,
   afterNextRender,
   booleanAttribute,
   effect,
+  f,
   filter,
   formatRuntimeError,
   inject,
@@ -151,7 +151,6 @@ import {
   map,
   numberAttribute,
   of,
-  p,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
@@ -160,6 +159,7 @@ import {
   switchMap,
   take,
   takeUntil,
+  to,
   ɵsetClassDebugInfo,
   ɵɵInheritDefinitionFeature,
   ɵɵadvance,
@@ -203,7 +203,7 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-DYV6NXUQ.js";
+} from "./chunk-Z45QSLBL.js";
 import {
   __spreadProps,
   __spreadValues
@@ -2099,7 +2099,7 @@ async function setupPlace(settings) {
   if (localStorage) {
     localStorage.setItem("BACKOFFICE.mock", `${!!mock && !location.href.includes("mock=false")}`);
   }
-  return Zr(config);
+  return to(config);
 }
 
 // src/app/ui/global-banner.component.ts
@@ -2214,13 +2214,13 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
   async ngOnInit() {
     this.loading.set(true);
     await waitForSignalValue(this._settings.initialised, (_) => _);
-    this.online.set(Qr());
+    this.online.set(Xr());
     this.interval("has_token", () => {
-      this.online.set(Qr());
-      if (!It() || !X())
+      this.online.set(Xr());
+      if (!Mt() || !J())
         return;
       this.loading.set(false);
-      this.online.set(Qr());
+      this.online.set(Xr());
       this.clearInterval("has_token");
     }, 1e3);
   }
@@ -2906,7 +2906,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     return this._users.dark_mode;
   }
   get online() {
-    return Qr();
+    return Xr();
   }
   get is_fools_day() {
     return false;
@@ -2927,7 +2927,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
         localStorage.setItem("BACKOFFICE.locale", locale);
       }
       if (params.has("x-api-key")) {
-        Br(params.get("x-api-key"));
+        Vr(params.get("x-api-key"));
       }
     });
     setNotifyOutlet(this._snackbar);
@@ -2949,7 +2949,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     this.timeout("init_uploads", () => {
       tr({
         auto_start: true,
-        token: X(),
+        token: J(),
         endpoint: "/api/engine/v2/uploads",
         worker_url: "assets/md5_worker.js"
       });
@@ -2965,16 +2965,16 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     this._initLocale();
   }
   onInitError() {
-    if (Pn())
+    if (Rn())
       return;
     log("Init", "Failed to initialise user. Restarting application...");
-    Un();
+    En();
     location.reload();
   }
   async _checkTenants() {
     if (!currentUser()?.sys_admin)
       return;
-    const tenant_list = (await p("/api/staff/v1/tenants")).map((_) => Object.keys(_).map((i) => _[i]));
+    const tenant_list = (await f("/api/staff/v1/tenants")).map((_) => Object.keys(_).map((i) => _[i]));
     for (const tenant of tenant_list) {
       if (!tenant.secret_expiry)
         continue;
@@ -3189,55 +3189,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-3UFHZOGL.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-EHDDSLV6.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-53YA25DA.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-VAIRPMF5.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-2XFFXTFT.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QSEPIL73.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-ZL6OJOTD.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-MAANDHHZ.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-3F3DDHIQ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-AVH2SFME.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-I4TIRONN.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-VZGL6CIX.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-2SAOFGES.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-C7OXDWV3.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-D65ZTVVY.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-LRGHDA2E.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-MEVRENVH.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-OHDLWXXH.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-UZ6X7JXC.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QVXGRNEI.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -3259,7 +3259,7 @@ var appConfig = {
 var is_mock = location.href.includes("mock=true") || localStorage.getItem("BACKOFFICE.mock") === "true";
 var bootstrap = async () => {
   if (is_mock) {
-    await import("./chunk-CCPJKFST.js");
+    await import("./chunk-TYX3CJ6G.js");
   }
   bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
 };

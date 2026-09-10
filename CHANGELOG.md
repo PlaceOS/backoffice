@@ -41,6 +41,7 @@ All notable changes to this project will be documented in this file.
 #### Users
 
 - Add toggle to include deleted users
+- Add force delete and restore actions
 
 ### Performance
 
