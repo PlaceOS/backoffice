@@ -42,6 +42,7 @@ All notable changes to this project will be documented in this file.
 
 - Add toggle to include deleted users
 - Add force delete and restore actions
+- Indicate deleted users in lists and about page
 
 ### Performance
 
