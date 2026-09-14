@@ -13,6 +13,7 @@ import {
     FormField,
     required,
     submit,
+    validate,
 } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -67,6 +68,7 @@ interface StaffTenantFormModel {
     platform: 'google' | 'office365';
     service_account: string;
     booking_limits: { type: string; amount: string | number }[];
+    booking_range: { type: string; days: string | number }[];
     early_checkin: number;
     credentials: HashMap;
     outlook_config: HashMap;
@@ -373,6 +375,27 @@ export interface StaffTenantModalData {
                         [fields]="['type', 'amount']"
                     />
                 </div>
+                <div class="mt-6 flex flex-col space-y-2">
+                    <span class="label">{{
+                        'ADMIN.TENANTS_BOOKING_RANGE' | translate
+                    }}</span>
+                    <p class="text-sm opacity-60">
+                        {{ 'ADMIN.TENANTS_BOOKING_RANGE_HINT' | translate }}
+                    </p>
+                    <object-list-field
+                        [ngModel]="formModel().booking_range"
+                        (ngModelChange)="updateBookingRange($event)"
+                        [ngModelOptions]="{ standalone: true }"
+                        [fields]="['type', 'days']"
+                    />
+                    @if (form.booking_range().invalid()) {
+                        <p class="text-error text-sm">
+                            {{
+                                'ADMIN.TENANTS_BOOKING_RANGE_ERROR' | translate
+                            }}
+                        </p>
+                    }
+                </div>
             </form>
         </fullscreen-modal-shell>
     `,
@@ -422,6 +445,21 @@ export class StaffTenantModalComponent {
         required(path.name);
         required(path.platform);
         email(path.service_account);
+        validate(path.booking_range, ({ value }) => {
+            const ranges = value();
+            const types = ranges.map(({ type }) => type?.trim());
+            return ranges.some(
+                ({ days }, index) =>
+                    !types[index] ||
+                    days == null ||
+                    `${days}`.trim() === '' ||
+                    !Number.isInteger(+days) ||
+                    +days < 0 ||
+                    +days > 4294967295,
+            ) || new Set(types).size !== types.length
+                ? { kind: 'booking_range' }
+                : undefined;
+        });
     });
 
     public readonly credential_fields = computed(() => {
@@ -469,6 +507,15 @@ export class StaffTenantModalComponent {
         this.formModel.update((model) => ({ ...model, booking_limits }));
     }
 
+    public updateBookingRange(
+        booking_range: StaffTenantFormModel['booking_range'],
+    ) {
+        this.formModel.update((model) => ({
+            ...model,
+            booking_range: [...booking_range],
+        }));
+    }
+
     public async save() {
         await submit(this.form, async () => undefined);
         const invalid_credentials = this.credential_fields()
@@ -497,6 +544,12 @@ export class StaffTenantModalComponent {
             ...model,
             credentials: this.activeCredentials(model),
             booking_limits,
+            booking_range: Object.fromEntries(
+                model.booking_range.map(({ type, days }) => [
+                    type.trim(),
+                    +days,
+                ]),
+            ),
         };
         if (!(value.credentials as HashMap).conference_type) {
             delete (value.credentials as HashMap).conference_type;
@@ -574,6 +627,9 @@ export class StaffTenantModalComponent {
                 type: k,
                 amount: limits[k],
             })),
+            booking_range: Object.entries(this.tenant?.booking_range || {}).map(
+                ([type, days]) => ({ type, days }),
+            ),
             early_checkin: this.tenant?.early_checkin || 60 * 60,
             credentials: {
                 user_agent: 'PlaceOS',
