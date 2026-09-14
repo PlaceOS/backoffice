@@ -33,6 +33,7 @@ All notable changes to this project will be documented in this file.
 #### Admin
 
 - Signage AI providers page
+- Add tenant bookable period
 
 #### Repositories
 
