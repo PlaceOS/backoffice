@@ -196,7 +196,7 @@ export interface SignagePluginModalData {
                                 }}
                             </div>
                         }
-                        @if (schema()) {
+                        @if (has_schema()) {
                             <div class="bg-base-200/50 mb-2 rounded-sm p-2">
                                 <schema-form
                                     #schema_form_el
@@ -207,7 +207,9 @@ export interface SignagePluginModalData {
                             </div>
                         }
                         @if (
-                            !schema_loading() && !schema() && !schema_error()
+                            !schema_loading() &&
+                            !has_schema() &&
+                            !schema_error()
                         ) {
                             <div
                                 class="bg-base-200 rounded-sm p-8 text-center text-sm opacity-60"
@@ -272,6 +274,9 @@ export class SignagePluginModalComponent
 
     public readonly embed_plugin = signal<SignagePlugin>(null);
     public readonly schema = signal<Record<string, unknown>>(null);
+    public readonly has_schema = computed(
+        () => Object.keys(this.schema() || {}).length > 0,
+    );
     public readonly schema_loading = signal(false);
     public readonly schema_error = signal(false);
     public readonly playback_type = signal('static');
@@ -326,11 +331,7 @@ export class SignagePluginModalComponent
     public onSchemaLoaded(config_schema: Record<string, unknown>): void {
         this.schema_loading.set(false);
         this.schema_error.set(false);
-        if (config_schema && Object.keys(config_schema).length > 0) {
-            this.schema.set(config_schema);
-        } else {
-            this.schema.set(null);
-        }
+        this.schema.set(config_schema ?? {});
     }
 
     public onPluginLoaded(details: PluginLoadedPayload): void {
@@ -354,10 +355,23 @@ export class SignagePluginModalComponent
         await submit(this.form, async () => {
             this.loading.set(i18n('ADMIN.SIGNAGE_PLUGINS_SAVING'));
             this._dialog_ref.disableClose = true;
+            const schema = this.schema();
+            const values = this.formModel();
             const payload: Partial<SignagePlugin> = {
                 ...this._data.item,
-                ...this.formModel(),
-                params: this.schema() || this._data.item?.params || {},
+                ...values,
+                params: schema ?? this._data.item?.params ?? {},
+                // Only keep defaults for parameters in the loaded source schema.
+                defaults: schema
+                    ? Object.fromEntries(
+                          Object.entries(values.defaults).filter(([key]) =>
+                              Object.prototype.hasOwnProperty.call(
+                                  schema.properties || {},
+                                  key,
+                              ),
+                          ),
+                      )
+                    : values.defaults,
             };
             try {
                 const result = await this._data.save(payload);
