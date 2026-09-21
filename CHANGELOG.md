@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - Harden signage AI provider setup
 - Unify header actions and fix signage AI table overflow
 - Fix close button on view upload modal
+- Remove obsolete signage plugin defaults on save
 
 #### Modules
 
