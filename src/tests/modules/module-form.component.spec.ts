@@ -115,6 +115,7 @@ describe('creating a module', () => {
         control_system_id: 'sys-1',
         system: { id: 'sys-1', name: 'Test System' },
         toJSON: () => ({
+            control_system_id: 'sys-1',
             settings: [
                 { encryption_level: 0 },
                 { encryption_level: 1 },
@@ -151,23 +152,44 @@ describe('creating a module', () => {
         expect(mocks.addSettings).not.toHaveBeenCalled();
     });
 
-    it('should not associate a device module with a control system', async () => {
-        fixture.componentInstance.formModel.update((value) => ({
-            ...value,
-            driver: {
-                id: 'driver-device',
-                name: 'Device driver',
-                role: PlaceDriverRole.Device,
-            } as PlaceDriver,
-            ip: '10.0.0.2',
-            port: 4999,
-        }));
+    it('should retain the control system when creating a logic module', async () => {
         await fixture.whenStable();
-
         await fixture.componentInstance.submit();
 
         expect(mocks.addModule).toHaveBeenCalledWith(
-            expect.not.objectContaining({ control_system_id: 'sys-1' }),
+            expect.objectContaining({ control_system_id: 'sys-1' }),
         );
     });
+
+    it.each([
+        PlaceDriverRole.Device,
+        PlaceDriverRole.SSH,
+        PlaceDriverRole.Service,
+        PlaceDriverRole.Websocket,
+    ])(
+        'should omit the control system when creating a module with role %s',
+        async (role) => {
+            fixture.componentInstance.formModel.update((value) => ({
+                ...value,
+                driver: {
+                    id: 'driver-non-logic',
+                    name: 'Non-logic driver',
+                    role,
+                    default_uri: 'https://example.com',
+                    default_port: 4999,
+                } as PlaceDriver,
+                ip: '10.0.0.2',
+                port: 4999,
+            }));
+            await fixture.whenStable();
+
+            await fixture.componentInstance.submit();
+
+            expect(mocks.addModule).toHaveBeenCalledOnce();
+            expect(mocks.addModule.mock.calls[0][0]).toMatchObject({ role });
+            expect(mocks.addModule.mock.calls[0][0]).not.toHaveProperty(
+                'control_system_id',
+            );
+        },
+    );
 });

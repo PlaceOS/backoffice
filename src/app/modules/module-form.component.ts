@@ -383,7 +383,7 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
 
     /** Role of the selected driver */
     public role = computed(() => {
-        const role = this.formModel().driver?.role || this.formModel().role;
+        const role = this.formModel().driver?.role ?? this.formModel().role;
         switch (role) {
             case PlaceDriverRole.SSH:
                 return 'ssh';
@@ -447,7 +447,7 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
             const model = this.formModel();
             const driver = model.driver;
             if (!driver?.id) return;
-            const role = driver.role || PlaceDriverRole.Logic;
+            const role = driver.role ?? PlaceDriverRole.Logic;
             const udp =
                 driver.role === PlaceDriverRole.Service ||
                 driver.role === PlaceDriverRole.Websocket
@@ -497,15 +497,15 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
             delete form_value.system;
             delete form_value.driver;
             delete form_value.edge;
-            // Only logic modules can belong to a control system.
-            if (form_value.role !== PlaceDriverRole.Logic) {
-                delete form_value.control_system_id;
-            }
             const form_item = (
                 item.id
                     ? cleanObject({ ...item_json, ...form_value }, [undefined])
                     : { ...item_json, ...form_value }
             ) as Identity;
+            // Strip the system after merging so the original item cannot restore it.
+            if (form_item.role !== PlaceDriverRole.Logic) {
+                delete form_item.control_system_id;
+            }
             try {
                 const _item = await (form_item.id
                     ? updateModule(
