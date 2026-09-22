@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - Preserve control system on creation
 - Stop treating settings collection as string
 - Omit control system from device modules
+- Allow non-logic module creation from systems
 
 #### Signage
 
