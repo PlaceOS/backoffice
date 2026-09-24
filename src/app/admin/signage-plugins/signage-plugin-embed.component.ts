@@ -16,7 +16,7 @@ import { SignagePlugin } from '@placeos/ts-client';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { SafePipe } from '../../ui/pipes/safe.pipe';
 
-const API_VERSION = 'signage-plugin/v1';
+export const SIGNAGE_PLUGIN_API_VERSION = 'signage-plugin/v1';
 
 /** Resolve a plugin URI the same way as the iframe element. */
 export function resolveSignagePluginUrl(
@@ -49,6 +49,8 @@ export type PluginLoadedPayload = {
     plugin: {
         name: string;
         version: string;
+        /** Not sent by plugins built before plugin types were added */
+        type?: SignagePlugin['plugin_type'];
     };
     capabilities: {
         requires_play_signal: boolean;
@@ -136,7 +138,7 @@ export class SignagePluginEmbedComponent
         payload: PluginConfigPayload | null = null,
     ) {
         this._plugin_el()?.nativeElement?.contentWindow.postMessage(
-            { api: API_VERSION, type, payload },
+            { api: SIGNAGE_PLUGIN_API_VERSION, type, payload },
             this.plugin_origin(),
         );
     }
@@ -155,7 +157,11 @@ export class SignagePluginEmbedComponent
             return;
 
         const msg = event.data;
-        if (!msg || msg.api !== API_VERSION || typeof msg.type !== 'string')
+        if (
+            !msg ||
+            msg.api !== SIGNAGE_PLUGIN_API_VERSION ||
+            typeof msg.type !== 'string'
+        )
             return;
 
         this.status.set(msg.type);
