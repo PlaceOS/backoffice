@@ -1,4 +1,13 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+    Component,
+    computed,
+    ElementRef,
+    inject,
+    OnInit,
+    signal,
+    viewChild,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -60,8 +69,31 @@ interface PluginProbe {
                     "
                     [value]="repository_id()"
                     (valueChange)="selectRepository($event)"
+                    (openedChange)="setRepositoryOpen($event)"
                 >
-                    @for (repo of repositories(); track repo.id) {
+                    <mat-option class="bg-base-100 sticky -top-2 z-20">
+                        <input
+                            #repository_search
+                            type="search"
+                            name="repository-search"
+                            [ngModel]="repository_filter()"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="repository_filter.set($event)"
+                            (mousedown)="$event.stopPropagation()"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                            class="option-search-input focus:bg-info/10 pointer-events-auto absolute inset-1 h-auto cursor-text rounded-sm p-4"
+                            [placeholder]="
+                                'COMMON.SEARCH_FOR'
+                                    | translate: { name: 'repositories' }
+                            "
+                            [attr.aria-label]="
+                                'COMMON.SEARCH_FOR'
+                                    | translate: { name: 'repositories' }
+                            "
+                        />
+                    </mat-option>
+                    @for (repo of filtered_repositories(); track repo.id) {
                         <mat-option [value]="repo.id">
                             {{ repo.name }}
                         </mat-option>
@@ -103,8 +135,21 @@ interface PluginProbe {
             </div>
         </main>
     `,
-    styles: [``],
+    styles: [
+        `
+            .option-search-input {
+                width: calc(100% - 0.5rem);
+                outline: none;
+            }
+
+            .option-search-input::placeholder {
+                color: var(--base-400, currentColor);
+                opacity: 0.65;
+            }
+        `,
+    ],
     imports: [
+        FormsModule,
         IconComponent,
         MatDialogModule,
         MatFormFieldModule,
@@ -118,6 +163,8 @@ export class SignagePluginImportModalComponent
     extends AsyncHandler
     implements OnInit
 {
+    private readonly _repository_search_el =
+        viewChild<ElementRef<HTMLInputElement>>('repository_search');
     private _dialog_ref =
         inject<MatDialogRef<SignagePluginImportModalComponent, SignagePlugin>>(
             MatDialogRef,
@@ -125,6 +172,18 @@ export class SignagePluginImportModalComponent
 
     public readonly repositories = signal<PlaceRepository[]>([]);
     public readonly repository_id = signal('');
+    public readonly repository_filter = signal('');
+    /** Repositories that match the search. The selected one always shows. */
+    public readonly filtered_repositories = computed(() => {
+        const search = this.repository_filter().trim().toLowerCase();
+        if (!search) return this.repositories();
+        const selected = this.repository_id();
+        return this.repositories().filter(
+            (repo) =>
+                repo.id === selected ||
+                repo.name.toLowerCase().includes(search),
+        );
+    });
     public readonly loading_files = signal(false);
     public readonly probes = signal<PluginProbe[]>([]);
     public readonly plugins = computed(() =>
@@ -155,6 +214,15 @@ export class SignagePluginImportModalComponent
         } catch (err) {
             this._notifyError(err);
         }
+    }
+
+    /** Clear the search and focus its input when the select opens */
+    public setRepositoryOpen(open: boolean) {
+        if (!open) return;
+        this.repository_filter.set('');
+        this.timeout('focus_repository_search', () =>
+            this._repository_search_el()?.nativeElement.focus(),
+        );
     }
 
     /** Find the HTML files in the repository and check which are plugins */
