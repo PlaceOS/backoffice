@@ -41,6 +41,10 @@ All notable changes to this project will be documented in this file.
 
 - Add interface changelog tab
 
+#### Signage
+
+- Import plugins from a frontend repository
+
 #### Systems
 
 - Select trigger playlists by name
