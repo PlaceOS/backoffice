@@ -316,7 +316,10 @@
         "TRIGGER_EXECUTE_ENABLED": "Execute Enabled",
         "TRIGGER_IMPORTANT": "Important",
         "MISCONFIGURED": "Room system does not contain all required zones",
-        "PLAYLISTS": "Playlists"
+        "PLAYLISTS": "Playlists",
+        "PLAYLISTS_SEARCH": "Search playlists to add...",
+        "PLAYLISTS_EMPTY": "No playlists assigned to this trigger",
+        "PLAYLIST_REMOVE": "Remove playlist"
     },
     "MODULES": {
         "SINGULAR": "Module",

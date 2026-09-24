@@ -1,4 +1,3 @@
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
     EventEmitter,
@@ -7,23 +6,25 @@ import {
     inject,
     signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { FormField, form, submit } from '@angular/forms/signals';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { MatRippleModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { PlaceTrigger, cleanObject } from '@placeos/ts-client';
-import { AsyncHandler } from '../common/async-handler.class';
 import {
-    addSignalChipItem,
-    getInvalidSignalFields,
-    removeSignalChipItem,
-} from '../common/forms';
+    PlaceTrigger,
+    SignagePlaylist,
+    cleanObject,
+    querySignagePlaylists,
+    showSignagePlaylist,
+} from '@placeos/ts-client';
+import { AsyncHandler } from '../common/async-handler.class';
+import { getInvalidSignalFields } from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
 import { generateTriggerSettingsFormModel } from '../triggers/triggers.utilities';
+import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -91,38 +92,67 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         }
                     </div>
                     @if (form.playlists) {
-                        <div class="flex flex-col">
+                        <div class="mb-4 flex flex-col">
                             <label for="playlists">{{
                                 'SYSTEMS.PLAYLISTS' | translate
                             }}</label>
-                            <mat-form-field appearance="outline">
-                                <mat-chip-grid #chipList aria-label="Playlists">
-                                    @for (
-                                        item of trigger_state().playlists;
-                                        track item
-                                    ) {
-                                        <mat-chip
-                                            [removable]="true"
-                                            (removed)="removePlaylist(item)"
+                            <item-search-field
+                                name="playlists"
+                                [placeholder]="
+                                    'SYSTEMS.PLAYLISTS_SEARCH' | translate
+                                "
+                                [query_fn]="query_fn"
+                                [exclude]="exclude_fn"
+                                [clear_on_select]="true"
+                                [ngModel]="null"
+                                [ngModelOptions]="{ standalone: true }"
+                                (ngModelChange)="addPlaylist($event)"
+                            />
+                            <div
+                                class="border-base-300 divide-base-300 divide-y rounded-sm border"
+                            >
+                                @for (
+                                    id of trigger_state().playlists;
+                                    track id
+                                ) {
+                                    <div
+                                        playlist
+                                        class="flex items-center gap-2 py-1 pr-1 pl-4"
+                                    >
+                                        <div class="min-w-0 flex-1">
+                                            <div class="truncate">
+                                                {{ playlist_names()[id] || id }}
+                                            </div>
+                                            <div
+                                                class="truncate text-xs opacity-30"
+                                            >
+                                                {{ id }}
+                                            </div>
+                                        </div>
+                                        <button
+                                            icon
+                                            matRipple
+                                            type="button"
+                                            [attr.aria-label]="
+                                                'SYSTEMS.PLAYLIST_REMOVE'
+                                                    | translate
+                                            "
+                                            (click)="removePlaylist(id)"
                                         >
-                                            {{ item }}
-                                            <icon matChipRemove>close</icon>
-                                        </mat-chip>
-                                    }
-                                    <input
-                                        matInput
-                                        placeholder="Playlist IDs"
-                                        [matChipInputFor]="chipList"
-                                        [matChipInputSeparatorKeyCodes]="
-                                            separators
-                                        "
-                                        [matChipInputAddOnBlur]="true"
-                                        (matChipInputTokenEnd)="
-                                            addPlaylist($event)
-                                        "
-                                    />
-                                </mat-chip-grid>
-                            </mat-form-field>
+                                            <icon>close</icon>
+                                        </button>
+                                    </div>
+                                } @empty {
+                                    <p
+                                        class="p-4 text-center text-sm opacity-30"
+                                    >
+                                        {{
+                                            'SYSTEMS.PLAYLISTS_EMPTY'
+                                                | translate
+                                        }}
+                                    </p>
+                                }
+                            </div>
                         </div>
                     }
                     <div class="-mx-2 flex flex-wrap items-center">
@@ -153,9 +183,9 @@ import { TranslatePipe } from '../ui/translate.pipe';
         SettingsToggleComponent,
         TranslatePipe,
         FormField,
-        MatFormFieldModule,
-        MatChipsModule,
-        MatInputModule,
+        FormsModule,
+        ItemSearchFieldComponent,
+        MatRippleModule,
         FullscreenModalShellComponent,
         IconComponent,
     ],
@@ -178,17 +208,31 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
     public heading = i18n(`Trigger.${this._data.item.id ? 'EDIT' : 'NEW'}`);
     public readonly trigger_state = this.formModel.asReadonly();
 
-    public readonly separators: number[] = [ENTER, COMMA, SPACE];
+    /** Playlist names keyed by playlist ID. IDs without a name show the ID. */
+    public readonly playlist_names = signal<Record<string, string>>({});
 
-    public readonly addPlaylist = (e: MatChipInputEvent) =>
-        this.formModel.update((model) => ({
-            ...model,
-            playlists: addSignalChipItem(model.playlists, e),
+    public readonly query_fn = (q: string) =>
+        querySignagePlaylists({ q, limit: 20 }).then((resp) => resp.data);
+    public readonly exclude_fn = (playlist: SignagePlaylist) =>
+        this.formModel().playlists.includes(playlist.id);
+
+    /** Add the selected playlist from the search field to the trigger */
+    public readonly addPlaylist = (playlist: SignagePlaylist | null) => {
+        if (!playlist?.id) return;
+        this.playlist_names.update((names) => ({
+            ...names,
+            [playlist.id]: playlist.name,
         }));
-    public readonly removePlaylist = (i: string) =>
+        this.formModel.update((model) =>
+            model.playlists.includes(playlist.id)
+                ? model
+                : { ...model, playlists: [...model.playlists, playlist.id] },
+        );
+    };
+    public readonly removePlaylist = (id: string) =>
         this.formModel.update((model) => ({
             ...model,
-            playlists: removeSignalChipItem(model.playlists, i),
+            playlists: model.playlists.filter((_) => _ !== id),
         }));
 
     public ngOnInit(): void {
@@ -196,6 +240,7 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
             'save_item_key',
             this._hotkey.listen(['KeyS'], () => this.submit()),
         );
+        this._loadPlaylistNames();
     }
 
     public async submit(): Promise<void> {
@@ -218,5 +263,19 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
         ) as Identity;
         // System trigger uses external save - emit action event
         this.event.emit({ reason: 'action', metadata: form_item });
+    }
+
+    /** Load names for the playlists already assigned to the trigger */
+    private async _loadPlaylistNames() {
+        const playlists = await Promise.all(
+            this.formModel().playlists.map((id) =>
+                showSignagePlaylist(id).catch(() => null),
+            ),
+        );
+        const names: Record<string, string> = {};
+        for (const playlist of playlists) {
+            if (playlist?.id) names[playlist.id] = playlist.name;
+        }
+        this.playlist_names.update((current) => ({ ...names, ...current }));
     }
 }
