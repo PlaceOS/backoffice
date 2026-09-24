@@ -18,6 +18,7 @@ import { openConfirmModal } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
+import { SignagePluginImportModalComponent } from './signage-plugin-import-modal.component';
 import { SignagePluginModalComponent } from './signage-plugin-modal.component';
 import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.component';
 
@@ -30,6 +31,21 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                     {{ 'ADMIN.SIGNAGE_PLUGINS_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
+                    <button
+                        icon
+                        default
+                        matRipple
+                        class="text-xl"
+                        (click)="importPlugin()"
+                        [matTooltip]="
+                            'ADMIN.SIGNAGE_PLUGINS_IMPORT' | translate
+                        "
+                        [attr.aria-label]="
+                            'ADMIN.SIGNAGE_PLUGINS_IMPORT' | translate
+                        "
+                    >
+                        <icon>travel_explore</icon>
+                    </button>
                     <button
                         icon
                         default
@@ -202,10 +218,25 @@ export class AdminSignagePluginsComponent
         this.loadPlugins();
     }
 
-    public newPlugin(): void {
+    /** Open the import wizard, then the new plugin form with the selected plugin details */
+    public importPlugin(): void {
+        const ref = this._dialog.open<
+            SignagePluginImportModalComponent,
+            void,
+            SignagePlugin
+        >(SignagePluginImportModalComponent);
+        this.subscription(
+            'import_events',
+            ref.afterClosed().subscribe((item) => {
+                if (item) this.newPlugin(item);
+            }),
+        );
+    }
+
+    public newPlugin(item = new SignagePlugin()): void {
         const ref = this._dialog.open(SignagePluginModalComponent, {
             data: {
-                item: new SignagePlugin(),
+                item,
                 save: (item: Partial<SignagePlugin>) => addSignagePlugin(item),
             },
         });
