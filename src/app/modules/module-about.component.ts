@@ -190,7 +190,7 @@ import { ModuleStateService } from './module-state.service';
                         default
                         start
                         matRipple
-                        [disabled]="!item.running || stopping()"
+                        [disabled]="item.running || stopping()"
                         (click)="toggleModuleState()"
                         [matTooltip]="'SYSTEMS.START' | translate"
                     >
@@ -206,7 +206,7 @@ import { ModuleStateService } from './module-state.service';
                         error
                         stop
                         matRipple
-                        [disabled]="item.running || stopping()"
+                        [disabled]="!item.running || stopping()"
                         (click)="toggleModuleState()"
                         [matTooltip]="'SYSTEMS.STOP' | translate"
                     >
