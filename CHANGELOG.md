@@ -29,6 +29,10 @@ All notable changes to this project will be documented in this file.
 - Stop edit modal plugin reloads
 - Make plugin defaults optional
 
+#### Systems
+
+- Keep module connection state after power toggle
+
 ### Documentation
 
 ### Features
