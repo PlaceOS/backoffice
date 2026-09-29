@@ -151,12 +151,21 @@ export class SystemStateService extends AsyncHandler {
                     complete: true,
                     limit: 200,
                 } as Record<string, unknown>).catch(() => ({ data: [] }));
+                // Keep known connection state across refreshes. Bindings only
+                // emit on change, so a reset value would never be filled again.
+                const known_state = new Map(
+                    this._modules().map((mod) => [
+                        mod.id,
+                        (mod as PlaceModule & { connected?: boolean })
+                            .connected,
+                    ]),
+                );
                 const modules = [...response.data];
                 modules.forEach(
                     (_) =>
                         ((
                             _ as PlaceModule & { connected?: boolean }
-                        ).connected = undefined),
+                        ).connected = known_state.get(_.id)),
                 );
                 modules.sort((a, b) => {
                     const index_a =
