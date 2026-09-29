@@ -38,6 +38,10 @@ All notable changes to this project will be documented in this file.
 - Signage AI providers page
 - Add tenant bookable period
 
+#### Groups
+
+- Configure default permissions and AD group sync
+
 #### Repositories
 
 - Add interface changelog tab

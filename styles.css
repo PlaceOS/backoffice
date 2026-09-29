@@ -1834,6 +1834,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .text-\[0\.7rem\] {
   font-size: 0.7rem;
 }
+#placeos .text-\[0\.8em\] {
+  font-size: 0.8em;
+}
 #placeos .text-\[0\.625rem\] {
   font-size: 0.625rem;
 }
@@ -2414,6 +2417,11 @@ input:where([type=button], [type=reset], [type=submit]),
 @media (width >= 40rem) {
   #placeos .sm\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (width >= 40rem) {
+  #placeos .sm\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 @media (width >= 40rem) {
