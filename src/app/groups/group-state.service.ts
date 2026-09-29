@@ -132,6 +132,7 @@ export class GroupStateService {
                         placeholder: 'GROUPS.USER_SEARCH',
                         empty_message: 'GROUPS.USERS_BULK_EMPTY',
                         show_permissions: true,
+                        permissions: this.active_item?.default_permissions,
                         query_fn: (query: string) =>
                             queryUsers({
                                 q: query,

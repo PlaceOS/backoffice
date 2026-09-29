@@ -34,6 +34,8 @@ export interface GroupBulkAddModalData<T extends GroupBulkAddItem> {
     query_fn: (query: string) => Promise<T[]>;
     exclude?: (item: T, search: string) => boolean;
     show_permissions?: boolean;
+    /** Initial permissions for the added items */
+    permissions?: number;
 }
 
 export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
@@ -229,7 +231,7 @@ export class GroupBulkAddModalComponent<T extends GroupBulkAddItem> {
     public readonly selected = signal<T[]>([]);
     public readonly search = signal('');
     public readonly loading = signal(false);
-    public readonly permissions = signal(0);
+    public readonly permissions = signal(this._data.permissions ?? 0);
     public readonly tab = signal(0);
     public readonly title = this._data.title;
     public readonly placeholder = this._data.placeholder;
