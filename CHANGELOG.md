@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - Stop treating settings collection as string
 - Omit control system from device modules
 - Allow non-logic module creation from systems
+- Correct inverted start/stop controls on about page
 
 #### Signage
 
