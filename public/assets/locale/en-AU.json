@@ -810,7 +810,18 @@
         "SWITCH_GROUP": "Switch group",
         "ALL_GROUPS": "All groups",
         "SEARCH_GROUPS": "Search groups",
-        "NO_MATCHING_GROUPS": "No matching groups"
+        "NO_MATCHING_GROUPS": "No matching groups",
+        "DEFAULT_PERMISSIONS": "Default permissions",
+        "DEFAULT_PERMISSIONS_HINT": "Permissions given to users added to this group without specific permissions.",
+        "AD_GROUPS": "AD group sync",
+        "AD_GROUPS_HINT": "Users in these AD groups are added to this group automatically with the set permissions.",
+        "AD_GROUPS_EMPTY": "No AD groups mapped to this group",
+        "AD_GROUP_SEARCH": "Search for AD groups...",
+        "AD_GROUP_ID": "AD group ID",
+        "AD_GROUP_NAME": "AD group name",
+        "AD_GROUP_ADD": "Add AD group",
+        "AD_GROUP_PERMISSIONS": "AD group permissions",
+        "AD_GROUP_REMOVE": "Remove AD group"
     },
     "DOMAINS": {
         "SINGULAR": "Domain",

@@ -58,7 +58,11 @@ vi.mock('../../app/groups/group-permissions-modal.component', () => ({
 }));
 
 describe('group membership actions', () => {
-    const group = new PlaceGroup({ id: 'group-1', authority_id: 'domain-1' });
+    const group = new PlaceGroup({
+        id: 'group-1',
+        authority_id: 'domain-1',
+        default_permissions: 5,
+    });
     const user = new PlaceGroupUser({
         group_id: 'group-1',
         user_id: 'user-1',
@@ -255,6 +259,11 @@ describe('group membership actions', () => {
             'GROUPS.USERS_BULK_SUCCESS:1',
         );
         expect(service.loading()).toBe(false);
+    });
+
+    it('starts bulk user permissions at the group default permissions', async () => {
+        await service.bulkAddUsers();
+        expect(mocks.open.mock.calls[0][1].data.permissions).toBe(5);
     });
 
     it('does not add memberships after a bulk dialog is cancelled', async () => {

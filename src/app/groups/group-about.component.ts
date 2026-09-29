@@ -12,6 +12,7 @@ import { toSignal } from '../common/signals';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
+import { groupPermissionLabels } from './group-permissions';
 import { GroupStateService } from './group-state.service';
 
 @Component({
@@ -21,7 +22,7 @@ import { GroupStateService } from './group-state.service';
             <div class="w-full">
                 <div
                     class="border-base-200 grid gap-2 rounded-sm border p-4"
-                    [style.gridTemplateColumns]="'8rem auto'"
+                    [style.gridTemplateColumns]="'10rem auto'"
                 >
                     @if (item()?.authority_id) {
                         <div class="flex items-center text-sm font-medium">
@@ -70,6 +71,60 @@ import { GroupStateService } from './group-state.service';
                         @if (!item()?.subsystems?.length) {
                             <span class="opacity-30">{{
                                 'GROUPS.SUBSYSTEMS_EMPTY' | translate
+                            }}</span>
+                        }
+                    </div>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'GROUPS.DEFAULT_PERMISSIONS' | translate }}
+                    </div>
+                    <div class="-mx-1 flex flex-1 flex-wrap">
+                        @for (
+                            label of permissionLabels(
+                                item()?.default_permissions || 0
+                            );
+                            track label
+                        ) {
+                            <span
+                                class="bg-base-200 m-1 rounded px-2 py-1 text-xs"
+                            >
+                                {{ label | translate }}
+                            </span>
+                        } @empty {
+                            <span class="opacity-30">{{
+                                'COMMON.NONE' | translate
+                            }}</span>
+                        }
+                    </div>
+                    <div class="flex items-center text-sm font-medium">
+                        {{ 'GROUPS.AD_GROUPS' | translate }}
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        @for (ad_group of ad_groups(); track ad_group.id) {
+                            <div class="flex flex-wrap items-center gap-1">
+                                <span class="text-sm select-text">
+                                    {{ ad_group.name }}
+                                </span>
+                                <span
+                                    class="mono text-xs opacity-30 select-text"
+                                >
+                                    {{ ad_group.id }}
+                                </span>
+                                @for (
+                                    label of permissionLabels(
+                                        ad_group.permissions
+                                    );
+                                    track label
+                                ) {
+                                    <span
+                                        class="bg-base-200 rounded px-2 py-1 text-xs"
+                                    >
+                                        {{ label | translate }}
+                                    </span>
+                                }
+                            </div>
+                        } @empty {
+                            <span class="opacity-30">{{
+                                'GROUPS.AD_GROUPS_EMPTY' | translate
                             }}</span>
                         }
                     </div>
@@ -143,6 +198,12 @@ export class GroupAboutComponent {
     });
     public readonly parent = signal<PlaceGroup | null>(null);
     public readonly authority = signal<PlaceDomain | null>(null);
+    public readonly permissionLabels = groupPermissionLabels;
+    public readonly ad_groups = computed(() =>
+        Object.entries(this.item()?.ad_group_mappings || {}).map(
+            ([id, [name, permissions]]) => ({ id, name, permissions }),
+        ),
+    );
     public readonly created_at = computed(
         () => Date.parse(this.item()?.created_at || '') / 1000,
     );

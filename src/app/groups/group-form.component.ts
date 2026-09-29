@@ -20,6 +20,7 @@ import {
     addGroup,
     cleanObject,
     PlaceGroup,
+    PlaceGroupAdMappings,
     queryDomains,
     queryGroups,
     showGroup,
@@ -38,10 +39,18 @@ import { DialogEvent, Identity } from '../common/types';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
+import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
+import { GroupAdGroupsFieldComponent } from './group-ad-groups-field.component';
+import {
+    GROUP_PERMISSION_FLAGS,
+    hasGroupPermission,
+    setGroupPermission,
+} from './group-permissions';
 import {
     applyGroupFormSchema,
     generateGroupFormModel,
+    hasStaffGroupSearch,
 } from './groups.utilities';
 
 @Component({
@@ -166,6 +175,52 @@ import {
                         />
                     </mat-form-field>
                 </div>
+                <fieldset class="field">
+                    <legend class="mb-1 text-[0.8em] font-medium">
+                        {{ 'GROUPS.DEFAULT_PERMISSIONS' | translate }}
+                    </legend>
+                    <p class="mb-2 text-xs opacity-60">
+                        {{ 'GROUPS.DEFAULT_PERMISSIONS_HINT' | translate }}
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                        @for (
+                            permission of permission_flags;
+                            track permission.key
+                        ) {
+                            <settings-toggle
+                                [ngModel]="
+                                    hasPermission(
+                                        formModel().default_permissions,
+                                        permission.value
+                                    )
+                                "
+                                [ngModelOptions]="{ standalone: true }"
+                                (ngModelChange)="
+                                    setDefaultPermission(
+                                        permission.value,
+                                        $event
+                                    )
+                                "
+                            >
+                                {{ permission.label | translate }}
+                            </settings-toggle>
+                        }
+                    </div>
+                </fieldset>
+                <fieldset class="field mt-4">
+                    <legend class="mb-1 text-[0.8em] font-medium">
+                        {{ 'GROUPS.AD_GROUPS' | translate }}
+                    </legend>
+                    <p class="mb-2 text-xs opacity-60">
+                        {{ 'GROUPS.AD_GROUPS_HINT' | translate }}
+                    </p>
+                    <group-ad-groups-field
+                        [mappings]="formModel().ad_group_mappings"
+                        (mappingsChange)="setAdGroupMappings($event)"
+                        [default_permissions]="formModel().default_permissions"
+                        [searchable]="staff_group_search.value()"
+                    />
+                </fieldset>
             </form>
         </fullscreen-modal-shell>
     `,
@@ -181,6 +236,8 @@ import {
         TranslatePipe,
         FormField,
         FullscreenModalShellComponent,
+        GroupAdGroupsFieldComponent,
+        SettingsToggleComponent,
     ],
 })
 export class GroupFormComponent extends AsyncHandler implements OnInit {
@@ -209,6 +266,13 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
         () => this.formModel().subsystems || [],
     );
     public readonly separators: number[] = [ENTER, COMMA];
+    public readonly permission_flags = GROUP_PERMISSION_FLAGS;
+    public readonly hasPermission = hasGroupPermission;
+    /** Whether AD groups can be found with the staff API */
+    public readonly staff_group_search = resource({
+        params: () => this.formModel().authority_id,
+        loader: ({ params }) => hasStaffGroupSearch(params),
+    });
     public readonly query_parent_groups = (_: string) =>
         queryGroups({ q: _, limit: 20 }).then(({ data }) => data);
     public readonly exclude_parent_group = (group: PlaceGroup, __: string) =>
@@ -235,6 +299,21 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
                 new Set([...(value.subsystems || []), ...group.subsystems]),
             ),
         }));
+    }
+
+    public setDefaultPermission(permission: number, enabled: boolean) {
+        this.formModel.update((value) => ({
+            ...value,
+            default_permissions: setGroupPermission(
+                value.default_permissions,
+                permission,
+                enabled,
+            ),
+        }));
+    }
+
+    public setAdGroupMappings(ad_group_mappings: PlaceGroupAdMappings) {
+        this.formModel.update((value) => ({ ...value, ad_group_mappings }));
     }
 
     public readonly addSubsystem = (event: MatChipInputEvent) =>
