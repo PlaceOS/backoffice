@@ -235,7 +235,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
     public readonly minLength = input(0);
     /** Whether item list is loading */
     public readonly loading = model<boolean>(false);
-    /** Service used for searching items */
+    /** Service used for searching items. A new function queries again */
     public readonly query_fn = input<(_: string) => Promise<T[]>>(() =>
         Promise.resolve([]),
     );
@@ -249,9 +249,10 @@ export class ItemSearchFieldComponent<T extends SearchItem>
             query: this._debounced_search(),
             options: this.options(),
             min_length: this.minLength(),
+            query_fn: this.query_fn(),
         }),
         loader: async ({ params }) => {
-            const { query, options, min_length } = params;
+            const { query, options, min_length, query_fn } = params;
             const trimmed_query = query.trim();
             this.loading.set(true);
             try {
@@ -259,7 +260,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
                     options && options.length > 0
                         ? options
                         : !min_length || trimmed_query.length >= min_length
-                          ? await this.query_fn()(trimmed_query).catch(
+                          ? await query_fn(trimmed_query).catch(
                                 () => [] as T[],
                             )
                           : [];
@@ -358,6 +359,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
      */
     public writeValue(value: T) {
         this.active_item.set(value);
+        if (!value) this.search_str.set('');
         this.resetSearchString();
     }
 
