@@ -25,7 +25,7 @@ import { VERSION } from '../../env/version';
 import { escapeHtml } from '../common/general';
 // import { SchemaStateService } from '../admin/schema-state.service';
 import { AsyncHandler } from '../common/async-handler.class';
-import { describeError } from '../common/errors';
+import { describeError, readError } from '../common/errors';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { currentUser } from '../common/user-state';
@@ -336,16 +336,17 @@ export class MetadataDisplayComponent
             this._dialog,
         );
         if (result.reason !== 'done') return;
-        await removeMetadata(this.item().id, { name: field }).catch((err) => {
-            result.close();
-            notifyError(
-                `Error removing old "${field}" metadata. Error: ${describeError(
+        try {
+            await removeMetadata(this.item().id, { name: field });
+        } catch (err) {
+            return notifyError(
+                `Error removing old "${field}" metadata. Error: ${await readError(
                     err,
                 )}`,
             );
-            throw err;
-        });
-        result.close();
+        } finally {
+            result.close();
+        }
         notifySuccess(`Successfully removed "${field}" metadata.`);
         this.metadata.set(
             this.metadata().filter((prop) => prop && prop.name !== field),

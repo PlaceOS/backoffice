@@ -742,20 +742,20 @@ export class SystemStateService extends AsyncHandler {
      */
     public async toggleModulePower(device: PlaceModule) {
         const method = device.running ? stopModule : startModule;
-        await method(device.id).catch((err) => {
+        try {
+            await method(device.id);
+        } catch (err) {
             if (typeof err === 'string' && err.length < 64) {
-                notifyError(err);
-            } else {
-                notifyError(
-                    `Failed to ${
-                        device.running ? 'stop' : 'start'
-                    } module '${device.id}'.\nView Error?`,
-                    'View',
-                    () => this.viewDetails(err),
-                );
+                return notifyError(err);
             }
-            throw err;
-        });
+            return notifyError(
+                `Failed to ${
+                    device.running ? 'stop' : 'start'
+                } module '${device.id}'.\nView Error?`,
+                'View',
+                () => this.viewDetails(err),
+            );
+        }
         notifySuccess(
             `Module successfully ${device.running ? 'stopped' : 'started'}`,
         );
