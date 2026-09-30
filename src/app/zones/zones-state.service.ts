@@ -228,11 +228,18 @@ export class ZonesStateService {
             waitForEvent(ref.afterClosed()),
         ]);
         if (details?.reason !== 'action') return ref.close();
-        const zone = await this.addTrigger(
-            ref.componentInstance.item as PlaceTrigger,
-        );
-        ref.close();
-        if (zone) this._service.replaceItem(zone as unknown as Identity);
+        try {
+            const zone = await this.addTrigger(
+                ref.componentInstance.item as PlaceTrigger,
+            );
+            if (zone) this._service.replaceItem(zone as unknown as Identity);
+        } catch (err) {
+            notifyError(
+                `Error adding trigger to zone. Error: ${describeError(err)}`,
+            );
+        } finally {
+            ref.close();
+        }
     }
 
     public async addTrigger(
@@ -277,13 +284,16 @@ export class ZonesStateService {
 
     public async addGroup(group: PlaceGroup) {
         if (!group?.id) return;
-        await addGroupZone({
-            group_id: group.id,
-            zone_id: this.active_item.id,
-        }).catch((error) => {
-            notifyError(i18n('ZONES.GROUP_ADD_ERROR', { error }));
-            throw error;
-        });
+        try {
+            await addGroupZone({
+                group_id: group.id,
+                zone_id: this.active_item.id,
+            });
+        } catch (error) {
+            return notifyError(
+                i18n('ZONES.GROUP_ADD_ERROR', { error: describeError(error) }),
+            );
+        }
         notifySuccess(i18n('ZONES.GROUP_ADD_SUCCESS'));
         this.changed();
     }
@@ -357,24 +367,32 @@ export class ZonesStateService {
         );
         if (details.reason !== 'done') return;
         details.loading(i18n('ZONES.GROUP_REMOVE_LOADING'));
-        await removeGroupZone(item.group_id, item.zone_id).catch((error) => {
+        try {
+            await removeGroupZone(item.group_id, item.zone_id);
+        } catch (error) {
             details.close();
-            notifyError(i18n('ZONES.GROUP_REMOVE_ERROR', { error }));
-            throw error;
-        });
+            return notifyError(
+                i18n('ZONES.GROUP_REMOVE_ERROR', {
+                    error: describeError(error),
+                }),
+            );
+        }
         details.close();
         notifySuccess(i18n('ZONES.GROUP_REMOVE_SUCCESS'));
         this.changed();
     }
 
     public async updateGroup(item: PlaceGroupZone) {
-        await updateGroupZone(item.group_id, item.zone_id, {
-            permissions: +item.permissions || 0,
-            deny: !!item.deny,
-        }).catch((error) => {
-            notifyError(i18n('ZONES.GROUP_SAVE_ERROR', { error }));
-            throw error;
-        });
+        try {
+            await updateGroupZone(item.group_id, item.zone_id, {
+                permissions: +item.permissions || 0,
+                deny: !!item.deny,
+            });
+        } catch (error) {
+            return notifyError(
+                i18n('ZONES.GROUP_SAVE_ERROR', { error: describeError(error) }),
+            );
+        }
         notifySuccess(i18n('ZONES.GROUP_SAVE_SUCCESS'));
         this.changed();
     }

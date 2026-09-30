@@ -13,6 +13,7 @@ import {
     updateGroupUser,
 } from '@placeos/ts-client';
 import { escapeHtml } from '../common/general';
+import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -91,7 +92,14 @@ export class UsersStateService {
                 const response = await queryGroupUsers({
                     user_id: item.id,
                     limit: 1000,
-                }).catch(() => ({ data: [] }));
+                }).catch((error) => {
+                    notifyError(
+                        i18n('USERS.GROUPS_LOAD_ERROR', {
+                            error: describeError(error),
+                        }),
+                    );
+                    return { data: [] as PlaceGroupUser[] };
+                });
                 return response.data.sort((a, b) =>
                     (a.group?.name || a.group_id).localeCompare(
                         b.group?.name || b.group_id,
@@ -111,13 +119,16 @@ export class UsersStateService {
 
     public async addGroup(group: PlaceGroup) {
         if (!group?.id) return;
-        await addGroupUser({
-            user_id: this.active_item.id,
-            group_id: group.id,
-        }).catch((error) => {
-            notifyError(i18n('USERS.GROUP_ADD_ERROR', { error }));
-            throw error;
-        });
+        try {
+            await addGroupUser({
+                user_id: this.active_item.id,
+                group_id: group.id,
+            });
+        } catch (error) {
+            return notifyError(
+                i18n('USERS.GROUP_ADD_ERROR', { error: describeError(error) }),
+            );
+        }
         notifySuccess(i18n('USERS.GROUP_ADD_SUCCESS'));
         this.changed();
     }
@@ -199,23 +210,31 @@ export class UsersStateService {
         );
         if (details.reason !== 'done') return;
         details.loading(i18n('USERS.GROUP_REMOVE_LOADING'));
-        await removeGroupUser(item.user_id, item.group_id).catch((error) => {
+        try {
+            await removeGroupUser(item.user_id, item.group_id);
+        } catch (error) {
             details.close();
-            notifyError(i18n('USERS.GROUP_REMOVE_ERROR', { error }));
-            throw error;
-        });
+            return notifyError(
+                i18n('USERS.GROUP_REMOVE_ERROR', {
+                    error: describeError(error),
+                }),
+            );
+        }
         details.close();
         notifySuccess(i18n('USERS.GROUP_REMOVE_SUCCESS'));
         this.changed();
     }
 
     public async updateGroup(item: PlaceGroupUser) {
-        await updateGroupUser(item.user_id, item.group_id, {
-            permissions: +item.permissions || 0,
-        }).catch((error) => {
-            notifyError(i18n('USERS.GROUP_SAVE_ERROR', { error }));
-            throw error;
-        });
+        try {
+            await updateGroupUser(item.user_id, item.group_id, {
+                permissions: +item.permissions || 0,
+            });
+        } catch (error) {
+            return notifyError(
+                i18n('USERS.GROUP_SAVE_ERROR', { error: describeError(error) }),
+            );
+        }
         notifySuccess(i18n('USERS.GROUP_SAVE_SUCCESS'));
         this.changed();
     }
@@ -262,7 +281,9 @@ export class UsersStateService {
             this.changed();
             notifySuccess(i18n('USERS.REVIVE_SUCCESS'));
         } catch (error) {
-            notifyError(i18n('USERS.REVIVE_ERROR', { error }));
+            notifyError(
+                i18n('USERS.REVIVE_ERROR', { error: describeError(error) }),
+            );
         } finally {
             details.close();
         }

@@ -129,7 +129,7 @@ describe('group membership actions', () => {
         });
     });
 
-    it('recovers to empty lists after membership queries fail', async () => {
+    it('reports failed membership queries and recovers to empty lists', async () => {
         mocks.queryGroupUsers.mockRejectedValue(new Error('Offline'));
         mocks.queryGroupZones.mockRejectedValue(new Error('Offline'));
         active.set(group);
@@ -138,6 +138,12 @@ describe('group membership actions', () => {
         expect(service.zones()).toEqual([]);
         expect(service.counts()).toEqual({ users: 0, zones: 0 });
         expect(service.loading()).toBe(false);
+        expect(mocks.notifyError).toHaveBeenCalledWith(
+            'GROUPS.USERS_LOAD_ERROR',
+        );
+        expect(mocks.notifyError).toHaveBeenCalledWith(
+            'GROUPS.ZONES_LOAD_ERROR',
+        );
     });
 
     it('does not send an add request for an unsaved user', async () => {
@@ -148,9 +154,7 @@ describe('group membership actions', () => {
     it('reports a failed add without claiming success', async () => {
         const error = new Error('Forbidden');
         mocks.addGroupUser.mockRejectedValue(error);
-        await expect(
-            service.addUser(new PlaceUser({ id: 'user-1' })),
-        ).rejects.toBe(error);
+        await service.addUser(new PlaceUser({ id: 'user-1' }));
         expect(mocks.addGroupUser).toHaveBeenCalledExactlyOnceWith({
             group_id: 'group-1',
             user_id: 'user-1',
@@ -192,7 +196,7 @@ describe('group membership actions', () => {
     it('closes the confirmation and reports a failed zone removal', async () => {
         const error = new Error('Forbidden');
         mocks.removeGroupZone.mockRejectedValue(error);
-        await expect(service.removeZone(zone)).rejects.toBe(error);
+        await service.removeZone(zone);
         expect(mocks.removeGroupZone).toHaveBeenCalledExactlyOnceWith(
             'group-1',
             'zone-1',

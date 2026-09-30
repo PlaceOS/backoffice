@@ -267,8 +267,13 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
 
     public async loadBrokers() {
         this.loading.set(true);
-        const brokers = await queryBrokers().then((r) => r.data);
-        this.brokers.set(brokers);
-        this.loading.set(false);
+        try {
+            const brokers = await queryBrokers().then((r) => r.data);
+            this.brokers.set(brokers);
+        } catch (err) {
+            notifyError(`Failed to load brokers. Error: ${describeError(err)}`);
+        } finally {
+            this.loading.set(false);
+        }
     }
 }

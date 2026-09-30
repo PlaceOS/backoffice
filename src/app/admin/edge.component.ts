@@ -254,10 +254,17 @@ export class PlaceEdgeComponent implements OnInit {
 
     public async loadEdges() {
         this.loading.set('Loading edge node list...');
-        const { data } = await queryEdges();
-        this.edge_list.set(
-            (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
-        );
-        this.loading.set('');
+        try {
+            const { data } = await queryEdges();
+            this.edge_list.set(
+                (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
+            );
+        } catch (err) {
+            notifyError(
+                `Failed to load edge nodes. Error: ${describeError(err)}`,
+            );
+        } finally {
+            this.loading.set('');
+        }
     }
 }

@@ -287,7 +287,10 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
                 if (files.length) {
                     this.show.set(true);
                     for (let i = 0; i < files.length; i++) {
-                        this._uploads.uploadFileWithPermissions(files[i]);
+                        // A cancelled upload needs no feedback
+                        this._uploads
+                            .uploadFileWithPermissions(files[i])
+                            .catch(() => null);
                     }
                 }
             }

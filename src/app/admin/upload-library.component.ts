@@ -20,6 +20,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { apiKey, cleanObject, query, remove, token } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { escapeHtml } from '../common/general';
+import { describeError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import {
     notifyError,
@@ -464,7 +465,10 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                     const uploads = [];
                     for (let i = 0; i < files.length; i++) {
                         uploads.push(
-                            this._uploads.uploadFileWithPermissions(files[i]),
+                            // A cancelled upload needs no feedback
+                            this._uploads
+                                .uploadFileWithPermissions(files[i])
+                                .catch(() => null),
                         );
                     }
                     // Cancelling the permissions modal rejects that file only
@@ -566,6 +570,10 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                 query_params: {},
                 path: 'uploads',
             });
+        } catch (err) {
+            return notifyError(
+                `Failed to remove upload. Error: ${describeError(err)}`,
+            );
         } finally {
             result.close();
         }

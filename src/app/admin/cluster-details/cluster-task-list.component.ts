@@ -293,7 +293,14 @@ export class PlaceClusterTaskListComponent
     public async loadCluster(id: string) {
         const clusters = await queryClusters({
             q: id,
-        } as Record<string, string>).then((_) => _.data);
+        } as Record<string, string>)
+            .then((_) => _.data)
+            .catch((err) => {
+                notifyError(
+                    `Failed to load cluster. Error: ${describeError(err)}`,
+                );
+                return [];
+            });
         // The search may return other clusters, so only accept an exact id
         const match = clusters.find((_) => _.id === id) || null;
         this.cluster.set(match);

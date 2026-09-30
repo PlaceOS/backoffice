@@ -12,6 +12,8 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
+import { describeError } from '../common/errors';
+import { notifyError } from '../common/notifications';
 import { DiffViewerComponent } from '../ui/diff-viewer.component';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -189,6 +191,11 @@ export class MetadataHistoryModalComponent implements OnInit {
         const history = await listMetadataHistory(this._data.id, {
             name: this._data.name,
             limit: 5000,
+        }).catch((err) => {
+            notifyError(
+                `Failed to load metadata history. Error: ${describeError(err)}`,
+            );
+            return [] as PlaceMetadata[];
         });
         this.history.set(history);
     }

@@ -18,6 +18,7 @@ import {
     updateGroupZone,
 } from '@placeos/ts-client';
 import { escapeHtml } from '../common/general';
+import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -48,7 +49,14 @@ export class GroupStateService {
                 const response = await queryGroupUsers({
                     group_id: item.id,
                     limit: 1000,
-                }).catch(() => ({ data: [] }));
+                }).catch((error) => {
+                    notifyError(
+                        i18n('GROUPS.USERS_LOAD_ERROR', {
+                            error: describeError(error),
+                        }),
+                    );
+                    return { data: [] as PlaceGroupUser[] };
+                });
                 return response.data.sort((a, b) =>
                     (a.user?.name || a.user_id).localeCompare(
                         b.user?.name || b.user_id,
@@ -72,7 +80,14 @@ export class GroupStateService {
                 const response = await queryGroupZones({
                     group_id: item.id,
                     limit: 1000,
-                }).catch(() => ({ data: [] }));
+                }).catch((error) => {
+                    notifyError(
+                        i18n('GROUPS.ZONES_LOAD_ERROR', {
+                            error: describeError(error),
+                        }),
+                    );
+                    return { data: [] as PlaceGroupZone[] };
+                });
                 return response.data.sort((a, b) =>
                     (a.zone?.name || a.zone_id).localeCompare(
                         b.zone?.name || b.zone_id,
@@ -113,13 +128,16 @@ export class GroupStateService {
 
     public async addUser(user: PlaceUser) {
         if (!user?.id) return;
-        await addGroupUser({
-            group_id: this.active_item.id,
-            user_id: user.id,
-        }).catch((error) => {
-            notifyError(i18n('GROUPS.USER_ADD_ERROR', { error }));
-            throw error;
-        });
+        try {
+            await addGroupUser({
+                group_id: this.active_item.id,
+                user_id: user.id,
+            });
+        } catch (error) {
+            return notifyError(
+                i18n('GROUPS.USER_ADD_ERROR', { error: describeError(error) }),
+            );
+        }
         notifySuccess(i18n('GROUPS.USER_ADD_SUCCESS'));
         this.changed();
     }
@@ -259,23 +277,31 @@ export class GroupStateService {
         );
         if (details.reason !== 'done') return;
         details.loading(i18n('GROUPS.USER_REMOVE_LOADING'));
-        await removeGroupUser(item.user_id, item.group_id).catch((error) => {
+        try {
+            await removeGroupUser(item.user_id, item.group_id);
+        } catch (error) {
             details.close();
-            notifyError(i18n('GROUPS.USER_REMOVE_ERROR', { error }));
-            throw error;
-        });
+            return notifyError(
+                i18n('GROUPS.USER_REMOVE_ERROR', {
+                    error: describeError(error),
+                }),
+            );
+        }
         details.close();
         notifySuccess(i18n('GROUPS.USER_REMOVE_SUCCESS'));
         this.changed();
     }
 
     public async updateUser(item: PlaceGroupUser) {
-        await updateGroupUser(item.user_id, item.group_id, {
-            permissions: +item.permissions || 0,
-        }).catch((error) => {
-            notifyError(i18n('GROUPS.USER_SAVE_ERROR', { error }));
-            throw error;
-        });
+        try {
+            await updateGroupUser(item.user_id, item.group_id, {
+                permissions: +item.permissions || 0,
+            });
+        } catch (error) {
+            return notifyError(
+                i18n('GROUPS.USER_SAVE_ERROR', { error: describeError(error) }),
+            );
+        }
         notifySuccess(i18n('GROUPS.USER_SAVE_SUCCESS'));
         this.changed();
     }
@@ -297,13 +323,16 @@ export class GroupStateService {
 
     public async addZone(zone: PlaceZone) {
         if (!zone?.id) return;
-        await addGroupZone({
-            group_id: this.active_item.id,
-            zone_id: zone.id,
-        }).catch((error) => {
-            notifyError(i18n('GROUPS.ZONE_ADD_ERROR', { error }));
-            throw error;
-        });
+        try {
+            await addGroupZone({
+                group_id: this.active_item.id,
+                zone_id: zone.id,
+            });
+        } catch (error) {
+            return notifyError(
+                i18n('GROUPS.ZONE_ADD_ERROR', { error: describeError(error) }),
+            );
+        }
         notifySuccess(i18n('GROUPS.ZONE_ADD_SUCCESS'));
         this.changed();
     }
@@ -321,24 +350,32 @@ export class GroupStateService {
         );
         if (details.reason !== 'done') return;
         details.loading(i18n('GROUPS.ZONE_REMOVE_LOADING'));
-        await removeGroupZone(item.group_id, item.zone_id).catch((error) => {
+        try {
+            await removeGroupZone(item.group_id, item.zone_id);
+        } catch (error) {
             details.close();
-            notifyError(i18n('GROUPS.ZONE_REMOVE_ERROR', { error }));
-            throw error;
-        });
+            return notifyError(
+                i18n('GROUPS.ZONE_REMOVE_ERROR', {
+                    error: describeError(error),
+                }),
+            );
+        }
         details.close();
         notifySuccess(i18n('GROUPS.ZONE_REMOVE_SUCCESS'));
         this.changed();
     }
 
     public async updateZone(item: PlaceGroupZone) {
-        await updateGroupZone(item.group_id, item.zone_id, {
-            permissions: +item.permissions || 0,
-            deny: !!item.deny,
-        }).catch((error) => {
-            notifyError(i18n('GROUPS.ZONE_SAVE_ERROR', { error }));
-            throw error;
-        });
+        try {
+            await updateGroupZone(item.group_id, item.zone_id, {
+                permissions: +item.permissions || 0,
+                deny: !!item.deny,
+            });
+        } catch (error) {
+            return notifyError(
+                i18n('GROUPS.ZONE_SAVE_ERROR', { error: describeError(error) }),
+            );
+        }
         notifySuccess(i18n('GROUPS.ZONE_SAVE_SUCCESS'));
         this.changed();
     }

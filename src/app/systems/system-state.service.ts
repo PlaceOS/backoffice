@@ -220,9 +220,14 @@ export class SystemStateService extends AsyncHandler {
             try {
                 const response = isSubsystemUser()
                     ? {
-                          data: await Promise.all(
-                              item.zones.map((id) => showZone(id)),
-                          ),
+                          // A zone the user cannot see must not hide the rest
+                          data: (
+                              await Promise.all(
+                                  item.zones.map((id) =>
+                                      showZone(id).catch(() => null),
+                                  ),
+                              )
+                          ).filter((zone) => !!zone),
                       }
                     : await listSystemZones(item.id).catch(() => ({
                           data: [],
@@ -418,12 +423,19 @@ export class SystemStateService extends AsyncHandler {
             waitForEvent(ref.afterClosed()),
         ]);
         if (details?.reason !== 'action') return ref.close();
-        const t = await this.addTrigger(
-            ref.componentInstance.item as PlaceTrigger,
-        );
-        ref.close();
-        this.changed();
-        return t;
+        try {
+            const t = await this.addTrigger(
+                ref.componentInstance.item as PlaceTrigger,
+            );
+            this.changed();
+            return t;
+        } catch (err) {
+            notifyError(
+                `Error adding trigger to system. Error: ${describeError(err)}`,
+            );
+        } finally {
+            ref.close();
+        }
     }
 
     public async addTrigger(trigger: PlaceTrigger) {

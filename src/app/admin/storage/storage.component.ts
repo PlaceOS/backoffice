@@ -7,7 +7,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { escapeHtml } from '../../common/general';
+import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
+import { notifyError } from '../../common/notifications';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
 import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
@@ -232,6 +234,10 @@ export class StorageComponent implements OnInit {
         resp.loading(i18n('ADMIN.STORAGE_REMOVE_LOADING'));
         try {
             await removeStorage(item.id);
+        } catch (err) {
+            return notifyError(
+                `Failed to remove storage provider. Error: ${describeError(err)}`,
+            );
         } finally {
             resp.close();
         }

@@ -12,6 +12,7 @@ import {
     update,
 } from '@placeos/ts-client';
 import { addDays, getUnixTime } from 'date-fns';
+import { describeError } from '../../common/errors';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { waitForEvent } from '../../common/signals';
 import { DialogEvent } from '../../common/types';
@@ -53,8 +54,8 @@ export class APIKeyService {
         loader: async () => (await get('/api/engine/v2/scopes')) as string[],
     });
 
-    public readonly available_scopes = computed(
-        () => this._available_scopes.value() || [],
+    public readonly available_scopes = computed(() =>
+        this._available_scopes.hasValue() ? this._available_scopes.value() : [],
     );
 
     private readonly _available_keys = resource({
@@ -79,8 +80,8 @@ export class APIKeyService {
         },
     });
 
-    public readonly available_keys = computed(
-        () => this._available_keys.value() || [],
+    public readonly available_keys = computed(() =>
+        this._available_keys.hasValue() ? this._available_keys.value() : [],
     );
 
     private readonly _users = resource({
@@ -96,7 +97,9 @@ export class APIKeyService {
         },
     });
 
-    public readonly users = computed(() => this._users.value() || []);
+    public readonly users = computed(() =>
+        this._users.hasValue() ? this._users.value() : [],
+    );
 
     public setDomain(domain: PlaceDomain) {
         this._admin_data.setDomain('api-keys', domain);
@@ -136,9 +139,10 @@ export class APIKeyService {
             },
         }).catch((_) => {
             ref.close();
-            notifyError(_);
-            throw _;
+            notifyError(describeError(_));
+            return null;
         });
+        if (!key) return;
         this._last_key.set(key as PlaceAPIKeyDetails);
         this._change.set(Date.now());
         notifySuccess('Successfully created new API key.');
@@ -174,9 +178,10 @@ export class APIKeyService {
                     expires_at: getUnixTime(addDays(Date.now(), 1)), // expire 1 day from creation
                 },
             }).catch((_) => {
-                notifyError(_);
-                throw _;
+                notifyError(describeError(_));
+                return null;
             });
+            if (!key) return;
             this._last_key.set(key as PlaceAPIKeyDetails);
             this._change.set(Date.now());
             notifySuccess('Successfully created new API key.');
@@ -199,21 +204,22 @@ export class APIKeyService {
         if (details?.reason !== 'done') return;
         ref.componentInstance.loading.set('Updating API key...');
         const domain = this._domain();
-        await update({
-            id: key.id,
-            query_params: {},
-            fn: (d) => new PlaceAPIKeyDetails(d),
-            path: 'api_keys',
-            method: 'patch',
-            form_data: {
-                ...details.metadata,
-                authority_id: domain.id,
-            },
-        }).catch((_) => {
+        try {
+            await update({
+                id: key.id,
+                query_params: {},
+                fn: (d) => new PlaceAPIKeyDetails(d),
+                path: 'api_keys',
+                method: 'patch',
+                form_data: {
+                    ...details.metadata,
+                    authority_id: domain.id,
+                },
+            });
+        } catch (_) {
             ref.close();
-            notifyError(_);
-            throw _;
-        });
+            return notifyError(describeError(_));
+        }
         this._change.set(Date.now());
         notifySuccess('Successfully updated API key.');
         ref.close();
@@ -237,6 +243,8 @@ export class APIKeyService {
                 query_params: {},
                 path: 'api_keys',
             });
+        } catch (error) {
+            return notifyError(describeError(error));
         } finally {
             details.close();
         }
