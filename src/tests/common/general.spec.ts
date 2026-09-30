@@ -427,6 +427,17 @@ describe('general.ts utilities', () => {
             const result = jsonToCsv(data, [], ';');
             expect(result).toBe('name;age\nJohn;30');
         });
+
+        it('should keep columns missing from the first row', () => {
+            const data: Record<string, unknown>[] = [
+                { id: '1' },
+                { id: '2', code: 'B2' },
+            ];
+            expect(jsonToCsv(data)).toBe('id,code\n1,\n2,B2');
+            expect(jsonToCsv(data, ['id', 'name', 'code'])).toBe(
+                'id,name,code\n1,,\n2,,B2',
+            );
+        });
     });
 
     describe('eventToPoint', () => {

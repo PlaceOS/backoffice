@@ -270,6 +270,8 @@ function splitCsvRows(csv: string, separator: string): string[][] {
  * Converts an array of JSON objects into a CSV string.
  *
  * @param data - The JSON array to convert.
+ * @param use_keys - Columns to output, in order. When empty, uses the union
+ * of keys across all rows, in first-seen order.
  * @param separator - The optional field separator (comma by default).
  * @returns A string in CSV format.
  */
@@ -280,9 +282,9 @@ export function jsonToCsv<T extends Record<string, unknown>>(
 ): string {
     if (!data.length) return '';
 
-    const headers = Object.keys(data[0]).filter(
-        (key) => !use_keys.length || use_keys.includes(key),
-    );
+    const headers = use_keys.length
+        ? use_keys
+        : [...new Set(data.flatMap((item) => Object.keys(item)))];
     const headerRow = headers.join(separator);
 
     const rows = data.map((item) => {
