@@ -1,4 +1,11 @@
-import { Service, Signal, WritableSignal, inject, signal } from '@angular/core';
+import {
+    Service,
+    Signal,
+    WritableSignal,
+    inject,
+    isDevMode,
+    signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { showMetadata, updateMetadata } from '@placeos/ts-client';
 import { format, isSameDay } from 'date-fns';
@@ -80,7 +87,15 @@ export class SettingsService extends AsyncHandler {
      */
     public async init() {
         this._applyTheme();
-        if (this.get('debug')) window.debug = true;
+        // Debug output is on for dev builds. To debug a production build,
+        // set localStorage `BACKOFFICE.debug` to `true` and reload.
+        if (
+            this.get('debug') ||
+            isDevMode() ||
+            localStorage.getItem('BACKOFFICE.debug') === 'true'
+        ) {
+            window.debug = true;
+        }
         const app = this.get('app') as { name?: string } | undefined;
         if (app?.name) {
             this._app_name = app.name;
