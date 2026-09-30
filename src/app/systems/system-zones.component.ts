@@ -220,7 +220,7 @@ export class SystemZonesComponent {
                 this.changed[item.id] ||
                 pending.find((_) => _.id === item.id)
             ) {
-                colours[index] = 'var(--wal)';
+                colours[index] = 'var(--warn-light)';
             }
         });
         return colours;
