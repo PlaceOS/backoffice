@@ -321,7 +321,7 @@ export class TriggerActionModalComponent
                 notifySuccess(
                     `Successfully ${
                         this.is_new ? 'added' : 'updated'
-                    } condition to trigger`,
+                    } action to trigger`,
                 );
                 this._dialog.close();
             },
@@ -330,7 +330,7 @@ export class TriggerActionModalComponent
                 notifyError(
                     `Error ${
                         this.is_new ? 'adding' : 'updating'
-                    } condition to trigger. Error: ${describeError(err)}`,
+                    } action to trigger. Error: ${describeError(err)}`,
                 );
             },
         );
