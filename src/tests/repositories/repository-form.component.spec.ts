@@ -5,9 +5,16 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import {
     PlaceRepositoryType,
     listRepositoryBranches,
+    updateRepository,
 } from '@placeos/ts-client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { notifyError } from '../../app/common/notifications';
 import { RepositoryFormComponent } from '../../app/repositories/repository-form.component';
+
+vi.mock('../../app/common/notifications', async (importOriginal) => ({
+    ...(await importOriginal<object>()),
+    notifyError: vi.fn(),
+}));
 
 vi.mock('@placeos/ts-client', () => ({
     EncryptionLevel: { Support: 2 },
@@ -70,6 +77,17 @@ describe('RepositoryFormComponent', () => {
         await new Promise((resolve) => setTimeout(resolve, 750));
 
         expect(listRepositoryBranches).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not save without a branch when the branch list is empty', async () => {
+        const component = fixture.componentInstance;
+        component.branch_list.set([]);
+        component.formModel.update((model) => ({ ...model, branch: '' }));
+
+        await component.submit();
+
+        expect(updateRepository).not.toHaveBeenCalled();
+        expect(notifyError).toHaveBeenCalledWith('REPOS.BRANCH_REQUIRED');
     });
 
     it('keeps selected options at the top when filtering', async () => {

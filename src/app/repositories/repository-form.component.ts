@@ -612,6 +612,11 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
 
     public async submit(): Promise<void> {
         await submit(this.form, async () => {
+            // A disabled branch field skips validation, e.g. when branches fail to load
+            if (!this.formModel().branch) {
+                notifyError(i18n(`${this._name}.BRANCH_REQUIRED`));
+                return;
+            }
             const item = this._data.item;
             this.saving.set(i18n(`${this._name}.SAVING`));
             this._dialog_ref.disableClose = true;
