@@ -1,8 +1,7 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DriverStateService } from './driver-state.service';
 
-import { Router } from '@angular/router';
 import { IconComponent } from '../ui/icon.component';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 
@@ -16,7 +15,7 @@ import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
                     class="markdown items-start"
                     [innerHTML]="docs_string | markdown | async"
                 ></div>
-            } @else {
+            } @else if (!docs_loading()) {
                 <div
                     class="bg-base-200 flex min-h-[calc(100vh-20rem)] w-full flex-col items-center justify-center space-y-4 rounded-xl opacity-30"
                 >
@@ -29,19 +28,10 @@ import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
     styles: [``],
     imports: [MarkdownPipe, IconComponent, AsyncPipe],
 })
-export class DriverDocsComponent implements OnInit {
+export class DriverDocsComponent {
     private _service = inject(DriverStateService);
-    private _router = inject(Router);
 
     public readonly docs = this._service.docs;
-
-    public async ngOnInit() {
-        const str = this.docs();
-        if (str) return;
-        this._router.navigate([
-            '/drivers',
-            this._service.active_item.id,
-            'about',
-        ]);
-    }
+    /** Hide the empty state until the readme request settles */
+    public readonly docs_loading = this._service.docs_loading;
 }

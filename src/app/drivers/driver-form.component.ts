@@ -548,24 +548,37 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         this.loading.set('');
     }
 
+    /**
+     * Load the repository, driver and commit for an existing driver.
+     * For a new driver, pre-select the repository and driver if given.
+     */
     private async _loadDetailsFromForm() {
         const { id, commit, file_name, repository_id } = this.formModel();
-        if (!id) return;
+        if (!repository_id) return;
         this.loading.set('DRIVERS.DETAILS_LOADING');
-        const repo = await showRepository(repository_id);
-        const driver = {
-            id: file_name,
-            name: file_name.replace(/\//g, ' > '),
-        };
-        this.repo.set(repo);
-        this.driver.set(driver);
-        const commit_list = await this._loadCommitList(
-            repository_id,
-            file_name,
-        );
-        const active_commit = commit_list.find((c) => c.id === commit);
-        if (active_commit) this.commit.set(active_commit);
-        this.loading.set('');
+        try {
+            const repo = await showRepository(repository_id);
+            this.repo.set(repo);
+            if (!file_name) return;
+            this.driver.set({
+                id: file_name,
+                name: file_name.replace(/\//g, ' > '),
+            });
+            if (!id) return;
+            const commit_list = await this._loadCommitList(
+                repository_id,
+                file_name,
+            );
+            // Commit may be older than the fetched list
+            const active_commit = commit_list.find((c) => c.id === commit) || {
+                id: commit,
+                name: commit,
+                extra: null,
+            };
+            this.commit.set(active_commit);
+        } finally {
+            this.loading.set('');
+        }
     }
 
     private async newSettings(item: Identity, settings_string: string) {

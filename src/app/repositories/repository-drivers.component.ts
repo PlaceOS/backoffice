@@ -1,11 +1,8 @@
-import { Component, effect, inject, OnInit } from '@angular/core';
-import { PlaceRepository } from '@placeos/ts-client';
+import { Component, inject } from '@angular/core';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
-import { AsyncHandler } from '../common/async-handler.class';
 import { IconComponent } from '../ui/icon.component';
 import { DriverFormatPipe } from '../ui/pipes/driver-format.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -75,7 +72,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     matRipple
                     [matTooltip]="'DRIVERS.NEW' | translate"
                     matTooltipPosition="left"
-                    (click)="newDriver(item)"
+                    (click)="newDriver(row)"
                 >
                     <icon>add</icon>
                 </button>
@@ -100,9 +97,8 @@ import { RepositoriesStateService } from './repositories-state.service';
         MatRippleModule,
     ],
 })
-export class RepositoryDriversComponent extends AsyncHandler implements OnInit {
+export class RepositoryDriversComponent {
     private _service = inject(RepositoriesStateService);
-    private _router = inject(Router);
 
     /** Whether driver list is loading */
     public readonly loading = this._service.loading;
@@ -110,29 +106,6 @@ export class RepositoryDriversComponent extends AsyncHandler implements OnInit {
     public readonly driver_list = this._service.driver_list;
     public readonly driver_list_error = this._service.driver_list_error;
 
-    public get item(): PlaceRepository {
-        return this._service.active_item as PlaceRepository;
-    }
-
-    public readonly newDriver = (d) => this._service.newDriver(d);
-
-    constructor() {
-        super();
-        effect(() => {
-            if (this.driver_list()?.length || this.driver_list_error()) {
-                this.clearTimeout('has_drivers');
-            }
-        });
-    }
-
-    public ngOnInit() {
-        this.timeout(
-            'has_drivers',
-            () => this._router.navigate(['/repositories', this.item.id]),
-            3000,
-        );
-        if (this.driver_list()?.length || this.driver_list_error()) {
-            this.clearTimeout('has_drivers');
-        }
-    }
+    public readonly newDriver = (driver: string) =>
+        this._service.newDriver(driver);
 }
