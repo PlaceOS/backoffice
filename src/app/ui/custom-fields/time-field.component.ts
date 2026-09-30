@@ -50,6 +50,7 @@ import { IconComponent } from '../icon.component';
                 (ngModelChange)="setValue($event)"
             />
             <button
+                type="button"
                 btn
                 icon
                 matSuffix

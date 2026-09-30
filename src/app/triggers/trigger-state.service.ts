@@ -304,7 +304,12 @@ export class TriggerStateService {
                 title: i18n('TRIGGERS.REMOVE_INSTANCE_TITLE', { type }),
                 content: i18n('TRIGGERS.REMOVE_INSTANCE_MSG', {
                     type,
-                    name: escapeHtml(instance.name),
+                    // Instances have no name, so match the id the list shows
+                    name: escapeHtml(
+                        instance.name ||
+                            instance.zone_id ||
+                            instance.control_system_id,
+                    ),
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },

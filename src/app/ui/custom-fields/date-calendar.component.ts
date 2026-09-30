@@ -41,6 +41,7 @@ interface DateItem {
                 </div>
                 <div class="flex items-center">
                     <button
+                        type="button"
                         icon
                         matRipple
                         name="schedule-next-month"
@@ -53,6 +54,7 @@ interface DateItem {
                         <icon>chevron_left</icon>
                     </button>
                     <button
+                        type="button"
                         icon
                         matRipple
                         name="schedule-previous-month"
@@ -78,6 +80,7 @@ interface DateItem {
             <div class="flex flex-wrap items-center justify-between">
                 @for (day of date_list(); track day) {
                     <button
+                        type="button"
                         icon
                         name="schedule-set-date"
                         class="relative my-0.5 h-9 w-9 min-w-[14%] overflow-visible"

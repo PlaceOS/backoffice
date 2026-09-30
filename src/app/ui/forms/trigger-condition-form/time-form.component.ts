@@ -428,16 +428,9 @@ export class TriggerConditionTimeFormComponent
         this.updateCronString();
     }
 
+    /** Write a custom cron string to the form. Sync so Save never sees a stale value. */
     public saveCRON(cron_str: string) {
-        this.timeout(
-            'save_cron',
-            () =>
-                this.formModel().update((model) => ({
-                    ...model,
-                    cron: cron_str,
-                })),
-            1000,
-        );
+        this.formModel().update((model) => ({ ...model, cron: cron_str }));
     }
 
     /**

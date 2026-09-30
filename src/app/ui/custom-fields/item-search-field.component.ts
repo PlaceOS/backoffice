@@ -83,6 +83,7 @@ interface SearchItem {
                     <div class="h-[50vh] flex-1 space-y-2 overflow-auto">
                         @for (option of item_list(); track option?.id) {
                             <button
+                                type="button"
                                 matRipple
                                 (click)="
                                     search_str.set(
