@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 // Mock @placeos/ts-client
 vi.mock('@placeos/ts-client', () => ({
@@ -15,8 +15,29 @@ vi.mock('../../app/common/general', () => ({
 // We need to import and test the i18n function and setTranslationService
 import {
     i18n,
+    localeFromUrl,
     setTranslationService,
 } from '../../app/common/locale.service';
+
+describe('localeFromUrl', () => {
+    it('should read lang from the hash query', () => {
+        expect(localeFromUrl('', '#/systems/sys-1/about?lang=fr')).toBe('fr');
+    });
+
+    it('should read lang from the page search', () => {
+        expect(localeFromUrl('?lang=fr', '#/systems')).toBe('fr');
+    });
+
+    it('should prefer the hash query over the page search', () => {
+        expect(localeFromUrl('?lang=de', '#/systems?lang=fr')).toBe('fr');
+    });
+
+    it('should return null when lang is not set', () => {
+        expect(
+            localeFromUrl('?x-api-key=abc', '#/systems?tab=zones'),
+        ).toBeNull();
+    });
+});
 
 describe('i18n function', () => {
     afterEach(() => {

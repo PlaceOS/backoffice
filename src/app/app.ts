@@ -1,4 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+    Component,
+    computed,
+    DestroyRef,
+    inject,
+    OnInit,
+    signal,
+} from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SwUpdate } from '@angular/service-worker';
 import {
@@ -15,13 +22,13 @@ import {
     RouterOutlet,
 } from '@angular/router';
 import { setupCache, updateAvailable } from './common/application';
-import { syncUploadToken } from './common/uploads';
 import { AsyncHandler } from './common/async-handler.class';
 import { detectIE, log } from './common/general';
 import { setNotifyOutlet } from './common/notifications';
 import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
 import { SettingsService } from './common/settings.service';
 import { signalFromClient, waitForSignalValue } from './common/signals';
+import { syncUploadToken } from './common/uploads';
 import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
 
@@ -29,7 +36,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceTenant } from './admin/staff-api.component';
 import { tenantExpiryBanner } from './admin/staff-api.utilities';
-import { LocaleService, setTranslationService } from './common/locale.service';
+import {
+    localeFromUrl,
+    LocaleService,
+    setTranslationService,
+} from './common/locale.service';
 import { GlobalBannerComponent } from './ui/global-banner.component';
 import { GlobalLoadingComponent } from './ui/global-loading.component';
 import { IconComponent } from './ui/icon.component';
@@ -37,6 +48,19 @@ import { UploadListComponent } from './ui/upload-list.component';
 
 /** Longest time start up waits for translations */
 const LOCALE_TIMEOUT_MS = 5000;
+
+/** Signal of the browser's network state. Call in an injection context. */
+function browserOnline() {
+    const state = signal(navigator.onLine);
+    const update = () => state.set(navigator.onLine);
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    inject(DestroyRef).onDestroy(() => {
+        window.removeEventListener('online', update);
+        window.removeEventListener('offline', update);
+    });
+    return state.asReadonly();
+}
 
 @Component({
     selector: 'placeos-root',
@@ -145,8 +169,12 @@ export class AppComponent extends AsyncHandler implements OnInit {
         return this._users.dark_mode;
     }
 
-    /** Whether PlaceOS is reachable */
-    public readonly online = signalFromClient(onlineState());
+    private readonly _client_online = signalFromClient(onlineState());
+    private readonly _browser_online = browserOnline();
+    /** Whether PlaceOS is reachable. ts-client only flags auth failures, so also track the network. */
+    public readonly online = computed(
+        () => this._client_online() && this._browser_online(),
+    );
 
     public get is_fools_day(): boolean {
         return false;
@@ -230,12 +258,17 @@ export class AppComponent extends AsyncHandler implements OnInit {
     }
 
     /**
-     * Set the locale from storage or the browser languages.
+     * Set the locale from the URL `lang` param, storage or the browser languages.
      * Resolves when translations load, or after a timeout.
      */
     private async _initLocale() {
         let load: Promise<void> | undefined;
         try {
+            // Router query params are not ready yet, so read lang from the URL
+            const url_locale = localeFromUrl(location.search, location.hash);
+            if (url_locale) {
+                localStorage.setItem('BACKOFFICE.locale', url_locale);
+            }
             let locale = localStorage.getItem('BACKOFFICE.locale');
             const locales = (this._settings.get('app.locales') as {
                 id: string;

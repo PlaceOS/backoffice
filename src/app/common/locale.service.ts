@@ -20,6 +20,19 @@ export function i18n(
     return _service.get(key, args, plural);
 }
 
+/**
+ * Read the `lang` query param from a URL's search and hash parts.
+ * The hash query wins, as the router uses hash locations.
+ */
+export function localeFromUrl(search: string, hash: string): string | null {
+    const hash_query = hash.includes('?') ? hash.slice(hash.indexOf('?')) : '';
+    return (
+        new URLSearchParams(hash_query).get('lang') ||
+        new URLSearchParams(search).get('lang') ||
+        null
+    );
+}
+
 declare global {
     interface Window {
         i18n: (key: string, args: Record<string, unknown>) => string;

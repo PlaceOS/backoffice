@@ -1,3 +1,4 @@
+import { computed } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -181,6 +182,13 @@ describe('SettingsService', () => {
             service.post<number>('number_key', 42);
             const value = service.value<number>('number_key');
             expect(value).toBe(42);
+        });
+
+        it('should update readers of a key posted later', () => {
+            const reader = computed(() => service.value('late_key'));
+            expect(reader()).toBeNull();
+            service.post('late_key', 'posted');
+            expect(reader()).toBe('posted');
         });
     });
 
