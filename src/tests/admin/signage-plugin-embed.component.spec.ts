@@ -29,5 +29,11 @@ describe('SignagePluginEmbedComponent', () => {
         it('rejects an invalid plugin URI', () => {
             expect(resolveSignagePluginUrl('http://[', base_uri)).toBeNull();
         });
+
+        it('rejects a non-http plugin URI', () => {
+            expect(
+                resolveSignagePluginUrl('javascript:alert(1)', base_uri),
+            ).toBeNull();
+        });
     });
 });

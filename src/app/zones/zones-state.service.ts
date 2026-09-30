@@ -18,7 +18,7 @@ import {
     updateGroupZone,
     updateZone,
 } from '@placeos/ts-client';
-import { unique } from '../common/general';
+import { escapeHtml, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -250,7 +250,7 @@ export class ZonesStateService {
         const details = await openConfirmModal(
             {
                 title: `Remove trigger`,
-                content: `<p>Are you sure you want remove trigger "${trigger.name}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
+                content: `<p>Are you sure you want remove trigger "${escapeHtml(trigger.name)}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
                 icon: { type: 'icon', content: 'delete' },
             },
             this._dialog,
@@ -347,7 +347,7 @@ export class ZonesStateService {
             {
                 title: i18n('ZONES.GROUP_REMOVE'),
                 content: i18n('ZONES.GROUP_REMOVE_MSG', {
-                    name: item.group?.name || item.group_id,
+                    name: escapeHtml(item.group?.name || item.group_id),
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },

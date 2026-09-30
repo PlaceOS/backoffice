@@ -15,6 +15,7 @@ import { apiKey, token } from '@placeos/ts-client';
 import SunEditor from 'suneditor';
 import { font, fontSize, formatBlock, link, list } from 'suneditor/src/plugins';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { escapeHtml } from '../../common/general';
 import { uploadFile } from '../../common/uploads';
 
 @Component({
@@ -77,6 +78,12 @@ export class RichTextInputComponent
         this.timeout('init', () => this._initialiseEditor());
     }
 
+    public override ngOnDestroy() {
+        this._editor?.destroy();
+        delete this._editor;
+        super.ngOnDestroy();
+    }
+
     /**
      * Update the form field value
      * @param new_value New value to set on the form field
@@ -97,7 +104,7 @@ export class RichTextInputComponent
             if (this._editor) {
                 this._setAuth();
                 setTimeout(() => {
-                    this._editor.setContents(value);
+                    this._editor?.setContents(value);
                 }, 100);
             } else this.timeout('write', () => this.writeValue(value));
         });
@@ -122,6 +129,7 @@ export class RichTextInputComponent
         }
         if (this._editor) {
             this.unsub('changes');
+            this._editor.destroy();
             _editor_el.innerHTML = '';
             delete this._editor;
         }
@@ -193,8 +201,8 @@ export class RichTextInputComponent
                 const link = `/api/engine/v2/uploads/${encodeURIComponent(upload.id)}/url`;
                 this._setAuth();
                 setTimeout(() => {
-                    this._editor.insertHTML(
-                        `<img src="${link}" alt="${file.name}" />`,
+                    this._editor?.insertHTML(
+                        `<img src="${link}" alt="${escapeHtml(file.name)}" />`,
                     );
                 }, 100);
             });
@@ -217,12 +225,12 @@ export class RichTextInputComponent
                 this._setAuth();
                 setTimeout(() => {
                     if (is_image) {
-                        this._editor.insertHTML(
-                            `<img src="${link}" alt="${file.name}" />`,
+                        this._editor?.insertHTML(
+                            `<img src="${link}" alt="${escapeHtml(file.name)}" />`,
                         );
                     } else {
-                        this._editor.insertHTML(
-                            `<a href="${link}" target="_blank">${file.name}</a>`,
+                        this._editor?.insertHTML(
+                            `<a href="${link}" target="_blank">${escapeHtml(file.name)}</a>`,
                         );
                     }
                 }, 100);

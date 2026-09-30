@@ -11,7 +11,6 @@ import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
-import { SafePipe } from '../ui/pipes/safe.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
 
@@ -34,7 +33,7 @@ import { DriverStateService } from './driver-state.service';
                             <div class="overflow-hidden underline select-all">
                                 <a
                                     class="mono block w-full truncate text-sm"
-                                    [href]="item().default_uri | safe: 'url'"
+                                    [href]="item().default_uri"
                                     target="_blank"
                                     >{{ item().default_uri }}</a
                                 >
@@ -222,7 +221,6 @@ import { DriverStateService } from './driver-state.service';
         DateFromPipe,
         MarkdownPipe,
         RouterModule,
-        SafePipe,
         MatProgressSpinnerModule,
         AsyncPipe,
         DatePipe,

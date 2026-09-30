@@ -18,14 +18,18 @@ import { SafePipe } from '../../ui/pipes/safe.pipe';
 
 export const SIGNAGE_PLUGIN_API_VERSION = 'signage-plugin/v1';
 
-/** Resolve a plugin URI the same way as the iframe element. */
+/**
+ * Resolve a plugin URI the same way as the iframe element.
+ * Returns `null` for invalid URIs and for schemes other than http(s).
+ */
 export function resolveSignagePluginUrl(
     uri: string,
     base_uri: string,
 ): URL | null {
     if (!uri) return null;
     try {
-        return new URL(uri, base_uri);
+        const url = new URL(uri, base_uri);
+        return ['http:', 'https:'].includes(url.protocol) ? url : null;
     } catch {
         return null;
     }
@@ -87,7 +91,7 @@ export type PluginErrorPayload = {
         @if (plugin_url(); as plugin_url) {
             <iframe
                 #plugin_el
-                sandbox="allow-scripts allow-same-origin"
+                sandbox="allow-scripts"
                 referrerpolicy="no-referrer"
                 [src]="plugin_url.href | safe: 'resource'"
             >
@@ -118,10 +122,6 @@ export class SignagePluginEmbedComponent
     public readonly plugin_url = computed(() =>
         resolveSignagePluginUrl(this.plugin()?.uri, this._document.baseURI),
     );
-    public readonly plugin_origin = computed(
-        () => this.plugin_url()?.origin || '',
-    );
-
     private _handle_messages = (e) => this._handleMessage(e);
 
     public ngOnInit() {
@@ -137,9 +137,10 @@ export class SignagePluginEmbedComponent
         type: SignageHostMessageType,
         payload: PluginConfigPayload | null = null,
     ) {
-        this._plugin_el()?.nativeElement?.contentWindow.postMessage(
+        // The sandboxed frame has an opaque origin, so no origin can be named
+        this._plugin_el()?.nativeElement?.contentWindow?.postMessage(
             { api: SIGNAGE_PLUGIN_API_VERSION, type, payload },
-            this.plugin_origin(),
+            '*',
         );
     }
 
@@ -151,10 +152,10 @@ export class SignagePluginEmbedComponent
         window.addEventListener('message', this._handle_messages);
     }
 
-    private _handleMessage(event) {
-        if (event.origin !== this.plugin_origin()) return;
-        if (event.source !== this._plugin_el()?.nativeElement?.contentWindow)
-            return;
+    private _handleMessage(event: MessageEvent) {
+        // Origin is `'null'` for sandboxed frames, so match the window
+        const frame_window = this._plugin_el()?.nativeElement?.contentWindow;
+        if (!frame_window || event.source !== frame_window) return;
 
         const msg = event.data;
         if (

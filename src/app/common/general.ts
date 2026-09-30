@@ -105,6 +105,23 @@ export function unique<T = string>(array: T[], key = '') {
     );
 }
 
+const HTML_ENTITIES: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+};
+
+/**
+ * Escape a value for use in an HTML string, e.g. a user controlled name
+ * inside confirm modal content or editor HTML
+ * @param value Value to escape
+ */
+export function escapeHtml(value: unknown): string {
+    return `${value ?? ''}`.replace(/[&<>"']/g, (char) => HTML_ENTITIES[char]);
+}
+
 /**
  * Generate a random number
  * @param ceil Biggest value to generate not inclusive

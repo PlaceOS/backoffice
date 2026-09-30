@@ -86,11 +86,17 @@ export const applyModuleFormSchema: SchemaFn<ModuleFormModel> = (path) => {
             ? { kind: 'pattern', message: 'Invalid IP address' }
             : undefined,
     );
-    validate(path.uri, ({ value }) =>
-        validateURI({ value: value() })
+    // The URI field is only shown for service/websocket modules, so a hidden
+    // value (e.g. inherited from a device driver) must not block saving
+    validate(path.uri, ({ value, valueOf }) => {
+        const role = valueOf(path.role);
+        const uses_uri =
+            role === PlaceDriverRole.Service ||
+            role === PlaceDriverRole.Websocket;
+        return uses_uri && validateURI({ value: value() })
             ? { kind: 'pattern', message: 'Invalid URI' }
-            : undefined,
-    );
+            : undefined;
+    });
     required(path.uri, {
         when({ valueOf }) {
             const role = valueOf(path.role);

@@ -31,6 +31,7 @@ import {
     updateDomain,
 } from '@placeos/ts-client';
 import { filter, map } from 'rxjs';
+import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -258,7 +259,7 @@ export class DomainStateService {
         const details = await openConfirmModal(
             {
                 title: `Delete application`,
-                content: `<p>Are you sure you want delete the application ${item.name}?</p><p>Configuration will be <strong>immediately</strong> updated</p>`,
+                content: `<p>Are you sure you want delete the application ${escapeHtml(item.name)}?</p><p>Configuration will be <strong>immediately</strong> updated</p>`,
                 icon: { type: 'icon', content: 'delete' },
             },
             this._dialog,

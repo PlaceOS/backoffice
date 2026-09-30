@@ -7,6 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, updateDomain } from '@placeos/ts-client';
+import { escapeHtml } from '../common/general';
 import { notifyError } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
@@ -15,7 +16,6 @@ import {
     ConfirmModalData,
 } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
-import { SafePipe } from '../ui/pipes/safe.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
@@ -132,10 +132,7 @@ export interface BackofficeExtension {
                     </div>
                 </ng-template>
                 <ng-template #url_template let-row="row">
-                    <a
-                        class="truncate p-4 underline"
-                        [href]="row.url | safe: 'url'"
-                    >
+                    <a class="truncate p-4 underline" [href]="row.url">
                         {{ row.url }}
                     </a>
                 </ng-template>
@@ -188,7 +185,6 @@ export interface BackofficeExtension {
         MatFormFieldModule,
         MatSelectModule,
         FormsModule,
-        SafePipe,
     ],
 })
 export class PlaceExtensionsComponent implements OnInit {
@@ -256,7 +252,7 @@ export class PlaceExtensionsComponent implements OnInit {
             {
                 data: {
                     title: 'Remove extension',
-                    content: `Are you sure you want to remove the extension "${item.name}" from ${item.type}?`,
+                    content: `Are you sure you want to remove the extension "${escapeHtml(item.name)}" from ${escapeHtml(item.type)}?`,
                     icon: { content: 'delete' },
                 },
             },

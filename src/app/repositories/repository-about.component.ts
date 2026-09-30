@@ -7,9 +7,9 @@ import { PlaceRepositoryType } from '@placeos/ts-client';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
-import { SafePipe } from '../ui/pipes/safe.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { RepositoriesStateService } from './repositories-state.service';
+import { maskUriCredentials } from './repositories.utilities';
 
 @Component({
     selector: 'repository-about',
@@ -108,7 +108,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     <div class="overflow-hidden underline select-all">
                         <a
                             class="block w-full truncate"
-                            [href]="item().uri | safe: 'url'"
+                            [href]="repo_uri()"
                             target="_blank"
                             >{{ repo_uri() || 'No URI set' }}</a
                         >
@@ -217,7 +217,6 @@ import { RepositoriesStateService } from './repositories-state.service';
         MatProgressSpinnerModule,
         MatRippleModule,
         MatTooltipModule,
-        SafePipe,
         DateFromPipe,
         AsyncPipe,
         DatePipe,
@@ -238,8 +237,9 @@ export class RepositoryAboutComponent {
             ? `${location.origin}/${this.item()?.folder_name}/`
             : `${location.hash}`,
     );
+    /** Repository URI without credentials, used for both the text and link */
     public readonly repo_uri = computed(() =>
-        this.item()?.uri.replace(/\/[a-zA-Z0-9\-.:]*@/, '/...@'),
+        maskUriCredentials(this.item()?.uri),
     );
     public readonly is_interface = computed(
         () => this.item()?.type === PlaceRepositoryType.Interface,

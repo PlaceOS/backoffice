@@ -11,7 +11,7 @@ import {
     removeEdge,
     retrieveEdgeToken,
 } from '@placeos/ts-client';
-import { copyToClipboard } from '../common/general';
+import { copyToClipboard, escapeHtml } from '../common/general';
 import {
     notifyError,
     notifyInfo,
@@ -228,7 +228,7 @@ export class PlaceEdgeComponent implements OnInit {
         const details = await openConfirmModal(
             {
                 title: 'Remove edge?',
-                content: `Remove <strong>${i.name}</strong>?<br>You or your users may lose access to some data.`,
+                content: `Remove <strong>${escapeHtml(i.name)}</strong>?<br>You or your users may lose access to some data.`,
                 icon: { type: 'icon', content: 'delete' },
             },
             this._dialog,

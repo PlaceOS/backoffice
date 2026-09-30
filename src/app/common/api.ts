@@ -28,6 +28,34 @@ export function toQueryString(map: HashMap<unknown>) {
 }
 
 /**
+ * Check an extension embed URL before it is loaded in an iframe.
+ * Returns the resolved URL if it is http(s) and matches one of the
+ * configured extension URLs for the item, else `null`.
+ * @param embed URL from the `embed` query param
+ * @param allowed_urls Extension URLs from `extensionsForItem`
+ * @param base Base for relative URLs
+ */
+export function allowedEmbedUrl(
+    embed: string,
+    allowed_urls: string[],
+    base = location.origin,
+): string | null {
+    const resolve = (value: string) => {
+        try {
+            const url = new URL(value, base);
+            return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+        } catch {
+            return null;
+        }
+    };
+    const url = embed ? resolve(embed) : null;
+    if (!url) return null;
+    return allowed_urls.some((allowed) => resolve(allowed) === url)
+        ? url
+        : null;
+}
+
+/**
  * Calculate the index of the module
  * @param module_list List of modules in the parent system
  * @param module Module to work out index

@@ -7,7 +7,11 @@ vi.mock('@placeos/ts-client', () => ({
     PlaceResource: class {},
 }));
 
-import { toQueryString, calculateModuleIndex } from '../../app/common/api';
+import {
+    allowedEmbedUrl,
+    calculateModuleIndex,
+    toQueryString,
+} from '../../app/common/api';
 
 describe('api.ts utilities', () => {
     describe('toQueryString', () => {
@@ -220,6 +224,49 @@ describe('api.ts utilities', () => {
                 modules[1] as any,
             );
             expect(index).toBe(2);
+        });
+    });
+
+    describe('allowedEmbedUrl', () => {
+        const base = 'https://backoffice.example';
+        const allowed = [
+            'https://ext.example/view?id=sys-1',
+            '/local/extension',
+        ];
+
+        it('allows a configured extension URL', () => {
+            expect(
+                allowedEmbedUrl(
+                    'https://ext.example/view?id=sys-1',
+                    allowed,
+                    base,
+                ),
+            ).toBe('https://ext.example/view?id=sys-1');
+        });
+
+        it('resolves a relative extension URL', () => {
+            expect(allowedEmbedUrl('/local/extension', allowed, base)).toBe(
+                'https://backoffice.example/local/extension',
+            );
+        });
+
+        it('rejects script URLs', () => {
+            expect(
+                allowedEmbedUrl('javascript:alert(1)', ['javascript:alert(1)']),
+            ).toBeNull();
+        });
+
+        it('rejects a URL that is not configured', () => {
+            expect(
+                allowedEmbedUrl('https://evil.example/view', allowed, base),
+            ).toBeNull();
+            expect(
+                allowedEmbedUrl(
+                    'https://ext.example/view?id=sys-2',
+                    allowed,
+                    base,
+                ),
+            ).toBeNull();
         });
     });
 });

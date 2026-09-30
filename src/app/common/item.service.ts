@@ -34,7 +34,7 @@ import {
     CascadeResource,
     runCascade,
 } from './cascade-delete';
-import { log } from './general';
+import { escapeHtml, log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
 import { waitForEvent, waitForSignalValue } from './signals';
@@ -342,12 +342,13 @@ export class ActiveItemService extends AsyncHandler {
                             ? 'USERS.FORCE_DELETE_MSG'
                             : `${actions.name}.DELETE_MSG`,
                         {
-                            name:
+                            name: escapeHtml(
                                 (
                                     item as PlaceResource & {
                                         display_name?: string;
                                     }
                                 ).display_name || item.name,
+                            ),
                         },
                     ),
                     extra: actions.delete_extra

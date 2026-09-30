@@ -47,10 +47,25 @@ describe('module form validation', () => {
             expect(fields.uri().invalid()).toBe(true);
             fields.uri().value.set('https://service.example.com');
             expect(fields().valid()).toBe(true);
-            fields.uri().value.set('invalid');
+            fields.uri().value.set('service.example.com:443');
             expect(fields.uri().invalid()).toBe(true);
         },
     );
+
+    it('ignores the hidden URI field for device modules', () => {
+        const { fields } = createTestForm(
+            {
+                ...generateModuleFormModel(),
+                role: PlaceDriverRole.Device,
+                driver_id: 'driver-1',
+                ip: '192.168.1.10',
+                port: 80,
+                uri: '192.168.1.10:80',
+            },
+            applyModuleFormSchema,
+        );
+        expect(fields().valid()).toBe(true);
+    });
 
     it('revalidates connection requirements when switching from device to logic', () => {
         const { fields, model } = createTestForm(

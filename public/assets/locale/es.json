@@ -116,6 +116,7 @@
         "SETTINGS_ENCRYPTED": "Encriptado",
         "SETTINGS_MERGED": "Combinado",
         "SETTINGS_MASKED": "OCULTO",
+        "SETTINGS_MASKED_ERROR": "Reemplace todos los valores ocultos antes de guardar la configuración cifrada",
         "SETTINGS_INHERITED": "Configuración heredada de [{{ parent }}]({{ path }})({{ type }})",
         "SETTINGS_LOCAL": "Configuración local de {{ type }}",
         "SETTINGS_SAVE_ERROR": "No se pudo guardar las configuraciones. Error {{ error }}",

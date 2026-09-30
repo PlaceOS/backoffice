@@ -409,40 +409,36 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
     public ngOnInit(): void {
         this.subscription(
             'save_all',
-            this._hotkey.listen(['KeyA'], () => this.saveAll()),
+            this._hotkey.listen(['Alt', 'Shift', 'KeyA'], () => this.saveAll()),
         );
         this.subscription(
             'clear_all',
-            this._hotkey.listen(['KeyC'], () => this.clearChanges()),
+            this._hotkey.listen(['Alt', 'Shift', 'KeyC'], () =>
+                this.clearChanges(),
+            ),
         );
     }
 
     /** Save changes to the given setting level */
     public save(level: EncryptionLevel) {
         const item = this.used_settings()[level];
-        if (!item && this.saving()[level]) return;
-        this.saving.update((s) => {
-            s[level] = true;
-            return s;
-        });
+        if (!item || this.saving()[level]) return;
+        if (this._hasMaskedValues(level)) {
+            return notifyError(i18n('COMMON.SETTINGS_MASKED_ERROR'));
+        }
+        if (!this._canSave(level)) return;
+        this._setSaving(level, true);
         const details = {
             ...item,
             settings_string: this.settingValue(level),
         };
-        const settings = this.settings();
-        (settings[level].id
-            ? updateSettings(settings[level].id, details)
+        (item.id
+            ? updateSettings(item.id, details)
             : addSettings(details)
         ).then(
             (new_settings: PlaceSettings) => {
-                this.saving.update((s) => {
-                    s[level] = false;
-                    return s;
-                });
-                this.settings.update((s) => {
-                    s[level] = new_settings;
-                    return s;
-                });
+                this._setSaving(level, false);
+                this._setSettings(level, new_settings);
                 notifySuccess(
                     i18n('COMMON.SETTINGS_SAVE_SUCCESS', {
                         type: this.type(level),
@@ -451,10 +447,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
                 this.clearChanges();
             },
             (err) => {
-                this.saving.update((s) => {
-                    s[level] = false;
-                    return s;
-                });
+                this._setSaving(level, false);
                 notifyError(
                     i18n('COMMON.SETTINGS_SAVE_ERROR', {
                         error: JSON.stringify(
@@ -466,51 +459,43 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    /** Save all changes to settings */
+    /** Save all changed settings levels that the user can edit */
     public saveAll() {
         if (this.has_errors())
             return notifyError('Some of the settings are invalid');
         const promises = [];
+        const saved_levels: number[] = [];
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
-            const settings = this.settings();
-            if (settings[i] && !this.saving()[i]) {
-                this.saving.update((s) => {
-                    s[i] = true;
-                    return s;
-                });
-                const details = {
-                    ...settings[i],
-                    settings_string: this.settingValue(i),
-                };
-                promises.push(
-                    settings[i].id
-                        ? updateSettings(settings[i].id, details)
-                        : addSettings(details),
-                );
+            if (this.settingDirty(i) && this._hasMaskedValues(i)) {
+                notifyError(i18n('COMMON.SETTINGS_MASKED_ERROR'));
             }
+            const item = this.used_settings()[i];
+            if (!item || this.saving()[i] || !this._canSave(i)) continue;
+            this._setSaving(i, true);
+            saved_levels.push(i);
+            const details = {
+                ...item,
+                settings_string: this.settingValue(i),
+            };
+            promises.push(
+                item.id
+                    ? updateSettings(item.id, details)
+                    : addSettings(details),
+            );
         }
         if (promises.length) {
             Promise.all(promises).then(
                 (results: PlaceSettings[]) => {
-                    for (const result of results) {
-                        this.saving.update((s) => {
-                            s[result.encryption_level] = false;
-                            return s;
-                        });
-                        this.settings.update((s) => {
-                            s[result.encryption_level] = result;
-                            return s;
-                        });
-                    }
+                    results.forEach((result, index) => {
+                        this._setSaving(saved_levels[index], false);
+                        this._setSettings(saved_levels[index], result);
+                    });
                     notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
                     this.clearChanges();
                 },
                 (err) => {
-                    for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
-                        this.saving.update((s) => {
-                            s[i] = false;
-                            return s;
-                        });
+                    for (const level of saved_levels) {
+                        this._setSaving(level, false);
                     }
                     notifyError(
                         i18n('COMMON.SETTINGS_SAVE_ERROR', {
@@ -522,6 +507,46 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
                 },
             );
         }
+    }
+
+    /** Whether the level has changes the user is allowed to save */
+    private _canSave(level: number) {
+        const option = this.levels().find((i) => i.id === level);
+        return (
+            !!option?.active &&
+            this.settingDirty(level) &&
+            !this._hasMaskedValues(level)
+        );
+    }
+
+    /** Whether encrypted settings still hold masked placeholder values */
+    private _hasMaskedValues(level: number) {
+        return (
+            level === EncryptionLevel.NeverDisplay &&
+            this.settingValue(level).includes(
+                `<${i18n('COMMON.SETTINGS_MASKED')}>`,
+            )
+        );
+    }
+
+    private _setSaving(level: number, state: boolean) {
+        this.saving.update(
+            (s) =>
+                s.map((v, i) => (i === level ? state : v)) as [
+                    boolean,
+                    boolean,
+                    boolean,
+                    boolean,
+                ],
+        );
+    }
+
+    private _setSettings(level: number, new_settings: PlaceSettings) {
+        this.settings.update((s) => {
+            const next = [...(s || [])] as SettingsArray;
+            next[level] = new_settings;
+            return next;
+        });
     }
 
     public clearChanges() {
@@ -555,7 +580,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
                 );
                 continue;
             }
-            processed_settings.push(this._processSetting(settings[i]));
+            processed_settings.push(this._processSetting(setting));
         }
         processed_settings.push(
             this.merge()
@@ -568,9 +593,9 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
     private _processSetting(setting: PlaceSettings): PlaceSettings {
         if (
             (setting.encryption_level === EncryptionLevel.Admin &&
-                !this.is_admin) ||
+                !this.is_admin()) ||
             (setting.encryption_level === EncryptionLevel.Support &&
-                !this.is_support) ||
+                !this.is_support()) ||
             setting.encryption_level === EncryptionLevel.NeverDisplay
         ) {
             const obj = {};

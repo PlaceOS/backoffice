@@ -17,6 +17,7 @@ import {
     updateGroupUser,
     updateGroupZone,
 } from '@placeos/ts-client';
+import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -250,7 +251,7 @@ export class GroupStateService {
             {
                 title: i18n('GROUPS.USER_REMOVE'),
                 content: i18n('GROUPS.USER_REMOVE_MSG', {
-                    name: item.user?.name || item.user_id,
+                    name: escapeHtml(item.user?.name || item.user_id),
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },
@@ -312,7 +313,7 @@ export class GroupStateService {
             {
                 title: i18n('GROUPS.ZONE_REMOVE'),
                 content: i18n('GROUPS.ZONE_REMOVE_MSG', {
-                    name: item.zone?.name || item.zone_id,
+                    name: escapeHtml(item.zone?.name || item.zone_id),
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },

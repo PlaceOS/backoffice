@@ -12,6 +12,7 @@ import {
     reviveUser,
     updateGroupUser,
 } from '@placeos/ts-client';
+import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -178,7 +179,7 @@ export class UsersStateService {
             {
                 title: i18n('USERS.GROUP_REMOVE'),
                 content: i18n('USERS.GROUP_REMOVE_MSG', {
-                    name: item.group?.name || item.group_id,
+                    name: escapeHtml(item.group?.name || item.group_id),
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },
@@ -229,7 +230,9 @@ export class UsersStateService {
         const details = await openConfirmModal(
             {
                 title: i18n('USERS.REVIVE'),
-                content: i18n('USERS.REVIVE_MSG', { name: item.name }),
+                content: i18n('USERS.REVIVE_MSG', {
+                    name: escapeHtml(item.name),
+                }),
                 confirm_text: i18n('USERS.REVIVE'),
                 icon: { type: 'icon', content: 'restore_from_trash' },
             },

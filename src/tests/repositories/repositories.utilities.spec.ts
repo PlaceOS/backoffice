@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { generateRepositoryFormModel } from '../../app/repositories/repositories.utilities';
+import {
+    generateRepositoryFormModel,
+    maskUriCredentials,
+} from '../../app/repositories/repositories.utilities';
 
 const mocks = vi.hoisted(() => ({
     PlaceRepositoryType: {
@@ -55,6 +58,28 @@ describe('repositories.utilities', () => {
                 username: 'user',
                 password: 'pass',
             });
+        });
+    });
+
+    describe('maskUriCredentials', () => {
+        it('removes a username and password with special characters', () => {
+            expect(
+                maskUriCredentials(
+                    'https://my_user+1:p%40ss_w%2Bd@github.com/org/repo.git',
+                ),
+            ).toBe('https://github.com/org/repo.git');
+        });
+
+        it('keeps a URI without credentials', () => {
+            expect(maskUriCredentials('https://github.com/org/repo')).toBe(
+                'https://github.com/org/repo',
+            );
+        });
+
+        it('removes credentials from a URI that does not parse', () => {
+            expect(maskUriCredentials('//user:pass@host/repo')).toBe(
+                '//host/repo',
+            );
         });
     });
 });
