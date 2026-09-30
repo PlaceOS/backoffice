@@ -54,3 +54,20 @@ export const applyRepositoryFormSchema: SchemaFn<RepositoryFormModel> = (
     });
     required(path.uri);
 };
+
+/**
+ * Remove the username and password from a repository URI, so it is safe to
+ * show and to use as a link. URIs that do not parse (e.g. `git@host:repo`)
+ * only have any `//user:pass@` part removed.
+ */
+export function maskUriCredentials(uri: string): string {
+    if (!uri) return '';
+    try {
+        const url = new URL(uri);
+        url.username = '';
+        url.password = '';
+        return url.href;
+    } catch {
+        return uri.replace(/\/\/[^/\s]*@/, '//');
+    }
+}

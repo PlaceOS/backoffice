@@ -12,11 +12,15 @@ export const validateIpAddress = (ctrl) =>
             : { pattern: true }
         : null;
 
+/** URI schemes that can run script when used as a link */
+const UNSAFE_URI_SCHEMES = ['javascript', 'vbscript', 'data'];
+
 export const validateURI = (ctrl) => {
     if (!ctrl.value) {
         return null;
     } else {
-        return /\w+:(\/?\/?)[^\s]+?/gim.test(ctrl.value)
+        const match = /^\s*([a-z][a-z0-9+.-]*):(\/?\/?)\S+/i.exec(ctrl.value);
+        return match && !UNSAFE_URI_SCHEMES.includes(match[1].toLowerCase())
             ? null
             : { pattern: true };
     }

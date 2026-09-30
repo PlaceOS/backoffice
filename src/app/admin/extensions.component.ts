@@ -16,7 +16,6 @@ import {
     ConfirmModalData,
 } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
-import { SafePipe } from '../ui/pipes/safe.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
@@ -133,10 +132,7 @@ export interface BackofficeExtension {
                     </div>
                 </ng-template>
                 <ng-template #url_template let-row="row">
-                    <a
-                        class="truncate p-4 underline"
-                        [href]="row.url | safe: 'url'"
-                    >
+                    <a class="truncate p-4 underline" [href]="row.url">
                         {{ row.url }}
                     </a>
                 </ng-template>
@@ -189,7 +185,6 @@ export interface BackofficeExtension {
         MatFormFieldModule,
         MatSelectModule,
         FormsModule,
-        SafePipe,
     ],
 })
 export class PlaceExtensionsComponent implements OnInit {

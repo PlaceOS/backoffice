@@ -127,6 +127,16 @@ describe('validation.ts utilities', () => {
                 const ctrl = { value: '/path/to/file' };
                 expect(validateURI(ctrl)).toEqual({ pattern: true });
             });
+
+            it.each([
+                'javascript:alert(1)',
+                ' JavaScript://%0aalert(1)',
+                'vbscript:msgbox(1)',
+                'data:text/html,<script>alert(1)</script>',
+                'text before javascript:alert(1)',
+            ])('should reject script URI %s', (value) => {
+                expect(validateURI({ value })).toEqual({ pattern: true });
+            });
         });
 
         describe('edge cases', () => {
