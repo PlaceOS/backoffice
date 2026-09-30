@@ -182,9 +182,10 @@ export function numberToPosition(num: number): string {
 export const csvToJson = parseCSV;
 /**
  * Parses a CSV string back into an array of JavaScript objects.
- * - It assumes the first line is the header row.
+ * - It assumes the first row is the header row.
  * - Attempts JSON.parse on each cell. If parsing fails, keeps the raw string.
- * - Handles basic quote escaping ("" -> ").
+ * - Handles quoted cells with separators, escaped quotes ("" -> ") and newlines.
+ * - Accepts `\n` and `\r\n` line endings.
  *
  * @param csv - The CSV string.
  * @param separator - The delimiter (comma by default).
@@ -194,16 +195,10 @@ export function parseCSV(
     csv: string,
     separator = ',',
 ): Record<string, unknown>[] {
-    // Split on newlines, remove any empty lines
-    const lines = csv.split('\n').filter((line) => line.trim() !== '');
-    if (!lines.length) return [];
+    const [headers, ...data_rows] = splitCsvRows(csv, separator);
+    if (!headers) return [];
 
-    const [headerLine, ...dataLines] = lines;
-    const headers = splitCsvLine(headerLine, separator);
-
-    return dataLines.map((line) => {
-        const cells = splitCsvLine(line, separator);
-
+    return data_rows.map((cells) => {
         const record: Record<string, unknown> = {};
 
         headers.forEach((header, idx) => {
@@ -223,50 +218,60 @@ export function parseCSV(
 }
 
 /**
- * Splits a CSV line into cells, handling:
- * - quoted strings
- * - escaped quotes
- *
- * This is a simplified parser that expects CSV in the format produced by `jsonToCSV`.
- * For more robust parsing (multiline fields, etc.), consider a specialized library.
+ * Splits CSV text into rows of cells in one pass over the characters.
+ * Quotes are tracked across lines, so a quoted cell can hold separators,
+ * escaped quotes ("") and newlines. Blank rows are removed.
  */
-function splitCsvLine(line: string, separator: string): string[] {
-    const cells: string[] = [];
-    let current = '';
-    let inQuotes = false;
+function splitCsvRows(csv: string, separator: string): string[][] {
+    const rows: string[][] = [];
+    let row: string[] = [];
+    let cell = '';
+    let in_quotes = false;
+    const endRow = () => {
+        row.push(cell);
+        if (row.length > 1 || row[0].trim() !== '') rows.push(row);
+        row = [];
+        cell = '';
+    };
 
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        const nextChar = line[i + 1];
-
-        if (char === '"') {
-            if (inQuotes && nextChar === '"') {
-                // Escaped quote ("")
-                current += '"';
-                i++; // Skip the next quote
+    // `i` only moves forward, so the loop ends after `csv.length` steps
+    for (let i = 0; i < csv.length; i++) {
+        const char = csv[i];
+        if (in_quotes) {
+            if (char !== '"') {
+                cell += char;
+            } else if (csv[i + 1] === '"') {
+                cell += '"';
+                i++;
             } else {
-                // Toggle quote mode
-                inQuotes = !inQuotes;
+                in_quotes = false;
             }
-        } else if (char === separator && !inQuotes) {
-            // End of current cell
-            cells.push(current);
-            current = '';
+        } else if (char === '"') {
+            in_quotes = true;
+        } else if (separator && csv.startsWith(separator, i)) {
+            row.push(cell);
+            cell = '';
+            i += separator.length - 1;
+        } else if (char === '\n') {
+            endRow();
+        } else if (char === '\r' && csv[i + 1] === '\n') {
+            endRow();
+            i++;
         } else {
-            current += char;
+            cell += char;
         }
     }
+    endRow();
 
-    // Push the last cell
-    cells.push(current);
-
-    return cells;
+    return rows;
 }
 
 /**
  * Converts an array of JSON objects into a CSV string.
  *
  * @param data - The JSON array to convert.
+ * @param use_keys - Columns to output, in order. When empty, uses the union
+ * of keys across all rows, in first-seen order.
  * @param separator - The optional field separator (comma by default).
  * @returns A string in CSV format.
  */
@@ -277,9 +282,9 @@ export function jsonToCsv<T extends Record<string, unknown>>(
 ): string {
     if (!data.length) return '';
 
-    const headers = Object.keys(data[0]).filter(
-        (key) => !use_keys.length || use_keys.includes(key),
-    );
+    const headers = use_keys.length
+        ? use_keys
+        : [...new Set(data.flatMap((item) => Object.keys(item)))];
     const headerRow = headers.join(separator);
 
     const rows = data.map((item) => {
@@ -299,7 +304,8 @@ export function jsonToCsv<T extends Record<string, unknown>>(
                 if (
                     cellStr.includes(separator) ||
                     cellStr.includes('"') ||
-                    cellStr.includes('\n')
+                    cellStr.includes('\n') ||
+                    cellStr.includes('\r')
                 ) {
                     // Escape quotes
                     const escaped = cellStr.replace(/"/g, '""');

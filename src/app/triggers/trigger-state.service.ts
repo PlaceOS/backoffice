@@ -213,6 +213,14 @@ export class TriggerStateService {
         const index = list.findIndex(
             (i) => JSON.stringify(i) === JSON.stringify(condition),
         );
+        if (index < 0) {
+            details.close();
+            return notifyError(
+                i18n('TRIGGERS.REMOVE_CONDITION_ERROR', {
+                    error: 'Condition not found on trigger',
+                }),
+            );
+        }
         list.splice(index, 1);
         const resp = await updateTrigger(item.id, {
             ...item.toJSON(),
@@ -254,6 +262,14 @@ export class TriggerStateService {
                 ? item.actions.mailers
                 : item.actions.functions
         ).findIndex((i) => JSON.stringify(i) === JSON.stringify(action));
+        if (index < 0) {
+            details.close();
+            return notifyError(
+                i18n('TRIGGERS.REMOVE_ACTION_ERROR', {
+                    error: 'Action not found on trigger',
+                }),
+            );
+        }
         ((action as TriggerMailer).emails
             ? actions.mailers
             : actions.functions

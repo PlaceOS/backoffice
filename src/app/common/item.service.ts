@@ -103,6 +103,8 @@ export class ActiveItemService extends AsyncHandler {
     /** Number of items */
     private _count = signal(0);
     private _scope_version = 0;
+    /** Id of the latest `setItem` call, so stale responses are dropped */
+    private _item_request = 0;
 
     public readonly count = this._count.asReadonly();
 
@@ -198,6 +200,7 @@ export class ActiveItemService extends AsyncHandler {
 
     /** Update the active item */
     public async setItem(id: string) {
+        const request = ++this._item_request;
         await waitForSignalValue(this._user.user, (user) => !!user);
         if (!hasSupportRole() && !hasSupportSubsystem()) return;
         const scope_version = this._scope_version;
@@ -214,7 +217,11 @@ export class ActiveItemService extends AsyncHandler {
             const item = await this.actions
                 .show(id)
                 .catch(() => notifyError(`Error loading ${id}`));
-            if (scope_version !== this._scope_version) return;
+            if (
+                scope_version !== this._scope_version ||
+                request !== this._item_request
+            )
+                return;
             this._active_item.set(item as PlaceResource);
             const name = this._type[0].toUpperCase() + this._type.slice(1);
             this._name.set(name);
@@ -547,7 +554,7 @@ export class ActiveItemService extends AsyncHandler {
                 },
             });
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                if (e.reason === 'done') {
+                if (e.reason === 'done' && e.metadata?.[0]) {
                     this._active_item.set(e.metadata[0] as PlaceResource);
                     this.replaceItem(e.metadata[0] as unknown as Identity);
                 }

@@ -227,8 +227,6 @@ export class TriggerActionModalComponent
         generateTriggerActionFormModel(this._data.action),
     );
     public readonly form = form(this.formModel, applyTriggerActionFormSchema);
-    /** Store for changes to actions */
-    public actions: TriggerActions;
     /** List of seperators for storing emails */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
     /** Variable to hold new email addresses */
@@ -241,7 +239,7 @@ export class TriggerActionModalComponent
 
     /** Whether the triggers is new or not */
     public get is_new(): boolean {
-        return !!this._data.action;
+        return !this._data.action;
     }
 
     /** Template system to use for status variable bindings */
@@ -300,15 +298,19 @@ export class TriggerActionModalComponent
         if (this.form().invalid()) {
             return;
         }
-        this.loading.set('Save trigger action...');
-        if (this.formModel().action_type === 'emails') {
-            this.updateMailers();
-        } else {
-            this.updateFunctions();
+        const actions =
+            this.formModel().action_type === 'emails'
+                ? this.updateMailers()
+                : this.updateFunctions();
+        if (!actions) {
+            return notifyError(
+                'Error updating trigger action. The action was changed or removed elsewhere.',
+            );
         }
+        this.loading.set('Save trigger action...');
         await updateTrigger(this.trigger.id, {
             ...this.trigger,
-            actions: this.actions,
+            actions,
         }).then(
             (item) => {
                 this.event.emit({
@@ -335,35 +337,45 @@ export class TriggerActionModalComponent
         );
     }
 
-    private updateMailers() {
-        const mailers = this.trigger.actions.mailers;
+    /**
+     * Copy of the trigger actions with the mailer added or replaced.
+     * `null` if the edited mailer is no longer on the trigger.
+     */
+    private updateMailers(): TriggerActions | null {
+        const mailers = [...(this.trigger.actions.mailers || [])];
         const new_mailer = {
             emails: this.formModel().emails,
             content: this.formModel().content,
         };
         if (this._data.action) {
-            const old_mailer = JSON.stringify(this._data.action || {});
+            const old_mailer = JSON.stringify(this._data.action);
             const index = mailers.findIndex(
                 (a_mailer) => JSON.stringify(a_mailer) === old_mailer,
             );
+            if (index < 0) return null;
             mailers.splice(index, 1, new_mailer);
         } else {
             mailers.push(new_mailer);
         }
-        this.actions = { ...this.trigger.actions, mailers };
+        return { ...this.trigger.actions, mailers };
     }
 
-    private updateFunctions() {
-        const functions = this.trigger.actions.functions;
+    /**
+     * Copy of the trigger actions with the function added or replaced.
+     * `null` if the edited function is no longer on the trigger.
+     */
+    private updateFunctions(): TriggerActions | null {
+        const functions = [...(this.trigger.actions.functions || [])];
         if (this._data.action) {
             const old_function = JSON.stringify(this._data.action);
             const index = functions.findIndex(
                 (fn) => JSON.stringify(fn) === old_function,
             );
+            if (index < 0) return null;
             functions.splice(index, 1, this.formModel().method_call);
         } else {
             functions.push(this.formModel().method_call);
         }
-        this.actions = { ...this.trigger.actions, functions };
+        return { ...this.trigger.actions, functions };
     }
 }

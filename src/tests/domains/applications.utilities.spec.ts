@@ -23,6 +23,7 @@ describe('applications.utilities', () => {
                 skip_authorization: true,
                 redirect_uri: 'https://example.com/callback',
                 uid: 'client-id',
+                preserve_client_id: true,
             } as any);
 
             expect(model).toEqual({
@@ -32,7 +33,7 @@ describe('applications.utilities', () => {
                 skip_authorization: true,
                 redirect_uri: 'https://example.com/callback',
                 client_id: 'client-id',
-                preserve_client_id: false,
+                preserve_client_id: true,
             });
         });
     });

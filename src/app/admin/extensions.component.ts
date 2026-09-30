@@ -43,6 +43,10 @@ export interface BackofficeExtension {
     icon: ApplicationIcon;
 }
 
+/** Extensions are keyed by type and name, so the same name can exist in each type */
+const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
+    a.type === b?.type && a.name === b?.name;
+
 @Component({
     selector: '[app-extensions]',
     template: `
@@ -238,9 +242,15 @@ export class PlaceExtensionsComponent implements OnInit {
         ).then(async (event) => {
             ref.componentInstance.loading.set('Saving backoffice extension...');
             let ext_list = this.extensions() || [];
-            ext_list = ext_list.filter((i) => i.name !== item?.name);
+            ext_list = ext_list.filter((i) => !isSameExtension(i, item));
             ext_list.push(event.metadata as BackofficeExtension);
-            await this.updateDomain(ext_list);
+            try {
+                await this.updateDomain(ext_list);
+            } catch (e) {
+                ref.componentInstance.loading.set('');
+                notifyError(`Error saving extension: ${e}`);
+                return;
+            }
             ref.componentInstance.loading.set('');
             ref.close();
         });
@@ -263,7 +273,7 @@ export class PlaceExtensionsComponent implements OnInit {
         ).then(async (__) => {
             ref.componentInstance.loading.set('Removing extension...');
             let ext_list = this.extensions();
-            ext_list = ext_list.filter((i) => i.name !== item.name);
+            ext_list = ext_list.filter((i) => !isSameExtension(i, item));
             await this.updateDomain(ext_list).catch((e) =>
                 notifyError(`Error removing extension: ${e}`),
             );

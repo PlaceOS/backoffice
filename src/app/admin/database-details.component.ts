@@ -10,6 +10,7 @@ import {
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
+import { describeError } from '../overlays/confirm-modal.component';
 import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component';
 
 type ZoneTreeExportItem = Record<string, unknown> & {
@@ -259,15 +260,25 @@ export class PlaceDatabaseDetailsComponent {
             return;
         }
         const id_map = new Map<string, string>();
-        for (const zone of zones) {
-            if (!zone.id) continue;
-            const parent_id = zone.parent_id
-                ? id_map.get(zone.parent_id) || ''
-                : '';
-            const created_zone = await addZone(
-                zoneToImportItem(zone, parent_id),
+        try {
+            for (const zone of zones) {
+                if (!zone.id) continue;
+                const parent_id = zone.parent_id
+                    ? id_map.get(zone.parent_id) || ''
+                    : '';
+                const created_zone = await addZone(
+                    zoneToImportItem(zone, parent_id),
+                );
+                id_map.set(zone.id, created_zone.id);
+            }
+        } catch (err) {
+            // Zones created before the error stay, so tell the user how far it got
+            notifyError(
+                `Error importing zone tree. Created ${id_map.size} of ${
+                    zones.length
+                } zones before the error. Error: ${describeError(err)}`,
             );
-            id_map.set(zone.id, created_zone.id);
+            return;
         }
         notifySuccess(`Imported ${id_map.size} zones.`);
     }
