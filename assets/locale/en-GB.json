@@ -121,6 +121,7 @@
         "SETTINGS_ENCRYPTED": "Encrypted",
         "SETTINGS_MERGED": "Merged",
         "SETTINGS_MASKED": "MASKED",
+        "SETTINGS_MASKED_ERROR": "Replace all masked values before you save encrypted settings",
         "SETTINGS_INHERITED": "Setting inherited from [{{ parent }}]({{ path }})({{ type }})",
         "SETTINGS_LOCAL": "Local setting from {{ type }}",
         "SETTINGS_SAVE_ERROR": "Failed to save settings. Error {{ error }}",

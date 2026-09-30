@@ -15,6 +15,11 @@ All notable changes to this project will be documented in this file.
 - Fix close button on view upload modal
 - Remove obsolete signage plugin defaults on save
 - Make signage plugin repos searchable in wizard
+- Sandbox signage plugin embed to an opaque origin
+
+#### App
+
+- Drop unused x-api-key URL param handler
 
 #### Modules
 
@@ -23,6 +28,10 @@ All notable changes to this project will be documented in this file.
 - Omit control system from device modules
 - Allow non-logic module creation from systems
 - Correct inverted start/stop controls on about page
+
+#### Overlays
+
+- Block confirm dismissal while its action runs
 
 #### Signage
 
@@ -33,6 +42,18 @@ All notable changes to this project will be documented in this file.
 #### Systems
 
 - Keep module connection state after power toggle
+- Show loading while removing a trigger or module
+
+#### Ui
+
+- Escape user names in confirm modal and editor HTML
+- Stop bypassing href sanitising for stored URIs
+- Ignore hotkeys when unlisted modifiers are held
+- Save only editable dirty settings levels
+- Validate extension embed URLs and frame messages
+- Require scheme:// form for driver and module URIs
+- Scope hotkeys to the top dialog and ignore modifier order
+- Escape item names in search field options
 
 ### Documentation
 

@@ -116,6 +116,7 @@
         "SETTINGS_ENCRYPTED": "Chiffré",
         "SETTINGS_MERGED": "Fusionné",
         "SETTINGS_MASKED": "MASQUÉ",
+        "SETTINGS_MASKED_ERROR": "Remplacez toutes les valeurs masquées avant d'enregistrer les paramètres chiffrés",
         "SETTINGS_INHERITED": "Paramètre hérité de [{{ parent }}]({{ path }})({{ type }})",
         "SETTINGS_LOCAL": "Paramètre local depuis {{ type }}",
         "SETTINGS_SAVE_ERROR": "Échec de l'enregistrement des paramètres. Erreur {{ error }}",
