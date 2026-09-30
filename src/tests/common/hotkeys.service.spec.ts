@@ -126,6 +126,48 @@ describe('HotkeysService', () => {
         });
     });
 
+    describe('modifier keys', () => {
+        const keyEvent = (
+            type: 'keydown' | 'keyup',
+            code: string,
+            init: KeyboardEventInit = {},
+        ) => {
+            const event = new KeyboardEvent(type, {
+                code,
+                cancelable: true,
+                ...init,
+            });
+            window.dispatchEvent(event);
+            return event;
+        };
+
+        it('ignores a single key combination while Control or Meta is held', () => {
+            const callback = vi.fn();
+            const subscription = service.listen(['KeyE'], callback);
+            for (const init of [{ ctrlKey: true }, { metaKey: true }]) {
+                const event = keyEvent('keydown', 'KeyE', init);
+                keyEvent('keyup', 'KeyE', init);
+                expect(event.defaultPrevented).toBe(false);
+            }
+            expect(callback).not.toHaveBeenCalled();
+            keyEvent('keydown', 'KeyE');
+            keyEvent('keyup', 'KeyE');
+            expect(callback).toHaveBeenCalledTimes(1);
+            subscription?.unsubscribe();
+        });
+
+        it('fires a combination that includes the held modifier', () => {
+            const callback = vi.fn();
+            const subscription = service.listen(['Control', 'KeyK'], callback);
+            keyEvent('keydown', 'ControlLeft', { ctrlKey: true });
+            keyEvent('keydown', 'KeyK', { ctrlKey: true });
+            keyEvent('keyup', 'KeyK', { ctrlKey: true });
+            keyEvent('keyup', 'ControlLeft');
+            expect(callback).toHaveBeenCalledTimes(1);
+            subscription?.unsubscribe();
+        });
+    });
+
     describe('multiple subscriptions', () => {
         it('should allow multiple subscriptions to different combinations', () => {
             const callback1 = vi.fn();

@@ -27,6 +27,8 @@ export class HotkeysService {
     private counter = 0;
     /** Last key code to be pressed */
     private last_down: string;
+    /** Modifiers held during the last keydown event */
+    private held_modifiers: string[] = [];
 
     constructor() {
         window.addEventListener('keydown', (event: KeyboardEvent) => {
@@ -37,6 +39,18 @@ export class HotkeysService {
                 return;
             }
             const code = this.mapKey((event.code || '').toLowerCase());
+            this.held_modifiers = this.heldModifiers(event);
+            // Leave e.g. Ctrl+C to the browser if no combination uses Control
+            if (
+                !INVALID_STANDALONE_KEYS.includes(code) &&
+                !this.registered_combos.some(
+                    (combo) =>
+                        combo[combo.length - 1] === code &&
+                        this.allowsModifiers(combo),
+                )
+            ) {
+                return;
+            }
             if (this.last_down !== code) {
                 this.setKeyState(code, ++this.counter);
                 if (this.combo_end.indexOf(code) >= 0) {
@@ -76,7 +90,7 @@ export class HotkeysService {
             this.setKeyState(last_key, null);
             this.updateCombinationEndList();
             const listener = (count: number) => {
-                if (count) {
+                if (count && this.allowsModifiers(combination)) {
                     const presses: number[] = [];
                     if (combination.length > 0) {
                         // Check that keys are pressed
@@ -128,7 +142,7 @@ export class HotkeysService {
         }
 
         // Check for contenteditable elements
-        if (active.getAttribute('contenteditable') === 'true') {
+        if ((active as HTMLElement).isContentEditable) {
             return true;
         }
 
@@ -148,11 +162,26 @@ export class HotkeysService {
         if (
             code.indexOf('alt') >= 0 ||
             code.indexOf('shift') >= 0 ||
-            code.indexOf('control') >= 0
+            code.indexOf('control') >= 0 ||
+            code.indexOf('meta') >= 0
         ) {
             return code.replace('left', '').replace('right', '');
         }
         return code;
+    }
+
+    /** List the combination modifiers held during a key event */
+    private heldModifiers(event: KeyboardEvent): string[] {
+        const held: string[] = [];
+        if (event.ctrlKey) held.push('control');
+        if (event.altKey) held.push('alt');
+        if (event.metaKey) held.push('meta');
+        return held;
+    }
+
+    /** Whether the combination includes every modifier currently held */
+    private allowsModifiers(combo: string[]): boolean {
+        return this.held_modifiers.every((key) => combo.includes(key));
     }
 
     /**
