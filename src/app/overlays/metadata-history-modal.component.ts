@@ -70,12 +70,12 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     <mat-form-field appearance="outline" class="w-[20rem]">
                         <mat-select
                             [(ngModel)]="first"
+                            (selectionChange)="select(0, $event.value)"
                             placeholder="Select metadata version"
                         >
                             @for (item of history(); track item.updated_at) {
                                 <mat-option
                                     [value]="item"
-                                    (click)="select(0, item)"
                                     class="leading-tight"
                                 >
                                     <div class="">
@@ -102,13 +102,13 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     <mat-form-field appearance="outline" class="w-[20rem]">
                         <mat-select
                             [(ngModel)]="second"
+                            (selectionChange)="select(1, $event.value)"
                             placeholder="Compare with"
                         >
                             @for (item of history(); track item.updated_at) {
                                 @if (item !== first) {
                                     <mat-option
                                         [value]="item"
-                                        (click)="select(1, item)"
                                         class="leading-tight"
                                     >
                                         <div class="">
@@ -144,7 +144,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                             [original]="first_details() || ''"
                         />
                     }
-                    @if (!(first_details && second_details)) {
+                    @if (!(first_details() && second_details())) {
                         <div
                             class="bg-base-200 flex h-full w-full items-center justify-center rounded-lg opacity-40"
                         >

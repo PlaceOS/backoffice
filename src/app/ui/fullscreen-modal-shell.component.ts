@@ -42,6 +42,7 @@ import { TranslatePipe } from './translate.pipe';
                         btn
                         matRipple
                         class="w-32 pr-0"
+                        [disabled]="disable_confirm()"
                         (click)="save.emit()"
                     >
                         <div class="flex items-center space-x-2">
@@ -82,5 +83,7 @@ export class FullscreenModalShellComponent {
     public readonly heading = input('Fullscreen Modal');
     public readonly confirm_text = input('');
     public readonly hide_confirm = input(false);
+    /** Disable the save button, e.g. until required choices are made */
+    public readonly disable_confirm = input(false);
     public readonly save = output();
 }

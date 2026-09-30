@@ -9,6 +9,7 @@ import {
     MAT_DIALOG_DATA,
     MatDialogModule,
     MatDialogRef,
+    MatDialogState,
 } from '@angular/material/dialog';
 
 import { FormsModule } from '@angular/forms';
@@ -43,6 +44,9 @@ export interface DuplicateModalData {
                                 matInput
                                 name="times"
                                 type="number"
+                                min="1"
+                                [max]="MAX_TIMES"
+                                step="1"
                                 [(ngModel)]="times"
                                 placeholder="Number of duplications"
                                 required
@@ -55,7 +59,7 @@ export interface DuplicateModalData {
                     @if (!done()) {
                         <div class="info">Creating item duplicates...</div>
                     }
-                    @for (itm of temp(); track itm.id; let i = $index) {
+                    @for (itm of temp(); track $index; let i = $index) {
                         <div class="item">
                             <div class="name">
                                 {{ item.name }} ({{ i + 1 }})
@@ -85,7 +89,7 @@ export interface DuplicateModalData {
                 <button
                     btn
                     name="accept"
-                    [disabled]="!times || times <= 0"
+                    [disabled]="!validTimes()"
                     (click)="duplicate()"
                 >
                     Duplicate
@@ -173,6 +177,7 @@ export class DuplicateModalComponent {
 
     /** Emitter for user action on the modal */
     public readonly event = output<DialogEvent>();
+    public readonly MAX_TIMES = 50;
     /** Number of times to duplicate the given item */
     public times = 1;
     /** Number of times to duplicate the given item */
@@ -192,7 +197,19 @@ export class DuplicateModalComponent {
     /**
      * Create the specified number of duplicate items
      */
+    public validTimes() {
+        const times = +this.times;
+        return Number.isInteger(times) && times >= 1 && times <= this.MAX_TIMES;
+    }
+
     public async duplicate() {
+        if (this.loading()) return;
+        if (!this.validTimes()) {
+            return notifyError(
+                `Number of duplicates must be a whole number from 1 to ${this.MAX_TIMES}`,
+            );
+        }
+        this.times = +this.times;
         this.loading.set(true);
         const ItemConstructor = this.item.constructor as new (
             data: HashMap,
@@ -201,6 +218,8 @@ export class DuplicateModalComponent {
         const list = [];
         this.temp.set(new Array(this.times).fill({}));
         for (let i = 0; i < this.times; i++) {
+            // Stop creating duplicates if the user closes the dialog
+            if (this._dialog_ref.getState() !== MatDialogState.OPEN) break;
             const new_item = new ItemConstructor({
                 ...item,
                 id: '',

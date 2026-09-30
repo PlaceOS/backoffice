@@ -1,5 +1,6 @@
 import {
     Component,
+    computed,
     input,
     model,
     OnChanges,
@@ -42,7 +43,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                     Matched fields
                 </div>
                 <div class="text-lg font-medium">
-                    {{ mappedFieldCount() }} / {{ field_list().length }}
+                    {{ mapped_field_count() }} / {{ field_list().length }}
                 </div>
             </div>
         </div>
@@ -138,6 +139,8 @@ export class MatchFieldsComponent implements OnChanges, OnInit {
         const mappings = this.mappings();
         const list = this.list();
         if (changes.list && list && list.length) {
+            // Mappings from a previous file do not apply to a new one
+            this.field_mapping.set({});
             this.source_fields.set(
                 Object.keys(list[0]).map((i) => ({
                     id: i,
@@ -184,11 +187,11 @@ export class MatchFieldsComponent implements OnChanges, OnInit {
         }));
     }
 
-    public mappedFieldCount(): number {
-        return this.field_list().filter(
-            (field) => !!this.field_mapping[field.id],
-        ).length;
-    }
+    public readonly mapped_field_count = computed(() => {
+        const mapping = this.field_mapping();
+        return this.field_list().filter((field) => !!mapping[field.id])
+            .length;
+    });
 
     public isRequired(field: unknown): boolean {
         return this.required_fields().includes(`${field}`);

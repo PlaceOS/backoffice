@@ -30,7 +30,10 @@ import { HashMap } from '../common/types';
 import { currentUser } from '../common/user-state';
 import { validateJSONString } from '../common/validation';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
-import { MetadataDetailsModalComponent } from '../overlays/metadata-details-modal.component';
+import {
+    MetadataDetailsModalComponent,
+    MetadataDetailsModalData,
+} from '../overlays/metadata-details-modal.component';
 import { MetadataHistoryModalComponent } from '../overlays/metadata-history-modal.component';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { IconComponent } from './icon.component';
@@ -300,14 +303,16 @@ export class MetadataDisplayComponent
 
     public editMetadataDetails(field: PlaceMetadata) {
         const form = this.form_map()[field.name];
-        this._dialog.open(MetadataDetailsModalComponent, {
+        this._dialog.open<
+            MetadataDetailsModalComponent,
+            MetadataDetailsModalData
+        >(MetadataDetailsModalComponent, {
             maxWidth: '95vw',
             data: {
                 value: form,
                 existing_names: this.metadata()
                     .filter((i) => i.name !== field.name)
                     .map((i) => i.name),
-                change: this.change(),
                 update: (value: MetadataFormModel) =>
                     this.updateMetadataDetails(field.name, value),
             },
