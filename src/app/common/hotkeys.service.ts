@@ -1,4 +1,9 @@
-import { Service, WritableSignal, signal } from '@angular/core';
+import { Service, WritableSignal, inject, signal } from '@angular/core';
+import {
+    MatDialog,
+    MatDialogRef,
+    MatDialogState,
+} from '@angular/material/dialog';
 
 import { unique } from '../common/general';
 import { SubscriptionLike } from '../common/signals';
@@ -13,8 +18,12 @@ const INVALID_STANDALONE_KEYS: string[] = [
     'os',
 ];
 
+/** Modifier keys whose held state is read from the key event flags */
+const MODIFIER_KEYS: string[] = ['control', 'shift', 'alt', 'meta'];
+
 @Service()
 export class HotkeysService {
+    private _dialog = inject(MatDialog);
     /** Map of signals which store press states of keys */
     private keydown_states: HashMap<WritableSignal<number>> = {};
     /** Map of listeners for key state signals */
@@ -23,11 +32,11 @@ export class HotkeysService {
     private combo_end: string[] = [];
     /** List of registered hotkey combinations */
     private registered_combos: string[][] = [];
-    /** Counter for the number of keydown events. Used for checking order of key presses */
+    /** Counter for the number of keydown events */
     private counter = 0;
     /** Last key code to be pressed */
     private last_down: string;
-    /** Modifiers held during the last keydown event */
+    /** Modifiers (including shift) held during the last keydown event */
     private held_modifiers: string[] = [];
 
     constructor() {
@@ -72,7 +81,10 @@ export class HotkeysService {
     }
 
     /**
-     * Listen to the given key combination
+     * Listen to the given key combination.
+     * Modifiers may be pressed in any order, but the last key must be pressed last.
+     * The listener belongs to the dialog that is on top when it is registered
+     * (or to the page when no dialog is open) and only fires while that layer is on top.
      * @param combo Array of key codes to listen to or a hotkey string e.g. `Alt+Shift+KeyK`
      * @param next Callback for combination presses
      */
@@ -89,29 +101,15 @@ export class HotkeysService {
             const last_key = combination[combination.length - 1];
             this.setKeyState(last_key, null);
             this.updateCombinationEndList();
+            const owner = this.topDialog();
             const listener = (count: number) => {
-                if (count && this.allowsModifiers(combination)) {
-                    const presses: number[] = [];
-                    if (combination.length > 0) {
-                        // Check that keys are pressed
-                        for (const key of combination) {
-                            const state = this.keydown_states[key];
-                            presses.push(state ? state() || -1 : -1);
-                        }
-                        // Check that keys are pressed in the correct order
-                        for (let i = 0; i < combination.length - 1; i++) {
-                            if (presses[i] > presses[i + 1]) {
-                                return;
-                            }
-                        }
-                    }
-                    const total = presses.reduce(
-                        (a, v) => a + (v > 0 ? 1 : -1),
-                        0,
-                    );
-                    if (total >= combination.length) {
-                        next();
-                    }
+                if (
+                    count &&
+                    this.allowsModifiers(combination) &&
+                    this.isActiveLayer(owner) &&
+                    combination.every((key) => this.isPressed(key))
+                ) {
+                    next();
                 }
             };
             this.keydown_listeners[last_key].push(listener);
@@ -170,18 +168,50 @@ export class HotkeysService {
         return code;
     }
 
-    /** List the combination modifiers held during a key event */
+    /** List the modifiers held during a key event */
     private heldModifiers(event: KeyboardEvent): string[] {
         const held: string[] = [];
         if (event.ctrlKey) held.push('control');
+        if (event.shiftKey) held.push('shift');
         if (event.altKey) held.push('alt');
         if (event.metaKey) held.push('meta');
         return held;
     }
 
-    /** Whether the combination includes every modifier currently held */
+    /**
+     * Whether the combination includes every modifier currently held.
+     * Shift is ignored so that it does not block single key hotkeys.
+     */
     private allowsModifiers(combo: string[]): boolean {
-        return this.held_modifiers.every((key) => combo.includes(key));
+        return this.held_modifiers.every(
+            (key) => key === 'shift' || combo.includes(key),
+        );
+    }
+
+    /** Whether the key is held. Modifiers use the event flags, so order does not matter */
+    private isPressed(key: string): boolean {
+        if (MODIFIER_KEYS.includes(key)) {
+            return this.held_modifiers.includes(key);
+        }
+        return (this.keydown_states[key]?.() || 0) > 0;
+    }
+
+    /** Top-most dialog that is open and not closing, or null if there is none */
+    private topDialog(): MatDialogRef<unknown> | null {
+        const open = this._dialog.openDialogs.filter(
+            (ref) => ref.getState() === MatDialogState.OPEN,
+        );
+        return open[open.length - 1] || null;
+    }
+
+    /**
+     * Whether a listener registered while `owner` was on top may fire now.
+     * A listener from a dialog that has since closed is treated as page level.
+     */
+    private isActiveLayer(owner: MatDialogRef<unknown> | null): boolean {
+        const layer =
+            owner && this._dialog.openDialogs.includes(owner) ? owner : null;
+        return this.topDialog() === layer;
     }
 
     /**
