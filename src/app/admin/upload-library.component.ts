@@ -84,6 +84,11 @@ export interface UploadInfo {
     uploaded_email: number;
 }
 
+/** Interval between upload progress checks */
+const UPLOAD_POLL_MS = 250;
+/** Stop checking upload progress after one hour */
+const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
+
 @Component({
     selector: 'upload-library',
     template: `
@@ -462,8 +467,16 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                             this._uploads.uploadFileWithPermissions(files[i]),
                         );
                     }
-                    const id_list = await Promise.all(uploads);
+                    // Cancelling the permissions modal rejects that file only
+                    const results = await Promise.allSettled(uploads);
+                    const id_list = results
+                        .filter((_) => _.status === 'fulfilled')
+                        .map((_) => (_ as PromiseFulfilledResult<number>).value);
+                    if (!id_list.length) return;
+                    this.loading.set(true);
+                    let polls = 0;
                     const checkUploads = () => {
+                        polls += 1;
                         const list = this._uploads.upload_list();
                         let success = 0;
                         let failed = 0;
@@ -474,15 +487,22 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                             if (upload.error) failed += 1;
                             else if (upload.progress >= 100) success += 1;
                         }
-                        if (success + failed >= id_list.length) {
+                        const finished = success + failed >= id_list.length;
+                        if (finished || polls >= MAX_UPLOAD_POLLS) {
                             if (failed) {
                                 notifyError('Failed to upload files.');
-                            } else if (success) {
+                            } else if (success && finished) {
                                 notifySuccess('Succesfully uploaded files.');
                             }
                             this.clearTimeout('upload_list');
+                            this.loading.set(false);
+                            if (success) this.refresh.update((_) => _ + 1);
                         } else {
-                            this.timeout('upload_list', checkUploads, 250);
+                            this.timeout(
+                                'upload_list',
+                                checkUploads,
+                                UPLOAD_POLL_MS,
+                            );
                         }
                     };
                     checkUploads();

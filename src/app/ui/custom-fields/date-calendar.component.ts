@@ -37,7 +37,7 @@ interface DateItem {
         <div class="p-2">
             <div class="flex items-center justify-between">
                 <div class="pr-2 pl-1.5 font-medium">
-                    {{ date_list()[6]?.id || date() | date: 'LLLL YYYY' }}
+                    {{ date_list()[6]?.id || date() | date: 'LLLL yyyy' }}
                 </div>
                 <div class="flex items-center">
                     <button
