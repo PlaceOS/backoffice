@@ -28,6 +28,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { escapeHtml } from '../../common/general';
 import { HashMap } from '../../common/types';
 import { IconComponent } from '../icon.component';
 import { SanitizePipe } from '../pipes/sanitise.pipe';
@@ -386,6 +387,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
         this._onTouch?.(this.active_item());
     }
 
+    /** Build the option label HTML for each item. Item values are escaped */
     private _updateNameMap() {
         const map = {};
         const list = this.items || [];
@@ -397,14 +399,15 @@ export class ItemSearchFieldComponent<T extends SearchItem>
                         : item.role === PlaceDriverRole.Logic
                           ? item.control_system_id
                           : item.ip;
-                map[item.id] = `${
-                    item.name || '<Unnamed>'
-                } <span class="small">${detail}<span>`;
+                map[item.id] = `${escapeHtml(
+                    item.name || '<Unnamed>',
+                )} <span class="small">${escapeHtml(detail)}</span>`;
             } else {
-                map[item.id] =
+                map[item.id] = escapeHtml(
                     (item as unknown as { custom_name?: string }).custom_name ||
-                    item.name ||
-                    '<Unnamed>';
+                        item.name ||
+                        '<Unnamed>',
+                );
             }
         }
         this.item_name.set(map);
