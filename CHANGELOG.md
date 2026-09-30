@@ -16,10 +16,30 @@ All notable changes to this project will be documented in this file.
 - Remove obsolete signage plugin defaults on save
 - Make signage plugin repos searchable in wizard
 - Sandbox signage plugin embed to an opaque origin
+- Stop losing API key expiry, edge keys and extensions
+- Show a readable error when a zone tree import fails
 
 #### App
 
 - Drop unused x-api-key URL param handler
+
+#### Common
+
+- Drop stale item loads and keep settings saved mid-flight
+
+#### Csv
+
+- Parse quoted newlines and CRLF line endings
+- Keep columns missing from the first row on export
+
+#### Domains
+
+- Keep OAuth client ID and handle empty settings
+- Show the stored client ID for existing apps
+
+#### Groups
+
+- Refresh and clear the parent when the authority changes
 
 #### Modules
 
@@ -44,6 +64,10 @@ All notable changes to this project will be documented in this file.
 - Keep module connection state after power toggle
 - Show loading while removing a trigger or module
 
+#### Triggers
+
+- Stop removing the wrong action or condition
+
 #### Ui
 
 - Escape user names in confirm modal and editor HTML
@@ -54,6 +78,10 @@ All notable changes to this project will be documented in this file.
 - Require scheme:// form for driver and module URIs
 - Scope hotkeys to the top dialog and ignore modifier order
 - Escape item names in search field options
+
+#### Zones
+
+- Keep parent zone when saving before it loads
 
 ### Documentation
 
