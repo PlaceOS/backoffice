@@ -7,7 +7,6 @@ import {
     invalidateToken,
     isMock,
     isOnline,
-    setAPI_Key,
     token,
 } from '@placeos/ts-client';
 
@@ -168,9 +167,6 @@ export class AppComponent extends AsyncHandler implements OnInit {
                 const locale = params.get('lang');
                 this._locale?.setLocale(locale);
                 localStorage.setItem('BACKOFFICE.locale', locale);
-            }
-            if (params.has('x-api-key')) {
-                setAPI_Key(params.get('x-api-key'));
             }
         });
         setNotifyOutlet(this._snackbar);
