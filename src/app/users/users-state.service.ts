@@ -31,10 +31,16 @@ export class UsersStateService {
     private _service = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _loading = signal(false);
+    /** Set while a bulk add runs */
+    private _saving = signal(false);
     private _change = signal(0);
 
-    public readonly loading = this._loading.asReadonly();
+    public readonly loading = computed(
+        () =>
+            this._saving() ||
+            this._counts.isLoading() ||
+            this._groups.isLoading(),
+    );
 
     public readonly item = this._service.item;
 
@@ -46,7 +52,6 @@ export class UsersStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceUser)) return {};
-            this._loading.set(true);
             const details = await Promise.all([
                 listMetadata(item.id)
                     .then((d) => d.length)
@@ -56,7 +61,6 @@ export class UsersStateService {
                     .catch(() => 0),
             ]);
             const [metadata, groups] = details;
-            this._loading.set(false);
             return {
                 metadata,
                 groups,
@@ -87,27 +91,22 @@ export class UsersStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceUser)) return [] as PlaceGroupUser[];
-            this._loading.set(true);
-            try {
-                const response = await queryGroupUsers({
-                    user_id: item.id,
-                    limit: 1000,
-                }).catch((error) => {
-                    notifyError(
-                        i18n('USERS.GROUPS_LOAD_ERROR', {
-                            error: describeError(error),
-                        }),
-                    );
-                    return { data: [] as PlaceGroupUser[] };
-                });
-                return response.data.sort((a, b) =>
-                    (a.group?.name || a.group_id).localeCompare(
-                        b.group?.name || b.group_id,
-                    ),
+            const response = await queryGroupUsers({
+                user_id: item.id,
+                limit: 1000,
+            }).catch((error) => {
+                notifyError(
+                    i18n('USERS.GROUPS_LOAD_ERROR', {
+                        error: describeError(error),
+                    }),
                 );
-            } finally {
-                this._loading.set(false);
-            }
+                return { data: [] as PlaceGroupUser[] };
+            });
+            return response.data.sort((a, b) =>
+                (a.group?.name || a.group_id).localeCompare(
+                    b.group?.name || b.group_id,
+                ),
+            );
         },
     });
 
@@ -175,7 +174,7 @@ export class UsersStateService {
         if (!groups?.length) return;
         // Only send permissions when set so the backend default applies
         const permissions = +result.permissions || 0;
-        this._loading.set(true);
+        this._saving.set(true);
         const results = await Promise.allSettled(
             groups.map((group) =>
                 addGroupUser({
@@ -185,7 +184,7 @@ export class UsersStateService {
                 }),
             ),
         );
-        this._loading.set(false);
+        this._saving.set(false);
         const failed = results.filter((_) => _.status === 'rejected').length;
         if (failed) {
             notifyError(i18n('USERS.GROUPS_BULK_ERROR', { count: failed }));

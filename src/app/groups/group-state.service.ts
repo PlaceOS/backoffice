@@ -32,39 +32,40 @@ export class GroupStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
     private _changed = signal(0);
-    private _loading = signal(false);
+    /** Set while a bulk add runs */
+    private _saving = signal(false);
 
     public readonly item = computed(
         () => this._state.item() as unknown as PlaceGroup,
     );
-    public readonly loading = this._loading.asReadonly();
+    public readonly loading = computed(
+        () =>
+            this._saving() ||
+            this._users.isLoading() ||
+            this._zones.isLoading(),
+    );
 
     private readonly _users = resource({
         params: () => ({ item: this.item(), changed: this._changed() }),
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceGroup)) return [] as PlaceGroupUser[];
-            this._loading.set(true);
-            try {
-                const response = await queryGroupUsers({
-                    group_id: item.id,
-                    limit: 1000,
-                }).catch((error) => {
-                    notifyError(
-                        i18n('GROUPS.USERS_LOAD_ERROR', {
-                            error: describeError(error),
-                        }),
-                    );
-                    return { data: [] as PlaceGroupUser[] };
-                });
-                return response.data.sort((a, b) =>
-                    (a.user?.name || a.user_id).localeCompare(
-                        b.user?.name || b.user_id,
-                    ),
+            const response = await queryGroupUsers({
+                group_id: item.id,
+                limit: 1000,
+            }).catch((error) => {
+                notifyError(
+                    i18n('GROUPS.USERS_LOAD_ERROR', {
+                        error: describeError(error),
+                    }),
                 );
-            } finally {
-                this._loading.set(false);
-            }
+                return { data: [] as PlaceGroupUser[] };
+            });
+            return response.data.sort((a, b) =>
+                (a.user?.name || a.user_id).localeCompare(
+                    b.user?.name || b.user_id,
+                ),
+            );
         },
     });
 
@@ -75,27 +76,22 @@ export class GroupStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceGroup)) return [] as PlaceGroupZone[];
-            this._loading.set(true);
-            try {
-                const response = await queryGroupZones({
-                    group_id: item.id,
-                    limit: 1000,
-                }).catch((error) => {
-                    notifyError(
-                        i18n('GROUPS.ZONES_LOAD_ERROR', {
-                            error: describeError(error),
-                        }),
-                    );
-                    return { data: [] as PlaceGroupZone[] };
-                });
-                return response.data.sort((a, b) =>
-                    (a.zone?.name || a.zone_id).localeCompare(
-                        b.zone?.name || b.zone_id,
-                    ),
+            const response = await queryGroupZones({
+                group_id: item.id,
+                limit: 1000,
+            }).catch((error) => {
+                notifyError(
+                    i18n('GROUPS.ZONES_LOAD_ERROR', {
+                        error: describeError(error),
+                    }),
                 );
-            } finally {
-                this._loading.set(false);
-            }
+                return { data: [] as PlaceGroupZone[] };
+            });
+            return response.data.sort((a, b) =>
+                (a.zone?.name || a.zone_id).localeCompare(
+                    b.zone?.name || b.zone_id,
+                ),
+            );
         },
     });
 
@@ -180,7 +176,7 @@ export class GroupStateService {
         const users = result?.items;
         if (!users?.length) return;
         const permissions = +result.permissions || 0;
-        this._loading.set(true);
+        this._saving.set(true);
         const results = await Promise.allSettled(
             users.map((user) =>
                 addGroupUser({
@@ -190,7 +186,7 @@ export class GroupStateService {
                 }),
             ),
         );
-        this._loading.set(false);
+        this._saving.set(false);
         const failed = results.filter((_) => _.status === 'rejected').length;
         if (failed) {
             notifyError(i18n('GROUPS.USERS_BULK_ERROR', { count: failed }));
@@ -243,7 +239,7 @@ export class GroupStateService {
         );
         const zones = result?.items;
         if (!zones?.length) return;
-        this._loading.set(true);
+        this._saving.set(true);
         const results = await Promise.allSettled(
             zones.map((zone) =>
                 addGroupZone({
@@ -252,7 +248,7 @@ export class GroupStateService {
                 }),
             ),
         );
-        this._loading.set(false);
+        this._saving.set(false);
         const failed = results.filter((_) => _.status === 'rejected').length;
         if (failed) {
             notifyError(i18n('GROUPS.ZONES_BULK_ERROR', { count: failed }));

@@ -24,7 +24,6 @@ export class DriverStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _loading = signal(false);
     private _last_error = signal<HashMap>(null);
     private _poll = signal(0);
     private _modules_change = signal(0);
@@ -33,7 +32,9 @@ export class DriverStateService {
         () => this._state.item() as unknown as PlaceDriver,
     );
 
-    public readonly loading = this._loading.asReadonly();
+    public readonly loading = computed(
+        () => this._modules.isLoading() || this._docs.isLoading(),
+    );
     /** Bumped each time a module of the driver is removed */
     public readonly modules_change = this._modules_change.asReadonly();
 
@@ -56,15 +57,10 @@ export class DriverStateService {
         params: () => ({ item: this.item(), changed: this._modules_change() }),
         loader: async ({ params: { item } }) => {
             if (!(item instanceof PlaceDriver)) return [] as PlaceModule[];
-            this._loading.set(true);
-            try {
-                const response = await queryModules({
-                    driver_id: item.id,
-                }).catch(() => ({ data: [] }));
-                return response.data;
-            } finally {
-                this._loading.set(false);
-            }
+            const response = await queryModules({
+                driver_id: item.id,
+            }).catch(() => ({ data: [] }));
+            return response.data;
         },
     });
 
@@ -74,12 +70,7 @@ export class DriverStateService {
         params: () => this.item(),
         loader: async ({ params: item }) => {
             if (!(item instanceof PlaceDriver)) return '';
-            this._loading.set(true);
-            try {
-                return driverReadme(item.id).catch(() => '');
-            } finally {
-                this._loading.set(false);
-            }
+            return driverReadme(item.id).catch(() => '');
         },
     });
 

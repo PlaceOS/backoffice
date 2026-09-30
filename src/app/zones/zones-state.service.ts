@@ -44,10 +44,16 @@ export class ZonesStateService {
     private _service = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _loading = signal(false);
+    /** Set while a bulk add runs */
+    private _saving = signal(false);
     private _change = signal(0);
 
-    public readonly loading = this._loading.asReadonly();
+    public readonly loading = computed(
+        () =>
+            this._saving() ||
+            this._counts.isLoading() ||
+            this._groups.isLoading(),
+    );
 
     public readonly item = computed(
         () => this._service.item() as unknown as PlaceZone,
@@ -58,39 +64,34 @@ export class ZonesStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceZone)) return {};
-            this._loading.set(true);
-            try {
-                const details = await Promise.all([
-                    querySystems({ zone_id: item.id, limit: 1 })
-                        .then((d) => d.total)
-                        .catch(() => 0),
-                    (isSubsystemUser()
-                        ? Promise.resolve({ data: [], total: 0 })
-                        : listZoneTriggers(item.id)
-                    )
-                        .then((d) => d.total)
-                        .catch(() => 0),
-                    listMetadata(item.id)
-                        .then((d) => d.length)
-                        .catch(() => 0),
-                    queryZones({ parent_id: item.id, limit: 1 })
-                        .then((d) => d.total)
-                        .catch(() => 0),
-                    queryGroupZones({ zone_id: item.id, limit: 1 })
-                        .then((d) => d.total)
-                        .catch(() => 0),
-                ]);
-                const [systems, triggers, metadata, children, groups] = details;
-                return {
-                    systems,
-                    triggers,
-                    metadata,
-                    children,
-                    groups,
-                };
-            } finally {
-                this._loading.set(false);
-            }
+            const details = await Promise.all([
+                querySystems({ zone_id: item.id, limit: 1 })
+                    .then((d) => d.total)
+                    .catch(() => 0),
+                (isSubsystemUser()
+                    ? Promise.resolve({ data: [], total: 0 })
+                    : listZoneTriggers(item.id)
+                )
+                    .then((d) => d.total)
+                    .catch(() => 0),
+                listMetadata(item.id)
+                    .then((d) => d.length)
+                    .catch(() => 0),
+                queryZones({ parent_id: item.id, limit: 1 })
+                    .then((d) => d.total)
+                    .catch(() => 0),
+                queryGroupZones({ zone_id: item.id, limit: 1 })
+                    .then((d) => d.total)
+                    .catch(() => 0),
+            ]);
+            const [systems, triggers, metadata, children, groups] = details;
+            return {
+                systems,
+                triggers,
+                metadata,
+                children,
+                groups,
+            };
         },
     });
 
@@ -173,20 +174,15 @@ export class ZonesStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceZone)) return [] as PlaceGroupZone[];
-            this._loading.set(true);
-            try {
-                const response = await queryGroupZones({
-                    zone_id: item.id,
-                    limit: 1000,
-                }).catch(() => ({ data: [] }));
-                return response.data.sort((a, b) =>
-                    (a.group?.name || a.group_id).localeCompare(
-                        b.group?.name || b.group_id,
-                    ),
-                );
-            } finally {
-                this._loading.set(false);
-            }
+            const response = await queryGroupZones({
+                zone_id: item.id,
+                limit: 1000,
+            }).catch(() => ({ data: [] }));
+            return response.data.sort((a, b) =>
+                (a.group?.name || a.group_id).localeCompare(
+                    b.group?.name || b.group_id,
+                ),
+            );
         },
     });
 
@@ -333,7 +329,7 @@ export class ZonesStateService {
                 .afterClosed(),
         );
         if (!groups?.length) return;
-        this._loading.set(true);
+        this._saving.set(true);
         const results = await Promise.allSettled(
             groups.map((group) =>
                 addGroupZone({
@@ -342,7 +338,7 @@ export class ZonesStateService {
                 }),
             ),
         );
-        this._loading.set(false);
+        this._saving.set(false);
         const failed = results.filter((_) => _.status === 'rejected').length;
         if (failed) {
             notifyError(i18n('ZONES.GROUPS_BULK_ERROR', { count: failed }));

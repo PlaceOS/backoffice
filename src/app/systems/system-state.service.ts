@@ -135,7 +135,7 @@ export class SystemStateService extends AsyncHandler {
 
     private readonly _module_resource = resource({
         params: () => ({ item: this.item(), changed: this._change() }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item } = params;
             if (!(item instanceof PlaceSystem)) {
                 this._last_module_system = '';
@@ -152,6 +152,10 @@ export class SystemStateService extends AsyncHandler {
                     complete: true,
                     limit: 200,
                 } as Record<string, unknown>).catch(() => ({ data: [] }));
+                // A newer load or another system took over. Leave its state alone.
+                if (abortSignal.aborted || this.item()?.id !== item.id) {
+                    return [] as PlaceModule[];
+                }
                 // Keep known connection state across refreshes. Bindings only
                 // emit on change, so a reset value would never be filled again.
                 const known_state = new Map(
@@ -182,7 +186,7 @@ export class SystemStateService extends AsyncHandler {
                 this._modules.set(modules);
                 return modules;
             } finally {
-                this.setLoading('modules', false);
+                if (!abortSignal.aborted) this.setLoading('modules', false);
             }
         },
     });

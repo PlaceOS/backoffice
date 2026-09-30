@@ -266,6 +266,8 @@ describe('group membership actions', () => {
         expect(mocks.notifySuccess).toHaveBeenCalledExactlyOnceWith(
             'GROUPS.USERS_BULK_SUCCESS:1',
         );
+        // The lists reload after the bulk add
+        await TestBed.inject(ApplicationRef).whenStable();
         expect(service.loading()).toBe(false);
     });
 
