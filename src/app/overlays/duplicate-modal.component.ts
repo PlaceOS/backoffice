@@ -16,6 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
@@ -227,7 +228,7 @@ export class DuplicateModalComponent {
             });
             this.setStatus(i, 'loading');
             const saved_item = await this._data.save(new_item).catch((err) => {
-                this.setStatus(i, `Error: ${err.message || err}`);
+                this.setStatus(i, `Error: ${describeError(err)}`);
                 notifyError(this.status()[i]);
             });
             list.push(saved_item);

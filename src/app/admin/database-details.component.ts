@@ -4,13 +4,13 @@ import { addZone, PlaceZone, queryZones, showZone } from '@placeos/ts-client';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { describeError } from '../common/errors';
 import { csvToJson, downloadFile, jsonToCsv } from '../common/general';
 import {
     notifyError,
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
-import { describeError } from '../overlays/confirm-modal.component';
 import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component';
 
 type ZoneTreeExportItem = Record<string, unknown> & {
@@ -200,13 +200,7 @@ export class PlaceDatabaseDetailsComponent {
             await this.importZoneTree(zones);
         } catch (err) {
             notifyError(
-                `Error importing zone tree. Error: ${JSON.stringify(
-                    (err as { response?: unknown; message?: unknown })
-                        .response ||
-                        (err as { response?: unknown; message?: unknown })
-                            .message ||
-                        err,
-                )}`,
+                `Error importing zone tree. Error: ${describeError(err)}`,
             );
         }
         this.importing_zones.set(false);
@@ -227,13 +221,7 @@ export class PlaceDatabaseDetailsComponent {
             notifySuccess(`Exported ${zones.length} zones.`);
         } catch (err) {
             notifyError(
-                `Error exporting zone tree. Error: ${JSON.stringify(
-                    (err as { response?: unknown; message?: unknown })
-                        .response ||
-                        (err as { response?: unknown; message?: unknown })
-                            .message ||
-                        err,
-                )}`,
+                `Error exporting zone tree. Error: ${describeError(err)}`,
             );
         }
         this.exporting_zones.set(false);

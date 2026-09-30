@@ -13,6 +13,7 @@ import { BackofficeUsersService } from '../users/users.service';
 
 import { DatePipe, SlicePipe } from '@angular/common';
 import { format } from 'date-fns';
+import { describeError } from '../common/errors';
 import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -253,9 +254,7 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
             (err) =>
                 notifyError(
                     i18n('ADMIN.BACKEND_SERVICES_ERROR', {
-                        error: JSON.stringify(
-                            err.response || err.message || err,
-                        ),
+                        error: describeError(err),
                     }),
                 ),
         );
@@ -268,7 +267,7 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
         ).catch((err) => {
             notifyError(
                 i18n('ADMIN.BACKEND_SERVICES_ERROR', {
-                    error: JSON.stringify(err.response || err.message || err),
+                    error: describeError(err),
                 }),
             );
             throw err;

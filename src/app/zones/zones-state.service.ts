@@ -18,6 +18,7 @@ import {
     updateGroupZone,
     updateZone,
 } from '@placeos/ts-client';
+import { describeError } from '../common/errors';
 import { escapeHtml, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -263,9 +264,9 @@ export class ZonesStateService {
         }).catch((err) => {
             details.close();
             notifyError(
-                `Error removing trigger ${trigger.id} from zone. Error: ${
-                    err.statusText || err.message || err
-                }`,
+                `Error removing trigger ${trigger.id} from zone. Error: ${describeError(
+                    err,
+                )}`,
             );
             throw err;
         });

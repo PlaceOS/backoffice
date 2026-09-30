@@ -11,6 +11,7 @@ import {
     removeModule,
     updateDriver,
 } from '@placeos/ts-client';
+import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap, Identity } from '../common/types';
@@ -198,9 +199,7 @@ export class DriverStateService {
             .then(() => true)
             .catch((err) => {
                 notifyError(
-                    `Error removing module ${device.id}. Error: ${
-                        err.statusText || err.message || err
-                    }`,
+                    `Error removing module ${device.id}. Error: ${describeError(err)}`,
                 );
                 return false;
             });

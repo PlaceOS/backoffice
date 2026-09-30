@@ -10,6 +10,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceResource } from '@placeos/ts-client';
+import { readError } from '../../common/errors';
 import { notifyError } from '../../common/notifications';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -174,7 +175,7 @@ export class StatusListComponent implements OnChanges {
                         this.completed_count.set(success_count);
                         results[index] = saved_item;
                     } catch (err) {
-                        const message = this.formatError(err);
+                        const message = `Error: ${await readError(err)}`;
                         this.setStatus(index, message);
                         console.error(`Failed to save item ${index}:`, err);
                         notifyError(message);
@@ -195,27 +196,5 @@ export class StatusListComponent implements OnChanges {
 
     private setStatus(index: number, value: string): void {
         this.status.update((status) => ({ ...status, [index]: value }));
-    }
-
-    private formatError(err: unknown): string {
-        if (err && typeof err === 'object') {
-            const http_err = err as Record<string, unknown>;
-            const status = http_err.status || '';
-            const status_text = http_err.statusText || '';
-            const message =
-                http_err.message ||
-                (http_err.error &&
-                typeof http_err.error === 'object' &&
-                (http_err.error as Record<string, unknown>).message
-                    ? (http_err.error as Record<string, unknown>).message
-                    : '');
-            if (status || status_text) {
-                return `Error: ${status} ${status_text}`.trim();
-            }
-            if (message) {
-                return `Error: ${message}`;
-            }
-        }
-        return `Error: ${String(err)}`;
     }
 }

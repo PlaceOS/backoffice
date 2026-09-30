@@ -5,6 +5,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get } from '@placeos/ts-client';
 import { toQueryString } from '../common/api';
+import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -170,12 +171,7 @@ export class PlaceBuildListComponent implements OnInit {
         if (err)
             return notifyError(
                 i18n('ADMIN.BUILD_LIST_REMOVE_ERROR', {
-                    error:
-                        (err as { statusText?: string; message?: string })
-                            .statusText ||
-                        (err as { statusText?: string; message?: string })
-                            .message ||
-                        err,
+                    error: describeError(err),
                 }),
             );
         this.last_change.set(null);

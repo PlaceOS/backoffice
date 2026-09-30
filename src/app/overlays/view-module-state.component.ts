@@ -14,6 +14,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { AsyncHandler } from '../common/async-handler.class';
+import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
@@ -199,7 +200,7 @@ export class ViewModuleStateModalComponent
             });
             this.state.set(JSON.stringify(pre_state, undefined, 4));
         } catch (err) {
-            notifyError(JSON.stringify(err.response || err.message || err));
+            notifyError(describeError(err));
         } finally {
             this.loading.set(false);
         }

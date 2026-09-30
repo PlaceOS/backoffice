@@ -31,6 +31,7 @@ import {
     updateDomain,
 } from '@placeos/ts-client';
 import { filter, map } from 'rxjs';
+import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -270,9 +271,9 @@ export class DomainStateService {
         details.close();
         if (err)
             return notifyError(
-                `Error removing domain application. Error: ${
-                    err.responseText || err.message || err
-                }`,
+                `Error removing domain application. Error: ${describeError(
+                    err,
+                )}`,
             );
         notifySuccess('Successfully removed domain application.');
         this._changed.set(new Date().valueOf());
@@ -324,9 +325,9 @@ export class DomainStateService {
         details.close();
         if (err)
             return notifyError(
-                `Error removing domain auth source. Error: ${
-                    err.responseText || err.message || err
-                }`,
+                `Error removing domain auth source. Error: ${describeError(
+                    err,
+                )}`,
             );
         notifySuccess('Successfully removed domain auth source.');
         this._changed.set(new Date().valueOf());

@@ -22,7 +22,6 @@ import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
     ConfirmModalData,
-    describeError,
 } from '../overlays/confirm-modal.component';
 import { DuplicateModalComponent } from '../overlays/duplicate-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
@@ -34,6 +33,7 @@ import {
     CascadeResource,
     runCascade,
 } from './cascade-delete';
+import { describeError } from './errors';
 import { escapeHtml, log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
@@ -516,9 +516,7 @@ export class ActiveItemService extends AsyncHandler {
                             }
                             notifyError(
                                 i18n(`${actions.name}.DELETE_ERROR`, {
-                                    error: JSON.stringify(
-                                        err.response || err.message || err,
-                                    ),
+                                    error: describeError(err),
                                 }),
                             );
                         });

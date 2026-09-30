@@ -14,6 +14,7 @@ import {
 } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../common/async-handler.class';
+import { describeError } from '../common/errors';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { FormModalComponent } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -257,9 +258,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
             details.close();
             if (err)
                 return notifyError(
-                    `Error deleting broker. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
+                    `Error deleting broker. Error: ${describeError(err)}`,
                 );
             notifySuccess(`Successfully deleted broker "${item.name}".`);
             this.loadBrokers();

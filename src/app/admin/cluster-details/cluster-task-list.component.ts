@@ -23,6 +23,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { signalFromSubscribable } from '../../common/signals';
@@ -274,9 +275,7 @@ export class PlaceClusterTaskListComponent
                             this.killing.set(null);
                             notifyError(
                                 i18n('ADMIN.CLUSTER_PROCESS_KILL_ERROR', {
-                                    error: JSON.stringify(
-                                        err.response || err.message || err,
-                                    ),
+                                    error: describeError(err),
                                 }),
                             );
                             ref.close();

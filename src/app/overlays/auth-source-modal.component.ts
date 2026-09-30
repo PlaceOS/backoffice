@@ -25,6 +25,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { AsyncHandler } from '../common/async-handler.class';
+import { readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
@@ -241,13 +242,11 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
                 notifySuccess(i18n('DOMAINS.AUTHENTICATION_SAVE_SUCCESS'));
                 this._dialog.close();
             },
-            (err) => {
+            async (err) => {
                 this.loading.set('');
                 notifyError(
                     i18n('DOMAINS.AUTHENTICATION_SAVE_ERROR', {
-                        error: JSON.stringify(
-                            err.response || err.message || err,
-                        ),
+                        error: await readError(err),
                     }),
                 );
             },

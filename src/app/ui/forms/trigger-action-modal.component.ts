@@ -26,6 +26,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { DialogEvent, Identity } from '../../common/types';
@@ -329,9 +330,7 @@ export class TriggerActionModalComponent
                 notifyError(
                     `Error ${
                         this.is_new ? 'adding' : 'updating'
-                    } condition to trigger. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
+                    } condition to trigger. Error: ${describeError(err)}`,
                 );
             },
         );

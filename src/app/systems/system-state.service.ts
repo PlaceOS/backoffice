@@ -37,6 +37,7 @@ import {
     querySupportSystems as querySystems,
 } from '../common/support-access';
 
+import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
@@ -284,11 +285,7 @@ export class SystemStateService extends AsyncHandler {
         const error = await startSystem(this.active_item.id)
             .then(() => null)
             .catch((err) => {
-                notifyError(
-                    `Failed to start system: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
+                notifyError(`Failed to start system: ${describeError(err)}`);
                 return err;
             });
         if (!error) {
@@ -312,11 +309,7 @@ export class SystemStateService extends AsyncHandler {
         const error = await stopSystem(this.active_item.id)
             .then(() => null)
             .catch((err) => {
-                notifyError(
-                    `Failed to stop system: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
+                notifyError(`Failed to stop system: ${describeError(err)}`);
                 return err;
             });
         if (!error) {
@@ -392,7 +385,7 @@ export class SystemStateService extends AsyncHandler {
                 `Error adding module to system "${
                     (system as PlaceSystem & { display_name?: string })
                         .display_name || system.name
-                }". Error: ${JSON.stringify(_e.response || _e.message || _e)}`,
+                }". Error: ${describeError(_e)}`,
             );
             throw _e;
         });
@@ -471,9 +464,7 @@ export class SystemStateService extends AsyncHandler {
             }/triggers/${trigger.id}`;
             const trig = await put(url, details.metadata).catch((err) => {
                 notifyError(
-                    `Error updating trigger settings. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
+                    `Error updating trigger settings. Error: ${describeError(err)}`,
                 );
                 throw err;
             });
@@ -497,9 +488,9 @@ export class SystemStateService extends AsyncHandler {
             (err) => {
                 details.close();
                 notifyError(
-                    `Error removing trigger ${trigger.id} from system. Error: ${
-                        err.statusText || err.message || err
-                    }`,
+                    `Error removing trigger ${trigger.id} from system. Error: ${describeError(
+                        err,
+                    )}`,
                 );
                 throw err;
             },
@@ -524,9 +515,7 @@ export class SystemStateService extends AsyncHandler {
             modules: list,
         }).catch((err) => {
             notifyError(
-                `Failed to reorder system modules: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
+                `Failed to reorder system modules: ${describeError(err)}`,
             );
             return err;
         });
@@ -596,11 +585,7 @@ export class SystemStateService extends AsyncHandler {
             ...this.active_item,
             modules: sorted_ids,
         }).catch((err) => {
-            notifyError(
-                `Failed to sort system modules: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
-            );
+            notifyError(`Failed to sort system modules: ${describeError(err)}`);
             return err;
         });
         details.close();
@@ -624,9 +609,7 @@ export class SystemStateService extends AsyncHandler {
             zones: order,
         }).catch((err) => {
             notifyError(
-                `Failed to reorder system zones: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
+                `Failed to reorder system zones: ${describeError(err)}`,
             );
             return err;
         });
@@ -644,9 +627,9 @@ export class SystemStateService extends AsyncHandler {
     public async joinModule(id: string) {
         await addSystemModule(this.active_item.id, id).catch((err) => {
             notifyError(
-                `Error adding module ${id} to system. Error: ${
-                    err.statusText || err.message || err
-                }`,
+                `Error adding module ${id} to system. Error: ${describeError(
+                    err,
+                )}`,
             );
         });
         this.timeout('join', async () => {
@@ -674,9 +657,9 @@ export class SystemStateService extends AsyncHandler {
             device.id,
         ).catch((err) => {
             notifyError(
-                `Error removing module ${device.id} from system. Error: ${
-                    err.statusText || err.message || err
-                }`,
+                `Error removing module ${device.id} from system. Error: ${describeError(
+                    err,
+                )}`,
             );
         });
         details.close();
@@ -698,9 +681,9 @@ export class SystemStateService extends AsyncHandler {
             zones,
         }).catch((err) => {
             notifyError(
-                `Error adding ${zone_list.length} zone(s) to system. Error: ${
-                    err.statusText || err.message || err
-                }`,
+                `Error adding ${zone_list.length} zone(s) to system. Error: ${describeError(
+                    err,
+                )}`,
             );
         });
         if (system) this._state.replaceItem(system as unknown as Identity);
@@ -724,9 +707,9 @@ export class SystemStateService extends AsyncHandler {
             zones,
         }).catch((err) => {
             notifyError(
-                `Error removing zone ${zone.id} from system. Error: ${
-                    err.statusText || err.message || err
-                }`,
+                `Error removing zone ${zone.id} from system. Error: ${describeError(
+                    err,
+                )}`,
             );
         });
         details.close();

@@ -11,6 +11,7 @@ import {
     removeEdge,
     retrieveEdgeToken,
 } from '@placeos/ts-client';
+import { describeError } from '../common/errors';
 import { copyToClipboard, escapeHtml } from '../common/general';
 import {
     notifyError,
@@ -237,9 +238,7 @@ export class PlaceEdgeComponent implements OnInit {
         details.close();
         if (err)
             return notifyError(
-                `Error removing edge. Error: ${
-                    err.statusText || err.message || err
-                }`,
+                `Error removing edge. Error: ${describeError(err)}`,
             );
         sessionStorage.removeItem('BACKOFFICE.last_edge');
         this.last_change.set(null);

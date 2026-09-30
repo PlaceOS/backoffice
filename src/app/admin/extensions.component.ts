@@ -7,6 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, updateDomain } from '@placeos/ts-client';
+import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { notifyError } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
@@ -275,7 +276,7 @@ export class PlaceExtensionsComponent implements OnInit {
             let ext_list = this.extensions();
             ext_list = ext_list.filter((i) => !isSameExtension(i, item));
             await this.updateDomain(ext_list).catch((e) =>
-                notifyError(`Error removing extension: ${e}`),
+                notifyError(`Error removing extension: ${describeError(e)}`),
             );
             ref.componentInstance?.loading.set('');
             ref.close();

@@ -29,6 +29,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from '../common/async-handler.class';
+import { readError } from '../common/errors';
 import {
     addSignalChipItem,
     getInvalidSignalFields,
@@ -476,14 +477,12 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
-        await addSettings(new_settings).catch((err) => {
+        await addSettings(new_settings).catch(async (err) => {
             this.loading.set(null);
             notifyError(
                 `Error saving settings for ${
                     item.name || item.id
-                }. Error: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
+                }. Error: ${await readError(err)}`,
             );
         });
     }

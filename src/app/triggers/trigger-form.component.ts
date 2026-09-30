@@ -21,6 +21,7 @@ import {
     updateTrigger,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
+import { readError } from '../common/errors';
 import { getInvalidSignalFields } from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
@@ -247,14 +248,12 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
-        await addSettings(new_settings).catch((err) => {
+        await addSettings(new_settings).catch(async (err) => {
             this.loading.set(null);
             notifyError(
                 `Error saving settings for ${
                     item.name || item.id
-                }. Error: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
+                }. Error: ${await readError(err)}`,
             );
         });
     }

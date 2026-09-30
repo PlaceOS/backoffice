@@ -12,6 +12,7 @@ import {
 } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../../common/async-handler.class';
+import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
@@ -289,7 +290,7 @@ export class AdminSignagePluginsComponent
         if (err)
             return notifyError(
                 i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_ERROR', {
-                    error: JSON.stringify(err.response || err.message || err),
+                    error: describeError(err),
                 }),
             );
         notifySuccess(i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_SUCCESS'));
@@ -304,7 +305,7 @@ export class AdminSignagePluginsComponent
         } catch (err) {
             notifyError(
                 i18n('ADMIN.SIGNAGE_PLUGINS_LOAD_ERROR', {
-                    error: JSON.stringify(err.response || err.message || err),
+                    error: describeError(err),
                 }),
             );
         } finally {

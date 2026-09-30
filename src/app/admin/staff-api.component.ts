@@ -8,6 +8,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get, PlaceDomain } from '@placeos/ts-client';
+import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
@@ -258,9 +259,9 @@ export class PlaceStaffAPIComponent implements OnInit {
         const system = await del(`/api/staff/v1/tenants/${tenant.id}`).catch(
             (err) => {
                 notifyError(
-                    `Error removing module ${tenant.id} from domain. Error: ${
-                        err.statusText || err.message || err
-                    }`,
+                    `Error removing module ${tenant.id} from domain. Error: ${describeError(
+                        err,
+                    )}`,
                 );
                 return true;
             },

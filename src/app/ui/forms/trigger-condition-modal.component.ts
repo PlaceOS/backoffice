@@ -13,6 +13,7 @@ import {
     updateTrigger,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { DialogEvent, Identity } from '../../common/types';
@@ -156,7 +157,7 @@ export class TriggerConditionModalComponent extends AsyncHandler {
         }).catch((err) =>
             notifyError(
                 i18n('TRIGGERS.CONDITION_SAVE_ERROR', {
-                    error: JSON.stringify(err.response || err.message || err),
+                    error: describeError(err),
                 }),
             ),
         );

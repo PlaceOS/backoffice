@@ -30,6 +30,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import * as yaml from 'js-yaml';
+import { readError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { SettingsFieldComponent } from '../custom-fields/settings-field.component';
 import { IconComponent } from '../icon.component';
@@ -446,13 +447,11 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
                 );
                 this.clearChanges();
             },
-            (err) => {
+            async (err) => {
                 this._setSaving(level, false);
                 notifyError(
                     i18n('COMMON.SETTINGS_SAVE_ERROR', {
-                        error: JSON.stringify(
-                            err.response || err.message || err,
-                        ),
+                        error: await readError(err),
                     }),
                 );
             },
@@ -493,15 +492,13 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
                     notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
                     this.clearChanges();
                 },
-                (err) => {
+                async (err) => {
                     for (const level of saved_levels) {
                         this._setSaving(level, false);
                     }
                     notifyError(
                         i18n('COMMON.SETTINGS_SAVE_ERROR', {
-                            error: JSON.stringify(
-                                err.response || err.message || err,
-                            ),
+                            error: await readError(err),
                         }),
                     );
                 },

@@ -47,6 +47,7 @@ import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
 
+import { readError } from '../common/errors';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -587,14 +588,12 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
-        await addSettings(new_settings).catch((err) => {
+        await addSettings(new_settings).catch(async (err) => {
             this.saving.set(null);
             notifyError(
                 `Error saving settings for ${
                     item.name || item.id
-                }. Error: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
+                }. Error: ${await readError(err)}`,
             );
         });
     }

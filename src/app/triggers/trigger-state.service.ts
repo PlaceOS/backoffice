@@ -15,6 +15,7 @@ import {
     updateZone,
 } from '@placeos/ts-client';
 
+import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -178,12 +179,9 @@ export class TriggerStateService {
         }).catch((_) => _);
         details.close();
         if (!(resp instanceof PlaceTrigger)) {
-            const error = resp as { response?: string; message?: string };
             return notifyError(
                 i18n('TRIGGERS.REORDER_CONFIRM_ERROR', {
-                    error: JSON.stringify(
-                        error.response || error.message || resp,
-                    ),
+                    error: describeError(resp),
                 }),
             );
         }
@@ -230,12 +228,9 @@ export class TriggerStateService {
         }).catch((err) => err);
         details.close();
         if (!(resp instanceof PlaceTrigger)) {
-            const error = resp as { response?: string; message?: string };
             return notifyError(
                 i18n('TRIGGERS.REMOVE_CONDITION_ERROR', {
-                    error: JSON.stringify(
-                        error.response || error.message || resp,
-                    ),
+                    error: describeError(resp),
                 }),
             );
         }
@@ -282,12 +277,9 @@ export class TriggerStateService {
         }).catch((err) => err);
         details.close();
         if (!(resp instanceof PlaceTrigger)) {
-            const error = resp as { response?: string; message?: string };
             return notifyError(
                 i18n('TRIGGERS.REMOVE_ACTION_ERROR', {
-                    error: JSON.stringify(
-                        error.response || error.message || resp,
-                    ),
+                    error: describeError(resp),
                 }),
             );
         }
@@ -340,10 +332,7 @@ export class TriggerStateService {
             return notifyError(
                 i18n('TRIGGERS.REMOVE_INSTANCE_ERROR', {
                     type,
-                    error:
-                        (err as Record<string, unknown>).responseText ||
-                        (err as Record<string, unknown>).message ||
-                        err,
+                    error: describeError(err),
                 }),
             );
         }
