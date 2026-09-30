@@ -33,6 +33,8 @@ export class DriverStateService {
     );
 
     public readonly loading = this._loading.asReadonly();
+    /** Bumped each time a module of the driver is removed */
+    public readonly modules_change = this._modules_change.asReadonly();
 
     private readonly _updates_available = resource({
         params: () => this._poll(),
@@ -182,10 +184,10 @@ export class DriverStateService {
         const details = await openConfirmModal(
             {
                 title: 'Remove module?',
-                content: `Remove ${device.driver_id}?<br>`,
+                content: `Remove ${device.custom_name || device.name || device.id}?<br>`,
                 extra: [
                     'error',
-                    'Note that all associated data be deleted immediatedly.',
+                    'Note that all associated data be deleted immediately.',
                 ],
                 icon: { type: 'icon', content: 'delete' },
             },
