@@ -1,4 +1,11 @@
-import { Service, Signal, WritableSignal, inject, signal } from '@angular/core';
+import {
+    Service,
+    Signal,
+    WritableSignal,
+    inject,
+    isDevMode,
+    signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { showMetadata, updateMetadata } from '@placeos/ts-client';
 import { format, isSameDay } from 'date-fns';
@@ -10,7 +17,6 @@ import { waitForSignalValue } from './signals';
 import { HashMap } from './types';
 
 import { VERSION } from '../../env/version';
-import { GoogleAnalyticsService } from './google-analytics.service';
 import { currentUser, current_user } from './user-state';
 
 declare global {
@@ -23,26 +29,15 @@ declare global {
 @Service()
 export class SettingsService extends AsyncHandler {
     private _title = inject(Title);
-    private _analytics = inject(GoogleAnalyticsService, { optional: true });
 
     /** Name of the application */
     private _app_name = 'PlaceOS';
-    /** List of override settings in order of priority */
-    private _overrides = signal<HashMap[]>([]);
     /** User's personal settings */
     private _user_settings = signal<HashMap>({});
     /** Mapping of named settings signals */
     private _signals: HashMap<WritableSignal<unknown>> = {};
     /** Mapping of pending settings */
     private _pending_settings: HashMap<unknown> = {};
-
-    /**
-     * @hidden
-     */
-    public set overrides(value: HashMap[]) {
-        this._overrides.set(value);
-        this._applyCssVariables();
-    }
 
     /** Get signal for key */
     public listen<T = unknown>(name: string): Signal<T> {
@@ -73,9 +68,6 @@ export class SettingsService extends AsyncHandler {
         this._title.setTitle(
             `${value} | ${this.get('app.name') || this._app_name}`,
         );
-        const tracking_id = this.get('app.analytics.tracking_id');
-        if (!tracking_id) return;
-        this._analytics?.send('pagename', { title: value });
     }
 
     constructor() {
@@ -95,7 +87,15 @@ export class SettingsService extends AsyncHandler {
      */
     public async init() {
         this._applyTheme();
-        if (this.get('debug')) window.debug = true;
+        // Debug output is on for dev builds. To debug a production build,
+        // set localStorage `BACKOFFICE.debug` to `true` and reload.
+        if (
+            this.get('debug') ||
+            isDevMode() ||
+            localStorage.getItem('BACKOFFICE.debug') === 'true'
+        ) {
+            window.debug = true;
+        }
         const app = this.get('app') as { name?: string } | undefined;
         if (app?.name) {
             this._app_name = app.name;
@@ -143,13 +143,6 @@ export class SettingsService extends AsyncHandler {
                     DEFAULT_SETTINGS as HashMap<unknown>,
                 )) as T;
         }
-        const override_settings = [...this._overrides()];
-        for (const override of override_settings) {
-            const value = getItemWithKeys(keys.slice(1), override);
-            if (value != null) {
-                return value as T;
-            }
-        }
         return getItemWithKeys(keys, DEFAULT_SETTINGS as HashMap<unknown>) as T;
     }
 
@@ -178,25 +171,6 @@ export class SettingsService extends AsyncHandler {
         this.saveUserSetting('theme', theme);
         localStorage.setItem('PLACEOS.theme', theme);
         this._applyTheme();
-    }
-
-    private _applyCssVariables() {
-        const variable_map = (this.get('app.css_variables') || {}) as Record<
-            string,
-            string
-        >;
-        let css_string = 'body { ';
-        for (const key in variable_map) {
-            css_string += `--${key}: ${variable_map[key]}; `;
-        }
-        css_string += '}';
-        let element = document.getElementById('css-var-overrides');
-        if (!element) {
-            element = document.createElement('style');
-            element.id = 'css-var-overrides';
-            document.head.appendChild(element);
-        }
-        element.innerText = css_string;
     }
 
     /**

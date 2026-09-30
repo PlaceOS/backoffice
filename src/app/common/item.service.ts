@@ -212,8 +212,7 @@ export class ActiveItemService extends AsyncHandler {
             (!this.active_item || this.active_item.id !== id) &&
             id.length > 2
         ) {
-            const url = this._router.url.split('/');
-            this._type = url[1] as ResourceType;
+            this._type = (this._urlSegments()[0] ?? '') as ResourceType;
             if (!this.type)
                 return this.timeout('setItem', () => this.setItem(id));
             this._loading.set(true);
@@ -595,10 +594,16 @@ export class ActiveItemService extends AsyncHandler {
         }
     }
 
+    /** Path segments of the current route, without query params or fragment */
+    private _urlSegments(): string[] {
+        const tree = this._router.parseUrl(this._router.url);
+        return tree.root.children['primary']?.segments.map((_) => _.path) ?? [];
+    }
+
     private async updateType() {
-        const url = this._router.url.split('/');
+        const url = this._urlSegments();
         const old_type = this._type;
-        this._type = url[1] as ResourceType;
+        this._type = (url[0] ?? '') as ResourceType;
         if (old_type !== this._type) {
             this._include_deleted.set(false);
             this._list_version++;
@@ -612,8 +617,8 @@ export class ActiveItemService extends AsyncHandler {
             this._show_options.set(true);
             this.updateList();
         }
-        if (this._type !== 'admin' && url[2]) {
-            await this.setItem(url[2]);
+        if (this._type !== 'admin' && url[1]) {
+            await this.setItem(url[1]);
         }
         if (this._type === 'admin') {
             this._active_item.set({ name: 'PlaceOS Admin' } as PlaceResource);

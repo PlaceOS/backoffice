@@ -535,7 +535,7 @@
         "FIELD_ACTION_FN_CALL": "関数呼び出しアクション",
         "FIELD_ACTION_EMAIL": "メールアクション",
         "REORDER_CONFIRM_TITLE": "トリガー{{ type }}アクションの再注文",
-        "REORDER_CONFIRM_MSG": "このトリガー条件を削除してよろしいですか？<br>この変更は<strong>即時</strong>にすべての関連システムに反映されます。",
+        "REORDER_CONFIRM_MSG": "トリガーアクションを並べ替えてよろしいですか？<br>この変更は<strong>即時</strong>にすべての関連システムに反映されます。",
         "REORDER_CONFIRM_LOADING": "トリガーアクションを再注文中...",
         "REORDER_CONFIRM_ERROR": "トリガーアクションの再注文に失敗しました。エラー：{{ error }}",
         "REORDER_CONFIRM_SUCCESS": "トリガーアクションを正常に再注文しました",
@@ -629,7 +629,7 @@
         "STAFF_CARD": "カード番号",
         "PASSWORD_REQUIRED": "有効なパスワードが必要です",
         "PASSWORD_CONFIRM": "パスワード（確認）",
-        "PASSOWRD_MATCH": "パスワードが一致しません"
+        "PASSWORDS_MATCH": "パスワードが一致しません"
     },
     "DOMAINS": {
         "SINGULAR": "ドメイン",
@@ -689,8 +689,8 @@
         "AUTHENTICATION_EMPTY": "このドメインには認証方法がありません",
         "AUTHENTICATION_SOURCE_TYPE": "認証ソースタイプ",
         "AUTHENTICATION_SOURCE_SELECT": "認証ソースを選択...",
-        "AUTHENTICATION_SAVE_ERROR": "認証ソースの更新に成功しました",
-        "AUTHENTICATION_SAVE_SUCCESS": "認証ソースの更新に失敗しました。エラー：{{ error }}",
+        "AUTHENTICATION_SAVE_SUCCESS": "認証ソースの更新に成功しました",
+        "AUTHENTICATION_SAVE_ERROR": "認証ソースの更新に失敗しました。エラー：{{ error }}",
         "AUTHENTICATION_NAME_REQUIRED": "認証ソース名が必要です",
         "OAUTH_SITE": "サイト",
         "OAUTH_SITE_PLACEHOLDER": "SSOプロバイダのURL",
@@ -899,7 +899,7 @@
         "APP_KEYS_LAST_DETAILS": "最後のアプリケーションキー詳細",
         "APP_KEYS_FIELD_SCOPES": "スコープ",
         "APP_KEYS_FIELD_PERMISSIONS": "アクセス権",
-        "APP_KEYS_SCOPES_REQUIRE": "少なくとも1つのスコープが必要です",
+        "APP_KEYS_SCOPES_REQUIRED": "少なくとも1つのスコープが必要です",
         "APP_KEYS_NAME_REQUIRED": "名前が必要です",
         "APP_KEYS_PERMISSIONS_EMPTY": "権限なし",
         "APP_KEYS_COPIED": "アプリケーションキーをクリップボードにコピーしました",

@@ -71,9 +71,6 @@ function browserOnline() {
                 <div class="relative h-1/2 w-full flex-1">
                     <router-outlet />
                 </div>
-                <!-- @if (filter()) {
-                    <global-search [(search)]="filter"></global-search>
-                } -->
                 @if (!simple()) {
                     <app-upload-list />
                 }
@@ -160,14 +157,9 @@ export class AppComponent extends AsyncHandler implements OnInit {
 
     /** Whether the application is loading */
     public readonly loading = signal(false);
-    public readonly filter = signal(false);
-    public readonly show = signal(false);
+    /** Whether to hide the upload list, e.g. on MQTT routes */
     public readonly simple = signal(false);
     public readonly update_available = updateAvailable;
-
-    public get dark_mode() {
-        return this._users.dark_mode;
-    }
 
     private readonly _client_online = signalFromClient(onlineState());
     private readonly _browser_online = browserOnline();
@@ -175,10 +167,6 @@ export class AppComponent extends AsyncHandler implements OnInit {
     public readonly online = computed(
         () => this._client_online() && this._browser_online(),
     );
-
-    public get is_fools_day(): boolean {
-        return false;
-    }
 
     public refreshApplication() {
         location.reload();
@@ -229,15 +217,6 @@ export class AppComponent extends AsyncHandler implements OnInit {
         this.loading.set(false);
         setLoadingMessage('Initialising upload service...');
         this.timeout('init_uploads', () => syncUploadToken());
-        // this.interval(
-        //     'dark-mode',
-        //     () =>
-        //         this.dark_mode
-        //             ? document.body.classList.add('theme-dark')
-        //             : document.body.classList.remove('theme-dark')
-        //     ,
-        //     200,
-        // );
         this._router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.simple.set(this._router.url.includes('mqtt'));

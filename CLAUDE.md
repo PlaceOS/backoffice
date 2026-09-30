@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-PlaceOS Backoffice is an Angular 20 admin UI for managing PlaceOS building automation systems. It uses standalone components (no NgModules), zoneless change detection with signals, and integrates with PlaceOS backend APIs.
+PlaceOS Backoffice is an Angular 22 admin UI for managing PlaceOS building automation systems. It uses standalone components (no NgModules), zoneless change detection with signals, and integrates with PlaceOS backend APIs.
 
 ## Commands
 
@@ -25,10 +25,10 @@ bun run lint                           # ESLint
 
 ## Tech Stack
 
-- **Framework**: Angular 20 with standalone components and signals
+- **Framework**: Angular 22 with standalone components and signals
 - **Build**: Nx 23 + Vite 8 + @analogjs/vite-plugin-angular
 - **Testing**: Vitest + Playwright
-- **Styling**: Tailwind CSS 3.4 with custom CSS variables
+- **Styling**: Tailwind CSS 4 (legacy `tailwind.config.js` loaded via `@config`) with custom CSS variables
 - **Backend**: @placeos/ts-client for PlaceOS REST API integration
 - **Real-time**: MQTT for dashboard updates
 
@@ -54,7 +54,7 @@ src/app/
 Each feature follows this structure:
 - `*.routes.ts` - Lazy-loaded feature routing
 - `*-state.service.ts` - Feature state management with signals/observables
-- Component files with `standalone: true`
+- Standalone components (the default since Angular 19, so `standalone: true` is not needed)
 
 ### Key Patterns
 
@@ -90,11 +90,11 @@ export class MyComponent extends AsyncHandler {
 
 ## Notes
 
-- Angular 20 with standalone components and signals
-- TypeScript 5.8.3
+- Angular 22 with standalone components and signals
+- TypeScript ~6.0
 - Supports multiple locales (see `app.locales` in settings)
 - Service worker support for PWA functionality (production builds)
-- Custom localization support via `public/assets/locales`, **TranslationPipe** and **LocalesService**
+- Custom localization support via `public/assets/locale`, **TranslatePipe** and **LocaleService**. `en-AU.json` is the fallback locale
 - Use **IconComponent** for icons
 
 ## Code styles

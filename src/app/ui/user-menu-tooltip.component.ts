@@ -90,7 +90,7 @@ import { TranslatePipe } from './translate.pipe';
                 matRipple
                 type="button"
                 target="_blank"
-                ref="noopener noreferer"
+                rel="noopener noreferrer"
                 report
                 [href]="github_link | safe: 'url'"
                 class="gap-2"

@@ -1,10 +1,8 @@
 import { Service, inject } from '@angular/core';
 import {
     ActivatedRouteSnapshot,
-    Route,
     Router,
     RouterStateSnapshot,
-    UrlSegment,
     UrlTree,
 } from '@angular/router';
 import { PlaceUser, onlineState } from '@placeos/ts-client';
@@ -35,25 +33,6 @@ export class AuthorisedAdminGuard {
             (user.sys_admin ||
                 (!!_next.routeConfig?.data?.['allow_subsystem'] &&
                     hasSupportSubsystem()));
-        if (!can_activate) {
-            this._router.navigate(['/unauthorised']);
-        }
-        return can_activate;
-    }
-
-    public async canLoad(
-        _route: Route,
-        _segments: UrlSegment[],
-    ): Promise<boolean> {
-        await waitForClientSignalValue(onlineState(), (_) => _);
-        const user: PlaceUser = await waitForSignalValue(
-            this._users.user,
-            (_) => !!_,
-        ).catch(() => null);
-        const can_activate =
-            !!user &&
-            (user.sys_admin ||
-                (!!_route.data?.['allow_subsystem'] && hasSupportSubsystem()));
         if (!can_activate) {
             this._router.navigate(['/unauthorised']);
         }

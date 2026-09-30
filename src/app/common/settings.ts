@@ -116,7 +116,8 @@ const composer = {
  */
 export const DEFAULT_SETTINGS = {
     env: 'prod',
-    debug: true,
+    /** Force debug output. See `SettingsService.init()` for other ways to enable it */
+    debug: false,
     mock: false,
     composer,
     app,

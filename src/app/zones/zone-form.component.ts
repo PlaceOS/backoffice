@@ -11,10 +11,7 @@ import {
 } from '@angular/core';
 import { FormField, form, submit } from '@angular/forms/signals';
 import {
-    EncryptionLevel,
-    PlaceSettings,
     PlaceZone,
-    addSettings,
     addZone as addZoneRequest,
     cleanObject,
     showZone,
@@ -87,6 +84,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="zone-name"
                                         [placeholder]="
                                             'COMMON.FIELD_NAME' | translate
                                         "
@@ -112,6 +110,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="zone-display"
                                         [placeholder]="
                                             'ZONES.DISPLAY_NAME' | translate
                                         "
@@ -174,6 +173,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
+                                    id="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
@@ -191,6 +191,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="location"
                                         [placeholder]="
                                             'ZONES.LOCATION_PLACEHOLDER'
                                                 | translate
@@ -212,6 +213,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 </div>
                                 <input
                                     matInput
+                                    id="timezone"
                                     [formField]="form.timezone"
                                     [placeholder]="
                                         'COMMON.TIMEZONE' | translate
@@ -244,6 +246,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="code"
                                         [placeholder]="
                                             'ZONES.CODE_PLACEHOLDER' | translate
                                         "
@@ -260,6 +263,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="type"
                                         [placeholder]="
                                             'ZONES.TYPE_PLACEHOLDER' | translate
                                         "
@@ -303,6 +307,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="map"
                                     [placeholder]="'ZONES.MAP_URL' | translate"
                                     [formField]="form.map_id"
                                 />
@@ -465,21 +470,5 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
         // Keep the user's choice if they changed the picker while loading
         if (!zone || this.form.parent_zone().dirty()) return;
         this.formModel.update((value) => ({ ...value, parent_zone: zone }));
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.loading.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
     }
 }

@@ -23,13 +23,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
-    EncryptionLevel,
     GitCommitDetails,
     PlaceRepository,
     PlaceRepositoryType,
-    PlaceSettings,
     addRepository,
-    addSettings,
     cleanObject,
     listRemoteRepositoryBranches,
     listRemoteRepositoryCommits,
@@ -90,6 +87,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                     [placeholder]="
                                         'COMMON.FIELD_NAME' | translate
                                     "
+                                    id="repository-name"
                                     [formField]="form.name"
                                 />
                                 <mat-error>{{
@@ -103,11 +101,15 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             !is_editing() && form.repo_type && form.folder_name
                         ) {
                             <div class="field">
-                                <label for="type">
+                                <label for="repo-type" id="repo-type-label">
                                     {{ 'REPOS.TYPE' | translate }}
                                 </label>
                                 <mat-form-field appearance="outline">
-                                    <mat-select [formField]="form.repo_type">
+                                    <mat-select
+                                        id="repo-type"
+                                        aria-labelledby="repo-type-label"
+                                        [formField]="form.repo_type"
+                                    >
                                         @for (
                                             type of repo_types();
                                             track type
@@ -138,6 +140,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                         [placeholder]="
                                             'REPOS.FOLDER_NAME' | translate
                                         "
+                                        id="folder-name"
                                         [formField]="form.folder_name"
                                     />
                                     <mat-error>{{
@@ -161,6 +164,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 <input
                                     matInput
                                     [placeholder]="'REPOS.URI' | translate"
+                                    id="uri"
                                     [formField]="form.uri"
                                     (blur)="markCredentialsBlur()"
                                 />
@@ -183,6 +187,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                         [placeholder]="
                                             'REPOS.USERNAME' | translate
                                         "
+                                        id="repo-u"
                                         [formField]="form.username"
                                         (blur)="markCredentialsBlur()"
                                     />
@@ -206,13 +211,18 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                         [placeholder]="
                                             'COMMON.PASSWORD' | translate
                                         "
+                                        id="repo-p"
                                         [formField]="form.password"
                                         (blur)="markCredentialsBlur()"
                                     />
                                     <button
                                         type="button"
                                         matSuffix
-                                        (click)="togglePassword()"
+                                        [attr.aria-label]="
+                                            'COMMON.PASSWORD_TOGGLE' | translate
+                                        "
+                                        [attr.aria-pressed]="show_password()"
+                                        (click)="togglePassword($event)"
                                     >
                                         <icon>visibility</icon>
                                     </button>
@@ -223,7 +233,8 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                     @if (form.branch) {
                         <div class="field">
                             <label
-                                for="repository-name"
+                                for="branch"
+                                id="branch-label"
                                 [class.error]="
                                     form.branch().invalid() &&
                                     form.branch().touched()
@@ -233,6 +244,8 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             </label>
                             <mat-form-field appearance="outline">
                                 <mat-select
+                                    id="branch"
+                                    aria-labelledby="branch-label"
                                     [formField]="form.branch"
                                     [placeholder]="'Select Branch'"
                                     (openedChange)="setBranchOpen($event)"
@@ -291,11 +304,13 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                     }
                     @if (is_interface()) {
                         <div class="field commit">
-                            <label for="commit">
+                            <label for="commit" id="commit-label">
                                 {{ 'REPOS.COMMIT' | translate }}</label
                             >
                             <mat-form-field appearance="outline">
                                 <mat-select
+                                    id="commit"
+                                    aria-labelledby="commit-label"
                                     [formField]="form.commit_hash"
                                     placeholder="Select commit"
                                     (openedChange)="setCommitOpen($event)"
@@ -435,6 +450,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
+                                    id="description"
                                     [formField]="form.description"
                                 ></textarea>
                             </mat-form-field>
@@ -451,6 +467,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                     [placeholder]="
                                         'REPOS.ROOT_PATH' | translate
                                     "
+                                    id="root-path"
                                     [formField]="form.root_path"
                                 />
                             </mat-form-field>
@@ -686,7 +703,9 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         this.credentials_blur.update((value) => value + 1);
     }
 
-    public togglePassword() {
+    /** Show or hide the password. Stops the click so the form field does not focus the input. */
+    public togglePassword(event: Event) {
+        event.stopPropagation();
         this.show_password.update((value) => !value);
     }
 
@@ -827,21 +846,5 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
             hash: commit.commit,
             subject: commit.subject || commit.commit,
         };
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.saving.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
     }
 }

@@ -93,7 +93,7 @@ import { ZonesStateService } from './zones-state.service';
                             default
                             error
                             matRipple
-                            [matTooltip]="'TRIGGERS.REMOVE'"
+                            [matTooltip]="'TRIGGERS.REMOVE' | translate"
                             (click)="deleteTrigger(row)"
                         >
                             <icon>delete</icon>

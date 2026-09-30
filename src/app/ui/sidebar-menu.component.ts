@@ -14,7 +14,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { authority, queryApplications } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
-import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
 import {
@@ -274,7 +273,6 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     private _tooltip = inject(CustomTooltipData, { optional: true });
     private _settings = inject(SettingsService);
     private _users = inject(BackofficeUsersService);
-    private _hotkey = inject(HotkeysService);
     private _router = inject(Router);
     private _dialog = inject(MatDialog);
     private _items = inject(ActiveItemService);
@@ -430,18 +428,6 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
                 }
             }),
         );
-        this.subscription(
-            'up',
-            this._hotkey.listen(['Control', 'Shift', 'ArrowUp'], () =>
-                this.changeSelected(-1),
-            ),
-        );
-        this.subscription(
-            'down',
-            this._hotkey.listen(['Control', 'Shift', 'ArrowDown'], () =>
-                this.changeSelected(1),
-            ),
-        );
         this.compact.set(
             localStorage.getItem('BACKOFFICE.SIDEBAR_COMPACT') === 'true',
         );
@@ -455,16 +441,6 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
                 this.isSupportedRedirectUri(app?.redirect_uri),
             ),
         );
-    }
-
-    private changeSelected(_offset = 1) {
-        // const index = this.menu_items.findIndex(
-        //     (item) => this._router.url.indexOf(item.route) >= 0
-        // );
-        // const new_index = index + offset;
-        // if (this.menu_items[new_index]) {
-        //     this._router.navigate([this.menu_items[new_index].route]);
-        // }
     }
 
     private isSupportedRedirectUri(uri: string) {

@@ -46,7 +46,7 @@ import { TranslatePipe } from '../translate.pipe';
                                 @if (form().name().invalid()) {
                                     <mat-error>
                                         {{
-                                            'DOMAINS.AUTHENTICATION_NAME_REQUIRE'
+                                            'DOMAINS.AUTHENTICATION_NAME_REQUIRED'
                                                 | translate
                                         }}
                                     </mat-error>
@@ -444,7 +444,7 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
         mappings: { name: string; mappings: string }[],
     ) {
         this.timeout(
-            'mappings',
+            'attribute_statements',
             () => {
                 const map: HashMap<string[]> = {};
                 for (const pair of mappings) {
@@ -467,7 +467,7 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
      */
     public updateRuntimeParams(mappings: { name: string; mapping: string }[]) {
         this.timeout(
-            'mappings',
+            'runtime_params',
             () => {
                 const map: HashMap = {};
                 for (const pair of mappings) {

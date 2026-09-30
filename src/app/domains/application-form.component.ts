@@ -71,6 +71,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="application-name"
                                         placeholder="Application Name"
                                         [formField]="form.name"
                                     />
@@ -90,6 +91,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="scopes"
                                         [placeholder]="
                                             'DOMAINS.APP_SCOPES' | translate
                                         "
@@ -158,6 +160,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="redirect-uri"
                                     placeholder="Redirect URI e.g. http://localhost:4200/oauth-resp.html"
                                     [formField]="form.redirect_uri"
                                 />
@@ -188,6 +191,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="client-id"
                                     name="client-id"
                                     [placeholder]="
                                         'DOMAINS.APP_CLIENT_PLACEHOLDER'

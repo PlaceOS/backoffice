@@ -36,12 +36,11 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
 @Component({
     selector: 'simple-table',
     template: `
-        <button
+        <div
             role="table"
             [class.virtual-table]="virtual_enabled()"
             class="border-base-200 grid overflow-visible border text-left"
             [style.gridTemplateColumns]="column_template()"
-            (click)="onclick.emit(0)"
             cdkDropList
             (cdkDropListDropped)="
                 ondrop.emit([$event.previousIndex, $event.currentIndex])
@@ -206,7 +205,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                 </div>
             }
             <!-- TODO: Add pagination -->
-        </button>
+        </div>
         <ng-template #row_template let-row="row" let-i="index">
             @if (selectable()) {
                 <div
@@ -283,7 +282,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
     styles: [
         `
             :host,
-            :host > button {
+            :host > [role='table'] {
                 min-width: 100%;
                 overflow: hidden;
             }
@@ -345,7 +344,6 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
 
     public readonly selectedChange = output<number[]>();
     public readonly enter_row = output<number>();
-    public readonly onclick = output<number>();
     public readonly oncontext = output<number>();
     public readonly ondrop = output<[number, number]>();
 

@@ -12,10 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import {
-    EncryptionLevel,
-    PlaceSettings,
     PlaceTrigger,
-    addSettings,
     addTrigger,
     cleanObject,
     updateTrigger,
@@ -26,7 +23,7 @@ import { getInvalidSignalFields } from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { DialogEvent, Identity } from '../common/types';
+import { DialogEvent } from '../common/types';
 import { CounterComponent } from '../ui/counter.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -67,6 +64,7 @@ import {
                                     [placeholder]="
                                         'COMMON.FIELD_NAME' | translate
                                     "
+                                    id="trigger-name"
                                     [formField]="form.name"
                                 />
                                 <mat-error>Trigger name is required</mat-error>
@@ -84,6 +82,7 @@ import {
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
+                                    id="description"
                                     [formField]="form.description"
                                 ></textarea>
                             </mat-form-field>
@@ -104,6 +103,7 @@ import {
                             <div class="field">
                                 <label
                                     for="debounce-period"
+                                    id="debounce-period-label"
                                     [class.error]="
                                         form.name().invalid() &&
                                         form.name().touched()
@@ -112,6 +112,9 @@ import {
                                     {{ 'TRIGGERS.DEBOUNCE_PERIOD' | translate }}
                                 </label>
                                 <a-counter
+                                    id="debounce-period"
+                                    role="group"
+                                    aria-labelledby="debounce-period-label"
                                     [formField]="form.debounce_period"
                                     [min]="0"
                                     [step]="100"
@@ -124,7 +127,7 @@ import {
                             formModel().enable_webhook && form.supported_methods
                         ) {
                             <div class="field">
-                                <label for="methods">
+                                <label for="methods" id="methods-label">
                                     {{
                                         'TRIGGERS.SUPPORTED_METHODS' | translate
                                     }}
@@ -135,6 +138,8 @@ import {
                                 >
                                     <mat-select
                                         multiple
+                                        id="methods"
+                                        aria-labelledby="methods-label"
                                         [formField]="form.supported_methods"
                                     >
                                         <mat-option value="GET">GET</mat-option>
@@ -236,21 +241,5 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
                 }),
             );
         }
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.loading.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
     }
 }

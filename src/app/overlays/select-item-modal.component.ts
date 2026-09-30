@@ -82,8 +82,6 @@ export class SelectItemModalComponent extends AsyncHandler {
 
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
-    /** Whether the item is being editing */
-    public edit: boolean;
     /** Item to edit */
     public item: unknown;
     /** Whether the item request is being processed */

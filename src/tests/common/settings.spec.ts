@@ -9,13 +9,6 @@ vi.mock('@placeos/ts-client', () => ({
     updateMetadata: vi.fn(() => Promise.resolve({})),
 }));
 
-// Mock Google Analytics Service
-vi.mock('../../app/common/google-analytics.service', () => ({
-    GoogleAnalyticsService: class {
-        send = vi.fn();
-    },
-}));
-
 // Mock version info
 vi.mock('../../env/version', () => ({
     VERSION: {
@@ -203,28 +196,6 @@ describe('SettingsService', () => {
             const value = service.get('app.title');
             // This depends on the mock implementation
             expect(value).toBeDefined();
-        });
-    });
-
-    describe('overrides setter', () => {
-        it('should read an overridden setting', () => {
-            service.overrides = [{ custom: 'value' }];
-            expect(service.get('app.custom')).toBe('value');
-        });
-
-        it('should restore defaults when overrides are cleared', () => {
-            service.overrides = [{ name: 'Override' }];
-            service.overrides = [];
-            expect(service.get('app.name')).toBe(DEFAULT_SETTINGS.app.name);
-        });
-
-        it('should use the first matching override', () => {
-            service.overrides = [
-                { name: 'First' },
-                { name: 'Second', custom: 'fallback' },
-            ];
-            expect(service.get('app.name')).toBe('First');
-            expect(service.get('app.custom')).toBe('fallback');
         });
     });
 

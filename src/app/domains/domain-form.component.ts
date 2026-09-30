@@ -15,11 +15,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
     addDomain,
-    addSettings,
     cleanObject,
-    EncryptionLevel,
     PlaceDomain,
-    PlaceSettings,
     updateDomain,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -72,6 +69,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="domain-name"
                                         [placeholder]="
                                             'COMMON.FIELD_NAME' | translate
                                         "
@@ -102,6 +100,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="domain"
                                         [placeholder]="
                                             'DOMAINS.NAME_PLACEHOLDER'
                                                 | translate
@@ -129,6 +128,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="login-url"
                                     [placeholder]="
                                         'DOMAINS.LOGIN_URL' | translate
                                     "
@@ -159,6 +159,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="logout-url"
                                     [placeholder]="
                                         'DOMAINS.LOGOUT_URL' | translate
                                     "
@@ -183,6 +184,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
+                                    id="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
@@ -205,7 +207,9 @@ import {
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-chip-grid
                                     #chipList
-                                    aria-label="Image List"
+                                    [attr.aria-label]="
+                                        'DOMAINS.EMAIL_DOMAINS' | translate
+                                    "
                                 >
                                     @for (
                                         item of email_domain_list();
@@ -364,21 +368,5 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
                 }),
             );
         }
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.loading.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
     }
 }

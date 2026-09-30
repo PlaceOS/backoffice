@@ -62,6 +62,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="broker-name"
                                     [placeholder]="
                                         'COMMON.FIELD_NAME' | translate
                                     "
@@ -81,6 +82,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
+                                    id="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
@@ -104,6 +106,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="host"
                                     [placeholder]="
                                         'ADMIN.BROKERS_FIELD_HOST' | translate
                                     "
@@ -131,6 +134,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="port-number"
                                         type="number"
                                         [placeholder]="
                                             'ADMIN.BROKERS_FIELD_PORT'
@@ -159,13 +163,19 @@ import {
                     </div>
                     @if (form.auth_type) {
                         <div class="field">
-                            <label for="type"
+                            <label
+                                for="broker-auth-type"
+                                id="broker-auth-type-label"
                                 >{{
                                     'ADMIN.BROKERS_FIELD_AUTH_TYPE' | translate
                                 }}
                             </label>
                             <mat-form-field appearance="outline">
-                                <mat-select [formField]="form.auth_type">
+                                <mat-select
+                                    id="broker-auth-type"
+                                    aria-labelledby="broker-auth-type-label"
+                                    [formField]="form.auth_type"
+                                >
                                     @for (type of auth_types; track type) {
                                         <mat-option [value]="type.id">
                                             {{ type.name }}
@@ -180,7 +190,7 @@ import {
                             @if (form.username) {
                                 <div class="field">
                                     <label
-                                        for="host"
+                                        for="username"
                                         [class.error]="
                                             form.username().invalid() &&
                                             form.username().touched()
@@ -194,6 +204,7 @@ import {
                                     <mat-form-field appearance="outline">
                                         <input
                                             matInput
+                                            id="username"
                                             [placeholder]="
                                                 'ADMIN.BROKERS_USERNAME'
                                                     | translate
@@ -223,6 +234,7 @@ import {
                                     <mat-form-field appearance="outline">
                                         <input
                                             matInput
+                                            id="new-password"
                                             autocomplete="new-password"
                                             [type]="
                                                 show_password()
@@ -270,6 +282,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <textarea
                                         matInput
+                                        id="cert"
                                         [placeholder]="
                                             'ADMIN.BROKERS_CERT' | translate
                                         "
@@ -291,7 +304,10 @@ import {
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-chip-grid
                                     #chipGrid
-                                    aria-label="Enter fruits"
+                                    [attr.aria-label]="
+                                        'ADMIN.BROKERS_FIELD_FILTERS'
+                                            | translate
+                                    "
                                 >
                                     @for (filter of filters(); track filter) {
                                         <mat-chip-row
@@ -305,7 +321,7 @@ import {
                                                 type="button"
                                                 matChipRemove
                                                 [attr.aria-label]="
-                                                    'COMMON.REMOVE_ITEM'
+                                                    'COMMON.ITEM_REMOVE'
                                                         | translate
                                                             : {
                                                                   item: filter,
@@ -317,6 +333,7 @@ import {
                                         </mat-chip-row>
                                     }
                                     <input
+                                        id="filters"
                                         [placeholder]="
                                             'ADMIN.BROKERS_FIELD_FILTERS'
                                                 | translate
@@ -408,7 +425,7 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
     public async submit(): Promise<void> {
         await submit(this.form, async () => {
             const item = this._data.item;
-            this.loading.set(i18n(`${this._name}.SAVING`));
+            this.loading.set(i18n(`${this._name}_SAVING`));
             this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
@@ -429,7 +446,7 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
                 this.loading.set(null);
                 this._dialog_ref.disableClose = false;
                 notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
+                    i18n(`${this._name}_SAVE_ERROR`, {
                         error: await readError(err),
                     }),
                 );
@@ -438,7 +455,7 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
             if (!result) return;
             this._dialog_ref.disableClose = false;
             this.event.emit({ reason: 'done', metadata: { item: result } });
-            notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+            notifySuccess(i18n(`${this._name}_SAVE_SUCCESS`));
             this._dialog_ref.close();
         });
         if (this.form().invalid()) {

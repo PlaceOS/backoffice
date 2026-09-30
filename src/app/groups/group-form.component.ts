@@ -102,10 +102,13 @@ import {
                 </div>
                 <div class="fieldset">
                     <div class="field">
-                        <label for="group-parent">{{
+                        <label for="group-parent" id="group-parent-label">{{
                             'GROUPS.PARENT_ID' | translate
                         }}</label>
                         <item-search-field
+                            id="group-parent"
+                            role="group"
+                            aria-labelledby="group-parent-label"
                             [placeholder]="'GROUPS.PARENT_SEARCH' | translate"
                             [query_fn]="query_parent_groups()"
                             [exclude]="exclude_parent_group"
@@ -115,14 +118,18 @@ import {
                         />
                     </div>
                     <div class="field">
-                        <label for="group-authority">{{
-                            'GROUPS.AUTHORITY_ID' | translate
-                        }}</label>
+                        <label
+                            for="group-authority"
+                            id="group-authority-label"
+                            >{{ 'GROUPS.AUTHORITY_ID' | translate }}</label
+                        >
                         <mat-form-field appearance="outline">
                             <mat-select
                                 [placeholder]="
                                     'GROUPS.AUTHORITY_SELECT' | translate
                                 "
+                                id="group-authority"
+                                aria-labelledby="group-authority-label"
                                 [formField]="form.authority_id"
                                 (selectionChange)="setParentGroup(null)"
                             >

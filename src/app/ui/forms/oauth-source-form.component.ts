@@ -43,7 +43,7 @@ import { TranslatePipe } from '../translate.pipe';
                             @if (form().name().invalid()) {
                                 <mat-error>
                                     {{
-                                        'DOMAINS.AUTHENTICATION_NAME_REQUIRE'
+                                        'DOMAINS.AUTHENTICATION_NAME_REQUIRED'
                                             | translate
                                     }}
                                 </mat-error>

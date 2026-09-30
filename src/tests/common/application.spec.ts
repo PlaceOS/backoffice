@@ -6,8 +6,6 @@ vi.mock('../../app/common/general', () => ({
 }));
 
 import {
-    clearCacheCheck,
-    hasNewVersion,
     isChunkLoadError,
     reloadApplicationOnChunkLoadError,
     setupCache,
@@ -17,47 +15,17 @@ import {
 describe('application.ts', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        // Fake timers stop the update check intervals leaking between tests
+        vi.useFakeTimers();
         updateAvailable.set(false);
-        // Reset the module state by clearing cache check
-        clearCacheCheck();
     });
 
     afterEach(() => {
-        clearCacheCheck();
+        vi.useRealTimers();
         sessionStorage.clear();
     });
 
-    describe('hasNewVersion', () => {
-        it('should return a boolean', () => {
-            expect(typeof hasNewVersion()).toBe('boolean');
-        });
-
-        it('should be callable multiple times', () => {
-            hasNewVersion();
-            hasNewVersion();
-            hasNewVersion();
-            // Should not throw
-        });
-    });
-
-    describe('clearCacheCheck', () => {
-        it('should not throw when no timer exists', () => {
-            expect(() => clearCacheCheck()).not.toThrow();
-        });
-
-        it('should be callable multiple times', () => {
-            clearCacheCheck();
-            clearCacheCheck();
-            clearCacheCheck();
-            // Should not throw
-        });
-    });
-
     describe('setupCache', () => {
-        afterEach(() => {
-            vi.useRealTimers();
-        });
-
         it('should not setup interval if cache is not enabled', () => {
             const mock_cache = {
                 isEnabled: false,
@@ -77,7 +45,6 @@ describe('application.ts', () => {
 
             // Should not throw
             expect(() => setupCache(mock_cache as any, 1000)).not.toThrow();
-            clearCacheCheck();
         });
 
         it('should accept default interval', () => {
@@ -89,18 +56,6 @@ describe('application.ts', () => {
 
             // Should not throw with default interval
             expect(() => setupCache(mock_cache as any)).not.toThrow();
-            clearCacheCheck();
-        });
-
-        it('should clear interval on clearCacheCheck', () => {
-            const mock_cache = {
-                isEnabled: true,
-                checkForUpdate: vi.fn().mockResolvedValue(false),
-                activateUpdate: vi.fn().mockResolvedValue(false),
-            };
-
-            setupCache(mock_cache as any, 1000);
-            expect(() => clearCacheCheck()).not.toThrow();
         });
 
         it('should be callable with different cache objects', () => {
@@ -116,14 +71,11 @@ describe('application.ts', () => {
             };
 
             setupCache(mock_cache1 as any, 1000);
-            clearCacheCheck();
             setupCache(mock_cache2 as any, 2000);
-            clearCacheCheck();
             // Should not throw
         });
 
         it('should flag the update card without activating the service worker update', async () => {
-            vi.useFakeTimers();
             const mock_cache = {
                 isEnabled: true,
                 checkForUpdate: vi.fn().mockResolvedValue(true),

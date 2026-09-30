@@ -13,12 +13,9 @@ import { form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
-    addSettings,
     addSystem,
     cleanObject,
-    EncryptionLevel,
     PlaceResource,
-    PlaceSettings,
     PlaceSystem,
     updateSystem,
 } from '@placeos/ts-client';
@@ -66,6 +63,7 @@ import {
                         <div class="field">
                             <label
                                 for="zone"
+                                id="zone-label"
                                 [class.error]="
                                     form.zone().invalid() &&
                                     form.zone().touched()
@@ -74,6 +72,9 @@ import {
                                 {{ 'ZONES.SINGULAR' | translate }}<span>*</span>
                             </label>
                             <item-search-field
+                                id="zone"
+                                role="group"
+                                aria-labelledby="zone-label"
                                 [query_fn]="query_fn"
                                 [formField]="form.zone"
                             />
@@ -102,6 +103,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="system-name"
                                         placeholder="System Name"
                                         [formField]="form.name"
                                     />
@@ -127,6 +129,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="system-email"
                                         [placeholder]="
                                             'COMMON.FIELD_EMAIL' | translate
                                         "
@@ -150,6 +153,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="display-name"
                                         [placeholder]="
                                             'SYSTEMS.DISPLAY_NAME' | translate
                                         "
@@ -166,6 +170,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="code-name"
                                         [placeholder]="
                                             'SYSTEMS.CODE' | translate
                                         "
@@ -189,6 +194,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="support-url"
                                     [placeholder]="
                                         'SYSTEMS.SUPPORT_URL' | translate
                                     "
@@ -205,6 +211,7 @@ import {
                             <div class="field">
                                 <label
                                     for="ui-devices"
+                                    id="ui-devices-label"
                                     [class.error]="
                                         form.installed_ui_devices().invalid() &&
                                         form.installed_ui_devices().touched()
@@ -213,6 +220,9 @@ import {
                                     {{ 'SYSTEMS.PANEL_COUNT' | translate }}
                                 </label>
                                 <a-counter
+                                    id="ui-devices"
+                                    role="group"
+                                    aria-labelledby="ui-devices-label"
                                     [formField]="form.installed_ui_devices"
                                     [min]="0"
                                     [max]="999"
@@ -223,6 +233,7 @@ import {
                             <div class="field">
                                 <label
                                     for="capacity"
+                                    id="capacity-label"
                                     [class.error]="
                                         form.capacity().invalid() &&
                                         form.capacity().touched()
@@ -231,6 +242,9 @@ import {
                                     {{ 'SYSTEMS.CAPACITY' | translate }}
                                 </label>
                                 <a-counter
+                                    id="capacity"
+                                    role="group"
+                                    aria-labelledby="capacity-label"
                                     [formField]="form.capacity"
                                     [min]="0"
                                     [max]="999"
@@ -263,6 +277,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
+                                    id="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
@@ -285,7 +300,9 @@ import {
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-chip-grid
                                     #chipList
-                                    aria-label="Image List"
+                                    [attr.aria-label]="
+                                        'SYSTEMS.FEATURES' | translate
+                                    "
                                 >
                                     @for (item of feature_list(); track item) {
                                         <mat-chip-row
@@ -386,6 +403,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="map_id"
                                     placeholder="Map SVG ID selector e.g. area-01.10-status"
                                     [formField]="form.map_id"
                                 />
@@ -404,6 +422,7 @@ import {
                             </div>
                             <input
                                 matInput
+                                id="timezone"
                                 [formField]="form.timezone"
                                 [placeholder]="'COMMON.TIMEZONE' | translate"
                                 [matAutocomplete]="auto"
@@ -424,10 +443,15 @@ import {
                     </div>
                     @if (form.images) {
                         <div class="field">
-                            <label for="images">{{
+                            <label for="images" id="images-label">{{
                                 'COMMON.IMAGES' | translate
                             }}</label>
-                            <image-list-field [formField]="form.images" />
+                            <image-list-field
+                                id="images"
+                                role="group"
+                                aria-labelledby="images-label"
+                                [formField]="form.images"
+                            />
                         </div>
                     }
                     @if (form.timetable_url) {
@@ -444,6 +468,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="timetable-url"
                                     [placeholder]="
                                         'SYSTEMS.TIMETABLE_URL' | translate
                                     "
@@ -469,6 +494,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="camera-url"
                                     [placeholder]="
                                         'SYSTEMS.CAMERA_URL' | translate
                                     "
@@ -557,6 +583,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="room-booking-url"
                                     [placeholder]="
                                         'SYSTEMS.ROOM_BOOKING_URL' | translate
                                     "
@@ -718,22 +745,6 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
                 }),
             );
         }
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.loading.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
     }
 
     /**

@@ -47,9 +47,6 @@ export const isValidDomain = (str) => {
     return domainRegex.test(str);
 };
 
-export const validateURL = (ctrl: AbstractControl) =>
-    isValidUrl(ctrl?.value) ? null : { url: 'invalid' };
-
 export function validateJSONString(control: AbstractControl) {
     if (!control || !control.value) {
         return null;

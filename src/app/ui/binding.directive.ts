@@ -69,11 +69,7 @@ export class BindingDirective<T = unknown>
             this.bindVariable();
         }
         const model = this.model();
-        if (
-            changes.modelInput &&
-            this._old_model !== model &&
-            this.model != null
-        ) {
+        if (changes.modelInput && this._old_model !== model && model != null) {
             this._old_model = model;
             this.execute();
         }

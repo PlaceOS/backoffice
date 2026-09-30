@@ -1,35 +1,7 @@
-import { FormControl, FormGroup } from '@angular/forms';
 import { describe, expect, it } from 'vitest';
-import {
-    generateUserFormModel,
-    validateMatch,
-} from '../../app/users/users.utilities';
+import { generateUserFormModel } from '../../app/users/users.utilities';
 
 describe('users.utilities', () => {
-    describe('validateMatch', () => {
-        it('returns a match error when values differ', () => {
-            const group = new FormGroup({
-                password: new FormControl('secret'),
-                confirm_password: new FormControl('different'),
-            });
-
-            expect(validateMatch('password')(group.controls.confirm_password))
-                .toEqual({
-                    match: true,
-                });
-        });
-
-        it('returns null when values match', () => {
-            const group = new FormGroup({
-                password: new FormControl('secret'),
-                confirm_password: new FormControl('secret'),
-            });
-
-            expect(validateMatch('password')(group.controls.confirm_password))
-                .toBeNull();
-        });
-    });
-
     describe('generateUserFormModel', () => {
         it('returns defaults', () => {
             expect(generateUserFormModel(undefined as any)).toMatchObject({

@@ -91,6 +91,8 @@ export class CounterComponent implements ControlValueAccessor {
     /** Whether control key is being held by the user */
     public ctrl_key: boolean;
     public focused = false;
+    /** Last valid value. Restored when the user enters a non-numeric value */
+    private _last_value: number | null = null;
 
     /** Form control on change handler */
     private _onChange: (_: number) => void;
@@ -153,6 +155,9 @@ export class CounterComponent implements ControlValueAccessor {
      */
     public setValue(new_value: number): void {
         if (this.disabled()) return;
+        if (!Number.isFinite(new_value)) {
+            new_value = this._last_value ?? this.min();
+        }
         if (new_value < this.min()) new_value = this.min();
         if (new_value > this.max()) new_value = this.max();
         if ((new_value / this.step()) % 1 !== 0) {
@@ -160,6 +165,7 @@ export class CounterComponent implements ControlValueAccessor {
                 Math.round(new_value * (1 / this.step())) / (1 / this.step());
         }
         this.value.set(new_value);
+        this._last_value = new_value;
         /* istanbul ignore else */
         if (this._onChange) {
             this._onChange(new_value);
@@ -173,6 +179,7 @@ export class CounterComponent implements ControlValueAccessor {
      */
     public writeValue(value: number) {
         this.value.set(value);
+        this._last_value = value;
     }
 
     /* istanbul ignore next */

@@ -139,7 +139,7 @@ export class FunctionArgumentComponent
 
     public loadForm() {
         const method = this.method();
-        if (!method && !method.order.length) return;
+        if (!method || !method.order?.length) return;
         const form_values: HashMap<unknown> = {};
         for (const prop in method.params) {
             const prop_details = method.params[prop] as unknown as Record<

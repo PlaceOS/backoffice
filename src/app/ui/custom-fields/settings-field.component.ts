@@ -37,7 +37,6 @@ import { TranslatePipe } from '../translate.pipe';
             [class.h-full]="fill()"
             [class.min-h-0]="fill()"
             editor
-            (window:resize)="resizeEditor()"
             #editor
         ></div>
     `,
@@ -172,7 +171,7 @@ export class SettingsFieldComponent
      * @param value The new value for the component
      */
     public writeValue(value: string) {
-        this.settings_string = `${value}`;
+        this.settings_string = `${value ?? ''}`;
         if (this.editor) {
             this.editor.getModel().detectIndentation(true, 4);
             if (this.readonly()) {

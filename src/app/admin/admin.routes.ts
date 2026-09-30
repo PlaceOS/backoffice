@@ -122,33 +122,6 @@ export const ROUTES: Routes = [
                     ),
             },
             {
-                path: 'mailing-list',
-                children: [
-                    {
-                        path: '',
-                        loadComponent: () =>
-                            import(
-                                './mailing-lists/email-templates.component'
-                            ).then((m) => m.EmailTemplatesComponent),
-                    },
-                    {
-                        path: 'edit',
-                        loadComponent: () =>
-                            import(
-                                './mailing-lists/email-template-form.component'
-                            ).then((m) => m.EmailTemplateFormComponent),
-                    },
-                    {
-                        path: 'edit/:id',
-                        loadComponent: () =>
-                            import(
-                                './mailing-lists/email-template-form.component'
-                            ).then((m) => m.EmailTemplateFormComponent),
-                    },
-                    { path: '**', redirectTo: '' },
-                ],
-            },
-            {
                 path: 'signage-plugins',
                 loadComponent: () =>
                     import('./signage-plugins/signage-plugins.component').then(
