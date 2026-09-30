@@ -23,6 +23,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { calculateModuleIndex } from '../../../common/api';
+import { describeError } from '../../../common/errors';
 import { i18n } from '../../../common/locale.service';
 import { notifyError } from '../../../common/notifications';
 import { Identity } from '../../../common/types';
@@ -155,7 +156,7 @@ import { TranslatePipe } from '../../translate.pipe';
                         </mat-form-field>
                     </div>
                 }
-                @if (this[side + '_status_variables']?.length) {
+                @if (statusVariables(side)().length) {
                     <div class="field">
                         <label [for]="side + '-status-var'">{{
                             'TRIGGERS.COMPARE_VARIABLE' | translate
@@ -172,7 +173,7 @@ import { TranslatePipe } from '../../translate.pipe';
                                 "
                             >
                                 @for (
-                                    mod of this[side + '_status_variables'];
+                                    mod of statusVariables(side)();
                                     track mod
                                 ) {
                                     <mat-option [value]="mod.name">
@@ -184,10 +185,7 @@ import { TranslatePipe } from '../../translate.pipe';
                     </div>
                 }
             </div>
-            @if (
-                this[side + '_status_variables'] &&
-                this[side + '_status_variables'].length
-            ) {
+            @if (statusVariables(side)().length) {
                 <div class="field">
                     <label [for]="side + '-subkeys'">{{
                         'TRIGGERS.COMPARE_SUBKEYS' | translate
@@ -237,9 +235,9 @@ export class TriggerConditionComparisonFormComponent
     /** List of status variables associated with the selected module */
     public readonly module_list = signal<Identity[]>([]);
     /** List of status variables associated with the selected module */
-    public left_status_variables: Identity[] = [];
+    public readonly left_status_variables = signal<Identity[]>([]);
     /** List of status variables associated with the selected module */
-    public right_status_variables: Identity[] = [];
+    public readonly right_status_variables = signal<Identity[]>([]);
     /** Type of value to compare the left hand side to */
     public readonly rhs_type: WritableSignal<'constant' | 'status_var'> =
         signal('constant');
@@ -312,6 +310,13 @@ export class TriggerConditionComparisonFormComponent
         ]);
     }
 
+    /** Status variable list for the given side of the comparison */
+    public statusVariables(side: 'left' | 'right') {
+        return side === 'left'
+            ? this.left_status_variables
+            : this.right_status_variables;
+    }
+
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.system && this.system()) {
             this.loadSystemModules();
@@ -352,11 +357,11 @@ export class TriggerConditionComparisonFormComponent
                 if (Object.keys(var_map || {}).length <= 0) {
                     var_map = { connected: true };
                 }
-                this[`${side}_status_variables`] = Object.keys(var_map).map(
-                    (key) => ({
+                this.statusVariables(side).set(
+                    Object.keys(var_map).map((key) => ({
                         id: key,
                         name: key,
-                    }),
+                    })),
                 );
                 this.addExistingStatusVariables();
             })
@@ -380,7 +385,15 @@ export class TriggerConditionComparisonFormComponent
         }
         const module_list = await queryModules({
             control_system_id: system.id,
-        }).then((resp) => resp.data);
+        })
+            .then((resp) => resp.data)
+            .catch((err) => {
+                notifyError(
+                    `Failed to load modules for ${system.id}. Error: ${describeError(err)}`,
+                );
+                return null;
+            });
+        if (!module_list) return;
         this.modules = module_list;
         const mod_list = this.system().modules;
         this.modules.sort(
@@ -447,31 +460,14 @@ export class TriggerConditionComparisonFormComponent
      * Add pre-exisiting status variables to the available list
      */
     private addExistingStatusVariables() {
-        if (this.left_side.status) {
-            if (
-                !this.left_status_variables.find(
-                    (status) => status.name === this.left_side.status,
-                )
-            ) {
-                this.left_status_variables.unshift({
-                    id: this.left_side.status,
-                    name: this.left_side.status,
-                    keys: [],
-                });
-            }
-        }
-        if (this.right_side.status) {
-            if (
-                !this.right_status_variables.find(
-                    (status) => status.name === this.right_side.status,
-                )
-            ) {
-                this.right_status_variables.unshift({
-                    id: this.right_side.status,
-                    name: this.right_side.status,
-                    keys: [],
-                });
-            }
+        for (const side of ['left', 'right'] as const) {
+            const status = this[`${side}_side`].status;
+            if (!status) continue;
+            this.statusVariables(side).update((list) =>
+                list.find((item) => item.name === status)
+                    ? list
+                    : [{ id: status, name: status, keys: [] }, ...list],
+            );
         }
     }
 }

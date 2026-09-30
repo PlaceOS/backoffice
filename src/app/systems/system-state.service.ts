@@ -41,12 +41,7 @@ import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
-import {
-    DialogEvent,
-    FormModalComponent,
-    HashMap,
-    Identity,
-} from '../common/types';
+import { DialogEvent, HashMap, Identity } from '../common/types';
 import {
     ConfirmModalData,
     openConfirmModal,
@@ -463,8 +458,7 @@ export class SystemStateService extends AsyncHandler {
                     external_save: true,
                 },
             });
-            const instance =
-                ref.componentInstance as unknown as FormModalComponent;
+            const instance = ref.componentInstance;
             const details = await Promise.race([
                 waitForEvent(
                     instance.event,
@@ -473,7 +467,7 @@ export class SystemStateService extends AsyncHandler {
                 waitForEvent(ref.afterClosed()),
             ]);
             if (details?.reason !== 'action') return;
-            instance.loading = 'Saving trigger settings...';
+            instance.loading.set('Saving trigger settings...');
 
             const url = `${apiEndpoint()}/systems/${
                 this.active_item.id
@@ -482,8 +476,9 @@ export class SystemStateService extends AsyncHandler {
                 notifyError(
                     `Error updating trigger settings. Error: ${describeError(err)}`,
                 );
-                throw err;
+                return null;
             });
+            instance.loading.set('');
             ref.close();
             if (!trig) return trigger;
             notifySuccess(`Successfully updated trigger settings.`);
