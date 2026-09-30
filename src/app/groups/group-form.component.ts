@@ -104,32 +104,14 @@ import {
                         <label for="group-parent">{{
                             'GROUPS.PARENT_ID' | translate
                         }}</label>
-                        <div class="flex items-center space-x-2">
-                            <item-search-field
-                                class="flex-1"
-                                [placeholder]="
-                                    'GROUPS.PARENT_SEARCH' | translate
-                                "
-                                [query_fn]="query_parent_groups()"
-                                [exclude]="exclude_parent_group"
-                                [ngModel]="parent_group()"
-                                [ngModelOptions]="{ standalone: true }"
-                                (ngModelChange)="setParentGroup($event)"
-                            />
-                            @if (formModel().parent_id) {
-                                <button
-                                    icon
-                                    type="button"
-                                    [attr.aria-label]="
-                                        'GROUPS.PARENT_CLEAR' | translate
-                                    "
-                                    [title]="'GROUPS.PARENT_CLEAR' | translate"
-                                    (click)="setParentGroup(null)"
-                                >
-                                    <icon>close</icon>
-                                </button>
-                            }
-                        </div>
+                        <item-search-field
+                            [placeholder]="'GROUPS.PARENT_SEARCH' | translate"
+                            [query_fn]="query_parent_groups()"
+                            [exclude]="exclude_parent_group"
+                            [ngModel]="parent_group()"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="setParentGroup($event)"
+                        />
                     </div>
                     <div class="field">
                         <label for="group-authority">{{
