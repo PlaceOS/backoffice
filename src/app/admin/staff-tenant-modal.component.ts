@@ -582,8 +582,9 @@ export class StaffTenantModalComponent {
             },
             ['', null, undefined],
         );
-        // Send null so the backend clears a config that the user turned off
-        if (!this.show_outlook()) data.outlook_config = null;
+        // staff-api ignores null, so send an empty config to clear it.
+        // It is stored as `{ app_id: '' }`, which reads as off.
+        if (!this.show_outlook()) data.outlook_config = {};
         const call = this.tenant?.id
             ? put(`/api/staff/v1/tenants/${this.tenant.id}`, data)
             : post('/api/staff/v1/tenants', data);
