@@ -60,6 +60,7 @@ import {
                         <div class="field">
                             <label
                                 for="driver"
+                                id="driver-label"
                                 [class.error]="
                                     form.driver().invalid() &&
                                     form.driver().touched()
@@ -70,6 +71,9 @@ import {
                             </label>
                             <item-search-field
                                 [query_fn]="driver_query_fn"
+                                id="driver"
+                                role="group"
+                                aria-labelledby="driver-label"
                                 [formField]="form.driver"
                             />
                             @if (
@@ -87,6 +91,7 @@ import {
                             <div class="field">
                                 <label
                                     for="system"
+                                    id="system-label"
                                     [class.error]="
                                         form.system().invalid() &&
                                         form.system().touched()
@@ -100,6 +105,9 @@ import {
                                 @if (!is_readonly) {
                                     <item-search-field
                                         [query_fn]="system_query_fn"
+                                        id="system"
+                                        role="group"
+                                        aria-labelledby="system-label"
                                         [formField]="form.system"
                                     />
                                     @if (
@@ -144,6 +152,7 @@ import {
                                         [placeholder]="
                                             'MODULES.URI' | translate
                                         "
+                                        id="uri"
                                         [formField]="form.uri"
                                     />
                                     <mat-error>{{
@@ -172,6 +181,7 @@ import {
                                         <input
                                             matInput
                                             placeholder="IP Address"
+                                            id="ip"
                                             [formField]="form.ip"
                                         />
                                         @if (form.ip().invalid()) {
@@ -208,6 +218,7 @@ import {
                                                 'MODULES.PORT_NUMBER'
                                                     | translate
                                             "
+                                            id="port-number"
                                             [formField]="form.port"
                                         />
                                         @if (form.port().invalid()) {
@@ -262,11 +273,15 @@ import {
                         </div>
                         @if (form.alert_level) {
                             <div class="field">
-                                <label for="alert-level">
+                                <label for="alert-level" id="alert-level-label">
                                     {{ 'COMMON.ALERT_LEVEL' | translate }}
                                 </label>
                                 <mat-form-field appearance="outline">
-                                    <mat-select [formField]="form.alert_level">
+                                    <mat-select
+                                        id="alert-level"
+                                        aria-labelledby="alert-level-label"
+                                        [formField]="form.alert_level"
+                                    >
                                         @for (
                                             level of alert_levels;
                                             track level.id
@@ -290,6 +305,7 @@ import {
                                         [placeholder]="
                                             'COMMON.NOTES' | translate
                                         "
+                                        id="notes"
                                         [formField]="form.notes"
                                     ></textarea>
                                 </mat-form-field>
@@ -306,6 +322,7 @@ import {
                                         [placeholder]="
                                             'MODULES.CUSTOM_NAME' | translate
                                         "
+                                        id="custom-name"
                                         [formField]="form.custom_name"
                                     />
                                 </mat-form-field>
@@ -313,7 +330,7 @@ import {
                         }
                         @if (form.edge && !formModel().id) {
                             <div class="field">
-                                <label for="driver">
+                                <label for="edge" id="edge-label">
                                     {{ 'COMMON.EDGE' | translate }}
                                 </label>
                                 <item-search-field
@@ -321,6 +338,9 @@ import {
                                         'COMMON.EDGE_SEARCH' | translate
                                     "
                                     [query_fn]="edge_query_fn"
+                                    id="edge"
+                                    role="group"
+                                    aria-labelledby="edge-label"
                                     [formField]="form.edge"
                                 />
                             </div>

@@ -36,12 +36,16 @@ import { BackofficeExtension } from '../extensions.component';
             <form>
                 <div class="fieldset">
                     <div class="field">
-                        <label for="type">
+                        <label for="extension-type" id="extension-type-label">
                             {{ 'ADMIN.EXTENSIONS_FIELD_TYPE' | translate }}
                             <span>*</span>
                         </label>
                         <mat-form-field appearance="outline">
-                            <mat-select [formField]="form.type">
+                            <mat-select
+                                id="extension-type"
+                                aria-labelledby="extension-type-label"
+                                [formField]="form.type"
+                            >
                                 @for (type of available_types; track type) {
                                     <mat-option [value]="type">
                                         <span class="capitalize">{{
@@ -53,7 +57,7 @@ import { BackofficeExtension } from '../extensions.component';
                         </mat-form-field>
                     </div>
                     <div class="field">
-                        <label for="name">
+                        <label for="extension-name">
                             {{ 'COMMON.FIELD_NAME' | translate }}
                             <span>*</span>
                         </label>
@@ -63,6 +67,7 @@ import { BackofficeExtension } from '../extensions.component';
                                 [placeholder]="
                                     'ADMIN.EXTENSIONS_FIELD_NAME' | translate
                                 "
+                                id="extension-name"
                                 [formField]="form.name"
                             />
                             <mat-error>{{
@@ -72,7 +77,7 @@ import { BackofficeExtension } from '../extensions.component';
                     </div>
                 </div>
                 <div class="field">
-                    <label for="url">
+                    <label for="extension-url">
                         {{ 'ADMIN.EXTENSIONS_FIELD_URL' | translate }}
                         <span>*</span>
                     </label>
@@ -82,6 +87,7 @@ import { BackofficeExtension } from '../extensions.component';
                             [placeholder]="
                                 'ADMIN.EXTENSIONS_FIELD_URL' | translate
                             "
+                            id="extension-url"
                             [formField]="form.url"
                         />
                         <mat-error>{{

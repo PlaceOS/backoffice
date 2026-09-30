@@ -65,8 +65,13 @@ import {
             (save)="submit()"
         >
             @if (!is_editing()) {
-                <label for="repos">{{ 'REPOS.SINGULAR' | translate }}</label>
+                <label for="repos" id="repos-label">{{
+                    'REPOS.SINGULAR' | translate
+                }}</label>
                 <item-search-field
+                    id="repos"
+                    role="group"
+                    aria-labelledby="repos-label"
                     [placeholder]="'REPOS.SEARCH' | translate"
                     [options]="repo_list()"
                     [loading]="loading_type().includes('repository')"
@@ -74,8 +79,13 @@ import {
                     (ngModelChange)="driver.set(null); commit.set(null)"
                 />
                 @if (repo()) {
-                    <label for="driver">{{ 'DRIVERS.BASE' | translate }}</label>
+                    <label for="driver" id="driver-label">{{
+                        'DRIVERS.BASE' | translate
+                    }}</label>
                     <item-search-field
+                        id="driver"
+                        role="group"
+                        aria-labelledby="driver-label"
                         [placeholder]="'DRIVERS.SEARCH' | translate"
                         [options]="driver_list()"
                         [loading]="loading_type().includes('drivers')"
@@ -85,10 +95,17 @@ import {
                 }
             }
             @if (driver()) {
-                <label for="commit" [class.error]="commit_error()">
+                <label
+                    for="commit"
+                    id="commit-label"
+                    [class.error]="commit_error()"
+                >
                     {{ 'DRIVERS.COMMIT' | translate }}
                 </label>
                 <item-search-field
+                    id="commit"
+                    role="group"
+                    aria-labelledby="commit-label"
                     [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
                     [options]="commit_list()"
                     [loading]="loading_type().includes('commits')"
@@ -117,6 +134,7 @@ import {
                         <input
                             matInput
                             [placeholder]="'COMMON.FIELD_NAME' | translate"
+                            id="driver-name"
                             [formField]="form.name"
                         />
                         <mat-error>
@@ -126,11 +144,15 @@ import {
                     <div class="flex space-x-4">
                         @if (!is_editing()) {
                             <div class="flex flex-1 flex-col">
-                                <label for="role">
+                                <label for="role" id="role-label">
                                     {{ 'DRIVERS.ROLE' | translate }}
                                 </label>
                                 <mat-form-field appearance="outline">
-                                    <mat-select [formField]="form.role">
+                                    <mat-select
+                                        id="role"
+                                        aria-labelledby="role-label"
+                                        [formField]="form.role"
+                                    >
                                         @for (type of role_types; track type) {
                                             <mat-option [value]="type.id">
                                                 {{ type.name | translate }}
@@ -154,6 +176,7 @@ import {
                                     [placeholder]="
                                         'DRIVERS.MODULE_NAME' | translate
                                     "
+                                    id="module-name"
                                     [formField]="form.module_name"
                                 />
                                 <mat-error>
@@ -174,6 +197,7 @@ import {
                             [placeholder]="
                                 'COMMON.FIELD_DESCRIPTION' | translate
                             "
+                            id="description"
                             [formField]="form.description"
                         ></textarea>
                     </mat-form-field>
@@ -187,6 +211,7 @@ import {
                         <input
                             matInput
                             [placeholder]="'DRIVERS.DEFAULT_URI' | translate"
+                            id="default-uri"
                             [formField]="form.default_uri"
                         />
                         <mat-error>
@@ -208,6 +233,7 @@ import {
                                     [placeholder]="
                                         'DRIVERS.DEFAULT_PORT' | translate
                                     "
+                                    id="default-port"
                                     [formField]="form.default_port"
                                 />
                                 <mat-error>
@@ -224,11 +250,15 @@ import {
                             />
                         </div>
                     </div>
-                    <label for="alert-level">
+                    <label for="alert-level" id="alert-level-label">
                         {{ 'COMMON.ALERT_LEVEL' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
-                        <mat-select [formField]="form.alert_level">
+                        <mat-select
+                            id="alert-level"
+                            aria-labelledby="alert-level-label"
+                            [formField]="form.alert_level"
+                        >
                             @for (level of alert_levels; track level.id) {
                                 <mat-option [value]="level.id">
                                     {{ level.name | translate }}

@@ -68,14 +68,18 @@ export interface JsonSchema {
             @if (schema_copy()) {
                 <div class="mb-4 flex items-center space-x-2">
                     <div class="flex w-1/2 flex-1 flex-col">
-                        <label for="type"
+                        <label for="schema-name"
                             >{{ 'ADMIN.SCHEMA_NAME' | translate }}:
                         </label>
                         <mat-form-field
                             class="no-subscript w-full"
                             appearance="outline"
                         >
-                            <input matInput [(ngModel)]="schema_copy().name" />
+                            <input
+                                matInput
+                                id="schema-name"
+                                [(ngModel)]="schema_copy().name"
+                            />
                         </mat-form-field>
                     </div>
                     <button

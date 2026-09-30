@@ -64,6 +64,7 @@ import {
                                     [placeholder]="
                                         'COMMON.FIELD_NAME' | translate
                                     "
+                                    id="trigger-name"
                                     [formField]="form.name"
                                 />
                                 <mat-error>Trigger name is required</mat-error>
@@ -81,6 +82,7 @@ import {
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
+                                    id="description"
                                     [formField]="form.description"
                                 ></textarea>
                             </mat-form-field>
@@ -101,6 +103,7 @@ import {
                             <div class="field">
                                 <label
                                     for="debounce-period"
+                                    id="debounce-period-label"
                                     [class.error]="
                                         form.name().invalid() &&
                                         form.name().touched()
@@ -109,6 +112,9 @@ import {
                                     {{ 'TRIGGERS.DEBOUNCE_PERIOD' | translate }}
                                 </label>
                                 <a-counter
+                                    id="debounce-period"
+                                    role="group"
+                                    aria-labelledby="debounce-period-label"
                                     [formField]="form.debounce_period"
                                     [min]="0"
                                     [step]="100"
@@ -121,7 +127,7 @@ import {
                             formModel().enable_webhook && form.supported_methods
                         ) {
                             <div class="field">
-                                <label for="methods">
+                                <label for="methods" id="methods-label">
                                     {{
                                         'TRIGGERS.SUPPORTED_METHODS' | translate
                                     }}
@@ -132,6 +138,8 @@ import {
                                 >
                                     <mat-select
                                         multiple
+                                        id="methods"
+                                        aria-labelledby="methods-label"
                                         [formField]="form.supported_methods"
                                     >
                                         <mat-option value="GET">GET</mat-option>
