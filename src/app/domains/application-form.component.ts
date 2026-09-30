@@ -240,7 +240,6 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
     public readonly form = form(this.formModel, applyApplicationFormSchema);
     public readonly loading = signal<string | null>(null);
     public readonly heading = signal('');
-    public default_redirect_uri: string;
     public readonly client_id = signal('');
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
     public subsystem_list = computed(() => this.formModel().subsystems || []);
@@ -260,11 +259,8 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
         const item = this._data.item;
         const edit = !!item.id;
         this.heading.set(i18n(`DOMAINS.APPLICATION_${edit ? 'EDIT' : 'NEW'}`));
-        const { redirect_uri } = this.formModel();
-        this.default_redirect_uri = redirect_uri || '';
         effect(
             () => {
-                const preserve = this.formModel().preserve_client_id;
                 const redirect_value = `${this.formModel().redirect_uri || ''}`;
                 const trimmed_value = redirect_value.trim();
                 if (redirect_value !== trimmed_value) {
@@ -273,16 +269,18 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
                         redirect_uri: trimmed_value,
                     }));
                 }
-                // Preserving keeps the stored client ID, so existing OAuth
-                // clients keep working when the redirect URI changes
-                if (preserve && item.uid) {
+                // The backend ignores a uid sent by the client. It sets
+                // md5(lowercase redirect_uri) on create and never changes it
+                // on update, so existing apps always keep the stored uid.
+                if (item.uid) {
                     this.client_id.set(item.uid);
                     return;
                 }
-                const uri = preserve
-                    ? this.default_redirect_uri
-                    : trimmed_value;
-                this.client_id.set(uri ? Md5.hashStr(uri) : '');
+                this.client_id.set(
+                    trimmed_value
+                        ? Md5.hashStr(trimmed_value.toLowerCase())
+                        : '',
+                );
             },
             { injector: this._injector },
         );
