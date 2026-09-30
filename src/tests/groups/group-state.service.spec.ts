@@ -164,7 +164,11 @@ describe('group membership actions', () => {
     it.each(['user', 'zone'] as const)(
         'does not remove a %s when confirmation is cancelled',
         async (kind) => {
-            mocks.confirm.mockResolvedValue({ reason: '', close, loading });
+            mocks.confirm.mockResolvedValue({
+                reason: undefined,
+                close,
+                loading,
+            });
             if (kind === 'user') await service.removeUser(user);
             else await service.removeZone(zone);
             expect(mocks.removeGroupUser).not.toHaveBeenCalled();

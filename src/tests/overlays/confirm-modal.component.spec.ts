@@ -1,10 +1,13 @@
+import { EventEmitter, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
     MAT_DIALOG_DATA,
+    MatDialog,
     MatDialogModule,
     MatDialogRef,
 } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Subject } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the ts-client - factory must be self-contained
@@ -30,11 +33,13 @@ vi.mock('../../app/common/notifications', () => ({
 }));
 
 import { MockComponent } from 'ng-mocks';
+import { DialogEvent } from '../../app/common/types';
 import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
     ConfirmModalData,
     describeError,
+    openConfirmModal,
     receiptToTsv,
 } from '../../app/overlays/confirm-modal.component';
 import { IconComponent } from '../../app/ui/icon.component';
@@ -572,6 +577,18 @@ describe('ConfirmModalComponent', () => {
             component.enableClose();
             expect(dialog_ref_mock.disableClose).toBe(false);
         });
+
+        it('should block dismissal only while loading', () => {
+            // A dismissal mid-action tears down the instance the caller is
+            // still writing to.
+            component.loading.set('Deleting...');
+            fixture.detectChanges();
+            expect(dialog_ref_mock.disableClose).toBe(true);
+
+            component.loading.set('');
+            fixture.detectChanges();
+            expect(dialog_ref_mock.disableClose).toBe(false);
+        });
     });
 
     describe('ngOnInit with close_delay', () => {
@@ -678,6 +695,35 @@ describe('ConfirmModalComponent', () => {
             const footer = fixture.nativeElement.querySelector('footer');
             expect(footer).toBeFalsy();
         });
+    });
+});
+
+describe('openConfirmModal', () => {
+    it('does not report a dismissed modal as confirmed', async () => {
+        const closed = new Subject<undefined>();
+        const ref = {
+            componentInstance: {
+                event: new EventEmitter<DialogEvent>(),
+                loading: signal(''),
+            } as Pick<ConfirmModalComponent, 'event' | 'loading'> | null,
+            afterClosed: () => closed.asObservable(),
+            close: vi.fn(),
+        };
+        const dialog = { open: vi.fn(() => ref) } as unknown as MatDialog;
+
+        const pending = openConfirmModal(
+            { title: '', content: '', icon: { content: 'delete' } },
+            dialog,
+        );
+        // Cancel, Escape and backdrop all close without a result, and
+        // Material drops the component instance on close.
+        ref.componentInstance = null;
+        closed.next(undefined);
+        closed.complete();
+        const details = await pending;
+
+        expect(details.reason).not.toBe('done');
+        expect(() => details.loading('Deleting...')).not.toThrow();
     });
 });
 

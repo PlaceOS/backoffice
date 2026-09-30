@@ -4,6 +4,7 @@ import {
     OnInit,
     Output,
     computed,
+    effect,
     inject,
     signal,
 } from '@angular/core';
@@ -105,11 +106,6 @@ export interface ConfirmModalData {
 }
 
 /**
- * Renders a receipt as tab separated rows, for pasting into a ticket or
- * spreadsheet. Failed rows are marked so a partial run is not mistaken for a
- * complete one.
- */
-/**
  * Readable text for whatever an option's `details()` rejected with.
  *
  * ts-client throws the raw `Response` for any non-OK status, and interpolating
@@ -133,6 +129,11 @@ export function describeError(error: unknown): string {
     return 'Unknown error';
 }
 
+/**
+ * Renders a receipt as tab separated rows, for pasting into a ticket or
+ * spreadsheet. Failed rows are marked so a partial run is not mistaken for a
+ * complete one.
+ */
 export function receiptToTsv(result: ConfirmModalResult): string {
     const rows = [
         ...result.items.map((item) => [item.type, item.name, item.id]),
@@ -156,17 +157,26 @@ export const CONFIRM_METADATA = {
     height: 'auto',
 };
 
-export interface ConfirmRepsonse {
-    reason: 'done' | '' | null;
+export interface ConfirmResponse {
+    /**
+     * `'done'` when the user confirmed. `undefined` when the modal was
+     * dismissed (Cancel, Escape or backdrop click).
+     */
+    reason?: 'done';
     metadata?: { options?: ConfirmModalSelection };
     loading: (_: string) => void;
     close: () => void;
 }
 
+/**
+ * Opens a confirm modal and resolves when the user confirms or dismisses it.
+ * Always resolves to an object, so callers must check
+ * `details.reason !== 'done'` before they run the action.
+ */
 export async function openConfirmModal(
     data: ConfirmModalData,
     dialog: MatDialog,
-): Promise<ConfirmRepsonse> {
+): Promise<ConfirmResponse> {
     const ref = dialog.open<ConfirmModalComponent, ConfirmModalData>(
         ConfirmModalComponent,
         {
@@ -182,7 +192,7 @@ export async function openConfirmModal(
             ),
             lastValueFrom(ref.afterClosed()),
         ])),
-        loading: (s) => ref.componentInstance.loading.set(s),
+        loading: (s) => ref.componentInstance?.loading.set(s),
         close: () => ref.close(),
     };
 }
@@ -551,6 +561,17 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
     public readonly disableClose = () => (this._dialog_ref.disableClose = true);
     /** Allow the user to close the modal */
     public readonly enableClose = () => (this._dialog_ref.disableClose = false);
+
+    constructor() {
+        super();
+        // Block Escape and backdrop dismissal while the action runs. Material
+        // nulls `componentInstance` on close, so a dismissal mid-action makes
+        // the caller's later `loading.set()` throw. The receipt stays
+        // dismissable.
+        effect(() => {
+            this._dialog_ref.disableClose = !!this.loading() && !this.result();
+        });
+    }
 
     public ngOnInit() {
         // An option that starts enabled has never been toggled, so nothing has

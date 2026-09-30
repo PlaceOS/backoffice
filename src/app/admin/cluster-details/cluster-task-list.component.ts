@@ -270,7 +270,7 @@ export class PlaceClusterTaskListComponent
                             ref.close();
                         },
                         (err) => {
-                            ref.componentInstance.loading.set(null);
+                            ref.componentInstance?.loading.set('');
                             this.killing.set(null);
                             notifyError(
                                 i18n('ADMIN.CLUSTER_PROCESS_KILL_ERROR', {
