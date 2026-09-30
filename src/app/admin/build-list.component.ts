@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -55,7 +55,7 @@ function cancelBuildJob(id, q = {}) {
                 />
                 <simple-table
                     class="block min-w-5xl text-sm"
-                    [data]="jobs()"
+                    [data]="job_list()"
                     [columns]="[
                         {
                             key: 'repo',
@@ -144,12 +144,8 @@ export class PlaceBuildListComponent implements OnInit {
     private _dialog = inject(MatDialog);
 
     public readonly loading = signal('');
-    public readonly hide_job = signal('');
     public readonly last_change = signal<BuildJob>(null);
     public readonly job_list = signal<BuildJob[]>([]);
-    public readonly jobs = computed(() => {
-        return this.job_list().filter(({ id }) => id !== this.hide_job());
-    });
 
     public ngOnInit() {
         this.loadJobList();
@@ -184,7 +180,7 @@ export class PlaceBuildListComponent implements OnInit {
             );
         this.last_change.set(null);
         notifySuccess(i18n('ADMIN.BUILD_LIST_REMOVE_SUCCESS'));
-        this.hide_job.set(i.id);
+        this.job_list.update((list) => list.filter(({ id }) => id !== i.id));
     }
 
     public async loadJobList() {

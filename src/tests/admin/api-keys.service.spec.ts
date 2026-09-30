@@ -3,7 +3,10 @@ import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AdminDataService } from '../../app/admin/admin-data.service';
-import { APIKeyService } from '../../app/admin/api-keys/api-keys.service';
+import {
+    APIKeyService,
+    apiKeyExpiry,
+} from '../../app/admin/api-keys/api-keys.service';
 
 const mocks = vi.hoisted(() => ({
     create: vi.fn(),
@@ -101,6 +104,27 @@ describe('APIKeyService', () => {
         expect(service.last_key()?.x_api_key).toBe('sk_test');
         expect(mocks.notifySuccess).toHaveBeenCalledWith(
             'Successfully created new API key.',
+        );
+    });
+});
+
+describe('apiKeyExpiry', () => {
+    const now = Date.UTC(2026, 0, 1);
+    const now_seconds = now / 1000;
+
+    it('adds the TTL in seconds to the current time', () => {
+        expect(apiKeyExpiry({ ttl: 3600 }, now)).toBe(now_seconds + 3600);
+    });
+
+    it('uses an explicit expiry when only expires_at is set', () => {
+        expect(apiKeyExpiry({ expires_at: now_seconds + 60 }, now)).toBe(
+            now_seconds + 60,
+        );
+    });
+
+    it('never expires without an expiry or TTL', () => {
+        expect(apiKeyExpiry({ expires_at: null, ttl: null }, now)).toBe(
+            undefined,
         );
     });
 });

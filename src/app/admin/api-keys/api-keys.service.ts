@@ -21,6 +21,17 @@ import { AdminDataService } from '../admin-data.service';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyModalComponent } from './api-key-modal.component';
 
+/**
+ * Expiry for a new API key in unix seconds, or `undefined` if it never expires.
+ * An explicit `expires_at` wins. Otherwise `ttl` (seconds) counts from `now` (ms).
+ */
+export function apiKeyExpiry(
+    { expires_at, ttl }: { expires_at?: number | null; ttl?: number | null },
+    now = Date.now(),
+): number | undefined {
+    return expires_at ?? (ttl ? getUnixTime(now) + ttl : undefined);
+}
+
 @Service()
 export class APIKeyService {
     private _dialog = inject(MatDialog);
@@ -120,10 +131,7 @@ export class APIKeyService {
             path: 'api_keys',
             form_data: {
                 ...api_key,
-                expires_at:
-                    (api_key.expires_at ?? api_key.ttl)
-                        ? getUnixTime(Date.now() + api_key.ttl)
-                        : undefined,
+                expires_at: apiKeyExpiry(api_key),
                 authority_id: domain.id,
             },
         }).catch((_) => {

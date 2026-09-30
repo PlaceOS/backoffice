@@ -1,6 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -72,7 +72,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                 />
                 <simple-table
                     class="block min-w-5xl text-sm"
-                    [data]="edges()"
+                    [data]="edge_list()"
                     [columns]="[
                         {
                             key: 'online',
@@ -192,11 +192,7 @@ export class PlaceEdgeComponent implements OnInit {
     private _clipboard = inject(Clipboard);
 
     public readonly loading = signal('');
-    public readonly hide_edge = signal('');
     public readonly edge_list = signal<PlaceEdge[]>([]);
-    public readonly edges = computed(() => {
-        return this.edge_list().filter(({ id }) => id !== this.hide_edge());
-    });
     public readonly last_change = signal<PlaceEdge>(null);
 
     public ngOnInit() {
@@ -218,6 +214,8 @@ export class PlaceEdgeComponent implements OnInit {
     public async edit(edge?: PlaceEdge) {
         const ref = this._dialog.open(EdgeModalComponent, { data: { edge } });
         ref.afterClosed().subscribe((_) => {
+            // Cancel keeps the last saved edge and its one-time API key
+            if (!_) return;
             sessionStorage.setItem('BACKOFFICE.last_edge', JSON.stringify(_));
             this.last_change.set(_);
             this.loadEdges();
@@ -246,7 +244,7 @@ export class PlaceEdgeComponent implements OnInit {
         sessionStorage.removeItem('BACKOFFICE.last_edge');
         this.last_change.set(null);
         notifySuccess('Successfully removed Edge.');
-        this.hide_edge.set(i.id);
+        this.edge_list.update((list) => list.filter(({ id }) => id !== i.id));
     }
 
     public copyKey(key: string) {
