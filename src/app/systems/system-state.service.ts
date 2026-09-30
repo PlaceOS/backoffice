@@ -492,6 +492,7 @@ export class SystemStateService extends AsyncHandler {
             icon: { type: 'icon', content: 'delete' },
         });
         if (details.reason !== 'done') return;
+        details.loading('Removing trigger...');
         await removeSystemTrigger(this.active_item.id, trigger.id).catch(
             (err) => {
                 details.close();
@@ -667,6 +668,7 @@ export class SystemStateService extends AsyncHandler {
             icon: { type: 'icon', content: 'delete' },
         });
         if (details.reason !== 'done') return;
+        details.loading('Removing module...');
         const system = await removeSystemModule(
             this.active_item.id,
             device.id,
