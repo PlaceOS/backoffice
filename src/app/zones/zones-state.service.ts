@@ -225,7 +225,7 @@ export class ZonesStateService {
             ),
             waitForEvent(ref.afterClosed()),
         ]);
-        if (details.reason !== 'done') return ref.close();
+        if (details?.reason !== 'action') return ref.close();
         const zone = await this.addTrigger(
             ref.componentInstance.item as PlaceTrigger,
         );

@@ -246,7 +246,7 @@ export class DomainStateService {
             ),
             waitForEvent(ref.afterClosed()),
         ]);
-        if (details.reason !== 'done') return;
+        if (details?.reason !== 'done') return;
         this._changed.set(new Date().valueOf());
     }
 
@@ -294,7 +294,7 @@ export class DomainStateService {
             ),
             waitForEvent(ref.afterClosed()),
         ]);
-        if (details.reason !== 'done') return;
+        if (details?.reason !== 'done') return;
         this._changed.set(new Date().valueOf());
     }
 

@@ -383,7 +383,7 @@ export class SystemStateService extends AsyncHandler {
             ),
             waitForEvent(ref.afterClosed()),
         ]);
-        if (details.reason !== 'done') return ref.close();
+        if (details?.reason !== 'action') return ref.close();
         const system = ref.componentInstance.item as PlaceSystem;
         if (!system) return ref.close();
         await addSystemModule(system.id, device.id).catch((_e) => {
@@ -424,7 +424,7 @@ export class SystemStateService extends AsyncHandler {
             ),
             waitForEvent(ref.afterClosed()),
         ]);
-        if (details.reason !== 'done') return ref.close();
+        if (details?.reason !== 'action') return ref.close();
         const t = await this.addTrigger(
             ref.componentInstance.item as PlaceTrigger,
         );
@@ -463,7 +463,7 @@ export class SystemStateService extends AsyncHandler {
                 ),
                 waitForEvent(ref.afterClosed()),
             ]);
-            if (details.reason !== 'done') return;
+            if (details?.reason !== 'action') return;
             instance.loading = 'Saving trigger settings...';
 
             const url = `${apiEndpoint()}/systems/${
