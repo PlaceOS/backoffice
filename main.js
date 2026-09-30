@@ -1,25 +1,24 @@
 import {
-  getUnixTime
-} from "./chunk-GV5KQIK5.js";
+  tenantExpiryBanner
+} from "./chunk-4GYT6WDW.js";
+import "./chunk-GV5KQIK5.js";
 import {
   AuthorisedUserGuard
-} from "./chunk-26WRX2NS.js";
+} from "./chunk-RHO4X4CZ.js";
 import {
   AuthorisedAdminGuard
-} from "./chunk-IDIIQ3TC.js";
+} from "./chunk-OZRDZORM.js";
 import {
   MatProgressBar,
   MatProgressBarModule
 } from "./chunk-LPUAWD4J.js";
 import {
   BackofficeUsersService
-} from "./chunk-LLFR5ZQW.js";
-import {
-  addDays
-} from "./chunk-XI4ZLZAC.js";
+} from "./chunk-VFOKN4KS.js";
+import "./chunk-XI4ZLZAC.js";
 import {
   SettingsService
-} from "./chunk-SKXIOOUD.js";
+} from "./chunk-XWMT7M74.js";
 import {
   currentUser
 } from "./chunk-ZBWUOXQY.js";
@@ -32,21 +31,19 @@ import {
   withHashLocation,
   withNavigationErrorHandler
 } from "./chunk-2C722Z46.js";
+import "./chunk-G27ITG57.js";
 import {
-  format
-} from "./chunk-FFPP635U.js";
-import "./chunk-HT5GXKXQ.js";
-import {
+  signalFromClient,
   waitForSignalValue
 } from "./chunk-4LO2VVHA.js";
 import "./chunk-TPDHL3PI.js";
 import {
   UploadsService
-} from "./chunk-N3FXMEAA.js";
+} from "./chunk-CCTHZZDQ.js";
 import {
-  yr
-} from "./chunk-6FGDMBQJ.js";
-import "./chunk-37SZDQI6.js";
+  syncUploadToken
+} from "./chunk-PSJCUEDM.js";
+import "./chunk-F34GYKGE.js";
 import {
   MatTooltip,
   MatTooltipModule
@@ -82,8 +79,9 @@ import "./chunk-YZCKBLZP.js";
 import {
   LocaleService,
   TranslatePipe,
+  localeFromUrl,
   setTranslationService
-} from "./chunk-PP5D56JZ.js";
+} from "./chunk-ZN5VMKUO.js";
 import {
   IconComponent
 } from "./chunk-XRQ22N5K.js";
@@ -115,6 +113,7 @@ import {
   ChangeDetectorRef,
   Component,
   DOCUMENT,
+  DestroyRef,
   Directive,
   ElementRef,
   En,
@@ -139,7 +138,9 @@ import {
   Xr,
   afterNextRender,
   booleanAttribute,
+  computed,
   effect,
+  eo,
   f,
   filter,
   formatRuntimeError,
@@ -2863,6 +2864,24 @@ function AppComponent_Conditional_5_Template(rf, ctx) {
     \u0275\u0275elementEnd()()()();
   }
 }
+var LOCALE_TIMEOUT_MS = 5e3;
+function browserOnline() {
+  const state = signal(
+    navigator.onLine,
+    ...ngDevMode ? [{ debugName: "state" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  const update = () => state.set(navigator.onLine);
+  window.addEventListener("online", update);
+  window.addEventListener("offline", update);
+  inject(DestroyRef).onDestroy(() => {
+    window.removeEventListener("online", update);
+    window.removeEventListener("offline", update);
+  });
+  return state.asReadonly();
+}
 var AppComponent = class _AppComponent extends AsyncHandler {
   _settings = inject(SettingsService);
   _users = inject(BackofficeUsersService);
@@ -2904,9 +2923,16 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   get dark_mode() {
     return this._users.dark_mode;
   }
-  get online() {
-    return Xr();
-  }
+  _client_online = signalFromClient(eo());
+  _browser_online = browserOnline();
+  /** Whether PlaceOS is reachable. ts-client only flags auth failures, so also track the network. */
+  online = computed(
+    () => this._client_online() && this._browser_online(),
+    ...ngDevMode ? [{ debugName: "online" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
   get is_fools_day() {
     return false;
   }
@@ -2940,16 +2966,11 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     this.timeout("wait_for_user", () => this.onInitError(), 30 * 1e3);
     await waitForSignalValue(this._users.initialised, (_) => _);
     this.clearTimeout("wait_for_user");
+    setLoadingMessage("Initialising locales...");
+    await this._initLocale();
     this.loading.set(false);
     setLoadingMessage("Initialising upload service...");
-    this.timeout("init_uploads", () => {
-      yr({
-        auto_start: true,
-        token: J(),
-        endpoint: "/api/engine/v2/uploads",
-        worker_url: "assets/md5_worker.js"
-      });
-    });
+    this.timeout("init_uploads", () => syncUploadToken());
     this._router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.simple.set(this._router.url.includes("mqtt"));
@@ -2957,8 +2978,6 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     });
     setLoadingMessage("Checking staff tenants...");
     this._checkTenants();
-    setLoadingMessage("Initialising locales...");
-    this._initLocale();
   }
   onInitError() {
     if (Rn())
@@ -2967,36 +2986,38 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     En();
     location.reload();
   }
+  /** Show one banner for staff tenants with expiring secrets */
   async _checkTenants() {
     if (!currentUser()?.sys_admin)
       return;
-    const tenant_list = (await f("/api/staff/v1/tenants")).map((_) => Object.keys(_).map((i) => _[i]));
-    for (const tenant of tenant_list) {
-      if (!tenant.secret_expiry)
-        continue;
-      if (tenant.secret_expiry > getUnixTime(addDays(Date.now(), -30))) {
-        this._settings.post("banner", {
-          id: `tenant_secret_expiry-${tenant.id}`,
-          type: "warn",
-          content: `Staff API Tenant "${tenant.name}" has a secret that will expire on ${format(tenant.secret_expiry * 1e3, "MMM do 'at' h:mma")}.`
-        });
-      }
-    }
+    const tenants = await f("/api/staff/v1/tenants").catch(() => []);
+    const banner = tenantExpiryBanner(Array.isArray(tenants) ? tenants : []);
+    if (banner)
+      this._settings.post("banner", banner);
   }
-  _initLocale() {
+  /**
+   * Set the locale from the URL `lang` param, storage or the browser languages.
+   * Resolves when translations load, or after a timeout.
+   */
+  async _initLocale() {
+    let load;
     try {
+      const url_locale = localeFromUrl(location.search, location.hash);
+      if (url_locale) {
+        localStorage.setItem("BACKOFFICE.locale", url_locale);
+      }
       let locale = localStorage.getItem("BACKOFFICE.locale");
       const locales = this._settings.get("app.locales") || [{ id: "en", name: "English" }];
       if (locale) {
-        this._locale?.setLocale(locale);
+        load = this._locale?.setLocale(locale);
       } else {
-        const list = navigator.languages;
+        const list = navigator.languages || [];
         for (const lang of list) {
           locale = locales.find((_) => _.id === lang)?.id;
           if (!locale)
             locale = locales.find((_) => lang.includes(_.id))?.id;
           if (locale) {
-            this._locale?.setLocale(lang);
+            load = this._locale?.setLocale(lang);
             localStorage.setItem("BACKOFFICE.locale", lang);
             break;
           }
@@ -3004,6 +3025,12 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       }
     } catch {
     }
+    if (!load)
+      return;
+    await Promise.race([
+      load.catch(() => void 0),
+      new Promise((resolve) => setTimeout(resolve, LOCALE_TIMEOUT_MS))
+    ]);
   }
   static \u0275fac = /* @__PURE__ */ (() => {
     let \u0275AppComponent_BaseFactory;
@@ -3024,7 +3051,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       \u0275\u0275advance();
       \u0275\u0275conditional(!ctx.loading() ? 1 : 2);
       \u0275\u0275advance(3);
-      \u0275\u0275conditional(!ctx.online && !ctx.loading() ? 4 : -1);
+      \u0275\u0275conditional(!ctx.online() && !ctx.loading() ? 4 : -1);
       \u0275\u0275advance();
       \u0275\u0275conditional(ctx.update_available() && !ctx.loading() ? 5 : -1);
     }
@@ -3073,7 +3100,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
             }
         </div>
         <global-loading />
-        @if (!online && !loading()) {
+        @if (!online() && !loading()) {
             <div
                 class="bg-error text-error-content fixed bottom-2 left-1/2 z-9999 -translate-x-1/2 rounded-3xl px-4 py-2 text-xs shadow-sm"
             >
@@ -3118,7 +3145,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 126 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 152 });
 })();
 
 // src/app/ui/unauthorised.component.ts
@@ -3185,55 +3212,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-C5ACMERA.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-SGOHWHRA.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-EVHC7OX5.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-3XV2AEQI.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-QSTVJZE5.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-D5T662SJ.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-7XWIG7NR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QU47L2MM.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-H34DRVT4.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QFIYWYRH.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-7TWPGGGT.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-GLGBFQ4E.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-MJD7KTYJ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-CYIUANDZ.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-3PVCMF6R.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IXWCHYW2.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-R7LNKGGD.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-UR6JE6HJ.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-UKL32PMK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-27NFA6MV.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];

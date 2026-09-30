@@ -18,10 +18,15 @@ All notable changes to this project will be documented in this file.
 - Sandbox signage plugin embed to an opaque origin
 - Stop losing API key expiry, edge keys and extensions
 - Show a readable error when a zone tree import fails
+- Repair tenant expiry, imports, uploads and cluster lookup
+- Clear outlook config when the toggle is off
 
 #### App
 
 - Drop unused x-api-key URL param handler
+- Update shell state for tenants, uploads, offline and locale
+- Load full browser locale tag again
+- Show offline, lang and secret expiry banners
 
 #### Common
 
@@ -37,9 +42,15 @@ All notable changes to this project will be documented in this file.
 - Keep OAuth client ID and handle empty settings
 - Show the stored client ID for existing apps
 
+#### Drivers
+
+- Repair module removal, update checks and driver form
+- Refresh module count and name module in remove confirm
+
 #### Groups
 
 - Refresh and clear the parent when the authority changes
+- Drop parent clear button
 
 #### Modules
 
@@ -52,6 +63,11 @@ All notable changes to this project will be documented in this file.
 #### Overlays
 
 - Block confirm dismissal while its action runs
+- Repair metadata, duplicate, bulk add and auth modals
+
+#### Repositories
+
+- Block save when branch is empty
 
 #### Signage
 
@@ -63,10 +79,16 @@ All notable changes to this project will be documented in this file.
 
 - Keep module connection state after power toggle
 - Show loading while removing a trigger or module
+- Keep tab state per system and stop form resets
+- Use a strict check for the Public row
+- Use renamed warn colour for changed zones
 
 #### Triggers
 
 - Stop removing the wrong action or condition
+- Build and parse valid cron schedules
+- Repair instance list, mailer reorder and zone removal
+- Save custom cron at once and stop date fields submitting the form
 
 #### Ui
 
@@ -78,10 +100,12 @@ All notable changes to this project will be documented in this file.
 - Require scheme:// form for driver and module URIs
 - Scope hotkeys to the top dialog and ignore modifier order
 - Escape item names in search field options
+- Dispose diff models after the editor swaps them
 
 #### Zones
 
 - Keep parent zone when saving before it loads
+- Load full lists and fix user, group and zone forms
 
 ### Documentation
 
