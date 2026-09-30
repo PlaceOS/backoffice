@@ -535,7 +535,7 @@
         "FIELD_ACTION_FN_CALL": "関数呼び出しアクション",
         "FIELD_ACTION_EMAIL": "メールアクション",
         "REORDER_CONFIRM_TITLE": "トリガー{{ type }}アクションの再注文",
-        "REORDER_CONFIRM_MSG": "このトリガー条件を削除してよろしいですか？<br>この変更は<strong>即時</strong>にすべての関連システムに反映されます。",
+        "REORDER_CONFIRM_MSG": "トリガーアクションを並べ替えてよろしいですか？<br>この変更は<strong>即時</strong>にすべての関連システムに反映されます。",
         "REORDER_CONFIRM_LOADING": "トリガーアクションを再注文中...",
         "REORDER_CONFIRM_ERROR": "トリガーアクションの再注文に失敗しました。エラー：{{ error }}",
         "REORDER_CONFIRM_SUCCESS": "トリガーアクションを正常に再注文しました",
