@@ -7,6 +7,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { queryDrivers, updateDriver } from '@placeos/ts-client';
+import { describeError } from '../common/errors';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
@@ -225,7 +226,7 @@ export class DriverUpdateListModalComponent {
         const selected = drivers.data.filter((_) =>
             this.selected_drivers().includes(_.id),
         );
-        await Promise.all(
+        const results = await Promise.allSettled(
             selected.map((driver) =>
                 driver.commit !== driver.update_info.commit
                     ? updateDriver(driver.id, {
@@ -234,13 +235,23 @@ export class DriverUpdateListModalComponent {
                       })
                     : Promise.resolve(),
             ),
-        ).catch((_) => {
-            notifyError('Error updating drivers', _);
-            this.loading.set('');
-            this._dialog_ref.disableClose = false;
-        });
-        notifySuccess(`Successfully updated ${selected.length} drivers`);
+        );
         this.loading.set('');
+        this._dialog_ref.disableClose = false;
+        const failed = results.filter(
+            (result): result is PromiseRejectedResult =>
+                result.status === 'rejected',
+        );
+        if (failed.length) {
+            notifyError(
+                `Failed to update ${failed.length} of ${selected.length} drivers. Error: ${describeError(
+                    failed[0].reason,
+                )}`,
+            );
+            this._change.set(Date.now());
+            return;
+        }
+        notifySuccess(`Successfully updated ${selected.length} drivers`);
         if (this.all_selected()) this._dialog_ref.close();
         else this._change.set(Date.now());
     }

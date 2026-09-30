@@ -266,8 +266,9 @@ export class SystemZonesComponent {
 
     public readonly savePendingZones = async () => {
         if (!this.pending_zones().length) return;
-        await this._service.addZones(this.pending_zones());
-        this.pending_zones.set([]);
+        if (await this._service.addZones(this.pending_zones())) {
+            this.pending_zones.set([]);
+        }
     };
 
     public readonly saveZoneOrder = async () => {

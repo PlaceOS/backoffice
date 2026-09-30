@@ -625,13 +625,17 @@ export class SystemStateService extends AsyncHandler {
      * @param id ID of the module to associate with the active system
      */
     public async joinModule(id: string) {
-        await addSystemModule(this.active_item.id, id).catch((err) => {
-            notifyError(
-                `Error adding module ${id} to system. Error: ${describeError(
-                    err,
-                )}`,
-            );
-        });
+        const added = await addSystemModule(this.active_item.id, id).catch(
+            (err) => {
+                notifyError(
+                    `Error adding module ${id} to system. Error: ${describeError(
+                        err,
+                    )}`,
+                );
+                return null;
+            },
+        );
+        if (!added) return;
         this.timeout('join', async () => {
             const system = await showSystem(this.active_item.id);
             if (system) this._state.replaceItem(system as unknown as Identity);
@@ -663,13 +667,15 @@ export class SystemStateService extends AsyncHandler {
             );
         });
         details.close();
-        if (system) this._state.replaceItem(system as unknown as Identity);
+        if (!system) return;
+        this._state.replaceItem(system as unknown as Identity);
         notifySuccess(`Successfully removed module from system.`);
     }
 
     /**
      * Add list of zones to the system
      * @param zones List of zones to add
+     * @returns Whether the zones were added
      */
     public async addZones(zone_list: PlaceZone[]) {
         const zones = unique([
@@ -686,8 +692,10 @@ export class SystemStateService extends AsyncHandler {
                 )}`,
             );
         });
-        if (system) this._state.replaceItem(system as unknown as Identity);
+        if (!system) return false;
+        this._state.replaceItem(system as unknown as Identity);
         notifySuccess(`Successfully added zone to system.`);
+        return true;
     }
 
     /**
@@ -713,7 +721,8 @@ export class SystemStateService extends AsyncHandler {
             );
         });
         details.close();
-        if (system) this._state.replaceItem(system as unknown as Identity);
+        if (!system) return;
+        this._state.replaceItem(system as unknown as Identity);
         notifySuccess(`Successfully removed zone from system.`);
     }
 
