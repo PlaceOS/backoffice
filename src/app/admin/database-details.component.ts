@@ -10,6 +10,7 @@ import {
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
+import { describeError } from '../overlays/confirm-modal.component';
 import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component';
 
 type ZoneTreeExportItem = Record<string, unknown> & {
@@ -275,13 +276,7 @@ export class PlaceDatabaseDetailsComponent {
             notifyError(
                 `Error importing zone tree. Created ${id_map.size} of ${
                     zones.length
-                } zones before the error. Error: ${JSON.stringify(
-                    (err as { response?: unknown; message?: unknown })
-                        .response ||
-                        (err as { response?: unknown; message?: unknown })
-                            .message ||
-                        err,
-                )}`,
+                } zones before the error. Error: ${describeError(err)}`,
             );
             return;
         }
