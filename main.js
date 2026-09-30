@@ -4,24 +4,24 @@ import {
 import "./chunk-GV5KQIK5.js";
 import {
   AuthorisedUserGuard
-} from "./chunk-RHO4X4CZ.js";
+} from "./chunk-YIUDHOHL.js";
 import {
   AuthorisedAdminGuard
-} from "./chunk-OZRDZORM.js";
+} from "./chunk-MVZ4GR2D.js";
 import {
   MatProgressBar,
   MatProgressBarModule
 } from "./chunk-LPUAWD4J.js";
 import {
   BackofficeUsersService
-} from "./chunk-VFOKN4KS.js";
+} from "./chunk-3D43EOHJ.js";
 import "./chunk-XI4ZLZAC.js";
 import {
   SettingsService
-} from "./chunk-XWMT7M74.js";
+} from "./chunk-KVQ45LGL.js";
 import {
   currentUser
-} from "./chunk-ZBWUOXQY.js";
+} from "./chunk-ZQOGPWQ4.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -35,11 +35,11 @@ import "./chunk-G27ITG57.js";
 import {
   signalFromClient,
   waitForSignalValue
-} from "./chunk-4LO2VVHA.js";
+} from "./chunk-T65YNYD6.js";
 import "./chunk-TPDHL3PI.js";
 import {
   UploadsService
-} from "./chunk-CCTHZZDQ.js";
+} from "./chunk-DVZ5PJPQ.js";
 import {
   syncUploadToken
 } from "./chunk-PSJCUEDM.js";
@@ -54,7 +54,7 @@ import {
 } from "./chunk-IQ5P3T5K.js";
 import {
   AsyncHandler
-} from "./chunk-MEGGKQGS.js";
+} from "./chunk-B77ZBLFJ.js";
 import {
   MatDialog
 } from "./chunk-BKGOEYCZ.js";
@@ -81,7 +81,7 @@ import {
   TranslatePipe,
   localeFromUrl,
   setTranslationService
-} from "./chunk-ZN5VMKUO.js";
+} from "./chunk-Q56IG7JO.js";
 import {
   IconComponent
 } from "./chunk-XRQ22N5K.js";
@@ -1977,7 +1977,7 @@ function setupCache(cache, interval = 5 * 60 * 1e3) {
       clearInterval(_timer);
     _timer = setInterval(() => {
       log("CACHE", `Checking for updates...`);
-      checkForUpdate(cache);
+      checkForUpdate(cache).catch((error) => log("CACHE", "Update check failed", [error], "warn", true));
     }, interval);
   }
 }
@@ -2213,7 +2213,7 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
   message = getLoadingMessage();
   async ngOnInit() {
     this.loading.set(true);
-    await waitForSignalValue(this._settings.initialised, (_) => _);
+    await waitForSignalValue(this._settings.initialised, (_) => _).catch(() => null);
     this.online.set(Xr());
     this.interval("has_token", () => {
       this.online.set(Xr());
@@ -2577,7 +2577,7 @@ var UploadListComponent = class _UploadListComponent extends AsyncHandler {
         if (files.length) {
           this.show.set(true);
           for (let i = 0; i < files.length; i++) {
-            this._uploads.uploadFileWithPermissions(files[i]);
+            this._uploads.uploadFileWithPermissions(files[i]).catch(() => null);
           }
         }
       }
@@ -2956,16 +2956,18 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     setTranslationService(this._locale);
     this.loading.set(true);
     setLoadingMessage("Loading application settings...");
-    await waitForSignalValue(this._settings.initialised, (_) => _);
+    const settings_ready = await waitForSignalValue(this._settings.initialised, (_) => _).catch(() => false);
+    if (!settings_ready)
+      return this.onInitError();
     const settings = this._settings.get("composer") || {};
     settings.mock = !!this._settings.get("mock");
     settings.ignore_api_key = true;
     setLoadingMessage("Authenticating user...");
     await setupPlace(settings).catch(() => this.onInitError());
     setupCache(this._cache);
-    this.timeout("wait_for_user", () => this.onInitError(), 30 * 1e3);
-    await waitForSignalValue(this._users.initialised, (_) => _);
-    this.clearTimeout("wait_for_user");
+    const user_ready = await waitForSignalValue(this._users.initialised, (_) => _, 50, 30 * 1e3).catch(() => false);
+    if (!user_ready)
+      return this.onInitError();
     setLoadingMessage("Initialising locales...");
     await this._initLocale();
     this.loading.set(false);
@@ -2977,7 +2979,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       }
     });
     setLoadingMessage("Checking staff tenants...");
-    this._checkTenants();
+    this._checkTenants().catch((error) => log("Init", "Failed to check staff tenants", [error], "warn"));
   }
   onInitError() {
     if (Rn())
@@ -3212,55 +3214,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-SGOHWHRA.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-XORSCDEX.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-3XV2AEQI.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IU4HKCZB.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-D5T662SJ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-KKW3YAXS.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-QU47L2MM.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-3ZA5DU6U.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-QFIYWYRH.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-6BSBX2TK.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-GLGBFQ4E.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-7DGTVWKS.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-CYIUANDZ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-KQIOLO6H.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-IXWCHYW2.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-X4KWCRSS.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-UR6JE6HJ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-W4FAKZLK.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-27NFA6MV.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-N6IDMBMJ.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
