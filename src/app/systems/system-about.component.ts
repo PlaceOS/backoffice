@@ -52,7 +52,7 @@ import { SystemStateService } from './system-state.service';
                             {{ 'COMMON.TRUE' | translate }}
                         </div>
                     }
-                    @if (item()?.email) {
+                    @if (item()?.public !== undefined) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.PUBLIC' | translate }}
                         </div>

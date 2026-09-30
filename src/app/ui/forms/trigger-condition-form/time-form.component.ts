@@ -20,7 +20,12 @@ import { numberToPosition } from '../../../common/general';
 import { i18n } from '../../../common/locale.service';
 import { TIMEZONES_IANA } from '../../../common/timezones';
 import { Identity } from '../../../common/types';
-import { TriggerConditionFormModel } from '../../../triggers/triggers.utilities';
+import {
+    buildCronString,
+    CronPeriod,
+    parseCronString,
+    TriggerConditionFormModel,
+} from '../../../triggers/triggers.utilities';
 import { CronInputFieldComponent } from '../../custom-fields/cron-input-field.component';
 import { DateFieldComponent } from '../../custom-fields/date-field.component';
 import { TimeFieldComponent } from '../../custom-fields/time-field.component';
@@ -226,8 +231,7 @@ import { TranslatePipe } from '../../translate.pipe';
                                             }"
                                         >
                                             <mat-select-trigger>
-                                                cron_hour()
-                                                {{ pad(cron_hour) }}:<span
+                                                {{ pad(cron_hour()) }}:<span
                                                     class="opacity-30"
                                                     >00</span
                                                 >
@@ -327,9 +331,7 @@ export class TriggerConditionTimeFormComponent
     /** Whether condition is a cron(recurring) job */
     public readonly is_cron = signal<boolean | null>(null);
     /** The period which the user selects the recurrence */
-    public readonly cron_period: WritableSignal<
-        'minute' | 'hour' | 'day' | 'week' | 'month' | 'year' | 'custom'
-    > = signal('minute');
+    public readonly cron_period: WritableSignal<CronPeriod> = signal('minute');
 
     public minutes_in_hour = new Array(12).fill(0).map((_, idx) => idx * 5);
     public hours_in_day = new Array(24).fill(0).map((_, idx) => idx);
@@ -426,16 +428,9 @@ export class TriggerConditionTimeFormComponent
         this.updateCronString();
     }
 
+    /** Write a custom cron string to the form. Sync so Save never sees a stale value. */
     public saveCRON(cron_str: string) {
-        this.timeout(
-            'save_cron',
-            () =>
-                this.formModel().update((model) => ({
-                    ...model,
-                    cron: cron_str,
-                })),
-            1000,
-        );
+        this.formModel().update((model) => ({ ...model, cron: cron_str }));
     }
 
     /**
@@ -444,33 +439,16 @@ export class TriggerConditionTimeFormComponent
     public updateCronString() {
         const form = this.form();
         if (form && form.cron) {
-            const hour = this.cron_hour();
-            const minute = this.cron_minute() % 60;
-            const day_of_week = this.days_of_week().indexOf(this.cron_day());
-            const day_of_month = this.cron_date();
-            const month = this.months_of_year().indexOf(this.cron_month());
-            let cron_str = '* * * * *';
-            switch (this.cron_period()) {
-                case 'minute':
-                    cron_str = minute ? `*/${minute} * * * *` : '* * * * *';
-                    break;
-                case 'hour':
-                    cron_str = hour
-                        ? `${minute} */${hour} * * *`
-                        : `${minute} * * * *`;
-                    break;
-                case 'day':
-                    cron_str = `${minute} ${hour} * * *`;
-                    break;
-                case 'week':
-                    cron_str = `${minute} ${hour} * * ${day_of_week}`;
-                    break;
-                case 'month':
-                    cron_str = `${minute} ${hour} ${day_of_month} * *`;
-                    break;
-                case 'year':
-                    cron_str = `${minute} ${hour} ${day_of_month} ${month} *`;
-                    break;
+            const cron_str = buildCronString(this.cron_period(), {
+                minute: this.cron_minute(),
+                hour: this.cron_hour(),
+                day_of_week: this.cron_day(),
+                day_of_month: this.cron_date(),
+                month: this.cron_month(),
+            });
+            if (cron_str === null) {
+                this.cron_string.set(this.formModel()().cron);
+                return;
             }
             this.formModel().update((model) => ({ ...model, cron: cron_str }));
         }
@@ -478,71 +456,14 @@ export class TriggerConditionTimeFormComponent
 
     private loadCronTab(cron_tab: string): void {
         this.cron_string.set(cron_tab);
-        if (
-            this.cron_string().includes('-') ||
-            this.cron_string().includes('/') ||
-            this.cron_string().includes(',')
-        ) {
-            this.cron_period.set('custom');
-            return;
-        }
-        const [minute, hour, day, month, weekday] = cron_tab.split(' ');
-        this.cron_minute.set(+minute || 0);
-        this.cron_hour.set(+hour || 0);
-        this.cron_day.set(+weekday || 0);
-        this.cron_date.set(+hour || 1);
-        this.cron_month.set(+month - 1);
-        this.cron_period.set('minute');
-        if (month !== '*') {
-            this.cron_period.set('month');
-        } else if (weekday !== '*') {
-            this.cron_period.set('week');
-        } else if (day !== '*') {
-            this.cron_period.set('day');
-        } else if (hour !== '*') {
-            this.cron_period.set('hour');
-        }
+        const { period, parts } = parseCronString(cron_tab);
+        this.cron_period.set(period);
+        if (period === 'custom') return;
+        this.cron_minute.set(parts.minute);
+        this.cron_hour.set(parts.hour);
+        this.cron_day.set(parts.day_of_week);
+        this.cron_date.set(parts.day_of_month);
+        this.cron_month.set(parts.month);
         this.cron_hour_period = this.cron_hour() > 12 ? 'PM' : 'AM';
-        // const cron_str = new CronBuilder(cron_tab);
-        // this.cron_minute =
-        //     cron_str.get('minute') === '*'
-        //         ? this.cron_minute
-        //         : +cron_str.get('minute');
-        // this.cron_hour =
-        //     cron_str.get('hour') === '*'
-        //         ? this.cron_minute
-        //         : +cron_str.get('hour');
-        // if (this.cron_hour > 12) {
-        //     this.cron_hour = this.cron_hour % 12;
-        //     this.cron_hour_period = 'PM';
-        // } else {
-        //     this.cron_hour_period = 'AM';
-        // }
-        // this.cron_day =
-        //     cron_str.get('dayOfTheWeek') === '*'
-        //         ? this.cron_day
-        //         : this.days_of_week[+cron_str.get('dayOfTheWeek')];
-        // this.cron_date =
-        //     cron_str.get('dayOfTheMonth') === '*'
-        //         ? this.cron_date
-        //         : +cron_str.get('dayOfTheMonth');
-        // this.cron_month =
-        //     cron_str.get('month') === '*'
-        //         ? this.cron_month
-        //         : this.months_of_year[+cron_str.get('month') - 1];
-        // /** Set the cron period */
-        // if (cron_str.get('month') !== '*') {
-        //     this.cron_period = 'year';
-        // } else if (cron_str.get('dayOfTheMonth') !== '*') {
-        //     this.cron_period = 'month';
-        // } else if (cron_str.get('dayOfTheWeek') !== '*') {
-        //     this.cron_period = 'week';
-        // } else if (cron_str.get('hour') !== '*') {
-        //     this.cron_period = 'day';
-        // } else if (cron_str.get('minute') !== '*') {
-        //     this.cron_period = 'hour';
-        // } else {
-        //     this.cron_period = 'minute';
-        // }
     }
 }

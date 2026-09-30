@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceModule } from '@placeos/ts-client';
@@ -98,7 +99,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
     imports: [
         DebugOutputComponent,
         IconComponent,
-        IconComponent,
+        MatRippleModule,
         TranslatePipe,
         MatTooltipModule,
         RouterModule,

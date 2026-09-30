@@ -31,6 +31,11 @@ const VALID_INPUT = [
     'ArrowUp',
     'ArrowDown',
     'Delete',
+    'Tab',
+    'Home',
+    'End',
+    'Enter',
+    'Escape',
 ];
 function listPattern(fieldPattern) {
     // One instance of `fieldPattern` plus any number of `,fieldPattern`
@@ -120,7 +125,7 @@ export class CronInputFieldComponent implements ControlValueAccessor {
         this.validatePattern(
             path.day,
             listPattern(
-                '(?:\\*(?:/\\d{1,2})?|(?:[1-9]|[12]\\d|3[01])(?:-(?:[1-9]|[12]d|3[01]))?(?:/\\d{1,2})?)',
+                '(?:\\*(?:/\\d{1,2})?|(?:[1-9]|[12]\\d|3[01])(?:-(?:[1-9]|[12]\\d|3[01]))?(?:/\\d{1,2})?)',
             ),
         );
         this.validatePattern(
@@ -176,7 +181,9 @@ export class CronInputFieldComponent implements ControlValueAccessor {
     }
 
     public preventInvalidCharacters(event: KeyboardEvent): void {
-        if (this.disabled()) event.preventDefault();
+        if (this.disabled()) return event.preventDefault();
+        // Allow shortcuts such as copy, paste and select all
+        if (event.ctrlKey || event.metaKey || event.altKey) return;
         if (!VALID_INPUT.includes(event.key)) event.preventDefault();
     }
 

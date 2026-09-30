@@ -60,8 +60,9 @@ export class SettingsService extends AsyncHandler {
         (this._signals[name] as WritableSignal<T>).set(value);
     }
 
+    /** Read the value for key. Tracks the key even before it is posted. */
     public value<T = unknown>(name: string): T {
-        return !this._signals[name] ? null : (this._signals[name]() as T);
+        return this.listen<T>(name)();
     }
 
     /** Page title */

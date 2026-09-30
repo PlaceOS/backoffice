@@ -37,10 +37,11 @@ interface DateItem {
         <div class="p-2">
             <div class="flex items-center justify-between">
                 <div class="pr-2 pl-1.5 font-medium">
-                    {{ date_list()[6]?.id || date() | date: 'LLLL YYYY' }}
+                    {{ date_list()[6]?.id || date() | date: 'LLLL yyyy' }}
                 </div>
                 <div class="flex items-center">
                     <button
+                        type="button"
                         icon
                         matRipple
                         name="schedule-next-month"
@@ -53,6 +54,7 @@ interface DateItem {
                         <icon>chevron_left</icon>
                     </button>
                     <button
+                        type="button"
                         icon
                         matRipple
                         name="schedule-previous-month"
@@ -78,6 +80,7 @@ interface DateItem {
             <div class="flex flex-wrap items-center justify-between">
                 @for (day of date_list(); track day) {
                     <button
+                        type="button"
                         icon
                         name="schedule-set-date"
                         class="relative my-0.5 h-9 w-9 min-w-[14%] overflow-visible"

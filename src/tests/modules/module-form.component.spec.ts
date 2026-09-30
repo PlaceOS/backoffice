@@ -161,6 +161,40 @@ describe('creating a module', () => {
         );
     });
 
+    it('should keep user edits after applying driver defaults', async () => {
+        const instance = fixture.componentInstance;
+        instance.formModel.update((value) => ({
+            ...value,
+            driver: {
+                id: 'driver-device',
+                name: 'Device driver',
+                role: PlaceDriverRole.Device,
+                default_uri: 'tcp://default',
+                default_port: 4999,
+            } as PlaceDriver,
+        }));
+        await fixture.whenStable();
+        expect(instance.formModel()).toMatchObject({
+            driver_id: 'driver-device',
+            name: 'Device driver',
+            uri: 'tcp://default',
+            port: 4999,
+        });
+
+        instance.formModel.update((value) => ({
+            ...value,
+            name: 'Custom',
+            uri: 'tcp://custom',
+            port: 1234,
+        }));
+        await fixture.whenStable();
+        expect(instance.formModel()).toMatchObject({
+            name: 'Custom',
+            uri: 'tcp://custom',
+            port: 1234,
+        });
+    });
+
     it.each([
         PlaceDriverRole.Device,
         PlaceDriverRole.SSH,

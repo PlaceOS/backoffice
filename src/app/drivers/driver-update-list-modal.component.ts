@@ -180,6 +180,8 @@ export class DriverUpdateListModalComponent {
             response.data = response.data.sort((a, b) =>
                 a.name.localeCompare(b.name),
             );
+            // Keep total in sync with the filtered list for select all
+            response.total = response.data.length;
             this.selected_drivers.set(response.data.map((d) => d.id));
             this.loading.set('');
             return response;

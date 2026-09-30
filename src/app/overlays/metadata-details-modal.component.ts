@@ -1,5 +1,5 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, OnInit, WritableSignal, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { form, FormField, required, submit, validate } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -18,8 +18,8 @@ import type { MetadataFormModel } from '../ui/metadata-display.component';
 export interface MetadataDetailsModalData {
     value: MetadataFormModel;
     existing_names: string[];
+    /** Called with the new details. The caller tracks its own changes. */
     update: (value: MetadataFormModel) => void;
-    change: WritableSignal<number>;
 }
 
 @Component({
@@ -172,7 +172,6 @@ export class MetadataDetailsModalComponent implements OnInit {
         await submit(this.form, async () => undefined);
         if (this.form().invalid()) return;
         this._data.update({ ...this._data.value, ...this.formModel() });
-        this._data.change.set(Date.now());
         this._dialog_ref.close();
     }
 }

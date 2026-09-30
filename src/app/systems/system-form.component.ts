@@ -667,6 +667,7 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
+        if (this.loading()) return;
         await submit(this.form, async () => {
             const item = this._data.item as unknown as PlaceResource;
             this.loading.set(i18n(`${this._name}.SAVING`));

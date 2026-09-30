@@ -94,8 +94,11 @@ export class ModuleStateService {
     }
 
     public async toggleModuleState() {
-        const method = this.active_item.running ? stopModule : startModule;
-        const error = await method(this.active_item.id)
+        // Capture before the await as the active module may change
+        const item = this.active_item as PlaceModule & { running: boolean };
+        const running = item.running;
+        const method = running ? stopModule : startModule;
+        const error = await method(item.id)
             .then(() => null)
             .catch((err) => err);
         if (error) {
@@ -103,9 +106,9 @@ export class ModuleStateService {
                 notifyError(error);
             } else {
                 notifyError(
-                    `Failed to ${
-                        this.active_item.running ? 'stop' : 'start'
-                    } device '${this.active_item.id}'.\nView Error?`,
+                    `Failed to ${running ? 'stop' : 'start'} device '${
+                        item.id
+                    }'.\nView Error?`,
                     'View',
                     () => this.viewDetails(error),
                 );
@@ -113,12 +116,9 @@ export class ModuleStateService {
             return;
         }
         notifySuccess(
-            `Module successfully ${
-                this.active_item.running ? 'stopped' : 'started'
-            }`,
+            `Module successfully ${running ? 'stopped' : 'started'}`,
         );
-        (this.active_item as PlaceModule & { running: boolean }).running =
-            !this.active_item.running;
+        item.running = !running;
     }
 
     /** View Results of the execute */

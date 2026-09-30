@@ -430,7 +430,11 @@ export class StaffTenantModalComponent {
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;
     public readonly loading = signal('');
-    public readonly show_outlook = model(false);
+    // The backend stores a cleared config as `{ app_id: '' }`, so check app_id
+    public readonly show_outlook = model(
+        !!((this.tenant || {}) as { outlook_config?: HashMap }).outlook_config
+            ?.app_id,
+    );
     public readonly name_map = FIELD_NAME_MAPPING;
     public readonly outlook_fields = [
         'app_id',
@@ -578,6 +582,9 @@ export class StaffTenantModalComponent {
             },
             ['', null, undefined],
         );
+        // staff-api ignores null, so send an empty config to clear it.
+        // It is stored as `{ app_id: '' }`, which reads as off.
+        if (!this.show_outlook()) data.outlook_config = {};
         const call = this.tenant?.id
             ? put(`/api/staff/v1/tenants/${this.tenant.id}`, data)
             : post('/api/staff/v1/tenants', data);

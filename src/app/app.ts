@@ -1,13 +1,18 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+    Component,
+    computed,
+    DestroyRef,
+    inject,
+    OnInit,
+    signal,
+} from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SwUpdate } from '@angular/service-worker';
-import { initUploads } from '@placeos/cloud-uploads';
 import {
     get,
     invalidateToken,
     isMock,
-    isOnline,
-    token,
+    onlineState,
 } from '@placeos/ts-client';
 
 import {
@@ -16,25 +21,46 @@ import {
     Router,
     RouterOutlet,
 } from '@angular/router';
-import { addDays, format, getUnixTime } from 'date-fns';
 import { setupCache, updateAvailable } from './common/application';
 import { AsyncHandler } from './common/async-handler.class';
 import { detectIE, log } from './common/general';
 import { setNotifyOutlet } from './common/notifications';
 import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
 import { SettingsService } from './common/settings.service';
-import { waitForSignalValue } from './common/signals';
+import { signalFromClient, waitForSignalValue } from './common/signals';
+import { syncUploadToken } from './common/uploads';
 import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceTenant } from './admin/staff-api.component';
-import { LocaleService, setTranslationService } from './common/locale.service';
+import { tenantExpiryBanner } from './admin/staff-api.utilities';
+import {
+    localeFromUrl,
+    LocaleService,
+    setTranslationService,
+} from './common/locale.service';
 import { GlobalBannerComponent } from './ui/global-banner.component';
 import { GlobalLoadingComponent } from './ui/global-loading.component';
 import { IconComponent } from './ui/icon.component';
 import { UploadListComponent } from './ui/upload-list.component';
+
+/** Longest time start up waits for translations */
+const LOCALE_TIMEOUT_MS = 5000;
+
+/** Signal of the browser's network state. Call in an injection context. */
+function browserOnline() {
+    const state = signal(navigator.onLine);
+    const update = () => state.set(navigator.onLine);
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    inject(DestroyRef).onDestroy(() => {
+        window.removeEventListener('online', update);
+        window.removeEventListener('offline', update);
+    });
+    return state.asReadonly();
+}
 
 @Component({
     selector: 'placeos-root',
@@ -68,7 +94,7 @@ import { UploadListComponent } from './ui/upload-list.component';
             }
         </div>
         <global-loading />
-        @if (!online && !loading()) {
+        @if (!online() && !loading()) {
             <div
                 class="bg-error text-error-content fixed bottom-2 left-1/2 z-9999 -translate-x-1/2 rounded-3xl px-4 py-2 text-xs shadow-sm"
             >
@@ -143,9 +169,12 @@ export class AppComponent extends AsyncHandler implements OnInit {
         return this._users.dark_mode;
     }
 
-    public get online() {
-        return isOnline();
-    }
+    private readonly _client_online = signalFromClient(onlineState());
+    private readonly _browser_online = browserOnline();
+    /** Whether PlaceOS is reachable. ts-client only flags auth failures, so also track the network. */
+    public readonly online = computed(
+        () => this._client_online() && this._browser_online(),
+    );
 
     public get is_fools_day(): boolean {
         return false;
@@ -186,16 +215,12 @@ export class AppComponent extends AsyncHandler implements OnInit {
         this.timeout('wait_for_user', () => this.onInitError(), 30 * 1000);
         await waitForSignalValue(this._users.initialised, (_) => _);
         this.clearTimeout('wait_for_user');
+        setLoadingMessage('Initialising locales...');
+        // TranslatePipe is pure, so load translations before the shell renders
+        await this._initLocale();
         this.loading.set(false);
         setLoadingMessage('Initialising upload service...');
-        this.timeout('init_uploads', () => {
-            initUploads({
-                auto_start: true,
-                token: token(),
-                endpoint: '/api/engine/v2/uploads',
-                worker_url: 'assets/md5_worker.js',
-            });
-        });
+        this.timeout('init_uploads', () => syncUploadToken());
         // this.interval(
         //     'dark-mode',
         //     () =>
@@ -212,8 +237,6 @@ export class AppComponent extends AsyncHandler implements OnInit {
         });
         setLoadingMessage('Checking staff tenants...');
         this._checkTenants();
-        setLoadingMessage('Initialising locales...');
-        this._initLocale();
     }
 
     private onInitError() {
@@ -224,45 +247,45 @@ export class AppComponent extends AsyncHandler implements OnInit {
         location.reload();
     }
 
+    /** Show one banner for staff tenants with expiring secrets */
     private async _checkTenants() {
         if (!currentUser()?.sys_admin) return;
-        const tenant_list: PlaceTenant[] = (
-            await get('/api/staff/v1/tenants')
-        ).map((_) => Object.keys(_).map((i) => _[i] as PlaceTenant));
-        for (const tenant of tenant_list) {
-            if (!tenant.secret_expiry) continue;
-            if (tenant.secret_expiry > getUnixTime(addDays(Date.now(), -30))) {
-                this._settings.post('banner', {
-                    id: `tenant_secret_expiry-${tenant.id}`,
-                    type: 'warn',
-                    content: `Staff API Tenant "${
-                        tenant.name
-                    }" has a secret that will expire on ${format(
-                        tenant.secret_expiry * 1000,
-                        "MMM do 'at' h:mma",
-                    )}.`,
-                });
-            }
-        }
+        const tenants = await get('/api/staff/v1/tenants').catch(() => []);
+        const banner = tenantExpiryBanner(
+            Array.isArray(tenants) ? (tenants as PlaceTenant[]) : [],
+        );
+        if (banner) this._settings.post('banner', banner);
     }
 
-    private _initLocale() {
+    /**
+     * Set the locale from the URL `lang` param, storage or the browser languages.
+     * Resolves when translations load, or after a timeout.
+     */
+    private async _initLocale() {
+        let load: Promise<void> | undefined;
         try {
+            // Router query params are not ready yet, so read lang from the URL
+            const url_locale = localeFromUrl(location.search, location.hash);
+            if (url_locale) {
+                localStorage.setItem('BACKOFFICE.locale', url_locale);
+            }
             let locale = localStorage.getItem('BACKOFFICE.locale');
             const locales = (this._settings.get('app.locales') as {
                 id: string;
                 name: string;
             }[]) || [{ id: 'en', name: 'English' }];
             if (locale) {
-                this._locale?.setLocale(locale);
+                load = this._locale?.setLocale(locale);
             } else {
-                const list = navigator.languages;
+                const list = navigator.languages || [];
                 for (const lang of list) {
                     locale = locales.find((_) => _.id === lang)?.id;
                     if (!locale)
                         locale = locales.find((_) => lang.includes(_.id))?.id;
+                    // Load the full browser tag (e.g. en-US), not the matched id,
+                    // as locale files use full tags.
                     if (locale) {
-                        this._locale?.setLocale(lang);
+                        load = this._locale?.setLocale(lang);
                         localStorage.setItem('BACKOFFICE.locale', lang);
                         break;
                     }
@@ -271,5 +294,11 @@ export class AppComponent extends AsyncHandler implements OnInit {
         } catch {
             // Ignore locale parsing errors
         }
+        if (!load) return;
+        // Do not block start up on a slow or failed locale file
+        await Promise.race([
+            load.catch(() => undefined),
+            new Promise((resolve) => setTimeout(resolve, LOCALE_TIMEOUT_MS)),
+        ]);
     }
 }

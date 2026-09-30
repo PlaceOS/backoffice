@@ -46,7 +46,11 @@ export interface TriggerConditionData {
             (save)="save()"
         >
             @if (form) {
-                <form trigger-condition class="flex flex-col">
+                <form
+                    trigger-condition
+                    class="flex flex-col"
+                    (submit)="$event.preventDefault()"
+                >
                     @if (form.condition_type) {
                         <div class="field">
                             <label for="type">

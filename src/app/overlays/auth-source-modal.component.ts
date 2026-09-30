@@ -62,6 +62,7 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
                 ) | translate
             "
             [loading]="loading()"
+            [disable_confirm]="!item()"
             (save)="save()"
         >
             @if (is_new) {
@@ -224,6 +225,8 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
      * Create item if new or update if exsiting
      */
     public async save() {
+        // Nothing to save until a source type is chosen
+        if (!this.item()) return;
         if (!(await this.submitActiveForm())) {
             return;
         }

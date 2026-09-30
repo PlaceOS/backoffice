@@ -8,7 +8,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get, PlaceDomain } from '@placeos/ts-client';
-import { addDays, getUnixTime, startOfDay } from 'date-fns';
 import { escapeHtml } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
@@ -19,6 +18,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
 import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 import { StaffTenantModalComponent } from './staff-tenant-modal.component';
+import { isSecretExpired, isSecretExpiring } from './staff-api.utilities';
 
 export interface PlaceTenant {
     id: string;
@@ -202,17 +202,9 @@ export class PlaceStaffAPIComponent implements OnInit {
     public readonly domain = this._admin_data.selectedDomain('staff-api');
     public readonly tenants = signal<PlaceTenant[]>([]);
 
-    public expiring(tenant: PlaceTenant): boolean {
-        const expiry = tenant.secret_expiry;
-        const after_time = getUnixTime(startOfDay(addDays(Date.now(), -30)));
-        return expiry && expiry >= after_time;
-    }
-
-    public expired(tenant: PlaceTenant): boolean {
-        const expiry = tenant.secret_expiry;
-        const after_time = getUnixTime(Date.now());
-        return expiry && expiry >= after_time;
-    }
+    public readonly expiring = (tenant: PlaceTenant) =>
+        isSecretExpiring(tenant);
+    public readonly expired = (tenant: PlaceTenant) => isSecretExpired(tenant);
 
     public async ngOnInit() {
         this.loading.set('Loading domains...');

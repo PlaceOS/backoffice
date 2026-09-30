@@ -10,12 +10,20 @@ import { RouterModule } from '@angular/router';
 import { addSystem, query, querySystemsWithEmails } from '@placeos/ts-client';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
-import { notifySuccess, notifyWarn } from '../common/notifications';
+import {
+    notifyError,
+    notifySuccess,
+    notifyWarn,
+} from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
+import { forEachWithLimit } from './signage-plugins/signage-plugins.utilities';
+
+/** Max number of systems created at once */
+const IMPORT_LIMIT = 5;
 
 export interface ExternalResource {
     id: string;
@@ -227,38 +235,68 @@ export class ResourceImportsComponent implements OnInit {
 
         if (resp?.reason !== 'done') return;
         resp.loading(i18n('ADMIN.RESOURCE_IMPORTS_ALL_LOADING'));
-        try {
-            await Promise.all(
-                missing.map((_) => this.importResource(_, false)),
+        let failed = 0;
+        await forEachWithLimit(missing, IMPORT_LIMIT, async (resource) => {
+            if (!(await this.importResource(resource, false))) failed += 1;
+        });
+        resp.close();
+        if (failed) {
+            notifyError(
+                i18n('ADMIN.RESOURCE_IMPORTS_ALL_ERROR', { count: failed }),
             );
-        } finally {
-            resp.close();
         }
-        notifySuccess(
-            i18n('ADMIN.RESOURCE_IMPORTS_ALL_SUCCESS', {
-                count: missing.length,
-            }),
-        );
+        if (missing.length > failed) {
+            notifySuccess(
+                i18n('ADMIN.RESOURCE_IMPORTS_ALL_SUCCESS', {
+                    count: missing.length - failed,
+                }),
+            );
+        }
     }
 
-    public async importResource(resource: ExternalResource, notify = true) {
+    /**
+     * Create a system for the resource.
+     * Returns whether the import succeeded.
+     */
+    public async importResource(
+        resource: ExternalResource,
+        notify = true,
+    ): Promise<boolean> {
         const domain = this.domain();
-        if (!domain) return;
+        if (!domain) return false;
         const system = await addSystem({
             name: `[${domain.name}] ${resource.display_name}`,
             email: resource.email,
             display_name: resource.display_name,
             capacity: resource.capacity,
+        }).catch((error) => {
+            if (notify) {
+                notifyError(
+                    i18n('ADMIN.RESOURCE_IMPORTS_ERROR', {
+                        name: resource.display_name,
+                        error: error?.message || error,
+                    }),
+                );
+            }
+            return null;
         });
-        if (!system) return;
-        resource.system_id = system.id;
-        resource.imported = true;
-        if (!notify) return;
-        notifySuccess(
-            i18n('ADMIN.RESOURCE_IMPORTS_SUCCESS', {
-                name: resource.display_name,
-            }),
+        if (!system) return false;
+        // Replace the row so the zoneless table updates
+        this.resource_list.update((list) =>
+            list.map((item) =>
+                item.email === resource.email
+                    ? { ...item, system_id: system.id, imported: true }
+                    : item,
+            ),
         );
+        if (notify) {
+            notifySuccess(
+                i18n('ADMIN.RESOURCE_IMPORTS_SUCCESS', {
+                    name: resource.display_name,
+                }),
+            );
+        }
+        return true;
     }
 
     public async loadResourceList() {

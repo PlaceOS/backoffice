@@ -173,6 +173,8 @@ export class DriversComponent {
     constructor() {
         effect(() => {
             const item = this.item();
+            // Reload the count after a module is removed
+            this._drivers.modules_change();
             this.device_count.set(undefined);
             this.loadValues(item);
         });

@@ -45,7 +45,7 @@ import { ZonesStateService } from './zones-state.service';
                         content: name_template,
                     },
                     {
-                        key: 'installed_ui_devices',
+                        key: 'module_count',
                         name: 'ZONES.SYSTEMS_FIELD_MODULE_COUNT' | translate,
                         size: '10rem',
                     },
@@ -108,7 +108,10 @@ export class ZoneSystemsComponent {
 
     public readonly systems = computed(() => {
         const filter = this.filter().toLowerCase();
-        const systems = this._systems();
+        const systems = this._systems().map((sys) => ({
+            ...sys,
+            module_count: sys.modules?.length || 0,
+        }));
         return !filter
             ? systems
             : systems.filter((sys) => sys.name.toLowerCase().includes(filter));

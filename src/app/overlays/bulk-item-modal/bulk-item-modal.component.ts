@@ -239,6 +239,8 @@ export class BulkItemModalComponent<
             });
             this.goTo('list');
         } else {
+            // A new file may have different columns, so drop old mappings
+            this.mappings = {};
             this.data_list = data;
             this.goTo('match-fields');
         }
@@ -255,11 +257,14 @@ export class BulkItemModalComponent<
             notifyWarn('Duplicate values were found. Saving will continue.');
         }
         this.loading = true;
+        // Keep the dialog open while items are being created
+        this._dialog_ref.disableClose = true;
         this.goTo('status');
     }
 
     public done() {
         this.loading = false;
+        this._dialog_ref.disableClose = false;
     }
 
     public close() {

@@ -101,7 +101,6 @@ export class DiffViewerComponent
 
     private _updateModel() {
         if (!this._editor) return;
-        this.unsub('models');
         const m_model = monaco.editor.createModel(
             this.modified(),
             'text/plain',
@@ -110,13 +109,14 @@ export class DiffViewerComponent
             this.original(),
             'text/plain',
         );
-        this.subscription('models', () => {
-            m_model.dispose();
-            o_model.dispose();
-        });
         this._editor.setModel({
             original: o_model,
             modified: m_model,
+        });
+        // Replacing the subscription disposes the old models, after the editor lets go of them
+        this.subscription('models', () => {
+            m_model.dispose();
+            o_model.dispose();
         });
     }
 }

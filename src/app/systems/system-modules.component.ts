@@ -1,4 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+    Component,
+    computed,
+    effect,
+    inject,
+    signal,
+    untracked,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -393,6 +400,7 @@ export class SystemModulesComponent extends AsyncHandler {
     public readonly item_signal = computed(
         () => this._service.item() as PlaceSystem,
     );
+    private readonly _item_id = computed(() => this.item_signal()?.id);
     public readonly loading = this._service.loading;
     public readonly modules = this._service.modules;
     public readonly modules_refresh = computed(() => {
@@ -498,10 +506,10 @@ export class SystemModulesComponent extends AsyncHandler {
         );
     /** Function for excluding modules already within this system */
     public readonly exclude_fn = (
-        item: PlaceModule & { control_system_id?: string; role?: number },
+        item: PlaceModule & { role?: number },
         __: string,
     ) =>
-        item.control_system_id === this.item.id ||
+        !!this.item.modules?.includes(item.id) ||
         item.role === PlaceDriverRole.Logic;
 
     public readonly newModule = () => this._service.newModule();
@@ -528,6 +536,15 @@ export class SystemModulesComponent extends AsyncHandler {
                 return i18n('DRIVERS.LOGIC');
         }
         return `${i18n('DRIVERS.UNKNOWN')} (${role})`;
+    }
+
+    constructor() {
+        super();
+        // Tab is reused across systems. Drop the pending module on change.
+        effect(() => {
+            this._item_id();
+            untracked(() => this.new_module.set(''));
+        });
     }
 
     public get item(): PlaceSystem {

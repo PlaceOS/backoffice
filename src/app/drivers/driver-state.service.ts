@@ -8,7 +8,7 @@ import {
     queryModules,
     recompileDriver,
     reloadDriver,
-    removeSystemModule,
+    removeModule,
     updateDriver,
 } from '@placeos/ts-client';
 import { ActiveItemService } from '../common/item.service';
@@ -26,12 +26,15 @@ export class DriverStateService {
     private _loading = signal(false);
     private _last_error = signal<HashMap>(null);
     private _poll = signal(0);
+    private _modules_change = signal(0);
 
     public readonly item = computed(
         () => this._state.item() as unknown as PlaceDriver,
     );
 
     public readonly loading = this._loading.asReadonly();
+    /** Bumped each time a module of the driver is removed */
+    public readonly modules_change = this._modules_change.asReadonly();
 
     private readonly _updates_available = resource({
         params: () => this._poll(),
@@ -40,7 +43,7 @@ export class DriverStateService {
                 update_available: true,
                 limit: 1,
             }).catch(() => ({ total: 0 }));
-            return response.total > 1;
+            return response.total > 0;
         },
     });
 
@@ -49,8 +52,8 @@ export class DriverStateService {
     );
 
     private readonly _modules = resource({
-        params: () => this.item(),
-        loader: async ({ params: item }) => {
+        params: () => ({ item: this.item(), changed: this._modules_change() }),
+        loader: async ({ params: { item } }) => {
             if (!(item instanceof PlaceDriver)) return [] as PlaceModule[];
             this._loading.set(true);
             try {
@@ -80,6 +83,7 @@ export class DriverStateService {
     });
 
     public readonly docs = computed(() => this._docs.value() || '');
+    public readonly docs_loading = computed(() => this._docs.isLoading());
 
     public get active_item() {
         return this._state.active_item;
@@ -113,12 +117,15 @@ export class DriverStateService {
         );
         if (details.reason !== 'done') return details.close();
         details.loading('Updating driver...');
-        const success = await updateDriver(item.id, {
+        const updated = await updateDriver(item.id, {
             ...item,
             commit: item.update_info.commit,
         }).catch(() => null);
-        if (!success) {
+        if (!updated) {
             notifyError('Failed to update driver.');
+        } else {
+            this._state.replaceItem(updated as unknown as Identity);
+            this._poll.update((poll) => poll + 1);
         }
         details.close();
     }
@@ -177,29 +184,29 @@ export class DriverStateService {
         const details = await openConfirmModal(
             {
                 title: 'Remove module?',
-                content: `Remove ${device.driver_id}?<br>`,
+                content: `Remove ${device.custom_name || device.name || device.id}?<br>`,
                 extra: [
                     'error',
-                    'Note that all associated data be deleted immediatedly.',
+                    'Note that all associated data be deleted immediately.',
                 ],
                 icon: { type: 'icon', content: 'delete' },
             },
             this._dialog,
         );
         if (details.reason !== 'done') return;
-        const system = await removeSystemModule(
-            this.active_item.id,
-            device.id,
-        ).catch((err) => {
-            notifyError(
-                `Error removing module ${device.id}. Error: ${
-                    err.statusText || err.message || err
-                }`,
-            );
-        });
+        const removed = await removeModule(device.id)
+            .then(() => true)
+            .catch((err) => {
+                notifyError(
+                    `Error removing module ${device.id}. Error: ${
+                        err.statusText || err.message || err
+                    }`,
+                );
+                return false;
+            });
         details.close();
-        if (!system) return;
-        this._state.replaceItem(system as unknown as Identity);
+        if (!removed) return;
+        this._modules_change.update((change) => change + 1);
         notifySuccess(`Successfully removed module.`);
     }
 }

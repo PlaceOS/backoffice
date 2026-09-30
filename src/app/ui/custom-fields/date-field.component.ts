@@ -34,6 +34,7 @@ export enum TimezoneDiffRange {
     selector: 'a-date-field',
     template: `
         <button
+            type="button"
             class="border-neutral flex h-12 w-full items-center justify-between rounded-sm border"
             customTooltip
             [content]="calendar_picker"

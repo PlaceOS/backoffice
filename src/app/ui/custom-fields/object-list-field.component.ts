@@ -47,6 +47,7 @@ import { TranslatePipe } from '../translate.pipe';
                             </div>
                         }
                         <button
+                            type="button"
                             icon
                             matRipple
                             class="border-error text-error h-12 w-12 rounded-sm border"

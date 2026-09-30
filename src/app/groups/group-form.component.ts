@@ -10,7 +10,7 @@ import {
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { disabled, form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -252,7 +252,11 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
     @Output() public event = new EventEmitter<DialogEvent>();
 
     public readonly formModel = signal(generateGroupFormModel(this._data.item));
-    public readonly form = form(this.formModel, applyGroupFormSchema);
+    public readonly form = form(this.formModel, (path) => {
+        applyGroupFormSchema(path);
+        // Domain is fixed once the group exists, matching the user form
+        disabled(path.authority_id, () => !!this._data.item.id);
+    });
     public readonly loading = signal<string | null>(null);
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,

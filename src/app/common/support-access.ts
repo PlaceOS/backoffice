@@ -77,7 +77,8 @@ export function canAccessSection(section: string) {
     return false;
 }
 
-async function collectPages<T>(response: QueryResponse<T>) {
+/** Load every page of a query. Throws after 1000 extra pages. */
+export async function collectPages<T>(response: QueryResponse<T>) {
     let page = await response;
     const data = [...page.data];
     for (let i = 0; page.next && i < 1000; i++) {

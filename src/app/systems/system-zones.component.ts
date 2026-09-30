@@ -1,4 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+    Component,
+    computed,
+    effect,
+    inject,
+    signal,
+    untracked,
+} from '@angular/core';
 import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
 import { querySupportZones as queryZones } from '../common/support-access';
 
@@ -177,13 +184,14 @@ import { SystemStateService } from './system-state.service';
 export class SystemZonesComponent {
     private _service = inject(SystemStateService);
 
-    public order_changed = false;
+    public readonly order_changed = signal(false);
 
     public show_original = false;
 
     public readonly original_zones = this._service.zones;
 
     public readonly item_signal = this._service.item;
+    private readonly _item_id = computed(() => this.item_signal()?.id);
 
     public changed: Record<string, boolean> = {};
     /** ID of a zone that the user wishes to add to the system */
@@ -212,7 +220,7 @@ export class SystemZonesComponent {
                 this.changed[item.id] ||
                 pending.find((_) => _.id === item.id)
             ) {
-                colours[index] = 'var(--wal)';
+                colours[index] = 'var(--warn-light)';
             }
         });
         return colours;
@@ -236,7 +244,7 @@ export class SystemZonesComponent {
     });
 
     public readonly has_changes = computed(
-        () => this.pending_zones().length > 0 || this.order_changed,
+        () => this.pending_zones().length > 0 || this.order_changed(),
     );
 
     /** Query function for systems */
@@ -267,7 +275,7 @@ export class SystemZonesComponent {
         const zone_order = this.zone_order();
         if (zones.every(({ id }, idx) => zone_order[idx] === id)) return;
         await this._service.reorderZones(zone_order);
-        this.order_changed = false;
+        this.order_changed.set(false);
         this.changed = {};
         this.zone_order.set([]);
     };
@@ -278,10 +286,18 @@ export class SystemZonesComponent {
     }
 
     public clearChanges() {
-        this.order_changed = false;
+        this.order_changed.set(false);
         this.changed = {};
         this.zone_order.set([]);
         this.pending_zones.set([]);
+    }
+
+    constructor() {
+        // Tab is reused across systems. Drop unsaved changes on system change.
+        effect(() => {
+            this._item_id();
+            untracked(() => this.clearChanges());
+        });
     }
 
     public get item(): PlaceSystem {
@@ -291,8 +307,8 @@ export class SystemZonesComponent {
     public async reorder([previous, current]: [number, number]) {
         const zones = [...this.zones()];
         moveItemInArray(zones, previous, current);
-        this.changed[zones[previous].id] = true;
+        this.changed[zones[current].id] = true;
         this.zone_order.set(zones.map(({ id }) => id));
-        this.order_changed = true;
+        this.order_changed.set(true);
     }
 }

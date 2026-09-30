@@ -664,7 +664,7 @@ export class SystemStateService extends AsyncHandler {
     public async removeModule(device: PlaceModule) {
         const details = await this.confirm({
             title: 'Remove module?',
-            content: `Remove ${device.driver_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
+            content: `Remove ${device.custom_name || device.name || device.id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
             icon: { type: 'icon', content: 'delete' },
         });
         if (details.reason !== 'done') return;

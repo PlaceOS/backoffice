@@ -1076,6 +1076,8 @@
         "RESOURCE_IMPORTS_ALL_LOADING": "Importing missing resources...",
         "RESOURCE_IMPORTS_ALL_SUCCESS": "Successfully imported {{ count }} resources.",
         "RESOURCE_IMPORTS_SUCCESS": "Successfully imported resource {{ name }}.",
+        "RESOURCE_IMPORTS_ERROR": "Failed to import resource {{ name }}. Error: {{ error }}",
+        "RESOURCE_IMPORTS_ALL_ERROR": "Failed to import {{ count }} resources.",
         "EXTENSIONS_HEADER": "Extensions",
         "EXTENSIONS_ADD": "Add Extension",
         "EXTENSIONS_NEW": "New Extension",

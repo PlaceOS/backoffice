@@ -53,8 +53,8 @@ import { TriggerStateService } from './trigger-state.service';
         <ng-template #state_template let-row="row">
             <div
                 class="mx-auto h-2 w-2 rounded-full"
-                [class.bg-base-content]="!row.bookable"
-                [class.bg-success]="row.bookable"
+                [class.bg-base-content]="!row.enabled"
+                [class.bg-success]="row.enabled"
             ></div>
         </ng-template>
         <ng-template #name_template let-row="row">
@@ -83,7 +83,7 @@ import { TriggerStateService } from './trigger-state.service';
                     error
                     matRipple
                     [matTooltip]="'TRIGGERS.DELETE_INSTANCE' | translate"
-                    (click)="deleteTrigger(item)"
+                    (click)="deleteTrigger(row)"
                 >
                     <icon>delete</icon>
                 </button>

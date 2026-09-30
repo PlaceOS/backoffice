@@ -295,9 +295,10 @@ export class PlaceClusterTaskListComponent
         const clusters = await queryClusters({
             q: id,
         } as Record<string, string>).then((_) => _.data);
-        const match = clusters.find((_) => _.id === id) || clusters[0];
-        console.log('Clusters:', clusters);
+        // The search may return other clusters, so only accept an exact id
+        const match = clusters.find((_) => _.id === id) || null;
         this.cluster.set(match);
+        if (!match) this.process_list.set([]);
         this.updateProcessList();
     }
 
