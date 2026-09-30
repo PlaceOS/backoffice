@@ -83,13 +83,17 @@ import { TriggerStateService } from './trigger-state.service';
         <hr class="my-4" />
         <div class="flex flex-col">
             <label
-                for="driver"
+                for="reference-system"
+                id="reference-system-label"
                 class="max-w-[50%]"
                 [matTooltip]="'TRIGGERS.REFERENCE_SYSTEM_MSG' | translate"
             >
                 {{ 'TRIGGERS.REFERENCE_SYSTEM' | translate }}
             </label>
             <item-search-field
+                id="reference-system"
+                role="group"
+                aria-labelledby="reference-system-label"
                 [placeholder]="'SYSTEMS.SEARCH' | translate"
                 class="w-full"
                 [query_fn]="query_fn"
