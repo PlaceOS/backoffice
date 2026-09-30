@@ -249,7 +249,7 @@ import { TriggerStateService } from './trigger-state.service';
                     },
                 ]"
                 [can_reorder]="true"
-                (ondrop)="confirmReorder('function', $event)"
+                (ondrop)="confirmReorder('mailer', $event)"
                 [empty_message]="'TRIGGERS.ACTION_EMAIL_EMPTY' | translate"
             />
             <ng-template #function_call_template let-row="row">

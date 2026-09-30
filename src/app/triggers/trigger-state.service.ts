@@ -10,7 +10,9 @@ import {
     TriggerTimeCondition,
     listTriggerInstances,
     removeSystemTrigger,
+    showZone,
     updateTrigger,
+    updateZone,
 } from '@placeos/ts-client';
 
 import { escapeHtml } from '../common/general';
@@ -310,12 +312,23 @@ export class TriggerStateService {
         );
         if (details.reason !== 'done') return;
         details.loading(i18n('TRIGGERS.REMOVE_INSTANCE_LOADING', { type }));
-        const method =
-            type === 'zone' ? removeSystemTrigger : removeSystemTrigger;
-        let err: unknown = await method(
-            instance.control_system_id,
-            instance?.id || this.active_item.id,
-        ).catch((_) => ({ error: _ }));
+        // Zone instances come from the zone's trigger list, so remove it there
+        const remove = instance.zone_id
+            ? async () => {
+                  const zone = await showZone(instance.zone_id);
+                  await updateZone(zone.id, {
+                      ...zone,
+                      triggers: (zone.triggers || []).filter(
+                          (id) => id !== this.active_item.id,
+                      ),
+                  });
+              }
+            : () =>
+                  removeSystemTrigger(
+                      instance.control_system_id,
+                      instance?.id || this.active_item.id,
+                  );
+        let err: unknown = await remove().catch((_) => ({ error: _ }));
         details.close();
         if ((err as Record<string, unknown>)?.error) {
             err = (err as Record<string, unknown>).error;

@@ -1,8 +1,8 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { listTriggerInstances, PlaceTrigger } from '@placeos/ts-client';
+import { PlaceTrigger } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
@@ -18,6 +18,7 @@ import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
 import { TranslatePipe } from '../ui/translate.pipe';
+import { TriggerStateService } from './trigger-state.service';
 
 @Component({
     selector: 'new-triggers-view',
@@ -111,11 +112,14 @@ import { TranslatePipe } from '../ui/translate.pipe';
 export class TriggersComponent extends AsyncHandler {
     protected _service = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
+    private _state = inject(TriggerStateService);
 
     public readonly name = 'triggers';
 
     public open_menu = false;
-    public readonly instance_count = signal(0);
+    public readonly instance_count = computed(
+        () => this._state.instances().length,
+    );
     public readonly loading = toSignal(this._service.loading, {
         initialValue: false,
     });
@@ -140,20 +144,4 @@ export class TriggersComponent extends AsyncHandler {
             },
         ].concat(extensionsForItem(this.item(), this.name)),
     );
-
-    constructor() {
-        super();
-        effect(() => {
-            void this.loadValues(this.item() as PlaceTrigger | null);
-        });
-    }
-
-    protected async loadValues(item: PlaceTrigger | null) {
-        if (!item) {
-            this.instance_count.set(0);
-            return;
-        }
-        // Get trigger count
-        this.instance_count.set((await listTriggerInstances(item.id)).length);
-    }
 }

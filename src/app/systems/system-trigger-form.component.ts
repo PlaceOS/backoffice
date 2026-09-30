@@ -205,7 +205,7 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
     );
     public readonly form = form(this.formModel);
     public loading: string;
-    public heading = i18n(`Trigger.${this._data.item.id ? 'EDIT' : 'NEW'}`);
+    public heading = i18n(`TRIGGERS.${this._data.item.id ? 'EDIT' : 'NEW'}`);
     public readonly trigger_state = this.formModel.asReadonly();
 
     /** Playlist names keyed by playlist ID. IDs without a name show the ID. */
@@ -244,6 +244,8 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
+        // Caller sets `loading` while it saves. Ignore repeat submits.
+        if (this.loading) return;
         await submit(this.form, async () => undefined);
         if (this.form().invalid()) {
             return notifyError(
