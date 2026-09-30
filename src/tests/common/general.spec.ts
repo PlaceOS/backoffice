@@ -329,6 +329,43 @@ describe('general.ts utilities', () => {
             expect(result).toEqual([{ name: 'John', age: 30 }]);
         });
 
+        it('should parse CRLF line endings', () => {
+            const csv = 'name,age\r\nJohn,30\r\nJane,25\r\n';
+            expect(parseCSV(csv)).toEqual([
+                { name: 'John', age: 30 },
+                { name: 'Jane', age: 25 },
+            ]);
+        });
+
+        it('should keep newlines inside quoted cells', () => {
+            const csv = 'name,notes\r\nTest,"line 1\r\nline 2\nline 3"\nNext,x';
+            expect(parseCSV(csv)).toEqual([
+                { name: 'Test', notes: 'line 1\r\nline 2\nline 3' },
+                { name: 'Next', notes: 'x' },
+            ]);
+        });
+
+        it('should keep escaped quotes next to separators and newlines', () => {
+            const csv = 'name,quote\n"a,b","say ""hi,\nthere"""';
+            expect(parseCSV(csv)).toEqual([
+                { name: 'a,b', quote: 'say "hi,\nthere"' },
+            ]);
+        });
+
+        it('should round-trip data exported by jsonToCsv', () => {
+            const data = [
+                {
+                    id: 'zone-1',
+                    name: 'Level "1", North',
+                    description: 'Line 1\nLine 2\r\nLine 3',
+                    tags: ['level', 'north'],
+                },
+                { id: 'zone-2', name: 'Level 2', description: '', tags: [] },
+            ];
+            expect(parseCSV(jsonToCsv(data))).toEqual(data);
+            expect(parseCSV(jsonToCsv(data, [], '\t'), '\t')).toEqual(data);
+        });
+
         it('csvToJson should be alias for parseCSV', () => {
             expect(csvToJson).toBe(parseCSV);
         });
