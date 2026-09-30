@@ -10,6 +10,7 @@ import {
     showRepository,
 } from '@placeos/ts-client';
 
+import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
@@ -46,7 +47,7 @@ export class RepositoriesStateService {
             try {
                 return await listRepositoryDrivers(item.id, { limit: 2000 });
             } catch (err) {
-                this._driver_list_error.set(this._errorMessage(err));
+                this._driver_list_error.set(describeError(err));
                 return [];
             } finally {
                 this._loading.set(false);
@@ -102,7 +103,7 @@ export class RepositoriesStateService {
                     count: 1,
                 } as Record<string, unknown>);
             } catch (err) {
-                this._commit_error.set(this._errorMessage(err));
+                this._commit_error.set(describeError(err));
             }
             return details[0]?.commit || 'HEAD';
         },
@@ -120,11 +121,9 @@ export class RepositoriesStateService {
         ).catch((err) => {
             notifyError(
                 i18n('REPOS.GIT_PULL_ERROR', {
-                    error: JSON.stringify(
-                        err.response ||
-                            err.message ||
-                            i18n('REPOS.GIT_PULL_TIMEOUT'),
-                    ),
+                    error: err
+                        ? describeError(err)
+                        : i18n('REPOS.GIT_PULL_TIMEOUT'),
                 }),
             );
         });
@@ -144,12 +143,5 @@ export class RepositoriesStateService {
                 }),
             },
         });
-    }
-
-    private _errorMessage(err: unknown): string {
-        if (err instanceof Response) return `${err.status} ${err.statusText}`;
-        if (err instanceof Error) return err.message;
-        const error = err as { response?: unknown; message?: unknown };
-        return JSON.stringify(error?.response || error?.message || err);
     }
 }

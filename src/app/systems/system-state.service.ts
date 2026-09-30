@@ -37,15 +37,11 @@ import {
     querySupportSystems as querySystems,
 } from '../common/support-access';
 
+import { describeError, readError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
-import {
-    DialogEvent,
-    FormModalComponent,
-    HashMap,
-    Identity,
-} from '../common/types';
+import { DialogEvent, HashMap, Identity } from '../common/types';
 import {
     ConfirmModalData,
     openConfirmModal,
@@ -134,7 +130,7 @@ export class SystemStateService extends AsyncHandler {
 
     private readonly _module_resource = resource({
         params: () => ({ item: this.item(), changed: this._change() }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item } = params;
             if (!(item instanceof PlaceSystem)) {
                 this._last_module_system = '';
@@ -151,6 +147,10 @@ export class SystemStateService extends AsyncHandler {
                     complete: true,
                     limit: 200,
                 } as Record<string, unknown>).catch(() => ({ data: [] }));
+                // A newer load or another system took over. Leave its state alone.
+                if (abortSignal.aborted || this.item()?.id !== item.id) {
+                    return [] as PlaceModule[];
+                }
                 // Keep known connection state across refreshes. Bindings only
                 // emit on change, so a reset value would never be filled again.
                 const known_state = new Map(
@@ -181,7 +181,7 @@ export class SystemStateService extends AsyncHandler {
                 this._modules.set(modules);
                 return modules;
             } finally {
-                this.setLoading('modules', false);
+                if (!abortSignal.aborted) this.setLoading('modules', false);
             }
         },
     });
@@ -219,9 +219,14 @@ export class SystemStateService extends AsyncHandler {
             try {
                 const response = isSubsystemUser()
                     ? {
-                          data: await Promise.all(
-                              item.zones.map((id) => showZone(id)),
-                          ),
+                          // A zone the user cannot see must not hide the rest
+                          data: (
+                              await Promise.all(
+                                  item.zones.map((id) =>
+                                      showZone(id).catch(() => null),
+                                  ),
+                              )
+                          ).filter((zone) => !!zone),
                       }
                     : await listSystemZones(item.id).catch(() => ({
                           data: [],
@@ -284,11 +289,7 @@ export class SystemStateService extends AsyncHandler {
         const error = await startSystem(this.active_item.id)
             .then(() => null)
             .catch((err) => {
-                notifyError(
-                    `Failed to start system: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
+                notifyError(`Failed to start system: ${describeError(err)}`);
                 return err;
             });
         if (!error) {
@@ -312,11 +313,7 @@ export class SystemStateService extends AsyncHandler {
         const error = await stopSystem(this.active_item.id)
             .then(() => null)
             .catch((err) => {
-                notifyError(
-                    `Failed to stop system: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
-                );
+                notifyError(`Failed to stop system: ${describeError(err)}`);
                 return err;
             });
         if (!error) {
@@ -392,7 +389,7 @@ export class SystemStateService extends AsyncHandler {
                 `Error adding module to system "${
                     (system as PlaceSystem & { display_name?: string })
                         .display_name || system.name
-                }". Error: ${JSON.stringify(_e.response || _e.message || _e)}`,
+                }". Error: ${describeError(_e)}`,
             );
             throw _e;
         });
@@ -425,12 +422,19 @@ export class SystemStateService extends AsyncHandler {
             waitForEvent(ref.afterClosed()),
         ]);
         if (details?.reason !== 'action') return ref.close();
-        const t = await this.addTrigger(
-            ref.componentInstance.item as PlaceTrigger,
-        );
-        ref.close();
-        this.changed();
-        return t;
+        try {
+            const t = await this.addTrigger(
+                ref.componentInstance.item as PlaceTrigger,
+            );
+            this.changed();
+            return t;
+        } catch (err) {
+            notifyError(
+                `Error adding trigger to system. Error: ${describeError(err)}`,
+            );
+        } finally {
+            ref.close();
+        }
     }
 
     public async addTrigger(trigger: PlaceTrigger) {
@@ -454,8 +458,7 @@ export class SystemStateService extends AsyncHandler {
                     external_save: true,
                 },
             });
-            const instance =
-                ref.componentInstance as unknown as FormModalComponent;
+            const instance = ref.componentInstance;
             const details = await Promise.race([
                 waitForEvent(
                     instance.event,
@@ -464,19 +467,18 @@ export class SystemStateService extends AsyncHandler {
                 waitForEvent(ref.afterClosed()),
             ]);
             if (details?.reason !== 'action') return;
-            instance.loading = 'Saving trigger settings...';
+            instance.loading.set('Saving trigger settings...');
 
             const url = `${apiEndpoint()}/systems/${
                 this.active_item.id
             }/triggers/${trigger.id}`;
             const trig = await put(url, details.metadata).catch((err) => {
                 notifyError(
-                    `Error updating trigger settings. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
+                    `Error updating trigger settings. Error: ${describeError(err)}`,
                 );
-                throw err;
+                return null;
             });
+            instance.loading.set('');
             ref.close();
             if (!trig) return trigger;
             notifySuccess(`Successfully updated trigger settings.`);
@@ -493,18 +495,17 @@ export class SystemStateService extends AsyncHandler {
         });
         if (details.reason !== 'done') return;
         details.loading('Removing trigger...');
-        await removeSystemTrigger(this.active_item.id, trigger.id).catch(
-            (err) => {
-                details.close();
-                notifyError(
-                    `Error removing trigger ${trigger.id} from system. Error: ${
-                        err.statusText || err.message || err
-                    }`,
-                );
-                throw err;
-            },
-        );
-        details.close();
+        try {
+            await removeSystemTrigger(this.active_item.id, trigger.id);
+        } catch (err) {
+            return notifyError(
+                `Error removing trigger ${trigger.id} from system. Error: ${await readError(
+                    err,
+                )}`,
+            );
+        } finally {
+            details.close();
+        }
         notifySuccess(`Successfully removed trigger from system.`);
         this.changed();
     }
@@ -524,9 +525,7 @@ export class SystemStateService extends AsyncHandler {
             modules: list,
         }).catch((err) => {
             notifyError(
-                `Failed to reorder system modules: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
+                `Failed to reorder system modules: ${describeError(err)}`,
             );
             return err;
         });
@@ -596,11 +595,7 @@ export class SystemStateService extends AsyncHandler {
             ...this.active_item,
             modules: sorted_ids,
         }).catch((err) => {
-            notifyError(
-                `Failed to sort system modules: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
-            );
+            notifyError(`Failed to sort system modules: ${describeError(err)}`);
             return err;
         });
         details.close();
@@ -624,9 +619,7 @@ export class SystemStateService extends AsyncHandler {
             zones: order,
         }).catch((err) => {
             notifyError(
-                `Failed to reorder system zones: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
+                `Failed to reorder system zones: ${describeError(err)}`,
             );
             return err;
         });
@@ -642,13 +635,17 @@ export class SystemStateService extends AsyncHandler {
      * @param id ID of the module to associate with the active system
      */
     public async joinModule(id: string) {
-        await addSystemModule(this.active_item.id, id).catch((err) => {
-            notifyError(
-                `Error adding module ${id} to system. Error: ${
-                    err.statusText || err.message || err
-                }`,
-            );
-        });
+        const added = await addSystemModule(this.active_item.id, id).catch(
+            (err) => {
+                notifyError(
+                    `Error adding module ${id} to system. Error: ${describeError(
+                        err,
+                    )}`,
+                );
+                return null;
+            },
+        );
+        if (!added) return;
         this.timeout('join', async () => {
             const system = await showSystem(this.active_item.id);
             if (system) this._state.replaceItem(system as unknown as Identity);
@@ -674,19 +671,21 @@ export class SystemStateService extends AsyncHandler {
             device.id,
         ).catch((err) => {
             notifyError(
-                `Error removing module ${device.id} from system. Error: ${
-                    err.statusText || err.message || err
-                }`,
+                `Error removing module ${device.id} from system. Error: ${describeError(
+                    err,
+                )}`,
             );
         });
         details.close();
-        if (system) this._state.replaceItem(system as unknown as Identity);
+        if (!system) return;
+        this._state.replaceItem(system as unknown as Identity);
         notifySuccess(`Successfully removed module from system.`);
     }
 
     /**
      * Add list of zones to the system
      * @param zones List of zones to add
+     * @returns Whether the zones were added
      */
     public async addZones(zone_list: PlaceZone[]) {
         const zones = unique([
@@ -698,13 +697,15 @@ export class SystemStateService extends AsyncHandler {
             zones,
         }).catch((err) => {
             notifyError(
-                `Error adding ${zone_list.length} zone(s) to system. Error: ${
-                    err.statusText || err.message || err
-                }`,
+                `Error adding ${zone_list.length} zone(s) to system. Error: ${describeError(
+                    err,
+                )}`,
             );
         });
-        if (system) this._state.replaceItem(system as unknown as Identity);
+        if (!system) return false;
+        this._state.replaceItem(system as unknown as Identity);
         notifySuccess(`Successfully added zone to system.`);
+        return true;
     }
 
     /**
@@ -724,13 +725,14 @@ export class SystemStateService extends AsyncHandler {
             zones,
         }).catch((err) => {
             notifyError(
-                `Error removing zone ${zone.id} from system. Error: ${
-                    err.statusText || err.message || err
-                }`,
+                `Error removing zone ${zone.id} from system. Error: ${describeError(
+                    err,
+                )}`,
             );
         });
         details.close();
-        if (system) this._state.replaceItem(system as unknown as Identity);
+        if (!system) return;
+        this._state.replaceItem(system as unknown as Identity);
         notifySuccess(`Successfully removed zone from system.`);
     }
 
@@ -740,20 +742,20 @@ export class SystemStateService extends AsyncHandler {
      */
     public async toggleModulePower(device: PlaceModule) {
         const method = device.running ? stopModule : startModule;
-        await method(device.id).catch((err) => {
+        try {
+            await method(device.id);
+        } catch (err) {
             if (typeof err === 'string' && err.length < 64) {
-                notifyError(err);
-            } else {
-                notifyError(
-                    `Failed to ${
-                        device.running ? 'stop' : 'start'
-                    } module '${device.id}'.\nView Error?`,
-                    'View',
-                    () => this.viewDetails(err),
-                );
+                return notifyError(err);
             }
-            throw err;
-        });
+            return notifyError(
+                `Failed to ${
+                    device.running ? 'stop' : 'start'
+                } module '${device.id}'.\nView Error?`,
+                'View',
+                () => this.viewDetails(err),
+            );
+        }
         notifySuccess(
             `Module successfully ${device.running ? 'stopped' : 'started'}`,
         );

@@ -28,7 +28,7 @@ import { TranslatePipe } from '../translate.pipe';
                         <div class="w-10"></div>
                     </div>
                 }
-                @for (item of active_list(); track item) {
+                @for (item of active_list(); track $index) {
                     <div class="row">
                         @for (field of fields(); track field) {
                             <div class="field" [attr.name]="field">
@@ -38,9 +38,9 @@ import { TranslatePipe } from '../translate.pipe';
                                         [name]="field"
                                         [placeholder]="field"
                                         [disabled]="disabled()"
-                                        [(ngModel)]="item[field]"
+                                        [ngModel]="item[field]"
                                         (ngModelChange)="
-                                            setValue(active_list())
+                                            updateField($index, field, $event)
                                         "
                                     />
                                 </mat-form-field>
@@ -50,9 +50,10 @@ import { TranslatePipe } from '../translate.pipe';
                             type="button"
                             icon
                             matRipple
+                            type="button"
                             class="border-error text-error h-12 w-12 rounded-sm border"
                             [disabled]="disabled()"
-                            (click)="removeRow(item)"
+                            (click)="removeRow($index)"
                         >
                             <icon>delete</icon>
                         </button>
@@ -157,16 +158,27 @@ export class ObjectListFieldComponent
 
     /**
      * Remove item from the active list
-     * @param item Item to remove
+     * @param index Index of the item to remove
      */
-    public removeRow(item: HashMap) {
+    public removeRow(index: number) {
         if (this.disabled()) return;
-        const index = this.active_list().indexOf(item);
-        if (index >= 0) {
-            this.active_list.update((list) =>
-                list.filter((_, item_index) => item_index !== index),
-            );
-        }
+        this.active_list.update((list) =>
+            list.filter((_, item_index) => item_index !== index),
+        );
+        this.setValue(this.active_list());
+    }
+
+    /**
+     * Set a field on one item. Emits a new list with a new item, so the
+     * parent's objects are never changed in place.
+     */
+    public updateField(index: number, field: string, value: string) {
+        if (this.disabled()) return;
+        this.active_list.update((list) =>
+            list.map((item, item_index) =>
+                item_index === index ? { ...item, [field]: value } : item,
+            ),
+        );
         this.setValue(this.active_list());
     }
 

@@ -31,6 +31,7 @@ import {
     updateDomain,
 } from '@placeos/ts-client';
 import { filter, map } from 'rxjs';
+import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -142,11 +143,15 @@ export class DomainStateService {
                 authority_id: params.id,
                 ...(params.full ? {} : { limit: 1 }),
             };
-            const responses = await Promise.all([
+            // One failing source type should not hide the others
+            const results = await Promise.allSettled([
                 querySAMLSources(q),
                 queryOAuthSources(q),
                 queryLDAPSources(q),
-            ]).catch(() => []);
+            ]);
+            const responses = results
+                .filter((result) => result.status === 'fulfilled')
+                .map((result) => result.value);
             return {
                 data: responses.flatMap(
                     (response): PlaceAuthSource[] => response.data,
@@ -214,10 +219,14 @@ export class DomainStateService {
         const result = await get(
             `/api/engine/v2/admin_consent/${encodeURIComponent(item.id)}`,
         ).catch((error) => {
-            notifyError(i18n('DOMAINS.AZURE_INTEGRATION_ERROR', { error }));
-            throw error;
+            notifyError(
+                i18n('DOMAINS.AZURE_INTEGRATION_ERROR', {
+                    error: describeError(error),
+                }),
+            );
+            return null;
         });
-        if (result.url) {
+        if (result?.url) {
             window.open(result.url, '_blank', 'noopener noreferrer');
         }
     }
@@ -270,9 +279,9 @@ export class DomainStateService {
         details.close();
         if (err)
             return notifyError(
-                `Error removing domain application. Error: ${
-                    err.responseText || err.message || err
-                }`,
+                `Error removing domain application. Error: ${describeError(
+                    err,
+                )}`,
             );
         notifySuccess('Successfully removed domain application.');
         this._changed.set(new Date().valueOf());
@@ -324,9 +333,9 @@ export class DomainStateService {
         details.close();
         if (err)
             return notifyError(
-                `Error removing domain auth source. Error: ${
-                    err.responseText || err.message || err
-                }`,
+                `Error removing domain auth source. Error: ${describeError(
+                    err,
+                )}`,
             );
         notifySuccess('Successfully removed domain auth source.');
         this._changed.set(new Date().valueOf());

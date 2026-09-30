@@ -324,14 +324,20 @@ export class ImageListFieldComponent
             const files: FileList = element.files;
             /* istanbul ignore else */
             if (files.length) {
-                this.interval('update_status', () =>
-                    this._updateUploadHistory(),
-                );
-                for (let i = 0; i < files.length; i++) {
-                    const id = await this._uploads.uploadFileWithPermissions(
-                        files[i],
-                    );
-                    this.upload_ids.update((list) => [...list, id]);
+                try {
+                    for (let i = 0; i < files.length; i++) {
+                        const id =
+                            await this._uploads.uploadFileWithPermissions(
+                                files[i],
+                            );
+                        this.upload_ids.update((list) => [...list, id]);
+                        // Start polling only once there is an upload to track
+                        this.interval('update_status', () =>
+                            this._updateUploadHistory(),
+                        );
+                    }
+                } catch {
+                    // The user cancelled the upload permissions modal
                 }
             }
         }
@@ -363,7 +369,7 @@ export class ImageListFieldComponent
 
     private async _updateUploadHistory() {
         const list = this.upload_ids();
-        if (list.length === 0) return;
+        if (list.length === 0) return this.clearInterval('update_status');
         const global_list = this._uploads.upload_list();
         const new_list = global_list.filter((_) =>
             list.find((i) => i === _.id),

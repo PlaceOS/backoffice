@@ -18,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { SignagePlugin } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../../common/async-handler.class';
+import { readError } from '../../common/errors';
 import { getInvalidSignalFields } from '../../common/forms';
 import { HotkeysService } from '../../common/hotkeys.service';
 import { i18n } from '../../common/locale.service';
@@ -390,9 +391,7 @@ export class SignagePluginModalComponent
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_ERROR', {
-                        error: JSON.stringify(
-                            err.response || err.message || err,
-                        ),
+                        error: await readError(err),
                     }),
                 );
             }

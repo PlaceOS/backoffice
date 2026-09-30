@@ -21,6 +21,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { lastValueFrom } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
+import { describeError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
@@ -103,30 +104,6 @@ export interface ConfirmModalData {
     icon: ApplicationIcon;
     /** Delay before closing the modal */
     close_delay?: number;
-}
-
-/**
- * Readable text for whatever an option's `details()` rejected with.
- *
- * ts-client throws the raw `Response` for any non-OK status, and interpolating
- * that yields "[object Response]" — which is what the user would otherwise be
- * shown as the reason they cannot continue.
- */
-export function describeError(error: unknown): string {
-    if (!error) return 'Unknown error';
-    if (typeof error === 'string') return error;
-    if (typeof Response !== 'undefined' && error instanceof Response) {
-        return `${error.status} ${error.statusText || 'request failed'}`.trim();
-    }
-    const message = (error as Error)?.message;
-    if (message) return message;
-    const status = (error as { status?: number; statusText?: string })?.status;
-    if (status) {
-        return `${status} ${
-            (error as { statusText?: string }).statusText || 'request failed'
-        }`.trim();
-    }
-    return 'Unknown error';
 }
 
 /**

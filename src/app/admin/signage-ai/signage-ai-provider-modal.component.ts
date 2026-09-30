@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { readError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
@@ -300,15 +301,16 @@ export class SignageAIProviderModalComponent {
         // an edit that leaves the boxes empty keeps the stored credentials
         if (Object.keys(credentials).length) body.credentials = credentials;
 
-        await saveSignageAIProvider(body).catch((error) => {
-            notifyError(i18n('ADMIN.AI_PROVIDER_SAVE_ERROR'));
+        try {
+            await saveSignageAIProvider(body);
+        } catch (error) {
+            return notifyError(
+                `${i18n('ADMIN.AI_PROVIDER_SAVE_ERROR')}: ${await readError(error)}`,
+            );
+        } finally {
             this.loading.set('');
             this._dialog_ref.disableClose = false;
-            throw error;
-        });
-
-        this.loading.set('');
-        this._dialog_ref.disableClose = false;
+        }
         notifySuccess(i18n('ADMIN.AI_PROVIDER_SAVE_SUCCESS'));
         this._dialog_ref.close(true);
     }

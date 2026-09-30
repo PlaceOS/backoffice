@@ -23,7 +23,9 @@ export function setupCache(cache: SwUpdate, interval: number = 5 * 60 * 1000) {
         if (_timer) clearInterval(_timer);
         _timer = setInterval(() => {
             log('CACHE', `Checking for updates...`);
-            checkForUpdate(cache);
+            checkForUpdate(cache).catch((error) =>
+                log('CACHE', 'Update check failed', [error], 'warn', true),
+            );
         }, interval);
     }
 }

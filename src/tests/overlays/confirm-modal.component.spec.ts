@@ -38,7 +38,6 @@ import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
     ConfirmModalData,
-    describeError,
     openConfirmModal,
     receiptToTsv,
 } from '../../app/overlays/confirm-modal.component';
@@ -769,34 +768,5 @@ describe('receiptToTsv', () => {
 describe('CONFIRM_METADATA', () => {
     it('should have height set to auto', () => {
         expect(CONFIRM_METADATA.height).toBe('auto');
-    });
-});
-
-describe('describeError', () => {
-    it('turns a ts-client Response rejection into something readable', () => {
-        // ts-client throws the raw Response for any non-OK status, and
-        // interpolating that gives "[object Response]" — which is what the
-        // user would otherwise be told is the reason they cannot continue.
-        expect(describeError(new Response('', { status: 403 }))).toContain(
-            '403',
-        );
-        expect(describeError(new Response('', { status: 403 }))).not.toContain(
-            'object Response',
-        );
-    });
-
-    it('uses an Error message when there is one', () => {
-        expect(describeError(new Error('gateway'))).toBe('gateway');
-    });
-
-    it('falls back to a status shape without a message', () => {
-        expect(describeError({ status: 502, statusText: 'Bad Gateway' })).toBe(
-            '502 Bad Gateway',
-        );
-    });
-
-    it('never renders an empty reason', () => {
-        expect(describeError(undefined)).toBe('Unknown error');
-        expect(describeError({})).toBe('Unknown error');
     });
 });

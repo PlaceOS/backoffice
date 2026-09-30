@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { readError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
@@ -262,14 +263,16 @@ export class StorageProviderModalComponent {
             delete (details as PlaceStorage & { access_secret?: unknown })
                 .access_secret;
         }
-        await saveStorage(details).catch((e) => {
-            notifyError(i18n('ADMIN.STORAGE_SAVE_ERROR'));
+        try {
+            await saveStorage(details);
+        } catch (err) {
+            return notifyError(
+                `${i18n('ADMIN.STORAGE_SAVE_ERROR')} Error: ${await readError(err)}`,
+            );
+        } finally {
             this.loading.set('');
             this._dialog_ref.disableClose = false;
-            throw e;
-        });
-        this.loading.set('');
-        this._dialog_ref.disableClose = false;
+        }
         notifySuccess(i18n('ADMIN.STORAGE_SAVE_SUCCESS'));
         this._dialog_ref.close();
     }

@@ -13,6 +13,7 @@ import { BackofficeUsersService } from '../users/users.service';
 
 import { DatePipe, SlicePipe } from '@angular/common';
 import { format } from 'date-fns';
+import { describeError } from '../common/errors';
 import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -253,9 +254,7 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
             (err) =>
                 notifyError(
                     i18n('ADMIN.BACKEND_SERVICES_ERROR', {
-                        error: JSON.stringify(
-                            err.response || err.message || err,
-                        ),
+                        error: describeError(err),
                     }),
                 ),
         );
@@ -263,24 +262,29 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     }
 
     public async loadPlatformDetails() {
-        const { changelog, version } = await get(
-            `${apiEndpoint()}/platform`,
-        ).catch((err) => {
+        void this.loadBackofficeChangelog();
+        const platform = await get(`${apiEndpoint()}/platform`).catch((err) => {
             notifyError(
                 i18n('ADMIN.BACKEND_SERVICES_ERROR', {
-                    error: JSON.stringify(err.response || err.message || err),
+                    error: describeError(err),
                 }),
             );
-            throw err;
+            return null;
         });
-        this.changelog_data.set(changelog.replace('# Changelog\n\n', ''));
-        this.backend_version.set(version);
-        this.backoffice_logs.set(
-            await (
-                await fetch(
-                    'https://raw.githubusercontent.com/PlaceOS/backoffice/develop/CHANGELOG.md',
-                )
-            ).text(),
+        if (!platform) return;
+        const { changelog, version } = platform;
+        this.changelog_data.set(
+            (changelog ?? '').replace('# Changelog\n\n', ''),
         );
+        this.backend_version.set(version);
+    }
+
+    /** Loads the backoffice changelog from GitHub. Failure only hides the link. */
+    private async loadBackofficeChangelog() {
+        const response = await fetch(
+            'https://raw.githubusercontent.com/PlaceOS/backoffice/develop/CHANGELOG.md',
+        ).catch(() => null);
+        if (!response?.ok) return;
+        this.backoffice_logs.set(await response.text().catch(() => ''));
     }
 }

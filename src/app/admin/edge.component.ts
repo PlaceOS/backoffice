@@ -11,6 +11,7 @@ import {
     removeEdge,
     retrieveEdgeToken,
 } from '@placeos/ts-client';
+import { describeError } from '../common/errors';
 import { copyToClipboard, escapeHtml } from '../common/general';
 import {
     notifyError,
@@ -237,9 +238,7 @@ export class PlaceEdgeComponent implements OnInit {
         details.close();
         if (err)
             return notifyError(
-                `Error removing edge. Error: ${
-                    err.statusText || err.message || err
-                }`,
+                `Error removing edge. Error: ${describeError(err)}`,
             );
         sessionStorage.removeItem('BACKOFFICE.last_edge');
         this.last_change.set(null);
@@ -255,10 +254,17 @@ export class PlaceEdgeComponent implements OnInit {
 
     public async loadEdges() {
         this.loading.set('Loading edge node list...');
-        const { data } = await queryEdges();
-        this.edge_list.set(
-            (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
-        );
-        this.loading.set('');
+        try {
+            const { data } = await queryEdges();
+            this.edge_list.set(
+                (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
+            );
+        } catch (err) {
+            notifyError(
+                `Failed to load edge nodes. Error: ${describeError(err)}`,
+            );
+        } finally {
+            this.loading.set('');
+        }
     }
 }

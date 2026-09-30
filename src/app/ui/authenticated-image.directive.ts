@@ -10,6 +10,8 @@ import { apiKey, authority, token } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 
 const IMAGE_STORE = new Map<string, string>();
+/** Tries to wait for the API authority before giving up (300ms apart) */
+const MAX_AUTH_WAIT_ATTEMPTS = 100;
 
 @Directive({
     selector: 'img [auth],video [auth]',
@@ -23,12 +25,19 @@ export class AuthenticatedImageDirective
     public readonly source = input<string>(undefined);
 
     public ngOnChanges(changes: SimpleChanges) {
-        if (changes.source && this.source()) this._loadImage().catch();
+        if (changes.source && this.source()) this._load();
     }
 
-    private async _loadImage() {
+    private _load(attempt = 0) {
+        this._loadImage(attempt).catch((e) =>
+            console.warn('Failed to load image:', e),
+        );
+    }
+
+    private async _loadImage(attempt: number) {
         if (!this._image_el || !authority()) {
-            return this.timeout('load', () => this._loadImage().catch(), 300);
+            if (attempt >= MAX_AUTH_WAIT_ATTEMPTS) return;
+            return this.timeout('load', () => this._load(attempt + 1), 300);
         }
         // If not an API call, just load the image
         const source = this.source();
@@ -50,9 +59,15 @@ export class AuthenticatedImageDirective
             location.protocol === 'https:' ? 'secure;' : ''
         }`;
         const response = await fetch(source);
+        // Do not cache an error body, such as a 401, as the image
+        if (!response.ok) {
+            throw new Error(`${response.status} ${response.statusText}`);
+        }
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
         IMAGE_STORE.set(source, url);
+        // The source changed while this one loaded
+        if (this.source() !== source) return;
         this._image_el.nativeElement.src = url;
     }
 }

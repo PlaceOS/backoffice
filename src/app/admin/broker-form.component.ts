@@ -22,6 +22,7 @@ import {
     updateBroker,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
+import { readError } from '../common/errors';
 import { addSignalChipItem, getInvalidSignalFields } from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
@@ -429,9 +430,7 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await err.text?.()) || err.message || err,
-                        ),
+                        error: await readError(err),
                     }),
                 );
                 return null;

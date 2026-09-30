@@ -13,6 +13,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
 import { loadSupportAccess } from '../common/support-access';
 import { FilterFn } from '../common/types';
+import { current_user, setCurrentUser } from '../common/user-state';
 
 import * as Sentry from '@sentry/browser';
 import { addDays } from 'date-fns';
@@ -28,11 +29,10 @@ export class BackofficeUsersService extends AsyncHandler {
     /** Signal with the currently available list of users */
     public readonly listing = signal<ServiceItem[]>([]);
 
-    private _user = signal<ServiceItem>(null);
     /** Active User */
-    public readonly user = this._user.asReadonly();
+    public readonly user = current_user;
     /** Active User */
-    public readonly current = () => this._user();
+    public readonly current = () => this.user();
 
     /** Active User */
     public readonly currentSignal = () => this.user;
@@ -49,7 +49,7 @@ export class BackofficeUsersService extends AsyncHandler {
             : false;
         const theme =
             localStorage.getItem('BACKOFFICE.theme') ??
-            ((this._user() || {}) as Record<string, unknown>).ui_theme;
+            ((this.user() || {}) as Record<string, unknown>).ui_theme;
         return (theme && theme === 'dark') || (!theme && os_dark);
     }
     public set dark_mode(state: boolean) {
@@ -101,7 +101,7 @@ export class BackofficeUsersService extends AsyncHandler {
                         return;
                     }
                     await loadSupportAccess(user);
-                    this._user.set(user);
+                    setCurrentUser(user);
                     Sentry.withScope((scope) =>
                         scope.setUser({ email: user.email }),
                     );

@@ -2,6 +2,8 @@ import { Component, OnInit, signal } from '@angular/core';
 import { listInterfaceRepositories } from '@placeos/ts-client';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { describeError } from '../common/errors';
+import { notifyError } from '../common/notifications';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -68,13 +70,20 @@ export class AdminInterfacesComponent implements OnInit {
 
     public async loadInterfaces() {
         this.loading.set(true);
-        const mapping = await listInterfaceRepositories();
-        const list = Object.keys(mapping).map((id) => ({
-            id,
-            name: mapping[id],
-        }));
-        list.sort((a, b) => `${a.id}`?.localeCompare(`${b.id}`));
-        this.interfaces.set(list);
-        this.loading.set(false);
+        try {
+            const mapping = await listInterfaceRepositories();
+            const list = Object.keys(mapping).map((id) => ({
+                id,
+                name: mapping[id],
+            }));
+            list.sort((a, b) => `${a.id}`?.localeCompare(`${b.id}`));
+            this.interfaces.set(list);
+        } catch (err) {
+            notifyError(
+                `Failed to load interfaces. Error: ${describeError(err)}`,
+            );
+        } finally {
+            this.loading.set(false);
+        }
     }
 }

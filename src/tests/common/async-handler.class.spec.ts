@@ -123,17 +123,36 @@ describe('AsyncHandler', () => {
         });
 
         it('should throw error without name', () => {
-            expect(() => handler.testTimeout('', vi.fn())).toThrow();
+            expect(() => handler.testTimeout('', vi.fn())).toThrow(
+                'without a name',
+            );
         });
 
         it('should throw error without callback', () => {
-            expect(() => handler.testTimeout('test', null as any)).toThrow();
+            expect(() => handler.testTimeout('test', null as any)).toThrow(
+                'without a callback',
+            );
         });
 
         it('should set timer to null after execution', () => {
             handler.testTimeout('test', vi.fn(), 100);
             vi.advanceTimersByTime(100);
             expect(handler.getTimers()['test']).toBeNull();
+        });
+
+        it('keeps the handle of a callback that reschedules itself', () => {
+            const callback = vi.fn(() => {
+                if (callback.mock.calls.length < 2) {
+                    handler.testTimeout('poll', callback, 100);
+                }
+            });
+            handler.testTimeout('poll', callback, 100);
+            vi.advanceTimersByTime(100);
+            expect(handler.getTimers()['poll']).not.toBeNull();
+            // The rescheduled timer can still be cleared by name
+            handler.testClearTimeout('poll');
+            vi.advanceTimersByTime(100);
+            expect(callback).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -186,11 +205,15 @@ describe('AsyncHandler', () => {
         });
 
         it('should throw error without name', () => {
-            expect(() => handler.testInterval('', vi.fn())).toThrow();
+            expect(() => handler.testInterval('', vi.fn())).toThrow(
+                'without a name',
+            );
         });
 
         it('should throw error without callback', () => {
-            expect(() => handler.testInterval('test', null as any)).toThrow();
+            expect(() => handler.testInterval('test', null as any)).toThrow(
+                'without a callback',
+            );
         });
     });
 

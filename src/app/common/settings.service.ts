@@ -108,7 +108,11 @@ export class SettingsService extends AsyncHandler {
             if (!window.application) window.application = {};
             window.application.settings = this;
         }
-        const user = await waitForSignalValue(current_user, (user) => !!user);
+        const user = await waitForSignalValue(
+            current_user,
+            (user) => !!user,
+        ).catch(() => null);
+        if (!user) return;
         const data = await showMetadata(user.id, 'settings');
         this._user_settings.set((data.details || {}) as HashMap);
         this._initDarkMode();

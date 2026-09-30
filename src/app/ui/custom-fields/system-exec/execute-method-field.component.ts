@@ -217,6 +217,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         this.loading.set(true);
         this.arguments.set(this.arguments() || {});
         const method = this.zone() ? executeOnZone : executeOnSystem;
+        let failed = false;
         const result = await method(
             this.zone() || this.system().id,
             (this.fn() as unknown as { name: string }).name,
@@ -250,8 +251,10 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
                 );
             }
             this.loading.set(false);
-            throw err;
+            failed = true;
+            return null;
         });
+        if (failed) return;
         notifySuccess(
             'Command successful executed.\nView Response?',
             'View',

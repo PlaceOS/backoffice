@@ -26,28 +26,26 @@ export class UploadsService {
         this._upload_list.set(in_progress_list);
     }
 
+    /**
+     * Asks the user for upload permissions, then uploads the file.
+     * Rejects when the user cancels the permissions modal.
+     */
     public async uploadFileWithPermissions(file: File) {
         const { UploadPermissionsModalComponent } = await import(
             '../ui/upload-permissions-modal.component'
         );
-        return new Promise<number>((resolve, reject) => {
-            const ref = this._dialog.open(UploadPermissionsModalComponent, {
-                data: { file },
-            });
-            lastValueFrom(ref.afterClosed()).then(async (details) => {
-                if (details) {
-                    const id = await this.uploadFile(
-                        details.file,
-                        details.is_public,
-                        details.permissions,
-                    ).catch((e) => {
-                        reject(e);
-                        throw e;
-                    });
-                    resolve(id);
-                } else reject();
-            });
+        const ref = this._dialog.open(UploadPermissionsModalComponent, {
+            data: { file },
         });
+        const details = await lastValueFrom(ref.afterClosed(), {
+            defaultValue: null,
+        });
+        if (!details) throw new Error('Upload cancelled');
+        return this.uploadFile(
+            details.file,
+            details.is_public,
+            details.permissions,
+        );
     }
 
     public uploadFile(

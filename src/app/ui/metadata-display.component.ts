@@ -25,6 +25,7 @@ import { VERSION } from '../../env/version';
 import { escapeHtml } from '../common/general';
 // import { SchemaStateService } from '../admin/schema-state.service';
 import { AsyncHandler } from '../common/async-handler.class';
+import { describeError, readError } from '../common/errors';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { currentUser } from '../common/user-state';
@@ -335,16 +336,17 @@ export class MetadataDisplayComponent
             this._dialog,
         );
         if (result.reason !== 'done') return;
-        await removeMetadata(this.item().id, { name: field }).catch((err) => {
-            result.close();
-            notifyError(
-                `Error removing old "${field}" metadata. Error: ${
-                    err.response || err.message || err
-                }`,
+        try {
+            await removeMetadata(this.item().id, { name: field });
+        } catch (err) {
+            return notifyError(
+                `Error removing old "${field}" metadata. Error: ${await readError(
+                    err,
+                )}`,
             );
-            throw err;
-        });
-        result.close();
+        } finally {
+            result.close();
+        }
         notifySuccess(`Successfully removed "${field}" metadata.`);
         this.metadata.set(
             this.metadata().filter((prop) => prop && prop.name !== field),
@@ -414,9 +416,7 @@ export class MetadataDisplayComponent
                             notifyError(
                                 `Error removing old "${
                                     field.name
-                                }" metadata. Error: ${JSON.stringify(
-                                    err.response || err.message || err,
-                                )}`,
+                                }" metadata. Error: ${describeError(err)}`,
                             ),
                     );
                 }
@@ -437,9 +437,7 @@ export class MetadataDisplayComponent
                 notifyError(
                     `Error saving "${
                         value.name
-                    }" metadata. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
+                    }" metadata. Error: ${describeError(err)}`,
                 );
             });
     }
@@ -520,9 +518,7 @@ export class MetadataDisplayComponent
             })
             .catch((err) =>
                 notifyError(
-                    `Error loading metadata. Error: ${
-                        err.response || err.message || err
-                    }`,
+                    `Error loading metadata. Error: ${describeError(err)}`,
                 ),
             )
             .finally(() => this.loading_list.set(false));

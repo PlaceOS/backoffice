@@ -23,6 +23,7 @@ import {
     updateDomain,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
+import { readError } from '../common/errors';
 import {
     addSignalChipItem,
     getInvalidSignalFields,
@@ -351,11 +352,7 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await (err as Response).text?.()) ||
-                                (err as Error).message ||
-                                err,
-                        ),
+                        error: await readError(err),
                     }),
                 );
             }
@@ -375,14 +372,12 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
-        await addSettings(new_settings).catch((err) => {
+        await addSettings(new_settings).catch(async (err) => {
             this.loading.set(null);
             notifyError(
                 `Error saving settings for ${
                     item.name || item.id
-                }. Error: ${JSON.stringify(
-                    err.response || err.message || err,
-                )}`,
+                }. Error: ${await readError(err)}`,
             );
         });
     }

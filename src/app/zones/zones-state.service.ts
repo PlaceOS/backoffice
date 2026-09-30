@@ -19,6 +19,7 @@ import {
     updateZone,
 } from '@placeos/ts-client';
 import { escapeHtml, unique } from '../common/general';
+import { describeError, readError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -43,10 +44,16 @@ export class ZonesStateService {
     private _service = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _loading = signal(false);
+    /** Set while a bulk add runs */
+    private _saving = signal(false);
     private _change = signal(0);
 
-    public readonly loading = this._loading.asReadonly();
+    public readonly loading = computed(
+        () =>
+            this._saving() ||
+            this._counts.isLoading() ||
+            this._groups.isLoading(),
+    );
 
     public readonly item = computed(
         () => this._service.item() as unknown as PlaceZone,
@@ -57,39 +64,34 @@ export class ZonesStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceZone)) return {};
-            this._loading.set(true);
-            try {
-                const details = await Promise.all([
-                    querySystems({ zone_id: item.id, limit: 1 })
-                        .then((d) => d.total)
-                        .catch(() => 0),
-                    (isSubsystemUser()
-                        ? Promise.resolve({ data: [], total: 0 })
-                        : listZoneTriggers(item.id)
-                    )
-                        .then((d) => d.total)
-                        .catch(() => 0),
-                    listMetadata(item.id)
-                        .then((d) => d.length)
-                        .catch(() => 0),
-                    queryZones({ parent_id: item.id, limit: 1 })
-                        .then((d) => d.total)
-                        .catch(() => 0),
-                    queryGroupZones({ zone_id: item.id, limit: 1 })
-                        .then((d) => d.total)
-                        .catch(() => 0),
-                ]);
-                const [systems, triggers, metadata, children, groups] = details;
-                return {
-                    systems,
-                    triggers,
-                    metadata,
-                    children,
-                    groups,
-                };
-            } finally {
-                this._loading.set(false);
-            }
+            const details = await Promise.all([
+                querySystems({ zone_id: item.id, limit: 1 })
+                    .then((d) => d.total)
+                    .catch(() => 0),
+                (isSubsystemUser()
+                    ? Promise.resolve({ data: [], total: 0 })
+                    : listZoneTriggers(item.id)
+                )
+                    .then((d) => d.total)
+                    .catch(() => 0),
+                listMetadata(item.id)
+                    .then((d) => d.length)
+                    .catch(() => 0),
+                queryZones({ parent_id: item.id, limit: 1 })
+                    .then((d) => d.total)
+                    .catch(() => 0),
+                queryGroupZones({ zone_id: item.id, limit: 1 })
+                    .then((d) => d.total)
+                    .catch(() => 0),
+            ]);
+            const [systems, triggers, metadata, children, groups] = details;
+            return {
+                systems,
+                triggers,
+                metadata,
+                children,
+                groups,
+            };
         },
     });
 
@@ -172,20 +174,15 @@ export class ZonesStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceZone)) return [] as PlaceGroupZone[];
-            this._loading.set(true);
-            try {
-                const response = await queryGroupZones({
-                    zone_id: item.id,
-                    limit: 1000,
-                }).catch(() => ({ data: [] }));
-                return response.data.sort((a, b) =>
-                    (a.group?.name || a.group_id).localeCompare(
-                        b.group?.name || b.group_id,
-                    ),
-                );
-            } finally {
-                this._loading.set(false);
-            }
+            const response = await queryGroupZones({
+                zone_id: item.id,
+                limit: 1000,
+            }).catch(() => ({ data: [] }));
+            return response.data.sort((a, b) =>
+                (a.group?.name || a.group_id).localeCompare(
+                    b.group?.name || b.group_id,
+                ),
+            );
         },
     });
 
@@ -227,11 +224,18 @@ export class ZonesStateService {
             waitForEvent(ref.afterClosed()),
         ]);
         if (details?.reason !== 'action') return ref.close();
-        const zone = await this.addTrigger(
-            ref.componentInstance.item as PlaceTrigger,
-        );
-        ref.close();
-        if (zone) this._service.replaceItem(zone as unknown as Identity);
+        try {
+            const zone = await this.addTrigger(
+                ref.componentInstance.item as PlaceTrigger,
+            );
+            if (zone) this._service.replaceItem(zone as unknown as Identity);
+        } catch (err) {
+            notifyError(
+                `Error adding trigger to zone. Error: ${describeError(err)}`,
+            );
+        } finally {
+            ref.close();
+        }
     }
 
     public async addTrigger(
@@ -257,32 +261,39 @@ export class ZonesStateService {
             this._dialog,
         );
         if (details.reason !== 'done') return;
-        const zone = await updateZone(this.active_item.id, {
-            ...this.active_item,
-            triggers: this.active_item.triggers.filter((t) => t !== trigger.id),
-        }).catch((err) => {
-            details.close();
-            notifyError(
-                `Error removing trigger ${trigger.id} from zone. Error: ${
-                    err.statusText || err.message || err
-                }`,
+        let zone: PlaceZone;
+        try {
+            zone = await updateZone(this.active_item.id, {
+                ...this.active_item,
+                triggers: this.active_item.triggers.filter(
+                    (t) => t !== trigger.id,
+                ),
+            });
+        } catch (err) {
+            return notifyError(
+                `Error removing trigger ${trigger.id} from zone. Error: ${await readError(
+                    err,
+                )}`,
             );
-            throw err;
-        });
-        details.close();
+        } finally {
+            details.close();
+        }
         notifySuccess(`Successfully removed trigger from zone.`);
         if (zone) this._service.replaceItem(zone as unknown as Identity);
     }
 
     public async addGroup(group: PlaceGroup) {
         if (!group?.id) return;
-        await addGroupZone({
-            group_id: group.id,
-            zone_id: this.active_item.id,
-        }).catch((error) => {
-            notifyError(i18n('ZONES.GROUP_ADD_ERROR', { error }));
-            throw error;
-        });
+        try {
+            await addGroupZone({
+                group_id: group.id,
+                zone_id: this.active_item.id,
+            });
+        } catch (error) {
+            return notifyError(
+                i18n('ZONES.GROUP_ADD_ERROR', { error: describeError(error) }),
+            );
+        }
         notifySuccess(i18n('ZONES.GROUP_ADD_SUCCESS'));
         this.changed();
     }
@@ -322,7 +333,7 @@ export class ZonesStateService {
                 .afterClosed(),
         );
         if (!groups?.length) return;
-        this._loading.set(true);
+        this._saving.set(true);
         const results = await Promise.allSettled(
             groups.map((group) =>
                 addGroupZone({
@@ -331,7 +342,7 @@ export class ZonesStateService {
                 }),
             ),
         );
-        this._loading.set(false);
+        this._saving.set(false);
         const failed = results.filter((_) => _.status === 'rejected').length;
         if (failed) {
             notifyError(i18n('ZONES.GROUPS_BULK_ERROR', { count: failed }));
@@ -356,24 +367,32 @@ export class ZonesStateService {
         );
         if (details.reason !== 'done') return;
         details.loading(i18n('ZONES.GROUP_REMOVE_LOADING'));
-        await removeGroupZone(item.group_id, item.zone_id).catch((error) => {
+        try {
+            await removeGroupZone(item.group_id, item.zone_id);
+        } catch (error) {
             details.close();
-            notifyError(i18n('ZONES.GROUP_REMOVE_ERROR', { error }));
-            throw error;
-        });
+            return notifyError(
+                i18n('ZONES.GROUP_REMOVE_ERROR', {
+                    error: describeError(error),
+                }),
+            );
+        }
         details.close();
         notifySuccess(i18n('ZONES.GROUP_REMOVE_SUCCESS'));
         this.changed();
     }
 
     public async updateGroup(item: PlaceGroupZone) {
-        await updateGroupZone(item.group_id, item.zone_id, {
-            permissions: +item.permissions || 0,
-            deny: !!item.deny,
-        }).catch((error) => {
-            notifyError(i18n('ZONES.GROUP_SAVE_ERROR', { error }));
-            throw error;
-        });
+        try {
+            await updateGroupZone(item.group_id, item.zone_id, {
+                permissions: +item.permissions || 0,
+                deny: !!item.deny,
+            });
+        } catch (error) {
+            return notifyError(
+                i18n('ZONES.GROUP_SAVE_ERROR', { error: describeError(error) }),
+            );
+        }
         notifySuccess(i18n('ZONES.GROUP_SAVE_SUCCESS'));
         this.changed();
     }

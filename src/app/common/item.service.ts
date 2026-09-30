@@ -22,7 +22,6 @@ import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
     ConfirmModalData,
-    describeError,
 } from '../overlays/confirm-modal.component';
 import { DuplicateModalComponent } from '../overlays/duplicate-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
@@ -34,6 +33,7 @@ import {
     CascadeResource,
     runCascade,
 } from './cascade-delete';
+import { describeError } from './errors';
 import { escapeHtml, log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
@@ -201,7 +201,11 @@ export class ActiveItemService extends AsyncHandler {
     /** Update the active item */
     public async setItem(id: string) {
         const request = ++this._item_request;
-        await waitForSignalValue(this._user.user, (user) => !!user);
+        const user = await waitForSignalValue(
+            this._user.user,
+            (user) => !!user,
+        ).catch(() => null);
+        if (!user) return;
         if (!hasSupportRole() && !hasSupportSubsystem()) return;
         const scope_version = this._scope_version;
         if (
@@ -516,9 +520,7 @@ export class ActiveItemService extends AsyncHandler {
                             }
                             notifyError(
                                 i18n(`${actions.name}.DELETE_ERROR`, {
-                                    error: JSON.stringify(
-                                        err.response || err.message || err,
-                                    ),
+                                    error: describeError(err),
                                 }),
                             );
                         });
@@ -627,7 +629,14 @@ export class ActiveItemService extends AsyncHandler {
             'update',
             async () => {
                 if (!this.actions) return;
-                await waitForSignalValue(this._user.user, (user) => !!user);
+                const user = await waitForSignalValue(
+                    this._user.user,
+                    (user) => !!user,
+                ).catch(() => null);
+                if (!user) {
+                    this._loading_list.set(false);
+                    return;
+                }
                 if (
                     list_version !== this._list_version ||
                     type !== this._type ||

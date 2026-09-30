@@ -11,6 +11,7 @@ import {
     removeModule,
     updateDriver,
 } from '@placeos/ts-client';
+import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap, Identity } from '../common/types';
@@ -23,7 +24,6 @@ export class DriverStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _loading = signal(false);
     private _last_error = signal<HashMap>(null);
     private _poll = signal(0);
     private _modules_change = signal(0);
@@ -32,7 +32,9 @@ export class DriverStateService {
         () => this._state.item() as unknown as PlaceDriver,
     );
 
-    public readonly loading = this._loading.asReadonly();
+    public readonly loading = computed(
+        () => this._modules.isLoading() || this._docs.isLoading(),
+    );
     /** Bumped each time a module of the driver is removed */
     public readonly modules_change = this._modules_change.asReadonly();
 
@@ -55,15 +57,10 @@ export class DriverStateService {
         params: () => ({ item: this.item(), changed: this._modules_change() }),
         loader: async ({ params: { item } }) => {
             if (!(item instanceof PlaceDriver)) return [] as PlaceModule[];
-            this._loading.set(true);
-            try {
-                const response = await queryModules({
-                    driver_id: item.id,
-                }).catch(() => ({ data: [] }));
-                return response.data;
-            } finally {
-                this._loading.set(false);
-            }
+            const response = await queryModules({
+                driver_id: item.id,
+            }).catch(() => ({ data: [] }));
+            return response.data;
         },
     });
 
@@ -73,12 +70,7 @@ export class DriverStateService {
         params: () => this.item(),
         loader: async ({ params: item }) => {
             if (!(item instanceof PlaceDriver)) return '';
-            this._loading.set(true);
-            try {
-                return driverReadme(item.id).catch(() => '');
-            } finally {
-                this._loading.set(false);
-            }
+            return driverReadme(item.id).catch(() => '');
         },
     });
 
@@ -142,19 +134,23 @@ export class DriverStateService {
         );
         if (details.reason !== 'done') return details.close();
         details.loading('Recompiling driver... This may take a while.');
-        await recompileDriver(item.id).catch(async (e) => {
-            console.log('Error:', e);
-            const content = e instanceof Response ? await e.text() : e;
-            this._last_error.set(content);
-            notifyError('Failed to recompile driver.', 'View Error', () =>
-                this._dialog.open<ViewResponseModalComponent>(
-                    ViewResponseModalComponent,
-                    { data: { content } },
-                ),
-            );
-        });
-        notifySuccess('Successfully recompiled the driver.');
+        const success = await recompileDriver(item.id)
+            .then(() => true)
+            .catch(async (e) => {
+                console.log('Error:', e);
+                const content = e instanceof Response ? await e.text() : e;
+                this._last_error.set(content);
+                notifyError('Failed to recompile driver.', 'View Error', () =>
+                    this._dialog.open<ViewResponseModalComponent>(
+                        ViewResponseModalComponent,
+                        { data: { content } },
+                    ),
+                );
+                return false;
+            });
         details.close();
+        if (!success) return;
+        notifySuccess('Successfully recompiled the driver.');
     }
 
     public async reloadDriver() {
@@ -198,9 +194,7 @@ export class DriverStateService {
             .then(() => true)
             .catch((err) => {
                 notifyError(
-                    `Error removing module ${device.id}. Error: ${
-                        err.statusText || err.message || err
-                    }`,
+                    `Error removing module ${device.id}. Error: ${describeError(err)}`,
                 );
                 return false;
             });

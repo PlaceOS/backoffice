@@ -22,6 +22,7 @@ import {
 } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../../common/async-handler.class';
+import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { IconComponent } from '../../ui/icon.component';
@@ -274,7 +275,7 @@ export class SignagePluginImportModalComponent
     private _notifyError(err: { response?: unknown; message?: string }) {
         notifyError(
             i18n('ADMIN.SIGNAGE_PLUGINS_IMPORT_ERROR', {
-                error: JSON.stringify(err.response || err.message || err),
+                error: describeError(err),
             }),
         );
     }

@@ -24,6 +24,7 @@ import {
     showModule,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
+import { describeError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { AppLink, HashMap } from '../common/types';
@@ -617,9 +618,7 @@ export class SystemModulesComponent extends AsyncHandler {
                 ),
             (err) =>
                 notifyError(
-                    `Error loading module. Error: ${JSON.stringify(
-                        err.response || err.message || err,
-                    )}`,
+                    `Error loading module. Error: ${describeError(err)}`,
                 ),
         );
     }

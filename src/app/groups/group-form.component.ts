@@ -27,6 +27,7 @@ import {
     updateGroup,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
+import { readError } from '../common/errors';
 import {
     addSignalChipItem,
     getInvalidSignalFields,
@@ -382,11 +383,7 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await (err as Response).text?.()) ||
-                                (err as Error).message ||
-                                err,
-                        ),
+                        error: await readError(err),
                     }),
                 );
             }

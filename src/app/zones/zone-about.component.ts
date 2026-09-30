@@ -18,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { AsyncHandler } from '../common/async-handler.class';
+import { describeError } from '../common/errors';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
@@ -171,9 +172,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 "
                                 matTooltipPosition="right"
                             >
-                                {{
-                                    item()?.updated_at * 1000 | dateFrom
-                                }}
+                                {{ item()?.updated_at * 1000 | dateFrom }}
                             </span>
                         </div>
                     </div>
@@ -313,8 +312,15 @@ export class ZoneAboutComponent extends AsyncHandler {
         });
     }
 
+    /** Loads the parent zone name. The view shows the parent ID if this fails */
     private async loadParent(parent_id: string) {
-        const zone = await showZone(parent_id);
+        const zone = await showZone(parent_id).catch((err) => {
+            console.warn(
+                `Failed to load parent zone ${parent_id}:`,
+                describeError(err),
+            );
+            return null;
+        });
         if (this.item()?.parent_id === parent_id && zone) this.parent.set(zone);
     }
 }

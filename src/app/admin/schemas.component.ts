@@ -6,6 +6,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { create, query, update } from '@placeos/ts-client';
+import { describeError } from '../common/errors';
+import { notifyError } from '../common/notifications';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -151,6 +153,13 @@ export class AdminSchemasComponent implements OnInit {
 
     public async saveSchema() {
         const schema = this.schema_copy();
+        try {
+            JSON.parse(schema.schema || '{}');
+        } catch (err) {
+            return notifyError(
+                `Schema is not valid JSON. ${describeError(err)}`,
+            );
+        }
         let schema_list = this.schema_list();
         const details = {
             query_params: {},
@@ -158,13 +167,20 @@ export class AdminSchemasComponent implements OnInit {
             form_data: schema,
             path: 'schema',
         };
-        const new_schema = await (schema.id
-            ? update<JsonSchema>({
-                  ...details,
-                  id: schema.id,
-                  method: 'patch',
-              })
-            : create<JsonSchema>({ ...details }));
+        let new_schema: JsonSchema;
+        try {
+            new_schema = await (schema.id
+                ? update<JsonSchema>({
+                      ...details,
+                      id: schema.id,
+                      method: 'patch',
+                  })
+                : create<JsonSchema>({ ...details }));
+        } catch (err) {
+            return notifyError(
+                `Failed to save schema. Error: ${describeError(err)}`,
+            );
+        }
         schema_list = [
             ...schema_list.filter((_) => schema.id !== _.id),
             new_schema,
@@ -196,7 +212,14 @@ export class AdminSchemasComponent implements OnInit {
                     ..._,
                 }) as JsonSchema,
             path: 'schema',
-        }).then((_) => _.data as JsonSchema[]);
+        })
+            .then((_) => _.data as JsonSchema[])
+            .catch((err) => {
+                notifyError(
+                    `Failed to load schemas. Error: ${describeError(err)}`,
+                );
+                return [] as JsonSchema[];
+            });
         schema_list.sort((a, b) => a.name?.localeCompare(b.name));
         this.schema_list.set(schema_list);
     }

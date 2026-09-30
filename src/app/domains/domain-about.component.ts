@@ -9,6 +9,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from '../common/async-handler.class';
+import { readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { validateJSONString } from '../common/validation';
@@ -182,13 +183,7 @@ export class DomainAboutComponent extends AsyncHandler {
             notifySuccess(i18n('DOMAINS.SETTINGS_SAVED'));
         } catch (err) {
             notifyError(
-                i18n('COMMON.SETTINGS_SAVE_ERROR', {
-                    error: JSON.stringify(
-                        (err as { response?: unknown }).response ||
-                            (err as Error).message ||
-                            err,
-                    ),
-                }),
+                i18n('DOMAINS.SAVE_ERROR', { error: await readError(err) }),
             );
         } finally {
             this.saving.set(false);

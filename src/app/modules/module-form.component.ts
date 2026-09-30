@@ -30,6 +30,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AsyncHandler } from '../common/async-handler.class';
+import { readError } from '../common/errors';
 import { getInvalidSignalFields } from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
@@ -518,11 +519,7 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await (err as Response).text?.()) ||
-                                (err as Error).message ||
-                                err,
-                        ),
+                        error: await readError(err),
                     }),
                 );
             }

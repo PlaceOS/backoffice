@@ -48,14 +48,16 @@ export class AsyncHandler implements OnDestroy {
         if (name && fn && fn instanceof Function) {
             this.clearTimeout(name);
             this._timers[name] = setTimeout(() => {
-                fn();
+                // Clear first, so a callback that schedules itself again
+                // under the same name keeps its new handle
                 this._timers[name] = null;
+                fn();
             }, delay);
         } else {
             throw new Error(
                 name
-                    ? 'Cannot create named timeout without a name'
-                    : 'Cannot create a timeout without a callback',
+                    ? 'Cannot create a timeout without a callback'
+                    : 'Cannot create named timeout without a name',
             );
         }
     }
@@ -84,8 +86,8 @@ export class AsyncHandler implements OnDestroy {
         } else {
             throw new Error(
                 name
-                    ? 'Cannot create named interval without a name'
-                    : 'Cannot create a interval without a callback',
+                    ? 'Cannot create an interval without a callback'
+                    : 'Cannot create named interval without a name',
             );
         }
     }
