@@ -45,6 +45,7 @@ export interface MetadataDetailsModalData {
                 <mat-form-field appearance="outline">
                     <input
                         matInput
+                        id="property-name"
                         placeholder="Property Name"
                         [formField]="form.name"
                     />
@@ -58,13 +59,14 @@ export interface MetadataDetailsModalData {
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
+                        id="description"
                         placeholder="Description"
                         [formField]="form.description"
                     ></textarea>
                 </mat-form-field>
-                <label for="system-email">Editors:</label>
+                <label for="editors">Editors:</label>
                 <mat-form-field appearance="outline" class="w-full">
-                    <mat-chip-grid #chipList aria-label="Image List">
+                    <mat-chip-grid #chipList aria-label="Editors">
                         @for (item of editors; track item) {
                             <mat-chip-row (removed)="removeEditor(item)">
                                 <div class="max-w-md truncate">{{ item }}</div>
@@ -78,6 +80,7 @@ export interface MetadataDetailsModalData {
                         }
                     </mat-chip-grid>
                     <input
+                        id="editors"
                         placeholder="Editors..."
                         [matChipInputFor]="chipList"
                         [matChipInputSeparatorKeyCodes]="separators"
@@ -89,6 +92,7 @@ export interface MetadataDetailsModalData {
                 <mat-form-field appearance="outline">
                     <input
                         matInput
+                        id="schema"
                         placeholder="Schema"
                         [formField]="form.schema"
                     />

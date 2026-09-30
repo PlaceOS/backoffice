@@ -72,6 +72,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="domain-name"
                                         [placeholder]="
                                             'COMMON.FIELD_NAME' | translate
                                         "
@@ -102,6 +103,7 @@ import {
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="domain"
                                         [placeholder]="
                                             'DOMAINS.NAME_PLACEHOLDER'
                                                 | translate
@@ -129,6 +131,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="login-url"
                                     [placeholder]="
                                         'DOMAINS.LOGIN_URL' | translate
                                     "
@@ -159,6 +162,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="logout-url"
                                     [placeholder]="
                                         'DOMAINS.LOGOUT_URL' | translate
                                     "
@@ -183,6 +187,7 @@ import {
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
+                                    id="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
@@ -205,7 +210,9 @@ import {
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-chip-grid
                                     #chipList
-                                    aria-label="Image List"
+                                    [attr.aria-label]="
+                                        'DOMAINS.EMAIL_DOMAINS' | translate
+                                    "
                                 >
                                     @for (
                                         item of email_domain_list();

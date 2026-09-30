@@ -87,6 +87,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="zone-name"
                                         [placeholder]="
                                             'COMMON.FIELD_NAME' | translate
                                         "
@@ -112,6 +113,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="zone-display"
                                         [placeholder]="
                                             'ZONES.DISPLAY_NAME' | translate
                                         "
@@ -174,6 +176,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
+                                    id="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
@@ -191,6 +194,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="location"
                                         [placeholder]="
                                             'ZONES.LOCATION_PLACEHOLDER'
                                                 | translate
@@ -212,6 +216,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 </div>
                                 <input
                                     matInput
+                                    id="timezone"
                                     [formField]="form.timezone"
                                     [placeholder]="
                                         'COMMON.TIMEZONE' | translate
@@ -244,6 +249,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="code"
                                         [placeholder]="
                                             'ZONES.CODE_PLACEHOLDER' | translate
                                         "
@@ -260,6 +266,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="type"
                                         [placeholder]="
                                             'ZONES.TYPE_PLACEHOLDER' | translate
                                         "
@@ -303,6 +310,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="map"
                                     [placeholder]="'ZONES.MAP_URL' | translate"
                                     [formField]="form.map_id"
                                 />

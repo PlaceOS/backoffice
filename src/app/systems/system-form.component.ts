@@ -285,7 +285,9 @@ import {
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-chip-grid
                                     #chipList
-                                    aria-label="Image List"
+                                    [attr.aria-label]="
+                                        'SYSTEMS.FEATURES' | translate
+                                    "
                                 >
                                     @for (item of feature_list(); track item) {
                                         <mat-chip-row

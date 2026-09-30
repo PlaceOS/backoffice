@@ -67,11 +67,12 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                         name="fakepasswordremembered"
                     />
                     <div class="field">
-                        <label for="domain">{{
+                        <label id="user-domain-label">{{
                             'DOMAINS.SINGULAR' | translate
                         }}</label>
                         <mat-form-field appearance="outline" class="h-12">
                             <mat-select
+                                aria-labelledby="user-domain-label"
                                 [formField]="form.authority_id"
                                 [placeholder]="
                                     'ADMIN.SELECT_DOMAIN' | translate
@@ -89,7 +90,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                         @if (form.first_name) {
                             <div class="field">
                                 <label
-                                    for="system-name"
+                                    for="first-name"
                                     [class.error]="
                                         form.first_name().invalid() &&
                                         form.first_name().touched()
@@ -101,6 +102,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="first-name"
                                         [placeholder]="
                                             'USERS.FIRST_NAME' | translate
                                         "
@@ -114,13 +116,14 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                         }
                         @if (form.last_name) {
                             <div class="field">
-                                <label for="system-name"
+                                <label for="last-name"
                                     >{{ 'USERS.LAST_NAME' | translate
                                     }}<span>*</span>
                                 </label>
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="last-name"
                                         [placeholder]="
                                             'USERS.LAST_NAME' | translate
                                         "
@@ -148,6 +151,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="useremail"
                                     [placeholder]="
                                         'COMMON.FIELD_EMAIL' | translate
                                     "
@@ -169,6 +173,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="staff-id"
                                         [placeholder]="
                                             'USERS.STAFF_ID' | translate
                                         "
@@ -185,6 +190,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="card-number"
                                         [placeholder]="
                                             'USERS.STAFF_CARD' | translate
                                         "
@@ -225,6 +231,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="new-password"
                                         autocomplete="new-password"
                                         [type]="
                                             show_password()
@@ -236,14 +243,20 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                         "
                                         [formField]="form.password"
                                     />
-                                    <icon
+                                    <button
+                                        icon
                                         matSuffix
+                                        type="button"
+                                        [attr.aria-label]="
+                                            'COMMON.PASSWORD_TOGGLE' | translate
+                                        "
+                                        [attr.aria-pressed]="show_password()"
                                         (click)="
                                             show_password.set(!show_password())
                                         "
                                     >
-                                        visibility
-                                    </icon>
+                                        <icon>visibility</icon>
+                                    </button>
                                     <mat-error>{{
                                         'USERS.PASSWORD_REQUIRED' | translate
                                     }}</mat-error>
@@ -264,6 +277,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 <mat-form-field appearance="outline">
                                     <input
                                         matInput
+                                        id="confirm-password"
                                         [type]="
                                             show_confirm() ? 'text' : 'password'
                                         "
@@ -272,14 +286,20 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                         "
                                         [formField]="form.confirm_password"
                                     />
-                                    <icon
+                                    <button
+                                        icon
                                         matSuffix
+                                        type="button"
+                                        [attr.aria-label]="
+                                            'COMMON.PASSWORD_TOGGLE' | translate
+                                        "
+                                        [attr.aria-pressed]="show_confirm()"
                                         (click)="
                                             show_confirm.set(!show_confirm())
                                         "
                                     >
-                                        visibility
-                                    </icon>
+                                        <icon>visibility</icon>
+                                    </button>
                                     <mat-error>{{
                                         'USERS.PASSWORDS_MATCH' | translate
                                     }}</mat-error>
@@ -301,7 +321,9 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-chip-grid
                                     #chipList
-                                    aria-label="Image List"
+                                    [attr.aria-label]="
+                                        'USERS.FIELD_GROUPS' | translate
+                                    "
                                 >
                                     @for (item of group_list(); track item) {
                                         <mat-chip-row
@@ -325,6 +347,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                     }
                                 </mat-chip-grid>
                                 <input
+                                    id="groups"
                                     [placeholder]="
                                         'USERS.FIELD_GROUPS' | translate
                                     "
@@ -350,6 +373,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
+                                    id="image"
                                     [placeholder]="'USERS.IMAGE' | translate"
                                     [formField]="form.image"
                                 />

@@ -73,6 +73,7 @@
         "ITEM_ADD_SELECTED": "Add selected",
         "PROCESSING_REQUEST": "Processing request...",
         "PASSWORD": "Password",
+        "PASSWORD_TOGGLE": "Show password",
         "IMAGE_ADD_URL": "Add image via URL",
         "IMAGE_UPLOADS": "Upload Image(s)",
         "DROP_UPLOAD_MSG": "Drop files to upload them to the cloud",
