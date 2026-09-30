@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+    buildCronString,
     generateTriggerActionFormModel,
     generateTriggerConditionFormModel,
     generateTriggerFormModel,
     generateTriggerSettingsFormModel,
+    parseCronString,
     validateEmailList,
 } from '../../app/triggers/triggers.utilities';
 
@@ -95,5 +97,39 @@ describe('triggers.utilities', () => {
         expect(validateEmailList({ value: ['invalid'] } as any)).toEqual({
             email: true,
         });
+    });
+
+    it('builds valid cron strings for each schedule period', () => {
+        const parts = {
+            minute: 30,
+            hour: 9,
+            day_of_week: 1,
+            day_of_month: 15,
+            month: 6,
+        };
+        expect(buildCronString('day', parts)).toBe('30 9 * * *');
+        expect(buildCronString('week', parts)).toBe('30 9 * * 1');
+        expect(buildCronString('month', parts)).toBe('30 9 15 * *');
+        expect(buildCronString('year', parts)).toBe('30 9 15 6 *');
+        expect(buildCronString('custom', parts)).toBeNull();
+    });
+
+    it.each([
+        ['* * * * *', 'minute'],
+        ['30 * * * *', 'hour'],
+        ['30 9 * * *', 'day'],
+        ['30 9 * * 0', 'week'],
+        ['30 9 15 * *', 'month'],
+        ['30 9 15 6 *', 'year'],
+    ] as const)('round-trips %s as a %s schedule', (cron, period) => {
+        const parsed = parseCronString(cron);
+        expect(parsed.period).toBe(period);
+        expect(buildCronString(parsed.period, parsed.parts)).toBe(cron);
+    });
+
+    it('treats ranges, steps and lists as custom', () => {
+        for (const cron of ['*/5 * * * *', '0 9 * * 1-5', '0 9,17 * * *']) {
+            expect(parseCronString(cron).period).toBe('custom');
+        }
     });
 });

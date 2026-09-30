@@ -203,3 +203,81 @@ export function applyTriggerActionFormSchema(
         },
     });
 }
+
+export type CronPeriod =
+    | 'minute'
+    | 'hour'
+    | 'day'
+    | 'week'
+    | 'month'
+    | 'year'
+    | 'custom';
+
+/** Values for the simple schedule editor. Month is 1-12, weekday is 0-6. */
+export interface CronParts {
+    minute: number;
+    hour: number;
+    day_of_week: number;
+    day_of_month: number;
+    month: number;
+}
+
+/**
+ * Build a cron string from the simple schedule editor values.
+ * Returns `null` for the `custom` period as the string is edited directly.
+ */
+export function buildCronString(
+    period: CronPeriod,
+    parts: CronParts,
+): string | null {
+    const minute = parts.minute % 60;
+    const { hour, day_of_week, day_of_month, month } = parts;
+    switch (period) {
+        case 'minute':
+            return minute ? `*/${minute} * * * *` : '* * * * *';
+        case 'hour':
+            return hour ? `${minute} */${hour} * * *` : `${minute} * * * *`;
+        case 'day':
+            return `${minute} ${hour} * * *`;
+        case 'week':
+            return `${minute} ${hour} * * ${day_of_week}`;
+        case 'month':
+            return `${minute} ${hour} ${day_of_month} * *`;
+        case 'year':
+            return `${minute} ${hour} ${day_of_month} ${month} *`;
+    }
+    return null;
+}
+
+/**
+ * Parse a cron string into the simple schedule editor values.
+ * Strings with ranges, steps or lists use the `custom` period.
+ */
+export function parseCronString(cron: string): {
+    period: CronPeriod;
+    parts: CronParts;
+} {
+    const cron_str = (cron || '').trim() || '* * * * *';
+    const [minute, hour, day, month, weekday] = cron_str.split(/\s+/);
+    const parts: CronParts = {
+        minute: +minute || 0,
+        hour: +hour || 0,
+        day_of_week: +weekday || 0,
+        day_of_month: +day || 1,
+        month: +month || 1,
+    };
+    if (/[-/,]/.test(cron_str)) return { period: 'custom', parts };
+    const is_set = (value?: string) => !!value && value !== '*';
+    const period: CronPeriod = is_set(month)
+        ? 'year'
+        : is_set(day)
+          ? 'month'
+          : is_set(weekday)
+            ? 'week'
+            : is_set(hour)
+              ? 'day'
+              : is_set(minute)
+                ? 'hour'
+                : 'minute';
+    return { period, parts };
+}
