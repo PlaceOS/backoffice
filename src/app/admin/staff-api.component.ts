@@ -260,7 +260,7 @@ export class PlaceStaffAPIComponent implements OnInit {
             },
             this._dialog,
         );
-        if (!details || !details.reason) return;
+        if (details.reason !== 'done') return;
         details.loading('Removing tenant from domain...');
         const system = await del(`/api/staff/v1/tenants/${tenant.id}`).catch(
             (err) => {

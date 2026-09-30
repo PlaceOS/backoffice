@@ -282,7 +282,7 @@ export class AdminSignagePluginsComponent
             },
             this._dialog,
         );
-        if (!details) return;
+        if (details.reason !== 'done') return;
         details.loading(i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_LOADING'));
         const err = await removeSignagePlugin(item.id).catch((_) => _);
         details.close();

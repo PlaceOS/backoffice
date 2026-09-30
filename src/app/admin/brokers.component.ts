@@ -251,7 +251,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
                 },
                 this._dialog,
             );
-            if (!details) return;
+            if (details.reason !== 'done') return;
             details.loading('Deleting broker...');
             const err = await removeBroker(item.id).catch((_) => _);
             details.close();

@@ -271,7 +271,7 @@ export class PlaceExtensionsComponent implements OnInit {
             await this.updateDomain(ext_list).catch((e) =>
                 notifyError(`Error removing extension: ${e}`),
             );
-            ref.componentInstance.loading.set('');
+            ref.componentInstance?.loading.set('');
             ref.close();
         });
     }

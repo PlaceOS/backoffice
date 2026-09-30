@@ -279,7 +279,7 @@ export class SystemStateService extends AsyncHandler {
             content: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
             icon: { type: 'icon', class: 'backoffice-controller-play' },
         });
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         details.loading('Starting system...');
         const error = await startSystem(this.active_item.id)
             .then(() => null)
@@ -307,7 +307,7 @@ export class SystemStateService extends AsyncHandler {
             content: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
             icon: { type: 'icon', class: 'backoffice-controller-stop' },
         });
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         details.loading('Stopping system...');
         const error = await stopSystem(this.active_item.id)
             .then(() => null)
@@ -383,7 +383,7 @@ export class SystemStateService extends AsyncHandler {
             ),
             waitForEvent(ref.afterClosed()),
         ]);
-        if (!details?.reason) return ref.close();
+        if (details?.reason !== 'action') return ref.close();
         const system = ref.componentInstance.item as PlaceSystem;
         if (!system) return ref.close();
         await addSystemModule(system.id, device.id).catch((_e) => {
@@ -424,7 +424,7 @@ export class SystemStateService extends AsyncHandler {
             ),
             waitForEvent(ref.afterClosed()),
         ]);
-        if (!details?.reason) return ref.close();
+        if (details?.reason !== 'action') return ref.close();
         const t = await this.addTrigger(
             ref.componentInstance.item as PlaceTrigger,
         );
@@ -463,7 +463,7 @@ export class SystemStateService extends AsyncHandler {
                 ),
                 waitForEvent(ref.afterClosed()),
             ]);
-            if (!details?.reason) return;
+            if (details?.reason !== 'action') return;
             instance.loading = 'Saving trigger settings...';
 
             const url = `${apiEndpoint()}/systems/${
@@ -491,7 +491,8 @@ export class SystemStateService extends AsyncHandler {
             content: `<p>Are you sure you want remove trigger "${trigger.name}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
             icon: { type: 'icon', content: 'delete' },
         });
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
+        details.loading('Removing trigger...');
         await removeSystemTrigger(this.active_item.id, trigger.id).catch(
             (err) => {
                 details.close();
@@ -514,7 +515,7 @@ export class SystemStateService extends AsyncHandler {
             content: `Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.`,
             icon: { type: 'icon', content: 'layers' },
         });
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         details.loading('Updating module order...');
         const list: string[] = [...this.active_item.modules];
         moveItemInArray(list, fst, snd);
@@ -545,7 +546,7 @@ export class SystemStateService extends AsyncHandler {
             content: `Are you sure you want to sort modules by class?<br>Modules with the same class name will be grouped together.`,
             icon: { type: 'icon', content: 'sort' },
         });
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         details.loading('Sorting modules by class...');
         let sorted_modules = [];
         if (alphabetical) {
@@ -616,7 +617,7 @@ export class SystemStateService extends AsyncHandler {
             content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
             icon: { type: 'icon', content: 'layers' },
         });
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         details.loading('Updating zone order...');
         const resp = await updateSystem(this.active_item.id, {
             ...this.active_item,
@@ -666,7 +667,8 @@ export class SystemStateService extends AsyncHandler {
             content: `Remove ${device.driver_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
             icon: { type: 'icon', content: 'delete' },
         });
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
+        details.loading('Removing module...');
         const system = await removeSystemModule(
             this.active_item.id,
             device.id,
@@ -715,7 +717,7 @@ export class SystemStateService extends AsyncHandler {
             content: `<p>Are you sure you want remove zone "${zone.name}" from the system?</p>Configuration will be updated immediately.`,
             icon: { type: 'icon', content: 'delete' },
         });
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         const zones = this.active_item.zones.filter((z) => z !== zone.id);
         const system = await updateSystem(this.active_item.id, {
             ...this.active_item,

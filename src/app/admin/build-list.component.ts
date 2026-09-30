@@ -166,7 +166,7 @@ export class PlaceBuildListComponent implements OnInit {
             },
             this._dialog,
         );
-        if (!details) return;
+        if (details.reason !== 'done') return;
         details.loading(i18n('ADMIN.BUILD_LIST_REMOVE_LOADING'));
         const err = await cancelBuildJob(i.id).catch((_) => _);
         details.close();

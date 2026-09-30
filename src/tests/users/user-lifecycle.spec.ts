@@ -163,7 +163,7 @@ describe('user restoration', () => {
 
     it('does not restore after cancellation', async () => {
         vi.mocked(openConfirmModal).mockResolvedValue({
-            reason: '',
+            reason: undefined,
             close,
             loading,
         });

@@ -223,12 +223,15 @@ export class APIKeyService {
         );
         if (details?.reason !== 'done') return;
         details.loading('Removing API key...');
-        await remove({
-            id: key.id,
-            query_params: {},
-            path: 'api_keys',
-        });
-        details.close();
+        try {
+            await remove({
+                id: key.id,
+                query_params: {},
+                path: 'api_keys',
+            });
+        } finally {
+            details.close();
+        }
         notifySuccess('Successfully removed API key.');
         this._change.set(Date.now());
     }
