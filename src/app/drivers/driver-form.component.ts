@@ -177,15 +177,21 @@ import {
                             [formField]="form.description"
                         ></textarea>
                     </mat-form-field>
-                    <label for="default-uri">{{
-                        'DRIVERS.DEFAULT_URI' | translate
-                    }}</label>
+                    <label
+                        for="default-uri"
+                        [class.error]="fieldInvalid('default_uri')"
+                    >
+                        {{ 'DRIVERS.DEFAULT_URI' | translate }}
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             [placeholder]="'DRIVERS.DEFAULT_URI' | translate"
                             [formField]="form.default_uri"
                         />
+                        <mat-error>
+                            {{ 'MODULES.URI_REQUIRED' | translate }}
+                        </mat-error>
                     </mat-form-field>
                     <div class="flex items-center space-x-4">
                         <div class="flex flex-1 flex-col">

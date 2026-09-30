@@ -44,4 +44,19 @@ describe('driver form validation', () => {
             expect(fields().valid()).toBe(true);
         },
     );
+
+    it('rejects a default URI without a scheme', () => {
+        const { fields } = createTestForm(
+            {
+                ...generateDriverFormModel(),
+                name: 'Display',
+                module_name: 'Display',
+                default_uri: 'example.com:8080',
+            },
+            applyDriverFormSchema,
+        );
+        expect(fields.default_uri().invalid()).toBe(true);
+        fields.default_uri().value.set('https://example.com:8080');
+        expect(fields().valid()).toBe(true);
+    });
 });

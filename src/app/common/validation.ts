@@ -15,11 +15,16 @@ export const validateIpAddress = (ctrl) =>
 /** URI schemes that can run script when used as a link */
 const UNSAFE_URI_SCHEMES = ['javascript', 'vbscript', 'data'];
 
+/**
+ * Validates a driver or module URI. The value must use the explicit
+ * `scheme://rest` form (e.g. `https://host:443/path`, `wss://host`).
+ * Bare `host:port` values are rejected, as are script schemes.
+ */
 export const validateURI = (ctrl) => {
     if (!ctrl.value) {
         return null;
     } else {
-        const match = /^\s*([a-z][a-z0-9+.-]*):(\/?\/?)\S+/i.exec(ctrl.value);
+        const match = /^([a-z][a-z0-9+.-]*):\/\/\S+$/i.exec(ctrl.value);
         return match && !UNSAFE_URI_SCHEMES.includes(match[1].toLowerCase())
             ? null
             : { pattern: true };

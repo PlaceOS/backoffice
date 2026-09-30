@@ -106,14 +106,12 @@ describe('validation.ts utilities', () => {
                 expect(validateURI(ctrl)).toBeNull();
             });
 
-            it('should accept mailto:user@example.com', () => {
-                const ctrl = { value: 'mailto:user@example.com' };
-                expect(validateURI(ctrl)).toBeNull();
-            });
-
-            it('should accept custom:scheme', () => {
-                const ctrl = { value: 'custom:scheme' };
-                expect(validateURI(ctrl)).toBeNull();
+            it.each([
+                'wss://example.com/socket',
+                'udp://192.168.1.1:161',
+                'https://192.168.1.1:8443/api',
+            ])('should accept %s', (value) => {
+                expect(validateURI({ value })).toBeNull();
             });
         });
 
@@ -129,7 +127,21 @@ describe('validation.ts utilities', () => {
             });
 
             it.each([
+                '192.168.1.1:80',
+                'example.com:8080',
+                'localhost:80',
+                'mailto:user@example.com',
+                'custom:scheme',
+                'http://',
+                'http://example.com/a b',
+            ])('should reject malformed URI %s', (value) => {
+                expect(validateURI({ value })).toEqual({ pattern: true });
+            });
+
+            it.each([
                 'javascript:alert(1)',
+                'javascript://%0aalert(1)',
+                'data://text/html,x',
                 ' JavaScript://%0aalert(1)',
                 'vbscript:msgbox(1)',
                 'data:text/html,<script>alert(1)</script>',
