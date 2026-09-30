@@ -8,8 +8,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get, PlaceDomain } from '@placeos/ts-client';
-import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
+import { readError } from '../common/errors';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -256,18 +256,18 @@ export class PlaceStaffAPIComponent implements OnInit {
         );
         if (details.reason !== 'done') return;
         details.loading('Removing tenant from domain...');
-        const system = await del(`/api/staff/v1/tenants/${tenant.id}`).catch(
-            (err) => {
+        const failed = await del(`/api/staff/v1/tenants/${tenant.id}`)
+            .then(() => false)
+            .catch(async (err) => {
                 notifyError(
-                    `Error removing module ${tenant.id} from domain. Error: ${describeError(
+                    `Error removing tenant ${tenant.name}. Error: ${await readError(
                         err,
                     )}`,
                 );
                 return true;
-            },
-        );
+            });
         details.close();
-        if (system) return;
+        if (failed) return;
         notifySuccess(`Successfully removed tenant from domain.`);
         await this.loadTenants();
     }

@@ -7,8 +7,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, updateDomain } from '@placeos/ts-client';
-import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
+import { readError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
@@ -247,10 +247,11 @@ export class PlaceExtensionsComponent implements OnInit {
             ext_list.push(event.metadata as BackofficeExtension);
             try {
                 await this.updateDomain(ext_list);
-            } catch (e) {
+            } catch (err) {
                 ref.componentInstance.loading.set('');
-                notifyError(`Error saving extension: ${e}`);
-                return;
+                return notifyError(
+                    `Error saving extension: ${await readError(err)}`,
+                );
             }
             ref.componentInstance.loading.set('');
             ref.close();
@@ -275,8 +276,8 @@ export class PlaceExtensionsComponent implements OnInit {
             ref.componentInstance.loading.set('Removing extension...');
             let ext_list = this.extensions();
             ext_list = ext_list.filter((i) => !isSameExtension(i, item));
-            await this.updateDomain(ext_list).catch((e) =>
-                notifyError(`Error removing extension: ${describeError(e)}`),
+            await this.updateDomain(ext_list).catch(async (e) =>
+                notifyError(`Error removing extension: ${await readError(e)}`),
             );
             ref.componentInstance?.loading.set('');
             ref.close();

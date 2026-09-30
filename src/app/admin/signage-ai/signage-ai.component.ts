@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { escapeHtml } from '../../common/general';
+import { readError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
@@ -329,8 +330,7 @@ export class SignageAIComponent implements OnInit {
             // the confirm modal owns its own spinner, so it has to be told
             resp.close();
             notifyError(
-                (error as Error)?.message ||
-                    i18n('ADMIN.AI_PROVIDER_REMOVE_FAILED'),
+                `${i18n('ADMIN.AI_PROVIDER_REMOVE_FAILED')}: ${await readError(error)}`,
             );
             return;
         }

@@ -26,6 +26,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Md5 } from 'ts-md5';
+import { readError } from '../common/errors';
 import {
     addSignalChipItem,
     getInvalidSignalFields,
@@ -321,11 +322,7 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}_SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await (err as Response).text?.()) ||
-                                (err as Error).message ||
-                                err,
-                        ),
+                        error: await readError(err),
                     }),
                 );
             }

@@ -37,6 +37,22 @@ describe('readError', () => {
         );
     });
 
+    it('uses the error field of a JSON body without a message', async () => {
+        const error = new Response('{"error":"invalid token"}', {
+            status: 401,
+            statusText: 'Unauthorized',
+        });
+        expect(await readError(error)).toBe('401 Unauthorized: invalid token');
+    });
+
+    it('shows only the status for an empty body', async () => {
+        const error = new Response('', {
+            status: 500,
+            statusText: 'Internal Server Error',
+        });
+        expect(await readError(error)).toBe('500 Internal Server Error');
+    });
+
     it('adds a plain text body and leaves the original readable', async () => {
         const error = new Response('driver failed to compile', {
             status: 500,

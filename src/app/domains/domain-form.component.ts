@@ -352,11 +352,7 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
                 this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
-                        error: JSON.stringify(
-                            (await (err as Response).text?.()) ||
-                                (err as Error).message ||
-                                err,
-                        ),
+                        error: await readError(err),
                     }),
                 );
             }

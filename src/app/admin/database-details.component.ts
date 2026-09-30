@@ -4,7 +4,7 @@ import { addZone, PlaceZone, queryZones, showZone } from '@placeos/ts-client';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { describeError } from '../common/errors';
+import { readError } from '../common/errors';
 import { csvToJson, downloadFile, jsonToCsv } from '../common/general';
 import {
     notifyError,
@@ -200,7 +200,7 @@ export class PlaceDatabaseDetailsComponent {
             await this.importZoneTree(zones);
         } catch (err) {
             notifyError(
-                `Error importing zone tree. Error: ${describeError(err)}`,
+                `Error importing zone tree. Error: ${await readError(err)}`,
             );
         }
         this.importing_zones.set(false);
@@ -221,7 +221,7 @@ export class PlaceDatabaseDetailsComponent {
             notifySuccess(`Exported ${zones.length} zones.`);
         } catch (err) {
             notifyError(
-                `Error exporting zone tree. Error: ${describeError(err)}`,
+                `Error exporting zone tree. Error: ${await readError(err)}`,
             );
         }
         this.exporting_zones.set(false);
@@ -264,7 +264,7 @@ export class PlaceDatabaseDetailsComponent {
             notifyError(
                 `Error importing zone tree. Created ${id_map.size} of ${
                     zones.length
-                } zones before the error. Error: ${describeError(err)}`,
+                } zones before the error. Error: ${await readError(err)}`,
             );
             return;
         }
