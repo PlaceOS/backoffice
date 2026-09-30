@@ -1,12 +1,34 @@
 import {
     humanReadableByteCount,
+    initUploads,
     uploadFile as uploadNewFile,
 } from '@placeos/cloud-uploads';
+import { token } from '@placeos/ts-client';
 
 import { randomInt } from './general';
 import { SubscriptionLike } from './signals';
 
 import * as blobUtil from 'blob-util';
+
+/** Token last passed to the upload service */
+let upload_token = '';
+
+/**
+ * Initialise the upload service with the current PlaceOS token.
+ * Call before each upload. The upload library has no token setter, so it is
+ * initialised again only when the token has changed since the last call.
+ */
+export function syncUploadToken() {
+    const current_token = token();
+    if (!current_token || current_token === upload_token) return;
+    upload_token = current_token;
+    initUploads({
+        auto_start: true,
+        token: current_token,
+        endpoint: '/api/engine/v2/uploads',
+        worker_url: 'assets/md5_worker.js',
+    });
+}
 
 function uploadURL(id: string) {
     return `${location.origin}/api/engine/v2/uploads/${encodeURIComponent(
@@ -66,6 +88,7 @@ export function uploadFile(
                         arrayBuffer as ArrayBuffer,
                         file.type,
                     );
+                    syncUploadToken();
                     const upload = await uploadNewFile(file, {
                         permissions,
                         public: is_public,

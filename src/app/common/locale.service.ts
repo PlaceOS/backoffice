@@ -166,7 +166,11 @@ export class LocaleService {
         return this._current_locale_short;
     }
 
-    public setLocale(locale: string) {
+    /**
+     * Set the active locale.
+     * Resolves when the locale mappings have loaded.
+     */
+    public setLocale(locale: string): Promise<void> {
         this._current_locale = locale;
         this._current_locale_short = this._current_locale.split('-')[0];
         if (!this._locale_mappings[locale] && !this._load_promises[locale]) {
@@ -174,6 +178,7 @@ export class LocaleService {
         }
         localStorage.setItem(`${STORE_KEY}`, locale);
         log('LOCALE', `Locale set to "${locale}"`);
+        return this._load_promises[locale] || Promise.resolve();
     }
 
     private async _loadLocale(locale: string) {
