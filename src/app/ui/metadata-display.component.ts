@@ -330,6 +330,7 @@ export class MetadataDisplayComponent
         );
         if (result.reason !== 'done') return;
         await removeMetadata(this.item().id, { name: field }).catch((err) => {
+            result.close();
             notifyError(
                 `Error removing old "${field}" metadata. Error: ${
                     err.response || err.message || err
@@ -337,6 +338,7 @@ export class MetadataDisplayComponent
             );
             throw err;
         });
+        result.close();
         notifySuccess(`Successfully removed "${field}" metadata.`);
         this.metadata.set(
             this.metadata().filter((prop) => prop && prop.name !== field),

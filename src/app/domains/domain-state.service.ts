@@ -246,7 +246,7 @@ export class DomainStateService {
             ),
             waitForEvent(ref.afterClosed()),
         ]);
-        if (!details) return;
+        if (details.reason !== 'done') return;
         this._changed.set(new Date().valueOf());
     }
 
@@ -263,7 +263,7 @@ export class DomainStateService {
             },
             this._dialog,
         );
-        if (!details) return;
+        if (details.reason !== 'done') return;
         details.loading('Deleting domain application...');
         const err = await removeApplication(item.id).catch((_) => _);
         details.close();
@@ -294,7 +294,7 @@ export class DomainStateService {
             ),
             waitForEvent(ref.afterClosed()),
         ]);
-        if (!details) return;
+        if (details.reason !== 'done') return;
         this._changed.set(new Date().valueOf());
     }
 

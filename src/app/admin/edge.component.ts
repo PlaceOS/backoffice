@@ -233,7 +233,7 @@ export class PlaceEdgeComponent implements OnInit {
             },
             this._dialog,
         );
-        if (!details) return;
+        if (details.reason !== 'done') return;
         details.loading('Removing edge...');
         const err = await removeEdge(i.id).catch((_) => _);
         details.close();

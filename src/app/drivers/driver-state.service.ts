@@ -111,7 +111,7 @@ export class DriverStateService {
             },
             this._dialog,
         );
-        if (!details?.reason) return details.close();
+        if (details.reason !== 'done') return details.close();
         details.loading('Updating driver...');
         const success = await updateDriver(item.id, {
             ...item,
@@ -133,7 +133,7 @@ export class DriverStateService {
             },
             this._dialog,
         );
-        if (!details?.reason) return details.close();
+        if (details.reason !== 'done') return details.close();
         details.loading('Recompiling driver... This may take a while.');
         await recompileDriver(item.id).catch(async (e) => {
             console.log('Error:', e);
@@ -160,7 +160,7 @@ export class DriverStateService {
             },
             this._dialog,
         );
-        if (!details?.reason) return details.close();
+        if (details.reason !== 'done') return details.close();
         details.loading('Reload driver... This may take a while.');
         const success = await reloadDriver(item.id).catch(() => false);
         if (success === false) {
@@ -186,7 +186,7 @@ export class DriverStateService {
             },
             this._dialog,
         );
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         const system = await removeSystemModule(
             this.active_item.id,
             device.id,

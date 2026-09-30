@@ -144,11 +144,11 @@ export class TriggerStateService {
             {
                 title: i18n('TRIGGERS.REORDER_CONFIRM_TITLE', { type }),
                 content: i18n('TRIGGERS.REORDER_CONFIRM_MSG'),
-                icon: { type: 'icon', content: 'delete' },
+                icon: { type: 'icon', content: 'reorder' },
             },
             this._dialog,
         );
-        if (!details) return;
+        if (details.reason !== 'done') return;
         const list: Array<TriggerFunction | TriggerMailer> = [
             ...(type === 'function'
                 ? this.active_item.actions.functions
@@ -173,6 +173,7 @@ export class TriggerStateService {
             ...this.active_item.toJSON(),
             actions,
         }).catch((_) => _);
+        details.close();
         if (!(resp instanceof PlaceTrigger)) {
             const error = resp as { response?: string; message?: string };
             return notifyError(
@@ -198,7 +199,7 @@ export class TriggerStateService {
             },
             this._dialog,
         );
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         details.loading(i18n('TRIGGERS.REMOVE_CONDITION_LOADING'));
         const item = this.active_item;
         const conditions = {
@@ -240,7 +241,7 @@ export class TriggerStateService {
             },
             this._dialog,
         );
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         details.loading(i18n('TRIGGERS.REMOVE_ACTION_LOADING'));
         const item = this.active_item;
         const actions = {
@@ -290,7 +291,7 @@ export class TriggerStateService {
             },
             this._dialog,
         );
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         details.loading(i18n('TRIGGERS.REMOVE_INSTANCE_LOADING', { type }));
         const method =
             type === 'zone' ? removeSystemTrigger : removeSystemTrigger;

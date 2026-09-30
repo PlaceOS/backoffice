@@ -539,12 +539,15 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         );
         if (result?.reason !== 'done') return;
         result.loading(i18n('ADMIN.UPLOADS_LIB_REMOVE_LOADING'));
-        await remove({
-            id: upload.id,
-            query_params: {},
-            path: 'uploads',
-        });
-        result.close();
+        try {
+            await remove({
+                id: upload.id,
+                query_params: {},
+                path: 'uploads',
+            });
+        } finally {
+            result.close();
+        }
         this.refresh.update((value) => value + 1);
     }
 }

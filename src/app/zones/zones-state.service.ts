@@ -225,7 +225,7 @@ export class ZonesStateService {
             ),
             waitForEvent(ref.afterClosed()),
         ]);
-        if (!details?.reason) return ref.close();
+        if (details.reason !== 'done') return ref.close();
         const zone = await this.addTrigger(
             ref.componentInstance.item as PlaceTrigger,
         );
@@ -255,7 +255,7 @@ export class ZonesStateService {
             },
             this._dialog,
         );
-        if (!details?.reason) return;
+        if (details.reason !== 'done') return;
         const zone = await updateZone(this.active_item.id, {
             ...this.active_item,
             triggers: this.active_item.triggers.filter((t) => t !== trigger.id),

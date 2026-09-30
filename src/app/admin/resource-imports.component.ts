@@ -226,8 +226,13 @@ export class ResourceImportsComponent implements OnInit {
 
         if (resp?.reason !== 'done') return;
         resp.loading(i18n('ADMIN.RESOURCE_IMPORTS_ALL_LOADING'));
-        await Promise.all(missing.map((_) => this.importResource(_, false)));
-        resp.close();
+        try {
+            await Promise.all(
+                missing.map((_) => this.importResource(_, false)),
+            );
+        } finally {
+            resp.close();
+        }
         notifySuccess(
             i18n('ADMIN.RESOURCE_IMPORTS_ALL_SUCCESS', {
                 count: missing.length,

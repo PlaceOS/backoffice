@@ -229,8 +229,11 @@ export class StorageComponent implements OnInit {
         );
         if (resp.reason !== 'done') return;
         resp.loading(i18n('ADMIN.STORAGE_REMOVE_LOADING'));
-        await removeStorage(item.id);
-        resp.close();
+        try {
+            await removeStorage(item.id);
+        } finally {
+            resp.close();
+        }
         this.loadStorage();
     }
 
