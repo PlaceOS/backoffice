@@ -218,7 +218,11 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                     <button
                                         type="button"
                                         matSuffix
-                                        (click)="togglePassword()"
+                                        [attr.aria-label]="
+                                            'COMMON.PASSWORD_TOGGLE' | translate
+                                        "
+                                        [attr.aria-pressed]="show_password()"
+                                        (click)="togglePassword($event)"
                                     >
                                         <icon>visibility</icon>
                                     </button>
@@ -699,7 +703,9 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         this.credentials_blur.update((value) => value + 1);
     }
 
-    public togglePassword() {
+    /** Show or hide the password. Stops the click so the form field does not focus the input. */
+    public togglePassword(event: Event) {
+        event.stopPropagation();
         this.show_password.update((value) => !value);
     }
 

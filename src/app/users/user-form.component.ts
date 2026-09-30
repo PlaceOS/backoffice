@@ -253,7 +253,8 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                         "
                                         [attr.aria-pressed]="show_password()"
                                         (click)="
-                                            show_password.set(!show_password())
+                                            show_password.set(!show_password());
+                                            $event.stopPropagation()
                                         "
                                     >
                                         <icon>visibility</icon>
@@ -296,7 +297,8 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                         "
                                         [attr.aria-pressed]="show_confirm()"
                                         (click)="
-                                            show_confirm.set(!show_confirm())
+                                            show_confirm.set(!show_confirm());
+                                            $event.stopPropagation()
                                         "
                                     >
                                         <icon>visibility</icon>
