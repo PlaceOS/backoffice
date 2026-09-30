@@ -194,22 +194,35 @@ export class SettingsService extends AsyncHandler {
         element.innerText = css_string;
     }
 
+    /**
+     * Save pending settings to the user's metadata.
+     * Settings changed while the request is in flight stay pending for the
+     * next save. On failure, the unsaved settings go back into the pending list.
+     */
     private async _savePendingChanges() {
         const user = currentUser();
         if (!user?.id || !Object.keys(this._pending_settings).length) return;
-        await updateMetadata(user.id, {
-            name: 'settings',
-            description: '',
-            details: {
-                ...this._user_settings(),
-                ...this._pending_settings,
-            },
-        });
-        this._user_settings.set({
-            ...this._user_settings(),
-            ...this._pending_settings,
-        } as HashMap);
+        const pending = this._pending_settings;
         this._pending_settings = {};
+        const details = { ...this._user_settings(), ...pending } as HashMap;
+        this._user_settings.set(details);
+        try {
+            await updateMetadata(user.id, {
+                name: 'settings',
+                description: '',
+                details,
+            });
+        } catch (err) {
+            // Newer changes win over the failed ones
+            this._pending_settings = { ...pending, ...this._pending_settings };
+            log(
+                'Settings',
+                'Failed to save user settings',
+                [err as object],
+                'warn',
+                true,
+            );
+        }
     }
 
     private _setFontSize() {
