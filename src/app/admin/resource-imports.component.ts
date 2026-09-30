@@ -9,6 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { addSystem, query, querySystemsWithEmails } from '@placeos/ts-client';
 import { escapeHtml } from '../common/general';
+import { readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import {
     notifyError,
@@ -269,12 +270,12 @@ export class ResourceImportsComponent implements OnInit {
             email: resource.email,
             display_name: resource.display_name,
             capacity: resource.capacity,
-        }).catch((error) => {
+        }).catch(async (error) => {
             if (notify) {
                 notifyError(
                     i18n('ADMIN.RESOURCE_IMPORTS_ERROR', {
                         name: resource.display_name,
-                        error: error?.message || error,
+                        error: await readError(error),
                     }),
                 );
             }
@@ -324,12 +325,20 @@ export class ResourceImportsComponent implements OnInit {
             imported: false,
             system_id: '',
         }));
-        const { data } = await querySystemsWithEmails({
-            in: list.map((_) => _.email).join(','),
-        });
+        const emails = list.map((_) => _.email).filter((_) => _);
+        const { data } = emails.length
+            ? await querySystemsWithEmails({ in: emails.join(',') }).catch(
+                  async (err) => {
+                      notifyError(
+                          `Failed to check imported resources. Error: ${await readError(err)}`,
+                      );
+                      return { data: [] };
+                  },
+              )
+            : { data: [] };
         for (const resource of list) {
             const system = data.find(
-                (_) => _.email.toLowerCase() === resource.email.toLowerCase(),
+                (_) => _.email?.toLowerCase() === resource.email.toLowerCase(),
             );
             if (system) {
                 resource.imported = true;

@@ -37,7 +37,7 @@ import {
     querySupportSystems as querySystems,
 } from '../common/support-access';
 
-import { describeError } from '../common/errors';
+import { describeError, readError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
@@ -495,18 +495,17 @@ export class SystemStateService extends AsyncHandler {
         });
         if (details.reason !== 'done') return;
         details.loading('Removing trigger...');
-        await removeSystemTrigger(this.active_item.id, trigger.id).catch(
-            (err) => {
-                details.close();
-                notifyError(
-                    `Error removing trigger ${trigger.id} from system. Error: ${describeError(
-                        err,
-                    )}`,
-                );
-                throw err;
-            },
-        );
-        details.close();
+        try {
+            await removeSystemTrigger(this.active_item.id, trigger.id);
+        } catch (err) {
+            return notifyError(
+                `Error removing trigger ${trigger.id} from system. Error: ${await readError(
+                    err,
+                )}`,
+            );
+        } finally {
+            details.close();
+        }
         notifySuccess(`Successfully removed trigger from system.`);
         this.changed();
     }

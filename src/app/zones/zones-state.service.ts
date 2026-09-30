@@ -18,8 +18,8 @@ import {
     updateGroupZone,
     updateZone,
 } from '@placeos/ts-client';
-import { describeError } from '../common/errors';
 import { escapeHtml, unique } from '../common/general';
+import { describeError, readError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -261,19 +261,23 @@ export class ZonesStateService {
             this._dialog,
         );
         if (details.reason !== 'done') return;
-        const zone = await updateZone(this.active_item.id, {
-            ...this.active_item,
-            triggers: this.active_item.triggers.filter((t) => t !== trigger.id),
-        }).catch((err) => {
-            details.close();
-            notifyError(
-                `Error removing trigger ${trigger.id} from zone. Error: ${describeError(
+        let zone: PlaceZone;
+        try {
+            zone = await updateZone(this.active_item.id, {
+                ...this.active_item,
+                triggers: this.active_item.triggers.filter(
+                    (t) => t !== trigger.id,
+                ),
+            });
+        } catch (err) {
+            return notifyError(
+                `Error removing trigger ${trigger.id} from zone. Error: ${await readError(
                     err,
                 )}`,
             );
-            throw err;
-        });
-        details.close();
+        } finally {
+            details.close();
+        }
         notifySuccess(`Successfully removed trigger from zone.`);
         if (zone) this._service.replaceItem(zone as unknown as Identity);
     }

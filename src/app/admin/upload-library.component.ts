@@ -20,7 +20,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { apiKey, cleanObject, query, remove, token } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { escapeHtml } from '../common/general';
-import { describeError } from '../common/errors';
+import { readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import {
     notifyError,
@@ -417,7 +417,12 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                     },
                     [null, '', undefined],
                 ),
-            }).catch(() => ({ data: [] as UploadInfo[] }));
+            }).catch(async (err) => {
+                notifyError(
+                    `Failed to load uploads. Error: ${await readError(err)}`,
+                );
+                return { data: [] as UploadInfo[] };
+            });
             return response.data
                 .map((_) => ({ ..._, mime_type: getMimeType(_.file_name) }))
                 .sort((a, b) => a.file_name.localeCompare(b.file_name));
@@ -471,11 +476,10 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                                 .catch(() => null),
                         );
                     }
-                    // Cancelling the permissions modal rejects that file only
-                    const results = await Promise.allSettled(uploads);
-                    const id_list = results
-                        .filter((_) => _.status === 'fulfilled')
-                        .map((_) => (_ as PromiseFulfilledResult<number>).value);
+                    // Cancelled uploads resolve to null, so drop them
+                    const id_list = (await Promise.all(uploads)).filter(
+                        (_): _ is number => _ != null,
+                    );
                     if (!id_list.length) return;
                     this.loading.set(true);
                     let polls = 0;
@@ -572,7 +576,7 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
             });
         } catch (err) {
             return notifyError(
-                `Failed to remove upload. Error: ${describeError(err)}`,
+                `Failed to remove upload. Error: ${await readError(err)}`,
             );
         } finally {
             result.close();
