@@ -1,16 +1,7 @@
-import {
-    PlaceDriver,
-    PlaceDriverRole,
-    PlaceRepository,
-} from '@placeos/ts-client';
+import { PlaceDriver, PlaceDriverRole } from '@placeos/ts-client';
 
 import { max, min, required, SchemaFn, validate } from '@angular/forms/signals';
 import { validateURI } from '../common/validation';
-
-export interface DriverInitData {
-    repo: PlaceRepository;
-    driver: PlaceDriver;
-}
 
 export interface DriverFormModel {
     id: string;

@@ -13,12 +13,9 @@ import { form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
-    addSettings,
     addSystem,
     cleanObject,
-    EncryptionLevel,
     PlaceResource,
-    PlaceSettings,
     PlaceSystem,
     updateSystem,
 } from '@placeos/ts-client';
@@ -720,22 +717,6 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
                 }),
             );
         }
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.loading.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
     }
 
     /**

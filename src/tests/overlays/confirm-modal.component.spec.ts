@@ -590,54 +590,6 @@ describe('ConfirmModalComponent', () => {
         });
     });
 
-    describe('ngOnInit with close_delay', () => {
-        beforeEach(async () => {
-            vi.useFakeTimers();
-
-            await TestBed.resetTestingModule();
-
-            await TestBed.configureTestingModule({
-                imports: [
-                    ConfirmModalComponent,
-                    MatDialogModule,
-                    NoopAnimationsModule,
-                ],
-                providers: [
-                    { provide: MatDialogRef, useValue: dialog_ref_mock },
-                    {
-                        provide: MAT_DIALOG_DATA,
-                        useValue: {
-                            ...default_data,
-                            close_delay: 3000,
-                        },
-                    },
-                ],
-            })
-                .overrideComponent(ConfirmModalComponent, {
-                    remove: { imports: [IconComponent] },
-                    add: { imports: [MockComponent(IconComponent)] },
-                })
-                .compileComponents();
-
-            fixture = TestBed.createComponent(ConfirmModalComponent);
-            component = fixture.componentInstance;
-        });
-
-        afterEach(() => {
-            vi.useRealTimers();
-        });
-
-        it('should set timeout to close dialog after close_delay', () => {
-            component.ngOnInit();
-
-            expect(dialog_ref_mock.close).not.toHaveBeenCalled();
-
-            vi.advanceTimersByTime(3000);
-
-            expect(dialog_ref_mock.close).toHaveBeenCalled();
-        });
-    });
-
     describe('loading state', () => {
         it('should update loading signal', () => {
             component.loading.set('Processing...');

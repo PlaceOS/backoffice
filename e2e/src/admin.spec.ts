@@ -287,24 +287,6 @@ test.describe('Admin', () => {
     });
 
     /**
-     * US-ADM-014: Manage Email Templates
-     * NOTE: This test is skipped because the mailing-list tab is disabled in the application
-     */
-    test.describe('US-ADM-014: Manage Email Templates', () => {
-        test.skip('AC-ADM-014-1: View Templates - should show email templates section', async ({
-            page,
-        }) => {
-            await adminPage.goto();
-
-            // Navigate to email templates section
-            await adminPage.viewEmailTemplates();
-
-            // Verify content is displayed
-            await expect(adminPage.mainContent).toBeVisible();
-        });
-    });
-
-    /**
      * US-ADM-015: Monitor Build Jobs
      */
     test.describe('US-ADM-015: Monitor Build Jobs', () => {

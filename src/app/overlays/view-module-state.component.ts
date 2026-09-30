@@ -1,9 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogModule,
-    MatDialogRef,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
     PlaceModule,
@@ -123,16 +119,12 @@ export class ViewModuleStateModalComponent
     extends AsyncHandler
     implements OnInit
 {
-    private _dialog =
-        inject<MatDialogRef<ViewModuleStateModalComponent>>(MatDialogRef);
     private _data = inject<ModuleStateModalData>(MAT_DIALOG_DATA);
 
     /** Current state of the selected module */
     public readonly state = signal<string | null>(null);
     /** Whether the module state is being loaded */
     public loading = signal(false);
-    /** Whether the modal is closing */
-    public closing = signal(false);
     /** Mapping of devices to the module bindings */
     public readonly device_classes = signal<HashMap<string>>({});
 
@@ -204,12 +196,5 @@ export class ViewModuleStateModalComponent
         } finally {
             this.loading.set(false);
         }
-    }
-
-    /**
-     * Close the modal
-     */
-    public close() {
-        this._dialog.close();
     }
 }

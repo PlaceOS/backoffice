@@ -66,30 +66,23 @@ describe.each([
     });
 
     for (const [index, role] of roles.entries()) {
-        it.each(['activate', 'load'] as const)(
-            `checks ${role.name} access before %s`,
-            async (operation) => {
-                user.set(role);
-                const instance = TestBed.inject<
-                    AuthorisedAdminGuard | AuthorisedUserGuard
-                >(guard);
-                const router = TestBed.inject(Router);
-                const result =
-                    operation === 'load'
-                        ? await instance.canLoad({}, [])
-                        : await instance.canActivate(
-                              new ActivatedRouteSnapshot(),
-                              router.routerState.snapshot,
-                          );
-                expect(result).toBe(allowed[index]);
-                if (allowed[index])
-                    expect(router.navigate).not.toHaveBeenCalled();
-                else
-                    expect(router.navigate).toHaveBeenCalledExactlyOnceWith([
-                        '/unauthorised',
-                    ]);
-            },
-        );
+        it(`checks ${role.name} access before activate`, async () => {
+            user.set(role);
+            const instance = TestBed.inject<
+                AuthorisedAdminGuard | AuthorisedUserGuard
+            >(guard);
+            const router = TestBed.inject(Router);
+            const result = await instance.canActivate(
+                new ActivatedRouteSnapshot(),
+                router.routerState.snapshot,
+            );
+            expect(result).toBe(allowed[index]);
+            if (allowed[index]) expect(router.navigate).not.toHaveBeenCalled();
+            else
+                expect(router.navigate).toHaveBeenCalledExactlyOnceWith([
+                    '/unauthorised',
+                ]);
+        });
     }
 
     it('admits subsystem members only on subsystem routes', async () => {
@@ -98,9 +91,12 @@ describe.each([
         const instance = TestBed.inject<
             AuthorisedAdminGuard | AuthorisedUserGuard
         >(guard);
-        expect(await instance.canLoad({}, [])).toBe(
-            guard === AuthorisedUserGuard,
-        );
+        expect(
+            await instance.canActivate(
+                new ActivatedRouteSnapshot(),
+                TestBed.inject(Router).routerState.snapshot,
+            ),
+        ).toBe(guard === AuthorisedUserGuard);
         const route = new ActivatedRouteSnapshot();
         route.data = { role_only: true };
         expect(
@@ -109,9 +105,6 @@ describe.each([
                 TestBed.inject(Router).routerState.snapshot,
             ),
         ).toBe(false);
-        expect(await instance.canLoad({ data: { role_only: true } }, [])).toBe(
-            false,
-        );
     });
 
     it('requires an explicit route opt-in for admin routes', async () => {
@@ -119,9 +112,16 @@ describe.each([
         user.set({ sys_admin: false, support: false });
         subsystem.allowed = true;
         const instance = TestBed.inject(AuthorisedAdminGuard);
+        const opted_in = Object.assign(new ActivatedRouteSnapshot(), {
+            routeConfig: { data: { allow_subsystem: true } },
+        });
         expect(
-            await instance.canLoad({ data: { allow_subsystem: true } }, []),
+            await instance.canActivate(
+                opted_in,
+                TestBed.inject(Router).routerState.snapshot,
+            ),
         ).toBe(true);
+        // Inherited data is not an opt-in; only the route's own config is
         const child = new ActivatedRouteSnapshot();
         child.data = { allow_subsystem: true };
         expect(

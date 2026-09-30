@@ -12,10 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import {
-    EncryptionLevel,
-    PlaceSettings,
     PlaceTrigger,
-    addSettings,
     addTrigger,
     cleanObject,
     updateTrigger,
@@ -26,7 +23,7 @@ import { getInvalidSignalFields } from '../common/forms';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { DialogEvent, Identity } from '../common/types';
+import { DialogEvent } from '../common/types';
 import { CounterComponent } from '../ui/counter.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -236,21 +233,5 @@ export class TriggerFormComponent extends AsyncHandler implements OnInit {
                 }),
             );
         }
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.loading.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
     }
 }

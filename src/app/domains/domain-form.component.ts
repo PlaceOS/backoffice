@@ -15,11 +15,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
     addDomain,
-    addSettings,
     cleanObject,
-    EncryptionLevel,
     PlaceDomain,
-    PlaceSettings,
     updateDomain,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -371,21 +368,5 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
                 }),
             );
         }
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.loading.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
     }
 }

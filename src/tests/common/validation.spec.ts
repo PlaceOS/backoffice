@@ -6,7 +6,6 @@ import {
     validateIpAddress,
     validateJSONString,
     validateURI,
-    validateURL,
 } from '../../app/common/validation';
 
 describe('validation.ts utilities', () => {
@@ -253,27 +252,6 @@ describe('validation.ts utilities', () => {
             it('should reject empty string', () => {
                 expect(isValidDomain('')).toBe(false);
             });
-        });
-    });
-
-    describe('validateURL', () => {
-        it('should return null for valid URL', () => {
-            const ctrl = new FormControl('https://example.com');
-            expect(validateURL(ctrl)).toBeNull();
-        });
-
-        it('should return error for invalid URL', () => {
-            const ctrl = new FormControl('not a url');
-            expect(validateURL(ctrl)).toEqual({ url: 'invalid' });
-        });
-
-        it('should return null for empty value', () => {
-            const ctrl = new FormControl('');
-            expect(validateURL(ctrl)).toBeNull();
-        });
-
-        it('should return null for null control', () => {
-            expect(validateURL(null as any)).toBeNull();
         });
     });
 

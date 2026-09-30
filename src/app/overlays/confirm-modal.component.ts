@@ -20,7 +20,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { lastValueFrom } from 'rxjs';
-import { AsyncHandler } from '../common/async-handler.class';
 import { describeError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
@@ -102,8 +101,6 @@ export interface ConfirmModalData {
     cancel_text?: string;
     /** Icon to display on the modal */
     icon: ApplicationIcon;
-    /** Delay before closing the modal */
-    close_delay?: number;
 }
 
 /**
@@ -407,7 +404,7 @@ export async function openConfirmModal(
         MatDialogModule,
     ],
 })
-export class ConfirmModalComponent extends AsyncHandler implements OnInit {
+export class ConfirmModalComponent implements OnInit {
     private _dialog_ref =
         inject<MatDialogRef<ConfirmModalComponent>>(MatDialogRef);
     private _data = inject<ConfirmModalData>(MAT_DIALOG_DATA);
@@ -540,7 +537,6 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
     public readonly enableClose = () => (this._dialog_ref.disableClose = false);
 
     constructor() {
-        super();
         // Block Escape and backdrop dismissal while the action runs. Material
         // nulls `componentInstance` on close, so a dismissal mid-action makes
         // the caller's later `loading.set()` throw. The receipt stays
@@ -556,13 +552,6 @@ export class ConfirmModalComponent extends AsyncHandler implements OnInit {
         // with no details and hold the confirm button disabled for good.
         for (const option of this.options) {
             if (this._selected()[option.id]) this._resolveDetails(option);
-        }
-        if (this._data.close_delay) {
-            this.timeout(
-                'close',
-                () => this._dialog_ref.close(),
-                this._data.close_delay,
-            );
         }
     }
 

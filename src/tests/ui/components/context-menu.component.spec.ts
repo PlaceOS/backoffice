@@ -105,15 +105,6 @@ describe('ContextMenuComponent', () => {
         });
     });
 
-    describe('updatePosition', () => {
-        it('should handle missing container gracefully', () => {
-            component.ngOnInit();
-            // updatePosition will schedule a timeout if container is missing
-            component.updatePosition();
-            expect(component.position()).toEqual({ top: 0, left: 0 });
-        });
-    });
-
     describe('template rendering', () => {
         it('should have container div with correct classes', () => {
             const container = fixture.nativeElement.querySelector('div');

@@ -11,10 +11,7 @@ import {
 } from '@angular/core';
 import { FormField, form, submit } from '@angular/forms/signals';
 import {
-    EncryptionLevel,
-    PlaceSettings,
     PlaceZone,
-    addSettings,
     addZone as addZoneRequest,
     cleanObject,
     showZone,
@@ -473,21 +470,5 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
         // Keep the user's choice if they changed the picker while loading
         if (!zone || this.form.parent_zone().dirty()) return;
         this.formModel.update((value) => ({ ...value, parent_zone: zone }));
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.loading.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
     }
 }

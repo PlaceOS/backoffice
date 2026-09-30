@@ -195,13 +195,6 @@ export class AdminSchemasComponent implements OnInit {
         this.loadSchemas();
     }
 
-    public getSchema(id: string): Record<string, string> {
-        const schema_list = this.schema_list();
-        const schema = schema_list.find((_) => _.id === id);
-        if (!schema) return null;
-        return JSON.parse(schema.schema || '{}');
-    }
-
     public async loadSchemas() {
         const schema_list = await query<JsonSchema>({
             query_params: {},

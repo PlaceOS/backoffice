@@ -102,14 +102,6 @@ export class AdminPage extends BasePage {
     }
 
     /**
-     * Get the mailing list section link (route: /admin/mailing-list)
-     * NOTE: This tab is currently disabled in the application
-     */
-    get mailingListLink(): Locator {
-        return this.page.locator('a[href*="/admin/mailing-list"]').first();
-    }
-
-    /**
      * Get the build jobs section link (route: /admin/build-jobs)
      */
     get buildJobsLink(): Locator {
@@ -444,35 +436,6 @@ export class AdminPage extends BasePage {
         if (data.region) {
             await this.fillField('Region', data.region);
         }
-
-        await this.save();
-    }
-
-    // Email Templates
-
-    /**
-     * View email templates
-     */
-    async viewEmailTemplates(): Promise<void> {
-        await this.mailingListLink.click();
-        await this.page.waitForTimeout(500);
-    }
-
-    /**
-     * Create email template
-     */
-    async createEmailTemplate(data: {
-        name: string;
-        subject: string;
-        body: string;
-    }): Promise<void> {
-        await this.viewEmailTemplates();
-        await this.addButton.click();
-        await this.dialog.waitFor({ timeout: 5000 });
-
-        await this.fillField('Name', data.name);
-        await this.fillField('Subject', data.subject);
-        await this.fillField('Body', data.body);
 
         await this.save();
     }

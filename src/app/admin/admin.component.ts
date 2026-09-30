@@ -11,7 +11,6 @@ import { SettingsService } from '../common/settings.service';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
-import { BackofficeUsersService } from '../users/users.service';
 
 @Component({
     selector: 'app-engine',
@@ -92,7 +91,6 @@ import { BackofficeUsersService } from '../users/users.service';
 export class PlaceComponent extends AsyncHandler implements OnInit {
     private _settings = inject(SettingsService);
     private _service = inject(ActiveItemService);
-    private _users = inject(BackofficeUsersService);
     private _debug = inject(PlaceDebugService);
 
     public readonly tab_list = signal([]);
@@ -101,10 +99,6 @@ export class PlaceComponent extends AsyncHandler implements OnInit {
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, 'admin');
-    }
-
-    public get dark_mode() {
-        return this._users.dark_mode;
     }
 
     public updateTabList() {
@@ -190,11 +184,6 @@ export class PlaceComponent extends AsyncHandler implements OnInit {
                     name: i18n('ADMIN.TAB_BUILD_JOBS'),
                     icon: { value: 'laps' },
                 },
-                // {
-                //     id: 'mailing-list',
-                //     name: 'Email Templates',
-                //     icon: { value: 'email' },
-                // },
             ].concat(this.extensions),
         );
     }

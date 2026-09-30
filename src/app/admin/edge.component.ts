@@ -5,19 +5,10 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-    PlaceEdge,
-    queryEdges,
-    removeEdge,
-    retrieveEdgeToken,
-} from '@placeos/ts-client';
+import { PlaceEdge, queryEdges, removeEdge } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
-import { copyToClipboard, escapeHtml } from '../common/general';
-import {
-    notifyError,
-    notifyInfo,
-    notifySuccess,
-} from '../common/notifications';
+import { escapeHtml } from '../common/general';
+import { notifyError, notifySuccess } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
@@ -204,12 +195,6 @@ export class PlaceEdgeComponent implements OnInit {
             // Ignore JSON parse errors
         }
         this.loadEdges();
-    }
-
-    public async token(edge: PlaceEdge) {
-        const details = await retrieveEdgeToken(edge.id);
-        copyToClipboard(details.token);
-        notifyInfo(`Token copied to clickboard.`);
     }
 
     public async edit(edge?: PlaceEdge) {

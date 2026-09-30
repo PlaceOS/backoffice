@@ -9,10 +9,6 @@ const CHUNK_LOAD_RELOAD_KEY = 'BACKOFFICE.chunk_load_reload';
 
 export const updateAvailable = signal(false);
 
-export function hasNewVersion() {
-    return updateAvailable();
-}
-
 /**
  * Setup handler for cache change events
  * @param cache Angular Service worker service
@@ -28,10 +24,6 @@ export function setupCache(cache: SwUpdate, interval: number = 5 * 60 * 1000) {
             );
         }, interval);
     }
-}
-
-export function clearCacheCheck() {
-    if (_timer) clearInterval(_timer);
 }
 
 export function isChunkLoadError(error: unknown): boolean {

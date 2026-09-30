@@ -2,8 +2,6 @@ import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { AsyncHandler } from '../common/async-handler.class';
-
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
@@ -46,10 +44,8 @@ export interface ChangelogModalData {
         IconComponent,
     ],
 })
-export class ChangelogModalComponent extends AsyncHandler {
+export class ChangelogModalComponent {
     private _data = inject<ChangelogModalData>(MAT_DIALOG_DATA);
 
-    /** Whether the changelog is loading */
-    public loading: boolean;
     public readonly changelog = this._data.changelog;
 }

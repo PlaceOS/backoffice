@@ -145,7 +145,6 @@ export class PlaceBuildListComponent implements OnInit {
     private _dialog = inject(MatDialog);
 
     public readonly loading = signal('');
-    public readonly last_change = signal<BuildJob>(null);
     public readonly job_list = signal<BuildJob[]>([]);
 
     public ngOnInit() {
@@ -174,7 +173,6 @@ export class PlaceBuildListComponent implements OnInit {
                     error: describeError(err),
                 }),
             );
-        this.last_change.set(null);
         notifySuccess(i18n('ADMIN.BUILD_LIST_REMOVE_SUCCESS'));
         this.job_list.update((list) => list.filter(({ id }) => id !== i.id));
     }

@@ -217,7 +217,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                         }
                     </div>
                     <div class="fieldset">
-                        @if (form.staff_id && !hide_password()) {
+                        @if (form.staff_id) {
                             <div class="field">
                                 <label
                                     for="new-password"
@@ -263,7 +263,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 </mat-form-field>
                             </div>
                         }
-                        @if (form.confirm_password && !hide_password()) {
+                        @if (form.confirm_password) {
                             <div class="field">
                                 <label
                                     for="confirm-password"
@@ -443,14 +443,7 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
     );
     /** List of separator characters for groups */
     public readonly separators: number[] = [ENTER, COMMA];
-    private _email = computed(() => this.formModel().email || '');
     public group_list = computed(() => this.formModel().groups || []);
-
-    public readonly hide_password = computed(
-        () =>
-            this._email().toLowerCase().startsWith('lynner') &&
-            !localStorage.getItem('PlaceOS.show_password'),
-    );
 
     public readonly addGroup = (e: MatChipInputEvent) =>
         this.formModel.update((value) => ({

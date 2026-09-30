@@ -23,13 +23,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
-    EncryptionLevel,
     GitCommitDetails,
     PlaceRepository,
     PlaceRepositoryType,
-    PlaceSettings,
     addRepository,
-    addSettings,
     cleanObject,
     listRemoteRepositoryBranches,
     listRemoteRepositoryCommits,
@@ -827,21 +824,5 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
             hash: commit.commit,
             subject: commit.subject || commit.commit,
         };
-    }
-
-    private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.saving.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
     }
 }

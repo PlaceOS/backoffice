@@ -1,4 +1,3 @@
-import { AbstractControl } from '@angular/forms';
 import {
     disabled,
     email,
@@ -8,19 +7,6 @@ import {
 } from '@angular/forms/signals';
 import { PlaceUser } from '@placeos/ts-client';
 import { isValidUrl } from '../common/validation';
-
-export function validateMatch(name: string) {
-    return (control: AbstractControl) => {
-        const group = control.parent;
-        if (group) {
-            const value = group.controls[name]
-                ? group.controls[name].value
-                : '';
-            return value !== control.value ? { match: true } : null;
-        }
-        return null;
-    };
-}
 
 export interface UserFormModel {
     authority_id: string;
