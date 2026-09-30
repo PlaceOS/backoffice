@@ -23,7 +23,7 @@ export function generateApplicationFormModel(
         skip_authorization: !!app?.skip_authorization,
         redirect_uri: app?.redirect_uri || '',
         client_id: app?.uid || '',
-        preserve_client_id: false,
+        preserve_client_id: !!app?.preserve_client_id,
     };
 }
 

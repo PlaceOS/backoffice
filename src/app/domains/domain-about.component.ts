@@ -66,6 +66,7 @@ import { DomainStateService } from './domain-state.service';
                 default
                 matRipple
                 [matTooltip]="'COMMON.SAVE_CHANGES' | translate"
+                [disabled]="saving()"
                 (click)="saveChanges()"
             >
                 <icon>save</icon>
@@ -140,6 +141,8 @@ export class DomainAboutComponent extends AsyncHandler {
                 : undefined,
         );
     });
+    /** Whether a settings save is in flight */
+    public readonly saving = signal(false);
     /** Index of the active tab */
     public index: number;
 
@@ -162,16 +165,34 @@ export class DomainAboutComponent extends AsyncHandler {
 
     /** Save changes to the settings fields */
     public async saveChanges() {
+        if (this.saving()) return;
         await submit(this.form, async () => undefined);
         if (this.form().invalid())
             return notifyError(i18n('DOMAINS.SETTINGS_ERROR'));
-        const domain = new PlaceDomain({
-            ...this.item,
-            config: JSON.parse(this.formModel().config),
-            internals: JSON.parse(this.formModel().internals),
-        });
-        await this._service.update(domain);
-        notifySuccess(i18n('DOMAINS.SETTINGS_SAVED'));
+        this.saving.set(true);
+        try {
+            const { config, internals } = this.formModel();
+            // An empty editor is valid and means no settings
+            const domain = new PlaceDomain({
+                ...this.item,
+                config: JSON.parse(config || '{}'),
+                internals: JSON.parse(internals || '{}'),
+            });
+            await this._service.update(domain);
+            notifySuccess(i18n('DOMAINS.SETTINGS_SAVED'));
+        } catch (err) {
+            notifyError(
+                i18n('COMMON.SETTINGS_SAVE_ERROR', {
+                    error: JSON.stringify(
+                        (err as { response?: unknown }).response ||
+                            (err as Error).message ||
+                            err,
+                    ),
+                }),
+            );
+        } finally {
+            this.saving.set(false);
+        }
     }
 
     /** Load settings fields for active item */

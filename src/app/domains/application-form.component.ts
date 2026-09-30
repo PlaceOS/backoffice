@@ -273,6 +273,12 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
                         redirect_uri: trimmed_value,
                     }));
                 }
+                // Preserving keeps the stored client ID, so existing OAuth
+                // clients keep working when the redirect URI changes
+                if (preserve && item.uid) {
+                    this.client_id.set(item.uid);
+                    return;
+                }
                 const uri = preserve
                     ? this.default_redirect_uri
                     : trimmed_value;
