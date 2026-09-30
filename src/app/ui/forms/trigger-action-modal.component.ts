@@ -126,7 +126,7 @@ export interface TriggerActionModalData {
                                                         type="button"
                                                         matChipRemove
                                                         [attr.aria-label]="
-                                                            'COMMON.REMOVE_ITEM'
+                                                            'COMMON.ITEM_REMOVE'
                                                                 | translate
                                                                     : {
                                                                           item: item,

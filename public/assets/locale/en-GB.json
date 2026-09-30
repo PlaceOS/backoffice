@@ -639,7 +639,7 @@
         "STAFF_CARD": "Card Number",
         "PASSWORD_REQUIRED": "A valid password is required",
         "PASSWORD_CONFIRM": "Confirm Password",
-        "PASSOWRD_MATCH": "Passwords do not match"
+        "PASSWORDS_MATCH": "Passwords do not match"
     },
     "DOMAINS": {
         "SINGULAR": "Domain",
@@ -699,8 +699,8 @@
         "AUTHENTICATION_EMPTY": "No authentication methods for this domain",
         "AUTHENTICATION_SOURCE_TYPE": "Authentication Source Type",
         "AUTHENTICATION_SOURCE_SELECT": "Select authentication source...",
-        "AUTHENTICATION_SAVE_ERROR": "Successfully updated authentication source",
-        "AUTHENTICATION_SAVE_SUCCESS": "Failed to update authentication source. Error: {{ error }}",
+        "AUTHENTICATION_SAVE_SUCCESS": "Successfully updated authentication source",
+        "AUTHENTICATION_SAVE_ERROR": "Failed to update authentication source. Error: {{ error }}",
         "AUTHENTICATION_NAME_REQUIRED": "An auth source name is required",
         "OAUTH_SITE": "Site",
         "OAUTH_SITE_PLACEHOLDER": "URL of the SSO provider",
@@ -927,7 +927,7 @@
         "APP_KEYS_TTL_MONTH": "30 Days",
         "APP_KEYS_TTL_90_DAYS": "90 Days",
         "APP_KEYS_TTL_YEAR": "1 Year",
-        "APP_KEYS_SCOPES_REQUIRE": "At least one scope is required",
+        "APP_KEYS_SCOPES_REQUIRED": "At least one scope is required",
         "APP_KEYS_NAME_REQUIRED": "A name is required",
         "APP_KEYS_PERMISSIONS_EMPTY": "No permissions",
         "APP_KEYS_COPIED": "Copied Application Key to clipboard",

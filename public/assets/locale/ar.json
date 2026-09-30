@@ -626,7 +626,7 @@
         "STAFF_CARD": "رقم البطاقة",
         "PASSWORD_REQUIRED": "مطلوب كلمة مرور صالحة",
         "PASSWORD_CONFIRM": "تأكيد كلمة المرور",
-        "PASSOWRD_MATCH": "كلمات المرور غير متطابقة"
+        "PASSWORDS_MATCH": "كلمات المرور غير متطابقة"
     },
     "DOMAINS": {
         "SINGULAR": "مجال",
@@ -686,8 +686,8 @@
         "AUTHENTICATION_EMPTY": "لا توجد طرق مصادقة لهذا المجال",
         "AUTHENTICATION_SOURCE_TYPE": "نوع مصدر المصادقة",
         "AUTHENTICATION_SOURCE_SELECT": "اختر مصدر المصادقة...",
-        "AUTHENTICATION_SAVE_ERROR": "تم تحديث مصدر المصادقة بنجاح",
-        "AUTHENTICATION_SAVE_SUCCESS": "فشل تحديث مصدر المصادقة. الخطأ: {{ error }}",
+        "AUTHENTICATION_SAVE_SUCCESS": "تم تحديث مصدر المصادقة بنجاح",
+        "AUTHENTICATION_SAVE_ERROR": "فشل تحديث مصدر المصادقة. الخطأ: {{ error }}",
         "AUTHENTICATION_NAME_REQUIRED": "مطلوب اسم لمصدر المصادقة",
         "OAUTH_SITE": "الموقع",
         "OAUTH_SITE_PLACEHOLDER": "عنوان URL لموفر SSO",
@@ -896,7 +896,7 @@
         "APP_KEYS_LAST_DETAILS": "آخر تفاصيل مفتاح تطبيق",
         "APP_KEYS_FIELD_SCOPES": "نطاقات",
         "APP_KEYS_FIELD_PERMISSIONS": "الوصول",
-        "APP_KEYS_SCOPES_REQUIRE": "مطلوب نطاق واحد على الأقل",
+        "APP_KEYS_SCOPES_REQUIRED": "مطلوب نطاق واحد على الأقل",
         "APP_KEYS_NAME_REQUIRED": "مطلوب اسم",
         "APP_KEYS_PERMISSIONS_EMPTY": "لا توجد أذونات",
         "APP_KEYS_COPIED": "تم نسخ مفتاح التطبيق إلى الحافظة",

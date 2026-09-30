@@ -626,7 +626,7 @@
         "STAFF_CARD": "Número de tarjeta",
         "PASSWORD_REQUIRED": "Se requiere una contraseña válida",
         "PASSWORD_CONFIRM": "Confirmar contraseña",
-        "PASSOWRD_MATCH": "Las contraseñas no coinciden"
+        "PASSWORDS_MATCH": "Las contraseñas no coinciden"
     },
     "DOMAINS": {
         "SINGULAR": "Dominio",
@@ -686,8 +686,8 @@
         "AUTHENTICATION_EMPTY": "No hay métodos de autenticación para este dominio",
         "AUTHENTICATION_SOURCE_TYPE": "Tipo de fuente de autenticación",
         "AUTHENTICATION_SOURCE_SELECT": "Seleccionar fuente de autenticación...",
-        "AUTHENTICATION_SAVE_ERROR": "Fuente de autenticación actualizada correctamente",
-        "AUTHENTICATION_SAVE_SUCCESS": "Error al actualizar la fuente de autenticación. Error: {{ error }}",
+        "AUTHENTICATION_SAVE_SUCCESS": "Fuente de autenticación actualizada correctamente",
+        "AUTHENTICATION_SAVE_ERROR": "Error al actualizar la fuente de autenticación. Error: {{ error }}",
         "AUTHENTICATION_NAME_REQUIRED": "Se requiere un nombre de fuente de autenticación",
         "OAUTH_SITE": "Sitio",
         "OAUTH_SITE_PLACEHOLDER": "URL del proveedor SSO",
@@ -909,7 +909,7 @@
         "APP_KEYS_TTL_MONTH": "30 Días",
         "APP_KEYS_TTL_90_DAYS": "90 Días",
         "APP_KEYS_TTL_YEAR": "1 Año",
-        "APP_KEYS_SCOPES_REQUIRE": "Se requiere al menos un alcance",
+        "APP_KEYS_SCOPES_REQUIRED": "Se requiere al menos un alcance",
         "APP_KEYS_NAME_REQUIRED": "Se requiere un nombre",
         "APP_KEYS_PERMISSIONS_EMPTY": "Sin permisos",
         "APP_KEYS_COPIED": "Clave de aplicación copiada al portapapeles",

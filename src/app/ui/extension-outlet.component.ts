@@ -187,7 +187,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
             description: `Metadata from ${this.url()}`,
             details: typeof message.content === 'object' ? message.content : {},
         });
-        notifySuccess(i18n('COMMON.METADTA_SAVE'));
+        notifySuccess(i18n('COMMON.METADATA_SAVE'));
         this._postMessage({
             id: message.id,
             type: 'backoffice',

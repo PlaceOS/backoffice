@@ -51,7 +51,7 @@ export enum TimezoneDiffRange {
                         {{ date() | date: date_format }}
                     } @else {
                         <span class="opacity-30">{{
-                            'FORM.DATE_EMPTY' | translate
+                            'COMMON.DATE_EMPTY' | translate
                         }}</span>
                     }
                 </div>

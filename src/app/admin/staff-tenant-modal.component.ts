@@ -312,7 +312,7 @@ export interface StaffTenantModalData {
                             }
                             <mat-error>
                                 {{
-                                    'ADMIN.TENANT_ITEM_REQUIRED'
+                                    'ADMIN.TENANTS_ITEM_REQUIRED'
                                         | translate: { name: item.key }
                                 }}
                             </mat-error>
@@ -591,8 +591,8 @@ export class StaffTenantModalComponent {
         const tenant = await call.catch((__) => null);
         this.loading.set('');
         this._dialog_ref.disableClose = false;
-        if (!tenant) return notifyError(i18n('ADMIN.TENANATS_SAVE_ERROR'));
-        notifySuccess(i18n('ADMIN.TENANATS_SAVE_SUCCESS'));
+        if (!tenant) return notifyError(i18n('ADMIN.TENANTS_SAVE_ERROR'));
+        notifySuccess(i18n('ADMIN.TENANTS_SAVE_SUCCESS'));
         this._dialog_ref.close();
     }
 

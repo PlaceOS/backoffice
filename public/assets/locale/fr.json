@@ -626,7 +626,7 @@
         "STAFF_CARD": "Numéro de carte",
         "PASSWORD_REQUIRED": "Un mot de passe valide est requis",
         "PASSWORD_CONFIRM": "Confirmer le mot de passe",
-        "PASSOWRD_MATCH": "Les mots de passe ne correspondent pas"
+        "PASSWORDS_MATCH": "Les mots de passe ne correspondent pas"
     },
     "DOMAINS": {
         "SINGULAR": "Domaine",
@@ -686,8 +686,8 @@
         "AUTHENTICATION_EMPTY": "Aucune méthode d'authentification pour ce domaine",
         "AUTHENTICATION_SOURCE_TYPE": "Type de source d'authentification",
         "AUTHENTICATION_SOURCE_SELECT": "Sélectionner la source d'authentification...",
-        "AUTHENTICATION_SAVE_ERROR": "Mise à jour de la source d'authentification réussie",
-        "AUTHENTICATION_SAVE_SUCCESS": "Échec de la mise à jour de la source d'authentification. Erreur : {{ error }}",
+        "AUTHENTICATION_SAVE_SUCCESS": "Mise à jour de la source d'authentification réussie",
+        "AUTHENTICATION_SAVE_ERROR": "Échec de la mise à jour de la source d'authentification. Erreur : {{ error }}",
         "AUTHENTICATION_NAME_REQUIRED": "Un nom de source d'authentification est requis",
         "OAUTH_SITE": "Site",
         "OAUTH_SITE_PLACEHOLDER": "URL du fournisseur SSO",
@@ -896,7 +896,7 @@
         "APP_KEYS_LAST_DETAILS": "Détails de la dernière clé d'application",
         "APP_KEYS_FIELD_SCOPES": "Périmètres",
         "APP_KEYS_FIELD_PERMISSIONS": "Accès",
-        "APP_KEYS_SCOPES_REQUIRE": "Au moins un périmètre est requis",
+        "APP_KEYS_SCOPES_REQUIRED": "Au moins un périmètre est requis",
         "APP_KEYS_NAME_REQUIRED": "Un nom est requis",
         "APP_KEYS_PERMISSIONS_EMPTY": "Aucune permission",
         "APP_KEYS_COPIED": "Clé d'application copiée dans le presse-papiers",
