@@ -67,11 +67,12 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                         name="fakepasswordremembered"
                     />
                     <div class="field">
-                        <label id="user-domain-label">{{
+                        <label for="user-domain" id="user-domain-label">{{
                             'DOMAINS.SINGULAR' | translate
                         }}</label>
                         <mat-form-field appearance="outline" class="h-12">
                             <mat-select
+                                id="user-domain"
                                 aria-labelledby="user-domain-label"
                                 [formField]="form.authority_id"
                                 [placeholder]="

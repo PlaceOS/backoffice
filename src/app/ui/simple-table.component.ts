@@ -41,7 +41,6 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
             [class.virtual-table]="virtual_enabled()"
             class="border-base-200 grid overflow-visible border text-left"
             [style.gridTemplateColumns]="column_template()"
-            (click)="onclick.emit(0)"
             cdkDropList
             (cdkDropListDropped)="
                 ondrop.emit([$event.previousIndex, $event.currentIndex])
@@ -345,7 +344,6 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
 
     public readonly selectedChange = output<number[]>();
     public readonly enter_row = output<number>();
-    public readonly onclick = output<number>();
     public readonly oncontext = output<number>();
     public readonly ondrop = output<[number, number]>();
 

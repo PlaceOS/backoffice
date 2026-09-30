@@ -163,13 +163,16 @@ import {
                     </div>
                     @if (form.auth_type) {
                         <div class="field">
-                            <label id="broker-auth-type-label"
+                            <label
+                                for="broker-auth-type"
+                                id="broker-auth-type-label"
                                 >{{
                                     'ADMIN.BROKERS_FIELD_AUTH_TYPE' | translate
                                 }}
                             </label>
                             <mat-form-field appearance="outline">
                                 <mat-select
+                                    id="broker-auth-type"
                                     aria-labelledby="broker-auth-type-label"
                                     [formField]="form.auth_type"
                                 >
