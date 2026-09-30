@@ -116,6 +116,7 @@
         "SETTINGS_ENCRYPTED": "暗号化済み",
         "SETTINGS_MERGED": "マージ済み",
         "SETTINGS_MASKED": "マスク済み",
+        "SETTINGS_MASKED_ERROR": "暗号化された設定を保存する前に、マスクされた値をすべて置き換えてください",
         "SETTINGS_INHERITED": "この設定は[{{ parent }}]({{ path }})({{ type }})から継承されています",
         "SETTINGS_LOCAL": "{{ type }}のローカル設定",
         "SETTINGS_SAVE_ERROR": "設定の保存に失敗しました。エラー：{{ error }}",

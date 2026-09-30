@@ -116,6 +116,7 @@
         "SETTINGS_ENCRYPTED": "مشفر",
         "SETTINGS_MERGED": "تم الدمج",
         "SETTINGS_MASKED": "تم إخفاؤه",
+        "SETTINGS_MASKED_ERROR": "استبدل جميع القيم المخفية قبل حفظ الإعدادات المشفرة",
         "SETTINGS_INHERITED": "إعداد موروث من [{{ parent }}]({{ path }})({{ type }})",
         "SETTINGS_LOCAL": "إعداد محلي من {{ type }}",
         "SETTINGS_SAVE_ERROR": "فشل حفظ الإعدادات. الخطأ {{ error }}",
