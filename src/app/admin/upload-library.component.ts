@@ -19,6 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { apiKey, cleanObject, query, remove, token } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
+import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import {
     notifyError,
@@ -531,7 +532,7 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
             {
                 title: i18n('ADMIN.UPLOADS_LIB_REMOVE'),
                 content: i18n('ADMIN.UPLOADS_LIB_REMOVE_MSG', {
-                    filename: upload.file_name,
+                    filename: escapeHtml(upload.file_name),
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },

@@ -39,7 +39,10 @@ vi.mock('../../app/common/hotkeys.service', () => ({
 vi.mock('../../app/common/settings.service', () => ({
     SettingsService: class {},
 }));
-vi.mock('../../app/common/general', () => ({ log: vi.fn() }));
+vi.mock('../../app/common/general', async () => ({
+    ...(await vi.importActual('../../app/common/general')),
+    log: vi.fn(),
+}));
 vi.mock('../../app/common/notifications', () => ({
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),

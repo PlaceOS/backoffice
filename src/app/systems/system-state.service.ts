@@ -31,7 +31,7 @@ import {
 import { calculateModuleIndex } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
-import { unique } from '../common/general';
+import { escapeHtml, unique } from '../common/general';
 import {
     isSubsystemUser,
     querySupportSystems as querySystems,
@@ -488,7 +488,7 @@ export class SystemStateService extends AsyncHandler {
     public async removeTrigger(trigger: PlaceTrigger) {
         const details = await this.confirm({
             title: `Remove trigger`,
-            content: `<p>Are you sure you want remove trigger "${trigger.name}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
+            content: `<p>Are you sure you want remove trigger "${escapeHtml(trigger.name)}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
             icon: { type: 'icon', content: 'delete' },
         });
         if (details.reason !== 'done') return;
@@ -714,7 +714,7 @@ export class SystemStateService extends AsyncHandler {
     public async removeZone(zone: PlaceZone) {
         const details = await this.confirm({
             title: 'Remove zone?',
-            content: `<p>Are you sure you want remove zone "${zone.name}" from the system?</p>Configuration will be updated immediately.`,
+            content: `<p>Are you sure you want remove zone "${escapeHtml(zone.name)}" from the system?</p>Configuration will be updated immediately.`,
             icon: { type: 'icon', content: 'delete' },
         });
         if (details.reason !== 'done') return;

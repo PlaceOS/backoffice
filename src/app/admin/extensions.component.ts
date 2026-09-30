@@ -7,6 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, updateDomain } from '@placeos/ts-client';
+import { escapeHtml } from '../common/general';
 import { notifyError } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
@@ -256,7 +257,7 @@ export class PlaceExtensionsComponent implements OnInit {
             {
                 data: {
                     title: 'Remove extension',
-                    content: `Are you sure you want to remove the extension "${item.name}" from ${item.type}?`,
+                    content: `Are you sure you want to remove the extension "${escapeHtml(item.name)}" from ${escapeHtml(item.type)}?`,
                     icon: { content: 'delete' },
                 },
             },

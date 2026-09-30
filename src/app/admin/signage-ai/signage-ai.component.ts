@@ -3,6 +3,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { escapeHtml } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
@@ -284,7 +285,7 @@ export class SignageAIComponent implements OnInit {
             {
                 title: i18n('ADMIN.AI_PROVIDER_TEST_TITLE'),
                 content: i18n('ADMIN.AI_PROVIDER_TEST_MSG', {
-                    name: item.name,
+                    name: escapeHtml(item.name),
                 }),
                 icon: { content: 'bolt' },
             },
@@ -314,7 +315,7 @@ export class SignageAIComponent implements OnInit {
             {
                 title: i18n('ADMIN.AI_PROVIDER_REMOVE_TITLE'),
                 content: i18n('ADMIN.AI_PROVIDER_REMOVE_MSG', {
-                    name: item.name,
+                    name: escapeHtml(item.name),
                 }),
                 icon: { content: 'delete_forever' },
             },

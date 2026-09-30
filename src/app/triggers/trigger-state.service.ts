@@ -13,6 +13,7 @@ import {
     updateTrigger,
 } from '@placeos/ts-client';
 
+import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -285,7 +286,7 @@ export class TriggerStateService {
                 title: i18n('TRIGGERS.REMOVE_INSTANCE_TITLE', { type }),
                 content: i18n('TRIGGERS.REMOVE_INSTANCE_MSG', {
                     type,
-                    name: instance.name,
+                    name: escapeHtml(instance.name),
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },

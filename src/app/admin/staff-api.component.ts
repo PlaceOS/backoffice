@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get, PlaceDomain } from '@placeos/ts-client';
 import { addDays, getUnixTime, startOfDay } from 'date-fns';
+import { escapeHtml } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -247,7 +248,7 @@ export class PlaceStaffAPIComponent implements OnInit {
         const details = await openConfirmModal(
             {
                 title: 'Remove tenant?',
-                content: `Remove <strong>${tenant.name}</strong> from this domain?<br>
+                content: `Remove <strong>${escapeHtml(tenant.name)}</strong> from this domain?<br>
                 <p style="text-align: left; width: 100%;">This will remove all related:</p><br>
                 <ul style="list-style: disc;text-align: left;padding-left: 2rem">
                 <li>bookings (such as desk bookings)</li>

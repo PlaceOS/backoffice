@@ -5,6 +5,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get } from '@placeos/ts-client';
 import { toQueryString } from '../common/api';
+import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -159,8 +160,8 @@ export class PlaceBuildListComponent implements OnInit {
             {
                 title: i18n('ADMIN.BUILD_LIST_REMOVE'),
                 content: i18n('ADMIN.BUILD_LIST_REMOVE_MSG', {
-                    driver: i.driver,
-                    repo: i.repo,
+                    driver: escapeHtml(i.driver),
+                    repo: escapeHtml(i.repo),
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },

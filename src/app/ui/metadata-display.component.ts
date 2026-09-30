@@ -22,6 +22,7 @@ import {
     updateMetadata,
 } from '@placeos/ts-client';
 import { VERSION } from '../../env/version';
+import { escapeHtml } from '../common/general';
 // import { SchemaStateService } from '../admin/schema-state.service';
 import { AsyncHandler } from '../common/async-handler.class';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -322,7 +323,7 @@ export class MetadataDisplayComponent
             {
                 title: `Remove Metadata block`,
                 content: `
-                <p>Are you sure you want delete the metadata property "${field}"?</p>
+                <p>Are you sure you want delete the metadata property "${escapeHtml(field)}"?</p>
             `,
                 icon: { type: 'icon', content: 'delete' },
             },

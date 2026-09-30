@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { addSystem, query, querySystemsWithEmails } from '@placeos/ts-client';
+import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifySuccess, notifyWarn } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -215,7 +216,7 @@ export class ResourceImportsComponent implements OnInit {
                     count: missing.length,
                 })}</p>
                 <ul class="list-disc ml-4 text-left px-8 text-sm">${missing
-                    .map((_) => `<li>${_.display_name}</li>`)
+                    .map((_) => `<li>${escapeHtml(_.display_name)}</li>`)
                     .join('')}</ul>
                 `,
                 icon: { type: 'icon', content: 'publish' },

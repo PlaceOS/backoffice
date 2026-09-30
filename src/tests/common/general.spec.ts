@@ -4,6 +4,7 @@ import {
     csvToJson,
     detectIE,
     downloadFile,
+    escapeHtml,
     eventToPoint,
     flatten,
     getItemWithKeys,
@@ -153,6 +154,19 @@ describe('general.ts utilities', () => {
         it('should handle undefined nested values gracefully', () => {
             const obj = { a: undefined };
             expect(getItemWithKeys(['a', 'b'], obj as any)).toBeNull();
+        });
+    });
+
+    describe('escapeHtml', () => {
+        it('escapes HTML special characters', () => {
+            expect(escapeHtml(`<img src=x onerror="a('b')">&`)).toBe(
+                '&lt;img src=x onerror=&quot;a(&#39;b&#39;)&quot;&gt;&amp;',
+            );
+        });
+
+        it('returns an empty string for null or undefined', () => {
+            expect(escapeHtml(null)).toBe('');
+            expect(escapeHtml(undefined)).toBe('');
         });
     });
 
