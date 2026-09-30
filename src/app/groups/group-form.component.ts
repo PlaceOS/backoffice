@@ -32,6 +32,7 @@ import {
     getInvalidSignalFields,
     removeSignalChipItem,
 } from '../common/forms';
+import { subtreeFilter } from '../common/hierarchy';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -273,10 +274,16 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
         params: () => this.formModel().authority_id,
         loader: ({ params }) => hasStaffGroupSearch(params),
     });
+    private readonly _excludeSubtree = subtreeFilter((id) => showGroup(id));
+    /** Hides this group's descendants, so the parent can't create a cycle */
     public readonly query_parent_groups = (_: string) =>
-        queryGroups({ q: _, limit: 20 }).then(({ data }) => data);
+        queryGroups({ q: _, limit: 20 }).then(({ data }) =>
+            this._excludeSubtree(data, this._data.item.id),
+        );
+    /** A parent group must be in the same authority */
     public readonly exclude_parent_group = (group: PlaceGroup, __: string) =>
-        group.id === this._data.item.id;
+        group.id === this._data.item.id ||
+        group.authority_id !== this.formModel().authority_id;
 
     public ngOnInit(): void {
         this.subscription(

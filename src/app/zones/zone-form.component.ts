@@ -20,6 +20,7 @@ import {
     showZone,
     updateZone as updateZoneRequest,
 } from '@placeos/ts-client';
+import { subtreeFilter } from '../common/hierarchy';
 import { querySupportZones as queryZones } from '../common/support-access';
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -364,6 +365,9 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
     constructor() {
         super();
         effect(() => {
+            // Sync only after the user changes the picker. The parent zone
+            // loads async, so an early save must keep the stored `parent_id`.
+            if (!this.form.parent_zone().dirty()) return;
             const parent_zone = this.formModel().parent_zone;
             const parent_id = parent_zone?.id || '';
             if (parent_id !== this.formModel().parent_id) {
@@ -374,9 +378,12 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
 
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
-    /** Query function for zones */
+    private readonly _excludeSubtree = subtreeFilter((id) => showZone(id));
+    /** Query function for zones. Hides this zone's descendants to prevent cycles */
     public readonly query_fn = (_: string) =>
-        queryZones({ q: _ }).then((resp) => resp.data as PlaceZone[]);
+        queryZones({ q: _ }).then((resp) =>
+            this._excludeSubtree(resp.data as PlaceZone[], this.formModel().id),
+        );
     /** Function to exclude zones */
     public readonly exclude = (zone: PlaceZone) =>
         zone.id === this.formModel().id;
@@ -453,17 +460,14 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
         }
     }
 
-    /** Update parent zone details if set */
+    /** Show the stored parent zone in the picker. `parent_id` stays as stored */
     private async updateZone() {
         const parent_id = this.formModel().parent_id;
-        if (parent_id) {
-            const zone = await showZone(parent_id);
-            this.formModel.update((value) => ({
-                ...value,
-                parent_zone: zone,
-                parent_id: zone?.id || '',
-            }));
-        }
+        if (!parent_id) return;
+        const zone = await showZone(parent_id).catch(() => null);
+        // Keep the user's choice if they changed the picker while loading
+        if (!zone || this.form.parent_zone().dirty()) return;
+        this.formModel.update((value) => ({ ...value, parent_zone: zone }));
     }
 
     private async newSettings(item: Identity, settings_string: string) {

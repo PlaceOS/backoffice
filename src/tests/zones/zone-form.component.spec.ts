@@ -61,7 +61,9 @@ describe('saving zones', () => {
     it('saves the selected parent ID without sending the picker object', async () => {
         fixture.componentInstance.form
             .parent_zone()
-            .value.set(new PlaceZone({ id: 'building-1', name: 'Building' }));
+            .controlValue.set(
+                new PlaceZone({ id: 'building-1', name: 'Building' }),
+            );
         await fixture.whenStable();
         await fixture.componentInstance.submit();
         expect(mocks.updateZone).toHaveBeenCalledExactlyOnceWith(
@@ -80,9 +82,9 @@ describe('saving zones', () => {
     it('saves an empty parent ID when the user removes the parent', async () => {
         fixture.componentInstance.form
             .parent_zone()
-            .value.set(new PlaceZone({ id: 'building-1' }));
+            .controlValue.set(new PlaceZone({ id: 'building-1' }));
         await fixture.whenStable();
-        fixture.componentInstance.form.parent_zone().value.set(null);
+        fixture.componentInstance.form.parent_zone().controlValue.set(null);
         await fixture.whenStable();
         await fixture.componentInstance.submit();
         expect(mocks.updateZone).toHaveBeenCalledWith(
@@ -117,5 +119,58 @@ describe('saving zones', () => {
         await fixture.componentInstance.submit();
         expect(mocks.updateZone).toHaveBeenCalledTimes(2);
         expect(dialog.close).toHaveBeenCalledOnce();
+    });
+});
+
+describe('saving zones with a stored parent', () => {
+    const dialog = { close: vi.fn(), disableClose: false };
+
+    async function createForm() {
+        TestBed.configureTestingModule({
+            imports: [ZoneFormComponent],
+            providers: [
+                provideZonelessChangeDetection(),
+                { provide: MatDialogRef, useValue: dialog },
+                {
+                    provide: MAT_DIALOG_DATA,
+                    useValue: {
+                        item: new PlaceZone({
+                            id: 'zone-1',
+                            name: 'Floor 1',
+                            parent_id: 'building-1',
+                        }),
+                    },
+                },
+            ],
+        });
+        const fixture = TestBed.createComponent(ZoneFormComponent);
+        await fixture.whenStable();
+        return fixture;
+    }
+
+    beforeEach(() => {
+        vi.resetAllMocks();
+        mocks.queryZones.mockResolvedValue({ data: [] });
+        mocks.updateZone.mockResolvedValue(new PlaceZone({ id: 'zone-1' }));
+    });
+
+    it('keeps the parent when saving before the parent loads', async () => {
+        mocks.showZone.mockReturnValue(new Promise(() => undefined));
+        const fixture = await createForm();
+        await fixture.componentInstance.submit();
+        expect(mocks.updateZone).toHaveBeenCalledWith(
+            'zone-1',
+            expect.objectContaining({ parent_id: 'building-1' }),
+        );
+    });
+
+    it('keeps the parent when the parent fails to load', async () => {
+        mocks.showZone.mockRejectedValue(new Error('Forbidden'));
+        const fixture = await createForm();
+        await fixture.componentInstance.submit();
+        expect(mocks.updateZone).toHaveBeenCalledWith(
+            'zone-1',
+            expect.objectContaining({ parent_id: 'building-1' }),
+        );
     });
 });
