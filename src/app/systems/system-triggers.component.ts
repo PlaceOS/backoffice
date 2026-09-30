@@ -1,4 +1,4 @@
-import { Component, computed, inject, model, signal } from '@angular/core';
+import { Component, computed, inject, model } from '@angular/core';
 import { PlaceTrigger } from '@placeos/ts-client';
 import { copyToClipboard, unique } from '../common/general';
 import { notifyInfo } from '../common/notifications';
@@ -229,13 +229,9 @@ export class SystemTriggersComponent {
 
     public readonly comparisons: HashMap<string> = {};
 
-    public readonly temp_trigger = signal<PlaceTrigger | null>(null);
-
     public readonly triggers = computed(() => {
         const filter = this.filter().toLowerCase();
-        const temp = this.temp_trigger();
-        const triggers = this.service_triggers();
-        const list = unique(temp ? [...triggers, temp] : triggers, 'id');
+        const list = unique(this.service_triggers(), 'id');
         return filter
             ? list.filter((t) =>
                   (t as PlaceTrigger & { name: string }).name
@@ -251,13 +247,10 @@ export class SystemTriggersComponent {
         );
         notifyInfo(i18n('SYSTEMS.COPIED_WEBHOOK'));
     };
-    public readonly editTrigger = async (t) =>
-        this.temp_trigger.set(
-            (await this._service.editTrigger(t)) as PlaceTrigger,
-        );
+    // The service reloads the trigger list after each change
+    public readonly editTrigger = (t) => this._service.editTrigger(t);
     public readonly deleteTrigger = (t) => this._service.removeTrigger(t);
-    public readonly selectTrigger = async () =>
-        this.temp_trigger.set((await this._service.selectTrigger()) || null);
+    public readonly selectTrigger = () => this._service.selectTrigger();
 
     public get item() {
         return this._service.active_item;

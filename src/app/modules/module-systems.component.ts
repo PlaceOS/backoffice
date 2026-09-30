@@ -46,7 +46,7 @@ import { ModuleStateService } from './module-state.service';
                             content: name_template,
                         },
                         {
-                            key: 'installed_ui_devices',
+                            key: 'module_count',
                             name:
                                 'MODULES.SYSTEMS_FIELD_MODULE_COUNT'
                                 | translate,
@@ -117,7 +117,10 @@ export class ModuleSystemsComponent {
 
     public readonly system_list = computed(() => {
         const filter = this.filter().toLowerCase();
-        const systems = this.systems();
+        const systems = this.systems().map((sys) => ({
+            ...sys,
+            module_count: sys.modules?.length || 0,
+        }));
         return filter
             ? systems.filter((sys) => sys.name.toLowerCase().includes(filter))
             : systems;

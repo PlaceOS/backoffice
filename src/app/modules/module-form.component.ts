@@ -7,6 +7,7 @@ import {
     OnInit,
     Output,
     signal,
+    untracked,
 } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
 import {
@@ -356,6 +357,12 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
     );
     public readonly form = form(this.formModel, applyModuleFormSchema);
     public readonly loading = signal<string | null>(null);
+    /** Selected driver. Only changes when a new driver is picked. */
+    private readonly _selected_driver = computed(
+        () => this.formModel().driver,
+    );
+    /** ID of the driver whose defaults have been applied to the form */
+    private _defaults_driver_id = '';
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
     );
@@ -443,47 +450,36 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
                 }));
             }
         });
+        // Apply driver defaults once per selected driver so later edits stick
         effect(() => {
-            const model = this.formModel();
-            const driver = model.driver;
-            if (!driver?.id) return;
-            const role = driver.role ?? PlaceDriverRole.Logic;
-            const udp =
-                driver.role === PlaceDriverRole.Service ||
-                driver.role === PlaceDriverRole.Websocket
-                    ? false
-                    : model.udp;
-            const system =
-                driver.role === PlaceDriverRole.Logic
-                    ? model.system
-                    : undefined;
-            if (
-                model.driver_id === driver.id &&
-                model.name === (driver.name || driver.module_name) &&
-                model.uri === (driver.default_uri || '') &&
-                model.port === (driver.default_port || 1) &&
-                model.alert_level === (driver.alert_level || 'medium') &&
-                model.role === role &&
-                model.udp === udp &&
-                model.system === system
-            ) {
-                return;
-            }
-            this.formModel.update((value) => ({
-                ...value,
-                driver_id: driver.id,
-                name: driver.name || driver.module_name,
-                uri: driver.default_uri || '',
-                port: driver.default_port || 1,
-                alert_level: driver.alert_level || 'medium',
-                role,
-                udp,
-                system,
-            }));
+            const driver = this._selected_driver();
+            if (!driver?.id || driver.id === this._defaults_driver_id) return;
+            this._defaults_driver_id = driver.id;
+            untracked(() =>
+                this.formModel.update((value) => ({
+                    ...value,
+                    driver_id: driver.id,
+                    name: driver.name || driver.module_name,
+                    uri: driver.default_uri || '',
+                    port: driver.default_port || 1,
+                    alert_level: driver.alert_level || 'medium',
+                    role: driver.role ?? PlaceDriverRole.Logic,
+                    udp:
+                        driver.role === PlaceDriverRole.Service ||
+                        driver.role === PlaceDriverRole.Websocket
+                            ? false
+                            : value.udp,
+                    system:
+                        driver.role === PlaceDriverRole.Logic
+                            ? value.system
+                            : undefined,
+                })),
+            );
         });
     }
 
     public async submit(): Promise<void> {
+        if (this.loading()) return;
         await submit(this.form, async () => {
             const item = this._data.item;
             this.loading.set(i18n(`${this._name}.SAVING`));
