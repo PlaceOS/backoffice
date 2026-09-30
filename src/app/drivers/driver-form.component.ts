@@ -33,7 +33,6 @@ import {
 } from '@placeos/ts-client';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { format, isAfter, subMinutes } from 'date-fns';
 import { AsyncHandler } from '../common/async-handler.class';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -604,9 +603,7 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
             return list.map((item) => ({
                 id: item.commit,
                 name: `${item.subject}`,
-                extra: isAfter(item.date, subMinutes(item.date, 1))
-                    ? this._date_pipe.transform(item.date.valueOf())
-                    : format(item.date, 'dd MMM yyyy'),
+                extra: this._date_pipe.transform(item.date),
             }));
         } finally {
             this._setLoadingType('commits', false);

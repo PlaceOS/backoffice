@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { DefaultUrlSerializer, Router } from '@angular/router';
 import { PlaceUser, removeUser, reviveUser } from '@placeos/ts-client';
 import { Subject } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -86,6 +86,8 @@ beforeEach(async () => {
                 useValue: {
                     url: '/users/-',
                     events: new Subject(),
+                    parseUrl: (url: string) =>
+                        new DefaultUrlSerializer().parse(url),
                     navigate: vi.fn(),
                 },
             },

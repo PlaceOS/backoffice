@@ -10,10 +10,8 @@ describe('timezone-helpers.ts utilities', () => {
             expect(getTimezoneOffsetInMinutes('UTC')).toBe(0);
         });
 
-        it('should return a number for valid timezones', () => {
-            // jsdom may not fully support timezone parsing, so we test the return type
-            const offset = getTimezoneOffsetInMinutes('Asia/Kolkata');
-            expect(typeof offset).toBe('number');
+        it('should return the half hour offset for Asia/Kolkata', () => {
+            expect(getTimezoneOffsetInMinutes('Asia/Kolkata')).toBe(330);
         });
 
         it('should return a number for western timezones', () => {
@@ -21,9 +19,15 @@ describe('timezone-helpers.ts utilities', () => {
             expect(typeof offset).toBe('number');
         });
 
-        it('should handle Australia/Sydney', () => {
-            const offset = getTimezoneOffsetInMinutes('Australia/Sydney');
-            expect(typeof offset).toBe('number');
+        it('should handle daylight saving for Australia/Sydney', () => {
+            const summer = new Date(Date.UTC(2024, 0, 15));
+            const winter = new Date(Date.UTC(2024, 6, 15));
+            expect(getTimezoneOffsetInMinutes('Australia/Sydney', summer)).toBe(
+                660,
+            );
+            expect(getTimezoneOffsetInMinutes('Australia/Sydney', winter)).toBe(
+                600,
+            );
         });
 
         it('should accept custom date parameter', () => {
@@ -53,17 +57,12 @@ describe('timezone-helpers.ts utilities', () => {
     });
 
     describe('getTimezoneOffsetString', () => {
-        it('should return correct format for UTC', () => {
-            const result = getTimezoneOffsetString('UTC');
-            // Should be a 5 character string like +0000 or -0000
-            expect(result.length).toBe(5);
-            expect(result).toMatch(/^[+-]\d{4}$/);
+        it('should return +0000 for UTC', () => {
+            expect(getTimezoneOffsetString('UTC')).toBe('+0000');
         });
 
-        it('should return 5 character string', () => {
-            const result = getTimezoneOffsetString('Asia/Kolkata');
-            expect(result.length).toBe(5);
-            expect(result).toMatch(/^[+-]\d{4}$/);
+        it('should include the minutes for Asia/Kolkata', () => {
+            expect(getTimezoneOffsetString('Asia/Kolkata')).toBe('+0530');
         });
 
         it('should return formatted string for western timezones', () => {

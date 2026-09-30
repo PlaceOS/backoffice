@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { NavigationEnd, Router } from '@angular/router';
+import { DefaultUrlSerializer, NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { afterEach, expect, it, vi } from 'vitest';
 import { HotkeysService } from '../../app/common/hotkeys.service';
@@ -68,6 +68,7 @@ it('clears the active resource and ignores old list and detail responses after s
     const router = {
         url: '/systems/-',
         events,
+        parseUrl: (url: string) => new DefaultUrlSerializer().parse(url),
         navigate: vi.fn(async () => {
             router.url = '/systems/-';
             events.next(new NavigationEnd(1, router.url, router.url));
@@ -131,6 +132,8 @@ it('reloads users with the deleted filter and ignores an older response', async 
                 useValue: {
                     url: '/users/-',
                     events: new Subject<NavigationEnd>(),
+                    parseUrl: (url: string) =>
+                        new DefaultUrlSerializer().parse(url),
                 },
             },
             { provide: MatDialog, useValue: {} },

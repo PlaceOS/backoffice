@@ -18,7 +18,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import {
     PlaceDriverRole,
     PlaceGroup,
@@ -28,6 +28,7 @@ import {
     PlaceZone,
     queryGroups,
 } from '@placeos/ts-client';
+import { filter } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { toSignal } from '../common/signals';
@@ -381,6 +382,11 @@ export class ItemSidebarComponent
     private readonly _route_change = toSignal(this._router.events, {
         initialValue: null,
     });
+    /** Changes once per completed navigation, not for every router event */
+    private readonly _navigation_end = toSignal(
+        this._router.events.pipe(filter((e) => e instanceof NavigationEnd)),
+        { initialValue: null },
+    );
 
     public readonly title = input('Systems');
     public readonly route = input('systems');
@@ -461,6 +467,9 @@ export class ItemSidebarComponent
         effect(() => {
             this._route_change();
             this.subroute.set(this._router.url.split('/')[3] || '');
+        });
+        effect(() => {
+            this._navigation_end();
             if (this.route() === 'groups') void this.loadGroupHierarchy();
         });
         effect(() => {
@@ -628,8 +637,11 @@ export class ItemSidebarComponent
 
     private expandGroupPath(group_id: string) {
         const path: string[] = [];
+        // Visited set stops the walk if the parent links contain a cycle
+        const visited = new Set<string>([group_id]);
         let group = this.findGroup(group_id);
-        while (group?.parent_id) {
+        while (group?.parent_id && !visited.has(group.parent_id)) {
+            visited.add(group.parent_id);
             path.unshift(group.parent_id);
             group = this.findGroup(group.parent_id);
         }

@@ -7,7 +7,7 @@ export function getTimezoneOffsetString(tz: string) {
     const offset = getTimezoneOffsetInMinutes(tz);
     const hours = Math.floor(Math.abs(offset) / 60);
     const minutes = Math.abs(offset) % 60;
-    const output = `${offset > 0 ? '+' : '-'}${padLength(hours, 2)}${padLength(
+    const output = `${offset >= 0 ? '+' : '-'}${padLength(hours, 2)}${padLength(
         minutes,
         2,
     )}`;
@@ -15,28 +15,30 @@ export function getTimezoneOffsetString(tz: string) {
     return output;
 }
 
+/**
+ * Offset of the given timezone from UTC in minutes, at the given date.
+ * Positive values are ahead of UTC, e.g. `Asia/Kolkata` is `330`.
+ */
 export function getTimezoneOffsetInMinutes(timeZone, date = new Date()) {
-    const options: Intl.DateTimeFormatOptions = {
+    // `longOffset` always gives a numeric offset (e.g. "GMT+05:30"), where
+    // `short` gives an abbreviation (e.g. "AEST") for many zones.
+    // A fixed locale keeps the digits and format predictable.
+    const formatter = new Intl.DateTimeFormat('en-US', {
         timeZone,
-        hour12: false,
-        timeZoneName: 'short',
-    };
-    const formatter = new Intl.DateTimeFormat([], options);
-    const parts = formatter.formatToParts(date);
+        timeZoneName: 'longOffset',
+    });
+    const tz_offset_part = formatter
+        .formatToParts(date)
+        .find((part) => part.type === 'timeZoneName');
+    // UTC is given as plain "GMT", which does not match
+    const offset_match = tz_offset_part?.value.match(
+        /GMT([+-])(\d{2}):(\d{2})/,
+    );
+    if (!offset_match) return 0;
 
-    // Find the timeZoneName part which contains the GMT offset
-    const tzOffsetPart = parts.find((part) => part.type === 'timeZoneName');
-    const tzOffsetString = tzOffsetPart ? tzOffsetPart.value : 'GMT';
-
-    // Match the offset from the string (e.g., "GMT+0530")
-    const offsetMatch = tzOffsetString.match(/GMT([+-])(\d{1,2})(\d{2})?/);
-    if (!offsetMatch) {
-        return 0; // If no match, assume UTC (offset 0)
-    }
-
-    const sign = offsetMatch[1] === '+' ? 1 : -1;
-    const hours = parseInt(offsetMatch[2], 10);
-    const minutes = offsetMatch[3] ? parseInt(offsetMatch[3], 10) : 0;
+    const sign = offset_match[1] === '+' ? 1 : -1;
+    const hours = parseInt(offset_match[2], 10);
+    const minutes = parseInt(offset_match[3], 10);
 
     return sign * (hours * 60 + minutes);
 }

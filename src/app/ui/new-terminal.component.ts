@@ -3,7 +3,6 @@ import {
     computed,
     effect,
     ElementRef,
-    inject,
     input,
     model,
     OnChanges,
@@ -14,8 +13,6 @@ import {
 import { FormsModule } from '@angular/forms';
 import { AsyncHandler } from '../common/async-handler.class';
 import { IconComponent } from './icon.component';
-import { SafePipe } from './pipes/safe.pipe';
-import { SanitizePipe } from './pipes/sanitise.pipe';
 import { TranslatePipe } from './translate.pipe';
 import { VirtualScrollComponent } from './virtual-scroll.component';
 
@@ -23,10 +20,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
     selector: 'new-terminal',
     template: `
         <ng-template #line_template let-item="item">
-            <div
-                [innerHTML]="item | safe"
-                class="mono p-1 hover:bg-white/10"
-            ></div>
+            <div [innerHTML]="item" class="mono p-1 hover:bg-white/10"></div>
         </ng-template>
         <div
             class="bg-base-200 border-base-300 relative flex h-full w-full items-end border-t text-xs text-white"
@@ -74,18 +68,14 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
             }
         `,
     ],
-    providers: [SanitizePipe],
     imports: [
         IconComponent,
         FormsModule,
-        SafePipe,
         TranslatePipe,
         VirtualScrollComponent,
     ],
 })
 export class NewTerminalComponent extends AsyncHandler implements OnChanges {
-    private _sanitize_pipe = inject(SanitizePipe);
-
     public readonly lines = input<string[]>([]);
     public readonly search = model('');
     public readonly resize = input(0);
@@ -172,13 +162,15 @@ export class NewTerminalComponent extends AsyncHandler implements OnChanges {
         );
     }
 
+    /**
+     * Wrap a raw log line to the terminal width and convert it to HTML.
+     * The line is split before escaping so that entities are not cut in half.
+     */
     private _formatLineWithHTML(line: string) {
-        const sanitized_line = this._sanitize_pipe.transform(line).toString();
         const max_length = this.line_length();
-        if (sanitized_line.length <= max_length)
-            return [setTermColorsForLine(sanitized_line)];
+        if (line.length <= max_length) return [formatTermLine(line)];
         const lines = [];
-        let remaining = sanitized_line;
+        let remaining = line;
         let count = 0;
         while (count < 128 && remaining.length > 0) {
             let break_at = max_length;
@@ -196,7 +188,7 @@ export class NewTerminalComponent extends AsyncHandler implements OnChanges {
             lines.push(
                 `${
                     count > 0 ? '&nbsp;&nbsp;&nbsp;&nbsp;' : ''
-                }${setTermColorsForLine(segment)}`,
+                }${formatTermLine(segment)}`,
             );
             count += 1;
         }
@@ -226,8 +218,22 @@ export class NewTerminalComponent extends AsyncHandler implements OnChanges {
     }
 }
 
-function setTermColorsForLine(line: string) {
-    return `<span>${line.replace(
+const HTML_ENTITIES: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+};
+
+/** Escape HTML so log text renders as text, not markup */
+function escapeHtml(value: string) {
+    return value.replace(/[&<>"']/g, (char) => HTML_ENTITIES[char]);
+}
+
+/** Escape a log line, then convert ANSI colour codes to styled spans */
+function formatTermLine(line: string) {
+    return `<span>${escapeHtml(line).replace(
         // eslint-disable-next-line no-control-regex
         /\u001b?\[([0-9]*)m/g,
         '</span><span class="tc-$1">',
