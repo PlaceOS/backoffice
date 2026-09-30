@@ -17,6 +17,7 @@ import {
     token,
     updateMetadata,
 } from '@placeos/ts-client';
+import { allowedEmbedUrl, extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -68,12 +69,28 @@ export class ExtensionOutletComponent extends AsyncHandler {
               : null;
     });
 
+    /** Last embed param that passed the extension URL check */
+    private _verified_embed = '';
+
     public readonly url = signal('');
     public readonly app_loaded = signal(false);
+    private readonly _frame_origin = computed(() =>
+        this.url() ? new URL(this.url()).origin : '',
+    );
 
-    public readonly onMessage = (m) => {
-        if (typeof m.data !== 'string') return;
-        this.handleMessage(JSON.parse(m.data));
+    /** Handle messages sent by the embedded extension frame only */
+    public readonly onMessage = (event: MessageEvent) => {
+        const frame_window = this._frame_el()?.nativeElement?.contentWindow;
+        if (!frame_window || event.source !== frame_window) return;
+        if (event.origin !== this._frame_origin()) return;
+        if (typeof event.data !== 'string') return;
+        let message: FrameMessage;
+        try {
+            message = JSON.parse(event.data);
+        } catch {
+            return;
+        }
+        this.handleMessage(message);
     };
 
     private readonly _frame_el =
@@ -91,11 +108,23 @@ export class ExtensionOutletComponent extends AsyncHandler {
             if (embed === undefined) {
                 return;
             }
-            if (embed) {
-                this.url.set(embed);
-            } else {
+            if (!embed) {
                 this._location.back();
+                return;
             }
+            const item = this._service.item();
+            if (!this._online() || !item || embed === this._verified_embed) {
+                return;
+            }
+            // Only load URLs from the extensions configured for this item
+            const url = allowedEmbedUrl(
+                embed,
+                extensionsForItem(item, this._service.type).map(
+                    (ext) => ext.query.embed,
+                ),
+            );
+            this._verified_embed = url ? embed : '';
+            this.url.set(url || '');
         });
         effect((onCleanup) => {
             window.addEventListener('message', this.onMessage);
@@ -106,34 +135,28 @@ export class ExtensionOutletComponent extends AsyncHandler {
     }
 
     private async handleMessage(message: FrameMessage) {
-        if (!this._frame_el()?.nativeElement) {
-            return this.timeout('not_ready', () => this.handleMessage(message));
+        const item = this._service.active_item;
+        if (message?.type !== 'backoffice' || !item) return;
+        if (message.action === 'update') {
+            // Handle update to item model
+            this.updateItem(item, message);
+        } else if (message.action === 'metadata' && message.name) {
+            // Handle updating metadata
+            this.updateMetadata(item, message);
+        } else if (message.action === 'load' && message.name) {
+            // Handle loading metadata
+            this.loadMetadata(item, message, message.parent);
+        } else if (message.action === 'resource' && message.name) {
+            // Handle loading a resource
+            const url = await this.loadResource(item, message);
+            this._postMessage({
+                id: message.id,
+                type: 'backoffice',
+                status: 'success',
+                content: url,
+                action: 'result',
+            });
         }
-        this.timeout(`on_message:${message.action}`, async () => {
-            const item = this._service.active_item;
-            if (message.type === 'backoffice' && item) {
-                if (message.action === 'update') {
-                    // Handle update to item model
-                    this.updateItem(item, message);
-                } else if (message.action === 'metadata' && message.name) {
-                    // Handle updating metadata
-                    this.updateMetadata(item, message);
-                } else if (message.action === 'load' && message.name) {
-                    // Handle updating metadata
-                    this.loadMetadata(item, message, message.parent);
-                } else if (message.action === 'resource' && message.name) {
-                    // Handle updating metadata
-                    const url = await this.loadResource(item, message);
-                    this._postMessage({
-                        id: message.id,
-                        type: 'backoffice',
-                        status: 'success',
-                        content: url,
-                        action: 'result',
-                    });
-                }
-            }
-        });
     }
 
     private async updateItem(item: PlaceResource, message: FrameMessage) {
@@ -225,9 +248,11 @@ export class ExtensionOutletComponent extends AsyncHandler {
     }
 
     private _postMessage(message: FrameMessage) {
+        const origin = this._frame_origin();
+        if (!origin) return;
         this._frame_el()?.nativeElement?.contentWindow?.postMessage(
             JSON.stringify(message),
-            '*',
+            origin,
         );
     }
 }
