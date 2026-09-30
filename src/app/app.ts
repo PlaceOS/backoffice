@@ -203,7 +203,11 @@ export class AppComponent extends AsyncHandler implements OnInit {
         this.loading.set(true);
         setLoadingMessage('Loading application settings...');
         /** Wait for settings to initialise */
-        await waitForSignalValue(this._settings.initialised, (_) => _);
+        const settings_ready = await waitForSignalValue(
+            this._settings.initialised,
+            (_) => _,
+        ).catch(() => false);
+        if (!settings_ready) return this.onInitError();
         const settings = (this._settings.get('composer') ||
             {}) as PlaceSettings;
         settings.mock = !!this._settings.get('mock');
@@ -212,9 +216,13 @@ export class AppComponent extends AsyncHandler implements OnInit {
         /** Wait for authentication details to load */
         await setupPlace(settings).catch(() => this.onInitError());
         setupCache(this._cache);
-        this.timeout('wait_for_user', () => this.onInitError(), 30 * 1000);
-        await waitForSignalValue(this._users.initialised, (_) => _);
-        this.clearTimeout('wait_for_user');
+        const user_ready = await waitForSignalValue(
+            this._users.initialised,
+            (_) => _,
+            50,
+            30 * 1000,
+        ).catch(() => false);
+        if (!user_ready) return this.onInitError();
         setLoadingMessage('Initialising locales...');
         // TranslatePipe is pure, so load translations before the shell renders
         await this._initLocale();
@@ -236,7 +244,10 @@ export class AppComponent extends AsyncHandler implements OnInit {
             }
         });
         setLoadingMessage('Checking staff tenants...');
-        this._checkTenants();
+        // Runs after the user loads, so currentUser() is set here
+        this._checkTenants().catch((error) =>
+            log('Init', 'Failed to check staff tenants', [error], 'warn'),
+        );
     }
 
     private onInitError() {

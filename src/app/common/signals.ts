@@ -74,19 +74,26 @@ export function waitForEvent<T>(
     });
 }
 
+/**
+ * Resolves with the first value of the signal that passes the predicate.
+ * Checks every `delay` ms, and rejects after `max_wait` ms so a value that
+ * never arrives cannot leave the caller waiting forever.
+ */
 export function waitForSignalValue<T>(
     source: Signal<T>,
     predicate: (value: T) => boolean = () => true,
     delay = 50,
+    max_wait = 60 * 1000,
 ): Promise<T> {
-    return new Promise<T>((resolve) => {
+    return new Promise<T>((resolve, reject) => {
+        const started = Date.now();
         const check = () => {
             const value = source();
-            if (predicate(value)) {
-                resolve(value);
-            } else {
-                setTimeout(check, delay);
+            if (predicate(value)) return resolve(value);
+            if (Date.now() - started >= max_wait) {
+                return reject(new Error('Timed out waiting for signal value'));
             }
+            setTimeout(check, delay);
         };
         check();
     });

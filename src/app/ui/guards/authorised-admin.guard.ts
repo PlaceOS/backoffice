@@ -29,7 +29,7 @@ export class AuthorisedAdminGuard {
         const user: PlaceUser = await waitForSignalValue(
             this._users.user,
             (_) => !!_,
-        );
+        ).catch(() => null);
         const can_activate =
             !!user &&
             (user.sys_admin ||
@@ -49,7 +49,7 @@ export class AuthorisedAdminGuard {
         const user: PlaceUser = await waitForSignalValue(
             this._users.user,
             (_) => !!_,
-        );
+        ).catch(() => null);
         const can_activate =
             !!user &&
             (user.sys_admin ||

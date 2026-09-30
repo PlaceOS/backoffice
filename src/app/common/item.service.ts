@@ -201,7 +201,11 @@ export class ActiveItemService extends AsyncHandler {
     /** Update the active item */
     public async setItem(id: string) {
         const request = ++this._item_request;
-        await waitForSignalValue(this._user.user, (user) => !!user);
+        const user = await waitForSignalValue(
+            this._user.user,
+            (user) => !!user,
+        ).catch(() => null);
+        if (!user) return;
         if (!hasSupportRole() && !hasSupportSubsystem()) return;
         const scope_version = this._scope_version;
         if (
@@ -625,7 +629,14 @@ export class ActiveItemService extends AsyncHandler {
             'update',
             async () => {
                 if (!this.actions) return;
-                await waitForSignalValue(this._user.user, (user) => !!user);
+                const user = await waitForSignalValue(
+                    this._user.user,
+                    (user) => !!user,
+                ).catch(() => null);
+                if (!user) {
+                    this._loading_list.set(false);
+                    return;
+                }
                 if (
                     list_version !== this._list_version ||
                     type !== this._type ||

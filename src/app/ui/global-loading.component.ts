@@ -57,7 +57,10 @@ export class GlobalLoadingComponent extends AsyncHandler implements OnInit {
 
     public async ngOnInit() {
         this.loading.set(true);
-        await waitForSignalValue(this._settings.initialised, (_) => _);
+        // Keep checking for a token even if settings are slow to load
+        await waitForSignalValue(this._settings.initialised, (_) => _).catch(
+            () => null,
+        );
         this.online.set(isOnline());
         this.interval(
             'has_token',

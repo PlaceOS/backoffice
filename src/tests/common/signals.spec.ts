@@ -30,6 +30,20 @@ describe('signals.ts utilities', () => {
             value.set('hello');
             expect(await promise).toBe('hello');
         });
+
+        it('rejects when no matching value arrives in time', async () => {
+            vi.useFakeTimers();
+            try {
+                const value = signal(false);
+                const promise = waitForSignalValue(value, Boolean, 50, 1000);
+                const result = expect(promise).rejects.toThrow('Timed out');
+                await vi.advanceTimersByTimeAsync(1000);
+                await result;
+                expect(vi.getTimerCount()).toBe(0);
+            } finally {
+                vi.useRealTimers();
+            }
+        });
     });
 });
 
