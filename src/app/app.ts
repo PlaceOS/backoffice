@@ -249,9 +249,11 @@ export class AppComponent extends AsyncHandler implements OnInit {
                     locale = locales.find((_) => _.id === lang)?.id;
                     if (!locale)
                         locale = locales.find((_) => lang.includes(_.id))?.id;
+                    // Load the full browser tag (e.g. en-US), not the matched id,
+                    // as locale files use full tags.
                     if (locale) {
-                        load = this._locale?.setLocale(locale);
-                        localStorage.setItem('BACKOFFICE.locale', locale);
+                        load = this._locale?.setLocale(lang);
+                        localStorage.setItem('BACKOFFICE.locale', lang);
                         break;
                     }
                 }
