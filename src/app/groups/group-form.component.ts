@@ -10,7 +10,7 @@ import {
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { disabled, form, FormField, submit } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -104,14 +104,32 @@ import {
                         <label for="group-parent">{{
                             'GROUPS.PARENT_ID' | translate
                         }}</label>
-                        <item-search-field
-                            [placeholder]="'GROUPS.PARENT_SEARCH' | translate"
-                            [query_fn]="query_parent_groups()"
-                            [exclude]="exclude_parent_group"
-                            [ngModel]="parent_group()"
-                            [ngModelOptions]="{ standalone: true }"
-                            (ngModelChange)="setParentGroup($event)"
-                        />
+                        <div class="flex items-center space-x-2">
+                            <item-search-field
+                                class="flex-1"
+                                [placeholder]="
+                                    'GROUPS.PARENT_SEARCH' | translate
+                                "
+                                [query_fn]="query_parent_groups()"
+                                [exclude]="exclude_parent_group"
+                                [ngModel]="parent_group()"
+                                [ngModelOptions]="{ standalone: true }"
+                                (ngModelChange)="setParentGroup($event)"
+                            />
+                            @if (formModel().parent_id) {
+                                <button
+                                    icon
+                                    type="button"
+                                    [attr.aria-label]="
+                                        'GROUPS.PARENT_CLEAR' | translate
+                                    "
+                                    [title]="'GROUPS.PARENT_CLEAR' | translate"
+                                    (click)="setParentGroup(null)"
+                                >
+                                    <icon>close</icon>
+                                </button>
+                            }
+                        </div>
                     </div>
                     <div class="field">
                         <label for="group-authority">{{
@@ -252,7 +270,11 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
     @Output() public event = new EventEmitter<DialogEvent>();
 
     public readonly formModel = signal(generateGroupFormModel(this._data.item));
-    public readonly form = form(this.formModel, applyGroupFormSchema);
+    public readonly form = form(this.formModel, (path) => {
+        applyGroupFormSchema(path);
+        // Domain is fixed once the group exists, matching the user form
+        disabled(path.authority_id, () => !!this._data.item.id);
+    });
     public readonly loading = signal<string | null>(null);
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,

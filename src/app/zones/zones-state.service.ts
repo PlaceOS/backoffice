@@ -24,6 +24,7 @@ import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import {
+    collectPages,
     isSubsystemUser,
     querySupportSystems as querySystems,
     querySupportZones as queryZones,
@@ -114,10 +115,10 @@ export class ZonesStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceZone)) return [] as PlaceSystem[];
-            const response = await querySystems({ zone_id: item.id }).catch(
-                () => ({ data: [] }),
-            );
-            return response.data;
+            // Load every page so the list matches the tab count
+            return collectPages(
+                querySystems({ zone_id: item.id, limit: 500 }),
+            ).catch(() => [] as PlaceSystem[]);
         },
     });
 
@@ -157,10 +158,10 @@ export class ZonesStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceZone)) return [] as PlaceZone[];
-            const response = await queryZones({ parent_id: item.id }).catch(
-                () => ({ data: [] }),
-            );
-            return response.data;
+            // Load every page so the list matches the tab count
+            return collectPages(
+                queryZones({ parent_id: item.id, limit: 500 }),
+            ).catch(() => [] as PlaceZone[]);
         },
     });
 

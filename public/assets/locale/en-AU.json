@@ -758,6 +758,7 @@
         "AUTHORITY_SELECT": "Select domain",
         "PARENT_ID": "Parent Group",
         "PARENT_SEARCH": "Search for parent group...",
+        "PARENT_CLEAR": "Remove parent group",
         "SUBSYSTEMS": "Subsystems",
         "SUBSYSTEMS_HINT": "Comma separated subsystems",
         "SUBSYSTEMS_EMPTY": "No subsystems",

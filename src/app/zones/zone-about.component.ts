@@ -1,4 +1,11 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import {
+    Component,
+    computed,
+    effect,
+    inject,
+    signal,
+    untracked,
+} from '@angular/core';
 import { PlaceSystem, PlaceZone, showZone } from '@placeos/ts-client';
 
 import { ZonesStateService } from './zones-state.service';
@@ -276,6 +283,7 @@ export class ZoneAboutComponent extends AsyncHandler {
     /** Selected system */
     public readonly active_system = signal<PlaceSystem | undefined>(undefined);
     public readonly item = this._service.item;
+    private readonly _item_id = computed(() => this.item()?.id);
     public readonly parent = signal<PlaceZone | undefined>(undefined);
     public readonly tag_list = computed(() =>
         this.item() ? this.item()?.tags : [],
@@ -297,6 +305,11 @@ export class ZoneAboutComponent extends AsyncHandler {
             const item = this.item();
             this.parent.set(undefined);
             if (item?.parent_id) void this.loadParent(item.parent_id);
+        });
+        // Clear the selected system when the zone changes
+        effect(() => {
+            this._item_id();
+            untracked(() => this.active_system.set(undefined));
         });
     }
 

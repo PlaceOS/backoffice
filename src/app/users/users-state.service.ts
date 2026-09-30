@@ -17,7 +17,11 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
-import { GroupBulkAddModalComponent } from '../groups/group-bulk-add-modal.component';
+import {
+    GroupBulkAddModalComponent,
+    GroupBulkAddModalData,
+    GroupBulkAddResult,
+} from '../groups/group-bulk-add-modal.component';
 import { GroupPermissionsModalComponent } from '../groups/group-permissions-modal.component';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 
@@ -119,9 +123,13 @@ export class UsersStateService {
     }
 
     public async bulkAddGroups(existing_groups: PlaceGroupUser[] = []) {
-        const groups = await waitForEvent(
+        const result = await waitForEvent(
             this._dialog
-                .open(GroupBulkAddModalComponent<PlaceGroup>, {
+                .open<
+                    GroupBulkAddModalComponent<PlaceGroup>,
+                    GroupBulkAddModalData<PlaceGroup>,
+                    GroupBulkAddResult<PlaceGroup>
+                >(GroupBulkAddModalComponent<PlaceGroup>, {
                     data: {
                         title: 'USERS.GROUPS_BULK',
                         placeholder: 'GROUPS.SEARCH',
@@ -152,13 +160,17 @@ export class UsersStateService {
                 })
                 .afterClosed(),
         );
+        const groups = result?.items;
         if (!groups?.length) return;
+        // Only send permissions when set so the backend default applies
+        const permissions = +result.permissions || 0;
         this._loading.set(true);
         const results = await Promise.allSettled(
             groups.map((group) =>
                 addGroupUser({
                     user_id: this.active_item.id,
                     group_id: group.id,
+                    ...(permissions ? { permissions } : {}),
                 }),
             ),
         );

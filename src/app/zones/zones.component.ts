@@ -18,6 +18,7 @@ import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTab, ItemTablistComponent } from '../ui/item-tablist.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
 import { TranslatePipe } from '../ui/translate.pipe';
+import { BackofficeUsersService } from '../users/users.service';
 import { ZonesStateService } from './zones-state.service';
 
 @Component({
@@ -127,6 +128,7 @@ export class ZonesComponent extends AsyncHandler {
     protected _route = inject(ActivatedRoute);
     protected _router = inject(Router);
     private _debug = inject(PlaceDebugService);
+    private _users = inject(BackofficeUsersService);
 
     public readonly item = computed(
         () => this._item.active_item$() as PlaceZone | null,
@@ -139,6 +141,7 @@ export class ZonesComponent extends AsyncHandler {
     public readonly counts = this._service.counts;
     public readonly tab_list = computed(() => {
         const details = this.counts();
+        const is_admin = !!this._users.user()?.sys_admin;
         return (
             [
                 {
@@ -188,6 +191,10 @@ export class ZonesComponent extends AsyncHandler {
                 (tab) =>
                     !isSubsystemUser() ||
                     !['history', 'triggers', 'groups'].includes(tab.id),
+            )
+            // Groups and history routes are admin only
+            .filter(
+                (tab) => is_admin || !['history', 'groups'].includes(tab.id),
             );
     });
 

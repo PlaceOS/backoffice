@@ -224,7 +224,7 @@ import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
                                         tz
                                     }}</mat-option>
                                 }
-                                @if (!timezones.length) {
+                                @if (!filtered_timezones().length) {
                                     <mat-option [disabled]="true">
                                         {{
                                             'COMMON.TIMEZONE_EMPTY' | translate
