@@ -133,6 +133,7 @@ All notable changes to this project will be documented in this file.
 
 - Signage AI providers page
 - Add tenant bookable period
+- Default new signage AI providers to gpt-image-2.5-sunburst (#318)
 
 #### Groups
 
