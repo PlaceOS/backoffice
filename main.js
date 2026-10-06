@@ -1,27 +1,28 @@
 import {
   tenantExpiryBanner
-} from "./chunk-4GYT6WDW.js";
+} from "./chunk-GUNB7RTX.js";
 import "./chunk-GV5KQIK5.js";
 import {
   AuthorisedUserGuard
-} from "./chunk-YIUDHOHL.js";
+} from "./chunk-53VUDFAG.js";
 import {
   AuthorisedAdminGuard
-} from "./chunk-MVZ4GR2D.js";
+} from "./chunk-VPBKJ65W.js";
 import {
   MatProgressBar,
   MatProgressBarModule
-} from "./chunk-LPUAWD4J.js";
+} from "./chunk-BOVIKFWA.js";
 import {
   BackofficeUsersService
-} from "./chunk-3D43EOHJ.js";
+} from "./chunk-27RGLWGV.js";
 import "./chunk-XI4ZLZAC.js";
 import {
   SettingsService
-} from "./chunk-KVQ45LGL.js";
+} from "./chunk-LDPMLA3S.js";
 import {
   currentUser
-} from "./chunk-ZQOGPWQ4.js";
+} from "./chunk-FQQU2C6T.js";
+import "./chunk-NRO2XDNU.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -30,34 +31,31 @@ import {
   provideRouter,
   withHashLocation,
   withNavigationErrorHandler
-} from "./chunk-2C722Z46.js";
-import "./chunk-G27ITG57.js";
+} from "./chunk-TWCYY2HH.js";
 import {
   signalFromClient,
   waitForSignalValue
-} from "./chunk-T65YNYD6.js";
+} from "./chunk-G5DVCCF5.js";
 import "./chunk-TPDHL3PI.js";
 import {
-  UploadsService
-} from "./chunk-DVZ5PJPQ.js";
-import {
+  UploadsService,
   syncUploadToken
-} from "./chunk-PSJCUEDM.js";
-import "./chunk-F34GYKGE.js";
+} from "./chunk-QQ75UKDL.js";
+import "./chunk-DG5F5M2I.js";
 import {
   MatTooltip,
   MatTooltipModule
-} from "./chunk-7AGLUCJP.js";
+} from "./chunk-RFD5AOWN.js";
 import {
   notifyInfo,
   setNotifyOutlet
 } from "./chunk-IQ5P3T5K.js";
 import {
   AsyncHandler
-} from "./chunk-B77ZBLFJ.js";
+} from "./chunk-SDGTGI2H.js";
 import {
   MatDialog
-} from "./chunk-BKGOEYCZ.js";
+} from "./chunk-XMG57YWH.js";
 import {
   BasePortalOutlet,
   CdkPortalOutlet,
@@ -68,28 +66,24 @@ import {
   TemplatePortal,
   createGlobalPositionStrategy,
   createOverlayRef
-} from "./chunk-6V3EPDQC.js";
+} from "./chunk-W6NODITO.js";
 import {
-  MatRippleLoader
-} from "./chunk-35RV2TRF.js";
-import {
+  MatRippleLoader,
   MatRippleModule
-} from "./chunk-G6JZQ6PF.js";
-import "./chunk-YZCKBLZP.js";
+} from "./chunk-PNGPFML7.js";
+import "./chunk-4G55JYYO.js";
 import {
   LocaleService,
   TranslatePipe,
   localeFromUrl,
   setTranslationService
-} from "./chunk-Q56IG7JO.js";
-import {
-  IconComponent
-} from "./chunk-XRQ22N5K.js";
+} from "./chunk-ETRW4JH6.js";
 import {
   BidiModule,
   BreakpointObserver,
   Breakpoints,
   FocusMonitor,
+  IconComponent,
   LiveAnnouncer,
   MatRipple,
   Platform,
@@ -97,16 +91,14 @@ import {
   _IdGenerator,
   _StructuralStylesLoader,
   _animationsDisabled
-} from "./chunk-LAM4IRA6.js";
+} from "./chunk-MKMIAR67.js";
 import {
+  DecimalPipe,
+  bootstrapApplication,
   copyToClipboard,
   detectIE,
   log
-} from "./chunk-SXYVSUAR.js";
-import {
-  DecimalPipe,
-  bootstrapApplication
-} from "./chunk-QYMVVG4Y.js";
+} from "./chunk-IWUSEH7D.js";
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
@@ -203,11 +195,11 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-6NXCBA4X.js";
+} from "./chunk-M2N6S2L7.js";
 import {
   __spreadProps,
   __spreadValues
-} from "./chunk-DPH5AP7B.js";
+} from "./chunk-RQBZITXC.js";
 
 // node_modules/@angular/material/fesm2022/_icon-button-chunk.mjs
 var _c0 = ["*", [["", "progressIndicator", ""]]];
@@ -2898,20 +2890,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       []
     )
   );
-  filter = signal(
-    false,
-    ...ngDevMode ? [{ debugName: "filter" }] : (
-      /* istanbul ignore next */
-      []
-    )
-  );
-  show = signal(
-    false,
-    ...ngDevMode ? [{ debugName: "show" }] : (
-      /* istanbul ignore next */
-      []
-    )
-  );
+  /** Whether to hide the upload list, e.g. on MQTT routes */
   simple = signal(
     false,
     ...ngDevMode ? [{ debugName: "simple" }] : (
@@ -2920,9 +2899,6 @@ var AppComponent = class _AppComponent extends AsyncHandler {
     )
   );
   update_available = updateAvailable;
-  get dark_mode() {
-    return this._users.dark_mode;
-  }
   _client_online = signalFromClient(eo());
   _browser_online = browserOnline();
   /** Whether PlaceOS is reachable. ts-client only flags auth failures, so also track the network. */
@@ -2933,9 +2909,6 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       []
     )
   );
-  get is_fools_day() {
-    return false;
-  }
   refreshApplication() {
     location.reload();
   }
@@ -3079,9 +3052,6 @@ var AppComponent = class _AppComponent extends AsyncHandler {
                 <div class="relative h-1/2 w-full flex-1">
                     <router-outlet />
                 </div>
-                <!-- @if (filter()) {
-                    <global-search [(search)]="filter"></global-search>
-                } -->
                 @if (!simple()) {
                     <app-upload-list />
                 }
@@ -3147,7 +3117,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 152 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 149 });
 })();
 
 // src/app/ui/unauthorised.component.ts
@@ -3214,55 +3184,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-XORSCDEX.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IXTQUHCL.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-IU4HKCZB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-SWXASPUQ.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-KKW3YAXS.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-AJRIUT5C.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-3ZA5DU6U.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-VJZQRGW6.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-6BSBX2TK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-DDPSHHDK.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-7DGTVWKS.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IBSBRUMN.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-KQIOLO6H.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-NA6CUPLP.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-X4KWCRSS.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-5XQWTACK.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-W4FAKZLK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-DXX5TVSR.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-N6IDMBMJ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-HLEUSJH2.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -3284,7 +3254,7 @@ var appConfig = {
 var is_mock = location.href.includes("mock=true") || localStorage.getItem("BACKOFFICE.mock") === "true";
 var bootstrap = async () => {
   if (is_mock) {
-    await import("./chunk-SLVWCER5.js");
+    await import("./chunk-NQ2DW2UX.js");
   }
   bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
 };

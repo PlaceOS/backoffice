@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
+#### A11y
+
+- Link form labels to inputs and label password toggles
+- Satisfy template lint rules
+- Link remaining form labels to their controls
+- Stop password toggles from focusing the input
+- Link the trigger reference system label
+
 #### Admin
 
 - Send a cleared provider field as empty, not null
@@ -52,6 +60,11 @@ All notable changes to this project will be documented in this file.
 - Refresh and clear the parent when the authority changes
 - Drop parent clear button
 
+#### I18n
+
+- Add missing locale keys and fix mistyped keys
+- Correct broker host, reorder and settings error strings
+
 #### Modules
 
 - Preserve control system on creation
@@ -68,6 +81,10 @@ All notable changes to this project will be documented in this file.
 #### Repositories
 
 - Block save when branch is empty
+
+#### Settings
+
+- Default debug output to off in production
 
 #### Signage
 
@@ -89,6 +106,7 @@ All notable changes to this project will be documented in this file.
 - Build and parse valid cron schedules
 - Repair instance list, mailer reorder and zone removal
 - Save custom cron at once and stop date fields submitting the form
+- Say action, not condition, in action save toasts
 
 #### Ui
 
