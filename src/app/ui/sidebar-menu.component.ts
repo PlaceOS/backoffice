@@ -58,7 +58,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         Place<span class="font-heading text-primary">OS</span>
                     </div>
                     <img
-                        src="assets/icon/mstile-310x310.png"
+                        src="assets/img/placeos-icon.svg"
                         class="hidden h-12 w-12"
                         [class.sm:block]="compact()"
                         alt="PlaceOS logo"
