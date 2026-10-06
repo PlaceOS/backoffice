@@ -233,7 +233,7 @@ export class SignageAIProviderModalComponent {
         provider: this._data.item?.provider || 'OPENAI',
         endpoint: this._data.item?.endpoint || '',
         location: this._data.item?.location || '',
-        default_model: this._data.item?.default_model || 'gpt-image-2',
+        default_model: this._data.item?.default_model || 'gpt-image-2.5-sunburst',
         enabled: this._data.item?.enabled ?? true,
         is_default: this._data.item?.is_default ?? false,
         user_per_day: this._data.item?.quotas?.user_per_day ?? 60,
