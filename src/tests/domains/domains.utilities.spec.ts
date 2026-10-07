@@ -13,6 +13,7 @@ describe('domains.utilities', () => {
                 internals: '',
                 description: '',
                 email_domains: [],
+                organisation_id: '',
             });
         });
 

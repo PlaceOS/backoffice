@@ -13,6 +13,7 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import {
     addDomain,
     cleanObject,
@@ -33,6 +34,7 @@ import {
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
+import { isClusterReach, organisations } from '../common/organisation-access';
 import { DialogEvent, Identity } from '../common/types';
 import { isValidDomain } from '../common/validation';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
@@ -176,6 +178,34 @@ import {
                             </mat-form-field>
                         </div>
                     }
+                    @if (form.organisation_id && show_organisation()) {
+                        <div class="field">
+                            <label for="organisation" id="organisation-label">
+                                {{ 'ORGANISATIONS.SINGULAR' | translate }}
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <mat-select
+                                    id="organisation"
+                                    aria-labelledby="organisation-label"
+                                    [formField]="form.organisation_id"
+                                >
+                                    <mat-option value="">
+                                        {{
+                                            'ORGANISATIONS.UNOWNED' | translate
+                                        }}
+                                    </mat-option>
+                                    @for (
+                                        item of organisation_list();
+                                        track item.id
+                                    ) {
+                                        <mat-option [value]="item.id">
+                                            {{ item.name }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    }
                     @if (form.description) {
                         <div class="field">
                             <label for="description">{{
@@ -272,6 +302,7 @@ import {
         MatFormFieldModule,
         MatChipsModule,
         MatInputModule,
+        MatSelectModule,
         TranslatePipe,
         FormField,
         IconComponent,
@@ -319,6 +350,9 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
     public email_domain_list = computed(
         () => this.formModel().email_domains || [],
     );
+    /** Only cluster staff choose the owner; everyone else's domains are their own */
+    public readonly show_organisation = isClusterReach;
+    public readonly organisation_list = organisations;
 
     public ngOnInit(): void {
         this.subscription(
@@ -341,12 +375,21 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
                     : { ...item_json, ...this.formModel() }
             ) as Identity;
             try {
+                const organisation_id = this.formModel().organisation_id;
+                const owner =
+                    this.show_organisation() &&
+                    organisation_id &&
+                    organisation_id !== item.organisation_id
+                        ? { organisation_id }
+                        : {};
                 const _item = await (form_item.id
                     ? updateDomain(
                           form_item.id as string,
                           form_item as unknown as PlaceDomain,
+                          'patch',
+                          owner,
                       )
-                    : addDomain(form_item as unknown as PlaceDomain));
+                    : addDomain(form_item as unknown as PlaceDomain, owner));
                 this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item: _item } });
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));

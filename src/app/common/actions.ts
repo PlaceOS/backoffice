@@ -62,6 +62,7 @@ import {
     planDomainCascade,
     planZoneCascade,
 } from './cascade-delete';
+import { organisationQueryParams } from './organisation-access';
 import {
     querySupportModules,
     querySupportSystems as querySystems,
@@ -103,6 +104,7 @@ export interface ItemActions<T> {
 const domains: ItemActions<PlaceDomain> = {
     query: (_) =>
         queryDomains({
+            ...organisationQueryParams(),
             q: _,
             fields: ['id', 'name', 'domain'].join(','),
         }),
@@ -216,6 +218,7 @@ const repositories: ItemActions<PlaceRepository> = {
 const systems: ItemActions<PlaceSystem> = {
     query: (_) =>
         querySystems({
+            ...organisationQueryParams(),
             q: _,
             fields: ['id', 'name', 'display_name'].join(','),
         }),
@@ -316,6 +319,7 @@ function processURL(system: PlaceSystem, url: string) {
 const triggers: ItemActions<PlaceTrigger> = {
     query: (_) =>
         queryTriggers({
+            ...organisationQueryParams(),
             q: _,
             fields: ['id', 'name', 'display_name'].join(','),
         }),
@@ -334,6 +338,7 @@ const triggers: ItemActions<PlaceTrigger> = {
 const users: ItemActions<PlaceUser> = {
     query: (_, options) =>
         queryUsers({
+            ...organisationQueryParams(),
             ...options,
             q: _,
             fields: [
@@ -358,6 +363,7 @@ const users: ItemActions<PlaceUser> = {
 const zones: ItemActions<PlaceZone> = {
     query: (_) =>
         queryZones({
+            ...organisationQueryParams(),
             q: _,
             fields: ['id', 'name', 'display_name', 'tags'].join(','),
         }),

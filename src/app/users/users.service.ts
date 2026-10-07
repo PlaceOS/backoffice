@@ -10,6 +10,7 @@ import {
 import { Md5 } from 'ts-md5';
 
 import { AsyncHandler } from '../common/async-handler.class';
+import { loadOrganisationAccess } from '../common/organisation-access';
 import { SettingsService } from '../common/settings.service';
 import { loadSupportAccess } from '../common/support-access';
 import { FilterFn } from '../common/types';
@@ -101,6 +102,7 @@ export class BackofficeUsersService extends AsyncHandler {
                         return;
                     }
                     await loadSupportAccess(user);
+                    await loadOrganisationAccess(user);
                     setCurrentUser(user);
                     Sentry.withScope((scope) =>
                         scope.setUser({ email: user.email }),
