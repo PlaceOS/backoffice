@@ -12,6 +12,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { organisationName } from '../common/organisation-access';
 import { validateJSONString } from '../common/validation';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { IconComponent } from '../ui/icon.component';
@@ -22,6 +23,18 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'app-domain-about',
     template: `
+        @if (item?.organisation_id) {
+            <div class="mb-2 flex items-center gap-2 text-sm">
+                <icon>corporate_fare</icon>
+                <span class="opacity-60"
+                    >{{ 'ORGANISATIONS.SINGULAR' | translate }}:</span
+                >
+                <span>{{
+                    organisationName(item.organisation_id) ||
+                        item.organisation_id
+                }}</span>
+            </div>
+        }
         @if (item?.description) {
             <div class="border-base-200 w-full rounded-sm border">
                 <h3
@@ -122,6 +135,7 @@ import { DomainStateService } from './domain-state.service';
     ],
 })
 export class DomainAboutComponent extends AsyncHandler {
+    public readonly organisationName = organisationName;
     private _service = inject(DomainStateService);
     private _clipboard = inject(Clipboard);
 

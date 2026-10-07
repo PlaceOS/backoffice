@@ -7,6 +7,11 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
+import {
+    canAccessClusterSection,
+    isClusterReach,
+    isPartnerReach,
+} from '../common/organisation-access';
 import { SettingsService } from '../common/settings.service';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
@@ -105,6 +110,11 @@ export class PlaceComponent extends AsyncHandler implements OnInit {
         this.tab_list.set(
             [
                 {
+                    id: 'organisations',
+                    name: i18n('ADMIN.TAB_ORGANISATIONS'),
+                    icon: { value: 'corporate_fare' },
+                },
+                {
                     id: 'about',
                     name: i18n('ADMIN.TAB_ABOUT'),
                     icon: { value: 'info' },
@@ -184,7 +194,15 @@ export class PlaceComponent extends AsyncHandler implements OnInit {
                     name: i18n('ADMIN.TAB_BUILD_JOBS'),
                     icon: { value: 'laps' },
                 },
-            ].concat(this.extensions),
+            ]
+                .filter(
+                    (tab) =>
+                        canAccessClusterSection(tab.id) &&
+                        (tab.id !== 'organisations' ||
+                            isClusterReach() ||
+                            isPartnerReach()),
+                )
+                .concat(this.extensions),
         );
     }
 

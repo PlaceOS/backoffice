@@ -1,5 +1,5 @@
-import { PlaceDomain } from '@placeos/ts-client';
 import { pattern, required, SchemaFn } from '@angular/forms/signals';
+import { PlaceDomain } from '@placeos/ts-client';
 
 export interface DomainFormModel {
     name: string;
@@ -10,6 +10,7 @@ export interface DomainFormModel {
     internals: string | Record<string, unknown>;
     description: string;
     email_domains: string[];
+    organisation_id: string;
 }
 
 export function generateDomainFormModel(domain?: PlaceDomain): DomainFormModel {
@@ -22,6 +23,7 @@ export function generateDomainFormModel(domain?: PlaceDomain): DomainFormModel {
         internals: domain?.internals || '',
         description: domain?.description || '',
         email_domains: domain?.email_domains || [],
+        organisation_id: domain?.organisation_id || '',
     };
 }
 

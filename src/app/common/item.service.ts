@@ -37,6 +37,10 @@ import { describeError } from './errors';
 import { escapeHtml, log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
+import {
+    selectOrganisation,
+    selected_organisation_id,
+} from './organisation-access';
 import { waitForEvent, waitForSignalValue } from './signals';
 import {
     canAccessSection,
@@ -146,6 +150,21 @@ export class ActiveItemService extends AsyncHandler {
             isSubsystemUser() &&
             canUseSupportAction(permission)
         );
+    }
+
+    /** Narrow every list to one organisation, or `''` for all in reach */
+    public switchOrganisation(id: string) {
+        if (id === selected_organisation_id() || !selectOrganisation(id))
+            return;
+        this._scope_version++;
+        this._active_item.set(null);
+        this._next_query.set(null);
+        this._list.set([]);
+        this._count.set(0);
+        this._search.set('');
+        this._loading.set(false);
+        this._loading_list.set(false);
+        this._router.navigate(['/', this.type || 'systems', '-']);
     }
 
     public switchGroup(id: string) {

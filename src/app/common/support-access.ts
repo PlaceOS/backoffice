@@ -12,6 +12,7 @@ import {
     querySystems,
     queryZones,
 } from '@placeos/ts-client';
+import { organisationQueryParams } from './organisation-access';
 
 let storage_key = '';
 const selected_id = signal('');
@@ -141,6 +142,7 @@ export function querySupportSystems(
         return Promise.resolve({ data: [], total: 0, next: null });
     }
     return querySystems({
+        ...organisationQueryParams(),
         ...options,
         ...(isSubsystemUser() ? { subsystem: 'support' } : {}),
         ...(selected_id() ? { group_id: selected_id() } : {}),
@@ -152,7 +154,7 @@ export function querySupportZones(
     options: PlaceZoneQueryOptions = {},
 ): QueryResponse<PlaceZone> {
     if ((!isSubsystemUser() && !selected_id()) || options.parent_id) {
-        return queryZones(options);
+        return queryZones({ ...organisationQueryParams(), ...options });
     }
     const groups = active_groups().filter(
         ({ permissions }) => hasSupportRole() || !!(permissions & 1),
@@ -176,7 +178,7 @@ export async function querySupportModules(
     options: Parameters<typeof queryModules>[0] = {},
 ): QueryResponse<PlaceModule> {
     if (!selected_id() || options.control_system_id)
-        return queryModules(options);
+        return queryModules({ ...organisationQueryParams(), ...options });
     const requested_group = selected_id();
     const systems = await collectPages(querySupportSystems({ limit: 200 }));
     const modules: PlaceModule[] = [];

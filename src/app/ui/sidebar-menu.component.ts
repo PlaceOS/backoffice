@@ -15,6 +15,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { authority, queryApplications } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
+import {
+    canAccessClusterSection,
+    hasOrganisationPicker,
+    selected_organisation,
+} from '../common/organisation-access';
 import { SettingsService } from '../common/settings.service';
 import {
     canAccessSection,
@@ -30,6 +35,7 @@ import {
 } from './custom-tooltip.component';
 import { DebugInfoComponent } from './debug-info.component';
 import { IconComponent } from './icon.component';
+import { OrganisationPickerComponent } from './organisation-picker.component';
 import { SupportGroupPickerComponent } from './support-group-picker.component';
 import { TranslatePipe } from './translate.pipe';
 import { UserAvatarComponent } from './user-avatar.component';
@@ -180,6 +186,21 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     </div>
                 </button>
             }
+            @if (has_organisation_picker()) {
+                <button matRipple type="button"
+                    class="hover:bg-base-100 flex min-h-14 items-center gap-2 border-t border-base-300 p-3 text-left"
+                    [class.justify-center]="compact()"
+                    [attr.aria-label]="'ORGANISATIONS.SWITCH' | translate"
+                    [matTooltip]="selected_organisation()?.name || ('ORGANISATIONS.ALL' | translate)"
+                    matTooltipPosition="right"
+                    (click)="switchOrganisation()">
+                    <icon class="text-2xl">corporate_fare</icon>
+                    <span class="min-w-0 flex-1 truncate" [class.sm:hidden]="compact()">
+                        {{ selected_organisation()?.name || ('ORGANISATIONS.ALL' | translate) }}
+                    </span>
+                    <icon [class.sm:hidden]="compact()">unfold_more</icon>
+                </button>
+            }
             @if (support_groups().length) {
                 <button matRipple type="button"
                     class="hover:bg-base-100 flex min-h-14 items-center gap-2 border-t border-base-300 p-3 text-left"
@@ -313,7 +334,8 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         {
             name: 'COMMON.REPOS',
             route: '/repositories',
-            show_on: () => this.is_admin,
+            show_on: () =>
+                this.is_admin && canAccessClusterSection('repositories'),
             icon: 'inventory_2',
         },
         {
@@ -385,6 +407,23 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     }
 
     public readonly close = () => this._tooltip?.close();
+
+    public readonly has_organisation_picker = hasOrganisationPicker;
+    public readonly selected_organisation = selected_organisation;
+
+    public switchOrganisation() {
+        this._dialog
+            .open<OrganisationPickerComponent, undefined, string>(
+                OrganisationPickerComponent,
+                {
+                    maxWidth: 'calc(100vw - 2rem)',
+                },
+            )
+            .afterClosed()
+            .subscribe((id) => {
+                if (id !== undefined) this._items.switchOrganisation(id);
+            });
+    }
 
     public switchGroup() {
         this._dialog

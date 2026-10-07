@@ -17,6 +17,13 @@ export const ROUTES: Routes = [
                     ),
             },
             {
+                path: 'organisations',
+                loadComponent: () =>
+                    import('./organisations.component').then(
+                        (m) => m.AdminOrganisationsComponent,
+                    ),
+            },
+            {
                 path: 'database',
                 loadComponent: () =>
                     import('./database-details.component').then(
