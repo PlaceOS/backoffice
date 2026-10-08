@@ -1,11 +1,22 @@
-import { MatSnackBar } from '@angular/material/snack-bar';
+import type { MatSnackBar } from '@angular/material/snack-bar';
 
 import { ApplicationIcon } from './types';
 
-let _service: MatSnackBar;
+/** Snackbar service, or a promise of it while the snackbar module loads */
+let _service: MatSnackBar | Promise<MatSnackBar> | null = null;
 
-export function setNotifyOutlet(snackbar: MatSnackBar) {
+/**
+ * Set the snackbar used for notifications.
+ * Pass a promise to load the snackbar module lazily.
+ * Notifications made before it resolves open once it does.
+ */
+export function setNotifyOutlet(snackbar: MatSnackBar | Promise<MatSnackBar>) {
     _service = snackbar;
+    if (snackbar instanceof Promise) {
+        snackbar.then((service) => {
+            if (_service === snackbar) _service = service;
+        });
+    }
 }
 
 /**
@@ -29,7 +40,23 @@ export function notify(
     if (!_service) {
         throw new Error("Snackbar service hasn't been initialised");
     }
-    const snackbar_ref = _service.open(message, action, {
+    if (_service instanceof Promise) {
+        _service.then((service) =>
+            openNotification(service, type, message, action, on_action),
+        );
+        return;
+    }
+    openNotification(_service, type, message, action, on_action);
+}
+
+function openNotification(
+    service: MatSnackBar,
+    type: string,
+    message: string,
+    action: string,
+    on_action?: () => void,
+) {
+    const snackbar_ref = service.open(message, action, {
         panelClass: [type],
         duration: 5000,
     });

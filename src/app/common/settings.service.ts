@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { showMetadata, updateMetadata } from '@placeos/ts-client';
-import { format, isSameDay } from 'date-fns';
 
 import { AsyncHandler } from './async-handler.class';
 import { getItemWithKeys, log } from './general';
@@ -74,9 +73,13 @@ export class SettingsService extends AsyncHandler {
         super();
         const now = new Date();
         const time = new Date(VERSION.time);
-        const built = isSameDay(now, time)
-            ? `Today at ${format(time, 'h:mma')}`
-            : format(time, 'do MMM yyyy, h:mma');
+        const built =
+            now.toDateString() === time.toDateString()
+                ? `Today at ${time.toLocaleTimeString([], { timeStyle: 'short' })}`
+                : time.toLocaleString([], {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                  });
         log('CORE', `${VERSION.semver}`, null, 'debug', true);
         log('APP', `${VERSION.hash} | Built: ${built}`, null, 'debug', true);
         this.init();

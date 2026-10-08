@@ -7,16 +7,12 @@ import {
     onlineState,
     queryUsers,
 } from '@placeos/ts-client';
-import { Md5 } from 'ts-md5';
 
 import { AsyncHandler } from '../common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
 import { loadSupportAccess } from '../common/support-access';
 import { FilterFn } from '../common/types';
 import { current_user, setCurrentUser } from '../common/user-state';
-
-import * as Sentry from '@sentry/browser';
-import { addDays } from 'date-fns';
 
 type ServiceItem = PlaceUser;
 
@@ -102,9 +98,6 @@ export class BackofficeUsersService extends AsyncHandler {
                     }
                     await loadSupportAccess(user);
                     setCurrentUser(user);
-                    Sentry.withScope((scope) =>
-                        scope.setUser({ email: user.email }),
-                    );
                     this.state.set('success');
                     this._initialised.set(true);
                     // Trigger dark mode getter to apply current theme
@@ -119,27 +112,6 @@ export class BackofficeUsersService extends AsyncHandler {
                     ),
                 );
         });
-    }
-
-    /**
-     * Manually set the user access token
-     * @param token Token to set
-     * @param expiry Expiry time of the token
-     */
-    public setToken(token: string, expiry: number) {
-        if (!expiry) {
-            expiry = addDays(Date.now(), 7).valueOf();
-        }
-        const path = `${location.origin}${
-            this._settings.get('composer.route') || ''
-        }/oauth-resp.html`;
-        if (localStorage) {
-            const client_id = Md5.hashStr(path);
-            localStorage.setItem(`${client_id}_access_token`, token);
-            localStorage.setItem(`${client_id}_expires_at`, `${expiry}`);
-            location.reload();
-        }
-        return path;
     }
 
     /**

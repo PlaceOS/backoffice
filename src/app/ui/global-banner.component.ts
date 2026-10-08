@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
+import { MatRipple } from '@angular/material/core';
 import { SettingsService } from '../common/settings.service';
 import { IconComponent } from './icon.component';
 
@@ -39,7 +39,7 @@ export interface BannerDetails {
             }
         `,
     ],
-    imports: [IconComponent, MatRippleModule],
+    imports: [IconComponent, MatRipple],
 })
 export class GlobalBannerComponent {
     private _settings = inject(SettingsService);
