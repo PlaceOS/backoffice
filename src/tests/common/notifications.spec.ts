@@ -65,6 +65,23 @@ describe('notifications.ts', () => {
             // If set correctly, notify should not throw
             expect(() => notify('test', 'message')).not.toThrow();
         });
+
+        it('should open notifications made while a lazy snackbar loads', async () => {
+            let resolve: (snackbar: unknown) => void;
+            const pending = new Promise((r) => (resolve = r));
+            setNotifyOutlet(pending as any);
+
+            notify('info', 'Early message');
+            expect(mock_snackbar.open).not.toHaveBeenCalled();
+
+            resolve(mock_snackbar);
+            await pending;
+            expect(mock_snackbar.open).toHaveBeenCalledWith(
+                'Early message',
+                'OK',
+                expect.any(Object),
+            );
+        });
     });
 
     describe('notify', () => {

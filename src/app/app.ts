@@ -3,17 +3,12 @@ import {
     computed,
     DestroyRef,
     inject,
+    Injector,
     OnInit,
     signal,
 } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { SwUpdate } from '@angular/service-worker';
-import {
-    get,
-    invalidateToken,
-    isMock,
-    onlineState,
-} from '@placeos/ts-client';
+import { get, invalidateToken, isMock, onlineState } from '@placeos/ts-client';
 
 import {
     ActivatedRoute,
@@ -28,14 +23,12 @@ import { setNotifyOutlet } from './common/notifications';
 import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
 import { SettingsService } from './common/settings.service';
 import { signalFromClient, waitForSignalValue } from './common/signals';
-import { syncUploadToken } from './common/uploads';
 import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
 
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { PlaceTenant } from './admin/staff-api.component';
-import { tenantExpiryBanner } from './admin/staff-api.utilities';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatTooltip } from '@angular/material/tooltip';
+import type { PlaceTenant } from './admin/staff-api.component';
 import {
     localeFromUrl,
     LocaleService,
@@ -67,12 +60,16 @@ function browserOnline() {
     template: `
         <div class="flex h-full w-full flex-col overflow-hidden">
             @if (!loading()) {
-                <global-banner />
+                @defer (on idle) {
+                    <global-banner />
+                }
                 <div class="relative h-1/2 w-full flex-1">
                     <router-outlet />
                 </div>
                 @if (!simple()) {
-                    <app-upload-list />
+                    @defer (on idle) {
+                        <app-upload-list />
+                    }
                 }
             } @else {
                 <div
@@ -99,30 +96,35 @@ function browserOnline() {
             </div>
         }
         @if (update_available() && !loading()) {
-            <section
-                role="status"
-                aria-live="polite"
-                class="border-info/30 bg-base-100 text-base-content fixed right-3 bottom-3 z-100 w-88 max-w-[calc(100vw-2rem)] rounded-md border p-3 shadow-lg"
-            >
-                <div class="flex items-center gap-2">
-                    <div class="min-w-0 flex-1">
-                        <div class="text-sm font-medium">Update available</div>
-                        <p class="mt-0.5 text-xs opacity-70">
-                            Refresh to load the latest Backoffice version.
-                        </p>
+            <!-- Deferred so the tooltip and overlay code stay out of the initial bundle -->
+            @defer {
+                <section
+                    role="status"
+                    aria-live="polite"
+                    class="border-info/30 bg-base-100 text-base-content fixed right-3 bottom-3 z-100 w-88 max-w-[calc(100vw-2rem)] rounded-md border p-3 shadow-lg"
+                >
+                    <div class="flex items-center gap-2">
+                        <div class="min-w-0 flex-1">
+                            <div class="text-sm font-medium">
+                                Update available
+                            </div>
+                            <p class="mt-0.5 text-xs opacity-70">
+                                Refresh to load the latest Backoffice version.
+                            </p>
+                        </div>
+                        <button
+                            icon
+                            default
+                            type="button"
+                            (click)="refreshApplication()"
+                            matTooltip="Refresh"
+                            matTooltipPosition="left"
+                        >
+                            <icon>refresh</icon>
+                        </button>
                     </div>
-                    <button
-                        icon
-                        default
-                        type="button"
-                        (click)="refreshApplication()"
-                        matTooltip="Refresh"
-                        matTooltipPosition="left"
-                    >
-                        <icon>refresh</icon>
-                    </button>
-                </div>
-            </section>
+                </section>
+            }
         }
     `,
     styles: [
@@ -140,17 +142,17 @@ function browserOnline() {
         GlobalBannerComponent,
         RouterOutlet,
         UploadListComponent,
-        MatProgressBarModule,
+        MatProgressBar,
         GlobalLoadingComponent,
         IconComponent,
-        MatTooltipModule,
+        MatTooltip,
     ],
 })
 export class AppComponent extends AsyncHandler implements OnInit {
     private _settings = inject(SettingsService);
     private _users = inject(BackofficeUsersService);
     private _cache = inject(SwUpdate);
-    private _snackbar = inject(MatSnackBar);
+    private _injector = inject(Injector);
     private _router = inject(Router);
     private _route = inject(ActivatedRoute);
     private _locale = inject(LocaleService, { optional: true });
@@ -186,7 +188,12 @@ export class AppComponent extends AsyncHandler implements OnInit {
                 localStorage.setItem('BACKOFFICE.locale', locale);
             }
         });
-        setNotifyOutlet(this._snackbar);
+        // Load the snackbar lazily to keep the overlay code out of the initial bundle
+        setNotifyOutlet(
+            import('@angular/material/snack-bar').then(({ MatSnackBar }) =>
+                this._injector.get(MatSnackBar),
+            ),
+        );
         setTranslationService(this._locale);
         this.loading.set(true);
         setLoadingMessage('Loading application settings...');
@@ -215,8 +222,6 @@ export class AppComponent extends AsyncHandler implements OnInit {
         // TranslatePipe is pure, so load translations before the shell renders
         await this._initLocale();
         this.loading.set(false);
-        setLoadingMessage('Initialising upload service...');
-        this.timeout('init_uploads', () => syncUploadToken());
         this._router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.simple.set(this._router.url.includes('mqtt'));
@@ -240,7 +245,10 @@ export class AppComponent extends AsyncHandler implements OnInit {
     /** Show one banner for staff tenants with expiring secrets */
     private async _checkTenants() {
         if (!currentUser()?.sys_admin) return;
-        const tenants = await get('/api/staff/v1/tenants').catch(() => []);
+        const [tenants, { tenantExpiryBanner }] = await Promise.all([
+            get('/api/staff/v1/tenants').catch(() => []),
+            import('./admin/staff-api.utilities'),
+        ]);
         const banner = tenantExpiryBanner(
             Array.isArray(tenants) ? (tenants as PlaceTenant[]) : [],
         );
@@ -249,7 +257,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
 
     /**
      * Set the locale from the URL `lang` param, storage or the browser languages.
-     * Resolves when translations load, or after a timeout.
+     * Resolves when the fallback and locale translations load, or after a timeout.
      */
     private async _initLocale() {
         let load: Promise<void> | undefined;
@@ -284,10 +292,9 @@ export class AppComponent extends AsyncHandler implements OnInit {
         } catch {
             // Ignore locale parsing errors
         }
-        if (!load) return;
         // Do not block start up on a slow or failed locale file
         await Promise.race([
-            load.catch(() => undefined),
+            Promise.all([this._locale?.ready, load]).catch(() => undefined),
             new Promise((resolve) => setTimeout(resolve, LOCALE_TIMEOUT_MS)),
         ]);
     }

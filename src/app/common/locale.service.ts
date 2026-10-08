@@ -1,7 +1,5 @@
 import { Service } from '@angular/core';
 
-import * as DEFAULT_LOCALE from '../../../public/assets/locale/en-AU.json';
-
 import { showMetadata } from '@placeos/ts-client';
 import { log } from './general';
 
@@ -93,8 +91,16 @@ export class LocaleService {
     private _cache_time = 7 * 24 * 60 * 60 * 1000;
     private _load_promises: Record<string, Promise<void>> = {};
 
-    private _default_mappings: Record<string, string> =
-        removeNesting(DEFAULT_LOCALE);
+    private _default_mappings: Record<string, string> = {};
+    /**
+     * Resolves when the fallback translations have loaded.
+     * They load lazily to keep them out of the initial bundle.
+     */
+    public readonly ready: Promise<void> = import(
+        '../../../public/assets/locale/en-AU.json'
+    ).then(({ default: data }) => {
+        this._default_mappings = removeNesting(data);
+    });
     private _locale_mappings: Record<string, Record<string, string>> = {};
 
     public locale_folder = 'assets/locale';
