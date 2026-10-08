@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/common/user-state.ts"],
-  "sourcesContent": ["import { signal } from '@angular/core';\nimport { PlaceUser } from '@placeos/ts-client';\n\nconst EMPTY_USER = new PlaceUser();\n\n/**\n * The signed in user. `BackofficeUsersService` loads it and is the only\n * writer. It lives here so that code which cannot inject that service, such\n * as `SettingsService` (a dependency of it), can still read the user.\n */\nconst _current_user = signal<PlaceUser>(null);\n\nexport const current_user = _current_user.asReadonly();\n\n/** Publish the signed in user. Only `BackofficeUsersService` calls this. */\nexport function setCurrentUser(user: PlaceUser) {\n    _current_user.set(user);\n}\n\n/** Get the current user details */\nexport function currentUser() {\n    return _current_user() || EMPTY_USER;\n}\n"],
-  "mappings": ";;;;;;AAGA,IAAM,aAAa,IAAI,GAAS;AAOhC,IAAM,gBAAgB;EAAkB;;;;;;AAEjC,IAAM,eAAe,cAAc,WAAU;AAG9C,SAAU,eAAe,MAAe;AAC1C,gBAAc,IAAI,IAAI;AAC1B;AAGM,SAAU,cAAW;AACvB,SAAO,cAAa,KAAM;AAC9B;",
-  "names": []
-}
