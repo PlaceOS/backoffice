@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["settings-field.component.ts"],
   "sourcesContent": ["\n            [editor],\n            [editor] * {\n                user-select: initial;\n            }\n        "],
-  "mappings": ";AACY,CAAA;;AAEI,uBAAA;AAAA,eAAA;AACJ;",
+  "mappings": ";AACY,CAAA;;AAEI,uBAAA;AAAA,oBAAA;AAAA,eAAA;AACJ;",
   "names": []
 }

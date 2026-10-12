@@ -11,4 +11,5 @@ export {
   getWasmInstance,
   wasmBinary
 };
+//# debugId=c41c0ff2-79e0-593a-bb96-e1cc69b104f7
 //# sourceMappingURL=chunk-IJXS3IQH.js.map

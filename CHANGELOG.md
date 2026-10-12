@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
+#### Build
+
+- Use node fs in the version script
+
+#### Extensions
+
+- Load admin tabs and reply to all frame requests
+
+## [2610.1] - 2026-10-08
+
+### Bug Fixes
+
 #### A11y
 
 - Link form labels to inputs and label password toggles

@@ -1,12 +1,12 @@
 import {
   AuthorisedUserGuard
-} from "./chunk-7XKVQ2GT.js";
+} from "./chunk-GMD45BIC.js";
 import {
   AuthorisedAdminGuard
-} from "./chunk-XE5EIFSD.js";
+} from "./chunk-KPEZNGPX.js";
 import {
   BackofficeUsersService
-} from "./chunk-EIPFTMWR.js";
+} from "./chunk-MXBGH2MP.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -15,37 +15,37 @@ import {
   provideRouter,
   withHashLocation,
   withNavigationErrorHandler
-} from "./chunk-EUOPYYFD.js";
-import "./chunk-PV3B5VUM.js";
+} from "./chunk-T7AMAKFI.js";
+import "./chunk-7ICEG2QL.js";
 import {
   MatProgressBar
-} from "./chunk-TFAOXLJB.js";
+} from "./chunk-5ECR7FL5.js";
 import {
   setNotifyOutlet
-} from "./chunk-AYJXTTVT.js";
+} from "./chunk-5ZBBWEMN.js";
 import {
   SettingsService
-} from "./chunk-LYZMFOYM.js";
+} from "./chunk-W2BFIR7P.js";
 import {
   currentUser
-} from "./chunk-5RDGWPHM.js";
+} from "./chunk-3ONUAWGE.js";
 import {
   signalFromClient,
   waitForSignalValue
-} from "./chunk-WCEMOYFJ.js";
+} from "./chunk-GPHMWQA5.js";
 import {
   AsyncHandler
-} from "./chunk-NZ7ZPGVU.js";
+} from "./chunk-E2Z2L4DB.js";
 import {
   LocaleService,
   TranslatePipe,
   localeFromUrl,
   setTranslationService
-} from "./chunk-5OMVQZOP.js";
+} from "./chunk-K5ZKBMLV.js";
 import {
   detectIE,
   log
-} from "./chunk-SXYVSUAR.js";
+} from "./chunk-AOPYKUKV.js";
 import {
   En,
   J,
@@ -56,10 +56,10 @@ import {
   f,
   to
 } from "./chunk-P3FA5CPP.js";
-import "./chunk-FVPQ6H6W.js";
+import "./chunk-2VXJJPLQ.js";
 import {
   bootstrapApplication
-} from "./chunk-QHKUHZUG.js";
+} from "./chunk-7ONBXR6Y.js";
 import {
   ApplicationRef,
   Component,
@@ -117,14 +117,14 @@ import {
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1
-} from "./chunk-RDM3X2TD.js";
+} from "./chunk-YCZTZCQV.js";
 import {
   __spreadValues
 } from "./chunk-RQBZITXC.js";
 
 // node_modules/@angular/service-worker/fesm2022/service-worker.mjs
 /**
- * @license Angular v22.0.0
+ * @license Angular v22.1.8
  * (c) 2010-2026 Google LLC. https://angular.dev/
  * License: MIT
  */
@@ -737,17 +737,17 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
 // src/app/app.ts
 var AppComponent_Conditional_1_Defer_1_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-3OOPX2PR.js").then((m) => m.GlobalBannerComponent)
+  import("./chunk-IDYHLWXF.js").then((m) => m.GlobalBannerComponent)
 ];
 var AppComponent_Conditional_1_Conditional_5_Defer_1_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-PF734KPP.js").then((m) => m.UploadListComponent)
+  import("./chunk-2HLNLJOD.js").then((m) => m.UploadListComponent)
 ];
 var AppComponent_Conditional_5_Defer_1_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-M3GDX7XZ.js").then((m) => m.IconComponent),
+  import("./chunk-PSHDVD3Q.js").then((m) => m.IconComponent),
   /* @ts-ignore */
-  import("./chunk-OKTF62KK.js").then((m) => m.MatTooltip)
+  import("./chunk-BYKJ572Z.js").then((m) => m.MatTooltip)
 ];
 function AppComponent_Conditional_1_Defer_0_Template(rf, ctx) {
   if (rf & 1) {
@@ -892,7 +892,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
         localStorage.setItem("BACKOFFICE.locale", locale);
       }
     });
-    setNotifyOutlet(import("./chunk-3QYJMLOH.js").then(({ MatSnackBar }) => this._injector.get(MatSnackBar)));
+    setNotifyOutlet(import("./chunk-ADWIIUZP.js").then(({ MatSnackBar }) => this._injector.get(MatSnackBar)));
     setTranslationService(this._locale);
     this.loading.set(true);
     setLoadingMessage("Loading application settings...");
@@ -932,7 +932,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       return;
     const [tenants, { tenantExpiryBanner }] = await Promise.all([
       f("/api/staff/v1/tenants").catch(() => []),
-      import("./chunk-WVIIVOIV.js")
+      import("./chunk-2P64JKH4.js")
     ]);
     const banner = tenantExpiryBanner(Array.isArray(tenants) ? tenants : []);
     if (banner)
@@ -1005,13 +1005,13 @@ var AppComponent = class _AppComponent extends AsyncHandler {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadataAsync(AppComponent, () => [
     /* @ts-ignore */
-    import("./chunk-3OOPX2PR.js").then((m) => m.GlobalBannerComponent),
+    import("./chunk-IDYHLWXF.js").then((m) => m.GlobalBannerComponent),
     /* @ts-ignore */
-    import("./chunk-PF734KPP.js").then((m) => m.UploadListComponent),
+    import("./chunk-2HLNLJOD.js").then((m) => m.UploadListComponent),
     /* @ts-ignore */
-    import("./chunk-M3GDX7XZ.js").then((m) => m.IconComponent),
+    import("./chunk-PSHDVD3Q.js").then((m) => m.IconComponent),
     /* @ts-ignore */
-    import("./chunk-OKTF62KK.js").then((m) => m.MatTooltip)
+    import("./chunk-BYKJ572Z.js").then((m) => m.MatTooltip)
   ], (GlobalBannerComponent, UploadListComponent, IconComponent, MatTooltip) => {
     setClassMetadata(AppComponent, [{
       type: Component,
@@ -1164,55 +1164,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-IKKFB7C3.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-WR5QNLWX.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-YVHI2Z3V.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-SJ5R4BTK.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-4DMJYQTR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QUHVUA2Z.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-3DGSE2XR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-BYP2U6FK.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-IHWJO4SL.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-UDTG7AYC.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-J4QDJZH5.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-CKH5ZDE7.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-RHD5W67D.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-BZ43ZVZM.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-VM3KNVHC.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-BEVHNT7X.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-TGQJTHJ4.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-CNOQGLI7.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-M4PN7CJW.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YWAPCKLH.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -1222,7 +1222,13 @@ var appConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(appRoutes, withHashLocation(), withNavigationErrorHandler((event) => reloadApplicationOnChunkLoadError(event.error))),
+    provideRouter(
+      appRoutes,
+      withHashLocation(),
+      withNavigationErrorHandler(
+        (event) => reloadApplicationOnChunkLoadError(event.error)
+      )
+    ),
     provideServiceWorker("ngsw-worker.js", {
       enabled: !isDevMode()
       // Disable in development, enable in production
@@ -1234,9 +1240,12 @@ var appConfig = {
 var is_mock = location.href.includes("mock=true") || localStorage.getItem("BACKOFFICE.mock") === "true";
 var bootstrap = async () => {
   if (is_mock) {
-    await import("./chunk-HNQUCSDD.js");
+    await import("./chunk-BNFFZH3M.js");
   }
-  bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
+  bootstrapApplication(AppComponent, appConfig).catch(
+    (err) => console.error(err)
+  );
 };
 bootstrap();
+//# debugId=bfadb507-e81f-57e4-8fd3-5b2a156662a9
 //# sourceMappingURL=main.js.map

@@ -8,4 +8,5 @@ var wgsl_default = [
 export {
   wgsl_default as default
 };
+//# debugId=96039079-9a39-5acb-9b8b-8792a09632d6
 //# sourceMappingURL=chunk-JHTXFN6I.js.map

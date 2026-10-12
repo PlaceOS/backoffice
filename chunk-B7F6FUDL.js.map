@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/pipes/sanitise.pipe.ts"
+  ],
+  "sourcesContent": [
+    "import { Pipe, PipeTransform, inject } from '@angular/core';\nimport {\n    DomSanitizer,\n    SafeHtml,\n    SafeResourceUrl,\n    SafeScript,\n    SafeStyle,\n} from '@angular/platform-browser';\n\nenum SecurityContext {\n    NONE = 0,\n    HTML = 1,\n    STYLE = 2,\n    SCRIPT = 3,\n    URL = 4,\n    RESOURCE_URL = 5,\n}\n\n@Pipe({\n    name: 'sanitize',\n})\nexport class SanitizePipe implements PipeTransform {\n    private sanitizer = inject(DomSanitizer);\n\n    transform(\n        value: unknown,\n        type: 'resource' | 'url' | 'script' | 'style' | 'html' = 'html',\n    ): SafeHtml | SafeResourceUrl | SafeScript | SafeStyle | string | null {\n        switch (type) {\n            case 'resource':\n                return this.sanitizer.sanitize(\n                    SecurityContext.RESOURCE_URL,\n                    value,\n                );\n            case 'url':\n                return this.sanitizer.sanitize(SecurityContext.URL, value);\n            case 'script':\n                return this.sanitizer.sanitize(SecurityContext.SCRIPT, value);\n            case 'style':\n                return this.sanitizer.sanitize(SecurityContext.STYLE, value);\n            default:\n                return this.sanitizer.sanitize(SecurityContext.HTML, value);\n        }\n    }\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;AAqBM,IAAO,eAAP,MAAO,cAAqC;EACtC,YAAY,OAAO,YAAY;EAEvC,UACI,OACA,OAAyD,QACS;AAClE,YAAQ,MAAM;MACV,KAAK;AACD,eAAO,KAAK,UAAU,SAClB,sBACA,KAAK;MAEb,KAAK;AACD,eAAO,KAAK,UAAU,SAAS,aAAqB,KAAK;MAC7D,KAAK;AACD,eAAO,KAAK,UAAU,SAAS,gBAAwB,KAAK;MAChE,KAAK;AACD,eAAO,KAAK,UAAU,SAAS,eAAuB,KAAK;MAC/D;AACI,eAAO,KAAK,UAAU,SAAS,cAAsB,KAAK;IAClE;EACJ;;qCAtBS,eAAY;EAAA;uFAAZ,eAAY,MAAA,KAAA,CAAA;;;sEAAZ,cAAY,CAAA;UAHxB;WAAK;MACF,MAAM;KACT;;;",
+  "names": [],
+  "debugId": "168465dd-2c22-576c-80d5-65f7ff3813e9"
+}

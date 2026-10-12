@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/common/forms.ts"
+  ],
+  "sourcesContent": [
+    "import { FieldTree } from '@angular/forms/signals';\nimport { MatChipInputEvent } from '@angular/material/chips';\n\nexport function addSignalChipItem<T = string>(\n    items: T[],\n    event: MatChipInputEvent,\n    transform: (value: string) => T = (value) => value as T,\n): T[] {\n    const value = (event.value || '').trim();\n    event.chipInput?.clear();\n    if (!value) return items;\n    const item = transform(value);\n    return items.includes(item) ? items : [...items, item];\n}\n\nexport function removeSignalChipItem<T = string>(items: T[], item: T): T[] {\n    return items.filter((existing) => existing !== item);\n}\n\nexport function getInvalidSignalFields<T extends object>(\n    form: FieldTree<T>,\n): string[] {\n    const value = form().value() as object;\n    return Object.keys(value).filter((key) => {\n        const field = form[key as keyof typeof form];\n        return typeof field === 'function' && field().invalid();\n    });\n}\n"
+  ],
+  "mappings": ";AAGO,SAAS,kBACZ,OACA,OACA,YAAkC,CAAC,UAAU,OAC1C;AACH,QAAM,SAAS,MAAM,SAAS,IAAI,KAAK;AACvC,QAAM,WAAW,MAAM;AACvB,MAAI,CAAC,MAAO,QAAO;AACnB,QAAM,OAAO,UAAU,KAAK;AAC5B,SAAO,MAAM,SAAS,IAAI,IAAI,QAAQ,CAAC,GAAG,OAAO,IAAI;AACzD;AAEO,SAAS,qBAAiC,OAAY,MAAc;AACvE,SAAO,MAAM,OAAO,CAAC,aAAa,aAAa,IAAI;AACvD;AAEO,SAAS,uBACZ,MACQ;AACR,QAAM,QAAQ,KAAK,EAAE,MAAM;AAC3B,SAAO,OAAO,KAAK,KAAK,EAAE,OAAO,CAAC,QAAQ;AACtC,UAAM,QAAQ,KAAK,GAAwB;AAC3C,WAAO,OAAO,UAAU,cAAc,MAAM,EAAE,QAAQ;AAAA,EAC1D,CAAC;AACL;",
+  "names": [],
+  "debugId": "72e02eee-8123-583a-8331-1ca2d96f6a45"
+}

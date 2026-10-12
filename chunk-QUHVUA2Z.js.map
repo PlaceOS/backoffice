@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/drivers/drivers.routes.ts"
+  ],
+  "sourcesContent": [
+    "import { Routes } from '@angular/router';\n\nexport const ROUTES: Routes = [\n    {\n        path: ':id',\n        loadComponent: () =>\n            import('./drivers.component').then((m) => m.DriversComponent),\n        children: [\n            {\n                path: 'about',\n                loadComponent: () =>\n                    import('./driver-about.component').then(\n                        (m) => m.DriverAboutComponent,\n                    ),\n            },\n            {\n                path: 'docs',\n                loadComponent: () =>\n                    import('./driver-docs.component').then(\n                        (m) => m.DriverDocsComponent,\n                    ),\n            },\n            {\n                path: 'modules',\n                loadComponent: () =>\n                    import('./driver-devices.component').then(\n                        (m) => m.DriverModulesComponent,\n                    ),\n            },\n            {\n                path: 'extend/:id',\n                loadComponent: () =>\n                    import('../ui/extension-outlet.component').then(\n                        (m) => m.ExtensionOutletComponent,\n                    ),\n            },\n            {\n                path: 'history',\n                loadComponent: () =>\n                    import('../ui/settings-history-view.component').then(\n                        (m) => m.SettingsHistoryViewComponent,\n                    ),\n            },\n            { path: '**', redirectTo: 'about' },\n        ],\n    },\n    { path: '**', redirectTo: '-' },\n];\n"
+  ],
+  "mappings": ";;;AAEO,IAAM,SAAiB;AAAA,EAC1B;AAAA,IACI,MAAM;AAAA,IACN,eAAe,MACX,OAAO,qBAAqB,EAAE,KAAK,CAAC,MAAM,EAAE,gBAAgB;AAAA,IAChE,UAAU;AAAA,MACN;AAAA,QACI,MAAM;AAAA,QACN,eAAe,MACX,OAAO,qBAA0B,EAAE;AAAA,UAC/B,CAAC,MAAM,EAAE;AAAA,QACb;AAAA,MACR;AAAA,MACA;AAAA,QACI,MAAM;AAAA,QACN,eAAe,MACX,OAAO,qBAAyB,EAAE;AAAA,UAC9B,CAAC,MAAM,EAAE;AAAA,QACb;AAAA,MACR;AAAA,MACA;AAAA,QACI,MAAM;AAAA,QACN,eAAe,MACX,OAAO,qBAA4B,EAAE;AAAA,UACjC,CAAC,MAAM,EAAE;AAAA,QACb;AAAA,MACR;AAAA,MACA;AAAA,QACI,MAAM;AAAA,QACN,eAAe,MACX,OAAO,qBAAkC,EAAE;AAAA,UACvC,CAAC,MAAM,EAAE;AAAA,QACb;AAAA,MACR;AAAA,MACA;AAAA,QACI,MAAM;AAAA,QACN,eAAe,MACX,OAAO,qBAAuC,EAAE;AAAA,UAC5C,CAAC,MAAM,EAAE;AAAA,QACb;AAAA,MACR;AAAA,MACA,EAAE,MAAM,MAAM,YAAY,QAAQ;AAAA,IACtC;AAAA,EACJ;AAAA,EACA,EAAE,MAAM,MAAM,YAAY,IAAI;AAClC;",
+  "names": [],
+  "debugId": "dbdf1fb0-41a3-5197-8cef-bc3e0cd7d4b8"
+}

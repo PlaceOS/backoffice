@@ -5,4 +5,5 @@ var github_dark_default = Object.freeze(JSON.parse('{"colors":{"activityBar.acti
 export {
   github_dark_default as default
 };
+//# debugId=e9ea56ca-ecc5-538a-9824-ef5579309684
 //# sourceMappingURL=chunk-ZLCY5G6Z.js.map

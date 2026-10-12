@@ -8,4 +8,5 @@ var mdx_default = [
 export {
   mdx_default as default
 };
+//# debugId=de18922b-4557-5ee6-a4b1-310d0ea7046d
 //# sourceMappingURL=chunk-XJE6DHUA.js.map
