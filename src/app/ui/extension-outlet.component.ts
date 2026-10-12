@@ -19,6 +19,7 @@ import {
 } from '@placeos/ts-client';
 import { allowedEmbedUrl, extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
+import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -28,15 +29,22 @@ import { SafePipe } from './pipes/safe.pipe';
 
 const RESOURCE_STORE = new Map<string, string>();
 
+/** Request sent by the extension frame */
 export interface FrameMessage<T = unknown> {
     id: string;
     type: 'backoffice';
     action: 'update' | 'load' | 'metadata' | 'resource' | 'result';
     name?: string;
     parent?: boolean;
-    status?: string;
-    content: string | HashMap<T> | T[];
+    status?: 'success' | 'error';
+    content?: string | HashMap<T> | T[];
 }
+
+/** Value of the message content if it is a plain object */
+const contentFields = (content: unknown): HashMap<unknown> =>
+    content && typeof content === 'object' && !Array.isArray(content)
+        ? (content as HashMap<unknown>)
+        : {};
 
 @Component({
     selector: 'app-extension-outlet',
@@ -134,95 +142,88 @@ export class ExtensionOutletComponent extends AsyncHandler {
         });
     }
 
+    /** Run the requested action and send the result back to the frame */
     private async handleMessage(message: FrameMessage) {
         const item = this._service.active_item;
         if (message?.type !== 'backoffice' || !item) return;
-        if (message.action === 'update') {
-            // Handle update to item model
-            this.updateItem(item, message);
-        } else if (message.action === 'metadata' && message.name) {
-            // Handle updating metadata
-            this.updateMetadata(item, message);
-        } else if (message.action === 'load' && message.name) {
-            // Handle loading metadata
-            this.loadMetadata(item, message, message.parent);
-        } else if (message.action === 'resource' && message.name) {
-            // Handle loading a resource
-            const url = await this.loadResource(item, message);
-            this._postMessage({
-                id: message.id,
-                type: 'backoffice',
-                status: 'success',
-                content: url,
-                action: 'result',
-            });
+        const result = this._runAction(item, message);
+        if (!result) return;
+        try {
+            this._reply(message.id, 'success', (await result) || undefined);
+        } catch {
+            this._reply(message.id, 'error');
         }
     }
 
+    /** Start the action of a request. Returns `null` for unknown actions */
+    private _runAction(
+        item: PlaceResource,
+        message: FrameMessage,
+    ): Promise<FrameMessage['content'] | void> | null {
+        switch (message.action) {
+            case 'update':
+                return this.updateItem(item, message);
+            case 'metadata':
+                return this.updateMetadata(item, message);
+            case 'load':
+                return this.loadMetadata(item, message);
+            case 'resource':
+                return this.loadResource(item, message);
+            default:
+                return null;
+        }
+    }
+
+    /** Merge the message content into the active item and save it */
     private async updateItem(item: PlaceResource, message: FrameMessage) {
         const updated_item = await this._service.actions
-            .save({
-                ...item,
-                ...(typeof message.content === 'object' ? message.content : {}),
-            })
-            .catch(() => notifyError(i18n('COMMON.ITEM_ERROR')));
-
-        if (this._frame_el()?.nativeElement) {
-            if (updated_item) {
-                notifySuccess(i18n('COMMON.ITEM_SAVE'));
-            }
-            this._postMessage({
-                id: message.id,
-                type: 'backoffice',
-                status: updated_item ? 'success' : 'error',
-            } as unknown as FrameMessage);
-        }
+            .save({ ...item, ...contentFields(message.content) })
+            .catch((error) => {
+                notifyError(
+                    i18n('COMMON.ITEM_ERROR', { error: describeError(error) }),
+                );
+                throw error;
+            });
+        // Later updates must merge into the saved item
+        this._service.replaceItem(updated_item as PlaceResource);
+        notifySuccess(i18n('COMMON.ITEM_SAVE'));
     }
 
+    /** Save the message content as metadata on the active item */
     private async updateMetadata(item: PlaceResource, message: FrameMessage) {
-        await showMetadata(item.id, message.name);
+        if (!item.id || !message.name)
+            throw new Error('Metadata not available');
         await updateMetadata(item.id, {
             id: item.id,
             name: message.name,
             description: `Metadata from ${this.url()}`,
-            details: typeof message.content === 'object' ? message.content : {},
+            details:
+                message.content && typeof message.content === 'object'
+                    ? message.content
+                    : {},
         });
         notifySuccess(i18n('COMMON.METADATA_SAVE'));
-        this._postMessage({
-            id: message.id,
-            type: 'backoffice',
-            status: 'success',
-        } as unknown as FrameMessage);
     }
 
+    /** Load metadata from the active item or from its parent */
     private async loadMetadata(
-        item: PlaceResource,
+        item: PlaceResource & { parent_id?: string },
         message: FrameMessage,
-        parent = false,
     ) {
-        const metadata = await showMetadata(
-            (parent
-                ? (item as PlaceResource & { parent_id?: string }).parent_id
-                : item.id) as string,
-            message.name,
-        );
-        if (metadata) {
-            this._postMessage({
-                id: message.id,
-                type: 'backoffice',
-                content: metadata.details,
-                status: 'success',
-            } as unknown as FrameMessage);
-        }
+        const id = message.parent ? item.parent_id : item.id;
+        if (!message.name || !id) throw new Error('Metadata not available');
+        const metadata = await showMetadata(id, message.name);
+        return metadata.details as FrameMessage['content'];
     }
 
+    /** Resolve a URL that the frame can show without credentials */
     private async loadResource(item: PlaceResource, message: FrameMessage) {
         const src = message.name;
+        if (!src) throw new Error('Resource URL is required');
         // If not an API call, just load the image
         if (!src.includes('/api/engine/v2/uploads')) return src;
-        const as_string = JSON.stringify(item);
-        // Prevent resolving resources for not owned by the parent item
-        if (!as_string.includes(src)) return src;
+        // Prevent resolving resources not owned by the parent item
+        if (!JSON.stringify(item).includes(src)) return src;
         // If image has already been loaded, just use the cached version
         if (RESOURCE_STORE.has(src)) return RESOURCE_STORE.get(src);
 
@@ -235,11 +236,13 @@ export class ExtensionOutletComponent extends AsyncHandler {
             location.protocol === 'https:' ? 'secure;' : ''
         }`;
         const response = await fetch(src);
+        if (!response.ok) throw new Error(`Failed to load ${src}`);
         const blob = await response.blob();
 
-        const url = await new Promise<string>((resolve) => {
+        const url = await new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target.result as string);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = () => reject(reader.error);
             reader.readAsDataURL(blob);
         });
 
@@ -247,11 +250,23 @@ export class ExtensionOutletComponent extends AsyncHandler {
         return url;
     }
 
-    private _postMessage(message: FrameMessage) {
+    /** Send the result of a request to the frame */
+    private _reply(
+        id: string,
+        status: FrameMessage['status'],
+        content?: FrameMessage['content'],
+    ) {
         const origin = this._frame_origin();
         if (!origin) return;
+        const reply: FrameMessage = {
+            id,
+            type: 'backoffice',
+            action: 'result',
+            status,
+            content,
+        };
         this._frame_el()?.nativeElement?.contentWindow?.postMessage(
-            JSON.stringify(message),
+            JSON.stringify(reply),
             origin,
         );
     }

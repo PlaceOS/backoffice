@@ -1,6 +1,11 @@
 import { authority, PlaceModule, PlaceResource } from '@placeos/ts-client';
 
-import { AppComponentExtensions, HashMap } from './types';
+import {
+    AppComponentExtensions,
+    ApplicationIcon,
+    ExtensionCondition,
+    HashMap,
+} from './types';
 
 /**
  * Convert map into a query string
@@ -77,59 +82,87 @@ export function calculateModuleIndex(
     );
 }
 
-export function extensionsForItem(item: PlaceResource, type: string) {
-    const authority_config = authority()?.config?.backoffice;
-    if (!authority_config || !item) return [];
-    const app_extend = authority_config.extend || {};
-    const extension_list: AppComponentExtensions = app_extend[type];
-    if (!extension_list || !item) return [];
-    const extensions = [];
-    for (const name in extension_list) {
-        let matches = 0;
-        for (const condition of extension_list[name].conditions) {
-            const [key, type, value] = condition;
-            switch (type) {
-                case 'includes':
-                    matches += item[key] && item[key].includes(value) ? 1 : 0;
-                    break;
-                case 'equals':
-                    matches += item[key] && item[key] === value ? 1 : 0;
-                    break;
-                case 'true':
-                case 'truthy':
-                    matches += item[key] ? 1 : 0;
-                    break;
-                case 'false':
-                case 'falsy':
-                    matches += !item[key] ? 1 : 0;
-                    break;
-                default:
-                    matches += 1;
-            }
-        }
-        if (matches >= extension_list[name].conditions.length) {
-            let url = extension_list[name].url;
-            for (const key in item) {
-                if (
-                    item[key] &&
-                    (typeof item[key] === 'string' ||
-                        typeof item[key] === 'number')
-                ) {
-                    if (typeof item[key] === 'string' && item[key].length > 128)
-                        continue;
-                    url = url.replace(
-                        `{{${key}}}`,
-                        encodeURIComponent(`${item[key]}`),
-                    );
-                }
-            }
-            extensions.push({
-                id: `extend/${name.split(' ').join('-').toLowerCase()}`,
-                name,
-                icon: extension_list[name].icon,
-                query: { embed: url },
-            });
-        }
+/** Tab details for an extension. Compatible with `ItemTab` */
+export interface ExtensionTab {
+    id: string;
+    name: string;
+    icon: ApplicationIcon;
+    /** Query params for the tab link. `embed` is the URL to load */
+    query: { embed: string };
+}
+
+/** Longest item value that can replace a URL placeholder */
+const MAX_PLACEHOLDER_LENGTH = 128;
+const DEFAULT_EXTENSION_ICON: ApplicationIcon = { content: 'extension' };
+
+/** Check one extension condition against the item */
+function matchesCondition(
+    item: PlaceResource,
+    [key, operation, value]: ExtensionCondition,
+): boolean {
+    const field: unknown = item[key];
+    switch (operation) {
+        case 'includes':
+            if (typeof field === 'string') return field.includes(`${value}`);
+            return Array.isArray(field) && field.includes(value);
+        case 'equals':
+            // Compare as text, as the admin form saves all values as strings
+            return (
+                field !== undefined &&
+                field !== null &&
+                `${field}` === `${value}`
+            );
+        case 'true':
+        case 'truthy':
+            return !!field;
+        case 'false':
+        case 'falsy':
+            return !field;
+        default:
+            return true;
     }
-    return extensions;
+}
+
+/**
+ * Replace each `{{key}}` in the URL with the encoded value of that
+ * item property. Placeholders without a short string or number value
+ * are left as they are.
+ */
+function resolveExtensionUrl(url: string, item: PlaceResource): string {
+    return url.replace(/{{(\w+)}}/g, (placeholder, key: string) => {
+        const value: unknown = item[key];
+        const is_usable =
+            typeof value === 'number' ||
+            (typeof value === 'string' &&
+                value.length <= MAX_PLACEHOLDER_LENGTH);
+        return is_usable ? encodeURIComponent(`${value}`) : placeholder;
+    });
+}
+
+/**
+ * List the extension tabs to show for an item. Extensions come from
+ * the `backoffice.extend` config of the current domain.
+ * @param item Active item of the section
+ * @param type Section of backoffice, e.g. `systems`
+ */
+export function extensionsForItem(
+    item: PlaceResource,
+    type: string,
+): ExtensionTab[] {
+    const extend: HashMap<AppComponentExtensions> =
+        authority()?.config?.backoffice?.extend || {};
+    if (!item) return [];
+    const tabs: ExtensionTab[] = [];
+    for (const [name, extension] of Object.entries(extend[type] || {})) {
+        if (!extension?.url) continue;
+        const conditions = extension.conditions || [];
+        if (!conditions.every((_) => matchesCondition(item, _))) continue;
+        tabs.push({
+            id: `extend/${name.split(' ').join('-').toLowerCase()}`,
+            name,
+            icon: extension.icon || DEFAULT_EXTENSION_ICON,
+            query: { embed: resolveExtensionUrl(extension.url, item) },
+        });
+    }
+    return tabs;
 }

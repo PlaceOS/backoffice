@@ -9,6 +9,21 @@ export interface AppComponentExtensions {
     [name: string]: AppComponentExtension;
 }
 
+/** Sections of backoffice that can show extension tabs */
+export const EXTENSION_SECTIONS = [
+    'admin',
+    'systems',
+    'modules',
+    'zones',
+    'drivers',
+    'repositories',
+    'triggers',
+    'users',
+    'domains',
+] as const;
+
+export type ExtensionSection = (typeof EXTENSION_SECTIONS)[number];
+
 export type ExtensionConditions =
     | 'equals'
     | 'true'
@@ -17,6 +32,9 @@ export type ExtensionConditions =
     | 'falsy'
     | 'includes'
     | 'none';
+
+/** Item field, operation and value to compare with */
+export type ExtensionCondition = [string, ExtensionConditions, unknown];
 
 /** Shared interface for form modal components opened via MatDialog */
 export interface FormModalComponent {
@@ -28,7 +46,7 @@ export interface AppComponentExtension {
     /** URL to embed in the application extension */
     url: string;
     /** Conditions to allow the extension to show */
-    conditions: [string, ExtensionConditions, unknown][];
+    conditions: ExtensionCondition[];
     /** Icon to draw of the associated tab */
     icon?: ApplicationIcon;
 }

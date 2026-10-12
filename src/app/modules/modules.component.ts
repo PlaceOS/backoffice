@@ -149,11 +149,8 @@ export class ModulesComponent {
                 name: i18n('MODULES.TAB_SETTINGS_HISTORY'),
                 icon: { content: 'schedule' },
             },
-        ]
-            .concat(this.extensions())
-            .filter(
-                (tab) => !isSubsystemUser() || !['history'].includes(tab.id),
-            ),
+            ...this.extensions(),
+        ].filter((tab) => !isSubsystemUser() || !['history'].includes(tab.id)),
     );
 
     constructor() {

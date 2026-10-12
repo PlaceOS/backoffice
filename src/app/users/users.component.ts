@@ -179,12 +179,10 @@ export class UsersComponent extends AsyncHandler {
                 name: i18n('USERS.TAB_HISTORY'),
                 icon: { content: 'history' },
             },
-        ]
-            .concat(extensionsForItem(this.item(), this.name))
-            .filter(
-                (tab) =>
-                    !isSubsystemUser() ||
-                    !['groups', 'history'].includes(tab.id),
-            ),
+            ...extensionsForItem(this.item(), this.name),
+        ].filter(
+            (tab) =>
+                !isSubsystemUser() || !['groups', 'history'].includes(tab.id),
+        ),
     );
 }

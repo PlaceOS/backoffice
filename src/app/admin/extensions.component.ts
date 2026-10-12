@@ -7,11 +7,16 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, updateDomain } from '@placeos/ts-client';
-import { escapeHtml } from '../common/general';
 import { readError } from '../common/errors';
+import { escapeHtml } from '../common/general';
 import { notifyError } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
-import { ApplicationIcon, DialogEvent } from '../common/types';
+import {
+    AppComponentExtension,
+    AppComponentExtensions,
+    DialogEvent,
+    ExtensionSection,
+} from '../common/types';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
@@ -22,26 +27,12 @@ import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
 import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
 
-export interface BackofficeExtension {
+/** Extension from the domain config, with the keys it is stored under */
+export interface BackofficeExtension extends AppComponentExtension {
     /** Section of backoffice to extend */
-    type:
-        | 'admin'
-        | 'systems'
-        | 'modules'
-        | 'zones'
-        | 'drivers'
-        | 'repositories'
-        | 'triggers'
-        | 'users'
-        | 'domains';
+    type: ExtensionSection;
     /** Display name of the extension */
     name: string;
-    /** URL to the application to embed */
-    url: string;
-    /** Conditions for showing the extension */
-    conditions: [string, string, unknown][];
-    /** Icon to display next to the name */
-    icon: ApplicationIcon;
 }
 
 /** Extensions are keyed by type and name, so the same name can exist in each type */
@@ -287,15 +278,11 @@ export class PlaceExtensionsComponent implements OnInit {
     public async updateDomain(extension_list: BackofficeExtension[]) {
         const domain = this.domain();
         if (!domain) return;
-        const extensions = {};
-        for (const ext of extension_list) {
-            if (!extensions[ext.type]) {
-                extensions[ext.type] = {};
-            }
-            const data = { ...ext };
-            delete data.type;
-            delete data.name;
-            extensions[ext.type][ext.name] = data;
+        const extensions: Partial<
+            Record<ExtensionSection, AppComponentExtensions>
+        > = {};
+        for (const { type, name, ...data } of extension_list) {
+            extensions[type] = { ...extensions[type], [name]: data };
         }
         const updated = new PlaceDomain({
             ...domain,

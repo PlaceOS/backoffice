@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 // Mock @placeos/ts-client before importing the module
 vi.mock('@placeos/ts-client', () => ({
@@ -7,11 +7,14 @@ vi.mock('@placeos/ts-client', () => ({
     PlaceResource: class {},
 }));
 
+import { authority, PlaceResource } from '@placeos/ts-client';
 import {
     allowedEmbedUrl,
     calculateModuleIndex,
+    extensionsForItem,
     toQueryString,
 } from '../../app/common/api';
+import { AppComponentExtension } from '../../app/common/types';
 
 describe('api.ts utilities', () => {
     describe('toQueryString', () => {
@@ -55,9 +58,9 @@ describe('api.ts utilities', () => {
         });
 
         it('should skip undefined values', () => {
-            expect(
-                toQueryString({ a: 'test', b: undefined, c: 'value' }),
-            ).toBe('a=test&c=value');
+            expect(toQueryString({ a: 'test', b: undefined, c: 'value' })).toBe(
+                'a=test&c=value',
+            );
         });
 
         it('should handle boolean values', () => {
@@ -192,10 +195,7 @@ describe('api.ts utilities', () => {
         });
 
         it('should handle module without driver', () => {
-            const modules = [
-                { id: 'mod-1' },
-                { id: 'mod-2' },
-            ];
+            const modules = [{ id: 'mod-1' }, { id: 'mod-2' }];
             const index = calculateModuleIndex(
                 modules as any,
                 modules[1] as any,
@@ -267,6 +267,103 @@ describe('api.ts utilities', () => {
                     base,
                 ),
             ).toBeNull();
+        });
+    });
+
+    describe('extensionsForItem', () => {
+        const item = {
+            id: 'sys-1',
+            name: 'Room 1',
+            capacity: 0,
+            bookable: true,
+            zones: ['zone-1', 'zone-2'],
+        } as unknown as PlaceResource;
+
+        const setExtension = (extension: Partial<AppComponentExtension>) =>
+            vi.mocked(authority).mockReturnValue({
+                config: {
+                    backoffice: {
+                        extend: {
+                            systems: {
+                                'Room Booking': {
+                                    url: 'https://ext.example/',
+                                    conditions: [],
+                                    ...extension,
+                                },
+                            },
+                        },
+                    },
+                },
+            } as unknown as ReturnType<typeof authority>);
+
+        const tabsFor = (extension: Partial<AppComponentExtension>) => {
+            setExtension(extension);
+            return extensionsForItem(item, 'systems');
+        };
+
+        it('builds a tab with the embed URL', () => {
+            expect(tabsFor({})).toEqual([
+                {
+                    id: 'extend/room-booking',
+                    name: 'Room Booking',
+                    icon: { content: 'extension' },
+                    query: { embed: 'https://ext.example/' },
+                },
+            ]);
+            expect(extensionsForItem(item, 'zones')).toEqual([]);
+            expect(extensionsForItem(null, 'systems')).toEqual([]);
+        });
+
+        it('replaces every placeholder that has a value', () => {
+            const [tab] = tabsFor({
+                url: '/view/{{id}}?id={{id}}&name={{name}}&size={{capacity}}&x={{zones}}',
+            });
+            expect(tab.query.embed).toBe(
+                '/view/sys-1?id=sys-1&name=Room%201&size=0&x={{zones}}',
+            );
+        });
+
+        it('requires all conditions to pass', () => {
+            expect(
+                tabsFor({
+                    conditions: [
+                        ['name', 'includes', 'Room'],
+                        ['zones', 'includes', 'zone-2'],
+                        ['bookable', 'truthy', ''],
+                    ],
+                }),
+            ).toHaveLength(1);
+            expect(
+                tabsFor({
+                    conditions: [
+                        ['name', 'includes', 'Room'],
+                        ['capacity', 'truthy', ''],
+                    ],
+                }),
+            ).toHaveLength(0);
+        });
+
+        it('compares equals conditions as text', () => {
+            expect(
+                tabsFor({
+                    conditions: [
+                        ['capacity', 'equals', '0'],
+                        ['bookable', 'equals', 'true'],
+                    ],
+                }),
+            ).toHaveLength(1);
+            expect(
+                tabsFor({ conditions: [['missing', 'equals', 'undefined']] }),
+            ).toHaveLength(0);
+        });
+
+        it('fails includes conditions on other field types', () => {
+            expect(
+                tabsFor({ conditions: [['capacity', 'includes', '0']] }),
+            ).toHaveLength(0);
+            expect(
+                tabsFor({ conditions: [['missing', 'includes', 'a']] }),
+            ).toHaveLength(0);
         });
     });
 });

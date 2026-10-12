@@ -11,7 +11,11 @@ import { form, FormField, required, submit } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { HotkeysService } from '../../common/hotkeys.service';
-import { DialogEvent } from '../../common/types';
+import {
+    DialogEvent,
+    EXTENSION_SECTIONS,
+    ExtensionConditions,
+} from '../../common/types';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -209,18 +213,13 @@ export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
 
-    public readonly available_types = [
-        'admin',
-        'systems',
-        'modules',
-        'zones',
-        'drivers',
-        'repositories',
-        'triggers',
-        'users',
-        'domains',
+    public readonly available_types = EXTENSION_SECTIONS;
+    public readonly condition_ops: ExtensionConditions[] = [
+        'includes',
+        'equals',
+        'truthy',
+        'falsy',
     ];
-    public readonly condition_ops = ['includes', 'equals', 'truthy', 'falsy'];
     public readonly item = this._data.item;
     public readonly loading = signal('');
     public readonly formModel = signal<{

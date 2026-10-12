@@ -139,7 +139,8 @@ export class DomainsComponent extends AsyncHandler {
                 count: count.users || 0,
                 icon: { content: 'group' },
             },
-        ].concat(extensionsForItem(this.item(), this.name));
+            ...extensionsForItem(this.item(), this.name),
+        ];
     });
 
     public readonly newItem = () => this._item.create();

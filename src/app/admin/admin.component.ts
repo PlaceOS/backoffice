@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 
 import { MatRippleModule } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
@@ -10,6 +10,7 @@ import { i18n } from '../common/locale.service';
 import { SettingsService } from '../common/settings.service';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
+import { ItemTab } from '../ui/item-tablist.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
 
 @Component({
@@ -29,13 +30,12 @@ import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
                                 btn
                                 matRipple
                                 class="clear hover:bg-base-200 w-auto min-w-full text-left"
-                                [routerLink]="['/admin', item.id]"
+                                [routerLink]="'/admin/' + item.id"
+                                [queryParams]="item.query || {}"
                                 routerLinkActive="bg-secondary! text-secondary-content"
                             >
                                 <div class="flex w-full items-center space-x-2">
-                                    <icon class="text-2xl">{{
-                                        item.icon?.value
-                                    }}</icon>
+                                    <icon class="text-2xl" [icon]="item.icon" />
                                     <span class="hidden sm:block">{{
                                         item.name
                                     }}</span>
@@ -93,103 +93,97 @@ export class PlaceComponent extends AsyncHandler implements OnInit {
     private _service = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
 
-    public readonly tab_list = signal([]);
     public open_menu = false;
     public readonly debug_position = this._debug.position;
 
-    public get extensions() {
-        return extensionsForItem(this._service.active_item, 'admin');
-    }
-
-    public updateTabList() {
-        this.tab_list.set(
+    public readonly tab_list = computed(() =>
+        (
             [
                 {
                     id: 'about',
                     name: i18n('ADMIN.TAB_ABOUT'),
-                    icon: { value: 'info' },
+                    icon: { content: 'info' },
                 },
                 {
                     id: 'database',
                     name: i18n('ADMIN.TAB_DATABASE'),
-                    icon: { value: 'database' },
+                    icon: { content: 'database' },
                 },
                 {
                     id: 'clusters',
                     name: i18n('ADMIN.TAB_CLUSTERS'),
-                    icon: { value: 'dns' },
+                    icon: { content: 'dns' },
                 },
                 {
                     id: 'edge',
                     name: i18n('ADMIN.TAB_EDGES'),
-                    icon: { value: 'network_node' },
+                    icon: { content: 'network_node' },
                 },
                 {
                     id: 'interfaces',
                     name: i18n('ADMIN.TAB_INTERFACES'),
-                    icon: { value: 'web' },
+                    icon: { content: 'web' },
                 },
                 {
                     id: 'brokers',
                     name: i18n('ADMIN.TAB_MQTT_BROKERS'),
-                    icon: { value: 'sensors' },
+                    icon: { content: 'sensors' },
                 },
                 {
                     id: 'staff-api',
                     name: i18n('ADMIN.TAB_TENANT_CONFIG'),
-                    icon: { value: 'api' },
+                    icon: { content: 'api' },
                 },
                 {
                     id: 'resource-imports',
                     name: i18n('ADMIN.TAB_RESOURCE_IMPORTS'),
-                    icon: { value: 'publish' },
+                    icon: { content: 'publish' },
                 },
                 {
                     id: 'extensions',
                     name: i18n('ADMIN.TAB_EXTENSIONS'),
-                    icon: { value: 'webhook' },
+                    icon: { content: 'webhook' },
                 },
                 {
                     id: 'api-keys',
                     name: i18n('ADMIN.TAB_API_KEYS'),
-                    icon: { value: 'key' },
+                    icon: { content: 'key' },
                 },
                 {
                     id: 'schemas',
                     name: i18n('ADMIN.TAB_CUSTOM_SCHEMAS'),
-                    icon: { value: 'list' },
+                    icon: { content: 'list' },
                 },
                 {
                     id: 'upload-storage',
                     name: i18n('ADMIN.TAB_UPLOAD_STORAGE'),
-                    icon: { value: 'cloud_upload' },
+                    icon: { content: 'cloud_upload' },
                 },
                 {
                     id: 'upload-library',
                     name: i18n('ADMIN.TAB_UPLOADS_LIBRARY'),
-                    icon: { value: 'photo_album' },
+                    icon: { content: 'photo_album' },
                 },
                 {
                     id: 'signage-ai',
                     name: i18n('ADMIN.TAB_SIGNAGE_AI'),
-                    icon: { value: 'auto_awesome' },
+                    icon: { content: 'auto_awesome' },
                 },
                 {
                     id: 'signage-plugins',
                     name: i18n('ADMIN.TAB_SIGNAGE_PLUGINS'),
-                    icon: { value: 'display_settings' },
+                    icon: { content: 'display_settings' },
                 },
                 {
                     id: 'build-jobs',
                     name: i18n('ADMIN.TAB_BUILD_JOBS'),
-                    icon: { value: 'laps' },
+                    icon: { content: 'laps' },
                 },
-            ].concat(this.extensions),
-        );
-    }
+            ] as ItemTab[]
+        ).concat(extensionsForItem(this._service.item(), 'admin')),
+    );
 
     public async ngOnInit() {
-        this.updateTabList();
         await new Promise((resolve) => setTimeout(resolve, 1000));
         this._settings.title = i18n('ADMIN.TITLE');
     }

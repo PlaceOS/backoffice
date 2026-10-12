@@ -129,19 +129,18 @@ export class TriggersComponent extends AsyncHandler {
     });
     public readonly newItem = () => this._service.create();
     public readonly scroll = signal(0);
-    public readonly tab_list = computed(() =>
-        [
-            {
-                id: 'about',
-                name: i18n('TRIGGERS.TAB_ABOUT'),
-                icon: { content: 'info' },
-            },
-            {
-                id: 'instances',
-                name: i18n('TRIGGERS.TAB_INSTANCES'),
-                count: this.instance_count(),
-                icon: { content: 'meeting_room' },
-            },
-        ].concat(extensionsForItem(this.item(), this.name)),
-    );
+    public readonly tab_list = computed(() => [
+        {
+            id: 'about',
+            name: i18n('TRIGGERS.TAB_ABOUT'),
+            icon: { content: 'info' },
+        },
+        {
+            id: 'instances',
+            name: i18n('TRIGGERS.TAB_INSTANCES'),
+            count: this.instance_count(),
+            icon: { content: 'meeting_room' },
+        },
+        ...extensionsForItem(this.item(), this.name),
+    ]);
 }

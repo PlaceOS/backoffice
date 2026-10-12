@@ -11,7 +11,7 @@ import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.compon
 import { ItemDetailsComponent } from '../ui/item-details.component';
 import { ItemSelectionComponent } from '../ui/item-selection.component';
 import { ItemSidebarComponent } from '../ui/item-sidebar.component';
-import { ItemTablistComponent } from '../ui/item-tablist.component';
+import { ItemTab, ItemTablistComponent } from '../ui/item-tablist.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { RepositoriesStateService } from './repositories-state.service';
@@ -124,16 +124,8 @@ export class RepositoriesComponent {
     public readonly extensions = computed(() =>
         extensionsForItem(this.item(), this.name),
     );
-    public readonly tab_list = computed<
-        {
-            id: string;
-            name: string;
-            count?: number;
-            loading?: boolean;
-            icon: { content: string };
-        }[]
-    >(() =>
-        (!this.is_driver_repo()
+    public readonly tab_list = computed<ItemTab[]>(() => [
+        ...(!this.is_driver_repo()
             ? [
                   {
                       id: 'about',
@@ -163,8 +155,8 @@ export class RepositoriesComponent {
                       loading: this.driver_list_loading(),
                       icon: { content: 'meeting_room' },
                   },
-              ]
-        ).concat(this.extensions()),
-    );
+              ]),
+        ...this.extensions(),
+    ]);
     public readonly scroll = signal(0);
 }
