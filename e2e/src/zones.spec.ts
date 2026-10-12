@@ -158,9 +158,10 @@ test.describe('Zones', () => {
 
             // Verify modal with pre-populated fields
             await expect(zonesPage.dialog).toBeVisible();
-            // Find the Name field specifically using accessible name with exact match
+            // Find the Name field specifically using accessible name with exact match.
+            // The label includes the required marker, so the name is "Name*".
             const nameField = zonesPage.dialog.getByRole('textbox', {
-                name: 'Name',
+                name: 'Name*',
                 exact: true,
             });
             const value = await nameField.inputValue();
