@@ -53,9 +53,7 @@ test.describe('Admin', () => {
      * US-ADM-001: View Cluster Status
      */
     test.describe('US-ADM-001: View Cluster Status', () => {
-        test('AC-ADM-001-1: Display Cluster Nodes - should show cluster information', async ({
-            page,
-        }) => {
+        test('AC-ADM-001-1: Display Cluster Nodes - should show cluster information', async () => {
             await adminPage.goto();
 
             // Navigate to clusters section
@@ -70,9 +68,7 @@ test.describe('Admin', () => {
      * US-ADM-003: View System Information
      */
     test.describe('US-ADM-003: View System Information', () => {
-        test('AC-ADM-003-1: Display Version Info - should show system version', async ({
-            page,
-        }) => {
+        test('AC-ADM-003-1: Display Version Info - should show system version', async () => {
             await adminPage.goto();
 
             // Navigate to about section
@@ -87,9 +83,7 @@ test.describe('Admin', () => {
      * US-ADM-004: View Database Status
      */
     test.describe('US-ADM-004: View Database Status', () => {
-        test('AC-ADM-004-4: Export Zone Tree - should open parent zone selection modal', async ({
-            page,
-        }) => {
+        test('AC-ADM-004-4: Export Zone Tree - should open parent zone selection modal', async () => {
             await adminPage.goto();
 
             await adminPage.viewDatabase();
@@ -108,9 +102,7 @@ test.describe('Admin', () => {
             ).toBeDisabled();
         });
 
-        test('AC-ADM-004-5: Import Zone Tree - should expose CSV or TSV import input', async ({
-            page,
-        }) => {
+        test('AC-ADM-004-5: Import Zone Tree - should expose CSV or TSV import input', async () => {
             await adminPage.goto();
 
             await adminPage.viewDatabase();
@@ -127,9 +119,7 @@ test.describe('Admin', () => {
      * US-ADM-008: Manage Backoffice Extensions
      */
     test.describe('US-ADM-008: Manage Backoffice Extensions', () => {
-        test('AC-ADM-008-1: View Extensions - should show extensions section', async ({
-            page,
-        }) => {
+        test('AC-ADM-008-1: View Extensions - should show extensions section', async () => {
             await adminPage.goto();
 
             // Navigate to extensions section
@@ -161,9 +151,7 @@ test.describe('Admin', () => {
      * US-ADM-009: Manage Tenants
      */
     test.describe('US-ADM-009: Manage Tenants', () => {
-        test('AC-ADM-009-1: View Tenants - should show tenants section', async ({
-            page,
-        }) => {
+        test('AC-ADM-009-1: View Tenants - should show tenants section', async () => {
             await adminPage.goto();
 
             // Navigate to staff API section
@@ -273,9 +261,7 @@ test.describe('Admin', () => {
      * US-ADM-012: Configure Upload Storage
      */
     test.describe('US-ADM-012: Configure Upload Storage', () => {
-        test('AC-ADM-012-1: View Storage Providers - should show storage section', async ({
-            page,
-        }) => {
+        test('AC-ADM-012-1: View Storage Providers - should show storage section', async () => {
             await adminPage.goto();
 
             // Navigate to upload storage section
@@ -290,9 +276,7 @@ test.describe('Admin', () => {
      * US-ADM-015: Monitor Build Jobs
      */
     test.describe('US-ADM-015: Monitor Build Jobs', () => {
-        test('AC-ADM-015-1: View Build Jobs - should show build jobs section', async ({
-            page,
-        }) => {
+        test('AC-ADM-015-1: View Build Jobs - should show build jobs section', async () => {
             await adminPage.goto();
 
             // Navigate to build jobs section

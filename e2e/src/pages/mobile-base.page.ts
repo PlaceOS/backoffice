@@ -186,7 +186,7 @@ export abstract class MobileBasePage extends BasePage {
         // Wait for loader to disappear
         await this.page
             .waitForSelector('[loader]', { state: 'detached', timeout: 30000 })
-            .catch(() => {});
+            .catch(() => undefined);
 
         // Wait for router outlet
         await this.page.waitForSelector('router-outlet', {
@@ -197,7 +197,7 @@ export abstract class MobileBasePage extends BasePage {
         // On mobile, wait for item-selection component
         await this.page
             .waitForSelector('item-selection', { timeout: 30000 })
-            .catch(() => {});
+            .catch(() => undefined);
 
         // Wait for any progress bars to complete
         await this.page.waitForTimeout(500);

@@ -22,9 +22,7 @@ test.describe('Users', () => {
      * US-USR-001: View Users List
      */
     test.describe('US-USR-001: View Users List', () => {
-        test('AC-USR-001-1: Display Users List - should show sidebar with all users', async ({
-            page,
-        }) => {
+        test('AC-USR-001-1: Display Users List - should show sidebar with all users', async () => {
             await usersPage.goto();
 
             // Verify the sidebar is visible
@@ -105,9 +103,7 @@ test.describe('Users', () => {
      * US-USR-003: Create New User
      */
     test.describe('US-USR-003: Create New User', () => {
-        test('AC-USR-003-1: Access Create Form - should open create modal', async ({
-            page,
-        }) => {
+        test('AC-USR-003-1: Access Create Form - should open create modal', async () => {
             await usersPage.goto();
 
             // Click add button
@@ -182,11 +178,11 @@ test.describe('Users', () => {
             // Open edit modal
             await usersPage.openEditModal();
 
-            // Modify a field (if allowed)
+            // Wait for the form field to be available
             const nameField = usersPage.dialog
                 .locator('input[formcontrolname="name"], input')
                 .first();
-            const currentName = await nameField.inputValue();
+            await nameField.inputValue();
 
             // Save without changes (just verify save works)
             await usersPage.save();
@@ -194,7 +190,7 @@ test.describe('Users', () => {
             // Verify dialog closed
             await expect(usersPage.dialog)
                 .not.toBeVisible({ timeout: 5000 })
-                .catch(() => {});
+                .catch(() => undefined);
         });
     });
 

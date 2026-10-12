@@ -27,7 +27,7 @@ export abstract class BasePage {
         // Wait for loader to disappear
         await this.page
             .waitForSelector('[loader]', { state: 'detached', timeout: 30000 })
-            .catch(() => {});
+            .catch(() => undefined);
 
         // Wait for router outlet to be attached (it's an empty element so won't be "visible")
         await this.page.waitForSelector('router-outlet', {
@@ -38,7 +38,7 @@ export abstract class BasePage {
         // Wait for main content to be visible (sidebar-menu or item-sidebar)
         await this.page
             .waitForSelector('sidebar-menu, item-sidebar', { timeout: 30000 })
-            .catch(() => {});
+            .catch(() => undefined);
 
         // Wait for any progress bars to complete
         await this.page.waitForTimeout(500);

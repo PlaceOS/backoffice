@@ -22,9 +22,7 @@ test.describe('Zones', () => {
      * US-ZON-001: View Zones List
      */
     test.describe('US-ZON-001: View Zones List', () => {
-        test('AC-ZON-001-1: Display Zones List - should show sidebar with all zones', async ({
-            page,
-        }) => {
+        test('AC-ZON-001-1: Display Zones List - should show sidebar with all zones', async () => {
             await zonesPage.goto();
 
             // Verify the sidebar is visible
@@ -100,7 +98,7 @@ test.describe('Zones', () => {
                         .first(),
                 )
                     .toBeVisible({ timeout: 5000 })
-                    .catch(() => {});
+                    .catch(() => undefined);
             }
         });
     });
@@ -109,9 +107,7 @@ test.describe('Zones', () => {
      * US-ZON-003: Create New Zone
      */
     test.describe('US-ZON-003: Create New Zone', () => {
-        test('AC-ZON-003-1: Access Create Form - should open create modal', async ({
-            page,
-        }) => {
+        test('AC-ZON-003-1: Access Create Form - should open create modal', async () => {
             await zonesPage.goto();
 
             // Click add button
@@ -189,7 +185,7 @@ test.describe('Zones', () => {
             // Verify dialog closed
             await expect(zonesPage.dialog)
                 .not.toBeVisible({ timeout: 5000 })
-                .catch(() => {});
+                .catch(() => undefined);
         });
     });
 

@@ -23,9 +23,7 @@ test.describe('Systems', () => {
      * US-SYS-001: View Systems List
      */
     test.describe('US-SYS-001: View Systems List', () => {
-        test('AC-SYS-001-1: Display Systems List - should show sidebar with all systems', async ({
-            page,
-        }) => {
+        test('AC-SYS-001-1: Display Systems List - should show sidebar with all systems', async () => {
             await systemsPage.goto();
 
             // Verify the sidebar is visible
@@ -88,9 +86,7 @@ test.describe('Systems', () => {
      * US-SYS-002: Create New System
      */
     test.describe('US-SYS-002: Create New System', () => {
-        test('AC-SYS-002-1: Access Create Form - should open create modal when Add button clicked', async ({
-            page,
-        }) => {
+        test('AC-SYS-002-1: Access Create Form - should open create modal when Add button clicked', async () => {
             await systemsPage.goto();
 
             // Click add button

@@ -100,7 +100,7 @@
         },
         []
     );
-    debug && console.log('tags', tags.join(', '));
+    if (debug) console.log('tags', tags.join(', '));
 
     const nextReleaseType = releaseSeverityOrder.find((type) =>
         semanticChanges.find(({ releaseType }) => type === releaseType)

@@ -99,9 +99,7 @@ test.describe('Domains', () => {
      * US-DOM-003: Create New Domain
      */
     test.describe('US-DOM-003: Create New Domain', () => {
-        test('AC-DOM-003-1: Access Create Form - should open create modal', async ({
-            page,
-        }) => {
+        test('AC-DOM-003-1: Access Create Form - should open create modal', async () => {
             await domainsPage.goto();
 
             // Click add button

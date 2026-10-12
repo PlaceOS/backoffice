@@ -89,7 +89,7 @@ export async function navigateTo(page: Page, path: string): Promise<void> {
 export async function waitForSidebarLoad(page: Page): Promise<void> {
     await page
         .waitForSelector('app-sidebar-menu', { timeout: 15000 })
-        .catch(() => {});
+        .catch(() => undefined);
     // Wait for list items to appear
     await page
         .waitForFunction(
@@ -179,7 +179,7 @@ export async function saveModal(page: Page): Promise<void> {
             state: 'detached',
             timeout: 10000,
         })
-        .catch(() => {});
+        .catch(() => undefined);
 }
 
 /**
@@ -195,7 +195,7 @@ export async function cancelModal(page: Page): Promise<void> {
             state: 'detached',
             timeout: 5000,
         })
-        .catch(() => {});
+        .catch(() => undefined);
 }
 
 /**
@@ -213,7 +213,7 @@ export async function confirmDelete(page: Page): Promise<void> {
             state: 'detached',
             timeout: 5000,
         })
-        .catch(() => {});
+        .catch(() => undefined);
 }
 
 /**

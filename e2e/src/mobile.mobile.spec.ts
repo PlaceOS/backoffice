@@ -21,7 +21,7 @@ async function waitForAppReady(page: Page): Promise<void> {
     // Wait for loader to disappear
     await page
         .waitForSelector('[loader]', { state: 'detached', timeout: 30000 })
-        .catch(() => {});
+        .catch(() => undefined);
 
     // Wait for router outlet
     await page.waitForSelector('router-outlet', {
@@ -32,7 +32,7 @@ async function waitForAppReady(page: Page): Promise<void> {
     // Wait for item-selection component (mobile)
     await page
         .waitForSelector('item-selection', { timeout: 30000 })
-        .catch(() => {});
+        .catch(() => undefined);
 
     // Small delay for animations
     await page.waitForTimeout(500);
@@ -53,7 +53,7 @@ async function closeItemSelectionIfOpen(page: Page): Promise<void> {
             .waitForSelector('item-selection virtual-scroll a', {
                 timeout: 10000,
             })
-            .catch(() => {});
+            .catch(() => undefined);
 
         // Select first item to close the overlay
         const first_item = page
@@ -74,7 +74,7 @@ async function closeItemSelectionIfOpen(page: Page): Promise<void> {
                     },
                     { timeout: 5000 },
                 )
-                .catch(() => {});
+                .catch(() => undefined);
         }
     }
 }
@@ -318,7 +318,7 @@ test.describe('Mobile', () => {
             systems_page = new MobileSystemsPage(page);
         });
 
-        test('should view systems list on mobile', async ({ page }) => {
+        test('should view systems list on mobile', async () => {
             await systems_page.goto();
 
             // Verify item selection is visible
@@ -341,9 +341,7 @@ test.describe('Mobile', () => {
             );
         });
 
-        test('should select a system and view details on mobile', async ({
-            page,
-        }) => {
+        test('should select a system and view details on mobile', async () => {
             await systems_page.goto();
 
             // Select first system

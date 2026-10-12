@@ -42,7 +42,7 @@ export function getTestEnvConfig(): TestEnvConfig {
 /**
  * Build the application URL with mock parameter if needed
  */
-export function buildAppUrl(path: string = '/'): string {
+export function buildAppUrl(path = '/'): string {
     const config = getTestEnvConfig();
     const base = config.base_url;
     const mock_param = config.use_mock ? 'mock=true' : '';
