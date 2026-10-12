@@ -1,7 +1,7 @@
 const { gitDescribeSync } = require('git-describe');
 const { version, core_version } = require('../package.json');
 const { resolve, relative } = require('path');
-const { writeFileSync } = require('fs-extra');
+const { writeFileSync } = require('fs');
 const { format, differenceInMinutes, startOfMonth } = require('date-fns');
 
 const minutes = Math.floor(Math.abs(differenceInMinutes(Date.now(), startOfMonth(Date.now()))) / 60);
@@ -13,7 +13,7 @@ try {
         dirtyMark: false,
         dirtySemver: false,
     });
-} catch (e) {
+} catch {
     gitInfo.hash = 'Unknown';
 }
 
