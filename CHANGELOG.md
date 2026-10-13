@@ -9,10 +9,15 @@ All notable changes to this project will be documented in this file.
 #### Build
 
 - Use node fs in the version script
+- Stop the @layer polyfill overriding Material styles
 
 #### Extensions
 
 - Load admin tabs and reply to all frame requests
+
+#### Ui
+
+- Stop the required-marker colour applying to checkboxes
 
 ## [2610.1] - 2026-10-08
 
