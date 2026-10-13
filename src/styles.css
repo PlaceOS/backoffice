@@ -681,7 +681,9 @@ section > label {
     margin-bottom: 0.25rem;
     font-weight: bold;
 
-    > span:first-child {
+    /* Material puts the checkbox box first in its label. `:where` keeps the
+       specificity below the `form label[for]` marker rule. */
+    > span:first-child:where(:not(.mdc-checkbox)) {
         color: var(--warn);
     }
 
@@ -793,7 +795,7 @@ form {
             color: var(--error);
         }
 
-        > span:not(.mat-checkbox-label) {
+        > span:not(.mdc-checkbox) {
             color: var(--pending);
         }
     }
