@@ -126,6 +126,24 @@ The Admin section provides comprehensive system administration capabilities incl
 - When I view the database details page
 - Then I should see loading feedback and the related import or export action should be disabled until it completes
 
+**AC-ADM-004-7: Re-sync MQTT**
+- Given I am a system administrator viewing database details
+- When I choose Re-sync MQTT
+- Then every module's state and every model's metadata is published to the MQTT brokers again
+- And both MQTT actions are disabled, with progress shown, until it finishes
+- And I am told when it has finished, or why it failed
+
+**AC-ADM-004-8: Clear & Re-sync MQTT**
+- Given the MQTT brokers hold state that has drifted from the modules
+- When I choose Clear & Re-sync MQTT and confirm
+- Then everything PlaceOS has published is removed from the brokers before it is all published again
+- And dismissing the confirmation changes nothing
+
+**AC-ADM-004-9: MQTT Re-sync Already Running**
+- Given an MQTT re-sync is running, started by me or anyone else
+- When I open the database details page, or try to start another
+- Then I see its progress and cannot start a second one
+
 ---
 
 # Network & Interfaces

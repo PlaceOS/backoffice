@@ -1,9 +1,18 @@
-import { Component, inject, signal } from '@angular/core';
-import { addZone, PlaceZone, queryZones, showZone } from '@placeos/ts-client';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+    addZone,
+    PlaceSourceResyncStatus,
+    PlaceZone,
+    queryZones,
+    showZone,
+    sourceResync,
+    sourceResyncStatus,
+} from '@placeos/ts-client';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AsyncHandler } from '../common/async-handler.class';
 import { readError } from '../common/errors';
 import { csvToJson, downloadFile, jsonToCsv } from '../common/general';
 import {
@@ -11,7 +20,11 @@ import {
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component';
+
+/** How often a running MQTT re-sync is checked on */
+const MQTT_STATUS_POLL_MS = 2000;
 
 type ZoneTreeExportItem = Record<string, unknown> & {
     id: string;
@@ -136,6 +149,50 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                     }
                 </button>
             </div>
+            <div
+                mqtt-resync
+                class="border-base-200 flex flex-col space-y-2 rounded-sm border p-2 md:col-span-2"
+            >
+                <p class="mx-auto max-w-120 p-2 text-center">
+                    Publish every module's state and every model's metadata to
+                    the MQTT brokers again. Clearing first removes everything
+                    PlaceOS has published, for when what the brokers hold has
+                    drifted from the modules; clients see nothing until it is
+                    published again.
+                </p>
+                <div class="flex flex-wrap justify-center">
+                    <button
+                        btn
+                        matRipple
+                        mqtt-resync-button
+                        [disabled]="mqtt_running()"
+                        (click)="resyncMqtt(false)"
+                    >
+                        Re-sync MQTT
+                    </button>
+                    <button
+                        btn
+                        matRipple
+                        mqtt-clear-button
+                        class="error"
+                        [disabled]="mqtt_running()"
+                        (click)="resyncMqtt(true)"
+                    >
+                        Clear &amp; Re-sync MQTT
+                    </button>
+                </div>
+                @if (mqtt_status(); as status) {
+                    <div
+                        mqtt-status
+                        class="flex items-center justify-center space-x-2 p-2 text-sm opacity-80"
+                    >
+                        @if (mqtt_running()) {
+                            <mat-spinner diameter="20" />
+                        }
+                        <span>{{ mqtt_status_text() }}</span>
+                    </div>
+                }
+            </div>
         </div>
     `,
     styles: [
@@ -159,13 +216,122 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
     ],
     imports: [MatProgressSpinnerModule, MatRippleModule, MatDialogModule],
 })
-export class PlaceDatabaseDetailsComponent {
+export class PlaceDatabaseDetailsComponent
+    extends AsyncHandler
+    implements OnInit
+{
     private readonly _dialog = inject(MatDialog);
+
+    /** Where the last MQTT re-sync got to, if this user may see it */
+    public readonly mqtt_status = signal<PlaceSourceResyncStatus | null>(null);
+    /** Whether a re-sync is being requested */
+    private readonly _mqtt_starting = signal(false);
+    /** Whether a re-sync is being requested or is running */
+    public readonly mqtt_running = computed(
+        () =>
+            this._mqtt_starting() ||
+            ['clearing', 'resyncing'].includes(this.mqtt_status()?.state),
+    );
+    public readonly mqtt_status_text = computed(() => {
+        const status = this.mqtt_status();
+        if (!status) return '';
+        switch (status.state) {
+            case 'clearing':
+                return 'Clearing the MQTT brokers...';
+            case 'resyncing':
+                return 'Publishing to the MQTT brokers...';
+            case 'complete':
+                return `Last re-sync finished ${new Date(
+                    status.finished_at,
+                ).toLocaleString()}${
+                    status.clear
+                        ? `, after removing ${status.cleared} topics`
+                        : ''
+                }.`;
+            case 'failed':
+                return `Last re-sync failed: ${status.error || 'unknown error'}`;
+            default:
+                return 'No re-sync since the MQTT service started.';
+        }
+    });
 
     /** Whether zones are being exported */
     public readonly exporting_zones = signal(false);
     /** Whether zones are being imported */
     public readonly importing_zones = signal(false);
+
+    public ngOnInit() {
+        this._loadMqttStatus();
+    }
+
+    /** Re-publishes everything to the MQTT brokers, clearing them first if asked */
+    public async resyncMqtt(clear: boolean) {
+        if (clear) {
+            const details = await openConfirmModal(
+                {
+                    title: 'Clear & Re-sync MQTT',
+                    content:
+                        'Remove everything PlaceOS has published from the MQTT brokers, then publish it all again. Dashboards and alerts show nothing until it is published again. Continue?',
+                    icon: { type: 'icon', content: 'sync_problem' },
+                    confirm_text: 'Clear & Re-sync',
+                },
+                this._dialog,
+            );
+            if (details.reason !== 'done') return;
+            details.close();
+        }
+        this._mqtt_starting.set(true);
+        try {
+            this.mqtt_status.set(await sourceResync(clear));
+            this._watchMqttStatus();
+        } catch (err) {
+            if ((err as Response)?.status === 409) {
+                notifyWarn('An MQTT re-sync is already running.');
+                this._loadMqttStatus();
+            } else {
+                notifyError(
+                    `Error starting the MQTT re-sync. Error: ${await readError(err)}`,
+                );
+            }
+        }
+        this._mqtt_starting.set(false);
+    }
+
+    private async _loadMqttStatus() {
+        try {
+            this.mqtt_status.set(await sourceResyncStatus());
+            if (this.mqtt_running()) this._watchMqttStatus();
+        } catch {
+            // not available to this user, or to this version of PlaceOS
+            this.mqtt_status.set(null);
+        }
+    }
+
+    /** Follows a running re-sync and says how it ended */
+    private _watchMqttStatus() {
+        this.interval(
+            'mqtt_status',
+            async () => {
+                let status: PlaceSourceResyncStatus;
+                try {
+                    status = await sourceResyncStatus();
+                } catch {
+                    return;
+                }
+                this.mqtt_status.set(status);
+                if (status.state === 'complete') {
+                    this.clearInterval('mqtt_status');
+                    notifySuccess('MQTT re-sync complete.');
+                } else if (status.state === 'failed') {
+                    this.clearInterval('mqtt_status');
+                    notifyError(
+                        `MQTT re-sync failed. Error: ${status.error || 'unknown error'}`,
+                    );
+                }
+            },
+            MQTT_STATUS_POLL_MS,
+        );
+    }
 
     public exportZoneTree() {
         const dialog_ref = this._dialog.open(ZoneTreeExportModalComponent, {
