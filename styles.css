@@ -2656,6 +2656,9 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .opacity-70 {
   opacity: 0.7;
 }
+#placeos .opacity-80 {
+  opacity: 0.8;
+}
 #placeos .shadow {
   --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgba(0, 0, 0, 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgba(0, 0, 0, 0.1));
   box-shadow:
@@ -3273,6 +3276,11 @@ input:where([type=button], [type=reset], [type=submit]),
 @media (min-width: 40rem) {
   #placeos .sm\:opacity-25 {
     opacity: 0.25;
+  }
+}
+@media (min-width: 48rem) {
+  #placeos .md\:col-span-2 {
+    grid-column: span 2 / span 2;
   }
 }
 @media (min-width: 48rem) {

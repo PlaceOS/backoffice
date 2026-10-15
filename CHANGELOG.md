@@ -19,6 +19,12 @@ All notable changes to this project will be documented in this file.
 
 - Stop the required-marker colour applying to checkboxes
 
+### Features
+
+#### Admin
+
+- MQTT re-sync and clear & re-sync on the database page
+
 ## [2610.1] - 2026-10-08
 
 ### Bug Fixes
