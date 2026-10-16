@@ -5,13 +5,14 @@ import {
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { NavigationEnd, Router } from '@angular/router';
 import {
     PlaceGroup,
     PlaceGroupUser,
     PlaceGroupZone,
     PlaceUser,
 } from '@placeos/ts-client';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
 import { GroupStateService } from '../../app/groups/group-state.service';
@@ -77,6 +78,10 @@ describe('group membership actions', () => {
     const active = signal<PlaceGroup | null>(null);
     const close = vi.fn();
     const loading = vi.fn();
+    const router = {
+        url: '/groups/group-1/users',
+        events: new Subject<NavigationEnd>(),
+    };
     let service: GroupStateService;
 
     beforeEach(() => {
@@ -100,6 +105,7 @@ describe('group membership actions', () => {
                     useValue: { item: active, active_item: group },
                 },
                 { provide: MatDialog, useValue: { open: mocks.open } },
+                { provide: Router, useValue: router },
             ],
         });
         service = TestBed.inject(GroupStateService);
@@ -126,6 +132,23 @@ describe('group membership actions', () => {
         expect(mocks.queryGroupUsers).toHaveBeenCalledWith({
             group_id: 'group-1',
             limit: 1000,
+        });
+    });
+
+    it('only counts members until their tab is opened', async () => {
+        const url = '/groups/group-1/about';
+        router.events.next(new NavigationEnd(1, url, url));
+        mocks.queryGroupUsers.mockResolvedValue({
+            data: [new PlaceGroupUser({ user_id: 'a-user' })],
+            total: 7,
+        });
+        active.set(group);
+        await TestBed.inject(ApplicationRef).whenStable();
+        expect(service.users()).toEqual([]);
+        expect(service.counts()).toEqual({ users: 7, zones: 0 });
+        expect(mocks.queryGroupUsers).toHaveBeenCalledExactlyOnceWith({
+            group_id: 'group-1',
+            limit: 1,
         });
     });
 

@@ -85,7 +85,9 @@ import { AdminClusterNodeComponent } from './cluster-node.component';
 export class PlaceClusterDetailsComponent extends AsyncHandler {
     /** List of available clusters on this instance of engine */
     public cluster_list = signal<PlaceCluster[]>([]);
-    public cluster_nodes = signal({});
+    public cluster_nodes = signal<
+        HashMap<Array<PlaceCluster & { hostname?: string }>>
+    >({});
     /** Map of clusters to CPU usage history */
     public usage_history: HashMap<
         HashMap<Array<{ id: number; cpu: number; memory: number }>>
@@ -100,7 +102,8 @@ export class PlaceClusterDetailsComponent extends AsyncHandler {
     }
 
     private async updateClusters() {
-        if (this.loading()) return;
+        // Skip a tick while hidden or while the last request is in flight
+        if (this.loading() || document.hidden) return;
         this.loading.set(true);
         const response = await queryClusters({ include_status: false }).catch(
             () => ({ data: [] as PlaceCluster[] }),
@@ -108,7 +111,9 @@ export class PlaceClusterDetailsComponent extends AsyncHandler {
         const list = response.data || [];
         this.cluster_list.set(list);
         const date = Date.now();
-        const node_map = this.cluster_nodes();
+        // A new object, so the signal notifies and removed clusters drop out
+        const node_map: HashMap<Array<PlaceCluster & { hostname?: string }>> =
+            {};
         this.cluster_list().forEach((cluster) => {
             if (!this.usage_history[cluster.id])
                 this.usage_history[cluster.id] = {};

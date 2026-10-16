@@ -242,7 +242,15 @@ export class PlaceClusterTaskListComponent
     }
 
     public ngOnInit() {
-        this.interval('poll', () => this.updateProcessList(), 15 * 1000);
+        this.interval(
+            'poll',
+            () => {
+                // Skip a tick while hidden or while the last request is in flight
+                if (document.hidden || this.loading()) return;
+                this.updateProcessList();
+            },
+            15 * 1000,
+        );
         this.updateProcessList();
     }
 
@@ -309,11 +317,14 @@ export class PlaceClusterTaskListComponent
     }
 
     public async updateProcessList() {
-        if (!this.cluster()) return;
+        const cluster = this.cluster();
+        if (!cluster) return;
         this.loading.set(true);
-        const list = await queryProcesses(this.cluster().id, {
+        const list = await queryProcesses(cluster.id, {
             include_status: true,
         }).catch(() => []);
+        // The page moved to another cluster while this was loading
+        if (cluster !== this.cluster()) return;
         this.process_list.set(
             list.sort((a, b) => b.module_instances - a.module_instances),
         );

@@ -63,6 +63,7 @@ import {
     planZoneCascade,
 } from './cascade-delete';
 import {
+    clearSupportModuleCache,
     querySupportModules,
     querySupportSystems as querySystems,
     querySupportZones as queryZones,
@@ -183,8 +184,12 @@ const modules: ItemActions<PlaceModule> = {
             fields: ['id', 'name', 'custom_name', 'module_name'].join(','),
         }),
     show: (_) => showModule(_),
-    save: (item) => (item.id ? updateModule(item.id, item) : addModule(item)),
-    remove: (item) => removeModule(item.id),
+    // The support group module list is cached, so drop it once this lands
+    save: (item) =>
+        (item.id ? updateModule(item.id, item) : addModule(item)).finally(
+            clearSupportModuleCache,
+        ),
+    remove: (item) => removeModule(item.id).finally(clearSupportModuleCache),
     itemConstructor: PlaceModule,
     loadModal: () =>
         import('../modules/module-form.component').then(

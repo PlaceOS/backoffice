@@ -14,7 +14,6 @@ import {
     PlaceZone,
     put,
     queryModules,
-    querySettings,
     queryTriggers,
     removeSystemModule,
     removeSystemTrigger,
@@ -74,10 +73,9 @@ export class SystemStateService extends AsyncHandler {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceSystem)) return [];
+            // The active item service already loaded the system's own settings
             return isSubsystemUser()
-                ? querySettings({ parent_id: item.id })
-                      .then((response) => response.data)
-                      .catch(() => [])
+                ? item.settings.filter((setting) => !!setting?.id)
                 : systemSettings(item.id).catch(() => []);
         },
     });
@@ -93,18 +91,12 @@ export class SystemStateService extends AsyncHandler {
             if (!(item instanceof PlaceSystem)) return {};
             this.setLoading('settings', true);
             try {
-                const [triggers, metadata] = await Promise.all([
-                    listSystemTriggers(item.id)
-                        .then((response) => response.total)
-                        .catch(() => 0),
-                    listMetadata(item.id)
-                        .then((response) => response.length)
-                        .catch(() => 0),
-                ]);
+                const metadata = await listMetadata(item.id)
+                    .then((response) => response.length)
+                    .catch(() => 0);
                 return {
                     devices: item.modules.length,
                     zones: item.zones.length,
-                    triggers,
                     metadata,
                 };
             } finally {
@@ -118,15 +110,11 @@ export class SystemStateService extends AsyncHandler {
         zones?: number;
         triggers?: number;
         metadata?: number;
-    }>(
-        () =>
-            this._counts.value() || {
-                devices: 0,
-                zones: 0,
-                triggers: 0,
-                metadata: 0,
-            },
-    );
+    }>(() => ({
+        ...(this._counts.value() || { devices: 0, zones: 0, metadata: 0 }),
+        // Counted from the trigger list so it is only requested once
+        triggers: this._triggers.value()?.total || 0,
+    }));
 
     private readonly _module_resource = resource({
         params: () => ({ item: this.item(), changed: this._change() }),
@@ -249,22 +237,23 @@ export class SystemStateService extends AsyncHandler {
         params: () => ({ item: this.item(), changed: this._change() }),
         loader: async ({ params }) => {
             const { item } = params;
-            if (!(item instanceof PlaceSystem)) return [] as PlaceTrigger[];
+            if (!(item instanceof PlaceSystem))
+                return { data: [] as PlaceTrigger[], total: 0 };
             this.setLoading('triggers', true);
             try {
-                const response = await listSystemTriggers(item.id).catch(
-                    () => ({
-                        data: [],
-                    }),
-                );
-                return response.data;
+                return await listSystemTriggers(item.id).catch(() => ({
+                    data: [] as PlaceTrigger[],
+                    total: 0,
+                }));
             } finally {
                 this.setLoading('triggers', false);
             }
         },
     });
     /** Signal for triggers associated with system */
-    public readonly triggers = computed(() => this._triggers.value() || []);
+    public readonly triggers = computed(
+        () => this._triggers.value()?.data || [],
+    );
 
     /** Signal of loading states */
     public readonly loading = this._loading.asReadonly();
@@ -648,9 +637,10 @@ export class SystemStateService extends AsyncHandler {
         if (!added) return;
         this.timeout('join', async () => {
             const system = await showSystem(this.active_item.id);
+            // A new item reloads everything, so only fall back to `changed`
             if (system) this._state.replaceItem(system as unknown as Identity);
+            else this.changed();
             notifySuccess(`Successfully added module to system.`);
-            this.changed();
         });
     }
 

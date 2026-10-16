@@ -41,6 +41,7 @@ import { waitForEvent, waitForSignalValue } from './signals';
 import {
     canAccessSection,
     canUseSupportAction,
+    clearSupportModuleCache,
     hasSupportRole,
     hasSupportSubsystem,
     isSubsystemUser,
@@ -58,6 +59,14 @@ const receiptItems = (resources: CascadeResource[]) =>
         id: resource.id,
         name: resource.name,
     }));
+
+/** Resource types whose items carry settings */
+const SETTINGS_TYPES = new Set<ResourceType>([
+    'drivers',
+    'modules',
+    'systems',
+    'zones',
+]);
 
 export type ResourceType =
     | 'domains'
@@ -105,8 +114,16 @@ export class ActiveItemService extends AsyncHandler {
     private _scope_version = 0;
     /** Id of the latest `setItem` call, so stale responses are dropped */
     private _item_request = 0;
+    /** Id of the latest settings refresh, so stale responses are dropped */
+    private _settings_request = 0;
+    private _items_changed = signal(0);
 
     public readonly count = this._count.asReadonly();
+    /**
+     * Changes after any item is saved, duplicated, bulk added or removed, so
+     * views that cache data derived from many items know to reload it
+     */
+    public readonly items_changed = this._items_changed.asReadonly();
 
     public get total() {
         return this._count();
@@ -217,20 +234,32 @@ export class ActiveItemService extends AsyncHandler {
                 return this.timeout('setItem', () => this.setItem(id));
             this._loading.set(true);
             this._active_item.set(null);
-            const item = await this.actions
-                .show(id)
-                .catch(() => notifyError(`Error loading ${id}`));
+            const actions = this.actions;
+            // Load settings alongside the item and set it once, as state
+            // services reload everything each time the item changes
+            const [item, settings] = await Promise.all([
+                actions
+                    .show(id)
+                    .catch(() => notifyError(`Error loading ${id}`)),
+                SETTINGS_TYPES.has(this._type) ? this.loadSettings(id) : null,
+            ]);
             if (
                 scope_version !== this._scope_version ||
                 request !== this._item_request
             )
                 return;
-            this._active_item.set(item as PlaceResource);
+            this._active_item.set(
+                (item && settings
+                    ? new actions.itemConstructor({
+                          ...(item as PlaceResource),
+                          settings,
+                      })
+                    : item) as PlaceResource,
+            );
             const name = this._type[0].toUpperCase() + this._type.slice(1);
             this._name.set(name);
             this._settings.title = name;
             this._show_options.set(false);
-            this.updateSettings();
             this._loading.set(false);
         }
     }
@@ -272,9 +301,10 @@ export class ActiveItemService extends AsyncHandler {
                 save: actions.save,
             },
         });
-        ref.afterClosed().subscribe(() =>
-            this._settings.post('disable_uploads', false),
-        );
+        ref.afterClosed().subscribe(() => {
+            this._settings.post('disable_uploads', false);
+            this._items_changed.update((count) => count + 1);
+        });
     }
 
     public async edit<T extends PlaceResource = PlaceResource>(
@@ -556,32 +586,45 @@ export class ActiveItemService extends AsyncHandler {
             });
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done' && e.metadata?.[0]) {
-                    this._active_item.set(e.metadata[0] as PlaceResource);
+                    // Clear first so the copy is shown with its own settings
+                    this._active_item.set(null);
                     this.replaceItem(e.metadata[0] as unknown as Identity);
                 }
             });
         }
     }
 
+    /**
+     * Show a saved item in place of the active one with the same id, or as
+     * the active item when there is none.
+     */
     public replaceItem(item: Identity | PlaceResource) {
-        if (
-            item?.id &&
-            (!this.active_item || this.active_item.id === item.id)
-        ) {
-            this._active_item.set(item as PlaceResource);
-            const list = this._list().filter(
-                (i) => (i as Identity).id !== item.id,
-            );
-            list.push(item);
-            list.sort((a, b) =>
-                (a as Identity).name?.localeCompare((b as Identity).name),
-            );
-            this.updateSettings();
-            this._list.set(list);
-        }
+        this._items_changed.update((count) => count + 1);
+        const current = this.active_item as PlaceResource & {
+            settings?: PlaceSettings[];
+        };
+        if (!item?.id || (current && current.id !== item.id)) return;
+        // Save responses have blank settings, so show the loaded ones until
+        // the refresh below confirms them
+        this._active_item.set(
+            (current?.settings && this.actions?.itemConstructor
+                ? new this.actions.itemConstructor({
+                      ...item,
+                      settings: current.settings,
+                  })
+                : item) as PlaceResource,
+        );
+        const list = this._list().filter((i) => (i as Identity).id !== item.id);
+        list.push(item);
+        list.sort((a, b) =>
+            (a as Identity).name?.localeCompare((b as Identity).name),
+        );
+        this._list.set(list);
+        if (SETTINGS_TYPES.has(this._type)) this.refreshSettings(`${item.id}`);
     }
 
     public removeItem(item: unknown) {
+        this._items_changed.update((count) => count + 1);
         if ((item as Identity).id) {
             const list = this._list().filter(
                 (i) => (i as Identity).id !== (item as Identity).id,
@@ -607,6 +650,8 @@ export class ActiveItemService extends AsyncHandler {
         if (old_type !== this._type) {
             this._include_deleted.set(false);
             this._list_version++;
+            // Entering a section starts from fresh data
+            clearSupportModuleCache();
             log('Service', `Item type set to ${this._type}`);
             this._next_query.set(null);
             this._active_item.set(null);
@@ -698,13 +743,11 @@ export class ActiveItemService extends AsyncHandler {
                                 })),
                     );
                     this._count.set(resp.total);
+                    const incoming = new Set(
+                        resp.data.map((item) => (item as Identity).id),
+                    );
                     const list = this._list().filter(
-                        (i) =>
-                            !resp.data.find(
-                                (item) =>
-                                    (item as Identity).id ===
-                                    (i as Identity).id,
-                            ),
+                        (i) => !incoming.has((i as Identity).id),
                     );
                     const new_list = list.concat(resp.data);
                     new_list.sort((a, b) =>
@@ -720,29 +763,59 @@ export class ActiveItemService extends AsyncHandler {
         );
     }
 
-    private async updateSettings() {
-        const item = this.active_item;
-        if (item && (item as PlaceResource & { settings?: unknown }).settings) {
-            let settings = (await querySettings({ parent_id: item.id })).data;
-            if (item !== this.active_item) return;
-            // Remove duplicate encryption_level
-            settings = new Array(5).fill(0).map(
-                (_, idx) =>
-                    settings.find((_) => _.encryption_level === idx) ||
-                    new PlaceSettings({
-                        encryption_level: idx,
-                    }),
+    /**
+     * Reload the active item's settings. Sets the item again only when they
+     * changed, as state services reload everything each time it is set.
+     */
+    private async refreshSettings(id: string) {
+        const request = ++this._settings_request;
+        const settings = await this.loadSettings(id);
+        const active = this.active_item as PlaceResource & {
+            settings?: PlaceSettings[];
+        };
+        if (
+            !settings ||
+            request !== this._settings_request ||
+            active?.id !== id ||
+            !this.actions?.itemConstructor
+        )
+            return;
+        // Masked levels have a blank settings_string, so also compare the
+        // save time and keys
+        const unchanged = settings.every((level, idx) => {
+            const shown = active.settings?.[idx];
+            return (
+                level.id === shown?.id &&
+                level.updated_at === shown?.updated_at &&
+                level.settings_string === shown?.settings_string &&
+                `${level.keys}` === `${shown?.keys}`
             );
+        });
+        if (unchanged) return;
+        this._active_item.set(
+            new this.actions.itemConstructor({
+                ...active,
+                settings,
+            }) as PlaceResource,
+        );
+    }
 
-            settings.sort((a, b) => a.encryption_level - b.encryption_level);
-            if (this.actions?.itemConstructor) {
-                this._active_item.set(
-                    new this.actions.itemConstructor({
-                        ...item,
-                        settings,
-                    }) as PlaceResource,
-                );
-            }
-        }
+    /**
+     * Settings of each encryption level for the item, with a blank entry for
+     * missing levels. Resolves `null` if they cannot be loaded.
+     */
+    private async loadSettings(id: string) {
+        const response = await querySettings({ parent_id: id }).catch(
+            () => null,
+        );
+        if (!response) return null;
+        // Remove duplicate encryption_level
+        return new Array(5)
+            .fill(0)
+            .map(
+                (_, idx) =>
+                    response.data.find((_) => _.encryption_level === idx) ||
+                    new PlaceSettings({ encryption_level: idx }),
+            );
     }
 }

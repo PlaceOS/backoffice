@@ -7,7 +7,6 @@ import {
     listZoneTriggers,
     PlaceGroup,
     PlaceGroupZone,
-    PlaceMetadata,
     PlaceSystem,
     PlaceTrigger,
     PlaceZone,
@@ -18,11 +17,12 @@ import {
     updateGroupZone,
     updateZone,
 } from '@placeos/ts-client';
-import { escapeHtml, unique } from '../common/general';
 import { describeError, readError } from '../common/errors';
+import { escapeHtml, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { openedTabs } from '../common/opened-tabs';
 import { waitForEvent } from '../common/signals';
 import {
     collectPages,
@@ -51,7 +51,10 @@ export class ZonesStateService {
     public readonly loading = computed(
         () =>
             this._saving() ||
-            this._counts.isLoading() ||
+            this._systems.isLoading() ||
+            this._triggers.isLoading() ||
+            this._metadata_count.isLoading() ||
+            this._children.isLoading() ||
             this._groups.isLoading(),
     );
 
@@ -59,41 +62,22 @@ export class ZonesStateService {
         () => this._service.item() as unknown as PlaceZone,
     );
 
-    private readonly _counts = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
-        loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceZone)) return {};
-            const details = await Promise.all([
-                querySystems({ zone_id: item.id, limit: 1 })
-                    .then((d) => d.total)
-                    .catch(() => 0),
-                (isSubsystemUser()
-                    ? Promise.resolve({ data: [], total: 0 })
-                    : listZoneTriggers(item.id)
-                )
-                    .then((d) => d.total)
-                    .catch(() => 0),
-                listMetadata(item.id)
-                    .then((d) => d.length)
-                    .catch(() => 0),
-                queryZones({ parent_id: item.id, limit: 1 })
-                    .then((d) => d.total)
-                    .catch(() => 0),
-                queryGroupZones({ zone_id: item.id, limit: 1 })
-                    .then((d) => d.total)
-                    .catch(() => 0),
-            ]);
-            const [systems, triggers, metadata, children, groups] = details;
-            return {
-                systems,
-                triggers,
-                metadata,
-                children,
-                groups,
-            };
-        },
+    private readonly _zone_id = computed(() => {
+        const item = this.item();
+        return item instanceof PlaceZone ? item.id : undefined;
     });
+    // Lists that can be long only load once their tab is opened. Until then
+    // a single row query gives the tab count.
+    private readonly _opened_tabs = openedTabs(this._zone_id);
+    private readonly _load_systems = computed(() =>
+        this._opened_tabs().has('systems'),
+    );
+    private readonly _load_children = computed(() =>
+        this._opened_tabs().has('children'),
+    );
+    private readonly _load_groups = computed(() =>
+        this._opened_tabs().has('groups'),
+    );
 
     public readonly counts = computed<{
         systems?: number;
@@ -101,92 +85,119 @@ export class ZonesStateService {
         metadata?: number;
         children?: number;
         groups?: number;
-    }>(
-        () =>
-            this._counts.value() || {
-                systems: 0,
-                triggers: 0,
-                metadata: 0,
-                children: 0,
-                groups: 0,
-            },
-    );
+    }>(() => ({
+        systems: this._systems.value()?.total || 0,
+        triggers: this._triggers.value()?.total || 0,
+        metadata: this._metadata_count.value() || 0,
+        children: this._children.value()?.total || 0,
+        groups: this._groups.value()?.total || 0,
+    }));
 
     private readonly _systems = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
+        params: () => ({
+            item: this.item(),
+            changed: this._change(),
+            full: this._load_systems(),
+        }),
         loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceZone)) return [] as PlaceSystem[];
+            const { item, full } = params;
+            const empty = { data: [] as PlaceSystem[], total: 0 };
+            if (!(item instanceof PlaceZone)) return empty;
+            if (!full) {
+                return querySystems({ zone_id: item.id, limit: 1 })
+                    .then(({ total }) => ({ ...empty, total }))
+                    .catch(() => empty);
+            }
             // Load every page so the list matches the tab count
-            return collectPages(
+            const data = await collectPages(
                 querySystems({ zone_id: item.id, limit: 500 }),
             ).catch(() => [] as PlaceSystem[]);
+            return { data, total: data.length };
         },
     });
 
-    public readonly systems = computed(() => this._systems.value() || []);
+    public readonly systems = computed(() => this._systems.value()?.data || []);
 
     private readonly _triggers = resource({
         params: () => ({ item: this.item(), changed: this._change() }),
         loader: async ({ params }) => {
             const { item } = params;
-            if (!(item instanceof PlaceZone)) return [] as PlaceTrigger[];
-            const response = await (
-                isSubsystemUser()
-                    ? Promise.resolve({ data: [], total: 0 })
-                    : listZoneTriggers(item.id)
-            ).catch(() => ({
-                data: [],
-            }));
-            return response.data;
+            const empty = { data: [] as PlaceTrigger[], total: 0 };
+            if (!(item instanceof PlaceZone) || isSubsystemUser()) return empty;
+            return listZoneTriggers(item.id).catch(() => empty);
         },
     });
 
-    public readonly triggers = computed(() => this._triggers.value() || []);
+    public readonly triggers = computed(
+        () => this._triggers.value()?.data || [],
+    );
 
-    private readonly _metadata = resource({
+    /** The metadata tab loads its own list, so only the count is needed */
+    private readonly _metadata_count = resource({
         params: () => ({ item: this.item(), changed: this._change() }),
         loader: async ({ params }) => {
             const { item } = params;
-            if (!(item instanceof PlaceZone)) return [] as PlaceMetadata[];
-            return listMetadata(item.id).catch(() => []);
+            if (!(item instanceof PlaceZone)) return 0;
+            return listMetadata(item.id)
+                .then((list) => list.length)
+                .catch(() => 0);
         },
     });
-
-    public readonly metadata = computed(() => this._metadata.value() || []);
 
     private readonly _children = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
+        params: () => ({
+            item: this.item(),
+            changed: this._change(),
+            full: this._load_children(),
+        }),
         loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceZone)) return [] as PlaceZone[];
+            const { item, full } = params;
+            const empty = { data: [] as PlaceZone[], total: 0 };
+            if (!(item instanceof PlaceZone)) return empty;
+            if (!full) {
+                return queryZones({ parent_id: item.id, limit: 1 })
+                    .then(({ total }) => ({ ...empty, total }))
+                    .catch(() => empty);
+            }
             // Load every page so the list matches the tab count
-            return collectPages(
+            const data = await collectPages(
                 queryZones({ parent_id: item.id, limit: 500 }),
             ).catch(() => [] as PlaceZone[]);
+            return { data, total: data.length };
         },
     });
 
-    public readonly children = computed(() => this._children.value() || []);
+    public readonly children = computed(
+        () => this._children.value()?.data || [],
+    );
 
     private readonly _groups = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
+        params: () => ({
+            item: this.item(),
+            changed: this._change(),
+            full: this._load_groups(),
+        }),
         loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceZone)) return [] as PlaceGroupZone[];
+            const { item, full } = params;
+            const empty = { data: [] as PlaceGroupZone[], total: 0 };
+            if (!(item instanceof PlaceZone)) return empty;
             const response = await queryGroupZones({
                 zone_id: item.id,
-                limit: 1000,
-            }).catch(() => ({ data: [] }));
-            return response.data.sort((a, b) =>
-                (a.group?.name || a.group_id).localeCompare(
-                    b.group?.name || b.group_id,
+                limit: full ? 1000 : 1,
+            }).catch(() => empty);
+            if (!full) return { ...empty, total: response.total };
+            return {
+                total: response.total,
+                data: [...response.data].sort((a, b) =>
+                    (a.group?.name || a.group_id).localeCompare(
+                        b.group?.name || b.group_id,
+                    ),
                 ),
-            );
+            };
         },
     });
 
-    public readonly groups = computed(() => this._groups.value() || []);
+    public readonly groups = computed(() => this._groups.value()?.data || []);
 
     public get active_item(): PlaceZone {
         return this._service.active_item as unknown as PlaceZone;
@@ -199,10 +210,6 @@ export class ZonesStateService {
             authority()?.id ||
             undefined
         );
-    }
-
-    constructor() {
-        setTimeout(() => this.changed(), 1000);
     }
 
     public async selectTrigger() {

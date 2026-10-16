@@ -18,7 +18,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import {
     PlaceDriverRole,
     PlaceGroup,
@@ -28,7 +28,6 @@ import {
     PlaceZone,
     queryGroups,
 } from '@placeos/ts-client';
-import { filter } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { toSignal } from '../common/signals';
@@ -382,11 +381,6 @@ export class ItemSidebarComponent
     private readonly _route_change = toSignal(this._router.events, {
         initialValue: null,
     });
-    /** Changes once per completed navigation, not for every router event */
-    private readonly _navigation_end = toSignal(
-        this._router.events.pipe(filter((e) => e instanceof NavigationEnd)),
-        { initialValue: null },
-    );
 
     public readonly title = input('Systems');
     public readonly route = input('systems');
@@ -468,8 +462,10 @@ export class ItemSidebarComponent
             this._route_change();
             this.subroute.set(this._router.url.split('/')[3] || '');
         });
+        // Groups only change through the item service, so reload the
+        // hierarchy after a save or removal rather than on every navigation
         effect(() => {
-            this._navigation_end();
+            this._service.items_changed();
             if (this.route() === 'groups') void this.loadGroupHierarchy();
         });
         effect(() => {

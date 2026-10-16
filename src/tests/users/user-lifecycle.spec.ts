@@ -29,6 +29,7 @@ vi.mock('../../app/common/support-access', () => ({
     hasSupportRole: () => false,
     hasSupportSubsystem: () => false,
     isSubsystemUser: () => false,
+    clearSupportModuleCache: () => undefined,
 }));
 vi.mock('../../app/users/users.service', () => ({
     BackofficeUsersService: class {},
