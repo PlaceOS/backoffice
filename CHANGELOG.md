@@ -25,6 +25,16 @@ All notable changes to this project will be documented in this file.
 
 - MQTT re-sync and clear & re-sync on the database page
 
+### Performance
+
+#### Build
+
+- Self-host fonts, shrink icon fonts and speed up CI
+
+#### Ui
+
+- Cut per-tick work in tables, forms and lists
+
 ## [2610.1] - 2026-10-08
 
 ### Bug Fixes

@@ -1,3 +1,809 @@
+/* node_modules/@fontsource-variable/roboto/index.css */
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-cyrillic-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0460-052F,
+    U+1C80-1C8A,
+    U+20B4,
+    U+2DE0-2DFF,
+    U+A640-A69F,
+    U+FE2E-FE2F;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-cyrillic-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0301,
+    U+0400-045F,
+    U+0490-0491,
+    U+04B0-04B1,
+    U+2116;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-greek-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+1F00-1FFF;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-greek-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0370-0377,
+    U+037A-037F,
+    U+0384-038A,
+    U+038C,
+    U+038E-03A1,
+    U+03A3-03FF;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-math-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0302-0303,
+    U+0305,
+    U+0307-0308,
+    U+0310,
+    U+0312,
+    U+0315,
+    U+031A,
+    U+0326-0327,
+    U+032C,
+    U+032F-0330,
+    U+0332-0333,
+    U+0338,
+    U+033A,
+    U+0346,
+    U+034D,
+    U+0391-03A1,
+    U+03A3-03A9,
+    U+03B1-03C9,
+    U+03D1,
+    U+03D5-03D6,
+    U+03F0-03F1,
+    U+03F4-03F5,
+    U+2016-2017,
+    U+2034-2038,
+    U+203C,
+    U+2040,
+    U+2043,
+    U+2047,
+    U+2050,
+    U+2057,
+    U+205F,
+    U+2070-2071,
+    U+2074-208E,
+    U+2090-209C,
+    U+20D0-20DC,
+    U+20E1,
+    U+20E5-20EF,
+    U+2100-2112,
+    U+2114-2115,
+    U+2117-2121,
+    U+2123-214F,
+    U+2190,
+    U+2192,
+    U+2194-21AE,
+    U+21B0-21E5,
+    U+21F1-21F2,
+    U+21F4-2211,
+    U+2213-2214,
+    U+2216-22FF,
+    U+2308-230B,
+    U+2310,
+    U+2319,
+    U+231C-2321,
+    U+2336-237A,
+    U+237C,
+    U+2395,
+    U+239B-23B7,
+    U+23D0,
+    U+23DC-23E1,
+    U+2474-2475,
+    U+25AF,
+    U+25B3,
+    U+25B7,
+    U+25BD,
+    U+25C1,
+    U+25CA,
+    U+25CC,
+    U+25FB,
+    U+266D-266F,
+    U+27C0-27FF,
+    U+2900-2AFF,
+    U+2B0E-2B11,
+    U+2B30-2B4C,
+    U+2BFE,
+    U+3030,
+    U+FF5B,
+    U+FF5D,
+    U+1D400-1D7FF,
+    U+1EE00-1EEFF;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-symbols-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0001-000C,
+    U+000E-001F,
+    U+007F-009F,
+    U+20DD-20E0,
+    U+20E2-20E4,
+    U+2150-218F,
+    U+2190,
+    U+2192,
+    U+2194-2199,
+    U+21AF,
+    U+21E6-21F0,
+    U+21F3,
+    U+2218-2219,
+    U+2299,
+    U+22C4-22C6,
+    U+2300-243F,
+    U+2440-244A,
+    U+2460-24FF,
+    U+25A0-27BF,
+    U+2800-28FF,
+    U+2921-2922,
+    U+2981,
+    U+29BF,
+    U+29EB,
+    U+2B00-2BFF,
+    U+4DC0-4DFF,
+    U+FFF9-FFFB,
+    U+10140-1018E,
+    U+10190-1019C,
+    U+101A0,
+    U+101D0-101FD,
+    U+102E0-102FB,
+    U+10E60-10E7E,
+    U+1D2C0-1D2D3,
+    U+1D2E0-1D37F,
+    U+1F000-1F0FF,
+    U+1F100-1F1AD,
+    U+1F1E6-1F1FF,
+    U+1F30D-1F30F,
+    U+1F315,
+    U+1F31C,
+    U+1F31E,
+    U+1F320-1F32C,
+    U+1F336,
+    U+1F378,
+    U+1F37D,
+    U+1F382,
+    U+1F393-1F39F,
+    U+1F3A7-1F3A8,
+    U+1F3AC-1F3AF,
+    U+1F3C2,
+    U+1F3C4-1F3C6,
+    U+1F3CA-1F3CE,
+    U+1F3D4-1F3E0,
+    U+1F3ED,
+    U+1F3F1-1F3F3,
+    U+1F3F5-1F3F7,
+    U+1F408,
+    U+1F415,
+    U+1F41F,
+    U+1F426,
+    U+1F43F,
+    U+1F441-1F442,
+    U+1F444,
+    U+1F446-1F449,
+    U+1F44C-1F44E,
+    U+1F453,
+    U+1F46A,
+    U+1F47D,
+    U+1F4A3,
+    U+1F4B0,
+    U+1F4B3,
+    U+1F4B9,
+    U+1F4BB,
+    U+1F4BF,
+    U+1F4C8-1F4CB,
+    U+1F4D6,
+    U+1F4DA,
+    U+1F4DF,
+    U+1F4E3-1F4E6,
+    U+1F4EA-1F4ED,
+    U+1F4F7,
+    U+1F4F9-1F4FB,
+    U+1F4FD-1F4FE,
+    U+1F503,
+    U+1F507-1F50B,
+    U+1F50D,
+    U+1F512-1F513,
+    U+1F53E-1F54A,
+    U+1F54F-1F5FA,
+    U+1F610,
+    U+1F650-1F67F,
+    U+1F687,
+    U+1F68D,
+    U+1F691,
+    U+1F694,
+    U+1F698,
+    U+1F6AD,
+    U+1F6B2,
+    U+1F6B9-1F6BA,
+    U+1F6BC,
+    U+1F6C6-1F6CF,
+    U+1F6D3-1F6D7,
+    U+1F6E0-1F6EA,
+    U+1F6F0-1F6F3,
+    U+1F6F7-1F6FC,
+    U+1F700-1F7FF,
+    U+1F800-1F80B,
+    U+1F810-1F847,
+    U+1F850-1F859,
+    U+1F860-1F887,
+    U+1F890-1F8AD,
+    U+1F8B0-1F8BB,
+    U+1F8C0-1F8C1,
+    U+1F900-1F90B,
+    U+1F93B,
+    U+1F946,
+    U+1F984,
+    U+1F996,
+    U+1F9E9,
+    U+1FA00-1FA6F,
+    U+1FA70-1FA7C,
+    U+1FA80-1FA89,
+    U+1FA8F-1FAC6,
+    U+1FACE-1FADC,
+    U+1FADF-1FAE9,
+    U+1FAF0-1FAF8,
+    U+1FB00-1FBFF;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-vietnamese-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0102-0103,
+    U+0110-0111,
+    U+0128-0129,
+    U+0168-0169,
+    U+01A0-01A1,
+    U+01AF-01B0,
+    U+0300-0301,
+    U+0303-0304,
+    U+0308-0309,
+    U+0323,
+    U+0329,
+    U+1EA0-1EF9,
+    U+20AB;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0100-02BA,
+    U+02BD-02C5,
+    U+02C7-02CC,
+    U+02CE-02D7,
+    U+02DD-02FF,
+    U+0304,
+    U+0308,
+    U+0329,
+    U+1D00-1DBF,
+    U+1E00-1E9F,
+    U+1EF2-1EFF,
+    U+2020,
+    U+20A0-20AB,
+    U+20AD-20C0,
+    U+2113,
+    U+2C60-2C7F,
+    U+A720-A7FF;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0000-00FF,
+    U+0131,
+    U+0152-0153,
+    U+02BB-02BC,
+    U+02C6,
+    U+02DA,
+    U+02DC,
+    U+0304,
+    U+0308,
+    U+0329,
+    U+2000-206F,
+    U+20AC,
+    U+2122,
+    U+2191,
+    U+2193,
+    U+2212,
+    U+2215,
+    U+FEFF,
+    U+FFFD;
+}
+
+/* node_modules/@fontsource-variable/roboto/wght-italic.css */
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-cyrillic-ext-wght-italic.woff2") format("woff2-variations");
+  unicode-range:
+    U+0460-052F,
+    U+1C80-1C8A,
+    U+20B4,
+    U+2DE0-2DFF,
+    U+A640-A69F,
+    U+FE2E-FE2F;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-cyrillic-wght-italic.woff2") format("woff2-variations");
+  unicode-range:
+    U+0301,
+    U+0400-045F,
+    U+0490-0491,
+    U+04B0-04B1,
+    U+2116;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-greek-ext-wght-italic.woff2") format("woff2-variations");
+  unicode-range: U+1F00-1FFF;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-greek-wght-italic.woff2") format("woff2-variations");
+  unicode-range:
+    U+0370-0377,
+    U+037A-037F,
+    U+0384-038A,
+    U+038C,
+    U+038E-03A1,
+    U+03A3-03FF;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-math-wght-italic.woff2") format("woff2-variations");
+  unicode-range:
+    U+0302-0303,
+    U+0305,
+    U+0307-0308,
+    U+0310,
+    U+0312,
+    U+0315,
+    U+031A,
+    U+0326-0327,
+    U+032C,
+    U+032F-0330,
+    U+0332-0333,
+    U+0338,
+    U+033A,
+    U+0346,
+    U+034D,
+    U+0391-03A1,
+    U+03A3-03A9,
+    U+03B1-03C9,
+    U+03D1,
+    U+03D5-03D6,
+    U+03F0-03F1,
+    U+03F4-03F5,
+    U+2016-2017,
+    U+2034-2038,
+    U+203C,
+    U+2040,
+    U+2043,
+    U+2047,
+    U+2050,
+    U+2057,
+    U+205F,
+    U+2070-2071,
+    U+2074-208E,
+    U+2090-209C,
+    U+20D0-20DC,
+    U+20E1,
+    U+20E5-20EF,
+    U+2100-2112,
+    U+2114-2115,
+    U+2117-2121,
+    U+2123-214F,
+    U+2190,
+    U+2192,
+    U+2194-21AE,
+    U+21B0-21E5,
+    U+21F1-21F2,
+    U+21F4-2211,
+    U+2213-2214,
+    U+2216-22FF,
+    U+2308-230B,
+    U+2310,
+    U+2319,
+    U+231C-2321,
+    U+2336-237A,
+    U+237C,
+    U+2395,
+    U+239B-23B7,
+    U+23D0,
+    U+23DC-23E1,
+    U+2474-2475,
+    U+25AF,
+    U+25B3,
+    U+25B7,
+    U+25BD,
+    U+25C1,
+    U+25CA,
+    U+25CC,
+    U+25FB,
+    U+266D-266F,
+    U+27C0-27FF,
+    U+2900-2AFF,
+    U+2B0E-2B11,
+    U+2B30-2B4C,
+    U+2BFE,
+    U+3030,
+    U+FF5B,
+    U+FF5D,
+    U+1D400-1D7FF,
+    U+1EE00-1EEFF;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-symbols-wght-italic.woff2") format("woff2-variations");
+  unicode-range:
+    U+0001-000C,
+    U+000E-001F,
+    U+007F-009F,
+    U+20DD-20E0,
+    U+20E2-20E4,
+    U+2150-218F,
+    U+2190,
+    U+2192,
+    U+2194-2199,
+    U+21AF,
+    U+21E6-21F0,
+    U+21F3,
+    U+2218-2219,
+    U+2299,
+    U+22C4-22C6,
+    U+2300-243F,
+    U+2440-244A,
+    U+2460-24FF,
+    U+25A0-27BF,
+    U+2800-28FF,
+    U+2921-2922,
+    U+2981,
+    U+29BF,
+    U+29EB,
+    U+2B00-2BFF,
+    U+4DC0-4DFF,
+    U+FFF9-FFFB,
+    U+10140-1018E,
+    U+10190-1019C,
+    U+101A0,
+    U+101D0-101FD,
+    U+102E0-102FB,
+    U+10E60-10E7E,
+    U+1D2C0-1D2D3,
+    U+1D2E0-1D37F,
+    U+1F000-1F0FF,
+    U+1F100-1F1AD,
+    U+1F1E6-1F1FF,
+    U+1F30D-1F30F,
+    U+1F315,
+    U+1F31C,
+    U+1F31E,
+    U+1F320-1F32C,
+    U+1F336,
+    U+1F378,
+    U+1F37D,
+    U+1F382,
+    U+1F393-1F39F,
+    U+1F3A7-1F3A8,
+    U+1F3AC-1F3AF,
+    U+1F3C2,
+    U+1F3C4-1F3C6,
+    U+1F3CA-1F3CE,
+    U+1F3D4-1F3E0,
+    U+1F3ED,
+    U+1F3F1-1F3F3,
+    U+1F3F5-1F3F7,
+    U+1F408,
+    U+1F415,
+    U+1F41F,
+    U+1F426,
+    U+1F43F,
+    U+1F441-1F442,
+    U+1F444,
+    U+1F446-1F449,
+    U+1F44C-1F44E,
+    U+1F453,
+    U+1F46A,
+    U+1F47D,
+    U+1F4A3,
+    U+1F4B0,
+    U+1F4B3,
+    U+1F4B9,
+    U+1F4BB,
+    U+1F4BF,
+    U+1F4C8-1F4CB,
+    U+1F4D6,
+    U+1F4DA,
+    U+1F4DF,
+    U+1F4E3-1F4E6,
+    U+1F4EA-1F4ED,
+    U+1F4F7,
+    U+1F4F9-1F4FB,
+    U+1F4FD-1F4FE,
+    U+1F503,
+    U+1F507-1F50B,
+    U+1F50D,
+    U+1F512-1F513,
+    U+1F53E-1F54A,
+    U+1F54F-1F5FA,
+    U+1F610,
+    U+1F650-1F67F,
+    U+1F687,
+    U+1F68D,
+    U+1F691,
+    U+1F694,
+    U+1F698,
+    U+1F6AD,
+    U+1F6B2,
+    U+1F6B9-1F6BA,
+    U+1F6BC,
+    U+1F6C6-1F6CF,
+    U+1F6D3-1F6D7,
+    U+1F6E0-1F6EA,
+    U+1F6F0-1F6F3,
+    U+1F6F7-1F6FC,
+    U+1F700-1F7FF,
+    U+1F800-1F80B,
+    U+1F810-1F847,
+    U+1F850-1F859,
+    U+1F860-1F887,
+    U+1F890-1F8AD,
+    U+1F8B0-1F8BB,
+    U+1F8C0-1F8C1,
+    U+1F900-1F90B,
+    U+1F93B,
+    U+1F946,
+    U+1F984,
+    U+1F996,
+    U+1F9E9,
+    U+1FA00-1FA6F,
+    U+1FA70-1FA7C,
+    U+1FA80-1FA89,
+    U+1FA8F-1FAC6,
+    U+1FACE-1FADC,
+    U+1FADF-1FAE9,
+    U+1FAF0-1FAF8,
+    U+1FB00-1FBFF;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-vietnamese-wght-italic.woff2") format("woff2-variations");
+  unicode-range:
+    U+0102-0103,
+    U+0110-0111,
+    U+0128-0129,
+    U+0168-0169,
+    U+01A0-01A1,
+    U+01AF-01B0,
+    U+0300-0301,
+    U+0303-0304,
+    U+0308-0309,
+    U+0323,
+    U+0329,
+    U+1EA0-1EF9,
+    U+20AB;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-latin-ext-wght-italic.woff2") format("woff2-variations");
+  unicode-range:
+    U+0100-02BA,
+    U+02BD-02C5,
+    U+02C7-02CC,
+    U+02CE-02D7,
+    U+02DD-02FF,
+    U+0304,
+    U+0308,
+    U+0329,
+    U+1D00-1DBF,
+    U+1E00-1E9F,
+    U+1EF2-1EFF,
+    U+2020,
+    U+20A0-20AB,
+    U+20AD-20C0,
+    U+2113,
+    U+2C60-2C7F,
+    U+A720-A7FF;
+}
+@font-face {
+  font-family: "Roboto Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./media/roboto-latin-wght-italic.woff2") format("woff2-variations");
+  unicode-range:
+    U+0000-00FF,
+    U+0131,
+    U+0152-0153,
+    U+02BB-02BC,
+    U+02C6,
+    U+02DA,
+    U+02DC,
+    U+0304,
+    U+0308,
+    U+0329,
+    U+2000-206F,
+    U+20AC,
+    U+2122,
+    U+2191,
+    U+2193,
+    U+2212,
+    U+2215,
+    U+FEFF,
+    U+FFFD;
+}
+
+/* src/fonts/material-symbols.css */
+@font-face {
+  font-family: "Material Symbols Outlined";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("./media/material-symbols-outlined.woff2") format("woff2");
+}
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga";
+}
+@font-face {
+  font-family: "Material Symbols Rounded";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("./media/material-symbols-rounded.woff2") format("woff2");
+}
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga";
+}
+@font-face {
+  font-family: "Material Symbols Sharp";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("./media/material-symbols-sharp.woff2") format("woff2");
+}
+.material-symbols-sharp {
+  font-family: "Material Symbols Sharp";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga";
+}
+
+/* node_modules/firacode/distr/fira_code.css */
+@font-face {
+  font-family: "Fira Code";
+  src: url("./media/FiraCode-Light.woff2") format("woff2"), url("./media/FiraCode-Light.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Fira Code";
+  src: url("./media/FiraCode-Regular.woff2") format("woff2"), url("./media/FiraCode-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Fira Code";
+  src: url("./media/FiraCode-Medium.woff2") format("woff2"), url("./media/FiraCode-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Fira Code";
+  src: url("./media/FiraCode-SemiBold.woff2") format("woff2"), url("./media/FiraCode-SemiBold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Fira Code";
+  src: url("./media/FiraCode-Bold.woff2") format("woff2"), url("./media/FiraCode-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Fira Code VF";
+  src: url("./media/FiraCode-VF.woff2") format("woff2-variations"), url("./media/FiraCode-VF.woff") format("woff-variations");
+  font-weight: 300 700;
+  font-style: normal;
+}
+
 /* src/styles.css */
 /*! tailwindcss v4.1.17 | MIT License | https://tailwindcss.com */
 @layer properties;
@@ -777,6 +1583,12 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .ml-auto {
   margin-left: auto;
+}
+#placeos .line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 #placeos .\!flex {
   display: flex !important;
@@ -3346,6 +4158,7 @@ input:where([type=button], [type=reset], [type=submit]),
   --bg-dark: #f0f0f0;
   --bg: #212121;
   --font:
+    "Roboto Variable",
     "Roboto",
     "Verdana",
     "Helvetica Neue",
@@ -3462,6 +4275,7 @@ body {
   color: hsl(0, 0%, 0%);
   color: var(--base-content);
   font-family:
+    "Roboto Variable",
     "Roboto",
     "Verdana",
     "Helvetica Neue",
@@ -3635,6 +4449,7 @@ body {
   background: #424242;
   margin: 0;
   font-family:
+    "Roboto Variable",
     Roboto,
     "Helvetica Neue",
     sans-serif;
@@ -3642,6 +4457,7 @@ body {
 .font-heading {
   font-family:
     "Young",
+    "Roboto Variable",
     "Roboto",
     "Verdana",
     "Helvetica Neue",
@@ -3760,6 +4576,7 @@ body {
   color: hsl(0, 0%, 0%);
   color: var(--base-content);
   font-family:
+    "Roboto Variable",
     "Roboto",
     "Verdana",
     "Helvetica Neue",
@@ -4068,6 +4885,7 @@ table:not([role=grid]) td.small {
 .font-heading {
   font-family:
     "Young",
+    "Roboto Variable",
     "Roboto",
     sans-serif;
   font-weight: 500;
@@ -5043,7 +5861,11 @@ html {
 .mat-typography .mat-h1,
 .mat-typography .mat-headline-5,
 .mat-typography h1 {
-  font: 400 24px / 32px Roboto, sans-serif;
+  font:
+    400 24px / 32px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: normal;
   margin: 0 0 16px;
 }
@@ -5052,7 +5874,11 @@ html {
 .mat-typography .mat-h2,
 .mat-typography .mat-headline-6,
 .mat-typography h2 {
-  font: 500 20px / 32px Roboto, sans-serif;
+  font:
+    500 20px / 32px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: 0.0125em;
   margin: 0 0 16px;
 }
@@ -5061,7 +5887,11 @@ html {
 .mat-typography .mat-h3,
 .mat-typography .mat-subtitle-1,
 .mat-typography h3 {
-  font: 400 16px / 28px Roboto, sans-serif;
+  font:
+    400 16px / 28px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: 0.009375em;
   margin: 0 0 16px;
 }
@@ -5070,27 +5900,43 @@ html {
 .mat-typography .mat-h4,
 .mat-typography .mat-body-1,
 .mat-typography h4 {
-  font: 400 16px / 24px Roboto, sans-serif;
+  font:
+    400 16px / 24px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: 0.03125em;
   margin: 0 0 16px;
 }
 .mat-h5,
 .mat-typography .mat-h5,
 .mat-typography h5 {
-  font: 400 calc(14px * 0.83) / 20px Roboto, sans-serif;
+  font:
+    400 calc(14px * 0.83) / 20px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   margin: 0 0 12px;
 }
 .mat-h6,
 .mat-typography .mat-h6,
 .mat-typography h6 {
-  font: 400 calc(14px * 0.67) / 20px Roboto, sans-serif;
+  font:
+    400 calc(14px * 0.67) / 20px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   margin: 0 0 12px;
 }
 .mat-body-strong,
 .mat-subtitle-2,
 .mat-typography .mat-body-strong,
 .mat-typography .mat-subtitle-2 {
-  font: 500 14px / 22px Roboto, sans-serif;
+  font:
+    500 14px / 22px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: 0.0071428571em;
 }
 .mat-body,
@@ -5098,7 +5944,11 @@ html {
 .mat-typography .mat-body,
 .mat-typography .mat-body-2,
 .mat-typography {
-  font: 400 14px / 20px Roboto, sans-serif;
+  font:
+    400 14px / 20px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: 0.0178571429em;
 }
 .mat-body p,
@@ -5112,30 +5962,50 @@ html {
 .mat-caption,
 .mat-typography .mat-small,
 .mat-typography .mat-caption {
-  font: 400 12px / 20px Roboto, sans-serif;
+  font:
+    400 12px / 20px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: 0.0333333333em;
 }
 .mat-headline-1,
 .mat-typography .mat-headline-1 {
-  font: 300 96px / 96px Roboto, sans-serif;
+  font:
+    300 96px / 96px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: -0.015625em;
   margin: 0 0 56px;
 }
 .mat-headline-2,
 .mat-typography .mat-headline-2 {
-  font: 300 60px / 60px Roboto, sans-serif;
+  font:
+    300 60px / 60px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: -0.0083333333em;
   margin: 0 0 64px;
 }
 .mat-headline-3,
 .mat-typography .mat-headline-3 {
-  font: 400 48px / 50px Roboto, sans-serif;
+  font:
+    400 48px / 50px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: normal;
   margin: 0 0 64px;
 }
 .mat-headline-4,
 .mat-typography .mat-headline-4 {
-  font: 400 34px / 40px Roboto, sans-serif;
+  font:
+    400 34px / 40px "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   letter-spacing: 0.0073529412em;
   margin: 0 0 64px;
 }
@@ -5305,12 +6175,20 @@ html .mat-warn {
   --mat-pseudo-checkbox-minimal-disabled-selected-checkmark-color: rgba(0, 0, 0, 0.331);
 }
 html {
-  --mat-option-label-text-font: Roboto, sans-serif;
+  --mat-option-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-option-label-text-line-height: 24px;
   --mat-option-label-text-size: 16px;
   --mat-option-label-text-tracking: 0.03125em;
   --mat-option-label-text-weight: 400;
-  --mat-optgroup-label-text-font: Roboto, sans-serif;
+  --mat-optgroup-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-optgroup-label-text-line-height: 24px;
   --mat-optgroup-label-text-size: 16px;
   --mat-optgroup-label-text-tracking: 0.03125em;
@@ -5387,7 +6265,11 @@ html .mat-mdc-checkbox.mat-warn {
 html {
   --mat-checkbox-touch-target-display: block;
   --mat-checkbox-state-layer-size: 40px;
-  --mat-checkbox-label-text-font: Roboto, sans-serif;
+  --mat-checkbox-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-checkbox-label-text-line-height: 20px;
   --mat-checkbox-label-text-size: 14px;
   --mat-checkbox-label-text-tracking: 0.0178571429em;
@@ -5511,7 +6393,11 @@ html .mat-mdc-chip.mat-mdc-standard-chip {
   --mat-chip-container-height: 32px;
 }
 html .mat-mdc-standard-chip {
-  --mat-chip-label-text-font: Roboto, sans-serif;
+  --mat-chip-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-chip-label-text-line-height: 20px;
   --mat-chip-label-text-size: 14px;
   --mat-chip-label-text-tracking: 0.0178571429em;
@@ -5534,12 +6420,20 @@ html {
   --mat-dialog-container-color: white;
   --mat-dialog-subhead-color: rgba(0, 0, 0, 0.87);
   --mat-dialog-supporting-text-color: rgba(0, 0, 0, 0.54);
-  --mat-dialog-subhead-font: Roboto, sans-serif;
+  --mat-dialog-subhead-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-dialog-subhead-line-height: 32px;
   --mat-dialog-subhead-size: 20px;
   --mat-dialog-subhead-weight: 500;
   --mat-dialog-subhead-tracking: 0.0125em;
-  --mat-dialog-supporting-text-font: Roboto, sans-serif;
+  --mat-dialog-supporting-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-dialog-supporting-text-line-height: 24px;
   --mat-dialog-supporting-text-size: 16px;
   --mat-dialog-supporting-text-weight: 400;
@@ -5632,22 +6526,38 @@ html {
   --mat-form-field-container-vertical-padding: 16px;
   --mat-form-field-filled-with-label-container-padding-top: 24px;
   --mat-form-field-filled-with-label-container-padding-bottom: 8px;
-  --mat-form-field-container-text-font: Roboto, sans-serif;
+  --mat-form-field-container-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-form-field-container-text-line-height: 24px;
   --mat-form-field-container-text-size: 16px;
   --mat-form-field-container-text-tracking: 0.03125em;
   --mat-form-field-container-text-weight: 400;
   --mat-form-field-outlined-label-text-populated-size: 16px;
-  --mat-form-field-subscript-text-font: Roboto, sans-serif;
+  --mat-form-field-subscript-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-form-field-subscript-text-line-height: 20px;
   --mat-form-field-subscript-text-size: 12px;
   --mat-form-field-subscript-text-tracking: 0.0333333333em;
   --mat-form-field-subscript-text-weight: 400;
-  --mat-form-field-filled-label-text-font: Roboto, sans-serif;
+  --mat-form-field-filled-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-form-field-filled-label-text-size: 16px;
   --mat-form-field-filled-label-text-tracking: 0.03125em;
   --mat-form-field-filled-label-text-weight: 400;
-  --mat-form-field-outlined-label-text-font: Roboto, sans-serif;
+  --mat-form-field-outlined-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-form-field-outlined-label-text-size: 16px;
   --mat-form-field-outlined-label-text-tracking: 0.03125em;
   --mat-form-field-outlined-label-text-weight: 400;
@@ -5670,7 +6580,11 @@ html {
   --mat-menu-item-focus-state-layer-color: rgba(0, 0, 0, 0.104);
   --mat-menu-container-color: white;
   --mat-menu-divider-color: rgba(0, 0, 0, 0.12);
-  --mat-menu-item-label-text-font: Roboto, sans-serif;
+  --mat-menu-item-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-menu-item-label-text-size: 16px;
   --mat-menu-item-label-text-tracking: 0.03125em;
   --mat-menu-item-label-text-line-height: 24px;
@@ -5738,7 +6652,11 @@ html .mat-mdc-form-field.mat-warn {
 }
 html {
   --mat-select-arrow-transform: translateY(-8px);
-  --mat-select-trigger-text-font: Roboto, sans-serif;
+  --mat-select-trigger-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-select-trigger-text-line-height: 24px;
   --mat-select-trigger-text-size: 16px;
   --mat-select-trigger-text-tracking: 0.03125em;
@@ -5859,14 +6777,22 @@ html .mat-mdc-slide-toggle.mat-warn {
 html {
   --mat-slide-toggle-state-layer-size: 40px;
   --mat-slide-toggle-touch-target-display: block;
-  --mat-slide-toggle-label-text-font: Roboto, sans-serif;
+  --mat-slide-toggle-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-slide-toggle-label-text-line-height: 20px;
   --mat-slide-toggle-label-text-size: 14px;
   --mat-slide-toggle-label-text-tracking: 0.0178571429em;
   --mat-slide-toggle-label-text-weight: 400;
 }
 html .mat-mdc-slide-toggle {
-  --mat-slide-toggle-label-text-font: Roboto, sans-serif;
+  --mat-slide-toggle-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-slide-toggle-label-text-line-height: 20px;
   --mat-slide-toggle-label-text-size: 14px;
   --mat-slide-toggle-label-text-tracking: 0.0178571429em;
@@ -5877,7 +6803,11 @@ html {
   --mat-snack-bar-container-color: #424242;
   --mat-snack-bar-supporting-text-color: white;
   --mat-snack-bar-button-color: #7986cb;
-  --mat-snack-bar-supporting-text-font: Roboto, sans-serif;
+  --mat-snack-bar-supporting-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-snack-bar-supporting-text-line-height: 20px;
   --mat-snack-bar-supporting-text-size: 14px;
   --mat-snack-bar-supporting-text-weight: 400;
@@ -5954,7 +6884,11 @@ html .mat-mdc-tab-header {
   --mat-tab-container-height: 48px;
 }
 html .mat-mdc-tab-header {
-  --mat-tab-label-text-font: Roboto, sans-serif;
+  --mat-tab-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-tab-label-text-size: 14px;
   --mat-tab-label-text-tracking: 0.0892857143em;
   --mat-tab-label-text-line-height: 36px;
@@ -5965,7 +6899,11 @@ html {
   --mat-tooltip-supporting-text-line-height: 16px;
   --mat-tooltip-container-color: #424242;
   --mat-tooltip-supporting-text-color: white;
-  --mat-tooltip-supporting-text-font: Roboto, sans-serif;
+  --mat-tooltip-supporting-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-tooltip-supporting-text-size: 12px;
   --mat-tooltip-supporting-text-weight: 400;
   --mat-tooltip-supporting-text-tracking: 0.0333333333em;
@@ -6152,27 +7090,47 @@ html {
   --mat-button-text-touch-target-display: block;
   --mat-button-tonal-container-height: 36px;
   --mat-button-tonal-touch-target-display: block;
-  --mat-button-filled-label-text-font: Roboto, sans-serif;
+  --mat-button-filled-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-button-filled-label-text-size: 14px;
   --mat-button-filled-label-text-tracking: 0.0892857143em;
   --mat-button-filled-label-text-transform: none;
   --mat-button-filled-label-text-weight: 500;
-  --mat-button-outlined-label-text-font: Roboto, sans-serif;
+  --mat-button-outlined-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-button-outlined-label-text-size: 14px;
   --mat-button-outlined-label-text-tracking: 0.0892857143em;
   --mat-button-outlined-label-text-transform: none;
   --mat-button-outlined-label-text-weight: 500;
-  --mat-button-protected-label-text-font: Roboto, sans-serif;
+  --mat-button-protected-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-button-protected-label-text-size: 14px;
   --mat-button-protected-label-text-tracking: 0.0892857143em;
   --mat-button-protected-label-text-transform: none;
   --mat-button-protected-label-text-weight: 500;
-  --mat-button-text-label-text-font: Roboto, sans-serif;
+  --mat-button-text-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-button-text-label-text-size: 14px;
   --mat-button-text-label-text-tracking: 0.0892857143em;
   --mat-button-text-label-text-transform: none;
   --mat-button-text-label-text-weight: 500;
-  --mat-button-tonal-label-text-font: Roboto, sans-serif;
+  --mat-button-tonal-label-text-font:
+    "Roboto Variable",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
   --mat-button-tonal-label-text-size: 14px;
   --mat-button-tonal-label-text-tracking: 0.0892857143em;
   --mat-button-tonal-label-text-transform: none;
