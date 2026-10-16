@@ -22,14 +22,13 @@ import { TranslatePipe } from './translate.pipe';
     template: `
         @if (load_error()) {
             <p role="alert">{{ 'COMMON.EDITOR_LOAD_ERROR' | translate }}</p>
-            <button type="button" (click)="resizeEditor()">
+            <button type="button" (click)="reload()">
                 {{ 'COMMON.RETRY' | translate }}
             </button>
         }
         <div
             class="select-initial relative h-128 w-full border border-gray-300"
             editor
-            (window:resize)="resizeEditor()"
             #editor
         ></div>
     `,
@@ -67,9 +66,9 @@ export class DiffViewerComponent
         }
     }
 
-    /** Update sizing of the editor after window has resized */
-    public resizeEditor() {
-        this.timeout('resize', () => this._createEditor(), 100);
+    /** Retry creating the editor after Monaco failed to load */
+    public reload() {
+        this._createEditor();
     }
 
     private async _createEditor() {
@@ -92,6 +91,8 @@ export class DiffViewerComponent
                 fontFamily: `"Fira Code", monospace`,
                 theme: !this._users.dark_mode ? 'vs' : 'vs-dark',
                 readOnly: true,
+                // Monaco watches the container size, so resizes need no rebuild
+                automaticLayout: true,
             },
         );
         this.subscription('editor', () => this._editor.dispose());

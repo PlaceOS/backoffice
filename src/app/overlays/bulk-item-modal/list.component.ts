@@ -91,13 +91,15 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                 }
             </div>
         }
-        <div class="flex max-w-full flex-wrap text-sm">
+        <!-- Virtual rows keep large imports to the visible inputs only -->
+        <div class="flex min-h-80 max-w-full flex-1 text-sm">
             <simple-table
                 [style.min-width]="
                     12.5 *
                         (fields().length + (show_start_modules() ? 1 : 0) + 1) +
                     'rem'
                 "
+                [virtual_row_height]="56"
                 [data]="list()"
                 [columns]="columns()"
             />
@@ -170,7 +172,16 @@ import { TranslatePipe } from '../../ui/translate.pipe';
             </button>
         </ng-template>
     `,
-    styles: [``],
+    styles: [
+        `
+            :host {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                min-height: 0;
+            }
+        `,
+    ],
     imports: [
         FormsModule,
         MatRippleModule,
@@ -244,12 +255,11 @@ export class ListComponent {
         );
     }
 
+    /** Replace only the edited row. Other rows keep their references. */
     public updateItem(index: number, field: string, value: unknown) {
-        this.list.set(
-            this.list().map((item, item_index) =>
-                item_index === index ? { ...item, [field]: value } : item,
-            ),
-        );
+        const list = [...this.list()];
+        list[index] = { ...list[index], [field]: value };
+        this.list.set(list);
     }
 
     public removeItem(index: number) {

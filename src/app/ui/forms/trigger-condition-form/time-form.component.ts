@@ -33,6 +33,9 @@ import { IconComponent } from '../../icon.component';
 import { SettingsToggleComponent } from '../../settings-toggle.component';
 import { TranslatePipe } from '../../translate.pipe';
 
+/** Most timezone options to render. Typing narrows the full list. */
+const TIMEZONE_OPTION_LIMIT = 50;
+
 @Component({
     selector: 'trigger-condition-time-form',
     template: `
@@ -413,7 +416,9 @@ export class TriggerConditionTimeFormComponent
     public updateTimezoneList(tz: string) {
         const tz_lower = (tz || '').toLowerCase();
         this.timezones.set(
-            TIMEZONES_IANA.filter((_) => _.toLowerCase().includes(tz_lower)),
+            TIMEZONES_IANA.filter((_) =>
+                _.toLowerCase().includes(tz_lower),
+            ).slice(0, TIMEZONE_OPTION_LIMIT),
         );
     }
 

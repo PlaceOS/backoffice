@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { ApplicationIcon } from '../common/types';
 import { SafePipe } from './pipes/safe.pipe';
 
@@ -29,6 +29,7 @@ import { SafePipe } from './pipes/safe.pipe';
         `,
     ],
     imports: [SafePipe],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IconComponent {
     public readonly className = input('material-symbols-rounded');
