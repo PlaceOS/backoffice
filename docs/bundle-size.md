@@ -11,12 +11,13 @@ service worker manifest as well. They can add downloads outside that budget.
 
 ## Icon fonts
 
-The fonts in `public/assets` retain all icon names, including names supplied by
-the server. They use weight 400, fill 0, and grade 0. Optical sizing remains
-variable. The source is `material-symbols` 0.39.3, with its license copied beside
-the fonts.
+The fonts in `src/fonts` retain all icon names, including names supplied by
+the server. They use optical size 24, weight 400, fill 0, and grade 0. The app
+does not set `font-variation-settings`. The source is `material-symbols` 0.39.3.
+The build bundles the fonts through `src/fonts/material-symbols.css` with hashed
+names. The license is in `public/assets`.
 
-After updating that package, regenerate the fonts and review the rendered icons:
+After updating `material-symbols`, regenerate the fonts and review the rendered icons:
 
 ```sh
 python3 -m venv /tmp/backoffice-font-tools
@@ -27,6 +28,10 @@ python3 -m venv /tmp/backoffice-font-tools
 Normal builds use the checked-in fonts and do not require Python or network access
 to generate them. Do not add the original variable fonts to the build asset list.
 
+Roboto comes from `@fontsource-variable/roboto` and Fira Code from `firacode`.
+The `styles` list in `project.json` bundles their CSS. Use the font family
+`'Roboto Variable'` for Roboto.
+
 ## Editors and highlighting
 
 Settings and diff editors call `loadMonaco()` before using its API. The loader
@@ -34,7 +39,8 @@ shares concurrent requests, has a 30-second timeout, and permits retry. Componen
 must check whether they were destroyed before creating an editor after the load.
 
 `markdown-languages.ts` lists the existing web languages and aliases explicitly.
-Only `github-dark` is packaged. Add new language loaders there. Importing the
+Only `github-dark` is packaged. Shiki uses the JavaScript regex engine, so the
+Oniguruma wasm is not downloaded. Add new language loaders there. Importing the
 Shiki web preset at runtime also brings its unused theme registry into the build.
 
 ## Themes and caching

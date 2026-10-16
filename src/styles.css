@@ -36,7 +36,9 @@
     --error: #e53935;
     --bg-dark: #f0f0f0;
     --bg: #212121;
-    --font: 'Roboto', 'Verdana', 'Helvetica Neue', Arial, sans-serif;
+    --font:
+        'Roboto Variable', 'Roboto', 'Verdana', 'Helvetica Neue', Arial,
+        sans-serif;
     --heading-font: 'Young', var(--font);
     --mono-font: 'Fira Code', monospace;
 
@@ -358,7 +360,7 @@ body {
 body {
     background: #424242;
     margin: 0;
-    font-family: Roboto, 'Helvetica Neue', sans-serif;
+    font-family: 'Roboto Variable', Roboto, 'Helvetica Neue', sans-serif;
 }
 
 .font-heading {
@@ -776,7 +778,7 @@ table:not([role='grid']) {
 \*=============================================================*/
 /* Typography */
 .font-heading {
-    font-family: 'Young', 'Roboto', sans-serif;
+    font-family: 'Young', 'Roboto Variable', 'Roboto', sans-serif;
     font-weight: 500;
 }
 

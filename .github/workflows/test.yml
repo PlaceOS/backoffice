@@ -3,7 +3,16 @@ name: TEST
 on:
     pull_request:
         branches: [develop]
+        paths-ignore:
+            - 'docs/**'
+            - '**/*.md'
     workflow_call:
+
+# Cancel superseded runs of a pull request. BUILD calls this workflow for
+# pushes; those runs get a unique group, so they never queue or cancel.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
     lint:
@@ -11,15 +20,6 @@ jobs:
         timeout-minutes: 3
         steps:
             - uses: actions/checkout@v4
-
-            - name: Cache Bun dependencies
-              id: cache
-              uses: actions/cache@v5
-              with:
-                  path: ~/.bun/install/cache
-                  key: ${{ runner.os }}-build-${{ hashFiles('**/bun.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-build-
 
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
@@ -38,15 +38,6 @@ jobs:
         steps:
             - uses: actions/checkout@v6
 
-            - name: Cache Bun dependencies
-              id: cache
-              uses: actions/cache@v5
-              with:
-                  path: ~/.bun/install/cache
-                  key: ${{ runner.os }}-build-${{ hashFiles('**/bun.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-build-
-
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
               with:
@@ -55,14 +46,14 @@ jobs:
             - name: Install dependencies
               run: bun install --frozen-lockfile
 
+            # Nx skips the tests when their inputs match a cached run.
             - name: Cache nx build cache
-              id: cache-nx
               uses: actions/cache@v5
               with:
-                  path: node_modules/.cache/nx
-                  key: ${{ runner.os }}-nx-${{ hashFiles('**/bun.lock') }}
+                  path: .nx/cache
+                  key: ${{ runner.os }}-nx-test-${{ github.sha }}
                   restore-keys: |
-                      ${{ runner.os }}-nx-
+                      ${{ runner.os }}-nx-test-
 
             - name: Setup version
               run: bun run postinstall
@@ -73,17 +64,12 @@ jobs:
     e2e-test:
         runs-on: ubuntu-latest
         timeout-minutes: 25
+        env:
+            # Pull requests to develop and pushes to develop run Chromium only.
+            # Other branches run every browser.
+            CHROMIUM_ONLY: ${{ github.base_ref == 'develop' || github.ref == 'refs/heads/develop' }}
         steps:
             - uses: actions/checkout@v6
-
-            - name: Cache Bun dependencies
-              id: cache
-              uses: actions/cache@v5
-              with:
-                  path: ~/.bun/install/cache
-                  key: ${{ runner.os }}-build-${{ hashFiles('**/bun.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-build-
 
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
@@ -93,23 +79,31 @@ jobs:
             - name: Install dependencies
               run: bun install --frozen-lockfile
 
-            - name: Cache nx build cache
-              id: cache-nx
-              uses: actions/cache@v5
-              with:
-                  path: node_modules/.cache/nx
-                  key: ${{ runner.os }}-nx-${{ hashFiles('**/bun.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-nx-
-
             - name: Setup version
               run: bun run postinstall
 
+            - name: Get Playwright version
+              id: playwright
+              run: echo "version=$(bunx playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Playwright browsers
+              id: playwright-cache
+              uses: actions/cache@v5
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ steps.playwright.outputs.version }}-${{ env.CHROMIUM_ONLY == 'true' && 'chromium' || 'all' }}
+
             - name: Install Playwright browsers
-              run: bunx playwright install --with-deps
+              if: steps.playwright-cache.outputs.cache-hit != 'true'
+              run: bunx playwright install --with-deps ${{ env.CHROMIUM_ONLY == 'true' && 'chromium' || '' }}
+
+            # The cache holds the browsers only. The system packages still need to be installed.
+            - name: Install Playwright system dependencies
+              if: steps.playwright-cache.outputs.cache-hit == 'true'
+              run: bunx playwright install-deps ${{ env.CHROMIUM_ONLY == 'true' && 'chromium' || '' }}
 
             - name: Run E2E tests
-              run: bunx nx e2e e2e ${{ (github.base_ref == 'develop' || github.ref == 'refs/heads/develop') && '-- --project=chromium --project=mobile-chrome' || '' }}
+              run: bunx nx e2e e2e ${{ env.CHROMIUM_ONLY == 'true' && '-- --project=chromium --project=mobile-chrome' || '' }}
 
             - name: Upload Playwright report
               uses: actions/upload-artifact@v4

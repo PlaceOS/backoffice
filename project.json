@@ -27,21 +27,6 @@
                         "output": "/"
                     },
                     {
-                        "glob": "**/*.woff2",
-                        "input": "node_modules/firacode/distr",
-                        "output": "/assets/firacode"
-                    },
-                    {
-                        "glob": "**/*.woff",
-                        "input": "node_modules/firacode/distr",
-                        "output": "/assets/firacode"
-                    },
-                    {
-                        "glob": "**/*.css",
-                        "input": "node_modules/firacode/distr",
-                        "output": "/assets/firacode"
-                    },
-                    {
                         "glob": "**/*",
                         "input": "node_modules/monaco-editor/min/",
                         "output": "./assets/monaco/min/"
@@ -57,7 +42,14 @@
                         "glob": "*worker.js"
                     }
                 ],
-                "styles": ["./src/styles.css", "./src/material-theme.scss"]
+                "styles": [
+                    "./node_modules/@fontsource-variable/roboto/index.css",
+                    "./node_modules/@fontsource-variable/roboto/wght-italic.css",
+                    "./src/fonts/material-symbols.css",
+                    "./node_modules/firacode/distr/fira_code.css",
+                    "./src/styles.css",
+                    "./src/material-theme.scss"
+                ]
             },
             "configurations": {
                 "production": {
@@ -65,7 +57,7 @@
                     "budgets": [
                         {
                             "type": "initial",
-                            "maximumWarning": "1mb",
+                            "maximumWarning": "750kb",
                             "maximumError": "1.5mb"
                         },
                         {

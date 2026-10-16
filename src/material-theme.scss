@@ -12,7 +12,10 @@ $theme: mat.m2-define-light-theme(
                     A400
                 ),
         ),
-        typography: mat.m2-define-typography-config(),
+        typography: mat.m2-define-typography-config(
+                $font-family:
+                    "'Roboto Variable', Roboto, 'Helvetica Neue', sans-serif",
+            ),
         density: 0,
     )
 );

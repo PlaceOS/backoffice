@@ -8,7 +8,7 @@
         "start": "nx serve",
         "build": "nx build",
         "test": "nx test",
-        "test:ci": "nx test backoffice --runInBand",
+        "test:ci": "nx test backoffice",
         "lint": "nx lint backoffice",
         "e2e": "nx e2e backoffice"
     },
@@ -40,6 +40,7 @@
         "@angular/material": "22.1.8",
         "@angular/pwa": "22.1.9",
         "@eslint/js": "^9.8.0",
+        "@fontsource-variable/roboto": "^5.3.0",
         "@ngneat/spectator": "^22.1.0",
         "@nx/angular": "23.3.0",
         "@nx/devkit": "23.3.0",

@@ -40,6 +40,11 @@ const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
 export default defineConfig({
     ...nxE2EPreset(__filename, { testDir: './src' }),
 
+    /* The preset uses 1 worker on CI. Each page has its own mock backend, so
+       tests can run in parallel. GitHub runners have 4 vCPUs; keep one free
+       for the dev server. */
+    workers: process.env['CI'] ? 3 : undefined,
+
     /* Test timeout - increase for mock mode as it may need longer to initialize */
     timeout: 60000,
 
