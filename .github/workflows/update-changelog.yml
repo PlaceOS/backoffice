@@ -29,7 +29,6 @@ jobs:
                   args: --verbose
               env:
                   OUTPUT: ${{ runner.temp }}/CHANGELOG.md
-                  GITHUB_REPO: ${{ github.repository }}
 
             - name: Checkout develop
               uses: actions/checkout@v6

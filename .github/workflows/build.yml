@@ -38,9 +38,9 @@ jobs:
               with:
                   tool: git-cliff@2.13.1
 
+            # Do not set GITHUB_REPO. cliff.toml uses no GitHub metadata, and
+            # the unauthenticated metadata requests hit the API rate limit.
             - name: Generate application changelog
-              env:
-                  GITHUB_REPO: ${{ github.repository }}
               run: git-cliff --config cliff.toml --output "${RUNNER_TEMP}/CHANGELOG.md"
 
             - name: Extract branch name
