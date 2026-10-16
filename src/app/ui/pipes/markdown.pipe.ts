@@ -5,14 +5,16 @@ import {
     createBundledHighlighter,
     createSingletonShorthands,
 } from 'shiki/core';
-import { createOnigurumaEngine } from 'shiki/engine/oniguruma';
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 import { markdownLanguages } from './markdown-languages';
 
 // Keep existing language support, but package only the theme we render.
+// The JavaScript regex engine avoids the Oniguruma wasm download. Forgiving
+// mode skips any grammar pattern it cannot convert instead of failing.
 const createHighlighter = createBundledHighlighter({
     langs: markdownLanguages,
     themes: { 'github-dark': () => import('shiki/themes/github-dark.mjs') },
-    engine: () => createOnigurumaEngine(import('shiki/wasm')),
+    engine: () => createJavaScriptRegexEngine({ forgiving: true }),
 });
 const { codeToHtml } = createSingletonShorthands(createHighlighter);
 

@@ -21,6 +21,7 @@ import {
     updateModule,
 } from '@placeos/ts-client';
 import {
+    clearSupportModuleCache,
     isSubsystemUser,
     querySupportSystems as querySystems,
 } from '../common/support-access';
@@ -379,9 +380,7 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
     public readonly form = form(this.formModel, applyModuleFormSchema);
     public readonly loading = signal<string | null>(null);
     /** Selected driver. Only changes when a new driver is picked. */
-    private readonly _selected_driver = computed(
-        () => this.formModel().driver,
-    );
+    private readonly _selected_driver = computed(() => this.formModel().driver);
     /** ID of the driver whose defaults have been applied to the form */
     private _defaults_driver_id = '';
     public heading = i18n(
@@ -530,6 +529,7 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
                           form_item as unknown as PlaceModule,
                       )
                     : addModule(form_item as unknown as PlaceModule));
+                clearSupportModuleCache();
                 this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item: _item } });
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));

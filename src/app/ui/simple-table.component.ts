@@ -5,15 +5,20 @@ import {
 } from '@angular/cdk/scrolling';
 import { NgTemplateOutlet } from '@angular/common';
 import {
+    ChangeDetectionStrategy,
     Component,
+    DestroyRef,
+    ElementRef,
     Signal,
     TemplateRef,
     computed,
     effect,
+    inject,
     input,
     linkedSignal,
     output,
     signal,
+    untracked,
     viewChild,
 } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -32,6 +37,14 @@ export interface TableColumn {
 }
 
 type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
+
+/** Shared collator for the default sort. Same order as `localeCompare`. */
+const COLLATOR = new Intl.Collator();
+
+/** Text key for the default sort of non-number values */
+function sortKey(value: unknown): string {
+    return typeof value === 'string' ? value : (JSON.stringify(value) ?? '');
+}
 
 @Component({
     selector: 'simple-table',
@@ -218,8 +231,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                     "
                     [class.border-b]="i !== data_length() - 1"
                     [style.background]="color()[i]"
-                    (mouseenter)="enter_row.emit(i)"
-                    (touchstart)="enter_row.emit(i)"
+                    [attr.data-row]="i"
                 >
                     <mat-checkbox
                         [checked]="selected().includes(i)"
@@ -242,8 +254,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
                     [class.border-b]="i !== data_length() - 1"
                     [class.border-r]="j !== active_columns().length - 1"
                     [class.width]="column.size"
-                    (mouseenter)="enter_row.emit(i)"
-                    (touchstart)="enter_row.emit(i)"
+                    [attr.data-row]="i"
                     [style.background]="color()[i]"
                 >
                     @switch (columnType(column)) {
@@ -318,6 +329,7 @@ type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
         IconComponent,
         NgTemplateOutlet,
     ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SimpleTableComponent<T = Record<string, unknown>> {
     // eslint-disable-next-line @angular-eslint/no-input-rename
@@ -360,7 +372,8 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
 
     // Computed data view with filtering and sorting
     public readonly data_view = computed(() => {
-        let data = [...this._data()];
+        // Returned as is when there is no filter and no sort
+        let data = this._data();
         const filter_str = this.filter()?.toLowerCase();
         const current_sort = this.sort();
 
@@ -379,24 +392,27 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
 
         // Apply sort
         if (current_sort && data.length) {
-            const type = typeof data[0][current_sort.key];
-            const default_fn =
-                type === 'number'
-                    ? (a, b) => a - b
-                    : (a, b) => {
-                          const a_value = JSON.stringify(a);
-                          const b_value = JSON.stringify(b);
-                          return a_value?.localeCompare(b_value);
-                      };
-            data = data.sort((a, b) => {
-                const sort_fn =
-                    this.column(current_sort.key)?.sort_fn || default_fn;
-                const result = sort_fn(
-                    a[current_sort.key],
-                    b[current_sort.key],
+            const { key, reverse } = current_sort;
+            const direction = reverse ? -1 : 1;
+            const sort_fn = this.column(key)?.sort_fn;
+            if (sort_fn) {
+                data = [...data].sort(
+                    (a, b) => direction * sort_fn(a[key], b[key]),
                 );
-                return current_sort.reverse ? -result : result;
-            });
+            } else if (typeof data[0][key] === 'number') {
+                data = [...data].sort((a, b) => direction * (a[key] - b[key]));
+            } else {
+                // Build each text key once, not once per comparison
+                const keyed = data.map((row) => ({
+                    row,
+                    sort_key: sortKey(row[key]),
+                }));
+                keyed.sort(
+                    (a, b) =>
+                        direction * COLLATOR.compare(a.sort_key, b.sort_key),
+                );
+                data = keyed.map((item) => item.row);
+            }
         }
 
         return data;
@@ -414,7 +430,33 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
         return column.content as TemplateRef<unknown>;
     }
 
+    private readonly _el = inject<ElementRef<HTMLElement>>(ElementRef);
+    private _hover_row = -1;
+
     constructor() {
+        // One native listener for row hover. Template listeners on each cell
+        // would schedule an app tick per event; this emits only on a new row.
+        const el = this._el.nativeElement;
+        const onEnter = (event: Event) => {
+            const cell = (event.target as Element).closest?.('[data-row]');
+            const row = cell ? +cell.getAttribute('data-row') : -1;
+            if (
+                row < 0 ||
+                (event.type === 'mouseover' && row === this._hover_row)
+            )
+                return;
+            this._hover_row = row;
+            this.enter_row.emit(row);
+        };
+        const onLeave = () => (this._hover_row = -1);
+        el.addEventListener('mouseover', onEnter);
+        el.addEventListener('touchstart', onEnter, { passive: true });
+        el.addEventListener('mouseleave', onLeave);
+        inject(DestroyRef).onDestroy(() => {
+            el.removeEventListener('mouseover', onEnter);
+            el.removeEventListener('touchstart', onEnter);
+            el.removeEventListener('mouseleave', onLeave);
+        });
         // Flex layouts can gain their final height after the viewport is created.
         effect((onCleanup) => {
             const viewport = this._viewport();
@@ -459,19 +501,33 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
             );
         });
 
-        // Reset page and update pagination info when data view changes
+        // A new filter or sort changes which row sits at each index,
+        // so clear the selection and go back to the top.
         effect(() => {
-            const data = this.data_view();
+            this.filter();
+            this.sort();
+            untracked(() => {
+                this.selected.set([]);
+                this.page.set(0);
+                this._viewport()?.scrollToIndex(0);
+            });
+        });
+
+        // New data (e.g. a poll) keeps the selection and page where possible
+        effect(() => {
+            const count = this.data_view().length;
             const page_size_value = this.page_size();
-
-            this.selected.set([]);
-            this.page.set(0);
-            this._viewport()?.scrollToIndex(0);
-
-            if (page_size_value) {
-                this.total_count.set(data.length);
-                this.total_pages.set(Math.ceil(data.length / page_size_value));
-            }
+            untracked(() => {
+                const selected = this.selected();
+                if (selected.some((i) => i >= count)) {
+                    this.selected.set(selected.filter((i) => i < count));
+                }
+                if (!page_size_value) return;
+                const pages = Math.ceil(count / page_size_value);
+                this.total_count.set(count);
+                this.total_pages.set(pages);
+                if (this.page() >= pages) this.page.set(Math.max(pages - 1, 0));
+            });
         });
     }
 

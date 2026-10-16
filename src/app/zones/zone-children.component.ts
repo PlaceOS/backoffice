@@ -14,7 +14,7 @@ import { ZonesStateService } from './zones-state.service';
 @Component({
     selector: 'zone-children',
     template: `
-        <div class="p-4">
+        <div class="flex h-full min-h-0 w-full flex-col p-4">
             <div class="flex items-center">
                 <mat-form-field class="flex-1" appearance="outline">
                     <div class="prefix" matPrefix>
@@ -36,7 +36,8 @@ import { ZonesStateService } from './zones-state.service';
                 [class.opacity-0]="!loading()"
             />
             <simple-table
-                class="block min-w-lg text-sm"
+                class="block min-h-0 w-full min-w-lg flex-1 text-sm"
+                [virtual_row_height]="64"
                 [data]="children()"
                 [columns]="[
                     {
@@ -68,7 +69,7 @@ import { ZonesStateService } from './zones-state.service';
             </ng-template>
             <ng-template #description_template let-data="data">
                 <div
-                    class="w-full overflow-hidden px-4 py-2 text-xs select-text"
+                    class="line-clamp-3 w-full overflow-hidden px-4 py-2 text-xs select-text"
                 >
                     {{ data }}
                     @if (!data) {

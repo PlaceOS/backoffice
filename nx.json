@@ -1,6 +1,7 @@
 {
     "$schema": "./node_modules/nx/schemas/nx-schema.json",
-    "defaultBase": "trunk",
+    "defaultBase": "develop",
+    "cacheDirectory": ".nx/cache",
     "namedInputs": {
         "default": ["{projectRoot}/**/*", "sharedGlobals"],
         "production": [
@@ -9,9 +10,11 @@
             "!{projectRoot}/eslint.config.mjs",
             "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
             "!{projectRoot}/tsconfig.spec.json",
-            "!{projectRoot}/src/test-setup.[jt]s"
+            "!{projectRoot}/src/test-setup.[jt]s",
+            "!{projectRoot}/docs/**/*",
+            "!{projectRoot}/user-stories/**/*"
         ],
-        "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
+        "sharedGlobals": []
     },
     "targetDefaults": {
         "@angular/build:application": {

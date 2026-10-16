@@ -13,14 +13,20 @@ from fontTools.varLib.instancer import instantiateVariableFont
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "node_modules/material-symbols"
-DESTINATION = ROOT / "public/assets"
+# The fonts are bundled through src/fonts/material-symbols.css. The license
+# stays in public/assets so that it ships with the app.
+DESTINATION = ROOT / "src/fonts"
+LICENSE_DESTINATION = ROOT / "public/assets"
 
 for style in ("rounded", "outlined", "sharp"):
     name = f"material-symbols-{style}.woff2"
     font = TTFont(SOURCE / name, recalcTimestamp=False)
-    # Keep optical sizing. The app uses normal weight and unfilled icons.
-    instantiateVariableFont(font, {"wght": 400, "FILL": 0, "GRAD": 0}, inplace=True)
+    # The app does not set font-variation-settings, so pin every axis to its
+    # default: 24px optical size, normal weight, unfilled, no grade.
+    instantiateVariableFont(
+        font, {"opsz": 24, "wght": 400, "FILL": 0, "GRAD": 0}, inplace=True
+    )
     font.save(DESTINATION / name)
     print(f"{name}: {(DESTINATION / name).stat().st_size:,} bytes")
 
-copyfile(SOURCE / "LICENSE", DESTINATION / "material-symbols-LICENSE.txt")
+copyfile(SOURCE / "LICENSE", LICENSE_DESTINATION / "material-symbols-LICENSE.txt")

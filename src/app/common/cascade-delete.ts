@@ -106,22 +106,32 @@ const emptyPlan = (): CascadePlan => ({
     steps: [],
 });
 
-/** Runs `fn` over `list` with at most `limit` requests in flight. */
-async function mapLimit<T, R>(
+/**
+ * Runs `fn` over `list` in order with at most `limit` requests in flight.
+ * After the first failure no new items start; it rejects with that error once
+ * the requests in flight settle, so callers see everything that happened.
+ */
+export async function mapLimit<T, R>(
     list: T[],
     limit: number,
     fn: (item: T) => Promise<R>,
 ): Promise<R[]> {
     const results: R[] = new Array(list.length);
     let next_index = 0;
+    let failure: { error: unknown } | null = null;
     const worker = async () => {
-        while (next_index < list.length) {
+        while (!failure && next_index < list.length) {
             const index = next_index++;
-            results[index] = await fn(list[index]);
+            try {
+                results[index] = await fn(list[index]);
+            } catch (error) {
+                failure ||= { error };
+            }
         }
     };
     const size = Math.min(limit, list.length);
     await Promise.all(new Array(size).fill(0).map(() => worker()));
+    if (failure) throw failure.error;
     return results;
 }
 
@@ -463,27 +473,34 @@ export async function planDomainCascade(
     return plan;
 }
 
+/** System removals run at once. Each is independent of the others. */
+const SYSTEM_REMOVAL_CONCURRENCY = 4;
+
 /**
- * Executes a plan's steps in order. Steps run sequentially — each system
- * removal cascades work on the server, and sequential execution gives honest
- * progress and lets a partial failure be reported precisely.
+ * Executes a plan's steps in order. Neighbouring system removals do not
+ * depend on each other, so they run a few at a time; every other step runs on
+ * its own. Each system removal cascades work on the server, which is why the
+ * pool stays small.
  *
  * The run stops at the first failure. Steps are ordered so that later ones
  * depend on earlier ones having gone: `planDomainCascade` appends the org zone
  * after the systems inside it, so carrying on past a failed system removal
- * would delete the zone out from under it. Everything after the failure is
- * reported as skipped rather than attempted.
+ * would delete the zone out from under it. No new step starts after a
+ * failure, removals already in flight finish, and everything not attempted is
+ * reported as skipped.
  */
 export async function runCascade(
     plan: CascadePlan,
     progress: (message: string) => void = () => undefined,
 ): Promise<CascadeOutcome> {
     const outcome: CascadeOutcome = { removed: [], failures: [], skipped: [] };
-    const total = plan.steps.length;
-    for (const [index, step] of plan.steps.entries()) {
+    const steps = plan.steps;
+    const total = steps.length;
+    const runStep = async (index: number) => {
+        const step = steps[index];
         if (outcome.failures.length) {
             outcome.skipped.push(step.resource);
-            continue;
+            return;
         }
         progress(
             i18n('CASCADE.PROGRESS', {
@@ -498,6 +515,20 @@ export async function runCascade(
         } catch (error) {
             outcome.failures.push({ resource: step.resource, error });
         }
+    };
+    // `start` grows by at least one each pass, so this ends after `total`
+    for (let start = 0; start < total; ) {
+        let end = start + 1;
+        if (steps[start].resource.type === 'system') {
+            while (end < total && steps[end].resource.type === 'system') end++;
+        }
+        const indexes = Array.from(
+            { length: end - start },
+            (_, offset) => start + offset,
+        );
+        // `runStep` records failures rather than throwing
+        await mapLimit(indexes, SYSTEM_REMOVAL_CONCURRENCY, runStep);
+        start = end;
     }
     return outcome;
 }

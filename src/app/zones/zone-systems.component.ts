@@ -14,7 +14,7 @@ import { ZonesStateService } from './zones-state.service';
 @Component({
     selector: 'zone-systems',
     template: `
-        <div class="p-4">
+        <div class="flex h-full min-h-0 w-full flex-col p-4">
             <div class="flex">
                 <mat-form-field class="flex-1" appearance="outline">
                     <div class="prefix" matPrefix>
@@ -36,7 +36,8 @@ import { ZonesStateService } from './zones-state.service';
                 [class.opacity-0]="!loading()"
             />
             <simple-table
-                class="block min-w-lg text-sm"
+                class="block min-h-0 w-full min-w-lg flex-1 text-sm"
+                [virtual_row_height]="64"
                 [data]="systems()"
                 [columns]="[
                     {
@@ -106,12 +107,17 @@ export class ZoneSystemsComponent {
     public readonly loading = this._state.loading;
     private readonly _systems = this._state.systems;
 
-    public readonly systems = computed(() => {
-        const filter = this.filter().toLowerCase();
-        const systems = this._systems().map((sys) => ({
+    /** Rows with a module count. Built only when the systems change. */
+    private readonly _rows = computed(() =>
+        this._systems().map((sys) => ({
             ...sys,
             module_count: sys.modules?.length || 0,
-        }));
+        })),
+    );
+
+    public readonly systems = computed(() => {
+        const filter = this.filter().toLowerCase();
+        const systems = this._rows();
         return !filter
             ? systems
             : systems.filter((sys) => sys.name.toLowerCase().includes(filter));

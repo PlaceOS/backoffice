@@ -4,6 +4,7 @@ import {
     effect,
     inject,
     input,
+    linkedSignal,
     model,
     OnInit,
     signal,
@@ -306,16 +307,31 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         return count;
     });
 
-    /** Whether a settings group has errors */
-    public readonly has_errors = computed(() => {
-        this.changed();
-        for (const key in this.form()) {
-            if (this.settingError(+key.replace('settings', ''))) {
-                return true;
+    /**
+     * YAML error for each form key, e.g. `settings0`.
+     * Only levels whose text changed are parsed again.
+     */
+    private readonly _setting_errors = linkedSignal<
+        HashMap,
+        HashMap<{ yaml: string } | null>
+    >({
+        source: this.form,
+        computation: (form, previous) => {
+            const errors: HashMap<{ yaml: string } | null> = {};
+            for (const key in form) {
+                errors[key] =
+                    previous && previous.source[key] === form[key]
+                        ? previous.value[key]
+                        : validateYAML({ value: form[key] } as never);
             }
-        }
-        return false;
+            return errors;
+        },
     });
+
+    /** Whether a settings group has errors */
+    public readonly has_errors = computed(() =>
+        Object.values(this._setting_errors()).some(Boolean),
+    );
 
     public readonly levels = computed(() => {
         const levels: Identity[] = [
@@ -395,9 +411,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
     }
 
     public settingError(level: number) {
-        return validateYAML({
-            value: this.settingValue(level),
-        } as never) as { yaml?: string } | null;
+        return this._setting_errors()[`settings${level}`] ?? null;
     }
 
     public updateSetting(level: number, value: string) {

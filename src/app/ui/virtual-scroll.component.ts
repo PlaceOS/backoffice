@@ -1,6 +1,7 @@
 import { NgTemplateOutlet, SlicePipe } from '@angular/common';
 import {
     AfterViewInit,
+    ChangeDetectionStrategy,
     Component,
     computed,
     ElementRef,
@@ -16,11 +17,7 @@ import {
 @Component({
     selector: 'virtual-scroll',
     template: `
-        <div
-            #scroll_container
-            class="relative h-full w-full overflow-auto"
-            (scroll)="updateOffsets()"
-        >
+        <div #scroll_container class="relative h-full w-full overflow-auto">
             <div
                 scroll-fill
                 class="w-full"
@@ -55,6 +52,7 @@ import {
         `,
     ],
     imports: [NgTemplateOutlet, SlicePipe],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VirtualScrollComponent implements AfterViewInit, OnDestroy {
     public readonly items = input<unknown[]>([]);
@@ -80,6 +78,7 @@ export class VirtualScrollComponent implements AfterViewInit, OnDestroy {
     private _scroll_container_el =
         viewChild<ElementRef<HTMLDivElement>>('scroll_container');
     private _resize_observer: ResizeObserver;
+    private readonly _on_scroll = () => this.updateOffsets();
 
     public ngAfterViewInit() {
         this.updateContainer();
@@ -87,18 +86,30 @@ export class VirtualScrollComponent implements AfterViewInit, OnDestroy {
             this.updateContainer(),
         );
         this._resize_observer.observe(this._el.nativeElement);
+        // Native listener so scroll events do not schedule a tick on their own
+        this._scroll_container_el()?.nativeElement.addEventListener(
+            'scroll',
+            this._on_scroll,
+            { passive: true },
+        );
     }
 
     public ngOnDestroy() {
         this._resize_observer?.disconnect();
+        this._scroll_container_el()?.nativeElement.removeEventListener(
+            'scroll',
+            this._on_scroll,
+        );
     }
 
+    /** Update the first visible item. Only writes state when it changes. */
     public updateOffsets() {
         const el = this._scroll_container_el()?.nativeElement;
         if (!el) return;
-        const scroll_top = el.scrollTop;
-        this.offset.set(Math.floor(scroll_top / this.item_size()));
-        this.scrolled.emit([this.offset(), this.offset() + this.range()]);
+        const offset = Math.floor(el.scrollTop / this.item_size());
+        if (offset === this.offset()) return;
+        this.offset.set(offset);
+        this.scrolled.emit([offset, offset + this.range()]);
     }
 
     public updateContainer() {

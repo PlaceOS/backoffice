@@ -4,7 +4,6 @@ import {
     PlaceSourceResyncStatus,
     PlaceZone,
     queryZones,
-    showZone,
     sourceResync,
     sourceResyncStatus,
 } from '@placeos/ts-client';
@@ -13,6 +12,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AsyncHandler } from '../common/async-handler.class';
+import { mapLimit } from '../common/cascade-delete';
 import { readError } from '../common/errors';
 import { csvToJson, downloadFile, jsonToCsv } from '../common/general';
 import {
@@ -25,6 +25,12 @@ import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component
 
 /** How often a running MQTT re-sync is checked on */
 const MQTT_STATUS_POLL_MS = 2000;
+/** Ceiling on pages followed for one zone query */
+const MAX_ZONE_PAGES = 100;
+/** Parent ids sent in one zone query, to keep the URL short */
+const PARENT_IDS_PER_QUERY = 50;
+/** Zone requests sent at once during an export or import */
+const ZONE_CONCURRENCY = 4;
 
 type ZoneTreeExportItem = Record<string, unknown> & {
     id: string;
@@ -81,7 +87,10 @@ function zoneToImportItem(
 async function queryAllZones(query_params: Record<string, unknown> = {}) {
     let response = await queryZones({ ...query_params, limit: 500 });
     const zones = [...response.data];
-    while (response.next) {
+    for (let page = 1; response.next; page++) {
+        // A partial export would look complete, so fail instead
+        if (page >= MAX_ZONE_PAGES)
+            throw new Error(`Zone list exceeds ${MAX_ZONE_PAGES} pages`);
         response = await response.next();
         zones.push(...response.data);
     }
@@ -309,14 +318,20 @@ export class PlaceDatabaseDetailsComponent
 
     /** Follows a running re-sync and says how it ended */
     private _watchMqttStatus() {
+        let checking = false;
         this.interval(
             'mqtt_status',
             async () => {
+                // Skip a tick while hidden or while the last check is in flight
+                if (checking || document.hidden) return;
+                checking = true;
                 let status: PlaceSourceResyncStatus;
                 try {
                     status = await sourceResyncStatus();
                 } catch {
                     return;
+                } finally {
+                    checking = false;
                 }
                 this.mqtt_status.set(status);
                 if (status.state === 'complete') {
@@ -375,11 +390,7 @@ export class PlaceDatabaseDetailsComponent
     private async exportSelectedZoneTrees(parents: PlaceZone[]) {
         this.exporting_zones.set(true);
         try {
-            const zones: ZoneTreeExportItem[] = [];
-            const visited = new Set<string>();
-            for (const parent of parents) {
-                await this.addZoneTreeToExport(parent.id, zones, visited);
-            }
+            const zones = await this.zoneTreeExport(parents);
             downloadFile(
                 `zone-tree-export-${new Date().toISOString()}.csv`,
                 jsonToCsv(zones, ZONE_TREE_CSV_FIELDS),
@@ -393,19 +404,33 @@ export class PlaceDatabaseDetailsComponent
         this.exporting_zones.set(false);
     }
 
-    private async addZoneTreeToExport(
-        zone_id: string,
-        zones: ZoneTreeExportItem[],
-        visited: Set<string>,
-    ) {
-        if (visited.has(zone_id)) return;
-        visited.add(zone_id);
-        const zone = await showZone(zone_id);
-        const children = await queryAllZones({ parent_id: zone_id });
-        zones.push(zoneToExportItem(zone));
-        for (const child of children) {
-            await this.addZoneTreeToExport(child.id, zones, visited);
+    /**
+     * The selected zones and every zone beneath them, walked one tree level
+     * at a time so parents always come before their children.
+     */
+    private async zoneTreeExport(parents: PlaceZone[]) {
+        const zones: ZoneTreeExportItem[] = [];
+        const visited = new Set<string>();
+        let level = parents;
+        // Each pass only keeps unvisited zones, so a cyclic parent_id ends it
+        while (level.length) {
+            const ids: string[] = [];
+            for (const zone of level) {
+                if (!zone?.id || visited.has(zone.id)) continue;
+                visited.add(zone.id);
+                ids.push(zone.id);
+                zones.push(zoneToExportItem(zone));
+            }
+            const chunks: string[][] = [];
+            for (let i = 0; i < ids.length; i += PARENT_IDS_PER_QUERY) {
+                chunks.push(ids.slice(i, i + PARENT_IDS_PER_QUERY));
+            }
+            const children = await mapLimit(chunks, ZONE_CONCURRENCY, (chunk) =>
+                queryAllZones({ parent_id: chunk.join(',') }),
+            );
+            level = children.flat();
         }
+        return zones;
     }
 
     private async importZoneTree(zones: ZoneTreeExportItem[]) {
@@ -413,27 +438,57 @@ export class PlaceDatabaseDetailsComponent
             notifyWarn('Invalid zone tree CSV file.');
             return;
         }
+        const pending = zones.filter((zone) => !!zone.id);
+        const file_ids = new Set(pending.map((zone) => zone.id));
+        const children = new Map<string, ZoneTreeExportItem[]>();
+        for (const zone of pending) {
+            if (!zone.parent_id || !file_ids.has(zone.parent_id)) continue;
+            children.set(zone.parent_id, [
+                ...(children.get(zone.parent_id) || []),
+                zone,
+            ]);
+        }
+        // Zones whose parent is not in the file go in at the top
+        let level = pending.filter(
+            (zone) => !zone.parent_id || !file_ids.has(zone.parent_id),
+        );
         const id_map = new Map<string, string>();
+        let created = 0;
         try {
-            for (const zone of zones) {
-                if (!zone.id) continue;
-                const parent_id = zone.parent_id
-                    ? id_map.get(zone.parent_id) || ''
-                    : '';
-                const created_zone = await addZone(
-                    zoneToImportItem(zone, parent_id),
-                );
-                id_map.set(zone.id, created_zone.id);
+            // Create a tree level at a time, as children need their parent's new id
+            for (
+                let depth = 0;
+                level.length && depth < pending.length;
+                depth++
+            ) {
+                await mapLimit(level, ZONE_CONCURRENCY, async (zone) => {
+                    const parent_id = zone.parent_id
+                        ? id_map.get(zone.parent_id) || ''
+                        : '';
+                    const created_zone = await addZone(
+                        zoneToImportItem(zone, parent_id),
+                    );
+                    id_map.set(zone.id, created_zone.id);
+                    created++;
+                });
+                level = level.flatMap((zone) => children.get(zone.id) || []);
             }
         } catch (err) {
             // Zones created before the error stay, so tell the user how far it got
             notifyError(
-                `Error importing zone tree. Created ${id_map.size} of ${
+                `Error importing zone tree. Created ${created} of ${
                     zones.length
                 } zones before the error. Error: ${await readError(err)}`,
             );
             return;
         }
-        notifySuccess(`Imported ${id_map.size} zones.`);
+        const skipped = pending.length - created;
+        notifySuccess(
+            `Imported ${created} zones.${
+                skipped
+                    ? ` Skipped ${skipped} zones with circular parent ids.`
+                    : ''
+            }`,
+        );
     }
 }

@@ -1,12 +1,12 @@
 import {
-    AfterViewInit,
+    afterRenderEffect,
+    ChangeDetectionStrategy,
     Component,
     ElementRef,
     inject,
     input,
     viewChild,
 } from '@angular/core';
-import { AsyncHandler } from '../common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
 import { Point } from '../common/types';
 
@@ -34,11 +34,9 @@ const COLORS: [string, string][] = [
             }
         `,
     ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BasicLineGraphComponent
-    extends AsyncHandler
-    implements AfterViewInit
-{
+export class BasicLineGraphComponent {
     private _settings = inject(SettingsService);
     private _element = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -51,25 +49,28 @@ export class BasicLineGraphComponent
         return this._settings.get('theme') === 'dark';
     }
 
-    public ngAfterViewInit() {
-        this._setupCanvas();
-        requestAnimationFrame(() => this._drawGraph());
+    private _canvas_sized = false;
+
+    constructor() {
+        // Draw after render each time the lines change. There is no timer.
+        // A theme change shows on the next lines update.
+        afterRenderEffect(() => this._drawGraph(this.lines()));
     }
 
-    private _setupCanvas() {
-        const canvas_el = this._canvas_el()?.nativeElement;
-        if (!canvas_el) {
-            return this.timeout('setup', () => this._setupCanvas());
-        }
+    private _setupCanvas(canvas_el: HTMLCanvasElement) {
         const container_box =
             this._element.nativeElement.getBoundingClientRect();
         canvas_el.width = container_box.width * 2;
         canvas_el.height = container_box.height * 2;
     }
 
-    private _drawGraph() {
+    private _drawGraph(lines: Point[][]) {
         const _canvas_el = this._canvas_el();
         if (!_canvas_el?.nativeElement) return;
+        if (!this._canvas_sized) {
+            this._setupCanvas(_canvas_el.nativeElement);
+            this._canvas_sized = true;
+        }
         const ctx = _canvas_el.nativeElement.getContext('2d');
         if (!ctx) return;
         let { width, height } = _canvas_el.nativeElement;
@@ -106,14 +107,14 @@ export class BasicLineGraphComponent
         ctx.fillText('60s', axis_start.x, height + 4);
 
         // Draw Lines
-        for (const line of this.lines()) {
+        lines.forEach((line, index) =>
             this._drawLine(
                 ctx,
                 [axis_start.x, 0, width - axis_start.x, height - axis_start.y],
                 line,
-                COLORS[this.lines().indexOf(line) % COLORS.length],
-            );
-        }
+                COLORS[index % COLORS.length],
+            ),
+        );
 
         ctx.strokeStyle = color;
         ctx.lineWidth = 2;
@@ -130,9 +131,6 @@ export class BasicLineGraphComponent
         ctx.stroke();
 
         ctx.restore();
-        this.timeout('draw', () =>
-            requestAnimationFrame(() => this._drawGraph()),
-        );
     }
 
     private _drawLine(

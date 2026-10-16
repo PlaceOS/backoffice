@@ -70,6 +70,50 @@ describe('SimpleTableComponent', () => {
         expect(component.selected()).toEqual([]);
     });
 
+    it('keeps the selection when the data refreshes', async () => {
+        const data = signal([
+            { id: '1', name: 'Item 1' },
+            { id: '2', name: 'Item 2' },
+        ]);
+        fixture.componentRef.setInput('data', data);
+        fixture.componentRef.setInput('selectable', true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        component.select(1, true);
+        data.set([{ id: '1', name: 'Item 1' }, ...data().slice(1)]);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(component.selected()).toEqual([1]);
+        data.set([{ id: '1', name: 'Item 1' }]);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(component.selected()).toEqual([]);
+    });
+
+    it('emits enter_row once per hovered row', async () => {
+        fixture.componentRef.setInput('data', [
+            { id: '1', name: 'Item 1', value: 1 },
+            { id: '2', name: 'Item 2', value: 2 },
+        ]);
+        fixture.componentRef.setInput('columns', [
+            { key: 'name', name: 'Name' },
+            { key: 'value', name: 'Value' },
+        ]);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const rows: number[] = [];
+        component.enter_row.subscribe((row) => rows.push(row));
+        const cells = fixture.nativeElement.querySelectorAll(
+            '[data-row]',
+        ) as NodeListOf<HTMLElement>;
+        const hover = (el: HTMLElement) =>
+            el.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+        hover(cells[0]);
+        hover(cells[1]);
+        hover(cells[2]);
+        expect(rows).toEqual([0, 1]);
+    });
+
     describe('default state', () => {
         it('should have empty selected array', () => {
             expect(component.selected()).toEqual([]);
@@ -354,6 +398,28 @@ describe('SimpleTableComponent', () => {
 
             const values = component.data_view().map((d) => d.value);
             expect(values).toEqual([30, 20, 10]);
+        });
+
+        it('should sort mixed values by their text form', async () => {
+            const data = [
+                { id: '1', name: 'b' },
+                { id: '2', name: undefined },
+                { id: '3', name: 'a' },
+            ];
+            fixture.componentRef.setInput('data', data);
+            fixture.componentRef.setInput('columns', test_columns);
+            fixture.componentRef.setInput('sortable', true);
+            fixture.detectChanges();
+            await fixture.whenStable();
+
+            component.setSort('name');
+            component.setSort('name');
+            fixture.detectChanges();
+            await fixture.whenStable();
+
+            const ids = component.data_view().map((d) => d.id);
+            expect(ids).toEqual(['1', '3', '2']);
+            expect(data.map((d) => d.id)).toEqual(['1', '2', '3']);
         });
 
         it('should use custom sort function when provided', async () => {

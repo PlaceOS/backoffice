@@ -12,8 +12,8 @@ import {
     reviveUser,
     updateGroupUser,
 } from '@placeos/ts-client';
-import { escapeHtml } from '../common/general';
 import { describeError } from '../common/errors';
+import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -44,6 +44,7 @@ export class UsersStateService {
 
     public readonly item = this._service.item;
 
+    // The metadata tab loads its own list, so only the count is needed here
     private readonly _counts = resource({
         params: () => ({
             item: this._service.active_item$(),
@@ -71,20 +72,6 @@ export class UsersStateService {
     public readonly counts = computed<{ metadata?: number; groups?: number }>(
         () => this._counts.value() || { metadata: 0, groups: 0 },
     );
-
-    private readonly _metadata = resource({
-        params: () => ({
-            item: this.item(),
-            change: this._change(),
-        }),
-        loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceUser)) return [];
-            return listMetadata(item.id).catch((_err) => []);
-        },
-    });
-
-    public readonly metadata = computed(() => this._metadata.value() || []);
 
     private readonly _groups = resource({
         params: () => ({ item: this.item(), change: this._change() }),
@@ -290,9 +277,5 @@ export class UsersStateService {
 
     private changed() {
         this._change.set(Date.now());
-    }
-
-    constructor() {
-        setTimeout(() => this.changed(), 1000);
     }
 }

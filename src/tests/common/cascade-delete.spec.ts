@@ -590,6 +590,45 @@ describe('cascade-delete', () => {
             expect(messages[0]).toContain('"total":2');
         });
 
+        it('removes systems a few at a time and the zone after them all', async () => {
+            let running = 0;
+            let peak = 0;
+            const order: string[] = [];
+            const system = (id: string) => ({
+                resource: { type: 'system' as const, id, name: id },
+                run: async () => {
+                    running++;
+                    peak = Math.max(peak, running);
+                    await new Promise((resolve) => setTimeout(resolve, 1));
+                    running--;
+                    order.push(id);
+                },
+            });
+            const plan = {
+                scope: [],
+                summary: [],
+                warnings: [],
+                steps: [
+                    ...['s1', 's2', 's3', 's4', 's5', 's6'].map(system),
+                    {
+                        resource: {
+                            type: 'zone' as const,
+                            id: 'zone-1',
+                            name: 'zone',
+                        },
+                        run: async () => {
+                            order.push('zone');
+                        },
+                    },
+                ],
+            };
+            const outcome = await runCascade(plan);
+            expect(peak).toBe(4);
+            expect(order).toHaveLength(7);
+            expect(order[6]).toBe('zone');
+            expect(outcome.removed).toHaveLength(7);
+        });
+
         it('stops at the first failure and skips the rest', async () => {
             // Steps are ordered by dependency — a domain plan puts the org zone
             // after the systems inside it — so carrying on past a failure would

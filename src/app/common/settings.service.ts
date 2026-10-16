@@ -172,6 +172,8 @@ export class SettingsService extends AsyncHandler {
         const current_theme = this.get('theme');
         if (current_theme === theme) return;
         this.saveUserSetting('theme', theme);
+        // Unsaved settings are not signals, so post the change for views
+        this.post('theme', theme);
         localStorage.setItem('PLACEOS.theme', theme);
         this._applyTheme();
     }

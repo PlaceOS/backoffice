@@ -16,6 +16,9 @@ import { current_user, setCurrentUser } from '../common/user-state';
 
 type ServiceItem = PlaceUser;
 
+/** Attempts `load` makes before it waits for the next reconnect */
+const MAX_LOAD_ATTEMPTS = 12;
+
 @Service()
 export class BackofficeUsersService extends AsyncHandler {
     private _settings = inject(SettingsService);
@@ -83,19 +86,28 @@ export class BackofficeUsersService extends AsyncHandler {
         return (await queryUsers(query_params)).data;
     }
 
-    public load(): Promise<void> {
+    /**
+     * Load the signed-in user and their support access. Retries with backoff
+     * while the user is not available, and gives up after
+     * `MAX_LOAD_ATTEMPTS` until the next reconnect calls it again.
+     */
+    public load(attempt = 0): Promise<void> {
         return new Promise((resolve) => {
             this.state.set('loading');
+            const retry = () => {
+                if (attempt + 1 >= MAX_LOAD_ATTEMPTS) {
+                    this.state.set('error');
+                    return resolve();
+                }
+                this.timeout(
+                    'load',
+                    () => this.load(attempt + 1).then(() => resolve()),
+                    Math.min(600 * 2 ** attempt, 30 * 1000),
+                );
+            };
             currentUser()
                 .then(async (user) => {
-                    if (!user) {
-                        this.timeout(
-                            'load',
-                            () => this.load().then((_) => resolve()),
-                            600,
-                        );
-                        return;
-                    }
+                    if (!user) return retry();
                     await loadSupportAccess(user);
                     setCurrentUser(user);
                     this.state.set('success');
@@ -104,13 +116,7 @@ export class BackofficeUsersService extends AsyncHandler {
                     const _current_theme = this.dark_mode;
                     resolve();
                 })
-                .catch(() =>
-                    this.timeout(
-                        'load',
-                        () => this.load().then((_) => resolve()),
-                        600,
-                    ),
-                );
+                .catch(retry);
         });
     }
 

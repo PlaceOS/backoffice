@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     canAccessSection,
     canUseSupportAction,
+    clearSupportModuleCache,
     hasSupportSubsystem,
     isSubsystemUser,
     loadSupportAccess,
@@ -11,6 +12,7 @@ import {
     querySupportZones,
     selectSupportGroup,
     selected_support_group_id,
+    support_groups,
 } from '../../app/common/support-access';
 
 const api = vi.hoisted(() => ({
@@ -179,6 +181,9 @@ describe('selected support group', () => {
             next: null,
         });
         await loadSupportAccess(new PlaceUser({ sys_admin: true }));
+        // Admins are published at once and their groups arrive after
+        expect(canAccessSection('admin')).toBe(true);
+        await vi.waitFor(() => expect(support_groups()).toHaveLength(1));
         expect(selected_support_group_id()).toBe('');
         selectSupportGroup('group-1');
         querySupportSystems({ q: 'room' });
@@ -195,13 +200,11 @@ describe('selected support group', () => {
     it('lists modules through group systems and removes shared duplicates', async () => {
         api.currentGroups.mockResolvedValue([membership(1)]);
         await loadSupportAccess(new PlaceUser());
-        const next = vi
-            .fn()
-            .mockResolvedValue({
-                data: [{ id: 'sys-2' }],
-                total: 2,
-                next: null,
-            });
+        const next = vi.fn().mockResolvedValue({
+            data: [{ id: 'sys-2' }],
+            total: 2,
+            next: null,
+        });
         api.querySystems.mockResolvedValue({
             data: [{ id: 'sys-1' }],
             total: 2,
@@ -224,7 +227,7 @@ describe('selected support group', () => {
         const result = await querySupportModules({ q: 'screen' });
         expect(result.data.map(({ id }) => id)).toEqual(['mod-1']);
         expect(api.querySystems).toHaveBeenCalledWith({
-            limit: 200,
+            limit: 1000,
             subsystem: 'support',
             group_id: 'group-1',
         });
@@ -234,6 +237,33 @@ describe('selected support group', () => {
         expect(api.queryModules).toHaveBeenCalledWith({
             control_system_id: 'sys-2',
         });
+    });
+
+    it('walks the group systems once for every search on the same group', async () => {
+        api.currentGroups.mockResolvedValue([membership(1)]);
+        await loadSupportAccess(new PlaceUser());
+        api.querySystems.mockResolvedValue({
+            data: [{ id: 'sys-1' }],
+            total: 1,
+            next: null,
+        });
+        api.queryModules.mockResolvedValue({
+            data: [
+                { id: 'mod-1', name: 'Screen' },
+                { id: 'mod-2', name: 'Light' },
+            ],
+            total: 2,
+            next: null,
+        });
+        const all = await querySupportModules({});
+        const lights = await querySupportModules({ q: 'light' });
+        expect(all.data).toHaveLength(2);
+        expect(lights.data.map(({ id }) => id)).toEqual(['mod-2']);
+        expect(api.querySystems).toHaveBeenCalledOnce();
+        expect(api.queryModules).toHaveBeenCalledOnce();
+        clearSupportModuleCache();
+        await querySupportModules({});
+        expect(api.queryModules).toHaveBeenCalledTimes(2);
     });
 
     it('does not show any sections before a user has access', async () => {

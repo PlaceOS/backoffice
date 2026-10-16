@@ -45,6 +45,9 @@ import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { applyZoneFormSchema, generateZoneFormModel } from './zones.utilites';
 
+/** Most timezone options to render. Typing narrows the full list. */
+const TIMEZONE_OPTION_LIMIT = 50;
+
 @Component({
     selector: 'zone-form',
     template: `
@@ -359,9 +362,9 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
     );
     public readonly filtered_timezones = computed(() => {
         const search = this.timezone().toLowerCase();
-        return this.timezones.filter((_tz) =>
-            _tz.toLowerCase().includes(search),
-        );
+        return this.timezones
+            .filter((_tz) => _tz.toLowerCase().includes(search))
+            .slice(0, TIMEZONE_OPTION_LIMIT);
     });
     public readonly loading = signal<string | null>(null);
     public readonly heading = i18n(

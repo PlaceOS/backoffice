@@ -17,11 +17,12 @@ import {
     updateGroupUser,
     updateGroupZone,
 } from '@placeos/ts-client';
-import { escapeHtml } from '../common/general';
 import { describeError } from '../common/errors';
+import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { openedTabs } from '../common/opened-tabs';
 import { waitForEvent } from '../common/signals';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { GroupBulkAddModalComponent } from './group-bulk-add-modal.component';
@@ -45,77 +46,95 @@ export class GroupStateService {
             this._zones.isLoading(),
     );
 
+    private readonly _group_id = computed(() => {
+        const item = this.item();
+        return item instanceof PlaceGroup ? item.id : undefined;
+    });
+    // Member lists only load once their tab is opened. Until then a single
+    // row query gives the tab count.
+    private readonly _opened_tabs = openedTabs(this._group_id);
+    private readonly _load_users = computed(() =>
+        this._opened_tabs().has('users'),
+    );
+    private readonly _load_zones = computed(() =>
+        this._opened_tabs().has('zones'),
+    );
+
     private readonly _users = resource({
-        params: () => ({ item: this.item(), changed: this._changed() }),
+        params: () => ({
+            item: this.item(),
+            changed: this._changed(),
+            full: this._load_users(),
+        }),
         loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceGroup)) return [] as PlaceGroupUser[];
+            const { item, full } = params;
+            const empty = { data: [] as PlaceGroupUser[], total: 0 };
+            if (!(item instanceof PlaceGroup)) return empty;
             const response = await queryGroupUsers({
                 group_id: item.id,
-                limit: 1000,
+                limit: full ? 1000 : 1,
             }).catch((error) => {
                 notifyError(
                     i18n('GROUPS.USERS_LOAD_ERROR', {
                         error: describeError(error),
                     }),
                 );
-                return { data: [] as PlaceGroupUser[] };
+                return empty;
             });
-            return response.data.sort((a, b) =>
-                (a.user?.name || a.user_id).localeCompare(
-                    b.user?.name || b.user_id,
+            if (!full) return { ...empty, total: response.total };
+            return {
+                total: response.total,
+                data: [...response.data].sort((a, b) =>
+                    (a.user?.name || a.user_id).localeCompare(
+                        b.user?.name || b.user_id,
+                    ),
                 ),
-            );
+            };
         },
     });
 
-    public readonly users = computed(() => this._users.value() || []);
+    public readonly users = computed(() => this._users.value()?.data || []);
 
     private readonly _zones = resource({
-        params: () => ({ item: this.item(), changed: this._changed() }),
+        params: () => ({
+            item: this.item(),
+            changed: this._changed(),
+            full: this._load_zones(),
+        }),
         loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceGroup)) return [] as PlaceGroupZone[];
+            const { item, full } = params;
+            const empty = { data: [] as PlaceGroupZone[], total: 0 };
+            if (!(item instanceof PlaceGroup)) return empty;
             const response = await queryGroupZones({
                 group_id: item.id,
-                limit: 1000,
+                limit: full ? 1000 : 1,
             }).catch((error) => {
                 notifyError(
                     i18n('GROUPS.ZONES_LOAD_ERROR', {
                         error: describeError(error),
                     }),
                 );
-                return { data: [] as PlaceGroupZone[] };
+                return empty;
             });
-            return response.data.sort((a, b) =>
-                (a.zone?.name || a.zone_id).localeCompare(
-                    b.zone?.name || b.zone_id,
+            if (!full) return { ...empty, total: response.total };
+            return {
+                total: response.total,
+                data: [...response.data].sort((a, b) =>
+                    (a.zone?.name || a.zone_id).localeCompare(
+                        b.zone?.name || b.zone_id,
+                    ),
                 ),
-            );
+            };
         },
     });
 
-    public readonly zones = computed(() => this._zones.value() || []);
-
-    private readonly _counts = resource({
-        params: () => ({ item: this.item(), changed: this._changed() }),
-        loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceGroup)) return {};
-            const [users, zones] = await Promise.all([
-                queryGroupUsers({ group_id: item.id, limit: 1 })
-                    .then((response) => response.total)
-                    .catch(() => 0),
-                queryGroupZones({ group_id: item.id, limit: 1 })
-                    .then((response) => response.total)
-                    .catch(() => 0),
-            ]);
-            return { users, zones };
-        },
-    });
+    public readonly zones = computed(() => this._zones.value()?.data || []);
 
     public readonly counts = computed<{ users?: number; zones?: number }>(
-        () => this._counts.value() || { users: 0, zones: 0 },
+        () => ({
+            users: this._users.value()?.total || 0,
+            zones: this._zones.value()?.total || 0,
+        }),
     );
 
     public get active_item() {

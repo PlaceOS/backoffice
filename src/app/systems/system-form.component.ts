@@ -49,6 +49,9 @@ import {
     generateSystemFormModel,
 } from './systems.utilities';
 
+/** Most timezone options to render. Typing narrows the full list. */
+const TIMEZONE_OPTION_LIMIT = 50;
+
 @Component({
     selector: 'system-form',
     template: `
@@ -664,11 +667,12 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
     private _timezone = computed(() => this.formModel().timezone || '');
-    public filtered_timezones = computed(() =>
-        this.timezones.filter((_tz) =>
-            _tz.toLowerCase().includes(this._timezone().toLowerCase()),
-        ),
-    );
+    public filtered_timezones = computed(() => {
+        const search = this._timezone().toLowerCase();
+        return this.timezones
+            .filter((_tz) => _tz.toLowerCase().includes(search))
+            .slice(0, TIMEZONE_OPTION_LIMIT);
+    });
 
     constructor() {
         super();

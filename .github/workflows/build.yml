@@ -22,15 +22,6 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Cache Bun dependencies
-              id: cache
-              uses: actions/cache@v5
-              with:
-                  path: ~/.bun/install/cache
-                  key: ${{ runner.os }}-build-${{ hashFiles('**/bun.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-build-
-
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
               with:
@@ -38,15 +29,6 @@ jobs:
 
             - name: Install dependencies
               run: bun install --frozen-lockfile
-
-            - name: Cache nx build cache
-              id: cache-nx
-              uses: actions/cache@v5
-              with:
-                  path: node_modules/.cache/nx
-                  key: ${{ runner.os }}-nx-${{ hashFiles('**/bun.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-nx-
 
             - name: Setup version
               run: bun run postinstall
@@ -93,6 +75,9 @@ jobs:
                   url: ${{ secrets.STATUS_URL }}
                   data: '{ "chat_url": "${{ secrets.CHAT_URL }}", "name": "${{ github.repository }}", "commit": "${{ github.sha }}", "pipeline_name": "backoffice", "branch": "${{ github.ref }}", "status": "processing", "url": "https://github.com/${{ github.repository }}/runs/${{ github.run_id }}" }'
 
+            # Do not restore an Nx cache for this build. Nx does not hash the
+            # gitignored src/env/version.ts, so a cached build could deploy
+            # the version info of an earlier commit.
             - name: Build application
               run: bun run build -- --verbose --configuration=${{ steps.build_ext.outputs.configuration }}
 

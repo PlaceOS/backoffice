@@ -12,14 +12,26 @@ import { BackofficeUsersService } from '../../app/users/users.service';
 const mocks = vi.hoisted(() => ({
     query: vi.fn(),
     show: vi.fn(),
+    settings: vi.fn(async () => ({ data: [] as object[] })),
     group: 'group-1',
 }));
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
+vi.mock('@placeos/ts-client', async () => ({
+    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
+        '@placeos/ts-client/dist/index.es.js',
+    )),
+    querySettings: mocks.settings,
+}));
 vi.mock('../../app/common/actions', () => ({
     ACTIONS: {
-        systems: { query: mocks.query, show: mocks.show },
+        systems: {
+            query: mocks.query,
+            show: mocks.show,
+            itemConstructor: class {
+                constructor(data: object) {
+                    Object.assign(this, data);
+                }
+            },
+        },
         users: { query: mocks.query, show: mocks.show },
     },
 }));
@@ -27,6 +39,7 @@ vi.mock('../../app/common/support-access', () => ({
     hasSupportRole: () => false,
     hasSupportSubsystem: () => true,
     canAccessSection: () => true,
+    clearSupportModuleCache: () => undefined,
     selected_support_group_id: () => mocks.group,
     selectSupportGroup: (id: string) => {
         mocks.group = id;
@@ -175,5 +188,58 @@ it('reloads users with the deleted filter and ignores an older response', async 
     await vi.advanceTimersByTimeAsync(1);
     expect(service.list()).toEqual([]);
     expect(service.count()).toBe(0);
+    service.ngOnDestroy();
+});
+
+it('shows a saved item with its current settings', async () => {
+    vi.useFakeTimers();
+    mocks.query.mockResolvedValue({ data: [], total: 0, next: null });
+    mocks.show.mockResolvedValue({ id: 'sys-1', name: 'Room' });
+    mocks.settings
+        .mockResolvedValueOnce({
+            data: [{ encryption_level: 0, settings_string: 'a: 1' }],
+        })
+        .mockResolvedValueOnce({
+            data: [{ encryption_level: 0, settings_string: 'a: 2' }],
+        });
+    const router = {
+        url: '/systems/sys-1',
+        events: new Subject<NavigationEnd>(),
+        parseUrl: (url: string) => new DefaultUrlSerializer().parse(url),
+        navigate: vi.fn(async () => true),
+    };
+    const user = signal({ sys_admin: false, support: false });
+    TestBed.configureTestingModule({
+        providers: [
+            ActiveItemService,
+            { provide: Router, useValue: router },
+            { provide: MatDialog, useValue: {} },
+            { provide: SettingsService, useValue: {} },
+            {
+                provide: HotkeysService,
+                useValue: { listen: () => () => undefined },
+            },
+            {
+                provide: BackofficeUsersService,
+                useValue: { user, current: user },
+            },
+        ],
+    });
+    const service = TestBed.inject(ActiveItemService);
+    await vi.advanceTimersByTimeAsync(350);
+    await service.setItem('sys-1');
+    const settingsValue = () =>
+        (
+            service.active_item as unknown as {
+                settings: { settings_string: string }[];
+            }
+        ).settings[0].settings_string;
+    expect(settingsValue()).toBe('a: 1');
+    // Settings saved since the item loaded must not be lost on a rename
+    service.replaceItem({ id: 'sys-1', name: 'Renamed' });
+    expect(service.active_item?.name).toBe('Renamed');
+    await vi.advanceTimersByTimeAsync(1);
+    expect(service.active_item?.name).toBe('Renamed');
+    expect(settingsValue()).toBe('a: 2');
     service.ngOnDestroy();
 });

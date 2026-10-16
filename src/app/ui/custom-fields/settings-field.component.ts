@@ -3,6 +3,7 @@
 import {
     Component,
     DestroyRef,
+    effect,
     ElementRef,
     forwardRef,
     inject,
@@ -94,21 +95,20 @@ export class SettingsFieldComponent
     /** API object for the monaco editor */
     private editor: monaco.editor.IStandaloneCodeEditor | undefined;
 
+    /** Follows theme changes. The editor reads the theme when it is created. */
+    private readonly _theme_watch = effect(() => {
+        // `setTheme` posts changes that `get` cannot signal on its own
+        this._settings.value('theme');
+        const theme = this._settings.get<string>('theme');
+        if (theme === this._theme) return;
+        this._theme = theme;
+        this.editor?.updateOptions({
+            theme: theme !== 'dark' ? 'vs' : 'vs-dark',
+        });
+    });
+
     public ngOnInit(): void {
         this.timeout('resize', () => this.createEditor(), 100);
-        this.interval(
-            'theme',
-            () => {
-                const theme = this._settings.get('theme') as string;
-                if (theme !== this._theme) {
-                    this._theme = theme;
-                    this.editor?.updateOptions({
-                        theme: theme !== 'dark' ? 'vs' : 'vs-dark',
-                    });
-                }
-            },
-            1000,
-        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
