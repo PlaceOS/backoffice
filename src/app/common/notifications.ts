@@ -58,7 +58,8 @@ function openNotification(
 ) {
     const snackbar_ref = service.open(message, action, {
         panelClass: [type],
-        duration: 5000,
+        // Errors stay until dismissed so they can be read and acted on
+        duration: type === 'error' ? undefined : 5000,
     });
     if (action) {
         on_action = on_action || (() => snackbar_ref.dismiss());

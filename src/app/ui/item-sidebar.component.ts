@@ -30,6 +30,7 @@ import {
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
+import { reportLoadError } from '../common/load-error';
 import { toSignal } from '../common/signals';
 import { IconComponent } from './icon.component';
 import { SettingsToggleComponent } from './settings-toggle.component';
@@ -67,7 +68,7 @@ interface GroupTreeItem {
                             'COMMON.SEARCH_FOR' | translate: { name: title() }
                         "
                     />
-                    @if (loading()) {
+                    @if (loading() || group_hierarchy_loading()) {
                         <mat-spinner
                             diameter="24"
                             class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
@@ -224,7 +225,7 @@ interface GroupTreeItem {
                                 {{ 'COMMON.END_OF_LIST' | translate }}
                             </div>
                         </div>
-                    } @else {
+                    } @else if (!group_hierarchy_loading()) {
                         <div
                             class="flex flex-col items-center justify-center p-8 opacity-30"
                         >
@@ -322,7 +323,8 @@ interface GroupTreeItem {
                             }
                         </a>
                     </ng-template>
-                } @else {
+                } @else if (!loading()) {
+                    <!-- The search box shows a spinner while the list loads -->
                     <div
                         class="flex flex-col items-center justify-center p-8 opacity-30"
                     >
@@ -387,6 +389,8 @@ export class ItemSidebarComponent
     public readonly filter_options = input<string[]>([]);
     public readonly show = signal(true);
     public readonly group_hierarchy = signal<PlaceGroup[]>([]);
+    /** Whether the group tree is loading */
+    public readonly group_hierarchy_loading = signal(false);
     public readonly expanded_groups = signal<Record<string, boolean>>({});
 
     public readonly include_deleted = this._service.include_deleted;
@@ -614,6 +618,7 @@ export class ItemSidebarComponent
     }
 
     private async loadGroupHierarchy() {
+        this.group_hierarchy_loading.set(true);
         const response = await queryGroups({
             limit: 2500,
             fields: [
@@ -624,11 +629,12 @@ export class ItemSidebarComponent
                 'parent_id',
                 'children_count',
             ].join(','),
-        }).catch(() => ({ data: [] }));
+        }).catch(reportLoadError({ data: [] }));
         const groups = response.data.sort((a, b) =>
             this.displayName(a).localeCompare(this.displayName(b)),
         );
         this.group_hierarchy.set(groups);
+        this.group_hierarchy_loading.set(false);
     }
 
     private expandGroupPath(group_id: string) {

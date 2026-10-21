@@ -11,6 +11,7 @@ import {
     stopModule,
 } from '@placeos/ts-client';
 import { ActiveItemService } from '../common/item.service';
+import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { querySupportSystems as querySystems } from '../common/support-access';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
@@ -79,7 +80,9 @@ export class ModuleStateService {
             try {
                 const response = await querySystems({
                     module_id: item.id,
-                }).catch(() => ({ data: [] as PlaceSystem[], total: 0 }));
+                }).catch(
+                    reportLoadError({ data: [] as PlaceSystem[], total: 0 }),
+                );
                 return { data: response.data, total: response.total };
             } finally {
                 this._loading.set(false);
@@ -123,9 +126,7 @@ export class ModuleStateService {
             }
             return;
         }
-        notifySuccess(
-            `Module successfully ${running ? 'stopped' : 'started'}`,
-        );
+        notifySuccess(`Module successfully ${running ? 'stopped' : 'started'}`);
         item.running = !running;
     }
 

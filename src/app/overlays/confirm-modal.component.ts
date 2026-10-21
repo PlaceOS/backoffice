@@ -97,6 +97,8 @@ export interface ConfirmModalData {
     options?: ConfirmModalOption[];
     /** Text displaed on the confirmation button */
     confirm_text?: string;
+    /** Whether confirming deletes or loses data. Styles the button as an error */
+    destructive?: boolean;
     /** Text displaed on the confirmation button */
     cancel_text?: string;
     /** Icon to display on the modal */
@@ -386,6 +388,7 @@ export async function openConfirmModal(
                     matRipple
                     name="accept"
                     class="flex-1"
+                    [class.error]="destructive"
                     [disabled]="resolving() || blocked()"
                     (click)="onConfirm()"
                 >
@@ -426,9 +429,12 @@ export class ConfirmModalComponent implements OnInit {
     public readonly content: string = this._data.content || 'Are you sure?';
     /** Body of the confirm modal */
     public readonly extra: [string, string] = this._data.extra || ['', ''];
+    /** Whether the confirm button deletes or loses data */
+    public readonly destructive = !!this._data.destructive;
     /** Display text on the confirm button */
     public readonly confirm_text: string =
-        this._data.confirm_text || 'COMMON.ACCEPT';
+        this._data.confirm_text ||
+        (this.destructive ? 'COMMON.DELETE' : 'COMMON.ACCEPT');
     /** Display text on the cancel button */
     public readonly cancel_text: string =
         this._data.cancel_text || 'COMMON.CANCEL';

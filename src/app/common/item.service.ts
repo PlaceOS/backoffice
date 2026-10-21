@@ -409,6 +409,7 @@ export class ActiveItemService extends AsyncHandler {
                           ]
                         : undefined,
                     icon: { type: 'icon', content: 'delete' },
+                    destructive: true,
                 },
             },
         );

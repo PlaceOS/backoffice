@@ -13,6 +13,7 @@ import {
 } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
+import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { collectPages } from '../common/support-access';
 import { HashMap, Identity } from '../common/types';
@@ -62,7 +63,7 @@ export class DriverStateService {
             // Load every page so the list matches the tab count
             const data = await collectPages(
                 queryModules({ driver_id: item.id, limit: 500 }),
-            ).catch(() => [] as PlaceModule[]);
+            ).catch(reportLoadError([] as PlaceModule[]));
             return { data, total: data.length };
         },
     });

@@ -34,6 +34,7 @@ import { filter, map } from 'rxjs';
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
+import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
@@ -116,7 +117,7 @@ export class DomainStateService {
             const response = await queryUsers({
                 authority_id: params.id,
                 limit: params.full ? 1000 : 1,
-            }).catch(() => ({ data: [] as PlaceUser[], total: 0 }));
+            }).catch(reportLoadError({ data: [] as PlaceUser[], total: 0 }));
             return {
                 ...response,
                 data: [...response.data].sort((a, b) =>
@@ -179,7 +180,9 @@ export class DomainStateService {
             const response = await queryApplications({
                 authority_id: params.id,
                 ...(params.full ? {} : { limit: 1 }),
-            }).catch(() => ({ data: [] as PlaceApplication[], total: 0 }));
+            }).catch(
+                reportLoadError({ data: [] as PlaceApplication[], total: 0 }),
+            );
             return {
                 ...response,
                 data: [...response.data].sort((a, b) =>

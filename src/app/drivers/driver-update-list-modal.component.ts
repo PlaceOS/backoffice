@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { queryDrivers, updateDriver } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
+import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { IconComponent } from '../ui/icon.component';
@@ -175,7 +176,7 @@ export class DriverUpdateListModalComponent {
             const response = await queryDrivers({
                 update_available: true,
                 limit: 1000,
-            }).catch(() => ({ data: [], total: 0 }));
+            }).catch(reportLoadError({ data: [], total: 0 }));
             response.data = response.data.filter(
                 (_) => _.commit !== _.update_info.commit,
             );

@@ -18,6 +18,7 @@ import {
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
+import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
@@ -49,7 +50,9 @@ export class TriggerStateService {
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceTrigger)) return [] as PlaceTrigger[];
-            return listTriggerInstances(item.id).catch(() => []);
+            return listTriggerInstances(item.id).catch(
+                reportLoadError([] as PlaceTrigger[]),
+            );
         },
     });
 

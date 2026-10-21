@@ -20,6 +20,7 @@ import {
 import { describeError, readError } from '../common/errors';
 import { escapeHtml, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
+import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openedTabs } from '../common/opened-tabs';
@@ -115,7 +116,7 @@ export class ZonesStateService {
             // Load every page so the list matches the tab count
             const data = await collectPages(
                 querySystems({ zone_id: item.id, limit: 500 }),
-            ).catch(() => [] as PlaceSystem[]);
+            ).catch(reportLoadError([] as PlaceSystem[]));
             return { data, total: data.length };
         },
     });
@@ -128,7 +129,7 @@ export class ZonesStateService {
             const { item } = params;
             const empty = { data: [] as PlaceTrigger[], total: 0 };
             if (!(item instanceof PlaceZone) || isSubsystemUser()) return empty;
-            return listZoneTriggers(item.id).catch(() => empty);
+            return listZoneTriggers(item.id).catch(reportLoadError(empty));
         },
     });
 
@@ -166,7 +167,7 @@ export class ZonesStateService {
             // Load every page so the list matches the tab count
             const data = await collectPages(
                 queryZones({ parent_id: item.id, limit: 500 }),
-            ).catch(() => [] as PlaceZone[]);
+            ).catch(reportLoadError([] as PlaceZone[]));
             return { data, total: data.length };
         },
     });
@@ -188,7 +189,7 @@ export class ZonesStateService {
             const response = await queryGroupZones({
                 zone_id: item.id,
                 limit: full ? 1000 : 1,
-            }).catch(() => empty);
+            }).catch(reportLoadError(empty));
             if (!full) return { ...empty, total: response.total };
             return {
                 total: response.total,
