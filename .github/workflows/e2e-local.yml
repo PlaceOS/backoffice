@@ -1,0 +1,201 @@
+name: E2E LOCAL (advisory)
+
+# Runs the local-backend e2e suite (e2e/src/local) against the isolated
+# PlaceOS stack in e2e/stack, on a self-hosted runner. See "CI" in
+# e2e/README.md.
+#
+# ADVISORY: do not add this job to branch protection or the required checks
+# until the suite has a track record (no false failures, a known flake rate).
+# That is a repository setting; nothing in this file can make it required.
+#
+# There is NO `pull_request` trigger, on purpose. This repository is public and
+# the runner is self-hosted, so a fork pull request could run any code on a
+# machine in an internal network. Every trigger here needs write access to the
+# repository. Do not add `pull_request` without a move to `ubuntu-latest`.
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            # The branches BUILD deploys from
+            - develop
+            - 'release/**'
+            - 'rc/**'
+            # To work on this suite and this workflow
+            - 'e2e/**'
+    schedule:
+        # Daily. Scheduled runs use the default branch only. 30 minutes after
+        # the user-interfaces nightly, which can share the runner.
+        - cron: '40 1 * * *'
+
+# The event is in the group, so a push to develop does not cancel a nightly
+# run on the same ref.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+    cancel-in-progress: true
+
+# The job only reads the code. The runner machine is persistent, so it must not
+# hold a token that can push.
+permissions:
+    contents: read
+
+jobs:
+    e2e-local:
+        name: 'local e2e (advisory, does not block builds)'
+        # Targeted by its custom label, so the machine can change without an
+        # edit here. The runner must be registered for this repository.
+        runs-on: [self-hosted, placeos-e2e]
+        timeout-minutes: 30
+        env:
+            E2E_BACKEND_URL: https://localhost:9543
+            E2E_APP_URL: http://localhost:4216
+            TZ: 'Etc/UTC'
+        steps:
+            # Checkout otherwise writes the token to .git/config, which stays on
+            # this machine
+            - uses: actions/checkout@v6
+              with:
+                  persist-credentials: false
+
+            # No actions/cache and no setup-node: the workspace and toolchain
+            # stay on this machine, and an upload to the remote cache costs more
+            # than it saves. no-cache keeps bun out of the GitHub cache. Keep the
+            # version the same as test.yml and build.yml.
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: '1.3.11'
+                  no-cache: true
+
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+
+            - name: Setup version
+              run: bun run postinstall
+
+            # This machine is not a fresh VM. An aborted run can leave the
+            # stack up or the dev server port held.
+            - name: Reclaim the machine from an earlier run
+              run: |
+                  e2e/stack/down.sh --volumes || true
+                  lsof -nP -iTCP:4216 -sTCP:LISTEN -t 2>/dev/null | xargs kill -9 2>/dev/null || true
+                  docker image prune -f || true
+
+            - name: Install Playwright browser
+              run: bunx playwright install chromium
+
+            # Without a pull, `latest` stays the image of the day the runner was
+            # set up. A pull that fails or stalls must not fail the run: the
+            # stack then starts on the images that are present, and the next
+            # step records which.
+            - name: Pull the current backend images
+              timeout-minutes: 15
+              continue-on-error: true
+              run: e2e/stack/up.sh --pull-only
+
+            # Needs GitHub (frontend-loader clones PlaceOS/www-core for the
+            # /login page) and Docker Hub.
+            - name: Bring up the local PlaceOS stack
+              timeout-minutes: 10
+              run: e2e/stack/up.sh
+
+            # The PlaceOS images track ${PLACEOS_TAG:-latest}, so a result can
+            # change with no frontend commit. Record the image ids, so a changed
+            # nightly can be explained. Set PLACEOS_TAG in `env` to pin them.
+            - name: Record backend inputs
+              run: |
+                  {
+                      echo '### Backend inputs'
+                      echo
+                      echo '| image | id |'
+                      echo '|---|---|'
+                      docker compose -p backoffice-e2e -f e2e/stack/docker-compose.yml images \
+                          --format json 2>/dev/null \
+                        | node -e '
+                              let raw = "";
+                              process.stdin.on("data", (d) => (raw += d));
+                              process.stdin.on("end", () => {
+                                  let rows = [];
+                                  try { rows = JSON.parse(raw); } catch { return; }
+                                  for (const r of rows) {
+                                      console.log(`| ${r.Repository}:${r.Tag} | \`${(r.ID || "").slice(0, 19)}\` |`);
+                                  }
+                              });
+                          ' || true
+                      echo
+                      echo "www-core HEAD: \`$(git ls-remote https://github.com/PlaceOS/www-core HEAD | cut -f1)\`"
+                  } >> "$GITHUB_STEP_SUMMARY"
+
+            - name: Run local e2e
+              run: bun run e2e:local
+
+            - name: Summarise results
+              if: ${{ always() }}
+              run: node e2e/stack/ci-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+
+            # Every service, not a selected list: the log that explains a
+            # failure is often from a service nobody expected.
+            - name: Collect backend logs
+              if: ${{ failure() }}
+              working-directory: e2e/stack
+              run: |
+                  mkdir -p ../../e2e-logs
+                  docker compose -p backoffice-e2e ps --all > ../../e2e-logs/_ps.txt 2>&1 || true
+                  for svc in $(docker compose -p backoffice-e2e config --services 2>/dev/null); do
+                      docker compose -p backoffice-e2e logs --no-color "$svc" \
+                          > "../../e2e-logs/$svc.log" 2>&1 || true
+                  done
+
+            - name: Upload Playwright report
+              if: ${{ always() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-report-local
+                  path: |
+                      dist/.playwright/e2e-local/report
+                      dist/.playwright/e2e-local/results.json
+                  retention-days: 14
+                  if-no-files-found: warn
+
+            - name: Upload failure artifacts
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-failures-local
+                  path: |
+                      dist/.playwright/e2e-local/test-output
+                      e2e-logs
+                  retention-days: 14
+                  if-no-files-found: warn
+
+            # The volumes go too: every run starts from a cold stack
+            - name: Tear down the stack
+              if: ${{ always() }}
+              run: e2e/stack/down.sh --volumes
+
+            # Only on failure, so a green run stays quiet. Plain curl, not a
+            # third-party action at a mutable ref: this runs on a persistent
+            # machine. The secrets go through `env`, so they are not on the
+            # command line.
+            - name: Notify on failure
+              if: ${{ failure() }}
+              continue-on-error: true
+              env:
+                  STATUS_URL: ${{ secrets.STATUS_URL }}
+                  CHAT_URL: ${{ secrets.CHAT_URL }}
+                  REPO: ${{ github.repository }}
+                  COMMIT: ${{ github.sha }}
+                  BRANCH: ${{ github.ref_name }}
+                  RUN_ID: ${{ github.run_id }}
+              run: |
+                  node -e '
+                      process.stdout.write(JSON.stringify({
+                          chat_url: process.env.CHAT_URL,
+                          name: process.env.REPO,
+                          commit: process.env.COMMIT,
+                          branch: process.env.BRANCH,
+                          url: `https://github.com/${process.env.REPO}/actions/runs/${process.env.RUN_ID}`,
+                          pipeline_name: "backoffice e2e local (advisory) FAILED",
+                          status: "failure",
+                      }));
+                  ' | curl --silent --show-error --fail --max-time 30 \
+                      --header 'Content-Type: application/json' --data @- "$STATUS_URL"
