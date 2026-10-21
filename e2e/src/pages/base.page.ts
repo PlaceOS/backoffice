@@ -39,9 +39,6 @@ export abstract class BasePage {
         await this.page
             .waitForSelector('sidebar-menu, item-sidebar', { timeout: 30000 })
             .catch(() => undefined);
-
-        // Wait for any progress bars to complete
-        await this.page.waitForTimeout(500);
     }
 
     /**

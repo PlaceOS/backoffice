@@ -19,7 +19,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 3
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
@@ -82,25 +82,10 @@ jobs:
             - name: Setup version
               run: bun run postinstall
 
-            - name: Get Playwright version
-              id: playwright
-              run: echo "version=$(bunx playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
-
-            - name: Cache Playwright browsers
-              id: playwright-cache
-              uses: actions/cache@v5
-              with:
-                  path: ~/.cache/ms-playwright
-                  key: ${{ runner.os }}-playwright-${{ steps.playwright.outputs.version }}-${{ env.CHROMIUM_ONLY == 'true' && 'chromium' || 'all' }}
-
+            # A browser cache saves no time here: a hit still installs the
+            # system packages, and a restore takes about as long as a download.
             - name: Install Playwright browsers
-              if: steps.playwright-cache.outputs.cache-hit != 'true'
               run: bunx playwright install --with-deps ${{ env.CHROMIUM_ONLY == 'true' && 'chromium' || '' }}
-
-            # The cache holds the browsers only. The system packages still need to be installed.
-            - name: Install Playwright system dependencies
-              if: steps.playwright-cache.outputs.cache-hit == 'true'
-              run: bunx playwright install-deps ${{ env.CHROMIUM_ONLY == 'true' && 'chromium' || '' }}
 
             - name: Run E2E tests
               run: bunx nx e2e e2e ${{ env.CHROMIUM_ONLY == 'true' && '-- --project=chromium --project=mobile-chrome' || '' }}
