@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
@@ -7,10 +7,7 @@ import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
-import {
-    isSubsystemUser,
-    querySupportSystems as querySystems,
-} from '../common/support-access';
+import { isSubsystemUser } from '../common/support-access';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
@@ -20,6 +17,7 @@ import { ItemSidebarComponent } from '../ui/item-sidebar.component';
 import { ItemTablistComponent } from '../ui/item-tablist.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
 import { TranslatePipe } from '../ui/translate.pipe';
+import { ModuleStateService } from './module-state.service';
 
 @Component({
     selector: 'new-modules-view',
@@ -114,6 +112,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 export class ModulesComponent {
     private _service = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
+    private _module_state = inject(ModuleStateService);
 
     public readonly name = 'modules';
     public readonly item = computed(
@@ -121,7 +120,7 @@ export class ModulesComponent {
     );
     public readonly loading = this._service.loading;
     /** Number of systems for the active device */
-    public readonly system_count = signal(undefined);
+    public readonly system_count = this._module_state.system_total;
     public readonly open_menu = signal(false);
     public readonly scroll = signal(0);
     public readonly debug_position = this._debug.position;
@@ -152,23 +151,4 @@ export class ModulesComponent {
             ...this.extensions(),
         ].filter((tab) => !isSubsystemUser() || !['history'].includes(tab.id)),
     );
-
-    constructor() {
-        effect(() => {
-            const item = this.item();
-            this.system_count.set(undefined);
-            this.loadValues(item);
-        });
-    }
-
-    protected async loadValues(item: PlaceModule) {
-        if (!item) return;
-        const query: Record<string, unknown> = {
-            offset: 0,
-            limit: 1,
-            module_id: item.id,
-        };
-        // Get system count
-        this.system_count.set((await querySystems(query)).total);
-    }
 }

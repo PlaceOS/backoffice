@@ -59,6 +59,17 @@ describe('UserPipe', () => {
             expect(second_call_count).toBe(first_call_count);
         });
 
+        it('should share a request that is in flight', async () => {
+            const { showUser } = await import('@placeos/ts-client');
+
+            await Promise.all([
+                pipe.transform('user-789'),
+                new UserPipe().transform('user-789'),
+            ]);
+
+            expect(showUser).toHaveBeenCalledTimes(1);
+        });
+
         it('should return user with expected properties', async () => {
             const result = await pipe.transform('test-user');
             expect(result).toHaveProperty('id');

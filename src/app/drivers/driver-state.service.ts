@@ -56,15 +56,20 @@ export class DriverStateService {
     private readonly _modules = resource({
         params: () => ({ item: this.item(), changed: this._modules_change() }),
         loader: async ({ params: { item } }) => {
-            if (!(item instanceof PlaceDriver)) return [] as PlaceModule[];
+            if (!(item instanceof PlaceDriver))
+                return { data: [] as PlaceModule[], total: 0 };
             const response = await queryModules({
                 driver_id: item.id,
-            }).catch(() => ({ data: [] }));
-            return response.data;
+            }).catch(() => ({ data: [] as PlaceModule[], total: 0 }));
+            return { data: response.data, total: response.total };
         },
     });
 
-    public readonly modules = computed(() => this._modules.value() || []);
+    public readonly modules = computed(() => this._modules.value()?.data || []);
+    /** Total modules of the driver, or `undefined` while loading */
+    public readonly modules_total = computed(() =>
+        this._modules.isLoading() ? undefined : this._modules.value()?.total,
+    );
 
     private readonly _docs = resource({
         params: () => this.item(),

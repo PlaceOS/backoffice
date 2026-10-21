@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import {
     moduleSettings,
     PlaceModule,
+    PlaceSystem,
     showDriver,
     showEdge,
     showSystem,
@@ -72,13 +73,14 @@ export class ModuleStateService {
     private readonly _system_list = resource({
         params: () => this.item(),
         loader: async ({ params: item }) => {
-            if (!(item instanceof PlaceModule)) return [];
+            if (!(item instanceof PlaceModule))
+                return { data: [] as PlaceSystem[], total: 0 };
             this._loading.set(true);
             try {
                 const response = await querySystems({
                     module_id: item.id,
-                }).catch(() => ({ data: [] }));
-                return response.data;
+                }).catch(() => ({ data: [] as PlaceSystem[], total: 0 }));
+                return { data: response.data, total: response.total };
             } finally {
                 this._loading.set(false);
             }
@@ -86,7 +88,13 @@ export class ModuleStateService {
     });
     /** Systems associated with the active module */
     public readonly system_list = computed(
-        () => this._system_list.value() || [],
+        () => this._system_list.value()?.data || [],
+    );
+    /** Total systems of the active module, or `undefined` while loading */
+    public readonly system_total = computed(() =>
+        this._system_list.isLoading()
+            ? undefined
+            : this._system_list.value()?.total,
     );
 
     public get active_item(): PlaceModule {

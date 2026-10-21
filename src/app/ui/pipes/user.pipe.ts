@@ -1,20 +1,23 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { PlaceUser, showUser } from '@placeos/ts-client';
 
-const USERS: PlaceUser[] = [];
+/** User lookups by ID, email or card number. Requests in flight are shared. */
+const USERS = new Map<string, Promise<PlaceUser>>();
 
 @Pipe({
     name: 'user',
 })
 export class UserPipe implements PipeTransform {
-    public async transform(id: string): Promise<PlaceUser> {
-        if (!id) return {} as PlaceUser;
-        let user = USERS.find(
-            (_) => _.id === id || _.email === id || _.card_number === id,
-        );
+    public transform(id: string): Promise<PlaceUser> {
+        if (!id) return Promise.resolve({} as PlaceUser);
+        let user = USERS.get(id);
         if (!user) {
-            user = await showUser(id);
-            USERS.push(user);
+            // Drop a failed lookup so that a later render can try again
+            user = showUser(id).catch(() => {
+                USERS.delete(id);
+                return {} as PlaceUser;
+            });
+            USERS.set(id, user);
         }
         return user;
     }
