@@ -28,6 +28,7 @@ All notable changes to this project will be documented in this file.
 #### Admin
 
 - MQTT re-sync and clear & re-sync on the database page
+- Configure tenant maximum booking length (#327)
 
 ### Performance
 
