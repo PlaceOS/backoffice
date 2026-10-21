@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock @angular/core signal
 vi.mock('@angular/core', () => ({
@@ -17,13 +17,13 @@ vi.mock('@placeos/ts-client', () => ({
     setup: vi.fn().mockResolvedValue(undefined),
 }));
 
+import { setup } from '@placeos/ts-client';
 import {
     getLoadingMessage,
+    PlaceSettings,
     setLoadingMessage,
     setupPlace,
-    PlaceSettings,
 } from '../../app/common/placeos';
-import { setup } from '@placeos/ts-client';
 
 describe('placeos.ts', () => {
     beforeEach(() => {
@@ -173,6 +173,44 @@ describe('placeos.ts', () => {
                     token_uri: expect.stringContaining('api.example.com'),
                 }),
             );
+        });
+
+        describe('on localhost', () => {
+            const settings: PlaceSettings = {
+                protocol: 'http:',
+                domain: '',
+                port: 4216,
+                route: '/backoffice',
+                use_domain: false,
+                local_login: false,
+                mock: false,
+            };
+
+            afterEach(() => window.history.pushState({}, '', '/'));
+
+            it('drops the route when a dev server serves the app at the root', async () => {
+                window.history.pushState({}, '', '/');
+
+                await setupPlace(settings);
+
+                expect(setup).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        redirect_uri: `${location.origin}/oauth-resp.html`,
+                    }),
+                );
+            });
+
+            it('keeps the route when the app is served under it', async () => {
+                window.history.pushState({}, '', '/backoffice/');
+
+                await setupPlace(settings);
+
+                expect(setup).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        redirect_uri: `${location.origin}/backoffice/oauth-resp.html`,
+                    }),
+                );
+            });
         });
 
         it('should return a promise', () => {
