@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/pipes/markdown.pipe.ts"
+  ],
+  "sourcesContent": [
+    "import { Pipe, PipeTransform, inject } from '@angular/core';\nimport { DomSanitizer, SafeHtml } from '@angular/platform-browser';\n\n// marked and Shiki load on first use, so pages without markdown skip them.\nconst loadRenderer = () => import('./markdown-render');\n\n@Pipe({\n    name: 'markdown',\n    standalone: true,\n})\nexport class MarkdownPipe implements PipeTransform {\n    private readonly sanitizer = inject(DomSanitizer);\n    private readonly cache = new Map<string, Promise<SafeHtml>>();\n\n    public transform(value: string | null | undefined): Promise<SafeHtml> {\n        const markdown = value || '';\n        if (!this.cache.has(markdown)) {\n            this.cache.set(\n                markdown,\n                loadRenderer()\n                    .then(({ renderMarkdown }) => renderMarkdown(markdown))\n                    .then((html) =>\n                        this.sanitizer.bypassSecurityTrustHtml(html),\n                    ),\n            );\n        }\n        return this.cache.get(markdown) as Promise<SafeHtml>;\n    }\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;AAIA,IAAM,eAAe,MAAM,OAAO,qBAAmB;AAM/C,IAAO,eAAP,MAAO,cAAqC;EAC7B,YAAY,OAAO,YAAY;EAC/B,QAAQ,oBAAI,IAA6B;EAEnD,UAAU,OAAoD;AACjE,UAAM,WAAW,SAAS;AAC1B,QAAI,CAAC,KAAK,MAAM,IAAI,QAAQ,GAAG;AAC3B,WAAK,MAAM,IACP,UACA,aAAY,EACP,KAAK,CAAC,EAAE,eAAc,MAAO,eAAe,QAAQ,CAAC,EACrD,KAAK,CAAC,SACH,KAAK,UAAU,wBAAwB,IAAI,CAAC,CAC/C;IAEb;AACA,WAAO,KAAK,MAAM,IAAI,QAAQ;EAClC;;qCAjBS,eAAY;EAAA;uFAAZ,eAAY,MAAA,KAAA,CAAA;;;sEAAZ,cAAY,CAAA;UAJxB;WAAK;MACF,MAAM;MACN,YAAY;KACf;;;",
+  "names": [],
+  "debugId": "c9292848-97e9-52e1-9707-ed46e1834d51"
+}

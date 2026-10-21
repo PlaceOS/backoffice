@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/pipes/user.pipe.ts"
+  ],
+  "sourcesContent": [
+    "import { Pipe, PipeTransform } from '@angular/core';\nimport { PlaceUser, showUser } from '@placeos/ts-client';\n\n/** User lookups by ID, email or card number. Requests in flight are shared. */\nconst USERS = new Map<string, Promise<PlaceUser>>();\n\n@Pipe({\n    name: 'user',\n})\nexport class UserPipe implements PipeTransform {\n    public transform(id: string): Promise<PlaceUser> {\n        if (!id) return Promise.resolve({} as PlaceUser);\n        let user = USERS.get(id);\n        if (!user) {\n            // Drop a failed lookup so that a later render can try again\n            user = showUser(id).catch(() => {\n                USERS.delete(id);\n                return {} as PlaceUser;\n            });\n            USERS.set(id, user);\n        }\n        return user;\n    }\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;AAIA,IAAM,QAAQ,oBAAI,IAA8B;AAK1C,IAAO,WAAP,MAAO,UAAiC;EACnC,UAAU,IAA+B;AAC5C,QAAI,CAAC;AAAI,aAAO,QAAQ,QAAQ,CAAA,CAAe;AAC/C,QAAI,OAAO,MAAM,IAAI,EAAE;AACvB,QAAI,CAAC,MAAM;AAEP,aAAO,GAAS,EAAE,EAAE,MAAM,MAAK;AAC3B,cAAM,OAAO,EAAE;AACf,eAAO,CAAA;MACX,CAAC;AACD,YAAM,IAAI,IAAI,IAAI;IACtB;AACA,WAAO;EACX;;qCAbS,WAAQ;EAAA;mFAAR,WAAQ,MAAA,KAAA,CAAA;;;sEAAR,UAAQ,CAAA;UAHpB;WAAK;MACF,MAAM;KACT;;;",
+  "names": [],
+  "debugId": "8196e5af-337a-5dd0-b976-d8259cc9108a"
+}

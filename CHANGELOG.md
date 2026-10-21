@@ -30,10 +30,16 @@ All notable changes to this project will be documented in this file.
 #### Build
 
 - Self-host fonts, shrink icon fonts and speed up CI
+- Shallow BUILD checkout, smaller Monaco copy, faster e2e
+
+#### Systems
+
+- Load tab lists on demand and reload only what changed
 
 #### Ui
 
 - Cut per-tick work in tables, forms and lists
+- Virtual rows for large lists and a lazy markdown renderer
 
 ## [2610.1] - 2026-10-08
 
