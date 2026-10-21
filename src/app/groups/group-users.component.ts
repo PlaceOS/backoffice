@@ -37,14 +37,17 @@ import { GroupStateService } from './group-state.service';
                     {{ 'GROUPS.USERS_BULK' | translate }}
                 </button>
             </section>
-            <section class="h-1/2 min-h-0 w-full flex-1 overflow-auto px-4">
+            <section
+                class="flex h-1/2 min-h-0 w-full flex-1 flex-col overflow-auto px-4"
+            >
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="loading() !== true"
                 />
                 <simple-table
-                    class="block min-w-[56rem] text-sm"
+                    class="block min-h-0 w-full min-w-[56rem] flex-1 text-sm"
+                    [virtual_row_height]="72"
                     [data]="users"
                     [columns]="[
                         {
@@ -83,12 +86,13 @@ import { GroupStateService } from './group-state.service';
         </ng-template>
         <ng-template #permissions_template let-row="row">
             <div class="flex flex-wrap gap-1 px-4 py-2">
-                @for (label of permissionLabels(row.permissions); track label) {
+                @let labels = permissionLabels(row.permissions);
+                @for (label of labels; track label) {
                     <span class="bg-base-200 rounded px-2 py-1 text-xs">
                         {{ label | translate }}
                     </span>
                 }
-                @if (!permissionLabels(row.permissions).length) {
+                @if (!labels.length) {
                     <span class="opacity-30">{{
                         'COMMON.NONE' | translate
                     }}</span>

@@ -73,26 +73,40 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         <mat-select
                             [(ngModel)]="first"
                             (selectionChange)="select(0, $event.value)"
+                            (openedChange)="first_open.set($event)"
                             placeholder="Select metadata version"
                         >
-                            @for (item of history(); track item.updated_at) {
-                                <mat-option
-                                    [value]="item"
-                                    class="leading-tight"
-                                >
-                                    <div class="">
-                                        {{
-                                            item.updated_at
-                                                | date: 'mediumDate'
-                                        }},
-                                        {{
-                                            item.updated_at | date: 'shortTime'
-                                        }}
-                                    </div>
-                                    <div class="truncate text-xs opacity-30">
-                                        {{ item.description }}
-                                    </div>
-                                </mat-option>
+                            @for (
+                                item of history();
+                                track item;
+                                let i = $index
+                            ) {
+                                @if (
+                                    first_open() ||
+                                    i < CLOSED_OPTIONS ||
+                                    item === first
+                                ) {
+                                    <mat-option
+                                        [value]="item"
+                                        class="leading-tight"
+                                    >
+                                        <div class="">
+                                            {{
+                                                item.updated_at
+                                                    | date: 'mediumDate'
+                                            }},
+                                            {{
+                                                item.updated_at
+                                                    | date: 'shortTime'
+                                            }}
+                                        </div>
+                                        <div
+                                            class="truncate text-xs opacity-30"
+                                        >
+                                            {{ item.description }}
+                                        </div>
+                                    </mat-option>
+                                }
                             }
                         </mat-select>
                         @if (first) {
@@ -105,10 +119,20 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         <mat-select
                             [(ngModel)]="second"
                             (selectionChange)="select(1, $event.value)"
+                            (openedChange)="second_open.set($event)"
                             placeholder="Compare with"
                         >
-                            @for (item of history(); track item.updated_at) {
-                                @if (item !== first) {
+                            @for (
+                                item of history();
+                                track item;
+                                let i = $index
+                            ) {
+                                @if (
+                                    item !== first &&
+                                    (second_open() ||
+                                        i < CLOSED_OPTIONS ||
+                                        item === second())
+                                ) {
                                     <mat-option
                                         [value]="item"
                                         class="leading-tight"
@@ -184,6 +208,12 @@ export class MetadataHistoryModalComponent implements OnInit {
 
     public first = null;
     public readonly second = signal(null);
+    // The history can hold thousands of versions. A closed select renders
+    // only a few options and the selected one; mat-select does not open
+    // without options.
+    public readonly CLOSED_OPTIONS = 20;
+    public readonly first_open = signal(false);
+    public readonly second_open = signal(false);
     public readonly first_details = signal('');
     public readonly second_details = signal('');
 

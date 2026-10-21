@@ -39,9 +39,13 @@ shares concurrent requests, has a 30-second timeout, and permits retry. Componen
 must check whether they were destroyed before creating an editor after the load.
 
 `markdown-languages.ts` lists the existing web languages and aliases explicitly.
-Only `github-dark` is packaged. Shiki uses the JavaScript regex engine, so the
-Oniguruma wasm is not downloaded. Add new language loaders there. Importing the
+Add new language loaders there. Only `github-dark` is packaged. Shiki uses the
+JavaScript regex engine, so the Oniguruma wasm is not downloaded. Importing the
 Shiki web preset at runtime also brings its unused theme registry into the build.
+
+The markdown pipe loads `markdown-render.ts`, which holds marked and Shiki, on
+first use. Pages without markdown do not download them. Do not import that file
+statically.
 
 ## Themes and caching
 

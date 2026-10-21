@@ -1,4 +1,4 @@
-import { Component, Type, inject, signal } from '@angular/core';
+import { Component, Type, computed, inject, signal } from '@angular/core';
 import {
     MAT_DIALOG_DATA,
     MatDialogModule,
@@ -100,7 +100,7 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
                 @case ('status') {
                     <bulk-item-status-list
                         [save]="save"
-                        [list]="item_list"
+                        [list]="item_list()"
                         (done)="done()"
                         (close_modal)="close()"
                     />
@@ -110,8 +110,8 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
                         [(list)]="item_list"
                         [fields]="available_fields"
                         [required_fields]="required_fields"
-                        [validation_errors]="validation_errors"
-                        [duplicate_warnings]="duplicate_warnings"
+                        [validation_errors]="validation_errors()"
+                        [duplicate_warnings]="duplicate_warnings()"
                         [show_start_modules]="is_system"
                         (next)="showStatus()"
                         (previous)="goTo('match-fields')"
@@ -177,7 +177,7 @@ export class BulkItemModalComponent<
         { id: 'status', label: 'Create' },
     ];
     /** List of items to bulk add */
-    public item_list: HashMap<unknown>[] = [];
+    public readonly item_list = signal<HashMap<unknown>[]>([]);
     /** List of raw data to use for bulk add */
     public data_list: HashMap<unknown>[] = [];
     /** Whether requests are being processed */
@@ -207,13 +207,10 @@ export class BulkItemModalComponent<
         return this._required_fields;
     }
 
-    public get validation_errors(): string[] {
-        return this.validateItems();
-    }
-
-    public get duplicate_warnings(): string[] {
-        return this.findDuplicates();
-    }
+    /** Missing required fields, checked again only when the list changes */
+    public readonly validation_errors = computed(() => this.validateItems());
+    /** Duplicate names or emails, checked again only when the list changes */
+    public readonly duplicate_warnings = computed(() => this.findDuplicates());
 
     constructor() {
         this.available_fields = this.getAvailableFields();
@@ -232,11 +229,13 @@ export class BulkItemModalComponent<
         }
         if (is_mapped) {
             const Resource = this._data.constr;
-            this.item_list = data.map((item) => {
-                // Values are already parsed by csvToJson/parseCSV,
-                // so no need for additional JSON.parse here
-                return new Resource(item);
-            });
+            this.item_list.set(
+                data.map((item) => {
+                    // Values are already parsed by csvToJson/parseCSV,
+                    // so no need for additional JSON.parse here
+                    return new Resource(item);
+                }),
+            );
             this.goTo('list');
         } else {
             // A new file may have different columns, so drop old mappings
@@ -247,13 +246,11 @@ export class BulkItemModalComponent<
     }
 
     public showStatus() {
-        const validation_errors = this.validateItems();
-        if (validation_errors.length > 0) {
+        if (this.validation_errors().length > 0) {
             notifyError('Fix the highlighted validation errors before saving.');
             return;
         }
-        const duplicates = this.findDuplicates();
-        if (duplicates.length > 0) {
+        if (this.duplicate_warnings().length > 0) {
             notifyWarn('Duplicate values were found. Saving will continue.');
         }
         this.loading = true;
@@ -338,7 +335,7 @@ export class BulkItemModalComponent<
 
     private validateItems(): string[] {
         const errors: string[] = [];
-        this.item_list.forEach((item, index) => {
+        this.item_list().forEach((item, index) => {
             for (const field of this._required_fields) {
                 const value = item[field];
                 if (value === undefined || value === null || value === '') {
@@ -357,7 +354,7 @@ export class BulkItemModalComponent<
         const dedup_field =
             this._data.constr === (PlaceUser as unknown) ? 'email' : 'name';
 
-        this.item_list.forEach((item, index) => {
+        this.item_list().forEach((item, index) => {
             const key = String(item[dedup_field] || '')
                 .toLowerCase()
                 .trim();
