@@ -30,7 +30,12 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 <h3 class="text-xl font-medium">
                     {{ 'COMMON.METADATA_HISTORY' | translate }}
                 </h3>
-                <button icon matRipple mat-dialog-close>
+                <button
+                    icon
+                    matRipple
+                    mat-dialog-close
+                    [attr.aria-label]="'COMMON.CLOSE' | translate"
+                >
                     <icon>close</icon>
                 </button>
             </div>

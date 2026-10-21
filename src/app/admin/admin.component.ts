@@ -12,6 +12,7 @@ import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemTab } from '../ui/item-tablist.component';
 import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
+import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
     selector: 'app-engine',
@@ -51,6 +52,7 @@ import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
                         matRipple
                         class="absolute top-2 left-4 z-40 mr-2 sm:hidden"
                         (click)="open_menu = true"
+                        [attr.aria-label]="'COMMON.MENU' | translate"
                     >
                         <icon>menu</icon>
                     </button>
@@ -81,6 +83,7 @@ import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
         `,
     ],
     imports: [
+        TranslatePipe,
         DebugOutputComponent,
         IconComponent,
         MatRippleModule,

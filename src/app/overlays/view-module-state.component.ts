@@ -35,7 +35,12 @@ export interface ModuleStateModalData {
             <h3 class="text-xl font-medium">
                 {{ 'MODULES.STATE' | translate }}
             </h3>
-            <button icon matRipple mat-dialog-close>
+            <button
+                icon
+                matRipple
+                mat-dialog-close
+                [attr.aria-label]="'COMMON.CLOSE' | translate"
+            >
                 <icon>close</icon>
             </button>
         </div>

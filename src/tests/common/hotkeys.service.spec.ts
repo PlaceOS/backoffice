@@ -159,6 +159,23 @@ describe('HotkeysService', () => {
         });
     });
 
+    describe('focused controls', () => {
+        it('ignores keys while a select has focus', () => {
+            const callback = vi.fn();
+            const subscription = service.listen(['ArrowRight'], callback);
+            const select = document.createElement('div');
+            select.setAttribute('role', 'combobox');
+            select.tabIndex = 0;
+            document.body.appendChild(select);
+            select.focus();
+            keyEvent('keydown', 'ArrowRight');
+            keyEvent('keyup', 'ArrowRight');
+            expect(callback).not.toHaveBeenCalled();
+            select.remove();
+            subscription?.unsubscribe();
+        });
+    });
+
     describe('modifier keys', () => {
         it('ignores a single key combination while Control or Meta is held', () => {
             const callback = vi.fn();

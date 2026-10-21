@@ -1,4 +1,6 @@
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatTooltip } from '@angular/material/tooltip';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ApplicationIcon } from '../../../app/common/types';
 import { IconComponent } from '../../../app/ui/icon.component';
@@ -121,6 +123,40 @@ describe('IconComponent', () => {
             expect(wrapper.className).toContain('flex');
             expect(wrapper.className).toContain('items-center');
             expect(wrapper.className).toContain('justify-center');
+        });
+    });
+
+    describe('inside buttons', () => {
+        @Component({
+            imports: [IconComponent, MatTooltip],
+            template: `
+                <button matTooltip="More actions">
+                    <icon>more_vert</icon>
+                </button>
+                <button><icon>save</icon> Save</button>
+                <button><icon>warning</icon><icon>refresh</icon></button>
+            `,
+        })
+        class TestButtonsComponent {}
+
+        it('labels icon-only buttons from their tooltip and hides icon names', async () => {
+            const host = TestBed.createComponent(TestButtonsComponent);
+            host.detectChanges();
+            await host.whenStable();
+            const [icon_only, with_text, two_icons] =
+                host.nativeElement.querySelectorAll('button');
+            expect(icon_only.getAttribute('aria-label')).toBe('More actions');
+            expect(
+                icon_only.querySelector('icon').getAttribute('aria-hidden'),
+            ).toBe('true');
+            // Other icons are not text, so these stay readable
+            expect(
+                two_icons.querySelector('icon').hasAttribute('aria-hidden'),
+            ).toBe(false);
+            expect(with_text.hasAttribute('aria-label')).toBe(false);
+            expect(
+                with_text.querySelector('icon').getAttribute('aria-hidden'),
+            ).toBe('true');
         });
     });
 });

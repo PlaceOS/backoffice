@@ -23,7 +23,12 @@ import { TranslatePipe } from './translate.pipe';
             <h2 class="px-2 text-xl font-medium">
                 {{ 'COMMON.UPLOAD_FILE' | translate }}
             </h2>
-            <button icon matRipple mat-dialog-close>
+            <button
+                icon
+                matRipple
+                mat-dialog-close
+                [attr.aria-label]="'COMMON.CLOSE' | translate"
+            >
                 <icon>close</icon>
             </button>
         </header>

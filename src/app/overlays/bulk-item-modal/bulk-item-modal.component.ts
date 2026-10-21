@@ -66,7 +66,12 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
                 </p>
             </div>
             @if (!loading) {
-                <button icon matRipple mat-dialog-close>
+                <button
+                    icon
+                    matRipple
+                    mat-dialog-close
+                    [attr.aria-label]="'COMMON.CLOSE' | translate"
+                >
                     <icon>close</icon>
                 </button>
             }

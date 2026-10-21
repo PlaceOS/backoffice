@@ -20,6 +20,17 @@ const INVALID_STANDALONE_KEYS: string[] = [
 
 /** Modifier keys whose held state is read from the key event flags */
 const MODIFIER_KEYS: string[] = ['control', 'shift', 'alt', 'meta'];
+/** Focused controls that handle letter and arrow keys themselves */
+const KEYBOARD_WIDGETS = [
+    '[role="combobox"]',
+    '[role="listbox"]',
+    '[role="option"]',
+    '[role="menu"]',
+    '[role="menuitem"]',
+    '[role="radiogroup"]',
+    '[role="slider"]',
+    '[role="spinbutton"]',
+].join(', ');
 
 @Service()
 export class HotkeysService {
@@ -146,6 +157,11 @@ export class HotkeysService {
 
         // Check if inside a Monaco editor (used for settings forms)
         if (active.closest('.monaco-editor')) {
+            return true;
+        }
+
+        // Selects, menus and similar controls use letters and arrow keys
+        if (active.closest(KEYBOARD_WIDGETS)) {
             return true;
         }
 

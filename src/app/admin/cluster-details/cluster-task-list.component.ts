@@ -45,7 +45,12 @@ const task_details = {};
             <div
                 class="border-base-300 bg-base-200 sticky top-0 left-0 z-20 m-4 mb-4 flex w-[calc(100%-2rem)] items-center rounded-sm border p-2"
             >
-                <a icon matRipple [routerLink]="['/admin', 'clusters']">
+                <a
+                    icon
+                    matRipple
+                    [routerLink]="['/admin', 'clusters']"
+                    [attr.aria-label]="'COMMON.BACK' | translate"
+                >
                     <icon>arrow_back</icon>
                 </a>
                 <h3 class="text-lg font-medium">

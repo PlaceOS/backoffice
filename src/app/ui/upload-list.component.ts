@@ -42,7 +42,12 @@ import { TranslatePipe } from './translate.pipe';
                     >
                         <icon>clear_all</icon>
                     </button>
-                    <button icon matRipple (click)="show.set(false)">
+                    <button
+                        icon
+                        matRipple
+                        (click)="show.set(false)"
+                        [attr.aria-label]="'COMMON.CLOSE' | translate"
+                    >
                         <icon>close</icon>
                     </button>
                 </div>

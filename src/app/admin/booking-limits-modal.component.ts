@@ -73,8 +73,8 @@ export class BookingLimitsModalComponent {
             );
             const resp = await call.catch(() => null);
             this.loading.set(false);
-            if (!resp) return notifyError('Error adding new tenant.');
-            notifySuccess('Successfully added new tenant.');
+            if (!resp) return notifyError('Error saving booking limits.');
+            notifySuccess('Saved booking limits.');
             this._dialog_ref.close({ ...this.tenant, booking_limits: resp });
         });
     }

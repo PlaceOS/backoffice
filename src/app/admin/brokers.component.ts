@@ -15,6 +15,7 @@ import {
 
 import { AsyncHandler } from '../common/async-handler.class';
 import { describeError } from '../common/errors';
+import { escapeHtml } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { FormModalComponent } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -247,8 +248,9 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
             const details = await openConfirmModal(
                 {
                     title: `Delete MQTT Broker`,
-                    content: `<p>Are you sure you want delete this boker?</p><p>The broker will be deleted <strong>immediately.</strong></p>`,
+                    content: `<p>Delete the broker <strong>${escapeHtml(item.name)}</strong>?</p><p>The broker is deleted <strong>immediately</strong>.</p>`,
                     icon: { type: 'icon', content: 'delete' },
+                    destructive: true,
                 },
                 this._dialog,
             );

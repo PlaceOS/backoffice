@@ -56,7 +56,12 @@ interface PluginProbe {
             <h3 class="text-xl font-medium">
                 {{ 'ADMIN.SIGNAGE_PLUGINS_IMPORT' | translate }}
             </h3>
-            <button icon matRipple mat-dialog-close>
+            <button
+                icon
+                matRipple
+                mat-dialog-close
+                [attr.aria-label]="'COMMON.CLOSE' | translate"
+            >
                 <icon>close</icon>
             </button>
         </div>

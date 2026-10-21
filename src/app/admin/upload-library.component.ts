@@ -500,7 +500,7 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                             if (failed) {
                                 notifyError('Failed to upload files.');
                             } else if (success && finished) {
-                                notifySuccess('Succesfully uploaded files.');
+                                notifySuccess('Successfully uploaded files.');
                             }
                             this.clearTimeout('upload_list');
                             this.loading.set(false);

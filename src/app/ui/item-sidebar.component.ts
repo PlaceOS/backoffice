@@ -84,6 +84,7 @@ interface GroupTreeItem {
                             class="h-11 w-11"
                             [class.border-info]="selected_filters.length"
                             [class.text-info]="selected_filters.length"
+                            [attr.aria-label]="'COMMON.FILTER' | translate"
                         >
                             <icon class="m-2 text-2xl">filter_list</icon>
                         </button>

@@ -525,7 +525,7 @@ export class StaffTenantModalComponent {
         const invalid_credentials = this.credential_fields()
             .filter((field) => field.required)
             .filter((field) => !this.formModel().credentials[field.key])
-            .map((field) => field.key);
+            .map((field) => FIELD_NAME_MAPPING[field.key] || field.key);
         if (this.form().invalid() || invalid_credentials.length) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {

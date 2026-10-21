@@ -75,10 +75,22 @@ import { TranslatePipe } from '../translate.pipe';
                             actions
                             class="absolute top-0 right-0 left-0 flex items-center justify-center space-x-2 opacity-0"
                         >
-                            <button type="button" icon (click)="copyLink(url)">
+                            <button
+                                type="button"
+                                icon
+                                (click)="copyLink(url)"
+                                [attr.aria-label]="
+                                    'COMMON.COPY_LINK' | translate
+                                "
+                            >
                                 <icon>link</icon>
                             </button>
-                            <button type="button" icon (click)="viewImage(url)">
+                            <button
+                                type="button"
+                                icon
+                                (click)="viewImage(url)"
+                                [attr.aria-label]="'COMMON.VIEW' | translate"
+                            >
                                 <icon>visibility</icon>
                             </button>
                             <button
@@ -86,6 +98,7 @@ import { TranslatePipe } from '../translate.pipe';
                                 icon
                                 [disabled]="disabled()"
                                 (click)="removeImage(url)"
+                                [attr.aria-label]="'COMMON.REMOVE' | translate"
                             >
                                 <icon>close</icon>
                             </button>
@@ -101,6 +114,9 @@ import { TranslatePipe } from '../translate.pipe';
                     [style.transform]="'translate(-' + offset() + '00%)'"
                     [matTooltip]="item.error"
                     (click)="retryUpload(item)"
+                    [attr.aria-label]="
+                        item.error ? ('COMMON.RETRY' | translate) : null
+                    "
                 >
                     @if (!item.error) {
                         <mat-progress-spinner

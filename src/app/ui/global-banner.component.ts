@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MatRipple } from '@angular/material/core';
 import { SettingsService } from '../common/settings.service';
 import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 export interface BannerDetails {
     id: string;
@@ -25,7 +26,12 @@ export interface BannerDetails {
                 [class.text-error-content]="banner.type === 'error'"
             >
                 <div class="flex-1">{{ banner?.content }}</div>
-                <button icon matRipple (click)="close()">
+                <button
+                    icon
+                    matRipple
+                    (click)="close()"
+                    [attr.aria-label]="'COMMON.CLOSE' | translate"
+                >
                     <icon>close</icon>
                 </button>
             </div>
@@ -39,7 +45,7 @@ export interface BannerDetails {
             }
         `,
     ],
-    imports: [IconComponent, MatRipple],
+    imports: [TranslatePipe, IconComponent, MatRipple],
 })
 export class GlobalBannerComponent {
     private _settings = inject(SettingsService);

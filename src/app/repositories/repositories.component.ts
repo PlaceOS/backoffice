@@ -39,6 +39,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         matRipple
                         class="mr-2 sm:hidden"
                         (click)="open_menu.set(true)"
+                        [attr.aria-label]="'COMMON.MENU' | translate"
                     >
                         <icon>menu</icon>
                     </button>

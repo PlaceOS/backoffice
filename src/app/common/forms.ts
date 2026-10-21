@@ -17,12 +17,21 @@ export function removeSignalChipItem<T = string>(items: T[], item: T): T[] {
     return items.filter((existing) => existing !== item);
 }
 
+/** Readable name for a form field key, e.g. `service_account` to "Service account" */
+export function fieldLabel(key: string): string {
+    const words = key.replace(/_/g, ' ').trim();
+    return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+/** Readable names of the invalid top-level fields, for error messages */
 export function getInvalidSignalFields<T extends object>(
     form: FieldTree<T>,
 ): string[] {
     const value = form().value() as object;
-    return Object.keys(value).filter((key) => {
-        const field = form[key as keyof typeof form];
-        return typeof field === 'function' && field().invalid();
-    });
+    return Object.keys(value)
+        .filter((key) => {
+            const field = form[key as keyof typeof form];
+            return typeof field === 'function' && field().invalid();
+        })
+        .map(fieldLabel);
 }

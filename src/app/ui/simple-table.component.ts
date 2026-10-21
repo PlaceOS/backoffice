@@ -187,6 +187,7 @@ function sortKey(value: unknown): string {
                                     icon
                                     matRipple
                                     class="h-full w-full rounded-none"
+                                    aria-label="Drag to reorder"
                                     cdkDragHandle
                                 >
                                     <icon class="text-2xl">unfold_more</icon>

@@ -42,6 +42,7 @@ import { UsersStateService } from './users-state.service';
                         icon
                         class="mr-2 sm:hidden"
                         (click)="open_menu = true"
+                        [attr.aria-label]="'COMMON.MENU' | translate"
                     >
                         <icon>menu</icon>
                     </button>
