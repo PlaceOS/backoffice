@@ -10,7 +10,8 @@
         "test": "nx test",
         "test:ci": "nx test backoffice",
         "lint": "nx lint backoffice",
-        "e2e": "nx e2e backoffice"
+        "e2e": "nx e2e backoffice",
+        "e2e:local": "playwright test --config e2e/playwright.local.config.ts"
     },
     "private": true,
     "dependencies": {

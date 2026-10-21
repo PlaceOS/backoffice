@@ -39,8 +39,10 @@ export async function setupPlace(settings: PlaceSettings): Promise<void> {
     const url = settings.use_domain
         ? `${protocol}//${host}:${port}`
         : location.origin;
+    // A local dev server serves the app at the root, on any port
     const route =
-        host.includes('localhost') && port === '4200'
+        host.includes('localhost') &&
+        !location.pathname.startsWith(settings.route)
             ? ''
             : settings.route || '';
     const mock =

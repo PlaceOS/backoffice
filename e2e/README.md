@@ -1,6 +1,13 @@
 # E2E Tests for PlaceOS Backoffice
 
-These Playwright tests run the app against the mock backend in
+There are two suites:
+
+- **Mock** (`src/*.spec.ts`): the app runs against the mock backend. CI runs
+  this suite. Most of this document is about it.
+- **Local backend** (`src/local/*.spec.ts`): the app runs against a real
+  PlaceOS stack in Docker. See [Local backend](#local-backend).
+
+The mock tests run the app against the mock backend in
 `src/app/mocks/`. Each test gets a new browser context, so it starts with
 fresh mock data. The mock backend keeps creates, edits and deletes in session
 storage, so a change stays after `page.reload()` in the same test.
@@ -26,9 +33,9 @@ The config starts the dev server, or uses the server that runs on port 4200.
 CI runs `chromium` and `mobile-chrome` for pull requests to `develop`, and
 all projects on other branches.
 
-`USE_MOCK=false` stops the tests from switching on the mock backend. There is
-no sign-in flow for a live server, and most tests expect the mock data, so
-use this only to debug.
+`USE_MOCK=false` stops the tests from switching on the mock backend. Most
+tests expect the mock data, so use this only to debug. To test against a real
+backend, use the [local backend](#local-backend) suite.
 
 ## Coverage
 
@@ -91,3 +98,136 @@ Rules:
    assertions (`toHaveText`, `toHaveURL`, `toHaveCount`) wait for the app.
 6. The item list is virtual and shows only part of a long list. Search for an
    item before you look for it in a long list.
+
+## Local backend
+
+These specs run against a PlaceOS stack on your computer. They make, change
+and delete real data, so the config refuses a backend that is not on a
+loopback host. The stack and the suite are adapted from the
+`PlaceOS/user-interfaces` e2e stack.
+
+You need Docker with about 2 GB of free memory for the stack.
+
+```bash
+e2e/stack/up.sh                    # start the stack (--fresh: remove its data first, --pull: pull new images)
+bun run e2e:local                  # run the specs
+bun run e2e:local -- zones.spec    # run one spec file
+bun run e2e:local -- --ui          # UI mode
+e2e/stack/down.sh                  # stop the stack (--volumes: remove its data)
+```
+
+### The stack
+
+`e2e/stack/` is its own compose project (`backoffice-e2e`) with its own
+network, volumes and secrets. It uses ports 9543 (HTTPS) and 9180 (HTTP). Thus
+it can run at the same time as PlaceOS/local (8443) and the user-interfaces
+e2e stack (9443).
+
+It has: postgres, elasticsearch, redis, search-ingest, frontend-loader, auth,
+rest-api, staff-api, nginx and init. It does not have core, so no driver
+compiles and no module starts. Add core from the user-interfaces stack when a
+spec needs it.
+
+`up.sh` makes the secrets in `e2e/stack/.secrets/` (not in git), starts the
+services, waits for the API and the login page, and runs `init`. `init` makes
+the authority, the admin user (`support@place.tech` / `development`) and a
+zone tree.
+
+`frontend-loader` is necessary. It copies `PlaceOS/www-core` into the `www`
+volume, and the platform `/login` page comes from there. Thus the first
+start needs access to GitHub.
+
+### How a run works
+
+1. Playwright starts the dev server on port 4216, with its proxy
+   (`config/proxy.conf.js`) pointed at the stack. It does not use port 4200,
+   because a dev server there can proxy to a shared deployment.
+2. The `setup` project (`support/stack.setup.ts`) checks that the stack
+   answers, then seeds it (`support/seed.ts`). The seed is idempotent:
+    - It registers an OAuth app for `http://localhost:4216/oauth-resp.html`.
+      ts-client uses `Md5(redirect_uri)` as its client id, and the sign-in
+      fails if no app has that id.
+    - It makes the authority's `login_url` absolute. A new authority has a
+      relative `login_url`, and ts-client then sends the browser to
+      `http://localhost/login`, which has no port.
+    - It makes a user that is not an admin (`e2e-staff@place.tech`).
+3. The setup signs in as each user through the API (OAuth code + PKCE) and
+   writes a storageState to `e2e/.auth/` (not in git). These files hold
+   bearer tokens.
+4. The `local` project runs `src/local/*.spec.ts`. `page` is signed in as
+   the admin.
+
+### CI
+
+`.github/workflows/e2e-local.yml` runs this suite on a self-hosted runner
+with the label `placeos-e2e`. It runs:
+
+- on a push to `develop`, `release/**`, `rc/**` and `e2e/**`
+- every day at 01:40 UTC
+- from **Run workflow**
+
+It has no `pull_request` trigger. This repository is public, so a fork pull
+request could run any code on the runner. Do not add the trigger, except if
+the job moves to `ubuntu-latest`.
+
+The job is advisory. Do not make it a required check until it has a record of
+runs with no false failures.
+
+Each run removes what an earlier run left, pulls the images, starts the stack
+with no data, runs the suite and removes the stack and its volumes. The step
+summary shows the image ids and the flaky specs. On failure, the artifacts
+have the traces, the videos and the log of each service.
+
+To set up the runner machine, follow
+[`SELF_HOSTED_RUNNER.md`](https://github.com/PlaceOS/user-interfaces/blob/develop/e2e/stack/SELF_HOSTED_RUNNER.md)
+in `PlaceOS/user-interfaces`, with these changes:
+
+- Register the runner for `PlaceOS/backoffice` (a repository runner serves
+  one repository), or use an organisation runner for both repositories.
+- The suite uses ports 9543, 9180 and 4216, and the user-interfaces suite uses
+  9443, 9080 and 4214. Thus the two jobs can run on one machine at the same
+  time if it has the memory.
+
+### Write a local spec
+
+```typescript
+import { ENGINE_API, uniqueName } from '../../support/api';
+import { expect, test } from '../../support/fixtures';
+import { FeaturePage } from '../pages';
+
+test('AC-ZON-004-5: a renamed zone is saved', async ({ page, api }) => {
+    const res = await api.post(`${ENGINE_API}/zones`, {
+        data: { name: uniqueName('E2E Zone') },
+    });
+    const zone = await res.json();
+    try {
+        // ...change the zone in the UI with FeaturePage...
+        // ...then check the result through `api`, not only on the page
+    } finally {
+        await api.delete(`${ENGINE_API}/zones/${zone.id}`);
+    }
+});
+```
+
+Rules:
+
+1. Import `test` and `expect` from `support/fixtures`. The fixtures are:
+   `page` (signed in as the admin), `staffPage` (signed in as a user that is
+   not an admin) and `api` (an API context with an admin bearer).
+2. Each spec makes its own data with `uniqueName()` and removes it in a
+   `finally`. Specs run in parallel on the same stack.
+3. Check the result through the API. The page can show a change that the
+   backend did not save.
+4. Check access rules as `staffPage`. A sys_admin passes every check, so the
+   same test as the admin proves nothing.
+5. A spec about sign-in starts with no token:
+   `test.use({ storageState: { cookies: [], origins: [] } })`. See
+   `src/local/login.spec.ts`.
+6. Make the new assertion fail one time, and make sure that it fails for the
+   correct reason.
+
+| Spec                   | Covers                                               |
+| ---------------------- | ---------------------------------------------------- |
+| `local/login.spec.ts`  | Sign-in through the platform login page              |
+| `local/access.spec.ts` | An admin opens domains; other users get the 403 page |
+| `local/zones.spec.ts`  | Create, rename and delete a zone, checked on the API |

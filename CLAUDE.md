@@ -17,7 +17,10 @@ bun run build                          # Production build
 bun run test                           # Unit tests (Vitest)
 bun run test:ci                        # Tests sequentially (CI mode)
 bunx playwright install --with-deps
-bun run e2e                            # Playwright E2E tests
+bun run e2e                            # Playwright E2E tests (mock backend)
+e2e/stack/up.sh                        # Local PlaceOS stack in Docker (https://localhost:9543)
+bun run e2e:local                      # Playwright E2E tests against the local stack
+e2e/stack/down.sh                      # Stop the stack (--volumes to remove its data)
 
 # Linting
 bun run lint                           # ESLint
