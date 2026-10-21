@@ -31,7 +31,11 @@ import {
     querySupportZones as queryZones,
 } from '../common/support-access';
 import { DialogEvent, Identity } from '../common/types';
-import { GroupBulkAddModalComponent } from '../groups/group-bulk-add-modal.component';
+import {
+    GroupBulkAddModalComponent,
+    GroupBulkAddModalData,
+    GroupBulkAddResult,
+} from '../groups/group-bulk-add-modal.component';
 import { GroupPermissionsModalComponent } from '../groups/group-permissions-modal.component';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {
@@ -306,9 +310,13 @@ export class ZonesStateService {
     }
 
     public async bulkAddGroups(existing_groups: PlaceGroupZone[] = []) {
-        const groups = await waitForEvent(
+        const result = await waitForEvent(
             this._dialog
-                .open(GroupBulkAddModalComponent<PlaceGroup>, {
+                .open<
+                    GroupBulkAddModalComponent<PlaceGroup>,
+                    GroupBulkAddModalData<PlaceGroup>,
+                    GroupBulkAddResult<PlaceGroup>
+                >(GroupBulkAddModalComponent<PlaceGroup>, {
                     data: {
                         title: 'ZONES.GROUPS_BULK',
                         placeholder: 'GROUPS.SEARCH',
@@ -339,6 +347,7 @@ export class ZonesStateService {
                 })
                 .afterClosed(),
         );
+        const groups = result?.items;
         if (!groups?.length) return;
         this._saving.set(true);
         const results = await Promise.allSettled(

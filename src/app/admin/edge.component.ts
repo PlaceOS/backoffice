@@ -202,8 +202,14 @@ export class PlaceEdgeComponent implements OnInit {
         ref.afterClosed().subscribe((_) => {
             // Cancel keeps the last saved edge and its one-time API key
             if (!_) return;
-            sessionStorage.setItem('BACKOFFICE.last_edge', JSON.stringify(_));
-            this.last_change.set(_);
+            // Only creates return a key; edits must not hide the last one
+            if (_.x_api_key) {
+                sessionStorage.setItem(
+                    'BACKOFFICE.last_edge',
+                    JSON.stringify(_),
+                );
+                this.last_change.set(_);
+            }
             this.loadEdges();
         });
     }
