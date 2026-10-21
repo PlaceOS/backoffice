@@ -7,6 +7,7 @@ import {
     listRepositoryBranches,
     updateRepository,
 } from '@placeos/ts-client';
+import { EMPTY } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { notifyError } from '../../app/common/notifications';
 import { RepositoryFormComponent } from '../../app/repositories/repository-form.component';
@@ -44,7 +45,14 @@ describe('RepositoryFormComponent', () => {
             providers: [
                 provideZonelessChangeDetection(),
                 provideNoopAnimations(),
-                { provide: MatDialogRef, useValue: { close: vi.fn() } },
+                {
+                    provide: MatDialogRef,
+                    useValue: {
+                        close: vi.fn(),
+                        backdropClick: () => EMPTY,
+                        keydownEvents: () => EMPTY,
+                    },
+                },
                 {
                     provide: MAT_DIALOG_DATA,
                     useValue: {

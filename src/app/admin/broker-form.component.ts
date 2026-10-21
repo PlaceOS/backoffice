@@ -426,7 +426,6 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
         await submit(this.form, async () => {
             const item = this._data.item;
             this.loading.set(i18n(`${this._name}_SAVING`));
-            this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
                 item.id
@@ -444,7 +443,6 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
                     : addBroker(form_item as unknown as PlaceMQTTBroker)
             ).catch(async (err) => {
                 this.loading.set(null);
-                this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}_SAVE_ERROR`, {
                         error: await readError(err),
@@ -453,7 +451,6 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
                 return null;
             });
             if (!result) return;
-            this._dialog_ref.disableClose = false;
             this.event.emit({ reason: 'done', metadata: { item: result } });
             notifySuccess(i18n(`${this._name}_SAVE_SUCCESS`));
             this._dialog_ref.close();

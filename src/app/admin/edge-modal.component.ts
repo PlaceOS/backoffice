@@ -104,13 +104,11 @@ export class EdgeModalComponent implements OnInit {
     public async save() {
         await submit(this.form, async () => undefined);
         if (this.form().invalid()) return;
-        this._dialog_ref.disableClose = true;
         this.loading.set('Saving edge node...');
         const edge = { ...this.edge, ...this.formModel() };
         const method = edge.id ? updateEdge(edge.id, edge) : addEdge(edge);
         const new_edge = await method.catch(() => null);
         this.loading.set('');
-        this._dialog_ref.disableClose = false;
         if (!new_edge) return notifyError(i18n('ADMIN.EDGE_ERROR'));
         if (edge.id) {
             notifySuccess(i18n('ADMIN.EDGE_NEW_SUCCESS'));

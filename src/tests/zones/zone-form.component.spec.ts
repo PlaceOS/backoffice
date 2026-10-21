@@ -2,6 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PlaceZone } from '@placeos/ts-client';
+import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ZoneFormComponent } from '../../app/zones/zone-form.component';
 
@@ -32,7 +33,12 @@ vi.mock('../../app/common/notifications', () => ({
 
 describe('saving zones', () => {
     let fixture: ComponentFixture<ZoneFormComponent>;
-    const dialog = { close: vi.fn(), disableClose: false };
+    const dialog = {
+        close: vi.fn(),
+        disableClose: false,
+        backdropClick: () => EMPTY,
+        keydownEvents: () => EMPTY,
+    };
 
     beforeEach(async () => {
         vi.resetAllMocks();
@@ -112,7 +118,8 @@ describe('saving zones', () => {
             'Renamed floor',
         );
         expect(fixture.componentInstance.loading()).toBeNull();
-        expect(dialog.disableClose).toBe(false);
+        // The modal shell keeps guarding Escape and backdrop clicks
+        expect(dialog.disableClose).toBe(true);
         expect(dialog.close).not.toHaveBeenCalled();
         expect(mocks.notifyError).toHaveBeenCalled();
         expect(mocks.notifySuccess).not.toHaveBeenCalled();
@@ -123,7 +130,12 @@ describe('saving zones', () => {
 });
 
 describe('saving zones with a stored parent', () => {
-    const dialog = { close: vi.fn(), disableClose: false };
+    const dialog = {
+        close: vi.fn(),
+        disableClose: false,
+        backdropClick: () => EMPTY,
+        keydownEvents: () => EMPTY,
+    };
 
     async function createForm() {
         TestBed.configureTestingModule({

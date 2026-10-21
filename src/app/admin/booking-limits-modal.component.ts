@@ -61,7 +61,6 @@ export class BookingLimitsModalComponent {
 
     public async save() {
         await submit(this.form, async () => {
-            this._dialog_ref.disableClose = true;
             this.loading.set(true);
             const limits = this.formModel().booking_limits || [];
             const booking_limits = {};
@@ -74,7 +73,6 @@ export class BookingLimitsModalComponent {
             );
             const resp = await call.catch(() => null);
             this.loading.set(false);
-            this._dialog_ref.disableClose = false;
             if (!resp) return notifyError('Error adding new tenant.');
             notifySuccess('Successfully added new tenant.');
             this._dialog_ref.close({ ...this.tenant, booking_limits: resp });

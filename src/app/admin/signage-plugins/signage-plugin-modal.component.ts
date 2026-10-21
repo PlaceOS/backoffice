@@ -355,7 +355,6 @@ export class SignagePluginModalComponent
         }
         await submit(this.form, async () => {
             this.loading.set(i18n('ADMIN.SIGNAGE_PLUGINS_SAVING'));
-            this._dialog_ref.disableClose = true;
             const schema = this.schema();
             const values = this.formModel();
             const payload: Partial<SignagePlugin> = {
@@ -376,7 +375,6 @@ export class SignagePluginModalComponent
             };
             try {
                 const result = await this._data.save(payload);
-                this._dialog_ref.disableClose = false;
                 this.event.emit({
                     reason: 'done',
                     metadata: { item: result },
@@ -388,7 +386,6 @@ export class SignagePluginModalComponent
                 });
             } catch (err) {
                 this.loading.set(null);
-                this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_ERROR', {
                         error: await readError(err),

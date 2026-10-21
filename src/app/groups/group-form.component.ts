@@ -364,7 +364,6 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
         await submit(this.form, async () => {
             const item = this._data.item;
             this.loading.set(i18n(`${this._name}.SAVING`));
-            this._dialog_ref.disableClose = true;
             const form_value = this.formModel();
             const form_item = cleanObject(
                 {
@@ -381,13 +380,11 @@ export class GroupFormComponent extends AsyncHandler implements OnInit {
                           form_item as unknown as PlaceGroup,
                       )
                     : addGroup(form_item as unknown as PlaceGroup));
-                this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item: _item } });
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
                 this._dialog_ref.close();
             } catch (err) {
                 this.loading.set(null);
-                this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
                         error: await readError(err),

@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { queryDrivers, updateDriver } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
+import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
@@ -121,7 +122,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 class="flex h-48 w-[20rem] flex-col items-center justify-center space-y-2"
             >
                 <mat-spinner [diameter]="32" />
-                <p>{{ 'DRIVERS.LOADING' | translate }}</p>
+                <p>{{ loading() }}</p>
             </div>
         }
         @if (!loading()) {
@@ -165,12 +166,12 @@ export class DriverUpdateListModalComponent {
     private _dialog_ref =
         inject<MatDialogRef<DriverUpdateListModalComponent>>(MatDialogRef);
 
-    public readonly loading = signal('Loading drivers...');
+    public readonly loading = signal(i18n('DRIVERS.LOADING'));
     private readonly _change = signal(0);
     private readonly _drivers_with_updates = resource({
         params: () => this._change(),
         loader: async () => {
-            this.loading.set('Loading drivers...');
+            this.loading.set(i18n('DRIVERS.LOADING'));
             const response = await queryDrivers({
                 update_available: true,
                 limit: 1000,
@@ -183,7 +184,8 @@ export class DriverUpdateListModalComponent {
             );
             // Keep total in sync with the filtered list for select all
             response.total = response.data.length;
-            this.selected_drivers.set(response.data.map((d) => d.id));
+            // Updates reload live modules, so the user picks them on purpose
+            this.selected_drivers.set([]);
             this.loading.set('');
             return response;
         },
@@ -220,7 +222,7 @@ export class DriverUpdateListModalComponent {
     }
 
     public async updateDrivers() {
-        this.loading.set('Updating drivers...');
+        this.loading.set(i18n('DRIVERS.UPDATING'));
         this._dialog_ref.disableClose = true;
         const drivers = this.drivers_with_updates();
         const selected = drivers.data.filter((_) =>

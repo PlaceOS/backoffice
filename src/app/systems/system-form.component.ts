@@ -703,7 +703,6 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
         await submit(this.form, async () => {
             const item = this._data.item as unknown as PlaceResource;
             this.loading.set(i18n(`${this._name}.SAVING`));
-            this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             // `zone` is UI-only; the backend uses `zones`, which the effect
             // keeps in sync. Strip it so we never POST `zone: null`.
@@ -728,13 +727,11 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
                           processed_item as unknown as PlaceSystem,
                       )
                     : addSystem(processed_item as unknown as PlaceSystem));
-                this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item: _item } });
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
                 this._dialog_ref.close();
             } catch (err) {
                 this.loading.set(null);
-                this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
                         error: await readError(err),

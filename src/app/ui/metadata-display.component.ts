@@ -125,7 +125,10 @@ function replaceDescTag(inputString, newContent) {
                                     icon
                                     matRipple
                                     (click)="saveMetadata(item)"
-                                    [disabled]="!edited()[item.name]"
+                                    [disabled]="
+                                        !edited()[item.name] ||
+                                        loading()[item.name]
+                                    "
                                     [matTooltip]="'COMMON.SAVE' | translate"
                                 >
                                     <icon class="text-xl">save</icon>
@@ -336,8 +339,11 @@ export class MetadataDisplayComponent
             this._dialog,
         );
         if (result.reason !== 'done') return;
+        const is_new = !!this.metadata().find((prop) => prop?.name === field)
+            ?.new;
         try {
-            await removeMetadata(this.item().id, { name: field });
+            // Blocks that were never saved only exist locally
+            if (!is_new) await removeMetadata(this.item().id, { name: field });
         } catch (err) {
             return notifyError(
                 `Error removing old "${field}" metadata. Error: ${await readError(
@@ -442,10 +448,21 @@ export class MetadataDisplayComponent
             });
     }
 
-    private generateForms() {
+    /** Build a form for each block. Unsaved edits are kept unless `reset` is set */
+    private generateForms(reset = false) {
+        const forms = this.form_map();
+        const edited = reset ? {} : this.edited();
         this.form_map.set({});
         this.edited.set({});
         this.metadata().forEach((group) => {
+            if (edited[group.name] && forms[group.name]) {
+                this.form_map.update((m) => {
+                    m[group.name] = forms[group.name];
+                    return m;
+                });
+                this.edited.update((m) => ({ ...m, [group.name]: true }));
+                return;
+            }
             const details =
                 typeof group.details === 'string'
                     ? JSON.parse(group.details)
@@ -514,7 +531,7 @@ export class MetadataDisplayComponent
                         .sort((a, b) => a.name.localeCompare(b.name))
                         .filter((m) => !!m),
                 );
-                this.generateForms();
+                this.generateForms(true);
             })
             .catch((err) =>
                 notifyError(
