@@ -1,12 +1,12 @@
 import {
   AuthorisedUserGuard
-} from "./chunk-N6DJ35NC.js";
+} from "./chunk-LIW6Z3WZ.js";
 import {
   AuthorisedAdminGuard
-} from "./chunk-DUPPIYGZ.js";
+} from "./chunk-MBTB5FRH.js";
 import {
   BackofficeUsersService
-} from "./chunk-TS6UUEEQ.js";
+} from "./chunk-JLMQNUTQ.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -25,7 +25,7 @@ import {
 } from "./chunk-PK5A7L3I.js";
 import {
   SettingsService
-} from "./chunk-PLX4KB2H.js";
+} from "./chunk-SJPETQBZ.js";
 import {
   currentUser
 } from "./chunk-V3CYZPSM.js";
@@ -737,11 +737,11 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
 // src/app/app.ts
 var AppComponent_Conditional_1_Defer_1_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-QHETADNZ.js").then((m) => m.GlobalBannerComponent)
+  import("./chunk-USLQZZHI.js").then((m) => m.GlobalBannerComponent)
 ];
 var AppComponent_Conditional_1_Conditional_5_Defer_1_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-WVCBWQDK.js").then((m) => m.UploadListComponent)
+  import("./chunk-FZUJ4CL6.js").then((m) => m.UploadListComponent)
 ];
 var AppComponent_Conditional_5_Defer_1_DepsFn = () => [
   /* @ts-ignore */
@@ -1005,9 +1005,9 @@ var AppComponent = class _AppComponent extends AsyncHandler {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadataAsync(AppComponent, () => [
     /* @ts-ignore */
-    import("./chunk-QHETADNZ.js").then((m) => m.GlobalBannerComponent),
+    import("./chunk-USLQZZHI.js").then((m) => m.GlobalBannerComponent),
     /* @ts-ignore */
-    import("./chunk-WVCBWQDK.js").then((m) => m.UploadListComponent),
+    import("./chunk-FZUJ4CL6.js").then((m) => m.UploadListComponent),
     /* @ts-ignore */
     import("./chunk-JUNOCA3L.js").then((m) => m.IconComponent),
     /* @ts-ignore */
@@ -1164,55 +1164,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-XOSRQIII.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-MMI3DPQM.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-OHJ6OKMG.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YOPENJPI.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-VI46AGLX.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-BEJ3PZJ6.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-FKNF2BBS.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-RE4PPYCC.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-4TAAC4UA.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-V7N4WUOB.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-6FVJALVL.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-OIH6WIVQ.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-AG5PIWO4.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-A6LV7MHM.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-PNKQYIJX.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-D7P5ESIC.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-33HK7LQ7.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-RAZETMMO.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-UUHOXMRS.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-EEP6AFL2.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -1240,7 +1240,7 @@ var appConfig = {
 var is_mock = location.href.includes("mock=true") || localStorage.getItem("BACKOFFICE.mock") === "true";
 var bootstrap = async () => {
   if (is_mock) {
-    await import("./chunk-ETQYXCRA.js");
+    await import("./chunk-QUWWWSLJ.js");
   }
   bootstrapApplication(AppComponent, appConfig).catch(
     (err) => console.error(err)
