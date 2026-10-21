@@ -3831,18 +3831,6 @@ input:where([type=button], [type=reset], [type=submit]),
   }
 }
 @media (min-width: 40rem) {
-  #placeos .sm\:-left-8 {
-    left: calc(0.25rem * -8);
-    left: calc(var(--spacing) * -8);
-  }
-}
-@media (min-width: 40rem) {
-  #placeos .sm\:-left-9 {
-    left: calc(0.25rem * -9);
-    left: calc(var(--spacing) * -9);
-  }
-}
-@media (min-width: 40rem) {
   #placeos .sm\:left-1\/2 {
     left: calc(1/2 * 100%);
   }
@@ -4108,6 +4096,28 @@ input:where([type=button], [type=reset], [type=submit]),
 @media (min-width: 48rem) {
   #placeos .md\:flex-row {
     flex-direction: row;
+  }
+}
+@media (min-width: 64rem) {
+  #placeos .lg\:-left-8 {
+    left: calc(0.25rem * -8);
+    left: calc(var(--spacing) * -8);
+  }
+}
+@media (min-width: 64rem) {
+  #placeos .lg\:-left-9 {
+    left: calc(0.25rem * -9);
+    left: calc(var(--spacing) * -9);
+  }
+}
+@media (min-width: 64rem) {
+  #placeos .lg\:block {
+    display: block;
+  }
+}
+@media (min-width: 64rem) {
+  #placeos .lg\:hidden {
+    display: none;
   }
 }
 @media (min-width: 64rem) {
@@ -4762,14 +4772,6 @@ hr {
   --csstools-color-scheme--light: ;
   color-scheme: dark;
 }
-.theme-dark input::-moz-placeholder {
-  color: inherit;
-  opacity: 0.6;
-}
-.theme-dark input::placeholder {
-  color: inherit;
-  opacity: 0.6;
-}
 div > label,
 section > label {
   font-size: 0.8rem;
@@ -4798,14 +4800,34 @@ section > label span[required] {
   min-width: 12rem;
 }
 #placeos ::-moz-placeholder {
-  color: hsl(0, 0%, 50%);
-  color: var(--neutral);
+  color: hsl(0, 0%, 0%);
+  color: var(--base-content);
 }
 #placeos ::placeholder,
 #placeos .mat-form-field-label,
 #placeos .mat-mdc-select-placeholder {
-  color: hsl(0, 0%, 50%);
-  color: var(--neutral);
+  color: hsl(0, 0%, 0%);
+  color: var(--base-content);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  #placeos ::-moz-placeholder {
+    color: color-mix(in srgb, hsl(0, 0%, 0%) 60%, transparent);
+  }
+  #placeos ::placeholder,
+  #placeos .mat-form-field-label,
+  #placeos .mat-mdc-select-placeholder {
+    color: color-mix(in srgb, hsl(0, 0%, 0%) 60%, transparent);
+  }
+  @supports (color: color-mix(in lch, red, blue)) {
+    #placeos ::-moz-placeholder {
+      color: color-mix(in srgb, var(--base-content) 60%, transparent);
+    }
+    #placeos ::placeholder,
+    #placeos .mat-form-field-label,
+    #placeos .mat-mdc-select-placeholder {
+      color: color-mix(in srgb, var(--base-content) 60%, transparent);
+    }
+  }
 }
 #placeos input {
   caret-color: hsl(336, 57%, 48%);

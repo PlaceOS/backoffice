@@ -18,6 +18,10 @@ All notable changes to this project will be documented in this file.
 #### Ui
 
 - Stop the required-marker colour applying to checkboxes
+- Stop edit modals and forms dropping unsaved work
+- Name delete targets and report failed list loads
+- Fit tablet layouts, readable dark placeholders, closable menus
+- Name icon buttons, guard hotkeys and fix copy
 
 ### Features
 

@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/common/load-error.ts"
+  ],
+  "sourcesContent": [
+    "import { readError } from './errors';\nimport { i18n } from './locale.service';\nimport { notifyError } from './notifications';\n\n/**\n * Catch handler for list loads. Tells the user the load failed, then returns\n * `empty` so the page still renders. Without it a failed load looks like a\n * list with nothing in it.\n */\nexport function reportLoadError<T>(empty: T) {\n    return async (error: unknown): Promise<T> => {\n        notifyError(\n            i18n('COMMON.LOAD_ERROR', { error: await readError(error) }),\n        );\n        return empty;\n    };\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;AASO,SAAS,gBAAmB,OAAU;AACzC,SAAO,OAAO,UAA+B;AACzC;AAAA,MACI,KAAK,qBAAqB,EAAE,OAAO,MAAM,UAAU,KAAK,EAAE,CAAC;AAAA,IAC/D;AACA,WAAO;AAAA,EACX;AACJ;",
+  "names": [],
+  "debugId": "44928881-7871-5d8c-b2b5-8570c522b23c"
+}
