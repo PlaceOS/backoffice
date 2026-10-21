@@ -30,7 +30,7 @@ import { TranslatePipe } from './translate.pipe';
                 (window:resize)="onWindowResize()"
             >
                 <div
-                    class="animate-fade-in border-base-300 bg-base-100 relative z-10 flex flex-col overflow-hidden border text-white shadow-sm"
+                    class="animate-fade-in border-base-300 bg-base-100 relative z-10 flex flex-col overflow-hidden border text-base-content shadow-sm"
                     content
                     #content
                     [style.height]="

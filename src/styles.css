@@ -424,36 +424,71 @@ kbd,
     border: 1px solid var(--base-300);
 }
 
+/* ANSI colours for the debug console. Each meets WCAG AA (4.5:1) on --base-200 */
 .tc-30 {
-    color: black;
+    color: #000000;
 }
 
 .tc-31 {
-    color: #d32f2f;
+    color: #b71c1c;
 }
 
 .tc-32 {
-    color: #388e3c;
+    color: #1b5e20;
 }
 
 .tc-33 {
-    color: #fbc02d;
+    color: #8a5a00;
 }
 
 .tc-34 {
-    color: #1e88e5;
+    color: #0d47a1;
 }
 
 .tc-35 {
-    color: #c2185b;
+    color: #880e4f;
 }
 
 .tc-36 {
-    color: #0097a7;
+    color: #006064;
 }
 
 .tc-37 {
-    color: white;
+    color: #595959;
+}
+
+.theme-dark {
+    .tc-30 {
+        color: #9e9e9e;
+    }
+
+    .tc-31 {
+        color: #ef9a9a;
+    }
+
+    .tc-32 {
+        color: #a5d6a7;
+    }
+
+    .tc-33 {
+        color: #fff176;
+    }
+
+    .tc-34 {
+        color: #90caf9;
+    }
+
+    .tc-35 {
+        color: #f48fb1;
+    }
+
+    .tc-36 {
+        color: #80deea;
+    }
+
+    .tc-37 {
+        color: #ffffff;
+    }
 }
 
 /*=============================================================*\
