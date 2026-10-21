@@ -1,0 +1,260 @@
+# Isolated PlaceOS stack for the backoffice e2e suite.
+#
+# Adapted from PlaceOS/user-interfaces `e2e/stack`. It is NOT PlaceOS/local:
+# everything here is project-scoped (no `container_name`, no fixed network), on
+# its own ports, so it runs beside a developer's own stack and beside the
+# user-interfaces e2e stack (9443/9080) without touching either.
+#
+# Trimmed to what the backoffice suite exercises: the engine REST API, auth,
+# staff-api (tenants) and the platform login page. Dropped: core, source,
+# mosquitto, triggers, dispatch, edge, influx, chronograf, minio. Without core
+# no driver compiles and no module starts; add it from the user-interfaces
+# stack when a spec needs that.
+#
+# frontend-loader IS required, even though the dev server serves the SPA. On
+# startup it clones PlaceOS/www-core into the `www` volume, and that is where
+# the platform /login page comes from. Bring-up needs network access to GitHub
+# one time to fill the volume.
+#
+# Bring it up with ./up.sh. It makes the secrets and runs `init` first.
+
+volumes:
+  postgres-data:
+  elastic-data:
+  redis-data:
+  nginx-data:
+  www:
+
+x-deployment-env: &deployment-env
+  PLACE_LOG_FORMAT: JSON
+  LOG_LEVEL: ${LOG_LEVEL:-warn}
+  ENV: development
+  SG_ENV: development
+  TZ: ${TZ:-UTC}
+
+x-postgresdb-client-env: &postgresdb-client-env
+  PG_HOST: postgres
+  PG_PORT: 5432
+  PG_DB: placeos
+  PG_USER: placeos
+  PG_PASSWORD: development
+  PG_DATABASE: placeos
+  PG_DATABASE_URL: postgresql://placeos:development@postgres:5432/placeos
+
+x-elastic-client-env: &elastic-client-env
+  ELASTIC_HOST: elastic
+  ELASTIC_PORT: 9200
+  ES_HOST: elastic
+  ES_PORT: 9200
+
+x-redis-client-env: &redis-client-env
+  REDIS_URL: redis://redis:6379
+
+x-search-ingest-client-env: &search-ingest-client-env
+  PLACE_SEARCH_INGEST_URI: http://search-ingest:3000
+
+x-logging: &std-logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 25m
+
+services:
+  postgres:
+    image: postgres:18.6-alpine # 18: migrations use uuidv7(), a PG18 builtin
+    hostname: postgres
+    restart: unless-stopped
+    <<: *std-logging
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U placeos -d placeos']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      <<: *postgresdb-client-env
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: placeos
+      POSTGRES_PASSWORD: development
+      POSTGRES_DB: placeos
+      TZ: ${TZ:-UTC}
+
+  elastic:
+    # The `latest` release of rest-api still searches through Elasticsearch.
+    # Remove this only when the image that ${PLACEOS_TAG:-latest} resolves to
+    # searches through Postgres (PPT-2644). The user-interfaces compose file
+    # has the check to run.
+    #
+    # A late 7.17 patch: 7.17.6 bundles a JDK that fails to start on cgroup v2.
+    image: elasticsearch:${E2E_ELASTIC_VERSION:-7.17.28}
+    hostname: elastic
+    restart: always
+    <<: *std-logging
+    healthcheck:
+      test: curl --silent --fail localhost:9200/_cat/health
+      interval: 10s
+      start_period: 60s
+      retries: 20
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    # Memory locking is off: it needs an unlimited `memlock` rlimit, which not
+    # every Docker host gives, and a test stack does not need it.
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    environment:
+      bootstrap.memory_lock: 'false'
+      cluster.routing.allocation.disk.threshold_enabled: 'false'
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      TZ: ${TZ:-UTC}
+
+  redis:
+    # Pinned by digest to the multi-arch manifest list. keydb is not under
+    # test, so a moving tag can only add noise.
+    image: eqalpha/keydb@sha256:6537505c42355ca1f571276bddf83f5b750f760f07b2a185a676481791e388ac
+    hostname: redis
+    restart: always
+    <<: *std-logging
+    healthcheck:
+      test: keydb-cli ping
+      interval: 5s
+    volumes:
+      - redis-data:/data
+    environment:
+      TZ: ${TZ:-UTC}
+
+  search-ingest:
+    image: placeos/search-ingest:${PLACEOS_TAG:-latest}
+    hostname: search-ingest
+    restart: always
+    <<: *std-logging
+    depends_on:
+      elastic: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+    environment:
+      <<: [*deployment-env, *postgresdb-client-env, *elastic-client-env]
+
+  # Fills the `www` volume from PlaceOS/www-core: the platform /login page.
+  frontend-loader:
+    image: placeos/frontend-loader:${PLACEOS_TAG:-latest}
+    hostname: frontend-loader
+    restart: always
+    <<: *std-logging
+    depends_on:
+      postgres: { condition: service_healthy }
+    volumes:
+      - www:/app/www
+    env_file:
+      - .secrets/.env.secret_key
+    environment:
+      <<: [*deployment-env, *postgresdb-client-env]
+      PLACE_LOADER_WWW: www
+
+  auth:
+    image: placeos/auth:${PLACEOS_TAG:-latest}
+    hostname: auth
+    restart: always
+    <<: *std-logging
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_started }
+    env_file:
+      - .secrets/.env.secret_key
+    environment:
+      <<: [*postgresdb-client-env, *redis-client-env]
+      COAUTH_NO_SSL: 'true'
+      TZ: ${TZ:-UTC}
+      PLACE_URI: https://${E2E_DOMAIN:-localhost:9543}
+
+  rest-api:
+    image: placeos/rest-api:${PLACEOS_TAG:-latest}
+    hostname: api # load-bearing: the nginx upstream is `api`
+    restart: always
+    <<: *std-logging
+    depends_on:
+      postgres: { condition: service_healthy }
+      elastic: { condition: service_healthy }
+      redis: { condition: service_started }
+    env_file:
+      - .secrets/.env.public_key
+      - .secrets/.env.secret_key
+    environment:
+      <<:
+        [
+          *deployment-env,
+          *postgresdb-client-env,
+          *elastic-client-env,
+          *redis-client-env,
+          *search-ingest-client-env,
+        ]
+
+  # Serves /api/staff/v1, which the admin tenants section and the tenant
+  # expiry banner read.
+  staff-api:
+    image: placeos/staff-api:${PLACEOS_TAG:-latest}
+    hostname: staff # load-bearing: the nginx upstream is `staff`
+    restart: unless-stopped
+    <<: *std-logging
+    depends_on:
+      postgres: { condition: service_healthy }
+    env_file:
+      - .secrets/.env.public_key
+      - .secrets/.env.secret_key
+    environment:
+      <<: [*postgresdb-client-env, *redis-client-env]
+      SG_ENV: production
+      STAFF_TIME_ZONE: ${TZ:-UTC}
+      PLACE_URI: 'https://nginx'
+      SSL_VERIFY_NONE: 'true'
+
+  nginx:
+    image: placeos/nginx:${PLACEOS_TAG:-latest}
+    hostname: nginx
+    restart: always
+    <<: *std-logging
+    ports:
+      - '${E2E_HTTP_PORT:-9180}:80'
+      - '${E2E_HTTPS_PORT:-9543}:443'
+    healthcheck:
+      test: "bash -c ': &>/dev/null </dev/tcp/127.0.0.1/80'"
+      interval: 5s
+      retries: 20
+    depends_on:
+      - rest-api
+      - auth
+      - staff-api
+    volumes:
+      - www:/etc/nginx/html/
+      - nginx-data:/etc/nginx/ssl
+    env_file:
+      - .secrets/.env.secret_key
+      - .secrets/.env.public_key
+    environment:
+      TZ: ${TZ:-UTC}
+      PLACE_DOMAIN: ${E2E_DOMAIN:-localhost:9543}
+
+  # One-shot seeder: authority, admin user, `backoffice` OAuth app and a
+  # placeholder zone tree. up.sh runs it with `compose run --rm init start`.
+  init:
+    image: placeos/init:${PLACEOS_TAG:-latest}
+    restart: 'no'
+    <<: *std-logging
+    depends_on:
+      postgres: { condition: service_healthy }
+    env_file:
+      - .secrets/.env.secret_key
+    environment:
+      <<: [*deployment-env, *postgresdb-client-env, *elastic-client-env]
+      PLACE_DOMAIN: ${E2E_DOMAIN:-localhost:9543}
+      PLACE_APPLICATION: backoffice
+      PLACE_AUTH_HOST: auth:8080
+      PLACE_USERNAME: E2E Admin
+      PLACE_EMAIL: ${E2E_ADMIN_EMAIL:-support@place.tech}
+      PLACE_PASSWORD: ${E2E_ADMIN_PASSWORD:-development}
+      PLACE_TLS: 'true'

@@ -87,19 +87,19 @@ export default defineConfig({
         {
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] },
-            testIgnore: '**/*.mobile.spec.ts',
+            testIgnore: ['**/*.mobile.spec.ts', '**/local/**'],
         },
 
         {
             name: 'firefox',
             use: { ...devices['Desktop Firefox'] },
-            testIgnore: '**/*.mobile.spec.ts',
+            testIgnore: ['**/*.mobile.spec.ts', '**/local/**'],
         },
 
         {
             name: 'webkit',
             use: { ...devices['Desktop Safari'] },
-            testIgnore: '**/*.mobile.spec.ts',
+            testIgnore: ['**/*.mobile.spec.ts', '**/local/**'],
         },
 
         // Mobile browsers - use dedicated mobile test files
