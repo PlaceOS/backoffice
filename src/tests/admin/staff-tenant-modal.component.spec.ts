@@ -28,6 +28,7 @@ describe('Staff tenant advance booking limits', () => {
         delegated: true,
         booking_limits: { desk: 2 },
         booking_range: { desk: 30, parking: 0 },
+        booking_period: { desk: 270, parking: 1500 },
     };
 
     beforeEach(() => vi.clearAllMocks());
@@ -133,6 +134,75 @@ describe('Staff tenant advance booking limits', () => {
             component.updateBookingRange(ranges);
             await component.save();
             expect(component.form.booking_range().invalid()).toBe(true);
+        }
+        expect(put).not.toHaveBeenCalled();
+    });
+
+    it('loads booking periods as days, hours and minutes', async () => {
+        const component = await createComponent({ tenant });
+        expect(component.formModel().booking_period).toEqual([
+            { type: 'desk', days: 0, hours: 4, minutes: 30 },
+            { type: 'parking', days: 1, hours: 1, minutes: 0 },
+        ]);
+    });
+
+    it('saves booking periods as total minutes', async () => {
+        const component = await createComponent({ tenant });
+        component.updateBookingPeriod(0, 'hours', 2);
+        component.updateBookingPeriod(0, 'minutes', 15);
+        component.updateBookingPeriod(1, 'days', '2');
+        component.addBookingPeriod();
+        component.updateBookingPeriod(2, 'type', ' locker ');
+        await component.save();
+        expect(put).toHaveBeenCalledWith(
+            '/api/staff/v1/tenants/tenant-test',
+            expect.objectContaining({
+                booking_range: { desk: 30, parking: 0 },
+                booking_period: { desk: 135, parking: 2940, locker: 60 },
+            }),
+        );
+    });
+
+    it('sends an empty map when all booking periods are removed', async () => {
+        const component = await createComponent({ tenant });
+        component.removeBookingPeriod(1);
+        component.removeBookingPeriod(0);
+        await component.save();
+        expect(put).toHaveBeenCalledWith(
+            '/api/staff/v1/tenants/tenant-test',
+            expect.objectContaining({ booking_period: {} }),
+        );
+    });
+
+    it('keeps stored minutes that are not a multiple of 5 selectable', async () => {
+        const component = await createComponent();
+        expect(component.minuteOptions(30)).not.toContain(7);
+        expect(component.minuteOptions(7)).toEqual([
+            0, 5, 7, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55,
+        ]);
+    });
+
+    it('blocks empty lengths, invalid days, missing and duplicate types', async () => {
+        const component = await createComponent({ tenant });
+        const invalid_periods = [
+            [{ type: 'desk', days: 0, hours: 0, minutes: 0 }],
+            [{ type: 'desk', days: '', hours: 1, minutes: 0 }],
+            [{ type: 'desk', days: '-1', hours: 1, minutes: 0 }],
+            [{ type: 'desk', days: '1.5', hours: 0, minutes: 0 }],
+            [{ type: 'desk', days: '2982617', hours: 0, minutes: 0 }],
+            [{ type: '', days: 1, hours: 0, minutes: 0 }],
+            [
+                { type: 'desk', days: 1, hours: 0, minutes: 0 },
+                { type: ' desk ', days: 0, hours: 2, minutes: 0 },
+            ],
+        ];
+        for (const periods of invalid_periods) {
+            component.formModel.update((model) => ({
+                ...model,
+                booking_period: periods,
+            }));
+            await component.save();
+            expect(component.form.booking_period().invalid()).toBe(true);
         }
         expect(put).not.toHaveBeenCalled();
     });

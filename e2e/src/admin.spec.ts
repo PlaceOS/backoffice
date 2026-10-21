@@ -1,3 +1,4 @@
+import { Page } from '@playwright/test';
 import { expect, seedSession, test } from './fixtures/test-fixtures';
 import { AdminPage } from './pages';
 
@@ -54,6 +55,25 @@ const API_KEYS = [
         updated_at: Date.now() / 1000,
     },
 ];
+
+const TENANT = {
+    id: 'tenant-e2e',
+    name: 'E2E Tenant',
+    domain: 'place.tech',
+    platform: 'google',
+    delegated: true,
+    booking_limits: {},
+    booking_range: {},
+    booking_period: { desk: 240, parking: 1470, locker: 45 },
+    early_checkin: 3600,
+};
+
+/** Tenant as saved by the mock staff API */
+async function storedTenant(page: Page): Promise<typeof TENANT> {
+    return page.evaluate(
+        () => JSON.parse(sessionStorage.getItem('PLACEOS.mocks.tenants'))[0],
+    );
+}
 
 test.describe('Admin', () => {
     let admin: AdminPage;
@@ -173,6 +193,97 @@ test.describe('Admin', () => {
 
             const row = await admin.tableRow('Default Tenant', admin.section);
             await expect(row.nth(1)).toHaveText(/google/);
+        });
+
+        test.describe('Maximum booking length', () => {
+            test.beforeEach(async ({ page }) => {
+                await seedSession(page, 'tenants', [TENANT]);
+                await admin.gotoSection('staff-api');
+            });
+
+            test('AC-ADM-009-2: shows lengths without empty units', async () => {
+                await expect(
+                    await admin.tenantBookingPeriods('E2E Tenant'),
+                ).toHaveText([
+                    'desk: 4 hours',
+                    'parking: 1 day 30 minutes',
+                    'locker: 45 minutes',
+                ]);
+            });
+
+            test('AC-ADM-009-3: edits lengths as days, hours and minutes', async ({
+                page,
+            }) => {
+                await admin.editTenant('E2E Tenant');
+
+                const rows = admin.bookingPeriodRows;
+                await expect(rows).toHaveCount(3);
+                await expect(
+                    rows.nth(1).getByRole('spinbutton', { name: 'Days' }),
+                ).toHaveValue('1');
+                await expect(
+                    rows.nth(1).getByRole('combobox', { name: 'Hours' }),
+                ).toContainText('0 hours');
+                await expect(
+                    rows.nth(1).getByRole('combobox', { name: 'Minutes' }),
+                ).toContainText('30 minutes');
+
+                // desk: 4 hours => 4 hours 30 minutes
+                await admin.setBookingPeriod(0, { minutes: 30 });
+                await expect(
+                    admin.dialog.locator('[period-total]').first(),
+                ).toHaveText('4 hours 30 minutes');
+
+                // Remove locker and add a two day room booking length
+                await rows
+                    .nth(2)
+                    .getByRole('button', { name: 'Delete' })
+                    .click();
+                await admin.dialog
+                    .locator('[booking-period]')
+                    .getByRole('button', { name: 'New item' })
+                    .click();
+                await admin.setBookingPeriod(2, {
+                    type: 'room',
+                    days: 2,
+                    hours: 0,
+                });
+
+                await admin.saveButton.click();
+                await expect(admin.dialog).toBeHidden();
+
+                expect((await storedTenant(page)).booking_period).toEqual({
+                    desk: 270,
+                    parking: 1470,
+                    room: 2880,
+                });
+                await expect(
+                    await admin.tenantBookingPeriods('E2E Tenant'),
+                ).toHaveText([
+                    'desk: 4 hours 30 minutes',
+                    'parking: 1 day 30 minutes',
+                    'room: 2 days',
+                ]);
+            });
+
+            test('AC-ADM-009-4: does not save a zero length', async ({
+                page,
+            }) => {
+                await admin.editTenant('E2E Tenant');
+
+                await admin.setBookingPeriod(2, { minutes: 0 });
+                await expect(
+                    admin.dialog.getByText(
+                        'Enter a unique booking type and a length greater than 0 for each row.',
+                    ),
+                ).toBeVisible();
+
+                await admin.saveButton.click();
+                await expect(admin.dialog).toBeVisible();
+                expect((await storedTenant(page)).booking_period).toEqual(
+                    TENANT.booking_period,
+                );
+            });
         });
     });
 

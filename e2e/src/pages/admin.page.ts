@@ -105,4 +105,59 @@ export class AdminPage extends BasePage {
             .first()
             .click();
     }
+
+    /** Maximum booking lengths of a tenant in the tenants table */
+    async tenantBookingPeriods(name: string): Promise<Locator> {
+        const row = await this.tableRow(name, this.section);
+        return row.locator('[booking-period] > div');
+    }
+
+    /** Open the edit modal of a tenant */
+    async editTenant(name: string): Promise<void> {
+        const row = await this.tableRow(name, this.section);
+        await row.getByRole('button', { name: 'Edit Tenant' }).click();
+        await expect(this.dialog).toBeVisible();
+    }
+
+    /** Rows of the maximum booking length editor in the tenant modal */
+    get bookingPeriodRows(): Locator {
+        return this.dialog.locator('[period-row]');
+    }
+
+    /** Set the maximum booking length of a row in the tenant modal */
+    async setBookingPeriod(
+        index: number,
+        period: {
+            type?: string;
+            days?: number;
+            hours?: number;
+            minutes?: number;
+        },
+    ): Promise<void> {
+        const row = this.bookingPeriodRows.nth(index);
+        if (period.type != null) {
+            await row
+                .getByRole('textbox', { name: 'Booking type' })
+                .fill(period.type);
+        }
+        if (period.days != null) {
+            await row
+                .getByRole('spinbutton', { name: 'Days' })
+                .fill(`${period.days}`);
+        }
+        const selects: [string, number | undefined, string][] = [
+            ['Hours', period.hours, 'hour'],
+            ['Minutes', period.minutes, 'minute'],
+        ];
+        for (const [name, value, unit] of selects) {
+            if (value == null) continue;
+            await row.getByRole('combobox', { name }).click();
+            await this.page
+                .getByRole('option', {
+                    name: `${value} ${unit}${value === 1 ? '' : 's'}`,
+                    exact: true,
+                })
+                .click();
+        }
+    }
 }
