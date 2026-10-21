@@ -8,14 +8,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { addSystem, query, querySystemsWithEmails } from '@placeos/ts-client';
-import { escapeHtml } from '../common/general';
 import { readError } from '../common/errors';
+import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import {
     notifyError,
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
+import { collectPages } from '../common/support-access';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -25,6 +26,8 @@ import { forEachWithLimit } from './signage-plugins/signage-plugins.utilities';
 
 /** Max number of systems created at once */
 const IMPORT_LIMIT = 5;
+/** Emails per systems lookup. 100 emails make a URL of about 3 KB. */
+const EMAIL_CHUNK_SIZE = 100;
 
 export interface ExternalResource {
     id: string;
@@ -326,23 +329,31 @@ export class ResourceImportsComponent implements OnInit {
             system_id: '',
         }));
         const emails = list.map((_) => _.email).filter((_) => _);
-        const { data } = emails.length
-            ? await querySystemsWithEmails({ in: emails.join(',') }).catch(
-                  async (err) => {
-                      notifyError(
-                          `Failed to check imported resources. Error: ${await readError(err)}`,
-                      );
-                      return { data: [] };
-                  },
-              )
-            : { data: [] };
-        for (const resource of list) {
-            const system = data.find(
-                (_) => _.email?.toLowerCase() === resource.email.toLowerCase(),
+        const system_ids = new Map<string, string>();
+        try {
+            // Send the emails in chunks to keep each URL under common 8 KB limits
+            for (let i = 0; i < emails.length; i += EMAIL_CHUNK_SIZE) {
+                const systems = await collectPages(
+                    querySystemsWithEmails({
+                        in: emails.slice(i, i + EMAIL_CHUNK_SIZE).join(','),
+                    }),
+                );
+                for (const system of systems) {
+                    const email = system.email?.toLowerCase();
+                    if (email && !system_ids.has(email))
+                        system_ids.set(email, system.id);
+                }
+            }
+        } catch (err) {
+            notifyError(
+                `Failed to check imported resources. Error: ${await readError(err)}`,
             );
-            if (system) {
+        }
+        for (const resource of list) {
+            const system_id = system_ids.get(resource.email.toLowerCase());
+            if (system_id) {
                 resource.imported = true;
-                resource.system_id = system.id;
+                resource.system_id = system_id;
             }
         }
         this.resource_list.set(list);

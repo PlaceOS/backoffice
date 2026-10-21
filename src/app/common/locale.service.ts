@@ -206,19 +206,14 @@ export class LocaleService {
         );
         if (!existing.expiry || existing.expiry < Date.now()) {
             localStorage.removeItem(`${STORE_KEY}.${locale}`);
-            const resp = await fetch(`${this.locale_folder}/${locale}.json`);
-            if (!resp.ok) {
+            const base_locale_values = await this._baseMappings(locale);
+            if (!base_locale_values) {
                 delete this._load_promises[locale];
-                return console.error(
-                    `Failed to loaded locale file for "${locale}".`,
-                    resp,
-                );
+                return;
             }
-            const locale_data = await resp.json();
             const locale_override_data = this.zone_id
                 ? await showMetadata(this.zone_id, `locale_${locale}`)
                 : { details: {} };
-            const base_locale_values = removeNesting(locale_data);
             const override_locale_values = removeNesting(
                 locale_override_data.details as Record<string, unknown>,
             );
@@ -241,5 +236,27 @@ export class LocaleService {
             this._locale_mappings[locale] = existing.mappings;
         }
         delete this._load_promises[locale];
+    }
+
+    /**
+     * Mappings from the locale file. The default locale reuses the bundled
+     * copy that `ready` loads. Returns `null` if the file fails to load.
+     */
+    private async _baseMappings(
+        locale: string,
+    ): Promise<Record<string, string> | null> {
+        if (locale === this._default_locale) {
+            await this.ready;
+            return this._default_mappings;
+        }
+        const resp = await fetch(`${this.locale_folder}/${locale}.json`);
+        if (!resp.ok) {
+            console.error(
+                `Failed to loaded locale file for "${locale}".`,
+                resp,
+            );
+            return null;
+        }
+        return removeNesting(await resp.json());
     }
 }

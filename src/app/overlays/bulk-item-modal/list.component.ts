@@ -108,7 +108,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
             <label class="mt-4 flex items-center space-x-2 text-sm">
                 <input
                     type="checkbox"
-                    [ngModel]="all_start_modules"
+                    [ngModel]="all_start_modules()"
                     (ngModelChange)="setAllStartModules($event)"
                 />
                 <span>Start all modules for all systems</span>
@@ -241,10 +241,10 @@ export class ListComponent {
         return columns;
     });
 
-    public get all_start_modules(): boolean {
+    public readonly all_start_modules = computed(() => {
         const list = this.list();
         return list.length > 0 && list.every((item) => !!item.start_modules);
-    }
+    });
 
     public setAllStartModules(value: boolean) {
         this.list.set(

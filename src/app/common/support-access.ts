@@ -191,7 +191,8 @@ export function querySupportZones(
     );
     return Promise.all(
         groups.map(async ({ group }) => {
-            const query = { ...options, group_id: group.id };
+            // Ask for large pages, as the pages load one after another
+            const query = { limit: 1000, ...options, group_id: group.id };
             return collectPages(queryZones(query));
         }),
     ).then((results) => {

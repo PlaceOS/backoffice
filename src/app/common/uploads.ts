@@ -8,8 +8,6 @@ import { token } from '@placeos/ts-client';
 import { randomInt } from './general';
 import { SubscriptionLike } from './signals';
 
-import * as blobUtil from 'blob-util';
-
 /** Token last passed to the upload service */
 let upload_token = '';
 
@@ -78,51 +76,42 @@ export function uploadFile(
         subscribe(next, error, complete) {
             let cancelled = false;
             let state_subscription: SubscriptionLike | null = null;
-            const fileReader = new FileReader();
-            fileReader.addEventListener(
-                'loadend',
-                async (e: ProgressEvent<FileReader>) => {
+            // Pass the File as is. The upload library reads it in chunks.
+            (async () => {
+                syncUploadToken();
+                const upload = await uploadNewFile(file, {
+                    permissions,
+                    public: is_public,
+                } as Record<string, unknown>);
+                if (cancelled) return;
+                const upload_details: UploadDetails = {
+                    id: randomInt(9999_9999_9999),
+                    name: file.name,
+                    progress: 0,
+                    link: uploadURL(upload.id),
+                    formatted_size: humanReadableByteCount(file.size),
+                    size: file.size,
+                    upload: upload,
+                };
+                state_subscription = upload.state.subscribe((state) => {
                     if (cancelled) return;
-                    const arrayBuffer = e.target.result;
-                    const _blob = blobUtil.arrayBufferToBlob(
-                        arrayBuffer as ArrayBuffer,
-                        file.type,
-                    );
-                    syncUploadToken();
-                    const upload = await uploadNewFile(file, {
-                        permissions,
-                        public: is_public,
-                    } as Record<string, unknown>);
-                    const upload_details: UploadDetails = {
-                        id: randomInt(9999_9999_9999),
-                        name: file.name,
-                        progress: 0,
-                        link: uploadURL(upload.id),
-                        formatted_size: humanReadableByteCount(file.size),
-                        size: file.size,
-                        upload: upload,
-                    };
-                    state_subscription = upload.state.subscribe((state) => {
-                        if (cancelled) return;
-                        upload_details.progress = state.progress;
-                        upload_details.link = uploadURL(upload.id);
-                        next(upload_details);
-                        if (state.status === 'FAILED') {
-                            error?.({
-                                ...upload_details,
-                                error: 'Upload failed',
-                            });
-                            state_subscription?.unsubscribe();
-                        }
-                        if (state.status === 'COMPLETED') {
-                            complete?.();
-                            state_subscription?.unsubscribe();
-                        }
-                    });
+                    upload_details.progress = state.progress;
+                    upload_details.link = uploadURL(upload.id);
                     next(upload_details);
-                },
-            );
-            fileReader.readAsArrayBuffer(file);
+                    if (state.status === 'FAILED') {
+                        error?.({
+                            ...upload_details,
+                            error: 'Upload failed',
+                        });
+                        state_subscription?.unsubscribe();
+                    }
+                    if (state.status === 'COMPLETED') {
+                        complete?.();
+                        state_subscription?.unsubscribe();
+                    }
+                });
+                next(upload_details);
+            })();
             return {
                 unsubscribe: () => {
                     cancelled = true;

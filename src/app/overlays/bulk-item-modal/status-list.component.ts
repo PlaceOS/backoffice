@@ -1,10 +1,11 @@
 import {
     Component,
-    OnChanges,
-    SimpleChanges,
+    computed,
     input,
+    OnChanges,
     output,
     signal,
+    SimpleChanges,
 } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -14,13 +15,14 @@ import { readError } from '../../common/errors';
 import { notifyError } from '../../common/notifications';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
+import { VirtualScrollComponent } from '../../ui/virtual-scroll.component';
 
 const BATCH_SIZE = 5;
 
 @Component({
     selector: 'bulk-item-status-list',
     template: `
-        <div class="flex w-full flex-col items-center pb-4">
+        <div class="flex h-full min-h-0 w-full flex-col items-center pb-4">
             @if (!is_done()) {
                 <div class="info font-medium">
                     {{ 'COMMON.BULK_UPLOADING' | translate }}
@@ -47,48 +49,13 @@ const BATCH_SIZE = 5;
                     [style.width.%]="progress()"
                 ></div>
             </div>
-            <div class="flex w-full flex-col">
-                @for (item of list(); track $index; let i = $index) {
-                    <div
-                        class="border-base-200 flex w-full items-center rounded-sm border p-2"
-                    >
-                        <div class="flex flex-1 flex-col justify-center px-2">
-                            <div class="name flex-1">{{ item.name }}</div>
-                            @if (status()[i] && status()[i] !== 'done') {
-                                <div class="text-error text-xs">
-                                    {{ status()[i] }}
-                                </div>
-                            }
-                        </div>
-                        <div class="status">
-                            @if (status()[i] && status()[i] !== 'loading') {
-                                <div
-                                    class="flex h-8 w-8 items-center justify-center rounded-full text-2xl shadow-sm"
-                                    [class.bg-error]="status()[i] !== 'done'"
-                                    [class.text-error-content]="
-                                        status()[i] !== 'done'
-                                    "
-                                    [class.bg-success]="status()[i] === 'done'"
-                                    [class.text-success-content]="
-                                        status()[i] === 'done'
-                                    "
-                                    [matTooltip]="status()[i]"
-                                >
-                                    <icon>
-                                        {{
-                                            status()[i] === 'done'
-                                                ? 'done'
-                                                : 'close'
-                                        }}
-                                    </icon>
-                                </div>
-                            }
-                            @if (status()[i] === 'loading') {
-                                <mat-spinner diameter="24" />
-                            }
-                        </div>
-                    </div>
-                }
+            <!-- Virtual rows keep large imports to the visible rows only -->
+            <div class="min-h-0 w-full flex-1">
+                <virtual-scroll
+                    [items]="list()"
+                    [item_size]="64"
+                    [item_template]="row_template"
+                />
             </div>
             @if (is_done()) {
                 <div
@@ -105,14 +72,56 @@ const BATCH_SIZE = 5;
                 </div>
             }
         </div>
+        <ng-template #row_template let-item="item" let-i="index">
+            @let state = status()[i]();
+            <div
+                class="border-base-200 flex h-16 w-full items-center rounded-sm border p-2"
+            >
+                <div class="flex min-w-0 flex-1 flex-col justify-center px-2">
+                    <div class="name truncate">{{ item.name }}</div>
+                    @if (state && state !== 'done') {
+                        <div class="text-error truncate text-xs">
+                            {{ state }}
+                        </div>
+                    }
+                </div>
+                <div class="status">
+                    @if (state && state !== 'loading') {
+                        <div
+                            class="flex h-8 w-8 items-center justify-center rounded-full text-2xl shadow-sm"
+                            [class.bg-error]="state !== 'done'"
+                            [class.text-error-content]="state !== 'done'"
+                            [class.bg-success]="state === 'done'"
+                            [class.text-success-content]="state === 'done'"
+                            [matTooltip]="state"
+                        >
+                            <icon>
+                                {{ state === 'done' ? 'done' : 'close' }}
+                            </icon>
+                        </div>
+                    }
+                    @if (state === 'loading') {
+                        <mat-spinner diameter="24" />
+                    }
+                </div>
+            </div>
+        </ng-template>
     `,
-    styles: [``],
+    styles: [
+        `
+            :host {
+                display: block;
+                height: 100%;
+            }
+        `,
+    ],
     imports: [
         MatRippleModule,
         MatProgressSpinnerModule,
         IconComponent,
         MatTooltipModule,
         TranslatePipe,
+        VirtualScrollComponent,
     ],
 })
 export class StatusListComponent implements OnChanges {
@@ -127,8 +136,11 @@ export class StatusListComponent implements OnChanges {
     public readonly done = output<Record<string, unknown>[]>();
     /** Emitter to close the modal once the user has reviewed results */
     public readonly close_modal = output<void>();
-    /** Status of each of the items to be created */
-    public readonly status = signal<Record<string, string>>({});
+    /**
+     * Status of each of the items to be created. One signal per row, so an
+     * update re-checks that row only.
+     */
+    public readonly status = computed(() => this.list().map(() => signal('')));
     /** Whether all items have been processed */
     public readonly is_done = signal(false);
     /** Count of successfully completed items */
@@ -195,6 +207,6 @@ export class StatusListComponent implements OnChanges {
     }
 
     private setStatus(index: number, value: string): void {
-        this.status.update((status) => ({ ...status, [index]: value }));
+        this.status()[index].set(value);
     }
 }

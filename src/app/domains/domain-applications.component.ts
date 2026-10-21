@@ -219,6 +219,8 @@ export class DomainApplicationsComponent {
     }
 
     public setShowSecret(id: string, value: boolean): void {
+        // Every row listens for window mouseup, so skip rows with no change
+        if (!!this.show_secret()[id] === value) return;
         this.show_secret.update((state) => ({ ...state, [id]: value }));
     }
 }

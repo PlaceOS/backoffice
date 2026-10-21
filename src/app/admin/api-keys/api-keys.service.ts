@@ -6,7 +6,6 @@ import {
     PlaceDomain,
     PlaceUser,
     query,
-    queryUsers,
     remove,
     showUser,
     update,
@@ -38,7 +37,6 @@ export class APIKeyService {
     private _dialog = inject(MatDialog);
     private _admin_data = inject(AdminDataService);
 
-    private _search = signal('');
     private _domain = this._admin_data.selectedDomain('api-keys');
     private _last_key = signal<PlaceAPIKeyDetails>(null);
     private _change = signal(0);
@@ -84,33 +82,12 @@ export class APIKeyService {
         this._available_keys.hasValue() ? this._available_keys.value() : [],
     );
 
-    private readonly _users = resource({
-        params: () => ({
-            domain: this._domain(),
-            q: this._search(),
-            change: this._change(),
-        }),
-        loader: async ({ params }) => {
-            const { domain, q } = params;
-            if (!domain) return [] as PlaceUser[];
-            return (await queryUsers({ authority_id: domain.id, q })).data;
-        },
-    });
-
-    public readonly users = computed(() =>
-        this._users.hasValue() ? this._users.value() : [],
-    );
-
     public setDomain(domain: PlaceDomain) {
         this._admin_data.setDomain('api-keys', domain);
     }
 
     public async selectDefaultDomain() {
         return this._admin_data.selectDefaultDomain('api-keys');
-    }
-
-    public setSearch(s: string) {
-        this._search.set(s);
     }
 
     public async newKey() {

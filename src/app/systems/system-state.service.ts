@@ -31,6 +31,7 @@ import { calculateModuleIndex } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { escapeHtml, unique } from '../common/general';
+import { openedTabs } from '../common/opened-tabs';
 import {
     isSubsystemUser,
     querySupportSystems as querySystems,
@@ -66,10 +67,33 @@ export class SystemStateService extends AsyncHandler {
     private _loading = signal<HashMap<boolean>>({});
     private _modules = signal<PlaceModule[]>([]);
     private _last_module_system = '';
-    private _change = signal(0);
+    // Each list reloads only after an action that changes it
+    private _settings_change = signal(0);
+    private _modules_change = signal(0);
+    private _triggers_change = signal(0);
+
+    private readonly _system_id = computed(() => {
+        const item = this.item();
+        return item instanceof PlaceSystem ? item.id : undefined;
+    });
+    // Tab lists load once their tab is opened. The item gives the module and
+    // zone counts, and a single row query gives the trigger count.
+    private readonly _opened_tabs = openedTabs(this._system_id);
+    private readonly _load_modules = computed(() =>
+        this._opened_tabs().has('modules'),
+    );
+    private readonly _load_zones = computed(() =>
+        this._opened_tabs().has('zones'),
+    );
+    private readonly _load_triggers = computed(() =>
+        this._opened_tabs().has('triggers'),
+    );
 
     private readonly _associated_settings = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
+        params: () => ({
+            item: this.item(),
+            changed: this._settings_change(),
+        }),
         loader: async ({ params }) => {
             const { item } = params;
             if (!(item instanceof PlaceSystem)) return [];
@@ -85,9 +109,8 @@ export class SystemStateService extends AsyncHandler {
     );
 
     private readonly _counts = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
-        loader: async ({ params }) => {
-            const { item } = params;
+        params: () => this.item(),
+        loader: async ({ params: item }) => {
             if (!(item instanceof PlaceSystem)) return {};
             this.setLoading('settings', true);
             try {
@@ -117,10 +140,14 @@ export class SystemStateService extends AsyncHandler {
     }));
 
     private readonly _module_resource = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
+        params: () => ({
+            item: this.item(),
+            changed: this._modules_change(),
+            load: this._load_modules(),
+        }),
         loader: async ({ params, abortSignal }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceSystem)) {
+            const { item, load } = params;
+            if (!(item instanceof PlaceSystem) || !load) {
                 this._last_module_system = '';
                 this._modules.set([]);
                 return [] as PlaceModule[];
@@ -199,10 +226,11 @@ export class SystemStateService extends AsyncHandler {
     );
 
     private readonly _zones = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
+        params: () => ({ item: this.item(), load: this._load_zones() }),
         loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceSystem)) return [] as PlaceZone[];
+            const { item, load } = params;
+            if (!(item instanceof PlaceSystem) || !load)
+                return [] as PlaceZone[];
             this.setLoading('zones', true);
             try {
                 const response = isSubsystemUser()
@@ -234,17 +262,22 @@ export class SystemStateService extends AsyncHandler {
     public readonly zones = computed(() => this._zones.value() || []);
 
     private readonly _triggers = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
+        params: () => ({
+            item: this.item(),
+            changed: this._triggers_change(),
+            full: this._load_triggers(),
+        }),
         loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceSystem))
-                return { data: [] as PlaceTrigger[], total: 0 };
+            const { item, full } = params;
+            const empty = { data: [] as PlaceTrigger[], total: 0 };
+            if (!(item instanceof PlaceSystem)) return empty;
             this.setLoading('triggers', true);
             try {
-                return await listSystemTriggers(item.id).catch(() => ({
-                    data: [] as PlaceTrigger[],
-                    total: 0,
-                }));
+                const response = await listSystemTriggers(
+                    item.id,
+                    full ? {} : { limit: 1 },
+                ).catch(() => empty);
+                return full ? response : { ...empty, total: response.total };
             } finally {
                 this.setLoading('triggers', false);
             }
@@ -283,7 +316,7 @@ export class SystemStateService extends AsyncHandler {
             });
         if (!error) {
             notifySuccess(`Successfully started system`);
-            this.timeout('change', () => this.changed());
+            this.timeout('change', () => this.modulesChanged());
         }
         details.close();
     }
@@ -307,7 +340,7 @@ export class SystemStateService extends AsyncHandler {
             });
         if (!error) {
             notifySuccess(`Successfully stopped system`);
-            this.timeout('change', () => this.changed());
+            this.timeout('change', () => this.modulesChanged());
         }
         details.close();
     }
@@ -341,7 +374,9 @@ export class SystemStateService extends AsyncHandler {
 
     public async editModule(device: PlaceModule) {
         await this._state.edit(device).catch((_err) => null);
-        this.changed();
+        // Module settings also show in the associated settings
+        this.modulesChanged();
+        this._settings_change.update((count) => count + 1);
     }
 
     public async addModuleToSystem(device: PlaceModule) {
@@ -382,7 +417,7 @@ export class SystemStateService extends AsyncHandler {
             );
             throw _e;
         });
-        this.changed();
+        this.modulesChanged();
         ref.close();
         notifySuccess(
             `Successfully added module to system "${
@@ -415,7 +450,7 @@ export class SystemStateService extends AsyncHandler {
             const t = await this.addTrigger(
                 ref.componentInstance.item as PlaceTrigger,
             );
-            this.changed();
+            this.triggersChanged();
             return t;
         } catch (err) {
             notifyError(
@@ -433,7 +468,7 @@ export class SystemStateService extends AsyncHandler {
             important: false,
             trigger_id: trigger.id,
         } as Record<string, unknown>);
-        this.timeout('change', () => this.changed());
+        this.timeout('change', () => this.triggersChanged());
         return t;
     }
 
@@ -471,7 +506,7 @@ export class SystemStateService extends AsyncHandler {
             ref.close();
             if (!trig) return trigger;
             notifySuccess(`Successfully updated trigger settings.`);
-            this.timeout('change', () => this.changed());
+            this.timeout('change', () => this.triggersChanged());
             return trig;
         }
     }
@@ -496,7 +531,7 @@ export class SystemStateService extends AsyncHandler {
             details.close();
         }
         notifySuccess(`Successfully removed trigger from system.`);
-        this.changed();
+        this.triggersChanged();
     }
 
     public async reorderModules(fst: number, snd: number) {
@@ -751,7 +786,7 @@ export class SystemStateService extends AsyncHandler {
         );
         (device as PlaceModule & { running: boolean }).running =
             !device.running;
-        this.changed();
+        this.modulesChanged();
     }
 
     /** View Results of the execute */
@@ -772,7 +807,18 @@ export class SystemStateService extends AsyncHandler {
         this._loading.update((state) => ({ ...state, [key]: value }));
     }
 
+    /** Reload the settings, module and trigger lists of the active system */
     private changed() {
-        this._change.set(Date.now());
+        this._settings_change.update((count) => count + 1);
+        this.modulesChanged();
+        this.triggersChanged();
+    }
+
+    private modulesChanged() {
+        this._modules_change.update((count) => count + 1);
+    }
+
+    private triggersChanged() {
+        this._triggers_change.update((count) => count + 1);
     }
 }

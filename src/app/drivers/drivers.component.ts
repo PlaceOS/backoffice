@@ -1,8 +1,7 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { PlaceDriver, queryModules } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
@@ -128,7 +127,7 @@ export class DriversComponent {
     public readonly loading = this._service.loading;
     public readonly scroll = signal(0);
     public readonly open_menu = signal(false);
-    public readonly device_count = signal(0);
+    public readonly device_count = this._drivers.modules_total;
     public readonly docs = this._drivers.docs;
     public readonly extensions = computed(() =>
         extensionsForItem(this.item(), this.name),
@@ -169,28 +168,4 @@ export class DriversComponent {
 
     public readonly showUpdateList = () => this._drivers.showUpdateList();
     public readonly newItem = () => this._service.create();
-
-    constructor() {
-        effect(() => {
-            const item = this.item();
-            // Reload the count after a module is removed
-            this._drivers.modules_change();
-            this.device_count.set(undefined);
-            this.loadValues(item);
-        });
-    }
-
-    protected async loadValues(item: PlaceDriver) {
-        if (!item) return;
-        const query: Record<string, unknown> = {
-            offset: 0,
-            limit: 1,
-            driver_id: item.id,
-        };
-        this.device_count.set(
-            await queryModules(query)
-                .then(({ total }) => total)
-                .catch(() => 0),
-        );
-    }
 }

@@ -29,12 +29,13 @@
                     {
                         "glob": "**/*",
                         "input": "node_modules/monaco-editor/min/",
-                        "output": "./assets/monaco/min/"
-                    },
-                    {
-                        "input": "src/environments/dev",
-                        "output": "/assets",
-                        "glob": "*.js"
+                        "output": "./assets/monaco/min/",
+                        "ignore": [
+                            "**/ts.worker-*.js",
+                            "**/css.worker-*.js",
+                            "**/html.worker-*.js",
+                            "**/nls.messages.*.js"
+                        ]
                     },
                     {
                         "input": "node_modules/ts-md5/dist/",

@@ -17,6 +17,7 @@ import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { openedTabs } from '../common/opened-tabs';
 import { waitForEvent } from '../common/signals';
 import {
     GroupBulkAddModalComponent,
@@ -38,66 +39,79 @@ export class UsersStateService {
     public readonly loading = computed(
         () =>
             this._saving() ||
-            this._counts.isLoading() ||
+            this._metadata_count.isLoading() ||
             this._groups.isLoading(),
     );
 
     public readonly item = this._service.item;
 
     // The metadata tab loads its own list, so only the count is needed here
-    private readonly _counts = resource({
+    private readonly _metadata_count = resource({
         params: () => ({
             item: this._service.active_item$(),
             change: this._change(),
         }),
         loader: async ({ params }) => {
             const { item } = params;
-            if (!(item instanceof PlaceUser)) return {};
-            const details = await Promise.all([
-                listMetadata(item.id)
-                    .then((d) => d.length)
-                    .catch((_err) => 0),
-                queryGroupUsers({ user_id: item.id, limit: 1 })
-                    .then((response) => response.total)
-                    .catch(() => 0),
-            ]);
-            const [metadata, groups] = details;
-            return {
-                metadata,
-                groups,
-            };
+            if (!(item instanceof PlaceUser)) return 0;
+            return listMetadata(item.id)
+                .then((d) => d.length)
+                .catch((_err) => 0);
         },
     });
 
     public readonly counts = computed<{ metadata?: number; groups?: number }>(
-        () => this._counts.value() || { metadata: 0, groups: 0 },
+        () => ({
+            metadata: this._metadata_count.value() || 0,
+            groups: this._groups.value()?.total || 0,
+        }),
+    );
+
+    private readonly _user_id = computed(() => {
+        const item = this.item();
+        return item instanceof PlaceUser ? item.id : undefined;
+    });
+    // The group list only loads once its tab is opened. Until then a single
+    // row query gives the tab count.
+    private readonly _opened_tabs = openedTabs(this._user_id);
+    private readonly _load_groups = computed(() =>
+        this._opened_tabs().has('groups'),
     );
 
     private readonly _groups = resource({
-        params: () => ({ item: this.item(), change: this._change() }),
+        params: () => ({
+            item: this.item(),
+            change: this._change(),
+            full: this._load_groups(),
+        }),
         loader: async ({ params }) => {
-            const { item } = params;
-            if (!(item instanceof PlaceUser)) return [] as PlaceGroupUser[];
+            const { item, full } = params;
+            const empty = { data: [] as PlaceGroupUser[], total: 0 };
+            if (!(item instanceof PlaceUser)) return empty;
             const response = await queryGroupUsers({
                 user_id: item.id,
-                limit: 1000,
+                limit: full ? 1000 : 1,
             }).catch((error) => {
                 notifyError(
                     i18n('USERS.GROUPS_LOAD_ERROR', {
                         error: describeError(error),
                     }),
                 );
-                return { data: [] as PlaceGroupUser[] };
+                return empty;
             });
-            return response.data.sort((a, b) =>
-                (a.group?.name || a.group_id).localeCompare(
-                    b.group?.name || b.group_id,
+            if (!full) return { ...empty, total: response.total };
+            return {
+                total: response.total,
+                data: [...response.data].sort((a, b) =>
+                    (a.group?.name || a.group_id).localeCompare(
+                        b.group?.name || b.group_id,
+                    ),
                 ),
-            );
+            };
         },
     });
 
-    public readonly groups = computed(() => this._groups.value() || []);
+    public readonly groups = computed(() => this._groups.value()?.data || []);
 
     public get active_item(): PlaceUser {
         return this._service.active_item as unknown as PlaceUser;
