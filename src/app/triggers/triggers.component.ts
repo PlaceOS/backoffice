@@ -30,13 +30,13 @@ import { TriggerStateService } from './trigger-state.service';
             <div class="flex h-full w-px flex-1 flex-col overflow-hidden">
                 <div class="flex h-px flex-1">
                     <item-sidebar
-                        class="hidden sm:block"
+                        class="hidden lg:block"
                         [route]="name"
                         [title]="'TRIGGERS.PLURAL' | translate"
                     />
                     <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
                         <item-selection
-                            class="z-20 sm:hidden"
+                            class="z-20 lg:hidden"
                             [route]="name"
                             [title]="'TRIGGERS.PLURAL' | translate"
                         >
@@ -74,7 +74,7 @@ import { TriggerStateService } from './trigger-state.service';
                             }
                         </div>
                         <button
-                            class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm sm:-left-9"
+                            class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm lg:-left-9"
                             [matTooltip]="'TRIGGERS.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple

@@ -1,9 +1,6 @@
-import { Component, TemplateRef, viewChild } from '@angular/core';
-import {
-    ComponentFixture,
-    TestBed,
-} from '@angular/core/testing';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { Component, TemplateRef, viewChild } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { CustomTooltipComponent } from '../../../app/ui/custom-tooltip.component';
 
@@ -80,6 +77,21 @@ describe('CustomTooltipComponent', () => {
         overlay_element
             .querySelector<HTMLElement>('.cdk-overlay-backdrop')
             ?.click();
+        fixture.detectChanges();
+
+        expect(overlay_element.textContent).not.toContain('Tooltip content');
+    });
+
+    it('closes on Escape', async () => {
+        fixture.detectChanges();
+        fixture.nativeElement.querySelector('button').click();
+        await waitForTooltipDelay();
+        fixture.detectChanges();
+        expect(overlay_element.textContent).toContain('Tooltip content');
+
+        document.body.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+        );
         fixture.detectChanges();
 
         expect(overlay_element.textContent).not.toContain('Tooltip content');

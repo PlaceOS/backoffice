@@ -29,13 +29,13 @@ import { SystemStateService } from './system-state.service';
             <div class="flex h-full w-px flex-1 flex-col overflow-hidden">
                 <div class="flex h-px flex-1">
                     <item-sidebar
-                        class="hidden sm:block"
+                        class="hidden lg:block"
                         [title]="'SYSTEMS.PLURAL' | translate"
                     />
                     <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
                         <item-selection
                             [title]="'SYSTEMS.PLURAL' | translate"
-                            class="z-20 sm:hidden"
+                            class="z-20 lg:hidden"
                         >
                             <button
                                 btn
@@ -71,7 +71,7 @@ import { SystemStateService } from './system-state.service';
                             }
                         </div>
                         <button
-                            class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm sm:-left-9"
+                            class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm lg:-left-9"
                             [matTooltip]="'SYSTEMS.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
@@ -81,7 +81,7 @@ import { SystemStateService } from './system-state.service';
                             <icon class="text-3xl">add</icon>
                         </button>
                         <button
-                            class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm sm:-left-8"
+                            class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm lg:-left-8"
                             [matTooltip]="'SYSTEMS.BULK' | translate"
                             matTooltipPosition="right"
                             matRipple

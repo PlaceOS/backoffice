@@ -662,10 +662,6 @@ hr {
     input {
         color-scheme: dark;
     }
-    input::placeholder {
-        color: inherit;
-        opacity: 0.6;
-    }
 }
 
 div > label,
@@ -699,10 +695,11 @@ section > label {
         min-width: 12rem;
     }
 
+    /* Dimmed text colour, so it stays readable in light and dark themes */
     ::placeholder,
     .mat-form-field-label,
     .mat-mdc-select-placeholder {
-        color: var(--neutral);
+        color: color-mix(in srgb, var(--base-content) 60%, transparent);
     }
 
     input {
