@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
+#### Auth
+
+- Use the root redirect_uri on any localhost dev server
+
 #### Build
 
 - Use node fs in the version script
