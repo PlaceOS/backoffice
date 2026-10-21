@@ -15,6 +15,7 @@ import {
     submit,
     validate,
 } from '@angular/forms/signals';
+import { MatRippleModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -26,9 +27,16 @@ import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
 import { ObjectListFieldComponent } from '../ui/custom-fields/object-list-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
+import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { PlaceTenant } from './staff-api.component';
+import {
+    formatMinutes,
+    joinDuration,
+    MAX_TENANT_LIMIT,
+    splitMinutes,
+} from './staff-api.utilities';
 
 const FIELD_NAME_MAPPING: HashMap<string> = {
     issuer: 'Service Account Email',
@@ -69,10 +77,21 @@ interface StaffTenantFormModel {
     service_account: string;
     booking_limits: { type: string; amount: string | number }[];
     booking_range: { type: string; days: string | number }[];
+    booking_period: BookingPeriodRow[];
     early_checkin: number;
     credentials: HashMap;
     outlook_config: HashMap;
 }
+
+interface BookingPeriodRow {
+    type: string;
+    days: string | number;
+    hours: number;
+    minutes: number;
+}
+
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, hour) => hour);
+const MINUTE_OPTIONS = Array.from({ length: 12 }, (_, step) => step * 5);
 
 export interface StaffTenantModalData {
     tenant?: PlaceTenant;
@@ -396,6 +415,168 @@ export interface StaffTenantModalData {
                         </p>
                     }
                 </div>
+                <div class="mt-6 flex flex-col space-y-2" booking-period>
+                    <span class="label">{{
+                        'ADMIN.TENANTS_BOOKING_PERIOD' | translate
+                    }}</span>
+                    <p class="text-sm opacity-60">
+                        {{ 'ADMIN.TENANTS_BOOKING_PERIOD_HINT' | translate }}
+                    </p>
+                    @for (
+                        item of formModel().booking_period;
+                        track $index;
+                        let index = $index
+                    ) {
+                        <div class="flex items-center space-x-2" period-row>
+                            <mat-form-field
+                                appearance="outline"
+                                class="no-subscript min-w-0 flex-2"
+                            >
+                                <input
+                                    matInput
+                                    [attr.aria-label]="
+                                        'ADMIN.TENANTS_BOOKING_TYPE' | translate
+                                    "
+                                    [placeholder]="
+                                        'ADMIN.TENANTS_BOOKING_TYPE' | translate
+                                    "
+                                    [ngModel]="item.type"
+                                    (ngModelChange)="
+                                        updateBookingPeriod(
+                                            index,
+                                            'type',
+                                            $event
+                                        )
+                                    "
+                                    [ngModelOptions]="{ standalone: true }"
+                                />
+                            </mat-form-field>
+                            <mat-form-field
+                                appearance="outline"
+                                class="no-subscript min-w-0 flex-1"
+                            >
+                                <input
+                                    matInput
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    [attr.aria-label]="
+                                        'ADMIN.TENANTS_DAYS' | translate
+                                    "
+                                    [ngModel]="item.days"
+                                    (ngModelChange)="
+                                        updateBookingPeriod(
+                                            index,
+                                            'days',
+                                            $event
+                                        )
+                                    "
+                                    [ngModelOptions]="{ standalone: true }"
+                                />
+                                <span matTextSuffix>{{
+                                    'ADMIN.TENANTS_DAYS' | translate
+                                }}</span>
+                            </mat-form-field>
+                            <mat-form-field
+                                appearance="outline"
+                                class="no-subscript min-w-0 flex-1"
+                            >
+                                <mat-select
+                                    [aria-label]="
+                                        'ADMIN.TENANTS_HOURS_LABEL' | translate
+                                    "
+                                    [ngModel]="item.hours"
+                                    (ngModelChange)="
+                                        updateBookingPeriod(
+                                            index,
+                                            'hours',
+                                            $event
+                                        )
+                                    "
+                                    [ngModelOptions]="{ standalone: true }"
+                                >
+                                    @for (hour of hour_options; track hour) {
+                                        <mat-option [value]="hour">
+                                            {{
+                                                'ADMIN.TENANTS_DURATION_HOURS'
+                                                    | translate
+                                                        : { count: hour }
+                                                        : hour
+                                            }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field
+                                appearance="outline"
+                                class="no-subscript min-w-0 flex-1"
+                            >
+                                <mat-select
+                                    [aria-label]="
+                                        'ADMIN.TENANTS_MINUTES_LABEL'
+                                            | translate
+                                    "
+                                    [ngModel]="item.minutes"
+                                    (ngModelChange)="
+                                        updateBookingPeriod(
+                                            index,
+                                            'minutes',
+                                            $event
+                                        )
+                                    "
+                                    [ngModelOptions]="{ standalone: true }"
+                                >
+                                    @for (
+                                        minute of minuteOptions(item.minutes);
+                                        track minute
+                                    ) {
+                                        <mat-option [value]="minute">
+                                            {{
+                                                'ADMIN.TENANTS_DURATION_MINUTES'
+                                                    | translate
+                                                        : { count: minute }
+                                                        : minute
+                                            }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                            <button
+                                type="button"
+                                icon
+                                matRipple
+                                class="border-error text-error h-12 w-12 shrink-0 rounded-sm border"
+                                [attr.aria-label]="'COMMON.DELETE' | translate"
+                                (click)="removeBookingPeriod(index)"
+                            >
+                                <icon>delete</icon>
+                            </button>
+                        </div>
+                        <p class="-mt-1 text-xs opacity-60" period-total>
+                            {{ formatPeriod(item) }}
+                        </p>
+                    }
+                    <button
+                        btn
+                        type="button"
+                        class="w-full"
+                        (click)="addBookingPeriod()"
+                    >
+                        <div class="flex items-center">
+                            <icon class="text-2xl">add</icon>
+                            <div class="text">
+                                {{ 'COMMON.NEW_ITEM' | translate }}
+                            </div>
+                        </div>
+                    </button>
+                    @if (form.booking_period().invalid()) {
+                        <p class="text-error text-sm">
+                            {{
+                                'ADMIN.TENANTS_BOOKING_PERIOD_ERROR' | translate
+                            }}
+                        </p>
+                    }
+                </div>
             </form>
         </fullscreen-modal-shell>
     `,
@@ -410,6 +591,8 @@ export interface StaffTenantModalData {
     ],
     imports: [
         FullscreenModalShellComponent,
+        IconComponent,
+        MatRippleModule,
         ObjectListFieldComponent,
         FormField,
         TranslatePipe,
@@ -459,12 +642,31 @@ export class StaffTenantModalComponent {
                     `${days}`.trim() === '' ||
                     !Number.isInteger(+days) ||
                     +days < 0 ||
-                    +days > 4294967295,
+                    +days > MAX_TENANT_LIMIT,
             ) || new Set(types).size !== types.length
                 ? { kind: 'booking_range' }
                 : undefined;
         });
+        validate(path.booking_period, ({ value }) => {
+            const periods = value();
+            const types = periods.map(({ type }) => type?.trim());
+            return periods.some(({ days }, index) => {
+                const total = joinDuration({ ...periods[index], days: +days });
+                return (
+                    !types[index] ||
+                    `${days ?? ''}`.trim() === '' ||
+                    !Number.isInteger(+days) ||
+                    +days < 0 ||
+                    total <= 0 ||
+                    total > MAX_TENANT_LIMIT
+                );
+            }) || new Set(types).size !== types.length
+                ? { kind: 'booking_period' }
+                : undefined;
+        });
     });
+
+    public readonly hour_options = HOUR_OPTIONS;
 
     public readonly credential_fields = computed(() => {
         const model = this.formModel();
@@ -520,6 +722,51 @@ export class StaffTenantModalComponent {
         }));
     }
 
+    /** Minute choices, keeping a stored value that isn't a multiple of 5 */
+    public minuteOptions(current: number) {
+        return MINUTE_OPTIONS.includes(current)
+            ? MINUTE_OPTIONS
+            : [...MINUTE_OPTIONS, current].sort((a, b) => a - b);
+    }
+
+    public formatPeriod(period: BookingPeriodRow) {
+        return formatMinutes(joinDuration({ ...period, days: +period.days }));
+    }
+
+    public addBookingPeriod() {
+        this.updateBookingPeriods((periods) => [
+            ...periods,
+            { type: '', days: 0, hours: 1, minutes: 0 },
+        ]);
+    }
+
+    public removeBookingPeriod(index: number) {
+        this.updateBookingPeriods((periods) =>
+            periods.filter((_, item_index) => item_index !== index),
+        );
+    }
+
+    public updateBookingPeriod<K extends keyof BookingPeriodRow>(
+        index: number,
+        field: K,
+        value: BookingPeriodRow[K],
+    ) {
+        this.updateBookingPeriods((periods) =>
+            periods.map((item, item_index) =>
+                item_index === index ? { ...item, [field]: value } : item,
+            ),
+        );
+    }
+
+    private updateBookingPeriods(
+        change: (periods: BookingPeriodRow[]) => BookingPeriodRow[],
+    ) {
+        this.formModel.update((model) => ({
+            ...model,
+            booking_period: change(model.booking_period),
+        }));
+    }
+
     public async save() {
         await submit(this.form, async () => undefined);
         const invalid_credentials = this.credential_fields()
@@ -551,6 +798,12 @@ export class StaffTenantModalComponent {
                 model.booking_range.map(({ type, days }) => [
                     type.trim(),
                     +days,
+                ]),
+            ),
+            booking_period: Object.fromEntries(
+                model.booking_period.map((period) => [
+                    period.type.trim(),
+                    joinDuration({ ...period, days: +period.days }),
                 ]),
             ),
         };
@@ -635,6 +888,9 @@ export class StaffTenantModalComponent {
             booking_range: Object.entries(this.tenant?.booking_range || {}).map(
                 ([type, days]) => ({ type, days }),
             ),
+            booking_period: Object.entries(
+                this.tenant?.booking_period || {},
+            ).map(([type, minutes]) => ({ type, ...splitMinutes(minutes) })),
             early_checkin: this.tenant?.early_checkin || 60 * 60,
             credentials: {
                 user_agent: 'PlaceOS',

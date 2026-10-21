@@ -19,7 +19,11 @@ import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
 import { BookingLimitsModalComponent } from './booking-limits-modal.component';
-import { isSecretExpired, isSecretExpiring } from './staff-api.utilities';
+import {
+    formatMinutes,
+    isSecretExpired,
+    isSecretExpiring,
+} from './staff-api.utilities';
 import { StaffTenantModalComponent } from './staff-tenant-modal.component';
 
 export interface PlaceTenant {
@@ -32,6 +36,8 @@ export interface PlaceTenant {
     service_account?: string;
     booking_limits: Record<string, number>;
     booking_range?: Record<string, number>;
+    /** Booking type => maximum length of a booking in minutes */
+    booking_period?: Record<string, number>;
     credentials?: HashMap<string>;
     secret_expiry?: number;
     early_checkin?: number;
@@ -92,6 +98,14 @@ export interface PlaceTenant {
                             name: 'ADMIN.TENANTS_PLATFORM' | translate,
                         },
                         {
+                            key: 'booking_period',
+                            name:
+                                'ADMIN.TENANTS_BOOKING_PERIOD_COLUMN'
+                                | translate,
+                            content: period_template,
+                            sortable: false,
+                        },
+                        {
                             key: 'secret_expiry',
                             name: 'ADMIN.TENANTS_SECRET_EXPIRY' | translate,
                             content: expires_template,
@@ -135,6 +149,16 @@ export interface PlaceTenant {
                 </div>
             </div>
         </ng-template>
+        <ng-template #period_template let-data="data">
+            <div class="flex flex-col px-2 py-1" booking-period>
+                @for (period of bookingPeriods(data); track period.type) {
+                    <div>
+                        <span class="opacity-60">{{ period.type }}:</span>
+                        {{ period.length }}
+                    </div>
+                }
+            </div>
+        </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2">
                 <button
@@ -142,6 +166,9 @@ export interface PlaceTenant {
                     default
                     matRipple
                     [matTooltip]="
+                        'ADMIN.TENANTS_EDIT_BOOKING_LIMITS' | translate
+                    "
+                    [attr.aria-label]="
                         'ADMIN.TENANTS_EDIT_BOOKING_LIMITS' | translate
                     "
                     (click)="editLimits(row)"
@@ -153,6 +180,7 @@ export interface PlaceTenant {
                     default
                     matRipple
                     [matTooltip]="'ADMIN.TENANTS_EDIT' | translate"
+                    [attr.aria-label]="'ADMIN.TENANTS_EDIT' | translate"
                     (click)="editTenant(row)"
                 >
                     <icon>edit</icon>
@@ -163,6 +191,7 @@ export interface PlaceTenant {
                     error
                     matRipple
                     [matTooltip]="'ADMIN.TENANTS_REMOVE' | translate"
+                    [attr.aria-label]="'ADMIN.TENANTS_REMOVE' | translate"
                     (click)="removeTenant(row)"
                 >
                     <icon>delete</icon>
@@ -207,6 +236,13 @@ export class PlaceStaffAPIComponent implements OnInit {
     public readonly expiring = (tenant: PlaceTenant) =>
         isSecretExpiring(tenant);
     public readonly expired = (tenant: PlaceTenant) => isSecretExpired(tenant);
+
+    public bookingPeriods(periods?: Record<string, number>) {
+        return Object.entries(periods || {}).map(([type, minutes]) => ({
+            type,
+            length: formatMinutes(minutes),
+        }));
+    }
 
     public async ngOnInit() {
         this.loading.set('Loading domains...');
