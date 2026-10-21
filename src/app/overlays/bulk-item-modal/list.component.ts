@@ -167,6 +167,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                 class="text-error mx-auto"
                 title="Remove row"
                 (click)="removeItem(index); $event.stopPropagation()"
+                [attr.aria-label]="'COMMON.DELETE' | translate"
             >
                 <icon>delete</icon>
             </button>

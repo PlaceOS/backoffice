@@ -525,7 +525,7 @@ export class StaffTenantModalComponent {
         const invalid_credentials = this.credential_fields()
             .filter((field) => field.required)
             .filter((field) => !this.formModel().credentials[field.key])
-            .map((field) => field.key);
+            .map((field) => FIELD_NAME_MAPPING[field.key] || field.key);
         if (this.form().invalid() || invalid_credentials.length) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
@@ -536,7 +536,6 @@ export class StaffTenantModalComponent {
                 }),
             );
         }
-        this._dialog_ref.disableClose = true;
         this.loading.set('Saving staff API tenant...');
         const model = this.formModel();
         const limits = model.booking_limits || [];
@@ -590,7 +589,6 @@ export class StaffTenantModalComponent {
             : post('/api/staff/v1/tenants', data);
         const tenant = await call.catch((__) => null);
         this.loading.set('');
-        this._dialog_ref.disableClose = false;
         if (!tenant) return notifyError(i18n('ADMIN.TENANTS_SAVE_ERROR'));
         notifySuccess(i18n('ADMIN.TENANTS_SAVE_SUCCESS'));
         this._dialog_ref.close();

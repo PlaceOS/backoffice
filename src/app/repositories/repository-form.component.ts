@@ -637,7 +637,6 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
             }
             const item = this._data.item;
             this.saving.set(i18n(`${this._name}.SAVING`));
-            this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_value = { ...this.formModel() };
             if (form_value.root_path) {
@@ -661,13 +660,11 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
                           form_item as unknown as PlaceRepository,
                       )
                     : addRepository(form_item as unknown as PlaceRepository));
-                this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item: _item } });
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
                 this._dialog_ref.close();
             } catch (err) {
                 this.saving.set(null);
-                this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
                         error: await readError(err),

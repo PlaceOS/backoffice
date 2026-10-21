@@ -112,7 +112,9 @@ export interface APIKeyModalData {
                                 [matChipInputSeparatorKeyCodes]="separators"
                                 [matChipInputAddOnBlur]="true"
                                 (matChipInputTokenEnd)="addScope($event)"
-                                (input)="scope_search.set($any($event.target).value)"
+                                (input)="
+                                    scope_search.set($any($event.target).value)
+                                "
                                 [matAutocomplete]="auto"
                             />
                         </mat-chip-grid>
@@ -178,6 +180,9 @@ export interface APIKeyModalData {
                                     icon
                                     type="button"
                                     (click)="clearUser()"
+                                    [attr.aria-label]="
+                                        'COMMON.CLEAR_VALUE' | translate
+                                    "
                                 >
                                     <icon>close</icon>
                                 </button>
@@ -278,6 +283,9 @@ export interface APIKeyModalData {
                                 matSuffix
                                 type="button"
                                 (click)="setExpiry('')"
+                                [attr.aria-label]="
+                                    'COMMON.CLEAR_VALUE' | translate
+                                "
                             >
                                 <icon>close</icon>
                             </button>
@@ -303,7 +311,10 @@ export interface APIKeyModalData {
                                 <mat-option [value]="null">{{
                                     'ADMIN.APP_KEYS_TTL_NONE' | translate
                                 }}</mat-option>
-                                @for (preset of ttl_presets; track preset.seconds) {
+                                @for (
+                                    preset of ttl_presets;
+                                    track preset.seconds
+                                ) {
                                     <mat-option [value]="preset.seconds">{{
                                         preset.label | translate
                                     }}</mat-option>
@@ -406,7 +417,10 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
             (a.name || '').localeCompare(b.name || ''),
         );
         // The selected user's label fills the input; don't filter it away.
-        if (!search || search === this._userLabel(this.formModel().user).toLowerCase()) {
+        if (
+            !search ||
+            search === this._userLabel(this.formModel().user).toLowerCase()
+        ) {
             return list;
         }
         return list.filter((user) =>

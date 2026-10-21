@@ -13,7 +13,9 @@ import {
 } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
+import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { collectPages } from '../common/support-access';
 import { HashMap, Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
@@ -58,10 +60,11 @@ export class DriverStateService {
         loader: async ({ params: { item } }) => {
             if (!(item instanceof PlaceDriver))
                 return { data: [] as PlaceModule[], total: 0 };
-            const response = await queryModules({
-                driver_id: item.id,
-            }).catch(() => ({ data: [] as PlaceModule[], total: 0 }));
-            return { data: response.data, total: response.total };
+            // Load every page so the list matches the tab count
+            const data = await collectPages(
+                queryModules({ driver_id: item.id, limit: 500 }),
+            ).catch(reportLoadError([] as PlaceModule[]));
+            return { data, total: data.length };
         },
     });
 

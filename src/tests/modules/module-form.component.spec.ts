@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { PlaceDriverRole, type PlaceDriver } from '@placeos/ts-client';
+import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ModuleFormComponent } from '../../app/modules/module-form.component';
 
@@ -60,7 +61,14 @@ describe('ModuleFormComponent', () => {
             providers: [
                 provideZonelessChangeDetection(),
                 provideNoopAnimations(),
-                { provide: MatDialogRef, useValue: { close: vi.fn() } },
+                {
+                    provide: MatDialogRef,
+                    useValue: {
+                        close: vi.fn(),
+                        backdropClick: () => EMPTY,
+                        keydownEvents: () => EMPTY,
+                    },
+                },
                 { provide: MAT_DIALOG_DATA, useValue: { item } },
             ],
         }).compileComponents();
@@ -137,7 +145,14 @@ describe('creating a module', () => {
             providers: [
                 provideZonelessChangeDetection(),
                 provideNoopAnimations(),
-                { provide: MatDialogRef, useValue: { close: vi.fn() } },
+                {
+                    provide: MatDialogRef,
+                    useValue: {
+                        close: vi.fn(),
+                        backdropClick: () => EMPTY,
+                        keydownEvents: () => EMPTY,
+                    },
+                },
                 { provide: MAT_DIALOG_DATA, useValue: { item } },
             ],
         }).compileComponents();

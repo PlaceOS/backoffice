@@ -6,8 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { escapeHtml } from '../../common/general';
 import { describeError } from '../../common/errors';
+import { escapeHtml } from '../../common/general';
+import { reportLoadError } from '../../common/load-error';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
@@ -248,7 +249,7 @@ export class StorageComponent implements OnInit {
         this.loading.set('Loading storage...');
         const { data } = await queryStorage({
             auth_id: this.domain()?.id,
-        }).catch(() => ({ data: [] }));
+        }).catch(reportLoadError({ data: [] }));
         this.store_list.set(data);
         this.loading.set('');
     }

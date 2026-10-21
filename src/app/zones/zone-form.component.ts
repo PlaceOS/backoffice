@@ -424,7 +424,6 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
         await submit(this.form, async () => {
             const item: PlaceZone = this._data.item;
             this.loading.set(i18n(`${this._name}.SAVING`));
-            this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             // `parent_zone` is UI-only; the backend uses `parent_id`, which the
             // effect keeps in sync. Strip it so we never POST `parent_zone: null`.
@@ -442,13 +441,11 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
                           form_item as unknown as PlaceZone,
                       )
                     : addZoneRequest(form_item as unknown as PlaceZone));
-                this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item: _item } });
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
                 this._dialog_ref.close();
             } catch (err) {
                 this.loading.set(null);
-                this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
                         error: await readError(err),

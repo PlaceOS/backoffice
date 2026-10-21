@@ -101,7 +101,13 @@ export interface DisplayItem {
                     }
                 </div>
             </div>
-            <button icon default matRipple [matMenuTriggerFor]="action_menu">
+            <button
+                icon
+                default
+                matRipple
+                [matMenuTriggerFor]="action_menu"
+                [attr.aria-label]="'COMMON.MORE_ACTIONS' | translate"
+            >
                 <icon>more_vert</icon>
             </button>
         </div>

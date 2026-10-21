@@ -20,6 +20,7 @@ import {
 import { describeError, readError } from '../common/errors';
 import { escapeHtml, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
+import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openedTabs } from '../common/opened-tabs';
@@ -31,7 +32,11 @@ import {
     querySupportZones as queryZones,
 } from '../common/support-access';
 import { DialogEvent, Identity } from '../common/types';
-import { GroupBulkAddModalComponent } from '../groups/group-bulk-add-modal.component';
+import {
+    GroupBulkAddModalComponent,
+    GroupBulkAddModalData,
+    GroupBulkAddResult,
+} from '../groups/group-bulk-add-modal.component';
 import { GroupPermissionsModalComponent } from '../groups/group-permissions-modal.component';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {
@@ -111,7 +116,7 @@ export class ZonesStateService {
             // Load every page so the list matches the tab count
             const data = await collectPages(
                 querySystems({ zone_id: item.id, limit: 500 }),
-            ).catch(() => [] as PlaceSystem[]);
+            ).catch(reportLoadError([] as PlaceSystem[]));
             return { data, total: data.length };
         },
     });
@@ -124,7 +129,7 @@ export class ZonesStateService {
             const { item } = params;
             const empty = { data: [] as PlaceTrigger[], total: 0 };
             if (!(item instanceof PlaceZone) || isSubsystemUser()) return empty;
-            return listZoneTriggers(item.id).catch(() => empty);
+            return listZoneTriggers(item.id).catch(reportLoadError(empty));
         },
     });
 
@@ -162,7 +167,7 @@ export class ZonesStateService {
             // Load every page so the list matches the tab count
             const data = await collectPages(
                 queryZones({ parent_id: item.id, limit: 500 }),
-            ).catch(() => [] as PlaceZone[]);
+            ).catch(reportLoadError([] as PlaceZone[]));
             return { data, total: data.length };
         },
     });
@@ -184,7 +189,7 @@ export class ZonesStateService {
             const response = await queryGroupZones({
                 zone_id: item.id,
                 limit: full ? 1000 : 1,
-            }).catch(() => empty);
+            }).catch(reportLoadError(empty));
             if (!full) return { ...empty, total: response.total };
             return {
                 total: response.total,
@@ -306,9 +311,13 @@ export class ZonesStateService {
     }
 
     public async bulkAddGroups(existing_groups: PlaceGroupZone[] = []) {
-        const groups = await waitForEvent(
+        const result = await waitForEvent(
             this._dialog
-                .open(GroupBulkAddModalComponent<PlaceGroup>, {
+                .open<
+                    GroupBulkAddModalComponent<PlaceGroup>,
+                    GroupBulkAddModalData<PlaceGroup>,
+                    GroupBulkAddResult<PlaceGroup>
+                >(GroupBulkAddModalComponent<PlaceGroup>, {
                     data: {
                         title: 'ZONES.GROUPS_BULK',
                         placeholder: 'GROUPS.SEARCH',
@@ -339,6 +348,7 @@ export class ZonesStateService {
                 })
                 .afterClosed(),
         );
+        const groups = result?.items;
         if (!groups?.length) return;
         this._saving.set(true);
         const results = await Promise.allSettled(

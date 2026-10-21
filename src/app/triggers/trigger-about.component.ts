@@ -182,6 +182,7 @@ import { TriggerStateService } from './trigger-state.service';
                         matRipple
                         [disabled]="!template_system()"
                         (click)="editCondition(row)"
+                        [attr.aria-label]="'COMMON.EDIT' | translate"
                     >
                         <icon>edit</icon>
                     </button>
@@ -191,6 +192,7 @@ import { TriggerStateService } from './trigger-state.service';
                         error
                         matRipple
                         (click)="removeCondition(row)"
+                        [attr.aria-label]="'COMMON.DELETE' | translate"
                     >
                         <icon>delete</icon>
                     </button>
@@ -281,6 +283,7 @@ import { TriggerStateService } from './trigger-state.service';
                         matRipple
                         [disabled]="!template_system()"
                         (click)="editAction(row)"
+                        [attr.aria-label]="'COMMON.EDIT' | translate"
                     >
                         <icon>edit</icon>
                     </button>
@@ -290,6 +293,7 @@ import { TriggerStateService } from './trigger-state.service';
                         error
                         matRipple
                         (click)="removeAction(row)"
+                        [attr.aria-label]="'COMMON.DELETE' | translate"
                     >
                         <icon>delete</icon>
                     </button>

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { SignagePlugin } from '@placeos/ts-client';
+import { EMPTY } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     SignagePluginModalComponent,
@@ -47,7 +48,12 @@ describe('SignagePluginModalComponent', () => {
                 },
                 {
                     provide: MatDialogRef,
-                    useValue: { close: vi.fn(), disableClose: false },
+                    useValue: {
+                        close: vi.fn(),
+                        disableClose: false,
+                        backdropClick: () => EMPTY,
+                        keydownEvents: () => EMPTY,
+                    },
                 },
                 {
                     provide: HotkeysService,

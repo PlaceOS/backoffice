@@ -18,6 +18,8 @@ import {
     viewChild,
     WritableSignal,
 } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
 import { SanitizePipe } from './pipes/sanitise.pipe';
 
@@ -64,6 +66,7 @@ export class CustomTooltipComponent<T = unknown>
     private _element = inject<ElementRef<HTMLElement>>(ElementRef);
     private _overlay = inject(Overlay);
     private _injector = inject(Injector);
+    private _router = inject(Router, { optional: true });
 
     /** Horizontal position of the rendered overlay */
     public readonly xPosition = input<'start' | 'center' | 'end'>('end');
@@ -155,6 +158,22 @@ export class CustomTooltipComponent<T = unknown>
                         ]),
                 });
                 this._overlay_ref.attach(_portal);
+                // Close like a menu: on Escape and when the page changes
+                this.subscription(
+                    'escape',
+                    this._overlay_ref
+                        .keydownEvents()
+                        .pipe(filter((e) => e.key === 'Escape'))
+                        .subscribe(() => this.close()),
+                );
+                if (this._router) {
+                    this.subscription(
+                        'navigation',
+                        this._router.events
+                            .pipe(filter((e) => e instanceof NavigationEnd))
+                            .subscribe(() => this.close()),
+                    );
+                }
                 if (this.backdrop()) {
                     this.subscription(
                         'backdrop',
@@ -170,6 +189,8 @@ export class CustomTooltipComponent<T = unknown>
 
     public close() {
         this.clearTimeout('open');
+        this.unsub('escape');
+        this.unsub('navigation');
         if (this._overlay_ref) {
             this._overlay_ref.dispose();
             this._overlay_ref = null;

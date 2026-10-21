@@ -39,6 +39,7 @@ import {
 
 import { describeError, readError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
+import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import { DialogEvent, HashMap, Identity } from '../common/types';
@@ -161,7 +162,9 @@ export class SystemStateService extends AsyncHandler {
                     control_system_id: item.id,
                     complete: true,
                     limit: 200,
-                } as Record<string, unknown>).catch(() => ({ data: [] }));
+                } as Record<string, unknown>).catch(
+                    reportLoadError({ data: [] }),
+                );
                 // A newer load or another system took over. Leave its state alone.
                 if (abortSignal.aborted || this.item()?.id !== item.id) {
                     return [] as PlaceModule[];
@@ -244,9 +247,9 @@ export class SystemStateService extends AsyncHandler {
                               )
                           ).filter((zone) => !!zone),
                       }
-                    : await listSystemZones(item.id).catch(() => ({
-                          data: [],
-                      }));
+                    : await listSystemZones(item.id).catch(
+                          reportLoadError({ data: [] }),
+                      );
                 const zones = [...response.data];
                 zones.sort(
                     (a, b) =>
@@ -276,7 +279,7 @@ export class SystemStateService extends AsyncHandler {
                 const response = await listSystemTriggers(
                     item.id,
                     full ? {} : { limit: 1 },
-                ).catch(() => empty);
+                ).catch(full ? reportLoadError(empty) : () => empty);
                 return full ? response : { ...empty, total: response.total };
             } finally {
                 this.setLoading('triggers', false);
@@ -303,8 +306,9 @@ export class SystemStateService extends AsyncHandler {
     public async startSystem() {
         const details = await this.confirm({
             title: 'Start system?',
-            content: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
+            content: `Start <strong>${escapeHtml(this.active_item.name)}</strong>?<br>All stopped modules within the system will boot up.`,
             icon: { type: 'icon', class: 'backoffice-controller-play' },
+            confirm_text: 'Start system',
         });
         if (details.reason !== 'done') return;
         details.loading('Starting system...');
@@ -327,8 +331,10 @@ export class SystemStateService extends AsyncHandler {
     public async stopSystem() {
         const details = await this.confirm({
             title: 'Stop system?',
-            content: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
+            content: `Stop <strong>${escapeHtml(this.active_item.name)}</strong>?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
             icon: { type: 'icon', class: 'backoffice-controller-stop' },
+            confirm_text: 'Stop system',
+            destructive: true,
         });
         if (details.reason !== 'done') return;
         details.loading('Stopping system...');

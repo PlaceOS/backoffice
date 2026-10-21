@@ -8,7 +8,7 @@ import {
 } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Subject } from 'rxjs';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the ts-client - factory must be self-contained
 vi.mock('@placeos/ts-client', () => {
@@ -106,6 +106,43 @@ describe('ConfirmModalComponent', () => {
 
         it('should use icon from data', () => {
             expect(component.icon.content).toBe('warning');
+        });
+    });
+
+    describe('destructive confirmations', () => {
+        it('label the confirm button Delete and style it as an error', async () => {
+            await TestBed.resetTestingModule();
+            await TestBed.configureTestingModule({
+                imports: [
+                    ConfirmModalComponent,
+                    MatDialogModule,
+                    NoopAnimationsModule,
+                ],
+                providers: [
+                    { provide: MatDialogRef, useValue: dialog_ref_mock },
+                    {
+                        provide: MAT_DIALOG_DATA,
+                        useValue: { ...default_data, destructive: true },
+                    },
+                ],
+            })
+                .overrideComponent(ConfirmModalComponent, {
+                    remove: { imports: [IconComponent] },
+                    add: { imports: [MockComponent(IconComponent)] },
+                })
+                .compileComponents();
+            const destructive_fixture = TestBed.createComponent(
+                ConfirmModalComponent,
+            );
+            destructive_fixture.detectChanges();
+            expect(destructive_fixture.componentInstance.confirm_text).toBe(
+                'COMMON.DELETE',
+            );
+            const accept: HTMLElement =
+                destructive_fixture.nativeElement.querySelector(
+                    'button[name="accept"]',
+                );
+            expect(accept.classList).toContain('error');
         });
     });
 

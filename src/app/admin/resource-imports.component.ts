@@ -164,18 +164,27 @@ export interface ExternalResource {
                         >
                             <icon>publish</icon>
                         </button>
-                        <a
-                            icon
-                            default
-                            matRipple
-                            [matTooltip]="
-                                'ADMIN.RESOURCE_IMPORTS_VIEW' | translate
-                            "
-                            [attr.disabled]="row.system_id === ''"
-                            [routerLink]="['/systems', row.system_id, 'about']"
-                        >
-                            <icon>visibility</icon>
-                        </a>
+                        @if (row.system_id) {
+                            <a
+                                icon
+                                default
+                                matRipple
+                                [matTooltip]="
+                                    'ADMIN.RESOURCE_IMPORTS_VIEW' | translate
+                                "
+                                [routerLink]="[
+                                    '/systems',
+                                    row.system_id,
+                                    'about',
+                                ]"
+                            >
+                                <icon>visibility</icon>
+                            </a>
+                        } @else {
+                            <button icon default disabled>
+                                <icon>visibility</icon>
+                            </button>
+                        }
                     </div>
                 </ng-template>
             </div>

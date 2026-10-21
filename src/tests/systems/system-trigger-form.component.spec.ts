@@ -2,6 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PlaceTrigger, SignagePlaylist } from '@placeos/ts-client';
+import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SystemTriggerFormComponent } from '../../app/systems/system-trigger-form.component';
 
@@ -37,7 +38,14 @@ describe('system trigger playlists', () => {
             imports: [SystemTriggerFormComponent],
             providers: [
                 provideZonelessChangeDetection(),
-                { provide: MatDialogRef, useValue: { close: vi.fn() } },
+                {
+                    provide: MatDialogRef,
+                    useValue: {
+                        close: vi.fn(),
+                        backdropClick: () => EMPTY,
+                        keydownEvents: () => EMPTY,
+                    },
+                },
                 {
                     provide: MAT_DIALOG_DATA,
                     useValue: {

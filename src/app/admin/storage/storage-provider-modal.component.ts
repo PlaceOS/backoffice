@@ -257,7 +257,6 @@ export class StorageProviderModalComponent {
         await submit(this.form, async () => undefined);
         if (this.form().invalid()) return;
         this.loading.set('Saving storage provider...');
-        this._dialog_ref.disableClose = true;
         const details = { ...this.formModel() } as PlaceStorage;
         if (details.id && !details.access_secret) {
             delete (details as PlaceStorage & { access_secret?: unknown })
@@ -271,7 +270,6 @@ export class StorageProviderModalComponent {
             );
         } finally {
             this.loading.set('');
-            this._dialog_ref.disableClose = false;
         }
         notifySuccess(i18n('ADMIN.STORAGE_SAVE_SUCCESS'));
         this._dialog_ref.close();

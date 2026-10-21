@@ -173,6 +173,7 @@ import { BackofficeExtension } from '../extensions.component';
                                 matRipple
                                 class="border-error text-error h-12 w-12 rounded-sm border"
                                 (click)="removeCondition(condition)"
+                                [attr.aria-label]="'COMMON.DELETE' | translate"
                             >
                                 <icon>delete</icon>
                             </button>

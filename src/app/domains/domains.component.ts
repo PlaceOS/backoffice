@@ -24,13 +24,13 @@ import { DomainStateService } from './domain-state.service';
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full" />
             <item-sidebar
-                class="hidden sm:block"
+                class="hidden lg:block"
                 [route]="name"
                 [title]="'DOMAINS.PLURAL' | translate"
             />
             <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
                 <item-selection
-                    class="z-20 sm:hidden"
+                    class="z-20 lg:hidden"
                     [route]="name"
                     [title]="'DOMAINS.PLURAL' | translate"
                 >
@@ -39,6 +39,7 @@ import { DomainStateService } from './domain-state.service';
                         icon
                         class="mr-2 sm:hidden"
                         (click)="open_menu = true"
+                        [attr.aria-label]="'COMMON.MENU' | translate"
                     >
                         <icon>menu</icon>
                     </button>
@@ -69,7 +70,7 @@ import { DomainStateService } from './domain-state.service';
                     }
                 </div>
                 <button
-                    class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm sm:-left-9"
+                    class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm lg:-left-9"
                     [matTooltip]="'DOMAINS.NEW' | translate"
                     matTooltipPosition="right"
                     matRipple

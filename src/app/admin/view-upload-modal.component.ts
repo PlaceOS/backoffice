@@ -9,10 +9,10 @@ import { UploadInfo } from './upload-library.component';
     selector: 'view-upload-modal',
     template: `
         <header
-            class="flex items-center justify-between border-base-100 bg-base-200 sticky top-0 z-10 m-2 w-[calc(100%-1rem)] rounded-lg border px-4 py-2"
+            class="border-base-100 bg-base-200 sticky top-0 z-10 m-2 flex w-[calc(100%-1rem)] items-center justify-between rounded-lg border px-4 py-2"
         >
             <h2 class="text-xl font-medium">View Upload</h2>
-            <button icon matRipple mat-dialog-close>
+            <button icon matRipple mat-dialog-close aria-label="Close">
                 <icon>close</icon>
             </button>
         </header>

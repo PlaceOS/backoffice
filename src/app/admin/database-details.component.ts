@@ -452,6 +452,17 @@ export class PlaceDatabaseDetailsComponent
         let level = pending.filter(
             (zone) => !zone.parent_id || !file_ids.has(zone.parent_id),
         );
+        const details = await openConfirmModal(
+            {
+                title: 'Import Zone Tree',
+                content: `Create ${pending.length} new zones? ${level.length} of them have no parent in the file, so they go in at the top level. Zones are not removed if the import fails.`,
+                icon: { type: 'icon', content: 'account_tree' },
+                confirm_text: 'Import',
+            },
+            this._dialog,
+        );
+        if (details.reason !== 'done') return;
+        details.close();
         const id_map = new Map<string, string>();
         let created = 0;
         try {

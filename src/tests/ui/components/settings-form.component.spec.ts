@@ -98,6 +98,18 @@ describe('SettingsFormComponent', () => {
         );
     });
 
+    it('keeps unsaved edits on other levels after saving one', async () => {
+        const component = createForm();
+        component.updateSetting(0, 'level0: changed');
+        component.updateSetting(1, 'level1: changed');
+        component.save(0);
+        await Promise.resolve();
+        TestBed.tick();
+        expect(component.settingDirty(0)).toBe(false);
+        expect(component.settingValue(1)).toBe('level1: changed');
+        expect(component.settingDirty(1)).toBe(true);
+    });
+
     it('masks admin settings for support users', () => {
         mocks.user = { sys_admin: false, support: true };
         const component = createForm();

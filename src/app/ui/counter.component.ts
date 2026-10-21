@@ -12,6 +12,7 @@ import {
 } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'a-counter',
@@ -25,6 +26,7 @@ import { IconComponent } from './icon.component';
                 class="border-secondary text-secondary z-10 h-12 w-12 rounded-l rounded-r-none border"
                 [disabled]="disabled() || !value() || value() === min()"
                 (click)="remove()"
+                [attr.aria-label]="'COMMON.DECREASE' | translate"
             >
                 <icon>remove</icon>
             </button>
@@ -58,6 +60,7 @@ import { IconComponent } from './icon.component';
                 class="border-secondary text-secondary z-10 h-12 w-12 rounded-l-none rounded-r border"
                 [disabled]="disabled() || value() === max()"
                 (click)="add()"
+                [attr.aria-label]="'COMMON.INCREASE' | translate"
             >
                 <icon>add</icon>
             </button>
@@ -72,7 +75,7 @@ import { IconComponent } from './icon.component';
             multi: true,
         },
     ],
-    imports: [IconComponent, MatRippleModule, FormsModule],
+    imports: [TranslatePipe, IconComponent, MatRippleModule, FormsModule],
 })
 export class CounterComponent implements ControlValueAccessor {
     /** Size of a single step */

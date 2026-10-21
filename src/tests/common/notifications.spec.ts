@@ -181,6 +181,14 @@ describe('notifications.ts', () => {
             );
         });
 
+        it('should stay open until dismissed', () => {
+            notifyError('Error message');
+
+            expect(
+                mock_snackbar.open.mock.calls[0][2].duration,
+            ).toBeUndefined();
+        });
+
         it('should log to console.error', () => {
             notifyError('Error message');
 

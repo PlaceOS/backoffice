@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SignageAIProviderModalComponent } from '../../app/admin/signage-ai/signage-ai-provider-modal.component';
 
@@ -20,7 +21,12 @@ describe('SignageAIProviderModalComponent', () => {
                 { provide: MAT_DIALOG_DATA, useValue: {} },
                 {
                     provide: MatDialogRef,
-                    useValue: { close: vi.fn(), disableClose: false },
+                    useValue: {
+                        close: vi.fn(),
+                        disableClose: false,
+                        backdropClick: () => EMPTY,
+                        keydownEvents: () => EMPTY,
+                    },
                 },
             ],
         })

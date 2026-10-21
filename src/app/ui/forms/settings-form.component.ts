@@ -8,6 +8,7 @@ import {
     model,
     OnInit,
     signal,
+    untracked,
     WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -247,6 +248,8 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         settings4: '',
     });
     public readonly dirty = signal<HashMap<boolean>>({});
+    /** Item the form was last loaded for */
+    private _form_id?: string;
     /** Whether a setting is being saved */
     public readonly saving = signal<[boolean, boolean, boolean, boolean]>([
         false,
@@ -376,12 +379,13 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         });
         effect(() => {
             if (this.merge_settings() !== undefined) {
-                this.timeout('update_merge', () => this.clearChanges(), 50);
+                this.timeout('update_merge', () => this._reloadForm(), 50);
             }
         });
         effect(() => {
             if (this.settings()) {
-                this.clearChanges();
+                // Only new settings should re-run this, not the form it writes
+                untracked(() => this._reloadForm());
             }
         });
     }
@@ -453,13 +457,13 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         ).then(
             (new_settings: PlaceSettings) => {
                 this._setSaving(level, false);
+                this._clearDirty([level]);
                 this._setSettings(level, new_settings);
                 notifySuccess(
                     i18n('COMMON.SETTINGS_SAVE_SUCCESS', {
                         type: this.type(level),
                     }),
                 );
-                this.clearChanges();
             },
             async (err) => {
                 this._setSaving(level, false);
@@ -499,12 +503,12 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         if (promises.length) {
             Promise.all(promises).then(
                 (results: PlaceSettings[]) => {
+                    this._clearDirty(saved_levels);
                     results.forEach((result, index) => {
                         this._setSaving(saved_levels[index], false);
                         this._setSettings(saved_levels[index], result);
                     });
                     notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
-                    this.clearChanges();
                 },
                 async (err) => {
                     for (const level of saved_levels) {
@@ -560,22 +564,38 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         });
     }
 
+    /** Discard all unsaved changes */
     public clearChanges() {
-        this.used_settings.set(this._processSettings(this.settings() || []));
-        this._initForm();
+        this.dirty.set({});
+        this._reloadForm();
     }
 
-    private _initForm() {
+    /**
+     * Reload the form from the saved settings. Unsaved edits are kept, unless
+     * the settings now belong to a different item.
+     */
+    private _reloadForm() {
+        if (this._form_id !== this.id()) this.dirty.set({});
+        this._form_id = this.id();
+        this.used_settings.set(this._processSettings(this.settings() || []));
         const used = this.used_settings();
-        this.form.set({
-            settings0: used[0].settings_string,
-            settings1: used[1].settings_string,
-            settings2: used[2].settings_string,
-            settings3: used[3].settings_string,
-            settings4: used[4].settings_string,
-        });
-        this.dirty.set({});
+        const form = this.form();
+        const dirty = this.dirty();
+        const next: HashMap = {};
+        for (let i = 0; i <= EncryptionLevel.NeverDisplay + 1; i++) {
+            const key = `settings${i}`;
+            next[key] = dirty[key] ? form[key] : used[i]?.settings_string;
+        }
+        this.form.set(next);
         this.changed.set(Date.now());
+    }
+
+    private _clearDirty(levels: number[]) {
+        this.dirty.update((dirty) => {
+            const next = { ...dirty };
+            for (const level of levels) delete next[`settings${level}`];
+            return next;
+        });
     }
 
     private _processSettings(settings: PlaceSettings[]): PlaceSettings[] {

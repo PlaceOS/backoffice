@@ -40,16 +40,6 @@ import { TranslatePipe } from './translate.pipe';
             <button
                 matRipple
                 type="button"
-                logout
-                class="space-x-2"
-                (click)="logout()"
-            >
-                <icon class="text-2xl">logout</icon>
-                {{ 'COMMON.LOGOUT' | translate }}
-            </button>
-            <button
-                matRipple
-                type="button"
                 class="space-x-2"
                 uploads
                 (click)="showUploadHistory()"
@@ -102,6 +92,16 @@ import { TranslatePipe } from './translate.pipe';
                 />
                 <div>{{ 'COMMON.REPORT_ISSUE' | translate }}</div>
             </a>
+            <button
+                matRipple
+                type="button"
+                logout
+                class="space-x-2"
+                (click)="logout()"
+            >
+                <icon class="text-2xl">logout</icon>
+                {{ 'COMMON.LOGOUT' | translate }}
+            </button>
         </div>
     `,
     styles: [

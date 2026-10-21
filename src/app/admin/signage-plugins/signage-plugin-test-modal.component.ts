@@ -188,7 +188,12 @@ export interface SignagePluginTestModalData {
                         {{ 'ADMIN.SIGNAGE_PLUGINS_TEST_HEADING' | translate }}
                         &mdash; {{ plugin().name }}
                     </h2>
-                    <button icon matRipple mat-dialog-close>
+                    <button
+                        icon
+                        matRipple
+                        mat-dialog-close
+                        [attr.aria-label]="'COMMON.CLOSE' | translate"
+                    >
                         <icon>close</icon>
                     </button>
                 </header>

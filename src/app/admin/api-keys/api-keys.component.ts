@@ -78,7 +78,7 @@ import { APIKeyService } from './api-keys.service';
                             <div
                                 class="mono bg-base-100 rounded-sm px-2 py-1 text-xs opacity-60"
                             >
-                                {{ last_key()?.name || 'Unanamed API Key' }}
+                                {{ last_key()?.name || 'Unnamed API Key' }}
                             </div>
                         </div>
                         <button

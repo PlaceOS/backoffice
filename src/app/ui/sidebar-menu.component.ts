@@ -80,6 +80,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                         compact() ? (link.name | translate) : ''
                                     "
                                     matTooltipPosition="right"
+                                    [attr.aria-label]="link.name | translate"
                                 >
                                     <div
                                         class="flex w-full items-center space-x-2"
@@ -108,6 +109,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                         compact() ? (link.name | translate) : ''
                                     "
                                     matTooltipPosition="right"
+                                    [attr.aria-label]="link.name | translate"
                                 >
                                     <div
                                         class="flex w-full items-center space-x-2"
@@ -149,7 +151,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         icon
                         matRipple
                         (click)="open.set(false)"
-                    >
+                     [attr.aria-label]="'COMMON.CLOSE' | translate">
                         <icon>close</icon>
                     </button>
                 </div>
@@ -164,6 +166,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     [content]="application_picker"
                     [matTooltip]="compact() ? 'Applications' : ''"
                     matTooltipPosition="right"
+                    aria-label="Applications"
                     yPosition="bottom"
                 >
                     <div
@@ -232,6 +235,10 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 icon
                 matRipple
                 class="border-base-200 bg-base-100 hover:bg-base-200 absolute right-0 bottom-12 z-999 hidden h-6 w-6 min-w-6 translate-x-1/2 rounded-full border shadow-sm sm:flex"
+                [attr.aria-label]="
+                    (compact() ? 'COMMON.MENU_EXPAND' : 'COMMON.MENU_COLLAPSE')
+                        | translate
+                "
                 (click)="toggleCompactMode()"
             >
                 <icon>
@@ -301,7 +308,7 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         {
             name: 'COMMON.ZONES',
             route: '/zones',
-            icon: 'meeting_room',
+            icon: 'layers',
             show_on: () => canAccessSection('zones'),
         },
         {

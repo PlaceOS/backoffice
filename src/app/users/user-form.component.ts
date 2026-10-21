@@ -483,7 +483,6 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
         await submit(this.form, async () => {
             const item = this._data.item;
             this.loading.set(i18n(`${this._name}.SAVING`));
-            this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_item = (
                 item.id
@@ -511,13 +510,11 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
                           form_item as unknown as PlaceUser,
                       )
                     : addUser(form_item as unknown as PlaceUser));
-                this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item: _item } });
                 notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
                 this._dialog_ref.close();
             } catch (err) {
                 this.loading.set(null);
-                this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
                         error: await readError(err),

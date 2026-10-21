@@ -480,7 +480,6 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         await submit(this.form, async () => {
             const item = this._data.item;
             this.saving.set(i18n(`${this._name}.SAVING`));
-            this._dialog_ref.disableClose = true;
             const item_json = item.toJSON ? item.toJSON() : item;
             const form_value = { ...this.formModel() };
             if (item.id) {
@@ -499,7 +498,6 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
                           form_item as unknown as PlaceDriver,
                       )
                     : addDriver(form_item as unknown as PlaceDriver));
-                this._dialog_ref.disableClose = false;
                 this.event.emit({
                     reason: 'done',
                     metadata: { item: _item as unknown as Identity },
@@ -514,7 +512,6 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
                 this._dialog_ref.close();
             } catch (err) {
                 this.saving.set(null);
-                this._dialog_ref.disableClose = false;
                 notifyError(
                     i18n(`${this._name}.SAVE_ERROR`, {
                         error: await readError(err),

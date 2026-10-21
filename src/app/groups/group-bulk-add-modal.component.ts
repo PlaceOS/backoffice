@@ -52,7 +52,12 @@ export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
             <h2 class="truncate px-2 text-lg font-medium sm:text-xl">
                 {{ title | translate }}
             </h2>
-            <button icon matRipple mat-dialog-close>
+            <button
+                icon
+                matRipple
+                mat-dialog-close
+                [attr.aria-label]="'COMMON.CLOSE' | translate"
+            >
                 <icon>close</icon>
             </button>
         </header>
@@ -66,7 +71,9 @@ export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
                 <mat-tab [label]="'GROUPS.FIELD_PERMISSIONS' | translate" />
             </mat-tab-group>
         }
-        <main class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-2">
+        <main
+            class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-2"
+        >
             @if (!show_permissions || tab() === 0) {
                 <mat-form-field appearance="outline" class="no-subscript">
                     <input
@@ -223,9 +230,9 @@ export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
 })
 export class GroupBulkAddModalComponent<T extends GroupBulkAddItem> {
     private _dialog_ref =
-        inject<MatDialogRef<GroupBulkAddModalComponent<T>, GroupBulkAddResult<T>>>(
-            MatDialogRef,
-        );
+        inject<
+            MatDialogRef<GroupBulkAddModalComponent<T>, GroupBulkAddResult<T>>
+        >(MatDialogRef);
     private _data = inject<GroupBulkAddModalData<T>>(MAT_DIALOG_DATA);
 
     public readonly selected = signal<T[]>([]);

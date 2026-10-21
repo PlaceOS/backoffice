@@ -307,6 +307,7 @@ import { SystemStateService } from './system-state.service';
                             default
                             matRipple
                             (click)="editModule(row)"
+                            [attr.aria-label]="'COMMON.EDIT' | translate"
                         >
                             <icon>edit</icon>
                         </button>
@@ -316,6 +317,9 @@ import { SystemStateService } from './system-state.service';
                             matRipple
                             (click)="setActive(i)"
                             [matMenuTriggerFor]="context_menu"
+                            [attr.aria-label]="
+                                'COMMON.MORE_ACTIONS' | translate
+                            "
                         >
                             <icon>more_vert</icon>
                         </button>

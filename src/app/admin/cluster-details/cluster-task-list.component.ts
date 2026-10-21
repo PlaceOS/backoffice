@@ -24,6 +24,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { describeError } from '../../common/errors';
+import { reportLoadError } from '../../common/load-error';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { signalFromSubscribable } from '../../common/signals';
@@ -44,7 +45,12 @@ const task_details = {};
             <div
                 class="border-base-300 bg-base-200 sticky top-0 left-0 z-20 m-4 mb-4 flex w-[calc(100%-2rem)] items-center rounded-sm border p-2"
             >
-                <a icon matRipple [routerLink]="['/admin', 'clusters']">
+                <a
+                    icon
+                    matRipple
+                    [routerLink]="['/admin', 'clusters']"
+                    [attr.aria-label]="'COMMON.BACK' | translate"
+                >
                     <icon>arrow_back</icon>
                 </a>
                 <h3 class="text-lg font-medium">
@@ -316,13 +322,26 @@ export class PlaceClusterTaskListComponent
         this.updateProcessList();
     }
 
+    /** Whether the last process list load failed */
+    private _load_failed = false;
+
     public async updateProcessList() {
         const cluster = this.cluster();
         if (!cluster) return;
         this.loading.set(true);
+        // This polls, so only report the first failure in a row
         const list = await queryProcesses(cluster.id, {
             include_status: true,
-        }).catch(() => []);
+        })
+            .then((list) => {
+                this._load_failed = false;
+                return list;
+            })
+            .catch((error) => {
+                if (this._load_failed) return [];
+                this._load_failed = true;
+                return reportLoadError([])(error);
+            });
         // The page moved to another cluster while this was loading
         if (cluster !== this.cluster()) return;
         this.process_list.set(

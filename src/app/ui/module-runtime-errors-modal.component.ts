@@ -25,7 +25,12 @@ import { TranslatePipe } from './translate.pipe';
                 </div>
             </h3>
             @if (!loading()) {
-                <button icon matRipple mat-dialog-close>
+                <button
+                    icon
+                    matRipple
+                    mat-dialog-close
+                    [attr.aria-label]="'COMMON.CLOSE' | translate"
+                >
                     <icon>close</icon>
                 </button>
             }

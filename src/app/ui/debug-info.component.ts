@@ -79,7 +79,13 @@ import { TranslatePipe } from './translate.pipe';
                     </p>
                 }
                 @if (compact()) {
-                    <button icon default matRipple [matMenuTriggerFor]="menu">
+                    <button
+                        icon
+                        default
+                        matRipple
+                        [matMenuTriggerFor]="menu"
+                        [attr.aria-label]="'COMMON.MORE_ACTIONS' | translate"
+                    >
                         <icon>more_horiz</icon>
                     </button>
                     <mat-menu #menu="matMenu">

@@ -27,13 +27,13 @@ import { UsersStateService } from './users-state.service';
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full" />
             <item-sidebar
-                class="hidden sm:block"
+                class="hidden lg:block"
                 [route]="name"
                 [title]="'USERS.PLURAL' | translate"
             />
             <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
                 <item-selection
-                    class="z-20 sm:hidden"
+                    class="z-20 lg:hidden"
                     [route]="name"
                     [title]="'USERS.PLURAL' | translate"
                 >
@@ -42,6 +42,7 @@ import { UsersStateService } from './users-state.service';
                         icon
                         class="mr-2 sm:hidden"
                         (click)="open_menu = true"
+                        [attr.aria-label]="'COMMON.MENU' | translate"
                     >
                         <icon>menu</icon>
                     </button>
@@ -72,7 +73,7 @@ import { UsersStateService } from './users-state.service';
                     }
                 </div>
                 <button
-                    class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm sm:-left-9"
+                    class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm lg:-left-9"
                     [matTooltip]="'USERS.NEW' | translate"
                     matTooltipPosition="right"
                     matRipple
@@ -82,7 +83,7 @@ import { UsersStateService } from './users-state.service';
                     <icon class="text-3xl">add</icon>
                 </button>
                 <button
-                    class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm sm:-left-8"
+                    class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm lg:-left-8"
                     [matTooltip]="'USERS.BULK' | translate"
                     matTooltipPosition="right"
                     matRipple

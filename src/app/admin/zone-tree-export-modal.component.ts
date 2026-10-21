@@ -16,7 +16,7 @@ import { IconComponent } from '../ui/icon.component';
     template: `
         <div class="bg-base-200 flex items-center justify-between px-4 py-2">
             <h3 class="text-xl font-medium">Export Zone Tree</h3>
-            <button icon matRipple mat-dialog-close>
+            <button icon matRipple mat-dialog-close aria-label="Close">
                 <icon>close</icon>
             </button>
         </div>
@@ -59,6 +59,7 @@ import { IconComponent } from '../ui/icon.component';
                                     icon
                                     matRipple
                                     (click)="removeSelected(zone)"
+                                    aria-label="Close"
                                 >
                                     <icon>close</icon>
                                 </button>

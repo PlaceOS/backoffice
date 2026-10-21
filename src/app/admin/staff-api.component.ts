@@ -8,8 +8,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get, PlaceDomain } from '@placeos/ts-client';
-import { escapeHtml } from '../common/general';
 import { readError } from '../common/errors';
+import { escapeHtml } from '../common/general';
+import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -18,8 +19,8 @@ import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
 import { BookingLimitsModalComponent } from './booking-limits-modal.component';
-import { StaffTenantModalComponent } from './staff-tenant-modal.component';
 import { isSecretExpired, isSecretExpiring } from './staff-api.utilities';
+import { StaffTenantModalComponent } from './staff-tenant-modal.component';
 
 export interface PlaceTenant {
     id: string;
@@ -278,7 +279,9 @@ export class PlaceStaffAPIComponent implements OnInit {
             return;
         }
         this.loading.set('Loading tenants for domain...');
-        const tenants = await get('/api/staff/v1/tenants').catch(() => []);
+        const tenants = await get('/api/staff/v1/tenants').catch(
+            reportLoadError([]),
+        );
         this.tenants.set(
             (tenants || []).filter((t) => t.domain === this.domain()?.domain),
         );
