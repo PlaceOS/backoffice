@@ -1,281 +1,93 @@
 # E2E Tests for PlaceOS Backoffice
 
-This directory contains end-to-end tests for the PlaceOS Backoffice application using Playwright.
+These Playwright tests run the app against the mock backend in
+`src/app/mocks/`. Each test gets a new browser context, so it starts with
+fresh mock data. The mock backend keeps creates, edits and deletes in session
+storage, so a change stays after `page.reload()` in the same test.
 
-## Test Coverage
+## Run the tests
 
-| Metric | Count |
-|--------|-------|
-| Total Tests | 204 |
-| Passing | 201 |
-| Skipped | 3 |
-| Browsers | Chromium, Firefox, WebKit |
-
-Tests cover 5 main feature areas: Systems, Users, Zones, Domains, and Admin.
-
-## Features
-
-- **Mock Mode (Default)**: Tests run against mock data using `@placeos/ts-client` mock mechanisms
-- **Live Mode**: Tests can be configured to run against a live PlaceOS environment
-- **User Story Coverage**: Tests are organized by user stories (US-SYS, US-USR, US-ZON, US-DOM, US-ADM)
-
-## Prerequisites
-
-- Bun 1.3+
-- Playwright browsers installed (`bunx playwright install`)
-
-## Running Tests
-
-### Quick Start (Mock Mode)
+Install the browsers one time with `bunx playwright install`.
 
 ```bash
-# Run all E2E tests with mock data
-bun run e2e
-# or
-bunx nx e2e e2e
-
-# Run tests in specific browser
-bunx nx e2e backoffice --project=chromium
-
-# Run specific test file
-bunx nx e2e backoffice --grep "Systems"
-
-# Run tests in headed mode (visible browser)
-bunx nx e2e backoffice --headed
-
-# Run tests with UI mode
-bunx nx e2e backoffice --ui
-
-# Run with debug output
-DEBUG=pw:api bunx nx e2e backoffice
+bun run e2e                                         # all projects
+bunx nx e2e e2e -- --project=chromium              # one browser
+bunx nx e2e e2e -- --project=chromium zones.spec   # one spec file
+bunx nx e2e e2e -- --ui                             # UI mode
 ```
 
-### Running Against Live Environment
+The config starts the dev server, or uses the server that runs on port 4200.
 
-```bash
-# Set environment variables for live testing
-USE_MOCK=false API_DOMAIN=placeos-dev.aca.im bunx nx e2e backoffice
+| Project                            | Specs                    |
+| ---------------------------------- | ------------------------ |
+| `chromium`, `firefox`, `webkit`    | `*.spec.ts`              |
+| `mobile-chrome`, `mobile-safari`   | `*.mobile.spec.ts`       |
 
-# Or create an .env file in the e2e directory
-cp .env.example .env
-# Edit .env with your settings
-```
+CI runs `chromium` and `mobile-chrome` for pull requests to `develop`, and
+all projects on other branches.
 
-## Configuration
+`USE_MOCK=false` stops the tests from switching on the mock backend. There is
+no sign-in flow for a live server, and most tests expect the mock data, so
+use this only to debug.
 
-### Environment Variables
+## Coverage
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `USE_MOCK` | `true` | Set to `false` to use live environment |
-| `BASE_URL` | `http://localhost:4200` | Base URL for the application |
-| `API_DOMAIN` | `localhost` | API domain for live environment |
-| `API_PORT` | `4200` | API port for live environment |
-| `API_PROTOCOL` | `http` | API protocol (`http` or `https`) |
-| `TEST_USER_EMAIL` | `admin@place.tech` | Test user email for live auth |
-| `TEST_USER_PASSWORD` | - | Test user password for live auth |
+Tests use the ids from `user-stories/*.md` (e.g. `AC-ZON-004-5`) in their
+names.
 
-### Using .env File
+| Spec                     | Covers                                                         |
+| ------------------------ | -------------------------------------------------------------- |
+| `systems.spec.ts`        | List, search, create, edit, delete, tabs, start and stop       |
+| `zones.spec.ts`          | List, search, create, edit, delete, parent link, child zones   |
+| `cascade-delete.spec.ts` | Optional removal of the systems inside a deleted zone          |
+| `modules.spec.ts`        | List, create from a driver, edit, delete, start and stop       |
+| `drivers.spec.ts`        | List, readme, modules, edit, delete, recompile and reload      |
+| `repositories.spec.ts`   | List, details, edit, delete, add a driver from a repository    |
+| `triggers.spec.ts`       | List, search, create, edit, delete, instances                  |
+| `users.spec.ts`          | List, search, create, edit, delete, metadata, history          |
+| `groups.spec.ts`         | Group tree, create, edit, delete, members, zone access         |
+| `domains.spec.ts`        | List, create, edit, delete, applications, auth methods, users  |
+| `admin.spec.ts`          | Every admin section, brokers, extensions, tenants, API keys    |
+| `navigation.spec.ts`     | Main menu, redirects, deep links, browser back                 |
+| `mobile.mobile.spec.ts`  | Hamburger menu, item picker, system details on phones          |
 
-Create a `.env` file in the `e2e` directory:
-
-```env
-USE_MOCK=true
-BASE_URL=http://localhost:4200
-# For live environment:
-# USE_MOCK=false
-# API_DOMAIN=placeos-dev.aca.im
-# API_PORT=443
-# API_PROTOCOL=https
-```
-
-## Test Structure
-
-```
-e2e/
-├── src/
-│   ├── config/
-│   │   └── test-env.ts       # Environment configuration
-│   ├── fixtures/
-│   │   └── test-fixtures.ts  # Test utilities and helpers
-│   ├── pages/
-│   │   ├── base.page.ts      # Base page object
-│   │   ├── systems.page.ts   # Systems page object
-│   │   ├── users.page.ts     # Users page object
-│   │   ├── zones.page.ts     # Zones page object
-│   │   ├── domains.page.ts   # Domains page object
-│   │   ├── admin.page.ts     # Admin page object
-│   │   └── index.ts          # Page exports
-│   ├── systems.spec.ts       # Systems tests (US-SYS-001 to US-SYS-012)
-│   ├── users.spec.ts         # Users tests (US-USR-001 to US-USR-012)
-│   ├── zones.spec.ts         # Zones tests (US-ZON-001 to US-ZON-011)
-│   ├── domains.spec.ts       # Domains tests (US-DOM-001 to US-DOM-012)
-│   └── admin.spec.ts         # Admin tests (US-ADM-001 to US-ADM-016)
-├── playwright.config.ts      # Playwright configuration
-├── .env.example              # Example environment file
-└── README.md                 # This file
-```
-
-## User Stories Covered
-
-### Systems (US-SYS)
-- US-SYS-001: View Systems List
-- US-SYS-002: Create New System
-- US-SYS-003: Edit System Details
-- US-SYS-004: Delete System
-- US-SYS-005: Bulk Import Systems
-- US-SYS-006: Manage System Modules
-- US-SYS-007: View System Zones
-- US-SYS-008: Manage System Triggers
-- US-SYS-009: Manage System Metadata
-- US-SYS-010: View System History
-- US-SYS-011: Start and Stop System
-- US-SYS-012: View System Extensions
-
-### Users (US-USR)
-- US-USR-001: View Users List
-- US-USR-002: View User Details
-- US-USR-003: Create New User
-- US-USR-004: Edit User Details
-- US-USR-005: Delete User
-- US-USR-006: Bulk Import Users
-- US-USR-007: Enable/Disable User
-- US-USR-008: Manage User Roles
-- US-USR-009: Manage User Metadata
-- US-USR-010: View User History
-- US-USR-011: Filter Users by Domain
-- US-USR-012: View User Groups
-
-### Zones (US-ZON)
-- US-ZON-001: View Zones List
-- US-ZON-002: View Zone Details
-- US-ZON-003: Create New Zone
-- US-ZON-004: Edit Zone Details
-- US-ZON-005: Delete Zone
-- US-ZON-006: View Child Zones
-- US-ZON-007: View Systems in Zone
-- US-ZON-008: Manage Zone Triggers
-- US-ZON-009: Manage Zone Metadata
-- US-ZON-010: View Zone History
-- US-ZON-011: Bulk Import Zones
-
-### Domains (US-DOM)
-- US-DOM-001: View Domains List
-- US-DOM-002: View Domain Details
-- US-DOM-003: Create New Domain
-- US-DOM-004: Edit Domain Configuration
-- US-DOM-005: Delete Domain
-- US-DOM-006: Manage OAuth Applications
-- US-DOM-007: Configure OAuth Authentication
-- US-DOM-008: Configure SAML Authentication
-- US-DOM-009: Configure LDAP Authentication
-- US-DOM-010: View Domain Users
-- US-DOM-011: View Domain Extensions
-- US-DOM-012: Manage Domain Authorization
-
-### Admin (US-ADM)
-- US-ADM-001: View Cluster Status
-- US-ADM-002: View Cluster Tasks
-- US-ADM-003: View System Information
-- US-ADM-008: Manage Backoffice Extensions
-- US-ADM-009: Manage Tenants
-- US-ADM-011: Manage API Keys
-- US-ADM-012: Configure Upload Storage
-- US-ADM-014: Manage Email Templates (skipped - requires live environment)
-- US-ADM-015: Monitor Build Jobs
-
-## Mock Mode Details
-
-When running in mock mode (default), tests use the `@placeos/ts-client` mock mechanisms:
-
-1. **HTTP Mocking**: API calls are intercepted and handled by mock endpoints
-2. **WebSocket Mocking**: Real-time updates are simulated
-3. **Mock Data**: Pre-defined data from `src/app/mocks/data/`
-
-The mock mode is enabled by setting `localStorage.setItem('BACKOFFICE.mock', 'true')` before page load, which the application checks during initialization.
-
-## Writing New Tests
-
-### Using Page Objects
+## Write a test
 
 ```typescript
-import { test, expect } from '@playwright/test';
-import { SystemsPage } from './pages';
+import { expect, seedMockData, test } from './fixtures/test-fixtures';
+import { FeaturePage } from './pages';
 
-test('should create a new system', async ({ page }) => {
-    // Set mock mode
-    await page.addInitScript(() => {
-        localStorage.setItem('BACKOFFICE.mock', 'true');
-    });
+test('a renamed trigger keeps its new name', async ({ page }) => {
+    await seedMockData(page, 'triggers', [{ id: 'trigger-1', name: 'Alarm' }]);
+    const triggers = new FeaturePage(page, 'triggers');
 
-    const systemsPage = new SystemsPage(page);
-    await systemsPage.goto();
+    await triggers.gotoItem('trigger-1');
+    await triggers.openEditModal();
+    await triggers.dialog.getByRole('textbox', { name: 'Name*' }).fill('Fire');
+    await triggers.saveButton.click();
 
-    // Zone is required - will auto-select first available zone
-    await systemsPage.createSystem({
-        name: 'Test System',
-        description: 'A test system',
-    });
-
-    await systemsPage.expectSystemInList('Test System');
+    await page.reload();
+    await triggers.waitForItemDetails();
+    await expect(triggers.itemName).toHaveText('Fire');
 });
 ```
 
-### Creating Users
+Rules:
 
-```typescript
-import { test, expect } from '@playwright/test';
-import { UsersPage } from './pages';
-
-test('should create a new user', async ({ page }) => {
-    await page.addInitScript(() => {
-        localStorage.setItem('BACKOFFICE.mock', 'true');
-    });
-
-    const usersPage = new UsersPage(page);
-    await usersPage.goto();
-
-    await usersPage.createUser({
-        first_name: 'John',
-        last_name: 'Doe',
-        email: 'john.doe@example.com',
-        password: 'SecurePassword123!',
-    });
-
-    await expect(usersPage.dialog).not.toBeVisible({ timeout: 10000 });
-});
-```
-
-### Test Conventions
-
-1. Use descriptive test names that reference user stories
-2. Use page objects for all page interactions
-3. Set mock mode in `beforeEach` for all tests
-4. Use `await` for all async operations
-5. Add appropriate waits for dynamic content
-
-## Troubleshooting
-
-### Tests Failing in CI
-
-- Ensure `USE_MOCK=true` is set
-- Check that the dev server is running and accessible
-- Increase timeout values if needed
-
-### Mock Data Not Loading
-
-- Verify mock mode is enabled in localStorage
-- Check that mock imports are included in `src/app/mocks/backend/index.ts`
-
-### Flaky Tests
-
-- Add explicit waits for dynamic content
-- Use `toBeVisible()` with timeout for assertions
-- Consider increasing action/navigation timeouts
-
-## Contributing
-
-1. Create tests following the user story structure
-2. Use page objects for reusable interactions
-3. Ensure tests pass in mock mode
-4. Document any new environment variables
+1. Import `test` and `expect` from `fixtures/test-fixtures`. This `test`
+   switches on the mock backend.
+2. Use `FeaturePage` for a list/detail section. `BasePage` has the shared
+   helpers: `gotoItem`, `itemLink`, `itemName`, `openTab`, `createWith`,
+   `openEditModal`, `deleteSelected`, `tableRow` and `notification`. Add a
+   page object only for helpers that one section needs (e.g. `UsersPage`).
+3. Seed the data a test needs. `seedMockData(page, 'triggers', rows)` replaces
+   the rows of an endpoint made with `generateBasicHandlers`.
+   `seedSession(page, key, rows)` replaces any other mock store, e.g.
+   `api_keys`.
+4. Make each test fail when the feature breaks. Check the value that changed,
+   the URL, or that a change stays after a reload. Do not only check that an
+   element is visible.
+5. Do not use `waitForTimeout` or `.catch()` on assertions. Web-first
+   assertions (`toHaveText`, `toHaveURL`, `toHaveCount`) wait for the app.
+6. The item list is virtual and shows only part of a long list. Search for an
+   item before you look for it in a long list.

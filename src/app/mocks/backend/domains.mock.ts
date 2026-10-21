@@ -1,5 +1,5 @@
 import { HashMap } from '../../common/types';
-import { API, generateBasicHandlers } from '../common.mock';
+import { API, DOMAIN, generateBasicHandlers } from '../common.mock';
 
 const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
@@ -16,7 +16,18 @@ const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
     return match;
 };
 
-const DOMAIN_DATA = [];
+/** Id of the authority the ts-client mock signs in to. Every mock user and
+ *  group belongs to it */
+export const AUTHORITY_ID = 'mock-authority';
 
-/** Add basic API handlers for systems */
+const DOMAIN_DATA = [
+    {
+        id: AUTHORITY_ID,
+        name: 'Place Technology',
+        domain: DOMAIN,
+        email_domains: [DOMAIN],
+    },
+];
+
+/** Add basic API handlers for domains */
 generateBasicHandlers(`${API}/domains`, DOMAIN_DATA, FILTER_FN);

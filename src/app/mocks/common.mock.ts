@@ -132,11 +132,13 @@ function endpointToStorageKey(endpoint: string): string {
  * @param endpoint API endpoint path
  * @param data Initial data (used as fallback if no session data)
  * @param filter Filter function for queries
+ * @param prepare Fills in server-side fields of created or updated items
  */
 export function generateBasicHandlers<T = unknown>(
     endpoint: string,
     data: T[],
     filter: FilterFn<T> = (_: T, _q: HashMap) => true,
+    prepare: (item: T) => T = (item) => item,
 ): MockChangeSignal<T[]> {
     const storage_key = endpointToStorageKey(endpoint);
 
@@ -182,10 +184,12 @@ export function generateBasicHandlers<T = unknown>(
         metadata: data,
         method: 'POST',
         callback: (event) => {
-            const item = { ...event.body };
-            item.id = `item-${generateID()}`;
-            item.created_at = Date.now() / 1000;
-            item.updated_at = Date.now() / 1000;
+            const item = prepare({
+                ...event.body,
+                id: `item-${generateID()}`,
+                created_at: Date.now() / 1000,
+                updated_at: Date.now() / 1000,
+            });
             const list = [...(ENDPOINT_SIGNALS[endpoint]() || [])];
             list.push(item);
             ENDPOINT_SIGNALS[endpoint].set(list);
@@ -207,11 +211,11 @@ export function generateBasicHandlers<T = unknown>(
             );
             if (index >= 0) {
                 const old_item = list[index];
-                const updated_item = {
+                const updated_item = prepare({
                     ...old_item,
                     ...item,
                     updated_at: Date.now() / 1000,
-                };
+                });
                 list.splice(index, 1, updated_item);
                 ENDPOINT_SIGNALS[endpoint].set(list);
                 saveToSession(storage_key, list);

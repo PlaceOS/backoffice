@@ -1,5 +1,6 @@
-import { expect, test } from '@playwright/test';
-import { ZonesPage } from './pages';
+import { buildAppUrl } from './config/test-env';
+import { expect, test } from './fixtures/test-fixtures';
+import { FeaturePage } from './pages';
 
 /**
  * Optional cascade delete (PPT-1203)
@@ -21,23 +22,14 @@ import { ZonesPage } from './pages';
  *   New Zone   (root, no children, no systems)
  */
 test.describe('Cascade delete', () => {
-    let zonesPage: ZonesPage;
+    let zonesPage: FeaturePage;
 
     test.beforeEach(async ({ page }) => {
-        await page.addInitScript(() => {
-            localStorage.setItem('BACKOFFICE.mock', 'true');
-        });
-        zonesPage = new ZonesPage(page);
+        zonesPage = new FeaturePage(page, 'zones');
     });
 
-    const openZone = async (page, zone_id: string) => {
-        await page.goto(`/?mock=true#/zones/${zone_id}/about`);
-        await zonesPage.waitForLoad();
-        await page.waitForSelector('item-details', { timeout: 20000 });
-    };
-
-    test('offers the option, disabled by default', async ({ page }) => {
-        await openZone(page, 'zone-lmhh_hVfz0');
+    test('offers the option, disabled by default', async () => {
+        await zonesPage.gotoItem('zone-lmhh_hVfz0');
         await zonesPage.openDeleteConfirmation();
 
         await expect(zonesPage.cascadeCheckbox).toHaveCount(1);
@@ -49,7 +41,7 @@ test.describe('Cascade delete', () => {
     test('no longer claims that systems are removed by default', async ({
         page,
     }) => {
-        await openZone(page, 'zone-lmhh_hVfz0');
+        await zonesPage.gotoItem('zone-lmhh_hVfz0');
         await zonesPage.openDeleteConfirmation();
 
         const content = await page
@@ -58,8 +50,8 @@ test.describe('Cascade delete', () => {
         expect(content).toContain('are kept unless you also remove');
     });
 
-    test('reports nothing to remove for an empty zone', async ({ page }) => {
-        await openZone(page, 'zone-lmhh_hVfz0');
+    test('reports nothing to remove for an empty zone', async () => {
+        await zonesPage.gotoItem('zone-lmhh_hVfz0');
         await zonesPage.openDeleteConfirmation();
         await zonesPage.enableCascade();
 
@@ -70,7 +62,7 @@ test.describe('Cascade delete', () => {
     test('lists the systems and modules that would be removed', async ({
         page,
     }) => {
-        await openZone(page, 'zone-Kl0E0HmCJ3'); // Place Technology (org)
+        await zonesPage.gotoItem('zone-Kl0E0HmCJ3'); // Place Technology (org)
         await zonesPage.openDeleteConfirmation();
         await zonesPage.enableCascade();
 
@@ -82,12 +74,10 @@ test.describe('Cascade delete', () => {
         expect(scope).toMatch(/Scope: this zone and \d+ zones? beneath it/);
     });
 
-    test('keeps systems that also belong to a zone outside the subtree', async ({
-        page,
-    }) => {
+    test('keeps systems that also belong to a zone outside the subtree', async () => {
         // Level 30's systems are also in Tower 2, which is above it — they
         // survive, so the cascade must remove nothing and say so.
-        await openZone(page, 'zone-LEHeo501Er');
+        await zonesPage.gotoItem('zone-LEHeo501Er');
         await zonesPage.openDeleteConfirmation();
         await zonesPage.enableCascade();
 
@@ -99,7 +89,7 @@ test.describe('Cascade delete', () => {
     });
 
     test('removes the orphaned systems when confirmed', async ({ page }) => {
-        await openZone(page, 'zone-Kl0E0HmCJ3');
+        await zonesPage.gotoItem('zone-Kl0E0HmCJ3');
         await zonesPage.openDeleteConfirmation();
         await zonesPage.enableCascade();
 
@@ -114,16 +104,17 @@ test.describe('Cascade delete', () => {
         await page.locator('confirm-modal button[name="close"]').click();
 
         // Every system lived inside this org zone, so the systems list empties
-        await page.goto('/?mock=true#/systems');
-        await zonesPage.waitForLoad();
-        await page.waitForTimeout(1000);
+        await page.goto(buildAppUrl('/#/systems'));
+        await expect(page.locator('item-sidebar')).toContainText(
+            'No Systems available',
+        );
         await expect(zonesPage.sidebarItems).toHaveCount(0);
     });
 
     test('lists what was removed, with ids, once it has run', async ({
         page,
     }) => {
-        await openZone(page, 'zone-Kl0E0HmCJ3');
+        await zonesPage.gotoItem('zone-Kl0E0HmCJ3');
         await zonesPage.openDeleteConfirmation();
         await zonesPage.enableCascade();
 
@@ -159,7 +150,7 @@ test.describe('Cascade delete', () => {
     test('shows no receipt for a delete without the option', async ({
         page,
     }) => {
-        await openZone(page, 'zone-lmhh_hVfz0');
+        await zonesPage.gotoItem('zone-lmhh_hVfz0');
         await zonesPage.openDeleteConfirmation();
         await zonesPage.acceptButton.click();
 
@@ -171,20 +162,16 @@ test.describe('Cascade delete', () => {
     test('leaves systems alone when the option is left off', async ({
         page,
     }) => {
-        await page.goto('/?mock=true#/systems');
-        await zonesPage.waitForLoad();
-        await page.waitForTimeout(1000);
-        const before = await zonesPage.sidebarItems.count();
-        expect(before).toBeGreaterThan(0);
+        const system = zonesPage.itemLink('2.30.08 - Activity Space');
+        await page.goto(buildAppUrl('/#/systems'));
+        await expect(system).toBeVisible();
 
-        await openZone(page, 'zone-Kl0E0HmCJ3');
+        await zonesPage.gotoItem('zone-Kl0E0HmCJ3');
         await zonesPage.openDeleteConfirmation();
         await zonesPage.acceptButton.click();
         await page.waitForURL(/#\/zones\/-/, { timeout: 30000 });
 
-        await page.goto('/?mock=true#/systems');
-        await zonesPage.waitForLoad();
-        await page.waitForTimeout(1000);
-        await expect(zonesPage.sidebarItems).toHaveCount(before);
+        await page.goto(buildAppUrl('/#/systems'));
+        await expect(system).toBeVisible();
     });
 });

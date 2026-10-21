@@ -1,5 +1,4 @@
-import { expect, test } from '@playwright/test';
-import { buildAppUrl } from './config/test-env';
+import { expect, test } from './fixtures/test-fixtures';
 import { SystemsPage } from './pages';
 
 /**
@@ -8,417 +7,302 @@ import { SystemsPage } from './pages';
  * Tests for user stories US-SYS-001 through US-SYS-012
  */
 
+/** 2.30.08 - Activity Space: 10 modules, 4 zones, no triggers */
+const ACTIVITY_SPACE = 'sys-QjJvCH7_dA';
+const ACTIVITY_SPACE_NAME = '2.30.08 - Activity Space';
+
 test.describe('Systems', () => {
-    let systemsPage: SystemsPage;
+    let systems: SystemsPage;
 
     test.beforeEach(async ({ page }) => {
-        // Set mock mode in localStorage
-        await page.addInitScript(() => {
-            localStorage.setItem('BACKOFFICE.mock', 'true');
-        });
-        systemsPage = new SystemsPage(page);
+        systems = new SystemsPage(page);
     });
 
-    /**
-     * US-SYS-001: View Systems List
-     */
     test.describe('US-SYS-001: View Systems List', () => {
-        test('AC-SYS-001-1: Display Systems List - should show sidebar with all systems', async () => {
-            await systemsPage.goto();
+        test('AC-SYS-001-1: lists the systems', async () => {
+            await systems.goto();
 
-            // Verify the sidebar is visible
-            await expect(systemsPage.sidebarList).toBeVisible();
-
-            // Verify systems are listed
-            await expect(systemsPage.systemsList.first()).toBeVisible({
-                timeout: 10000,
-            });
-        });
-
-        test('AC-SYS-001-2: Search Systems - should filter systems by search term', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
-
-            // Wait for list to load
-            await page.waitForTimeout(1000);
-
-            // Search for a specific system
-            await systemsPage.search('Activity');
-
-            // Wait for search results to filter
-            await page.waitForTimeout(500);
-
-            // Verify filtered results - use paragraph elements inside the links which contain the system names
-            const items = page
-                .locator('item-sidebar a p, virtual-scroll a p')
-                .filter({ hasText: /Activity/i });
-            const count = await items.count();
-            expect(count).toBeGreaterThan(0);
-        });
-
-        test('AC-SYS-001-3: System Selection - should display system details when selected', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
-
-            // Wait for list to load
-            await page.waitForTimeout(1000);
-
-            // Select first system
-            const firstSystem = systemsPage.systemsList.first();
-            const systemName = await firstSystem.textContent();
-            await firstSystem.click();
-
-            // Verify details are displayed
-            await expect(systemsPage.mainContent).toBeVisible();
-            if (systemName) {
-                await expect(
-                    page
-                        .locator(`text=${systemName.trim().split('\n')[0]}`)
-                        .first(),
-                ).toBeVisible();
-            }
-        });
-    });
-
-    /**
-     * US-SYS-002: Create New System
-     */
-    test.describe('US-SYS-002: Create New System', () => {
-        test('AC-SYS-002-1: Access Create Form - should open create modal when Add button clicked', async () => {
-            await systemsPage.goto();
-
-            // Click add button
-            await systemsPage.addButton.click();
-
-            // Verify modal appears
-            await expect(systemsPage.dialog).toBeVisible();
-        });
-
-        test('AC-SYS-002-2: Required Fields Validation - should show validation errors for missing required fields', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
-            await systemsPage.openAddModal();
-
-            // Try to save without filling required fields
-            await systemsPage.saveButton.click();
-
-            // Dialog should still be visible (validation failed)
-            await expect(systemsPage.dialog).toBeVisible();
-
-            // Check for validation error indicators
-            const errorFields = page.locator(
-                'mat-error, .mat-mdc-form-field-error, [class*="error"]',
-            );
-            await expect(errorFields.first())
-                .toBeVisible({ timeout: 5000 })
-                .catch(() => {
-                    // Validation might be shown differently
-                });
-        });
-
-        test('AC-SYS-002-3: Successful Creation - should create system and show in list', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
-
-            const uniqueName = `Test System ${Date.now()}`;
-
-            await systemsPage.createSystem({
-                name: uniqueName,
-                description: 'E2E test system',
-            });
-
-            // Wait for creation to complete
-            await page.waitForTimeout(1000);
-
-            // In mock mode, verify the dialog closed (creation succeeded)
-            // Mock mode doesn't persist items, so we verify the form submission worked
-            await expect(systemsPage.dialog).not.toBeVisible({ timeout: 5000 });
-        });
-    });
-
-    /**
-     * US-SYS-003: Edit System Details
-     */
-    test.describe('US-SYS-003: Edit System Details', () => {
-        test('AC-SYS-003-1: Access Edit Mode - should open edit modal with current details', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
-
-            // Select first system
-            await systemsPage.systemsList.first().click();
-            await page.waitForTimeout(500);
-
-            // Click edit
-            await systemsPage.openEditModal();
-
-            // Verify modal with pre-populated fields
-            await expect(systemsPage.dialog).toBeVisible();
-            const nameField = systemsPage.dialog.locator('input').first();
-            const value = await nameField.inputValue();
-            expect(value.length).toBeGreaterThan(0);
-        });
-
-        test('AC-SYS-003-4: Cancel Edit - should discard changes when cancelled', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
-
-            // Select first system
-            await systemsPage.systemsList.first().click();
-            await page.waitForTimeout(500);
-
-            // Get original name
-            const originalName = await systemsPage.mainContent
-                .locator('h2, h3, [class*="title"]')
-                .first()
-                .textContent();
-
-            // Open edit and make changes
-            await systemsPage.openEditModal();
-            await systemsPage.fillField('Name', 'Changed Name');
-
-            // Cancel
-            await systemsPage.cancel();
-
-            // Verify original name is still displayed
-            await page.waitForTimeout(500);
-            const currentName = await systemsPage.mainContent
-                .locator('h2, h3, [class*="title"]')
-                .first()
-                .textContent();
-            expect(currentName).toBe(originalName);
-        });
-    });
-
-    /**
-     * US-SYS-004: Delete System
-     */
-    test.describe('US-SYS-004: Delete System', () => {
-        test('AC-SYS-004-1: Delete Confirmation - should show confirmation dialog', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
-
-            // Select a system
-            await systemsPage.systemsList.first().click();
-            await page.waitForTimeout(500);
-
-            // Open action menu and click delete
-            await systemsPage.openActionMenu();
-            await systemsPage.deleteButton.click();
-
-            // Verify confirmation dialog appears with delete heading
-            await expect(systemsPage.dialog).toBeVisible();
+            await expect(systems.itemLink(ACTIVITY_SPACE_NAME)).toBeVisible();
             await expect(
-                systemsPage.dialog.locator(
-                    'h2:has-text("Delete"), h2:has-text("delete")',
-                ),
+                systems.itemLink('2.30.09 - Activity Space'),
             ).toBeVisible();
         });
 
-        test('AC-SYS-004-3: Cancel Deletion - should keep system when cancelled', async ({
+        test('AC-SYS-001-2: search filters the list', async () => {
+            await systems.goto();
+            await systems.search('2.30.09');
+
+            await expect(
+                systems.itemLink('2.30.09 - Activity Space'),
+            ).toBeVisible();
+            await expect(systems.itemLink(ACTIVITY_SPACE_NAME)).toHaveCount(0);
+        });
+
+        test('AC-SYS-001-3: selecting a system opens its details', async ({
             page,
         }) => {
-            await systemsPage.goto();
+            await systems.goto();
+            await systems.itemLink(ACTIVITY_SPACE_NAME).click();
 
-            // Select a system
-            const firstSystem = systemsPage.systemsList.first();
-            const systemName = await firstSystem.textContent();
-            await firstSystem.click();
-            await page.waitForTimeout(500);
+            await expect(page).toHaveURL(
+                new RegExp(`#/systems/${ACTIVITY_SPACE}/`),
+            );
+            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_NAME);
+        });
+    });
 
-            // Open action menu and click delete
-            await systemsPage.openActionMenu();
-            await systemsPage.deleteButton.click();
-            await expect(systemsPage.dialog).toBeVisible();
+    test.describe('US-SYS-002: Create New System', () => {
+        test('AC-SYS-002-2: required fields are checked', async () => {
+            await systems.goto();
+            await systems.openAddModal();
 
-            // Cancel
-            await systemsPage.cancelButton.click();
+            await systems.saveButton.click();
 
-            // Verify system still exists
-            if (systemName) {
-                await systemsPage.expectSystemInList(
-                    systemName.trim().split('\n')[0],
-                );
+            await expect(systems.dialog).toBeVisible();
+            await expect(
+                systems.dialog.locator('mat-error').first(),
+            ).toBeVisible();
+        });
+
+        test('AC-SYS-002-3: saves the system and opens it', async () => {
+            await systems.goto();
+
+            await systems.createWith(async () => {
+                await systems.selectZone('Tower 2');
+                await systems.nameField.fill('Boardroom');
+            });
+
+            await expect(systems.itemName).toHaveText('Boardroom');
+            await systems.search('Boardroom');
+            await expect(systems.itemLink('Boardroom')).toBeVisible();
+        });
+    });
+
+    test.describe('US-SYS-003: Edit System Details', () => {
+        test('AC-SYS-003-1: the edit form holds the current name', async () => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openEditModal();
+
+            await expect(systems.nameField).toHaveValue(ACTIVITY_SPACE_NAME);
+        });
+
+        test('AC-SYS-003-3: a renamed system keeps its new name', async ({
+            page,
+        }) => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openEditModal();
+            await systems.nameField.fill('2.30.08 - Quiet Room');
+            await systems.saveButton.click();
+            await expect(systems.dialog).toBeHidden();
+
+            await expect(systems.itemName).toHaveText('2.30.08 - Quiet Room');
+            await page.reload();
+            await systems.waitForItemDetails();
+            await expect(systems.itemName).toHaveText('2.30.08 - Quiet Room');
+        });
+
+        test('AC-SYS-003-4: closing the modal discards changes', async () => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openEditModal();
+            await systems.nameField.fill('Not Saved');
+            await systems.discardChanges();
+
+            await expect(systems.dialog).toBeHidden();
+            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_NAME);
+        });
+    });
+
+    test.describe('US-SYS-004: Delete System', () => {
+        test('AC-SYS-004-1: asks for confirmation', async () => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openDeleteConfirmation();
+
+            await expect(
+                systems.page.locator('confirm-modal h2'),
+            ).toContainText('Delete');
+        });
+
+        test('AC-SYS-004-2: removes the system from the list', async () => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.deleteSelected();
+
+            await expect(systems.itemLink(ACTIVITY_SPACE_NAME)).toHaveCount(0);
+            await expect(
+                systems.itemLink('2.30.09 - Activity Space'),
+            ).toBeVisible();
+        });
+
+        test('AC-SYS-004-3: keeps the system when the confirmation is dismissed', async ({
+            page,
+        }) => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openDeleteConfirmation();
+            await page.keyboard.press('Escape');
+
+            await expect(page.locator('confirm-modal')).toHaveCount(0);
+            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_NAME);
+            await expect(systems.itemLink(ACTIVITY_SPACE_NAME)).toBeVisible();
+        });
+    });
+
+    test.describe('US-SYS-006: Manage System Modules', () => {
+        test('AC-SYS-006-1: lists the modules and links to them', async ({
+            page,
+        }) => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openTab('modules');
+
+            await systems.tabContent
+                .getByRole('link', { name: 'KNX BAOS Lighting' })
+                .first()
+                .click();
+
+            await expect(page).toHaveURL(/#\/modules\/mod-/);
+            await expect(systems.itemName).toHaveText('KNX BAOS Lighting');
+        });
+
+        test('AC-SYS-006-5: search filters the execute module selector', async ({
+            page,
+        }) => {
+            await systems.gotoItem(ACTIVITY_SPACE, 'modules');
+            // The selector re-renders and closes when the module list loads
+            await expect(
+                systems.tabContent
+                    .getByRole('link', { name: 'KNX BAOS Lighting' })
+                    .first(),
+            ).toBeVisible();
+            await systems.searchExecuteModules('Lighting');
+
+            const options = page
+                .locator('.cdk-overlay-pane mat-option')
+                .filter({ hasText: /\S/ });
+            await expect(
+                options.filter({ hasText: /Lighting/i }).first(),
+            ).toBeVisible();
+            await expect(
+                options.filter({ hasNotText: /Lighting/i }),
+            ).toHaveCount(0);
+        });
+    });
+
+    test.describe('US-SYS-007: View System Zones', () => {
+        test('AC-SYS-007-1: lists every zone the system is in', async () => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openTab('zones');
+
+            for (const name of [
+                'L30 Activity Spaces',
+                'Level 30',
+                'Tower 2',
+                'Place Technology',
+            ]) {
+                await expect(
+                    systems.tabContent.getByRole('link', {
+                        name,
+                        exact: true,
+                    }),
+                ).toBeVisible();
             }
         });
-    });
 
-    /**
-     * US-SYS-006: Manage System Modules
-     */
-    test.describe('US-SYS-006: Manage System Modules', () => {
-        test('AC-SYS-006-1: View Attached Modules - should display modules list', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
+        test('AC-SYS-007-2: a zone link opens that zone', async ({ page }) => {
+            await systems.gotoItem(ACTIVITY_SPACE, 'zones');
 
-            // Select a system
-            await systemsPage.systemsList.first().click();
-            await page.waitForTimeout(500);
+            await systems.tabContent
+                .getByRole('link', { name: 'Tower 2' })
+                .click();
 
-            // Navigate to modules tab
-            await systemsPage.viewModules();
-
-            // Verify modules tab content is visible
-            await expect(systemsPage.mainContent).toBeVisible();
-        });
-
-        test('AC-SYS-006-5: Search Modules for Execution - should filter the execute module selector', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
-
-            await systemsPage.search('2.30.08');
-            await systemsPage.systemsList.first().click();
-            await page.waitForTimeout(500);
-
-            await systemsPage.viewModules();
-            await systemsPage.searchExecuteModules('Lighting');
-
-            const visibleOptions = page
-                .locator('.cdk-overlay-pane mat-option')
-                .filter({ hasText: /Lighting/i });
-            await expect(visibleOptions.first()).toBeVisible({
-                timeout: 10000,
-            });
-            await expect(
-                page.locator('input[name="module-search"]'),
-            ).toHaveValue('Lighting');
+            await expect(page).toHaveURL(/#\/zones\/zone-Kl0HN~nDwc/);
+            await expect(systems.itemName).toHaveText('Tower 2');
         });
     });
 
-    /**
-     * US-SYS-007: View System Zones
-     */
-    test.describe('US-SYS-007: View System Zones', () => {
-        test('AC-SYS-007-1: Display Zone Membership - should show zones list', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
-
-            // Select a system
-            await systemsPage.systemsList.first().click();
-            await page.waitForTimeout(500);
-
-            // Navigate to zones tab
-            await systemsPage.viewZones();
-
-            // Verify zones tab content is visible
-            await expect(systemsPage.mainContent).toBeVisible();
-        });
-    });
-
-    /**
-     * US-SYS-008: Manage System Triggers
-     */
     test.describe('US-SYS-008: Manage System Triggers', () => {
-        test('AC-SYS-008-1: View System Triggers - should display triggers list', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
+        test('AC-SYS-008-1: shows the empty triggers list', async () => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openTab('triggers');
 
-            // Select a system
-            await systemsPage.systemsList.first().click();
-            await page.waitForTimeout(500);
-
-            // Navigate to triggers tab
-            await systemsPage.viewTriggers();
-
-            // Verify triggers tab content is visible
-            await expect(systemsPage.mainContent).toBeVisible();
+            await expect(systems.tabContent).toContainText(
+                'No triggers for selected system',
+            );
         });
     });
 
-    /**
-     * US-SYS-009: Manage System Metadata
-     */
     test.describe('US-SYS-009: Manage System Metadata', () => {
-        test('AC-SYS-009-1: View Metadata - should display metadata entries', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
+        test('AC-SYS-009-1: shows the empty metadata list', async () => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openTab('metadata');
 
-            // Select a system
-            await systemsPage.systemsList.first().click();
-            await page.waitForTimeout(500);
-
-            // Navigate to metadata tab
-            await systemsPage.viewMetadata();
-
-            // Verify metadata tab content is visible
-            await expect(systemsPage.mainContent).toBeVisible();
+            await expect(systems.tabContent).toContainText(
+                'No Metadata blocks found',
+            );
         });
 
-        test('AC-SYS-009-2: Metadata Loading State - should render the shared metadata view after loading', async ({
+        test('AC-SYS-009-2: renders the metadata view after a slow load', async ({
             page,
         }) => {
             await page.addInitScript(() => {
                 sessionStorage.setItem('PLACEOS.mocks.metadata_delay', '3000');
             });
-            await page.goto(buildAppUrl('/#/systems/sys-QjJvCH7_dA/metadata'));
-            await systemsPage.waitForLoad();
-            await expect(page.locator('metadata-display')).toBeAttached({
-                timeout: 5000,
+            await systems.gotoItem(ACTIVITY_SPACE, 'metadata');
+
+            await expect(systems.metadataLoadingSpinner).toBeVisible();
+            await expect(systems.metadataLoadingSpinner).toBeHidden({
+                timeout: 10000,
             });
-            await expect(
-                page.locator('metadata-display input[placeholder*="metadata"]'),
-            ).toBeVisible();
-            await expect(
-                page.locator('text=/Error loading metadata/i'),
-            ).toHaveCount(0);
+            await expect(systems.tabContent).toContainText(
+                'No Metadata blocks found',
+            );
+            await expect(page.getByText(/Error loading metadata/i)).toHaveCount(
+                0,
+            );
         });
     });
 
-    /**
-     * US-SYS-010: View System History
-     */
     test.describe('US-SYS-010: View System History', () => {
-        test('AC-SYS-010-1: Display Change History - should show history list', async ({
-            page,
-        }) => {
-            await systemsPage.goto();
+        test('AC-SYS-010-3: opens the settings history view', async () => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openTab('history');
 
-            // Select a system
-            await systemsPage.systemsList.first().click();
-            await page.waitForTimeout(500);
-
-            // Navigate to history tab
-            await systemsPage.viewHistory();
-
-            // Verify history tab content is visible
-            await expect(systemsPage.mainContent).toBeVisible();
+            await expect(
+                systems.tabContent.getByRole('combobox', {
+                    name: 'Select current settings',
+                }),
+            ).toBeVisible();
         });
     });
 
-    /**
-     * US-SYS-011: Start and Stop System
-     */
     test.describe('US-SYS-011: Start and Stop System', () => {
-        test('AC-SYS-011-1/2: Start/Stop buttons should be visible', async ({
+        test('AC-SYS-011-2: stops the system after confirmation', async ({
             page,
         }) => {
-            await systemsPage.goto();
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.stopButton.click();
 
-            // Select a system
-            await systemsPage.systemsList.first().click();
-            await page.waitForTimeout(500);
+            await expect(page.locator('confirm-modal')).toContainText(
+                'Stop system?',
+            );
+            await systems.acceptButton.click();
 
-            // Verify start or stop button is visible
-            const startVisible = await systemsPage.startButton
-                .isVisible()
-                .catch(() => false);
-            const stopVisible = await systemsPage.stopButton
-                .isVisible()
-                .catch(() => false);
+            await expect(
+                systems.notification('Successfully stopped system'),
+            ).toBeVisible();
+        });
 
-            // At least one should be visible depending on system state
-            expect(startVisible || stopVisible).toBeTruthy();
+        test('AC-SYS-011-1: starts the system after confirmation', async ({
+            page,
+        }) => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.startButton.click();
+
+            await expect(page.locator('confirm-modal')).toContainText(
+                'Start system?',
+            );
+            await systems.acceptButton.click();
+
+            await expect(
+                systems.notification('Successfully started system'),
+            ).toBeVisible();
         });
     });
 });

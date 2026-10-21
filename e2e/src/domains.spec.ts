@@ -1,287 +1,202 @@
-import { expect, test } from '@playwright/test';
-import { DomainsPage } from './pages';
+import { expect, seedMockData, test } from './fixtures/test-fixtures';
+import { FeaturePage } from './pages';
 
 /**
  * Domains E2E Tests
  *
- * Tests for user stories US-DOM-001 through US-DOM-012
+ * Tests for user stories US-DOM-001 through US-DOM-012.
+ * The mock backend has no domains, so each test seeds its own.
  */
 
+/** Authority of the mock users, from `src/app/mocks/backend/domains.mock.ts` */
+const PLACE_ID = 'mock-authority';
+
+const DOMAINS = [
+    {
+        id: PLACE_ID,
+        name: 'Place Technology',
+        domain: 'place.tech',
+        description: 'Main tenant',
+        email_domains: ['place.tech'],
+    },
+    {
+        id: 'dom-acme',
+        name: 'Acme Corporation',
+        domain: 'acme.example.com',
+        description: 'Second tenant',
+        email_domains: ['acme.example.com'],
+    },
+];
+
 test.describe('Domains', () => {
-    let domainsPage: DomainsPage;
+    let domains: FeaturePage;
 
     test.beforeEach(async ({ page }) => {
-        // Set mock mode in localStorage
-        await page.addInitScript(() => {
-            localStorage.setItem('BACKOFFICE.mock', 'true');
-        });
-        domainsPage = new DomainsPage(page);
+        await seedMockData(page, 'domains', DOMAINS);
+        domains = new FeaturePage(page, 'domains');
     });
 
-    /**
-     * US-DOM-001: View Domains List
-     */
     test.describe('US-DOM-001: View Domains List', () => {
-        test('AC-DOM-001-1: Display Domains List - should show sidebar with all domains', async ({
-            page,
-        }) => {
-            await domainsPage.goto();
+        test('AC-DOM-001-1: lists every domain', async () => {
+            await domains.goto();
 
-            // Verify the sidebar is visible
-            await expect(domainsPage.sidebarList).toBeVisible();
-
-            // Wait for domains to load (might be empty in mock)
-            await page.waitForTimeout(2000);
+            await expect(domains.itemLink('Place Technology')).toBeVisible();
+            await expect(domains.itemLink('Acme Corporation')).toBeVisible();
         });
 
-        test('AC-DOM-001-2: Search Domains - should filter domains by search term', async ({
-            page,
-        }) => {
-            await domainsPage.goto();
+        test('AC-DOM-001-2: search filters the list', async () => {
+            await domains.goto();
+            await domains.search('Acme');
 
-            // Wait for list to load
-            await page.waitForTimeout(1000);
-
-            // Search for a domain
-            await domainsPage.search('place');
-
-            // Wait for search results
-            await page.waitForTimeout(500);
-
-            // Verify content updates
-            await expect(domainsPage.sidebarList).toBeVisible();
+            await expect(domains.itemLink('Acme Corporation')).toBeVisible();
+            await expect(domains.itemLink('Place Technology')).toHaveCount(0);
         });
 
-        test('AC-DOM-001-3: Domain Selection - should display domain details when selected', async ({
+        test('AC-DOM-001-3: selecting a domain opens its details', async ({
             page,
         }) => {
-            await domainsPage.goto();
+            await domains.goto();
+            await domains.itemLink('Acme Corporation').click();
 
-            // Wait for list to load
-            await page.waitForTimeout(1000);
-
-            // Check if there are any domains
-            const count = await domainsPage.domainsList.count();
-            if (count > 0) {
-                // Select first domain
-                await domainsPage.domainsList.first().click();
-
-                // Verify details are displayed
-                await expect(domainsPage.mainContent).toBeVisible();
-            }
+            await expect(page).toHaveURL(/#\/domains\/dom-acme\//);
+            await expect(domains.itemName).toHaveText('Acme Corporation');
         });
     });
 
-    /**
-     * US-DOM-002: View Domain Details
-     */
     test.describe('US-DOM-002: View Domain Details', () => {
-        test('AC-DOM-002-1: Display Basic Information - should show domain name', async ({
-            page,
-        }) => {
-            await domainsPage.goto();
-            await page.waitForTimeout(1000);
+        test('AC-DOM-002-1: shows the domain, description and email domains', async () => {
+            await domains.gotoItem(PLACE_ID);
 
-            // Check if there are any domains
-            const count = await domainsPage.domainsList.count();
-            if (count > 0) {
-                // Select a domain
-                await domainsPage.domainsList.first().click();
-                await page.waitForTimeout(500);
-
-                // Verify domain details
-                await expect(domainsPage.mainContent).toBeVisible();
-            }
+            await expect(domains.itemDetails).toContainText('place.tech');
+            await expect(domains.tabContent).toContainText('Main tenant');
+            await expect(
+                domains.tabContent.getByRole('button', { name: 'place.tech' }),
+            ).toBeVisible();
         });
     });
 
-    /**
-     * US-DOM-003: Create New Domain
-     */
     test.describe('US-DOM-003: Create New Domain', () => {
-        test('AC-DOM-003-1: Access Create Form - should open create modal', async () => {
-            await domainsPage.goto();
+        test('AC-DOM-003-2: name and domain are required', async () => {
+            await domains.goto();
+            await domains.openAddModal();
 
-            // Click add button
-            await domainsPage.addButton.click();
+            await domains.saveButton.click();
 
-            // Verify modal appears
-            await expect(domainsPage.dialog).toBeVisible();
+            await expect(domains.dialog).toBeVisible();
+            await expect(domains.dialog.locator('mat-error')).toHaveCount(2);
         });
 
-        test('AC-DOM-003-4: Successful Creation - should create domain', async ({
-            page,
-        }) => {
-            await domainsPage.goto();
+        test('AC-DOM-003-4: saves the domain and opens it', async () => {
+            await domains.goto();
 
-            const timestamp = Date.now();
-            const uniqueName = `Test Domain ${timestamp}`;
-            const uniqueDomain = `test${timestamp}.example.com`;
-
-            await domainsPage.createDomain({
-                name: uniqueName,
-                domain: uniqueDomain,
-                description: 'E2E test domain',
+            await domains.createWith(async () => {
+                await domains.dialog
+                    .getByRole('textbox', { name: 'Name*' })
+                    .fill('Globex');
+                await domains.dialog
+                    .getByRole('textbox', { name: 'Domain Name' })
+                    .fill('globex.example.com');
             });
 
-            // Wait for creation to complete
-            await page.waitForTimeout(1000);
-
-            // In mock mode, verify the dialog closed (creation succeeded)
-            // Mock mode doesn't persist items, so we verify the form submission worked
-            await expect(domainsPage.dialog).not.toBeVisible({ timeout: 5000 });
+            await expect(domains.itemName).toHaveText('Globex');
+            await expect(domains.itemDetails).toContainText(
+                'globex.example.com',
+            );
+            await expect(domains.itemLink('Globex')).toBeVisible();
         });
     });
 
-    /**
-     * US-DOM-004: Edit Domain Configuration
-     */
     test.describe('US-DOM-004: Edit Domain Configuration', () => {
-        test('AC-DOM-004-1: Access Edit Mode - should open edit modal', async ({
+        test('AC-DOM-004-1: a changed description is kept', async ({
             page,
         }) => {
-            await domainsPage.goto();
+            await domains.gotoItem(PLACE_ID);
+            await domains.openEditModal();
 
-            // Check if there are any domains
-            const count = await domainsPage.domainsList.count();
-            if (count > 0) {
-                // Select first domain
-                await domainsPage.domainsList.first().click();
-                await page.waitForTimeout(500);
+            const description = domains.dialog.getByRole('textbox', {
+                name: 'Description',
+            });
+            await expect(description).toHaveValue('Main tenant');
+            await description.fill('Head office tenant');
+            await domains.saveButton.click();
+            await expect(domains.dialog).toBeHidden();
 
-                // Click edit
-                await domainsPage.openEditModal();
-
-                // Verify modal
-                await expect(domainsPage.dialog).toBeVisible();
-            }
+            await expect(domains.tabContent).toContainText(
+                'Head office tenant',
+            );
+            await page.reload();
+            await domains.waitForItemDetails();
+            await expect(domains.tabContent).toContainText(
+                'Head office tenant',
+            );
         });
     });
 
-    /**
-     * US-DOM-005: Delete Domain
-     */
     test.describe('US-DOM-005: Delete Domain', () => {
-        test('AC-DOM-005-1: Delete Confirmation - should show confirmation dialog', async ({
-            page,
-        }) => {
-            await domainsPage.goto();
+        test('AC-DOM-005-2: removes the domain from the list', async () => {
+            await domains.gotoItem('dom-acme');
+            await domains.deleteSelected();
 
-            // Check if there are any domains
-            const count = await domainsPage.domainsList.count();
-            if (count > 0) {
-                // Select a domain
-                await domainsPage.domainsList.first().click();
-                await page.waitForTimeout(500);
-
-                // Click delete
-                await domainsPage.deleteButton.click();
-
-                // Verify confirmation dialog appears
-                await expect(domainsPage.dialog).toBeVisible();
-            }
+            await expect(domains.itemLink('Acme Corporation')).toHaveCount(0);
+            await expect(domains.itemLink('Place Technology')).toBeVisible();
         });
     });
 
-    /**
-     * US-DOM-006: Manage OAuth Applications
-     */
     test.describe('US-DOM-006: Manage OAuth Applications', () => {
-        test('AC-DOM-006-1: View Applications List - should show applications tab', async ({
-            page,
-        }) => {
-            await domainsPage.goto();
+        test('AC-DOM-006-1: shows the empty applications list', async () => {
+            await domains.gotoItem(PLACE_ID);
+            await domains.openTab('applications');
 
-            // Check if there are any domains
-            const count = await domainsPage.domainsList.count();
-            if (count > 0) {
-                // Select a domain
-                await domainsPage.domainsList.first().click();
-                await page.waitForTimeout(500);
-
-                // Navigate to applications tab
-                await domainsPage.viewApplications();
-
-                // Verify applications tab content is visible
-                await expect(domainsPage.mainContent).toBeVisible();
-            }
+            await expect(domains.tabContent).toContainText(
+                'No applications for this domain',
+            );
+            await expect(
+                domains.tabContent.getByRole('button', {
+                    name: 'New Application',
+                }),
+            ).toBeVisible();
         });
     });
 
-    /**
-     * US-DOM-007: Configure OAuth Authentication
-     */
-    test.describe('US-DOM-007: Configure OAuth Authentication', () => {
-        test('AC-DOM-007-1: View Auth Sources - should show authentication tab', async ({
-            page,
-        }) => {
-            await domainsPage.goto();
+    test.describe('US-DOM-007: Configure Authentication', () => {
+        test('AC-DOM-007-1: shows the empty authentication list', async () => {
+            await domains.gotoItem(PLACE_ID);
+            await domains.openTab('authentication');
 
-            // Check if there are any domains
-            const count = await domainsPage.domainsList.count();
-            if (count > 0) {
-                // Select a domain
-                await domainsPage.domainsList.first().click();
-                await page.waitForTimeout(500);
-
-                // Navigate to auth sources tab
-                await domainsPage.viewAuthSources();
-
-                // Verify auth sources tab content is visible
-                await expect(domainsPage.mainContent).toBeVisible();
-            }
+            await expect(domains.tabContent).toContainText(
+                'No authentication methods for this domain',
+            );
+            await expect(
+                domains.tabContent.getByRole('button', {
+                    name: 'New Auth Method',
+                }),
+            ).toBeVisible();
         });
     });
 
-    /**
-     * US-DOM-010: View Domain Users
-     */
     test.describe('US-DOM-010: View Domain Users', () => {
-        test('AC-DOM-010-1: Display Users List - should show users in domain', async ({
-            page,
-        }) => {
-            await domainsPage.goto();
+        test('AC-DOM-010-1: lists the users of the domain with their role', async () => {
+            await domains.gotoItem(PLACE_ID);
+            await domains.openTab('users');
 
-            // Check if there are any domains
-            const count = await domainsPage.domainsList.count();
-            if (count > 0) {
-                // Select a domain
-                await domainsPage.domainsList.first().click();
-                await page.waitForTimeout(500);
-
-                // Navigate to users tab
-                await domainsPage.viewUsers();
-
-                // Verify users tab content is visible
-                await expect(domainsPage.mainContent).toBeVisible();
-            }
+            const admin = domains.tabContent.getByRole('row', {
+                name: /Place Admin/,
+            });
+            await expect(admin).toContainText('admin@place.tech');
+            await expect(admin.locator('code')).toHaveText('Admin');
         });
-    });
 
-    /**
-     * US-DOM-011: View Domain Extensions
-     */
-    test.describe('US-DOM-011: View Domain Extensions', () => {
-        test('AC-DOM-011-1: View Extensions - should show extensions tab', async ({
-            page,
-        }) => {
-            await domainsPage.goto();
+        test('AC-DOM-010-1: leaves out users of other domains', async () => {
+            await domains.gotoItem('dom-acme');
+            await domains.openTab('users');
 
-            // Check if there are any domains
-            const count = await domainsPage.domainsList.count();
-            if (count > 0) {
-                // Select a domain
-                await domainsPage.domainsList.first().click();
-                await page.waitForTimeout(500);
-
-                // Navigate to extensions tab
-                await domainsPage.viewExtensions().catch(() => {
-                    // Extensions tab might not be available
-                });
-
-                // Verify content is visible
-                await expect(domainsPage.mainContent).toBeVisible();
-            }
+            // The list is empty while it loads, so wait for the load to end
+            await expect(
+                domains.tabContent.locator('mat-progress-bar'),
+            ).toHaveClass(/opacity-0/);
+            await expect(domains.tabContent).toContainText(
+                'No users associated with this domain',
+            );
         });
     });
 });
