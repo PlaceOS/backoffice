@@ -6420,6 +6420,7 @@ html .mat-mdc-standard-chip.mat-mdc-chip-highlighted.mat-warn {
 }
 html .mat-mdc-chip.mat-mdc-standard-chip {
   --mat-chip-container-height: 32px;
+  --mat-chip-touch-target-display: block;
 }
 html .mat-mdc-standard-chip {
   --mat-chip-label-text-font:
