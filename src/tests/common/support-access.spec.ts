@@ -115,6 +115,7 @@ describe('support subsystem access', () => {
         expect(next).toHaveBeenCalledOnce();
         expect(api.queryZones).toHaveBeenCalledTimes(1);
         expect(api.queryZones).toHaveBeenCalledWith({
+            limit: 1000,
             q: 'office',
             group_id: 'group-1',
         });
