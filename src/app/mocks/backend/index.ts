@@ -1,5 +1,6 @@
 import './domains.mock';
 import './drivers.mock';
+import './groups.mock';
 import './modules.mock';
 import './repositories.mock';
 import './systems.mock';

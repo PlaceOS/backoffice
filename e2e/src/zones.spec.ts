@@ -1,370 +1,255 @@
-import { expect, test } from '@playwright/test';
-import { ZonesPage } from './pages';
+import { expect, test } from './fixtures/test-fixtures';
+import { FeaturePage } from './pages';
 
 /**
  * Zones E2E Tests
  *
- * Tests for user stories US-ZON-001 through US-ZON-011
+ * Tests for user stories US-ZON-001 through US-ZON-011.
+ *
+ * The mock zone tree these tests rely on:
+ *
+ *   Place Technology (org)
+ *   └── Tower 2 (building)
+ *       ├── Level 30                     zone-LEHeo501Er
+ *       │   └── L30 Activity Spaces      zone-iIdF20naW0
+ *       └── Level 31                     zone-QjLXbYUxuC
+ *           ├── L31 Activity Spaces
+ *           ├── L31 Multifunction: 31.22
+ *           └── L31 R7 Activity Space
+ *   New Zone   (root, no children, no systems)  zone-lmhh_hVfz0
  */
 
+const L30_SPACES = 'zone-iIdF20naW0';
+const LEVEL_31 = 'zone-QjLXbYUxuC';
+const NEW_ZONE = 'zone-lmhh_hVfz0';
+
 test.describe('Zones', () => {
-    let zonesPage: ZonesPage;
+    let zones: FeaturePage;
 
     test.beforeEach(async ({ page }) => {
-        // Set mock mode in localStorage
-        await page.addInitScript(() => {
-            localStorage.setItem('BACKOFFICE.mock', 'true');
-        });
-        zonesPage = new ZonesPage(page);
+        zones = new FeaturePage(page, 'zones');
     });
 
-    /**
-     * US-ZON-001: View Zones List
-     */
     test.describe('US-ZON-001: View Zones List', () => {
-        test('AC-ZON-001-1: Display Zones List - should show sidebar with all zones', async () => {
-            await zonesPage.goto();
+        test('AC-ZON-001-1: lists the zones', async () => {
+            await zones.goto();
 
-            // Verify the sidebar is visible
-            await expect(zonesPage.sidebarList).toBeVisible();
-
-            // Verify zones are listed
-            await expect(zonesPage.zonesList.first()).toBeVisible({
-                timeout: 10000,
-            });
+            await expect(zones.itemLink('Place Technology')).toBeVisible();
+            await expect(zones.itemLink('Tower 2')).toBeVisible();
         });
 
-        test('AC-ZON-001-3: Search Zones - should filter zones by search term', async ({
-            page,
-        }) => {
-            await zonesPage.goto();
+        test('AC-ZON-001-3: search filters the list', async () => {
+            await zones.goto();
+            await zones.search('Level 3');
 
-            // Wait for list to load
-            await page.waitForTimeout(1000);
-
-            // Search for a specific zone
-            await zonesPage.search('Level');
-
-            // Wait for search results to filter
-            await page.waitForTimeout(500);
-
-            // Verify filtered results - use paragraph elements inside the links which contain the zone names
-            const items = page
-                .locator('item-sidebar a p, virtual-scroll a p')
-                .filter({ hasText: /Level/i });
-            const count = await items.count();
-            expect(count).toBeGreaterThan(0);
+            await expect(zones.itemLink('Level 30')).toBeVisible();
+            await expect(zones.itemLink('Level 31')).toBeVisible();
+            await expect(zones.itemLink('Tower 2')).toHaveCount(0);
         });
 
-        test('AC-ZON-001-4: Zone Selection - should display zone details when selected', async ({
+        test('AC-ZON-001-4: selecting a zone opens its details', async ({
             page,
         }) => {
-            await zonesPage.goto();
+            await zones.goto();
+            await zones.itemLink('New Zone').click();
 
-            // Wait for list to load
-            await page.waitForTimeout(1000);
-
-            // Select first zone
-            const firstZone = zonesPage.zonesList.first();
-            await firstZone.click();
-
-            // Verify details are displayed
-            await expect(zonesPage.mainContent).toBeVisible();
+            await expect(page).toHaveURL(new RegExp(`#/zones/${NEW_ZONE}/`));
+            await expect(zones.itemName).toHaveText('New Zone');
         });
     });
 
-    /**
-     * US-ZON-002: View Zone Details
-     */
     test.describe('US-ZON-002: View Zone Details', () => {
-        test('AC-ZON-002-1: Display Basic Information - should show zone name', async ({
-            page,
-        }) => {
-            await zonesPage.goto();
-            await page.waitForTimeout(1000);
+        test('AC-ZON-002-1: shows each tag once', async () => {
+            await zones.gotoItem(LEVEL_31);
 
-            // Select a zone
-            const firstZone = zonesPage.zonesList.first();
-            const zoneName = await firstZone.textContent();
-            await firstZone.click();
-            await page.waitForTimeout(500);
+            await expect(
+                zones.itemDetails.getByText('level', { exact: true }),
+            ).toHaveCount(1);
+        });
 
-            // Verify zone details
-            await expect(zonesPage.mainContent).toBeVisible();
-            if (zoneName) {
-                await expect(
-                    zonesPage.mainContent
-                        .locator(`text=${zoneName.trim().split('\n')[0]}`)
-                        .first(),
-                )
-                    .toBeVisible({ timeout: 5000 })
-                    .catch(() => undefined);
-            }
+        test('AC-ZON-002-2: links to the parent zone', async ({ page }) => {
+            await zones.gotoItem(L30_SPACES);
+
+            const parent = zones.tabContent.getByRole('link', {
+                name: 'Level 30 (zone-LEHeo501Er)',
+            });
+            await parent.click();
+
+            await expect(page).toHaveURL(/#\/zones\/zone-LEHeo501Er\/about/);
+            await expect(zones.itemName).toHaveText('Level 30');
         });
     });
 
-    /**
-     * US-ZON-003: Create New Zone
-     */
     test.describe('US-ZON-003: Create New Zone', () => {
-        test('AC-ZON-003-1: Access Create Form - should open create modal', async () => {
-            await zonesPage.goto();
+        test('AC-ZON-003-2: name is required', async () => {
+            await zones.goto();
+            await zones.openAddModal();
 
-            // Click add button
-            await zonesPage.addButton.click();
+            await zones.saveButton.click();
 
-            // Verify modal appears
-            await expect(zonesPage.dialog).toBeVisible();
+            await expect(zones.dialog).toBeVisible();
+            await expect(zones.dialog.locator('mat-error')).toBeVisible();
         });
 
-        test('AC-ZON-003-5: Successful Creation - should create zone and show in list', async ({
-            page,
-        }) => {
-            await zonesPage.goto();
+        test('AC-ZON-003-5: saves the zone and opens it', async () => {
+            await zones.goto();
 
-            const uniqueName = `Test Zone ${Date.now()}`;
-
-            await zonesPage.createZone({
-                name: uniqueName,
-                description: 'E2E test zone',
+            await zones.createWith(async () => {
+                await zones.dialog
+                    .getByRole('textbox', { name: 'Name*', exact: true })
+                    .fill('Level 32');
             });
 
-            // Wait for creation
-            await page.waitForTimeout(1000);
-
-            // Search for the new zone
-            await zonesPage.search(uniqueName);
-
-            // Verify it appears in the list
-            await zonesPage.expectZoneInList(uniqueName);
+            await expect(zones.itemName).toHaveText('Level 32');
+            await expect(zones.itemLink('Level 32')).toBeVisible();
         });
     });
 
-    /**
-     * US-ZON-004: Edit Zone Details
-     */
     test.describe('US-ZON-004: Edit Zone Details', () => {
-        test('AC-ZON-004-1: Access Edit Mode - should open edit modal with current details', async ({
-            page,
-        }) => {
-            await zonesPage.goto();
+        test('AC-ZON-004-1: the edit form holds the current name', async () => {
+            await zones.gotoItem(NEW_ZONE);
+            await zones.openEditModal();
 
-            // Select first zone
-            await zonesPage.zonesList.first().click();
-            await page.waitForTimeout(500);
-
-            // Click edit
-            await zonesPage.openEditModal();
-
-            // Verify modal with pre-populated fields
-            await expect(zonesPage.dialog).toBeVisible();
-            // Find the Name field specifically using accessible name with exact match.
-            // The label includes the required marker, so the name is "Name*".
-            const nameField = zonesPage.dialog.getByRole('textbox', {
-                name: 'Name*',
-                exact: true,
-            });
-            const value = await nameField.inputValue();
-            expect(value.length).toBeGreaterThan(0);
+            await expect(
+                zones.dialog.getByRole('textbox', {
+                    name: 'Name*',
+                    exact: true,
+                }),
+            ).toHaveValue('New Zone');
         });
 
-        test('AC-ZON-004-5: Save Changes - should persist changes', async ({
+        test('AC-ZON-004-5: a renamed zone keeps its new name', async ({
             page,
         }) => {
-            await zonesPage.goto();
+            await zones.gotoItem(NEW_ZONE);
+            await zones.openEditModal();
+            await zones.dialog
+                .getByRole('textbox', { name: 'Name*', exact: true })
+                .fill('Basement');
+            await zones.saveButton.click();
+            await expect(zones.dialog).toBeHidden();
 
-            // Select first zone
-            await zonesPage.zonesList.first().click();
-            await page.waitForTimeout(500);
+            await expect(zones.itemName).toHaveText('Basement');
+            await page.reload();
+            await zones.waitForItemDetails();
+            await expect(zones.itemName).toHaveText('Basement');
+            await expect(zones.itemLink('New Zone')).toHaveCount(0);
+        });
 
-            // Open edit modal
-            await zonesPage.openEditModal();
+        test('AC-ZON-004-6: closing the modal discards changes', async () => {
+            await zones.gotoItem(NEW_ZONE);
+            await zones.openEditModal();
+            await zones.dialog
+                .getByRole('textbox', { name: 'Name*', exact: true })
+                .fill('Not Saved');
+            await zones.discardChanges();
 
-            // Save without changes
-            await zonesPage.save();
-
-            // Verify dialog closed
-            await expect(zonesPage.dialog)
-                .not.toBeVisible({ timeout: 5000 })
-                .catch(() => undefined);
+            await expect(zones.dialog).toBeHidden();
+            await expect(zones.itemName).toHaveText('New Zone');
         });
     });
 
-    /**
-     * US-ZON-005: Delete Zone
-     */
     test.describe('US-ZON-005: Delete Zone', () => {
-        test('AC-ZON-005-1: Delete Confirmation - should show confirmation dialog', async ({
-            page,
-        }) => {
-            await zonesPage.goto();
+        test('AC-ZON-005-3: removes the zone from the list', async () => {
+            await zones.gotoItem(NEW_ZONE);
+            await zones.deleteSelected();
 
-            // Select a zone
-            await zonesPage.zonesList.first().click();
-            await page.waitForTimeout(500);
-
-            // Open action menu and click delete
-            await zonesPage.openActionMenu();
-            await zonesPage.deleteButton.click();
-
-            // Verify confirmation dialog appears
-            await expect(zonesPage.dialog).toBeVisible();
+            await expect(zones.itemLink('New Zone')).toHaveCount(0);
+            await expect(zones.itemLink('Tower 2')).toBeVisible();
         });
 
-        test('AC-ZON-005-4: Cancel Deletion - should keep zone when cancelled', async ({
+        test('AC-ZON-005-4: keeps the zone when the confirmation is dismissed', async ({
             page,
         }) => {
-            await zonesPage.goto();
+            await zones.gotoItem(NEW_ZONE);
+            await zones.openDeleteConfirmation();
+            await page.keyboard.press('Escape');
 
-            // Select a zone
-            const firstZone = zonesPage.zonesList.first();
-            const zoneName = await firstZone.textContent();
-            await firstZone.click();
-            await page.waitForTimeout(500);
+            await expect(page.locator('confirm-modal')).toHaveCount(0);
+            await expect(zones.itemName).toHaveText('New Zone');
+            await expect(zones.itemLink('New Zone')).toBeVisible();
+        });
+    });
 
-            // Open action menu and click delete
-            await zonesPage.openActionMenu();
-            await zonesPage.deleteButton.click();
-            await expect(zonesPage.dialog).toBeVisible();
+    test.describe('US-ZON-006: View Child Zones', () => {
+        test('AC-ZON-006-1: lists the child zones', async () => {
+            await zones.gotoItem(LEVEL_31);
+            await zones.openTab('children');
 
-            // Cancel
-            await zonesPage.cancelButton.click();
-
-            // Verify zone still exists
-            if (zoneName) {
-                await zonesPage.expectZoneInList(
-                    zoneName.trim().split('\n')[0],
-                );
+            for (const name of [
+                'L31 Activity Spaces',
+                'L31 Multifunction: 31.22',
+                'L31 R7 Activity Space',
+            ]) {
+                await expect(
+                    zones.tabContent.getByRole('link', { name }),
+                ).toBeVisible();
             }
         });
     });
 
-    /**
-     * US-ZON-006: View Child Zones
-     */
-    test.describe('US-ZON-006: View Child Zones', () => {
-        test('AC-ZON-006-1: Display Child Zones - should show children tab', async ({
-            page,
-        }) => {
-            await zonesPage.goto();
-
-            // Select a zone
-            await zonesPage.zonesList.first().click();
-            await page.waitForTimeout(500);
-
-            // Navigate to children tab
-            await zonesPage.viewChildren();
-
-            // Verify children tab content is visible
-            await expect(zonesPage.mainContent).toBeVisible();
-        });
-    });
-
-    /**
-     * US-ZON-007: View Systems in Zone
-     */
     test.describe('US-ZON-007: View Systems in Zone', () => {
-        test('AC-ZON-007-1: Display Systems List - should show systems in zone', async ({
+        test('AC-ZON-007-1: lists the systems and links to them', async ({
             page,
         }) => {
-            await zonesPage.goto();
+            await zones.gotoItem(L30_SPACES);
+            await zones.openTab('systems');
 
-            // Select a zone
-            await zonesPage.zonesList.first().click();
-            await page.waitForTimeout(500);
+            const system = zones.tabContent.getByRole('link', {
+                name: '2.30.08 - Activity Space',
+            });
+            await system.click();
 
-            // Navigate to systems tab
-            await zonesPage.viewSystems();
-
-            // Verify systems tab content is visible
-            await expect(zonesPage.mainContent).toBeVisible();
+            await expect(page).toHaveURL(/#\/systems\/sys-QjJvCH7_dA/);
+            await expect(zones.itemName).toHaveText('2.30.08 - Activity Space');
         });
     });
 
-    /**
-     * US-ZON-008: Manage Zone Triggers
-     */
     test.describe('US-ZON-008: Manage Zone Triggers', () => {
-        test('AC-ZON-008-1: View Zone Triggers - should display triggers list', async ({
-            page,
-        }) => {
-            await zonesPage.goto();
+        test('AC-ZON-008-1: shows the empty triggers list', async () => {
+            await zones.gotoItem(NEW_ZONE);
+            await zones.openTab('triggers');
 
-            // Select a zone
-            await zonesPage.zonesList.first().click();
-            await page.waitForTimeout(500);
-
-            // Navigate to triggers tab
-            await zonesPage.viewTriggers();
-
-            // Verify triggers tab content is visible
-            await expect(zonesPage.mainContent).toBeVisible();
+            await expect(zones.tabContent).toContainText(
+                'No triggers for selected zone',
+            );
         });
     });
 
-    /**
-     * US-ZON-009: Manage Zone Metadata
-     */
     test.describe('US-ZON-009: Manage Zone Metadata', () => {
-        test('AC-ZON-009-1: View Metadata - should display metadata entries', async ({
-            page,
-        }) => {
-            await zonesPage.goto();
+        test('AC-ZON-009-1: shows the empty metadata list', async () => {
+            await zones.gotoItem(NEW_ZONE);
+            await zones.openTab('metadata');
 
-            // Select a zone
-            await zonesPage.zonesList.first().click();
-            await page.waitForTimeout(500);
-
-            // Navigate to metadata tab
-            await zonesPage.viewMetadata();
-
-            // Verify metadata tab content is visible
-            await expect(zonesPage.mainContent).toBeVisible();
+            await expect(zones.tabContent).toContainText(
+                'No Metadata blocks found',
+            );
         });
 
-        test('AC-ZON-009-2: Metadata Loading State - should show spinner while metadata is loading', async ({
+        test('AC-ZON-009-2: shows a spinner while metadata loads', async ({
             page,
         }) => {
             await page.addInitScript(() => {
                 sessionStorage.setItem('PLACEOS.mocks.metadata_delay', '1000');
             });
-            await zonesPage.goto();
+            await zones.gotoItem(NEW_ZONE);
+            await zones.openTab('metadata');
 
-            await zonesPage.zonesList.first().click();
-            await page.waitForTimeout(500);
-
-            await zonesPage.metadataTab.click();
-            await expect(page.locator('metadata-display')).toBeAttached({
-                timeout: 5000,
-            });
-
-            await expect(zonesPage.metadataLoadingSpinner).toBeVisible({
-                timeout: 5000,
-            });
-            await expect(zonesPage.metadataLoadingSpinner).not.toBeVisible({
-                timeout: 10000,
-            });
+            await expect(zones.metadataLoadingSpinner).toBeVisible();
+            await expect(zones.metadataLoadingSpinner).toBeHidden();
         });
     });
 
-    /**
-     * US-ZON-010: View Zone History
-     */
     test.describe('US-ZON-010: View Zone History', () => {
-        test('AC-ZON-010-1: Display Change History - should show history list', async ({
-            page,
-        }) => {
-            await zonesPage.goto();
+        test('AC-ZON-010-1: opens the settings history view', async () => {
+            await zones.gotoItem(NEW_ZONE);
+            await zones.openTab('history');
 
-            // Select a zone
-            await zonesPage.zonesList.first().click();
-            await page.waitForTimeout(500);
-
-            // Navigate to history tab
-            await zonesPage.viewHistory();
-
-            // Verify history tab content is visible
-            await expect(zonesPage.mainContent).toBeVisible();
+            await expect(
+                zones.tabContent.getByRole('combobox', {
+                    name: 'Select current settings',
+                }),
+            ).toBeVisible();
         });
     });
 });

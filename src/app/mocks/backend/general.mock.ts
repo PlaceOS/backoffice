@@ -1,5 +1,5 @@
 import { registerMockEndpoint } from '@placeos/ts-client';
-import { API } from '../common.mock';
+import { API, generateBasicHandlers } from '../common.mock';
 
 registerMockEndpoint({
     path: `${API}/version`,
@@ -17,3 +17,19 @@ registerMockEndpoint({
     method: 'GET',
     callback: () => [],
 });
+
+/** Backend versions for the admin about section */
+registerMockEndpoint({
+    path: `${API}/cluster/versions`,
+    method: 'GET',
+    callback: () => [],
+});
+
+registerMockEndpoint({
+    path: `${API}/platform`,
+    method: 'GET',
+    callback: () => ({ version: 'mock', changelog: '' }),
+});
+
+/** Custom schemas in the admin section */
+generateBasicHandlers(`${API}/schema`, []);

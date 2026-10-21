@@ -2,7 +2,7 @@ export const ZONES = [
     {
         name: 'Place Technology',
         description: 'org',
-        tags: 'org',
+        tags: ['org'],
         settings: {
             touch_enabled: false,
             discovery_info: {
@@ -224,7 +224,7 @@ export const ZONES = [
     {
         name: 'L30 Activity Spaces',
         description: null,
-        tags: null,
+        tags: [],
         settings: {
             mics: [{ name: 'Soundbar Mic', id: 'mic', basic_mixer: true }],
             inputs: ['Wireless', 'Laptop', 'Web Conference', 'Tele Conference'],
@@ -310,7 +310,7 @@ export const ZONES = [
     {
         name: 'L31 Activity Spaces',
         description: '',
-        tags: '',
+        tags: [],
         settings: {
             mics: [{ name: 'Soundbar Mic', id: 'mic', basic_mixer: true }],
             inputs: ['Wireless', 'Laptop', 'Web Conference', 'Tele Conference'],
@@ -395,7 +395,7 @@ export const ZONES = [
     {
         name: 'L31 Multifunction: 31.22',
         description: null,
-        tags: null,
+        tags: [],
         settings: {
             rooms: ['sys-beGO1NjTjy', 'sys-beJ1G79tKo'],
             ignore_modes: true,
@@ -453,7 +453,7 @@ export const ZONES = [
     {
         name: 'L31 R7 Activity Space',
         description: null,
-        tags: null,
+        tags: [],
         settings: {
             mics: [{ name: 'Soundbar Mic', id: 'mic', basic_mixer: true }],
             inputs: ['Wireless', 'Laptop', 'Web Conference', 'Tele Conference'],
@@ -538,7 +538,7 @@ export const ZONES = [
     {
         name: 'Level 30',
         description: 'level',
-        tags: 'level',
+        tags: ['level'],
         settings: { discovery_info: {}, number: 30 },
         triggers: [],
         created_at: 1495599360,
@@ -548,7 +548,7 @@ export const ZONES = [
     {
         name: 'Level 31',
         description: 'level',
-        tags: 'level',
+        tags: ['level'],
         settings: { number: 31, discovery_info: {} },
         triggers: [],
         created_at: 1506945022,
@@ -558,7 +558,7 @@ export const ZONES = [
     {
         name: 'New Zone',
         description: null,
-        tags: null,
+        tags: [],
         settings: { booking_max_duration: 900 },
         triggers: [],
         created_at: 1550546496,
@@ -567,7 +567,7 @@ export const ZONES = [
     {
         name: 'Tower 2',
         description: 'building',
-        tags: 'building',
+        tags: ['building'],
         settings: {
             discovery_info: {
                 locker_locations: {

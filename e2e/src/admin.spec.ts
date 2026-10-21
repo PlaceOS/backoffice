@@ -1,4 +1,4 @@
-import { Page, expect, test } from '@playwright/test';
+import { expect, seedSession, test } from './fixtures/test-fixtures';
 import { AdminPage } from './pages';
 
 /**
@@ -7,312 +7,222 @@ import { AdminPage } from './pages';
  * Tests for user stories US-ADM-001 through US-ADM-016
  */
 
-async function seedAdminApiKeyData(page: Page): Promise<void> {
-    await page.addInitScript(() => {
-        sessionStorage.setItem(
-            'PLACEOS.mocks.api_engine_v2_domains',
-            JSON.stringify([
-                {
-                    id: 'place.tech',
-                    name: 'Place Technology',
-                    domain: 'place.tech',
-                },
-            ]),
-        );
-        sessionStorage.setItem(
-            'PLACEOS.mocks.api_keys',
-            JSON.stringify([
-                {
-                    id: 'api_key-e2e',
-                    name: 'E2E App Key',
-                    description: 'Existing e2e API key',
-                    authority_id: 'place.tech',
-                    scopes: ['public'],
-                    permissions: 'user',
-                    user_id: 'current',
-                    created_at: Date.now() / 1000,
-                    updated_at: Date.now() / 1000,
-                },
-            ]),
-        );
-    });
-}
+/** Admin menu entries, their route id and the heading of the section */
+const SECTIONS = [
+    { name: 'About', id: 'about', heading: 'Backoffice & PlaceOS Details' },
+    { name: 'Database', id: 'database', heading: 'PlaceOS Database' },
+    { name: 'Clusters', id: 'clusters', heading: 'PlaceOS Clusters' },
+    { name: 'Edges', id: 'edge', heading: 'PlaceOS Edge Nodes' },
+    { name: 'Interfaces', id: 'interfaces', heading: 'PlaceOS Interfaces' },
+    { name: 'MQTT Brokers', id: 'brokers', heading: 'MQTT Brokers' },
+    { name: 'Staff Tenants', id: 'staff-api', heading: 'Staff API Tenants' },
+    {
+        name: 'Resource Imports',
+        id: 'resource-imports',
+        heading: 'Resource Imports',
+    },
+    { name: 'Extensions', id: 'extensions', heading: 'Extensions' },
+    {
+        name: 'Application Keys',
+        id: 'api-keys',
+        heading: 'PlaceOS Application Keys',
+    },
+    { name: 'Custom Schemas', id: 'schemas', heading: 'Custom Schemas' },
+    {
+        name: 'Data Stores',
+        id: 'upload-storage',
+        heading: 'PlaceOS Data Stores',
+    },
+    {
+        name: 'Uploads Library',
+        id: 'upload-library',
+        heading: 'Uploads Library',
+    },
+    { name: 'Build Jobs', id: 'build-jobs', heading: 'Build Service Jobs' },
+];
+
+const API_KEYS = [
+    {
+        id: 'api_key-e2e',
+        name: 'E2E App Key',
+        description: 'Existing e2e API key',
+        authority_id: 'mock-authority',
+        scopes: ['public'],
+        permissions: 'user',
+        user_id: 'current',
+        created_at: Date.now() / 1000,
+        updated_at: Date.now() / 1000,
+    },
+];
 
 test.describe('Admin', () => {
-    let adminPage: AdminPage;
+    let admin: AdminPage;
 
     test.beforeEach(async ({ page }) => {
-        // Set mock mode in localStorage
-        await page.addInitScript(() => {
-            localStorage.setItem('BACKOFFICE.mock', 'true');
-        });
-        adminPage = new AdminPage(page);
+        admin = new AdminPage(page);
     });
 
-    /**
-     * US-ADM-001: View Cluster Status
-     */
-    test.describe('US-ADM-001: View Cluster Status', () => {
-        test('AC-ADM-001-1: Display Cluster Nodes - should show cluster information', async () => {
-            await adminPage.goto();
+    test('each admin menu entry opens its section', async ({ page }) => {
+        await admin.goto();
 
-            // Navigate to clusters section
-            await adminPage.viewClusters();
+        for (const section of SECTIONS) {
+            await test.step(section.name, async () => {
+                await admin.sectionLink(section.id).click();
 
-            // Verify content is displayed
-            await expect(adminPage.mainContent).toBeVisible();
-        });
+                await expect(page).toHaveURL(
+                    new RegExp(`#/admin/${section.id}$`),
+                );
+                await expect(admin.section).toContainText(section.heading);
+            });
+        }
     });
 
-    /**
-     * US-ADM-003: View System Information
-     */
     test.describe('US-ADM-003: View System Information', () => {
-        test('AC-ADM-003-1: Display Version Info - should show system version', async () => {
-            await adminPage.goto();
+        test('AC-ADM-003-1: shows the backoffice version and commit', async () => {
+            await admin.gotoSection('about');
 
-            // Navigate to about section
-            await adminPage.viewAbout();
-
-            // Verify content is displayed
-            await expect(adminPage.mainContent).toBeVisible();
+            await expect(admin.section).toContainText('Version');
+            await expect(admin.section).toContainText(
+                /Commit hash\s*g?[0-9a-f]{7,}/,
+            );
         });
     });
 
-    /**
-     * US-ADM-004: View Database Status
-     */
     test.describe('US-ADM-004: View Database Status', () => {
-        test('AC-ADM-004-4: Export Zone Tree - should open parent zone selection modal', async () => {
-            await adminPage.goto();
-
-            await adminPage.viewDatabase();
-
-            await expect(adminPage.exportZoneTreeButton).toBeVisible();
-            await adminPage.openZoneTreeExportModal();
+        test('AC-ADM-004-4: export asks for the parent zones first', async () => {
+            await admin.gotoSection('database');
+            await admin.exportZoneTreeButton.click();
 
             await expect(
-                adminPage.dialog.locator('h3:has-text("Export Zone Tree")'),
+                admin.dialog.getByRole('heading', { name: 'Export Zone Tree' }),
             ).toBeVisible();
             await expect(
-                adminPage.dialog.locator('item-search-field'),
+                admin.dialog.locator('item-search-field'),
             ).toBeVisible();
             await expect(
-                adminPage.dialog.locator('button:has-text("Export Selected")'),
+                admin.dialog.getByRole('button', { name: 'Export Selected' }),
             ).toBeDisabled();
         });
 
-        test('AC-ADM-004-5: Import Zone Tree - should expose CSV or TSV import input', async () => {
-            await adminPage.goto();
+        test('AC-ADM-004-5: import accepts CSV files', async () => {
+            await admin.gotoSection('database');
 
-            await adminPage.viewDatabase();
-
-            await expect(adminPage.importZoneTreeButton).toBeVisible();
-            await expect(adminPage.zoneTreeImportInput).toHaveAttribute(
+            await expect(admin.importZoneTreeButton).toBeVisible();
+            await expect(admin.zoneTreeImportInput).toHaveAttribute(
                 'accept',
                 /text\/csv|\.csv/,
             );
         });
     });
 
-    /**
-     * US-ADM-008: Manage Backoffice Extensions
-     */
+    test.describe('US-ADM-006: Manage MQTT Brokers', () => {
+        test('adds a broker to the list', async ({ page }) => {
+            await admin.gotoSection('brokers');
+            await expect(admin.section).toContainText('No MQTT Brokers');
+
+            await page.getByRole('button', { name: 'Add MQTT Broker' }).click();
+            await admin.dialog
+                .getByRole('textbox', { name: 'Name*' })
+                .fill('Building Broker');
+            await admin.dialog
+                .getByRole('textbox', { name: 'Host*' })
+                .fill('mqtt.place.tech');
+            await admin.dialog
+                .getByRole('textbox', { name: 'Username *' })
+                .fill('placeos');
+            await admin.dialog
+                .getByRole('textbox', { name: 'Password' })
+                .fill('secret');
+            await admin.saveButton.click();
+            await expect(admin.dialog).toBeHidden();
+
+            await expect(admin.section).toContainText('Building Broker');
+            await expect(admin.section).toContainText('mqtt.place.tech');
+        });
+    });
+
     test.describe('US-ADM-008: Manage Backoffice Extensions', () => {
-        test('AC-ADM-008-1: View Extensions - should show extensions section', async () => {
-            await adminPage.goto();
-
-            // Navigate to extensions section
-            await adminPage.viewExtensions();
-
-            // Verify content is displayed
-            await expect(adminPage.mainContent).toBeVisible();
-        });
-
-        test('AC-ADM-008-2: Create Extension - should open extension create dialog', async ({
+        test('AC-ADM-008-2: adds an extension to the domain', async ({
             page,
         }) => {
-            await adminPage.goto();
+            await admin.gotoSection('extensions');
+            await expect(admin.section).toContainText(
+                'No extensions available for the selected domain',
+            );
 
-            // Navigate to extensions section
-            await adminPage.viewExtensions();
+            await page.getByRole('button', { name: 'Add Extension' }).click();
+            await admin.dialog
+                .getByRole('textbox', { name: 'Name *' })
+                .fill('Floor Plans');
+            await admin.dialog
+                .getByRole('textbox', { name: 'URL *' })
+                .fill('https://maps.place.tech');
+            await admin.saveButton.click();
+            await expect(admin.dialog).toBeHidden();
 
-            // Click add button
-            await adminPage.addButton.click().catch(() => {
-                // Add button might not be visible if extensions section is different
-            });
-
-            // Wait a moment for dialog
-            await page.waitForTimeout(500);
+            await expect(admin.section).toContainText('Floor Plans');
+            await expect(admin.section).toContainText(
+                'https://maps.place.tech',
+            );
         });
     });
 
-    /**
-     * US-ADM-009: Manage Tenants
-     */
     test.describe('US-ADM-009: Manage Tenants', () => {
-        test('AC-ADM-009-1: View Tenants - should show tenants section', async () => {
-            await adminPage.goto();
+        test('AC-ADM-009-1: lists the tenants and their platform', async () => {
+            await admin.gotoSection('staff-api');
 
-            // Navigate to staff API section
-            await adminPage.viewTenants();
-
-            // Verify content is displayed
-            await expect(adminPage.mainContent).toBeVisible();
+            const row = await admin.tableRow('Default Tenant', admin.section);
+            await expect(row.nth(1)).toHaveText(/google/);
         });
     });
 
-    /**
-     * US-ADM-011: Manage API Keys
-     */
     test.describe('US-ADM-011: Manage API Keys', () => {
-        test('AC-ADM-011-1: View API Keys - should show API keys section', async ({
-            page,
-        }) => {
-            await seedAdminApiKeyData(page);
-            await adminPage.goto();
-
-            // Navigate to API keys section
-            await adminPage.viewApiKeys();
-            await adminPage.selectApiKeyDomain();
-
-            // Verify content is displayed
-            await expect(adminPage.mainContent).toBeVisible();
+        test.beforeEach(async ({ page }) => {
+            await seedSession(page, 'api_keys', API_KEYS);
+            await admin.gotoSection('api-keys');
+            await admin.selectApiKeyDomain();
         });
 
-        test('AC-ADM-011-2: Generate New Key - should open key generation dialog', async ({
-            page,
-        }) => {
-            await seedAdminApiKeyData(page);
-            await adminPage.goto();
-
-            // Navigate to API keys section
-            await adminPage.viewApiKeys();
-            await adminPage.selectApiKeyDomain();
-
-            // Click add/generate button
-            await expect(adminPage.apiKeyAddButton).toBeEnabled({
-                timeout: 10000,
-            });
-            await adminPage.apiKeyAddButton.click();
-
-            await expect(adminPage.dialog).toBeVisible();
+        test('AC-ADM-011-1: lists the keys of the domain', async () => {
+            await expect(admin.section).toContainText('E2E App Key');
+            await expect(admin.section).toContainText('Existing e2e API key');
         });
 
-        test('AC-ADM-011-4: Assign to User - should search and select a user with identity details', async ({
-            page,
-        }) => {
-            await seedAdminApiKeyData(page);
-            await adminPage.goto();
-            await adminPage.viewApiKeys();
-            await adminPage.selectApiKeyDomain();
+        test('AC-ADM-011-2: opens the new key form', async () => {
+            await expect(admin.apiKeyAddButton).toBeEnabled();
+            await admin.apiKeyAddButton.click();
 
-            await expect(adminPage.apiKeyAddButton).toBeEnabled({
-                timeout: 10000,
-            });
-            await adminPage.apiKeyAddButton.click();
-            await expect(adminPage.dialog).toBeVisible();
+            await expect(admin.dialog).toBeVisible();
+            await expect(admin.apiKeyUserSearchInput).toBeVisible();
+        });
 
-            await adminPage.searchApiKeyUser('Alex');
+        test('AC-ADM-011-4: assigns a user with identity details', async () => {
+            await admin.apiKeyAddButton.click();
+            await admin.searchApiKeyUser('Alex');
 
-            const userOption = adminPage.apiKeyUserOption('Alex');
-            await expect(userOption.locator('a-user-avatar')).toBeVisible();
+            const option = admin.apiKeyUserOption('Alex');
+            await expect(option.locator('a-user-avatar')).toBeVisible();
+            await expect(option).toContainText(/@place\.tech/i);
+
+            await option.click();
+
+            await expect(admin.apiKeyUserSearchInput).toHaveValue(/Alex/);
             await expect(
-                userOption.locator('text=/@place\\.tech/i'),
-            ).toBeVisible();
-
-            await userOption.click();
-
-            await expect(adminPage.apiKeyUserSearchInput).toHaveValue(/Alex/);
-            await expect(
-                adminPage.dialog.locator('a-user-avatar').first(),
+                admin.dialog.locator('a-user-avatar').first(),
             ).toBeVisible();
             await expect(
-                adminPage.dialog
+                admin.dialog
                     .locator('main button:has(icon:has-text("close"))')
                     .first(),
             ).toBeVisible();
         });
 
-        test('AC-ADM-011-6: Search All Domain Users - should not filter user search by permission role', async ({
-            page,
-        }) => {
-            await seedAdminApiKeyData(page);
-            await adminPage.goto();
-            await adminPage.viewApiKeys();
-            await adminPage.selectApiKeyDomain();
+        test('AC-ADM-011-6: user search is not filtered by permission', async () => {
+            await admin.apiKeyAddButton.click();
+            await admin.selectApiKeyPermissions('admin');
+            await admin.searchApiKeyUser('Jeremy');
 
-            await expect(adminPage.apiKeyAddButton).toBeEnabled({
-                timeout: 10000,
-            });
-            await adminPage.apiKeyAddButton.click();
-            await expect(adminPage.dialog).toBeVisible();
-
-            await adminPage.selectApiKeyPermissions('admin');
-            await adminPage.searchApiKeyUser('Jeremy');
-
-            await expect(adminPage.apiKeyUserOption('Jeremy West')).toBeVisible(
-                { timeout: 10000 },
-            );
-        });
-    });
-
-    /**
-     * US-ADM-012: Configure Upload Storage
-     */
-    test.describe('US-ADM-012: Configure Upload Storage', () => {
-        test('AC-ADM-012-1: View Storage Providers - should show storage section', async () => {
-            await adminPage.goto();
-
-            // Navigate to upload storage section
-            await adminPage.viewUploadStorage();
-
-            // Verify content is displayed
-            await expect(adminPage.mainContent).toBeVisible();
-        });
-    });
-
-    /**
-     * US-ADM-015: Monitor Build Jobs
-     */
-    test.describe('US-ADM-015: Monitor Build Jobs', () => {
-        test('AC-ADM-015-1: View Build Jobs - should show build jobs section', async () => {
-            await adminPage.goto();
-
-            // Navigate to build jobs section
-            await adminPage.viewBuildJobs();
-
-            // Verify content is displayed
-            await expect(adminPage.mainContent).toBeVisible();
-        });
-    });
-
-    /**
-     * Admin Navigation Tests
-     */
-    test.describe('Admin Navigation', () => {
-        test('should be able to navigate between admin sections', async ({
-            page,
-        }) => {
-            await adminPage.goto();
-
-            // Test navigating to different sections
-            const sections = [
-                { link: adminPage.aboutLink, name: 'About' },
-                { link: adminPage.apiKeysLink, name: 'API Keys' },
-                { link: adminPage.extensionsLink, name: 'Extensions' },
-            ];
-
-            for (const section of sections) {
-                const isVisible = await section.link
-                    .isVisible()
-                    .catch(() => false);
-                if (isVisible) {
-                    await section.link.click();
-                    await page.waitForTimeout(500);
-                    await expect(adminPage.mainContent).toBeVisible();
-                }
-            }
+            await expect(admin.apiKeyUserOption('Jeremy West')).toBeVisible();
         });
     });
 });

@@ -5,11 +5,7 @@
 
 export { AdminPage } from './admin.page';
 export { BasePage } from './base.page';
-export { DomainsPage } from './domains.page';
+export { FeaturePage } from './feature.page';
+export { MobilePage } from './mobile.page';
 export { SystemsPage } from './systems.page';
 export { UsersPage } from './users.page';
-export { ZonesPage } from './zones.page';
-
-// Mobile page objects
-export { MobileBasePage } from './mobile-base.page';
-export { MobileSystemsPage } from './mobile-systems.page';
