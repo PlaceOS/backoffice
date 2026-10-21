@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - Name delete targets and report failed list loads
 - Fit tablet layouts, readable dark placeholders, closable menus
 - Name icon buttons, guard hotkeys and fix copy
+- Debug console text is readable in light mode
 
 ### Features
 
