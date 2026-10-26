@@ -16,6 +16,7 @@ vi.mock('../../app/common/general', () => ({
 import {
     i18n,
     localeFromUrl,
+    LocaleService,
     setTranslationService,
 } from '../../app/common/locale.service';
 
@@ -208,5 +209,29 @@ describe('LocaleService behavior patterns', () => {
         expect(i18n('items', {}, 0)).toBe('0 items');
         expect(i18n('items', {}, 1)).toBe('1 item');
         expect(i18n('items', {}, 5)).toBe('5 items');
+    });
+});
+
+describe('LocaleService page language', () => {
+    afterEach(() => vi.unstubAllGlobals());
+
+    it('marks the page with the language of the loaded translations', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn((url: string) =>
+                Promise.resolve({
+                    ok: url.endsWith('/fr.json'),
+                    json: () => Promise.resolve({}),
+                }),
+            ),
+        );
+        const service = new LocaleService();
+
+        await service.setLocale('fr');
+        expect(document.documentElement.lang).toBe('fr');
+
+        // Only fr.json exists, so the text falls back to the default locale
+        await service.setLocale('de-DE');
+        expect(document.documentElement.lang).toBe('en-AU');
     });
 });

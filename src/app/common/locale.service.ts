@@ -192,15 +192,31 @@ export class LocaleService {
     public setLocale(locale: string): Promise<void> {
         this._current_locale = locale;
         this._current_locale_short = this._current_locale.split('-')[0];
-        // Screen readers pick their voice from the page language.
-        // The Japanese locale file is "jp", but the language code is "ja".
-        document.documentElement.lang = locale === 'jp' ? 'ja' : locale;
         if (!this._locale_mappings[locale] && !this._load_promises[locale]) {
             this._load_promises[locale] = this._loadLocale(locale);
         }
         localStorage.setItem(`${STORE_KEY}`, locale);
         log('LOCALE', `Locale set to "${locale}"`);
-        return this._load_promises[locale] || Promise.resolve();
+        // The language is only known once the translations load or fail
+        return (this._load_promises[locale] || Promise.resolve()).finally(
+            () => {
+                if (this._current_locale === locale) this._updatePageLanguage();
+            },
+        );
+    }
+
+    /**
+     * Mark the page with the language of the translations that `get()` uses,
+     * as screen readers pick their voice from it. A locale without a
+     * translation file falls back to the default locale.
+     */
+    private _updatePageLanguage() {
+        const locale = [this._current_locale, this._current_locale_short].find(
+            (code) => this._locale_mappings[code],
+        );
+        const lang = locale || this._default_locale;
+        // The Japanese locale file is "jp", but the language code is "ja"
+        document.documentElement.lang = lang === 'jp' ? 'ja' : lang;
     }
 
     private async _loadLocale(locale: string) {
