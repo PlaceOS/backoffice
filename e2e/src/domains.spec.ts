@@ -193,7 +193,7 @@ test.describe('Domains', () => {
             // The list is empty while it loads, so wait for the load to end
             await expect(
                 domains.tabContent.locator('mat-progress-bar'),
-            ).toHaveClass(/opacity-0/);
+            ).toBeHidden();
             await expect(domains.tabContent).toContainText(
                 'No users associated with this domain',
             );

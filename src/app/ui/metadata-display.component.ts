@@ -38,6 +38,7 @@ import {
 import { MetadataHistoryModalComponent } from '../overlays/metadata-history-modal.component';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { IconComponent } from './icon.component';
+import { LoadingLabelDirective } from './loading-label.directive';
 import { DateFromPipe } from './pipes/date-from.pipe';
 import { UserPipe } from './pipes/user.pipe';
 import { TranslatePipe } from './translate.pipe';
@@ -223,6 +224,7 @@ function replaceDescTag(inputString, newContent) {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         MatProgressSpinnerModule,
         TranslatePipe,
         IconComponent,

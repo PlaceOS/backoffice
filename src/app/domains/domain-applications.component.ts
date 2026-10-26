@@ -10,6 +10,7 @@ import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DomainStateService } from './domain-state.service';
@@ -31,7 +32,7 @@ import { DomainStateService } from './domain-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="loading() !== true"
+                    [class.invisible]="loading() !== true"
                 />
                 <simple-table
                     class="block min-w-360 text-sm"
@@ -67,7 +68,8 @@ import { DomainStateService } from './domain-state.service';
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             size: '6rem',
                             sortable: false,
                             content: actions_template,
@@ -181,6 +183,7 @@ import { DomainStateService } from './domain-state.service';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         SimpleTableComponent,
         IconComponent,
         MatChipsModule,

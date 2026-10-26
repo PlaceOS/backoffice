@@ -30,6 +30,7 @@ import {
 } from './custom-tooltip.component';
 import { DebugInfoComponent } from './debug-info.component';
 import { IconComponent } from './icon.component';
+import { SkipToContentComponent } from './skip-to-content.component';
 import { SupportGroupPickerComponent } from './support-group-picker.component';
 import { TranslatePipe } from './translate.pipe';
 import { UserAvatarComponent } from './user-avatar.component';
@@ -39,6 +40,8 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     selector: 'sidebar-menu',
     template: `
         <!-- eslint-disable @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+        <!-- Close the mobile menu so the content it skips to is visible -->
+        <skip-to-content (click)="open.set(false)" />
         <div
             sidebar-menu
             class="bg-base-200 pointer-events-none absolute inset-0 z-40 hidden h-full flex-col justify-between sm:pointer-events-auto sm:relative sm:inset-auto sm:z-10 sm:flex"
@@ -48,7 +51,10 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             [class.pointer-events-auto!]="open()"
             (click)="close()"
         >
-            <div class="flex h-1/2 flex-1 flex-col items-center space-y-2">
+            <nav
+                class="flex h-1/2 flex-1 flex-col items-center space-y-2"
+                [attr.aria-label]="'COMMON.MAIN_MENU' | translate"
+            >
                 <a
                     [routerLink]="['/']"
                     class="font-heading mt-4 ml-16 text-4xl sm:mb-2 sm:ml-0"
@@ -105,6 +111,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                     class="clear hover:bg-base-100 relative mx-auto w-[calc(100%-1rem)] text-left"
                                     [routerLink]="[link.route]"
                                     routerLinkActive="bg-secondary! text-secondary-content"
+                                    ariaCurrentWhenActive="page"
                                     [matTooltip]="
                                         compact() ? (link.name | translate) : ''
                                     "
@@ -155,7 +162,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         <icon>close</icon>
                     </button>
                 </div>
-            </div>
+            </nav>
             @if (show_application_picker()) {
                 <button
                     btn
@@ -274,6 +281,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
         CustomTooltipComponent,
         RouterModule,
         DebugInfoComponent,
+        SkipToContentComponent,
     ],
 })
 export class SidebarMenuComponent extends AsyncHandler implements OnInit {

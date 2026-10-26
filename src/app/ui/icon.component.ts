@@ -65,39 +65,51 @@ export class IconComponent {
      * Icon fonts render names like "more_vert", which screen readers read
      * aloud. Inside a button or link, hide the icon when the control has its
      * own text or label. For icon-only controls with a tooltip, use the
-     * tooltip as the control's label.
+     * tooltip as the control's label. Outside a control, an icon with its
+     * own tooltip (e.g. an info icon) becomes an image named by the tooltip.
      */
     private _labelControl() {
         const host = this._element.nativeElement;
         const control = host.parentElement?.closest<HTMLElement>('button, a');
-        if (!control) return;
+        if (!control) {
+            if (host.classList.contains('mat-mdc-tooltip-trigger')) {
+                this._labelFromTooltip(host);
+            }
+            return;
+        }
         const has_text = !!textWithoutIcons(control);
         if (control.hasAttribute('aria-label') || has_text) {
             host.setAttribute('aria-hidden', 'true');
             return;
         }
         // The tooltip must be on the control itself, not an outer element
-        const tooltip = this._tooltip;
-        if (
-            !tooltip ||
-            !control.classList.contains('mat-mdc-tooltip-trigger')
-        ) {
-            return;
+        if (control.classList.contains('mat-mdc-tooltip-trigger')) {
+            this._labelFromTooltip(control);
         }
+    }
+
+    /** Keep the label of the target the same as the tooltip text */
+    private _labelFromTooltip(target: HTMLElement) {
+        const tooltip = this._tooltip;
+        if (!tooltip) return;
+        const host = this._element.nativeElement;
         // Tooltip text can change, e.g. "Enable" and "Disable"
         afterEveryRender(
             () => {
                 const label = `${tooltip.message || ''}`.trim();
-                if (control.getAttribute('aria-label') === (label || null)) {
+                if (target.getAttribute('aria-label') === (label || null)) {
                     return;
                 }
                 // Without tooltip text the icon name is the only label left
                 if (label) {
-                    control.setAttribute('aria-label', label);
-                    host.setAttribute('aria-hidden', 'true');
+                    target.setAttribute('aria-label', label);
+                    if (target === host) host.setAttribute('role', 'img');
+                    else host.setAttribute('aria-hidden', 'true');
                 } else {
-                    control.removeAttribute('aria-label');
-                    host.removeAttribute('aria-hidden');
+                    target.removeAttribute('aria-label');
+                    host.removeAttribute(
+                        target === host ? 'role' : 'aria-hidden',
+                    );
                 }
             },
             { injector: this._injector },

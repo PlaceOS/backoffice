@@ -5,6 +5,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceRepositoryType } from '@placeos/ts-client';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -212,6 +213,7 @@ import { maskUriCredentials } from './repositories.utilities';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         MarkdownPipe,
         TranslatePipe,
         MatProgressSpinnerModule,

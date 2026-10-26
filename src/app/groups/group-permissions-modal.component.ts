@@ -6,6 +6,7 @@ import {
     MatDialogModule,
     MatDialogRef,
 } from '@angular/material/dialog';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -33,7 +34,9 @@ export interface GroupPermissionsModalResult {
         <header
             class="bg-base-200 sticky top-0 z-10 m-2 flex h-14 w-[calc(100%-1rem)] min-w-[22rem] items-center rounded-sm border-none p-2"
         >
-            <h2 class="px-2 text-xl font-medium">{{ title | translate }}</h2>
+            <h2 appDialogTitle class="px-2 text-xl font-medium">
+                {{ title | translate }}
+            </h2>
         </header>
         <main class="flex w-lg max-w-[85vw] flex-col gap-4 p-4 sm:h-auto">
             <section class="grid grid-cols-2 gap-x-4 gap-y-2">
@@ -76,6 +79,7 @@ export interface GroupPermissionsModalResult {
     `,
     styles: [``],
     imports: [
+        DialogTitleDirective,
         FormsModule,
         IconComponent,
         MatDialogModule,

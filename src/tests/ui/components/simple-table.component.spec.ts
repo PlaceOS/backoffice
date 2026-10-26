@@ -9,6 +9,10 @@ import {
     TableColumn,
 } from '../../../app/ui/simple-table.component';
 
+vi.mock('@placeos/ts-client', () =>
+    vi.importActual('@placeos/ts-client/dist/index.es.js'),
+);
+
 describe('SimpleTableComponent', () => {
     let component: SimpleTableComponent<Record<string, unknown>>;
     let fixture: ComponentFixture<
@@ -53,7 +57,7 @@ describe('SimpleTableComponent', () => {
         fixture.detectChanges();
         await fixture.whenStable();
         const rows = fixture.nativeElement.querySelectorAll(
-            '[role="row"]',
+            'cdk-virtual-scroll-viewport [role="row"]',
         ) as NodeListOf<HTMLElement>;
         expect(rows.length).toBe(12);
         expect(rows[0].textContent).toContain('User 500');
@@ -112,6 +116,78 @@ describe('SimpleTableComponent', () => {
         hover(cells[1]);
         hover(cells[2]);
         expect(rows).toEqual([0, 1]);
+    });
+
+    it('groups cells into rows under column headers with sort state', async () => {
+        fixture.componentRef.setInput('data', [
+            { id: '1', name: 'Item 1', value: 1 },
+            { id: '2', name: 'Item 2', value: 2 },
+        ]);
+        fixture.componentRef.setInput('columns', [
+            { key: 'name', name: 'Name' },
+            { key: 'value', name: 'Value', sortable: false },
+        ]);
+        fixture.componentRef.setInput('sortable', true);
+        component.setSort('name');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const table: HTMLElement =
+            fixture.nativeElement.querySelector('[role="table"]');
+        const rows = table.querySelectorAll(':scope > [role="row"]');
+        expect(rows.length).toBe(3);
+        const headers = rows[0].querySelectorAll('[role="columnheader"]');
+        expect(headers[0].getAttribute('aria-sort')).toBe('ascending');
+        // Only sortable columns get a button
+        expect(headers[0].querySelector('button')).not.toBeNull();
+        expect(headers[1].querySelector('button')).toBeNull();
+        expect(rows[1].querySelectorAll('[role="cell"]').length).toBe(2);
+    });
+
+    it('moves rows with the arrow keys and keeps focus on the moved row', async () => {
+        // Without ids, rows are tracked by index and their elements do not move
+        const rows = [
+            { name: 'Item 1' },
+            { name: 'Item 2' },
+            { name: 'Item 3' },
+        ];
+        fixture.componentRef.setInput('data', rows);
+        fixture.componentRef.setInput('columns', [
+            { key: 'name', name: 'Name' },
+        ]);
+        fixture.componentRef.setInput('can_reorder', true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        document.body.appendChild(fixture.nativeElement);
+        const moves: [number, number][] = [];
+        component.ondrop.subscribe((move) => moves.push(move));
+        const handle = (i: number) =>
+            fixture.nativeElement.querySelector(
+                `[data-reorder="${i}"]`,
+            ) as HTMLElement;
+        const press = (i: number, key: string) =>
+            handle(i).dispatchEvent(new KeyboardEvent('keydown', { key }));
+
+        press(0, 'ArrowUp');
+        press(2, 'ArrowDown');
+        expect(moves).toEqual([]);
+
+        handle(0).focus();
+        press(0, 'ArrowDown');
+        expect(moves).toEqual([[0, 1]]);
+        // The parent applies the move
+        fixture.componentRef.setInput('data', [rows[1], rows[0], rows[2]]);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(document.activeElement).toBe(handle(1));
+
+        // A cancelled move leaves the data as it was and focus where it is
+        press(1, 'ArrowDown');
+        handle(0).focus();
+        fixture.componentRef.setInput('data', [rows[1], rows[0], rows[2]]);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(document.activeElement).toBe(handle(0));
+        fixture.nativeElement.remove();
     });
 
     describe('default state', () => {

@@ -9,7 +9,9 @@ import {
     showModule,
 } from '@placeos/ts-client';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
+import { DialogTitleDirective } from './dialog-title.directive';
 import { IconComponent } from './icon.component';
+import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
 
 @Component({
@@ -18,7 +20,10 @@ import { TranslatePipe } from './translate.pipe';
         <header
             class="border-base-100 bg-base-200 sticky top-0 z-10 mx-auto my-2 flex h-14 w-[calc(100%-1rem)] max-w-full items-center justify-between rounded-sm border px-2"
         >
-            <h3 class="flex items-center space-x-2 px-2 text-xl font-medium">
+            <h3
+                appDialogTitle
+                class="flex items-center space-x-2 px-2 text-xl font-medium"
+            >
                 <div>{{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }}</div>
                 <div class="bg-base-100 rounded px-2 py-1 font-mono text-xs">
                     {{ module()?.custom_name || module()?.name }}
@@ -68,6 +73,8 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
+        DialogTitleDirective,
         TranslatePipe,
         MatProgressSpinnerModule,
         IconComponent,

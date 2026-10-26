@@ -27,6 +27,7 @@ import {
     PlaceSystem,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../../../common/async-handler.class';
+import { LoadingLabelDirective } from '../../loading-label.directive';
 import { TranslatePipe } from '../../translate.pipe';
 import { ModuleLike } from './select-module.component';
 
@@ -107,6 +108,7 @@ interface MethodOption extends PlaceModuleFunction {
         },
     ],
     imports: [
+        LoadingLabelDirective,
         MatProgressSpinnerModule,
         TranslatePipe,
         MatFormFieldModule,

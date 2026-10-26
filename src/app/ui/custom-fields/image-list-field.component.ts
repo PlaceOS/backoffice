@@ -25,6 +25,7 @@ import { UploadDetails } from '../../common/uploads';
 import { UploadsService } from '../../common/uploads.service';
 import { AuthenticatedImageDirective } from '../authenticated-image.directive';
 import { IconComponent } from '../icon.component';
+import { LoadingLabelDirective } from '../loading-label.directive';
 import { TranslatePipe } from '../translate.pipe';
 
 @Component({
@@ -224,6 +225,7 @@ import { TranslatePipe } from '../translate.pipe';
         },
     ],
     imports: [
+        LoadingLabelDirective,
         TranslatePipe,
         IconComponent,
         MatFormFieldModule,

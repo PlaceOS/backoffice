@@ -36,6 +36,7 @@ import { readError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { SettingsFieldComponent } from '../custom-fields/settings-field.component';
 import { IconComponent } from '../icon.component';
+import { LoadingLabelDirective } from '../loading-label.directive';
 import { DateFromPipe } from '../pipes/date-from.pipe';
 import { UserPipe } from '../pipes/user.pipe';
 import { TranslatePipe } from '../translate.pipe';
@@ -211,6 +212,7 @@ type SettingsArray = [
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         MatProgressSpinnerModule,
         TranslatePipe,
         DateFromPipe,

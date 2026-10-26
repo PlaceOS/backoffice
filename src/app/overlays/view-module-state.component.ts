@@ -14,7 +14,9 @@ import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ModuleStateModalData {
@@ -32,7 +34,7 @@ export interface ModuleStateModalData {
         <div
             class="bg-base-200 mx-4 mt-4 mb-2 flex items-center justify-between rounded-sm px-4 py-2"
         >
-            <h3 class="text-xl font-medium">
+            <h3 appDialogTitle class="text-xl font-medium">
                 {{ 'MODULES.STATE' | translate }}
             </h3>
             <button
@@ -111,6 +113,8 @@ export interface ModuleStateModalData {
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
+        DialogTitleDirective,
         MatDialogModule,
         MatProgressSpinnerModule,
         TranslatePipe,

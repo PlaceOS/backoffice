@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { AuthenticatedImageDirective } from '../ui/authenticated-image.directive';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 import { UploadInfo } from './upload-library.component';
 
@@ -11,7 +12,7 @@ import { UploadInfo } from './upload-library.component';
         <header
             class="border-base-100 bg-base-200 sticky top-0 z-10 m-2 flex w-[calc(100%-1rem)] items-center justify-between rounded-lg border px-4 py-2"
         >
-            <h2 class="text-xl font-medium">View Upload</h2>
+            <h2 appDialogTitle class="text-xl font-medium">View Upload</h2>
             <button icon matRipple mat-dialog-close aria-label="Close">
                 <icon>close</icon>
             </button>
@@ -47,6 +48,7 @@ import { UploadInfo } from './upload-library.component';
     `,
     styles: [``],
     imports: [
+        DialogTitleDirective,
         MatDialogModule,
         AuthenticatedImageDirective,
         IconComponent,

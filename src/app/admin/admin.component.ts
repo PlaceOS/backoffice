@@ -23,8 +23,9 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <sidebar-menu [(open)]="open_menu" class="sm:h-full" />
             <div class="flex h-full w-px flex-1 flex-col overflow-hidden">
                 <div class="z-0 flex h-1/2 flex-1">
-                    <div
+                    <nav
                         class="border-base-200 relative z-10 h-full space-y-2 overflow-auto border-r px-2 pt-10 sm:w-56 sm:py-4"
+                        [attr.aria-label]="'COMMON.MANAGE' | translate"
                     >
                         @for (item of tab_list(); track item.id) {
                             <a
@@ -34,6 +35,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 [routerLink]="'/admin/' + item.id"
                                 [queryParams]="item.query || {}"
                                 routerLinkActive="bg-secondary! text-secondary-content"
+                                ariaCurrentWhenActive="page"
                             >
                                 <div class="flex w-full items-center space-x-2">
                                     <icon class="text-2xl" [icon]="item.icon" />
@@ -43,10 +45,14 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 </div>
                             </a>
                         }
-                    </div>
-                    <div class="relative z-0 h-full w-1/2 flex-1 overflow-auto">
+                    </nav>
+                    <main
+                        id="main-content"
+                        tabindex="-1"
+                        class="relative z-0 h-full w-1/2 flex-1 overflow-auto outline-none"
+                    >
                         <router-outlet />
-                    </div>
+                    </main>
                     <button
                         icon
                         matRipple

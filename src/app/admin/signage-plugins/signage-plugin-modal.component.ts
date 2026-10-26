@@ -25,6 +25,7 @@ import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { DialogEvent } from '../../common/types';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
+import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { SettingsToggleComponent } from '../../ui/settings-toggle.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { SchemaFormComponent } from './schema-form.component';
@@ -239,6 +240,7 @@ export interface SignagePluginModalData {
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
         FullscreenModalShellComponent,
         FormField,
         MatFormFieldModule,

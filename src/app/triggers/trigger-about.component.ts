@@ -128,7 +128,8 @@ import { TriggerStateService } from './trigger-state.service';
                     },
                     {
                         key: 'actions',
-                        name: ' ',
+                        name: 'COMMON.ACTIONS' | translate,
+                        hide_name: true,
                         size: '6rem',
                         sortable: false,
                         content: actions_template,
@@ -148,7 +149,8 @@ import { TriggerStateService } from './trigger-state.service';
                     },
                     {
                         key: 'actions',
-                        name: ' ',
+                        name: 'COMMON.ACTIONS' | translate,
+                        hide_name: true,
                         size: '6rem',
                         sortable: false,
                         content: actions_template,
@@ -227,7 +229,8 @@ import { TriggerStateService } from './trigger-state.service';
                     },
                     {
                         key: 'actions',
-                        name: ' ',
+                        name: 'COMMON.ACTIONS' | translate,
+                        hide_name: true,
                         size: '6rem',
                         sortable: false,
                         content: fn_actions_template,
@@ -248,7 +251,8 @@ import { TriggerStateService } from './trigger-state.service';
                     },
                     {
                         key: 'actions',
-                        name: ' ',
+                        name: 'COMMON.ACTIONS' | translate,
+                        hide_name: true,
                         size: '6rem',
                         sortable: false,
                         content: fn_actions_template,

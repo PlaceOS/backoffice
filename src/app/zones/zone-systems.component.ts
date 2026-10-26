@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterModule } from '@angular/router';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -33,7 +34,7 @@ import { ZonesStateService } from './zones-state.service';
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
-                [class.opacity-0]="!loading()"
+                [class.invisible]="!loading()"
             />
             <simple-table
                 class="block min-h-0 w-full min-w-lg flex-1 text-sm"
@@ -89,6 +90,7 @@ import { ZonesStateService } from './zones-state.service';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         DateFromPipe,
         RouterModule,
         SimpleTableComponent,

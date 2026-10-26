@@ -24,6 +24,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { PlaceSystem, queryModules } from '@placeos/ts-client';
 import { calculateModuleIndex } from '../../../common/api';
 import { AsyncHandler } from '../../../common/async-handler.class';
+import { LoadingLabelDirective } from '../../loading-label.directive';
 import { TranslatePipe } from '../../translate.pipe';
 
 export interface ModuleLike {
@@ -97,6 +98,7 @@ export interface ModuleLike {
         },
     ],
     imports: [
+        LoadingLabelDirective,
         MatProgressSpinnerModule,
         MatFormFieldModule,
         MatInputModule,

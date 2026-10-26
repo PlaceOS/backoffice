@@ -60,6 +60,8 @@ function openNotification(
         panelClass: [type],
         // Errors stay until dismissed so they can be read and acted on
         duration: type === 'error' ? undefined : 5000,
+        // Screen readers announce errors at once, not after the current speech
+        politeness: type === 'error' ? 'assertive' : 'polite',
     });
     if (action) {
         on_action = on_action || (() => snackbar_ref.dismiss());

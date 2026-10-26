@@ -13,7 +13,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { filter, merge } from 'rxjs';
 import { i18n } from '../common/locale.service';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { DialogTitleDirective } from './dialog-title.directive';
 import { IconComponent } from './icon.component';
+import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
 
 /** Events in the form that may change a value */
@@ -40,7 +42,7 @@ const NAVIGATION_KEYS = new Set([
             <header
                 class="border-base-100 bg-base-200 sticky top-0 z-10 mx-auto my-2 flex w-156 max-w-full items-center justify-between rounded-sm border px-4 py-2"
             >
-                <h2 class="text-xl font-medium">
+                <h2 appDialogTitle class="text-xl font-medium">
                     {{ heading() }}
                 </h2>
                 @if (!loading()) {
@@ -99,6 +101,8 @@ const NAVIGATION_KEYS = new Set([
         </div>
     `,
     imports: [
+        LoadingLabelDirective,
+        DialogTitleDirective,
         MatProgressSpinnerModule,
         TranslatePipe,
         IconComponent,

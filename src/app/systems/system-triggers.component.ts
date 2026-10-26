@@ -15,6 +15,7 @@ import { i18n } from '../common/locale.service';
 import { HashMap } from '../common/types';
 import { BindingDirective } from '../ui/binding.directive';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -54,7 +55,7 @@ export interface TriggerInstanceState {
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading().triggers"
+                    [class.invisible]="!loading().triggers"
                 />
                 <simple-table
                     class="block min-w-2xl text-sm"
@@ -62,7 +63,8 @@ export interface TriggerInstanceState {
                     [columns]="[
                         {
                             key: 'status',
-                            name: ' ',
+                            name: 'SYSTEMS.MODULE_FIELD_STATE' | translate,
+                            hide_name: true,
                             size: '3rem',
                             content: status_template,
                         },
@@ -88,7 +90,8 @@ export interface TriggerInstanceState {
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             size: '8.75rem',
                             sortable: false,
@@ -113,6 +116,15 @@ export interface TriggerInstanceState {
                         "
                         [class.bg-success]="trigger_state[row.id]?.triggered"
                     ></div>
+                    <!-- Colour alone does not show the state, so name it -->
+                    <span class="sr-only">
+                        {{
+                            (trigger_state[row.id]?.triggered
+                                ? 'SYSTEMS.TRIGGER_TRIGGERED'
+                                : 'SYSTEMS.TRIGGER_NOT_TRIGGERED'
+                            ) | translate
+                        }}
+                    </span>
                 </ng-template>
                 <ng-template #name_template let-row="row">
                     <div
@@ -200,6 +212,7 @@ export interface TriggerInstanceState {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         TranslatePipe,
         MatRippleModule,

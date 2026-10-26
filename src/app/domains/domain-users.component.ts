@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { PlaceDomain } from '@placeos/ts-client';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DomainStateService } from './domain-state.service';
@@ -13,7 +14,7 @@ import { DomainStateService } from './domain-state.service';
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
-                [class.opacity-0]="loading() !== true"
+                [class.invisible]="loading() !== true"
             />
             <simple-table
                 class="block min-h-0 w-full flex-1 text-sm"
@@ -72,7 +73,12 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
-    imports: [SimpleTableComponent, TranslatePipe, MatProgressBarModule],
+    imports: [
+        LoadingLabelDirective,
+        SimpleTableComponent,
+        TranslatePipe,
+        MatProgressBarModule,
+    ],
 })
 export class DomainUsersComponent {
     private _service = inject(DomainStateService);

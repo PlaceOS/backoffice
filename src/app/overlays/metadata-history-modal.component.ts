@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { DiffViewerComponent } from '../ui/diff-viewer.component';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -27,7 +28,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <div
                 class="bg-base-200 m-4 flex items-center justify-between rounded-sm px-4 py-2"
             >
-                <h3 class="text-xl font-medium">
+                <h3 appDialogTitle class="text-xl font-medium">
                     {{ 'COMMON.METADATA_HISTORY' | translate }}
                 </h3>
                 <button
@@ -188,6 +189,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
     `,
     styles: [``],
     imports: [
+        DialogTitleDirective,
         MatDialogModule,
         DiffViewerComponent,
         MatFormFieldModule,

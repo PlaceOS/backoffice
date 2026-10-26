@@ -25,7 +25,9 @@ import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 /** Breakdown of what enabling a `ConfirmModalOption` would do */
@@ -179,7 +181,7 @@ export async function openConfirmModal(
         <header
             class="bg-base-200 sticky top-0 z-10 m-2 flex h-14 w-[calc(100%-1rem)] min-w-[20rem] items-center rounded-sm border-none p-2"
         >
-            <h2 class="px-2 text-xl font-medium">
+            <h2 appDialogTitle class="px-2 text-xl font-medium">
                 {{ result() ? result().title : (title | translate) }}
             </h2>
         </header>
@@ -399,6 +401,8 @@ export async function openConfirmModal(
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
+        DialogTitleDirective,
         MatProgressSpinnerModule,
         MatCheckboxModule,
         TranslatePipe,

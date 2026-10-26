@@ -28,6 +28,7 @@ import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
 import { toSignal } from '../common/signals';
 import { IconComponent } from './icon.component';
+import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
 import { VirtualScrollComponent } from './virtual-scroll.component';
 
@@ -190,6 +191,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         TranslatePipe,
         IconComponent,
         VirtualScrollComponent,

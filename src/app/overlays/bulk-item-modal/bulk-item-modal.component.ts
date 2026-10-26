@@ -17,6 +17,7 @@ import {
 import { unique } from '../../common/general';
 import { notifyError, notifyWarn } from '../../common/notifications';
 import { HashMap, Identity } from '../../common/types';
+import { DialogTitleDirective } from '../../ui/dialog-title.directive';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { CsvUploadComponent } from './csv-upload.component';
@@ -57,7 +58,7 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
             class="bg-base-200 m-4 mb-2 flex items-center justify-between rounded-sm px-4 py-3"
         >
             <div>
-                <h3 class="text-xl font-medium">
+                <h3 appDialogTitle class="text-xl font-medium">
                     {{ 'COMMON.BULK_ADD' | translate: { type: type } }}
                 </h3>
                 <p class="text-base-content/60 text-sm">
@@ -155,6 +156,7 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
         `,
     ],
     imports: [
+        DialogTitleDirective,
         MatDialogModule,
         TranslatePipe,
         IconComponent,

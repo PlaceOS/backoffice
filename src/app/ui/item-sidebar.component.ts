@@ -33,7 +33,9 @@ import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { toSignal } from '../common/signals';
 import { IconComponent } from './icon.component';
+import { LoadingLabelDirective } from './loading-label.directive';
 import { SettingsToggleComponent } from './settings-toggle.component';
+import { SkipToContentComponent } from './skip-to-content.component';
 import { TranslatePipe } from './translate.pipe';
 import { VirtualScrollComponent } from './virtual-scroll.component';
 
@@ -46,8 +48,9 @@ interface GroupTreeItem {
     selector: 'item-sidebar',
     template: `
         <!-- eslint-disable @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
-        <div
+        <nav
             class="border-base-200 bg-base-100 flex h-full w-[24rem] max-w-[25vw] min-w-64 flex-col space-y-2 overflow-hidden rounded-sm shadow-sm sm:border-r"
+            [attr.aria-label]="title()"
             (click)="$event.stopPropagation()"
         >
             <div class="flex items-center gap-1 px-1 pt-1">
@@ -68,6 +71,8 @@ interface GroupTreeItem {
                             'COMMON.SEARCH_FOR' | translate: { name: title() }
                         "
                     />
+                    <!-- The search has focus on load, so offer the skip next -->
+                    <skip-to-content />
                     @if (loading() || group_hierarchy_loading()) {
                         <mat-spinner
                             diameter="24"
@@ -76,7 +81,10 @@ interface GroupTreeItem {
                     }
                 </div>
                 @if (filter_options()?.length) {
-                    <div class="relative flex overflow-hidden">
+                    <!-- The select sits invisible on top of the button and takes all input -->
+                    <div
+                        class="focus-within:outline-info relative flex overflow-hidden rounded-lg focus-within:outline-2"
+                    >
                         <button
                             icon
                             default
@@ -84,7 +92,8 @@ interface GroupTreeItem {
                             class="h-11 w-11"
                             [class.border-info]="selected_filters.length"
                             [class.text-info]="selected_filters.length"
-                            [attr.aria-label]="'COMMON.FILTER' | translate"
+                            tabindex="-1"
+                            aria-hidden="true"
                         >
                             <icon class="m-2 text-2xl">filter_list</icon>
                         </button>
@@ -94,6 +103,7 @@ interface GroupTreeItem {
                         >
                             <mat-select
                                 multiple
+                                [aria-label]="'COMMON.FILTER' | translate"
                                 [(ngModel)]="selected_filters"
                                 (ngModelChange)="updateSearch(search)"
                             >
@@ -192,6 +202,11 @@ interface GroupTreeItem {
                                                   ]
                                                 : ['/', route(), node.group.id]
                                         "
+                                        [attr.aria-current]="
+                                            selected_id() === node.group.id
+                                                ? 'page'
+                                                : null
+                                        "
                                         (click)="show.set(false)"
                                     >
                                         <div
@@ -259,6 +274,7 @@ interface GroupTreeItem {
                                     : ['/', route(), item.id]
                             "
                             routerLinkActive="active"
+                            ariaCurrentWhenActive="page"
                             [matTooltip]="
                                 item.update_available &&
                                 item.commit !== item.update_info.commit
@@ -312,6 +328,14 @@ interface GroupTreeItem {
                                     "
                                 >
                                     <icon> brightness_alert </icon>
+                                    <span class="sr-only">
+                                        {{
+                                            (item.zone_issues === 'system'
+                                                ? 'SYSTEMS.MISCONFIGURED'
+                                                : 'ZONES.MISCONFIGURED'
+                                            ) | translate
+                                        }}
+                                    </span>
                                 </div>
                             }
                             @if (item.has_runtime_error) {
@@ -320,6 +344,9 @@ interface GroupTreeItem {
                                     [matTooltip]="'MODULES.ERROR' | translate"
                                 >
                                     <icon> error </icon>
+                                    <span class="sr-only">
+                                        {{ 'MODULES.ERROR' | translate }}
+                                    </span>
                                 </div>
                             }
                         </a>
@@ -340,7 +367,7 @@ interface GroupTreeItem {
                     </div>
                 }
             </div>
-        </div>
+        </nav>
     `,
     styles: [
         `
@@ -360,6 +387,7 @@ interface GroupTreeItem {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         CdkTreeModule,
         TranslatePipe,
         MatTooltipModule,
@@ -373,6 +401,7 @@ interface GroupTreeItem {
         VirtualScrollComponent,
         MatRippleModule,
         SettingsToggleComponent,
+        SkipToContentComponent,
     ],
 })
 export class ItemSidebarComponent

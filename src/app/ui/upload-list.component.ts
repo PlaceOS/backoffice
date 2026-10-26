@@ -11,6 +11,7 @@ import { SettingsService } from '../common/settings.service';
 import { UploadDetails } from '../common/uploads';
 import { UploadsService } from '../common/uploads.service';
 import { IconComponent } from './icon.component';
+import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
 
 @Component({
@@ -200,6 +201,7 @@ import { TranslatePipe } from './translate.pipe';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         TranslatePipe,
         IconComponent,
         MatRippleModule,

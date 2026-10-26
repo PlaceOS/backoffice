@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
+import { MatTabNavPanel } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceUser } from '@placeos/ts-client';
@@ -31,7 +32,11 @@ import { UsersStateService } from './users-state.service';
                 [route]="name"
                 [title]="'USERS.PLURAL' | translate"
             />
-            <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
+            <main
+                id="main-content"
+                tabindex="-1"
+                class="relative z-0 flex h-full w-1/2 flex-1 flex-col outline-none"
+            >
                 <item-selection
                     class="z-20 lg:hidden"
                     [route]="name"
@@ -59,6 +64,7 @@ import { UsersStateService } from './users-state.service';
                         />
                         <item-tablist
                             [base]="name"
+                            [panel]="tab_panel"
                             [tabs]="tab_list()"
                             [scrolled]="scroll() > 0"
                             class="z-10"
@@ -68,7 +74,9 @@ import { UsersStateService } from './users-state.service';
                             class="relative z-0 h-1/2 w-full flex-1 overflow-auto"
                             (scroll)="scroll.set(el.scrollTop)"
                         >
-                            <router-outlet />
+                            <mat-tab-nav-panel #tab_panel class="block h-full">
+                                <router-outlet />
+                            </mat-tab-nav-panel>
                         </div>
                     }
                 </div>
@@ -92,11 +100,12 @@ import { UsersStateService } from './users-state.service';
                 >
                     <icon class="text-2xl">playlist_add</icon>
                 </button>
-            </div>
+            </main>
         </div>
     `,
     styles: [``],
     imports: [
+        MatTabNavPanel,
         IconComponent,
         MatRippleModule,
         MatTooltipModule,

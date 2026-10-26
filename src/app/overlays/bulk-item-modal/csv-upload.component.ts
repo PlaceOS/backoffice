@@ -6,6 +6,7 @@ import { csvToJson, downloadFile, jsonToCsv } from '../../common/general';
 import { notifyError, notifyWarn } from '../../common/notifications';
 import { HashMap } from '../../common/types';
 import { IconComponent } from '../../ui/icon.component';
+import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { TranslatePipe } from '../../ui/translate.pipe';
 
 @Component({
@@ -73,6 +74,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
         MatRippleModule,
         TranslatePipe,
         MatProgressSpinnerModule,

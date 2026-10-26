@@ -19,6 +19,7 @@ import {
 import { collectPages } from '../common/support-access';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
@@ -89,7 +90,7 @@ export interface ExternalResource {
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
                 <simple-table
                     class="mb-4 block min-w-3xl text-sm"
@@ -113,7 +114,8 @@ export interface ExternalResource {
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             sortable: false,
                             size: '6.25rem',
@@ -192,6 +194,7 @@ export interface ExternalResource {
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         RouterModule,
         MatRippleModule,

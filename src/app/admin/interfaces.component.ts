@@ -4,6 +4,7 @@ import { listInterfaceRepositories } from '@placeos/ts-client';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -17,7 +18,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
-                [class.opacity-0]="!loading()"
+                [class.invisible]="!loading()"
             />
             <simple-table
                 class="block min-w-xl text-sm"
@@ -57,7 +58,12 @@ import { TranslatePipe } from '../ui/translate.pipe';
             }
         `,
     ],
-    imports: [SimpleTableComponent, TranslatePipe, MatProgressBarModule],
+    imports: [
+        LoadingLabelDirective,
+        SimpleTableComponent,
+        TranslatePipe,
+        MatProgressBarModule,
+    ],
 })
 export class AdminInterfacesComponent implements OnInit {
     /** List of interfaces */

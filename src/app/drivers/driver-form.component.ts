@@ -49,6 +49,7 @@ import { DialogEvent, Identity } from '../common/types';
 import { readError } from '../common/errors';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import {
@@ -281,6 +282,7 @@ import {
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
         TranslatePipe,
         MatProgressSpinnerModule,
         SettingsToggleComponent,

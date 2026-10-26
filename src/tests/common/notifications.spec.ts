@@ -103,6 +103,7 @@ describe('notifications.ts', () => {
                 {
                     panelClass: ['success'],
                     duration: 5000,
+                    politeness: 'polite',
                 },
             );
         });
@@ -187,6 +188,14 @@ describe('notifications.ts', () => {
             expect(
                 mock_snackbar.open.mock.calls[0][2].duration,
             ).toBeUndefined();
+        });
+
+        it('should be announced at once', () => {
+            notifyError('Error message');
+
+            expect(mock_snackbar.open.mock.calls[0][2].politeness).toBe(
+                'assertive',
+            );
         });
 
         it('should log to console.error', () => {
