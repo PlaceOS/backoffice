@@ -36,7 +36,11 @@ import { ZonesStateService } from './zones-state.service';
                         [title]="'ZONES.PLURAL' | translate"
                         [filter_options]="zone_tags()"
                     />
-                    <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
+                    <main
+                        id="main-content"
+                        tabindex="-1"
+                        class="relative z-0 flex h-full w-1/2 flex-1 flex-col outline-none"
+                    >
                         <item-selection
                             class="z-20 lg:hidden"
                             [route]="name"
@@ -96,7 +100,7 @@ import { ZonesStateService } from './zones-state.service';
                         >
                             <icon class="text-2xl">playlist_add</icon>
                         </button>
-                    </div>
+                    </main>
                 </div>
                 @if (debug_position() === 'below') {
                     <app-debug-output below />

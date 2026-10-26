@@ -161,91 +161,136 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                 @if (uploads_list()?.length > 0) {
                     <div
                         role="table"
+                        [attr.aria-rowcount]="sorted_uploads().length + 1"
                         class="mb-4 block min-w-240 overflow-hidden text-sm"
                     >
                         <div
                             header
+                            role="row"
+                            aria-rowindex="1"
                             class="divide-base-100 border-base-300 bg-base-200 grid min-w-full grid-cols-5 divide-x border"
                             [style.grid-template-columns]="
                                 'auto 10rem 7rem 8rem 11.5rem'
                             "
                         >
-                            <button
-                                class="flex items-center justify-between p-2"
-                                (click)="sortBy('file_name')"
-                                [class.active]="sorted_by()[0] === 'file_name'"
+                            <div
+                                role="columnheader"
+                                class="flex"
+                                [attr.aria-sort]="ariaSort('file_name')"
                             >
-                                <div class="p-2">
-                                    {{ 'COMMON.FIELD_NAME' | translate }}
-                                </div>
-                                <icon class="text-xl">{{
-                                    sorted_by()[1]
-                                        ? 'arrow_downward'
-                                        : 'arrow_upward'
-                                }}</icon>
-                            </button>
-                            <button
-                                class="flex items-center justify-between p-2"
-                                (click)="sortBy('mime_type')"
-                                [class.active]="sorted_by()[0] === 'mime_type'"
+                                <button
+                                    type="button"
+                                    class="flex flex-1 items-center justify-between p-2"
+                                    (click)="sortBy('file_name')"
+                                    [class.active]="
+                                        sorted_by()[0] === 'file_name'
+                                    "
+                                >
+                                    <div class="p-2">
+                                        {{ 'COMMON.FIELD_NAME' | translate }}
+                                    </div>
+                                    <icon class="text-xl">{{
+                                        sorted_by()[1]
+                                            ? 'arrow_downward'
+                                            : 'arrow_upward'
+                                    }}</icon>
+                                </button>
+                            </div>
+                            <div
+                                role="columnheader"
+                                class="flex"
+                                [attr.aria-sort]="ariaSort('mime_type')"
                             >
-                                <div class="p-2">
-                                    {{
-                                        'ADMIN.UPLOADS_LIB_FIELD_TYPE'
-                                            | translate
-                                    }}
-                                </div>
-                                <icon class="text-xl">{{
-                                    sorted_by()[1]
-                                        ? 'arrow_downward'
-                                        : 'arrow_upward'
-                                }}</icon>
-                            </button>
-                            <button
-                                class="flex items-center justify-between p-2"
-                                (click)="sortBy('file_size')"
-                                [class.active]="sorted_by()[0] === 'file_size'"
+                                <button
+                                    type="button"
+                                    class="flex flex-1 items-center justify-between p-2"
+                                    (click)="sortBy('mime_type')"
+                                    [class.active]="
+                                        sorted_by()[0] === 'mime_type'
+                                    "
+                                >
+                                    <div class="p-2">
+                                        {{
+                                            'ADMIN.UPLOADS_LIB_FIELD_TYPE'
+                                                | translate
+                                        }}
+                                    </div>
+                                    <icon class="text-xl">{{
+                                        sorted_by()[1]
+                                            ? 'arrow_downward'
+                                            : 'arrow_upward'
+                                    }}</icon>
+                                </button>
+                            </div>
+                            <div
+                                role="columnheader"
+                                class="flex"
+                                [attr.aria-sort]="ariaSort('file_size')"
                             >
-                                <div class="p-2">
-                                    {{
-                                        'ADMIN.UPLOADS_LIB_FIELD_SIZE'
-                                            | translate
-                                    }}
-                                </div>
-                                <icon class="text-xl">{{
-                                    sorted_by()[1]
-                                        ? 'arrow_downward'
-                                        : 'arrow_upward'
-                                }}</icon>
-                            </button>
-                            <button
-                                class="flex items-center justify-between p-2"
-                                (click)="sortBy('created_at')"
-                                [class.active]="sorted_by()[0] === 'created_at'"
+                                <button
+                                    type="button"
+                                    class="flex flex-1 items-center justify-between p-2"
+                                    (click)="sortBy('file_size')"
+                                    [class.active]="
+                                        sorted_by()[0] === 'file_size'
+                                    "
+                                >
+                                    <div class="p-2">
+                                        {{
+                                            'ADMIN.UPLOADS_LIB_FIELD_SIZE'
+                                                | translate
+                                        }}
+                                    </div>
+                                    <icon class="text-xl">{{
+                                        sorted_by()[1]
+                                            ? 'arrow_downward'
+                                            : 'arrow_upward'
+                                    }}</icon>
+                                </button>
+                            </div>
+                            <div
+                                role="columnheader"
+                                class="flex"
+                                [attr.aria-sort]="ariaSort('created_at')"
                             >
-                                <div class="p-2">
-                                    {{ 'COMMON.CREATED_AT' | translate }}
-                                </div>
-                                <icon class="text-xl">{{
-                                    sorted_by()[1]
-                                        ? 'arrow_downward'
-                                        : 'arrow_upward'
-                                }}</icon>
-                            </button>
-                            <div class="p-4"></div>
+                                <button
+                                    type="button"
+                                    class="flex flex-1 items-center justify-between p-2"
+                                    (click)="sortBy('created_at')"
+                                    [class.active]="
+                                        sorted_by()[0] === 'created_at'
+                                    "
+                                >
+                                    <div class="p-2">
+                                        {{ 'COMMON.CREATED_AT' | translate }}
+                                    </div>
+                                    <icon class="text-xl">{{
+                                        sorted_by()[1]
+                                            ? 'arrow_downward'
+                                            : 'arrow_upward'
+                                    }}</icon>
+                                </button>
+                            </div>
+                            <div role="columnheader" class="p-4"></div>
                         </div>
                         <cdk-virtual-scroll-viewport
                             itemSize="48"
                             class="min-h-[calc(100vh-13.25rem)]"
                         >
                             <div
-                                *cdkVirtualFor="let upload of sorted_uploads()"
+                                *cdkVirtualFor="
+                                    let upload of sorted_uploads();
+                                    let i = index
+                                "
+                                role="row"
+                                [attr.aria-rowindex]="i + 2"
                                 class="divide-base-300 border-base-300 grid h-12 min-w-full grid-cols-5 divide-x overflow-hidden border-x border-b"
                                 [style.grid-template-columns]="
                                     'auto 10rem 7rem 8rem 11.5rem'
                                 "
                             >
                                 <div
+                                    role="cell"
                                     class="flex h-full items-center p-4 text-xs"
                                 >
                                     <div
@@ -256,19 +301,25 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                                     </div>
                                 </div>
                                 <div
+                                    role="cell"
                                     class="mono flex h-full items-center truncate p-4 text-xs"
                                 >
                                     {{ upload.mime_type }}
                                 </div>
                                 <div
+                                    role="cell"
                                     class="mono flex h-full w-full items-center justify-end p-4 text-xs"
                                 >
                                     {{ sizeOf(upload.file_size) }}
                                 </div>
-                                <div class="flex h-full items-center p-4">
+                                <div
+                                    role="cell"
+                                    class="flex h-full items-center p-4"
+                                >
                                     {{ +upload.created_at * 1000 | dateFrom }}
                                 </div>
                                 <div
+                                    role="cell"
                                     class="flex w-full items-center justify-end space-x-2 px-2"
                                 >
                                     <button
@@ -445,6 +496,13 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         const divisor = Math.pow(1024, level);
         const short_bytes = Math.floor((bytes / divisor) * 100) / 100;
         return `${short_bytes} ${sizes[level]}`;
+    }
+
+    /** Sort state of a column for screen readers */
+    public ariaSort(field: string) {
+        const [sorted_field, asc] = this.sorted_by();
+        if (sorted_field !== field) return null;
+        return asc ? 'ascending' : 'descending';
     }
 
     public sortBy(new_field: string) {

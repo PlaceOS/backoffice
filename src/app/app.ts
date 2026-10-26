@@ -79,9 +79,11 @@ function browserOnline() {
                     <div
                         class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
                     >
+                        <!-- Translations are not loaded yet, so the label is English -->
                         <mat-progress-bar
                             mode="indeterminate"
                             class="scale-150 rounded"
+                            aria-label="Loading"
                         />
                     </div>
                 </div>
@@ -90,6 +92,7 @@ function browserOnline() {
         <global-loading />
         @if (!online() && !loading()) {
             <div
+                role="alert"
                 class="bg-error text-error-content fixed bottom-2 left-1/2 z-9999 -translate-x-1/2 rounded-3xl px-4 py-2 text-xs shadow-sm"
             >
                 Unable to reach server... Some features may not work.

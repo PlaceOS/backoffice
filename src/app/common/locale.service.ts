@@ -192,6 +192,9 @@ export class LocaleService {
     public setLocale(locale: string): Promise<void> {
         this._current_locale = locale;
         this._current_locale_short = this._current_locale.split('-')[0];
+        // Screen readers pick their voice from the page language.
+        // The Japanese locale file is "jp", but the language code is "ja".
+        document.documentElement.lang = locale === 'jp' ? 'ja' : locale;
         if (!this._locale_mappings[locale] && !this._load_promises[locale]) {
             this._load_promises[locale] = this._loadLocale(locale);
         }

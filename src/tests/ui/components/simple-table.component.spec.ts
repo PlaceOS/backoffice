@@ -9,6 +9,10 @@ import {
     TableColumn,
 } from '../../../app/ui/simple-table.component';
 
+vi.mock('@placeos/ts-client', () =>
+    vi.importActual('@placeos/ts-client/dist/index.es.js'),
+);
+
 describe('SimpleTableComponent', () => {
     let component: SimpleTableComponent<Record<string, unknown>>;
     let fixture: ComponentFixture<
@@ -53,7 +57,7 @@ describe('SimpleTableComponent', () => {
         fixture.detectChanges();
         await fixture.whenStable();
         const rows = fixture.nativeElement.querySelectorAll(
-            '[role="row"]',
+            'cdk-virtual-scroll-viewport [role="row"]',
         ) as NodeListOf<HTMLElement>;
         expect(rows.length).toBe(12);
         expect(rows[0].textContent).toContain('User 500');
@@ -112,6 +116,31 @@ describe('SimpleTableComponent', () => {
         hover(cells[1]);
         hover(cells[2]);
         expect(rows).toEqual([0, 1]);
+    });
+
+    it('groups cells into rows under column headers with sort state', async () => {
+        fixture.componentRef.setInput('data', [
+            { id: '1', name: 'Item 1', value: 1 },
+            { id: '2', name: 'Item 2', value: 2 },
+        ]);
+        fixture.componentRef.setInput('columns', [
+            { key: 'name', name: 'Name' },
+            { key: 'value', name: 'Value', sortable: false },
+        ]);
+        fixture.componentRef.setInput('sortable', true);
+        component.setSort('name');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const table: HTMLElement =
+            fixture.nativeElement.querySelector('[role="table"]');
+        const rows = table.querySelectorAll(':scope > [role="row"]');
+        expect(rows.length).toBe(3);
+        const headers = rows[0].querySelectorAll('[role="columnheader"]');
+        expect(headers[0].getAttribute('aria-sort')).toBe('ascending');
+        // Only sortable columns get a button
+        expect(headers[0].querySelector('button')).not.toBeNull();
+        expect(headers[1].querySelector('button')).toBeNull();
+        expect(rows[1].querySelectorAll('[role="cell"]').length).toBe(2);
     });
 
     describe('default state', () => {

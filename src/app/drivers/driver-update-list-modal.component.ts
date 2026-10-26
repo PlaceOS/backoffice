@@ -11,6 +11,7 @@ import { describeError } from '../common/errors';
 import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -21,7 +22,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
         <header
             class="border-base-100 bg-base-200 z-10 mx-auto my-2 flex w-[calc(100%-1rem)] justify-between rounded-sm border px-4 py-2"
         >
-            <h2 class="flex items-center space-x-4 text-xl font-medium">
+            <h2
+                appDialogTitle
+                class="flex items-center space-x-4 text-xl font-medium"
+            >
                 <div>{{ 'DRIVERS.UPDATE' | translate }}</div>
                 @if (!loading()) {
                     <code class="mono bg-base-300 rounded-sm px-2 py-1 text-xs">
@@ -156,6 +160,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         `,
     ],
     imports: [
+        DialogTitleDirective,
         MatDialogModule,
         TranslatePipe,
         IconComponent,

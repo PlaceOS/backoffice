@@ -18,7 +18,9 @@ import { waitForSignalValue } from '../common/signals';
                 <div
                     class="border-base-300 bg-base-100 absolute bottom-5 left-1/2 w-[24rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border p-2 text-center text-xs shadow"
                 >
-                    <p class="text-center font-mono">{{ message() }}</p>
+                    <p role="status" class="text-center font-mono">
+                        {{ message() }}
+                    </p>
                 </div>
                 <div
                     class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-full border shadow"
@@ -26,6 +28,7 @@ import { waitForSignalValue } from '../common/signals';
                     <mat-progress-bar
                         mode="indeterminate"
                         class="scale-150 rounded"
+                        [attr.aria-label]="message()"
                     />
                 </div>
             </div>

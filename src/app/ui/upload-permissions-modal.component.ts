@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { UploadPermissions } from '../common/uploads';
+import { DialogTitleDirective } from './dialog-title.directive';
 import { IconComponent } from './icon.component';
 import { SettingsToggleComponent } from './settings-toggle.component';
 import { TranslatePipe } from './translate.pipe';
@@ -20,7 +21,7 @@ import { TranslatePipe } from './translate.pipe';
         <header
             class="bg-base-200 sticky top-0 z-10 m-2 flex w-[24rem] max-w-[calc(100%-1rem)] items-center justify-between rounded-sm border-none p-2"
         >
-            <h2 class="px-2 text-xl font-medium">
+            <h2 appDialogTitle class="px-2 text-xl font-medium">
                 {{ 'COMMON.UPLOAD_FILE' | translate }}
             </h2>
             <button
@@ -99,6 +100,7 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [``],
     imports: [
+        DialogTitleDirective,
         MatDialogModule,
         TranslatePipe,
         MatRippleModule,

@@ -9,13 +9,14 @@ import {
 import { PlaceZone, queryZones } from '@placeos/ts-client';
 
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 
 @Component({
     selector: 'app-zone-tree-export-modal',
     template: `
         <div class="bg-base-200 flex items-center justify-between px-4 py-2">
-            <h3 class="text-xl font-medium">Export Zone Tree</h3>
+            <h3 appDialogTitle class="text-xl font-medium">Export Zone Tree</h3>
             <button icon matRipple mat-dialog-close aria-label="Close">
                 <icon>close</icon>
             </button>
@@ -87,6 +88,7 @@ import { IconComponent } from '../ui/icon.component';
         </footer>
     `,
     imports: [
+        DialogTitleDirective,
         FormsModule,
         IconComponent,
         ItemSearchFieldComponent,

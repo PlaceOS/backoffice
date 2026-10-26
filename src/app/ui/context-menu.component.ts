@@ -16,7 +16,9 @@ import {
     selector: '[context-menu]',
     template: `
         <ng-content />
+        <!-- Only places the menu at the pointer, so hide it from assistive tech -->
         <div
+            aria-hidden="true"
             class="pointer-events-none fixed h-px w-px"
             style="opacity: 0; height: 0"
             [style.top]="position().top + 'px'"

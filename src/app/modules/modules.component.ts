@@ -33,7 +33,11 @@ import { ModuleStateService } from './module-state.service';
                         [route]="name"
                         [title]="'MODULES.PLURAL' | translate"
                     />
-                    <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
+                    <main
+                        id="main-content"
+                        tabindex="-1"
+                        class="relative z-0 flex h-full w-1/2 flex-1 flex-col outline-none"
+                    >
                         <item-selection
                             class="z-20 lg:hidden"
                             [route]="name"
@@ -83,7 +87,7 @@ import { ModuleStateService } from './module-state.service';
                         >
                             <icon class="text-3xl">add</icon>
                         </button>
-                    </div>
+                    </main>
                 </div>
                 @if (debug_position() === 'below') {
                     <app-debug-output below />

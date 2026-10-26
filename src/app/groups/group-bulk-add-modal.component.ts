@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -49,7 +50,10 @@ export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
         <header
             class="bg-base-200 m-2 flex h-14 shrink-0 items-center justify-between gap-2 rounded-sm border-none p-2"
         >
-            <h2 class="truncate px-2 text-lg font-medium sm:text-xl">
+            <h2
+                appDialogTitle
+                class="truncate px-2 text-lg font-medium sm:text-xl"
+            >
                 {{ title | translate }}
             </h2>
             <button
@@ -216,6 +220,7 @@ export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
         `,
     ],
     imports: [
+        DialogTitleDirective,
         FormsModule,
         IconComponent,
         MatDialogModule,

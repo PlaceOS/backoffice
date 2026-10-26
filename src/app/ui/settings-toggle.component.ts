@@ -12,8 +12,12 @@ import { IconComponent } from './icon.component';
 @Component({
     selector: 'settings-toggle',
     template: `
+        <!-- The button is the checkbox for assistive tech; the inner checkbox is only visual -->
         <button
             type="button"
+            role="checkbox"
+            [attr.aria-checked]="!!value()"
+            [attr.aria-description]="info() || null"
             matRipple
             class="relative flex min-h-12 flex-1 items-center space-x-2 overflow-hidden rounded-sm border px-2"
             [class.border-base-300]="!value()"
@@ -35,6 +39,7 @@ import { IconComponent } from './icon.component';
                 [(ngModel)]="value"
                 class="pointer-events-none"
                 [disabled]="disabled()"
+                inert
             />
         </button>
     `,

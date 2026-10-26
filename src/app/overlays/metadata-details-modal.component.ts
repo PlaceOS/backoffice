@@ -18,6 +18,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { addSignalChipItem, removeSignalChipItem } from '../common/forms';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 import type { MetadataFormModel } from '../ui/metadata-display.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -35,7 +36,9 @@ export interface MetadataDetailsModalData {
         <header
             class="border-base-100 bg-base-200 z-10 mx-auto my-2 flex w-[calc(100%-1rem)] items-center justify-between rounded-sm border px-4 py-2"
         >
-            <h2 class="text-xl font-medium">Update metadata details</h2>
+            <h2 appDialogTitle class="text-xl font-medium">
+                Update metadata details
+            </h2>
             <button
                 btn
                 icon
@@ -127,6 +130,7 @@ export interface MetadataDetailsModalData {
     `,
     styles: [``],
     imports: [
+        DialogTitleDirective,
         TranslatePipe,
         MatDialogModule,
         MatRippleModule,

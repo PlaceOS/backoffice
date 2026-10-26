@@ -197,6 +197,11 @@ import { SystemStateService } from './system-state.service';
                 </div>
                 <div class="h-16 w-full"></div>
                 <ng-template #state_template let-row="row" let-index="index">
+                    <!-- Colour alone does not show the state, so name it -->
+                    @let status_label =
+                        'MODULES.STATUS_LABEL'
+                            | translate
+                                : { status: moduleStatus(row) | translate };
                     <button
                         dot
                         binding
@@ -215,7 +220,9 @@ import { SystemStateService } from './system-state.service';
                         "
                         (click)="setActive(index)"
                         [matMenuTriggerFor]="context_menu"
-                        aria-label="Module connection status"
+                        [attr.aria-label]="status_label"
+                        [matTooltip]="status_label"
+                        matTooltipPosition="right"
                     ></button>
                     @if (row.running && row.connected === undefined) {
                         <mat-spinner
@@ -247,6 +254,11 @@ import { SystemStateService } from './system-state.service';
                                 matRipple
                                 class="border-base-200 bg-info text-info-content h-6 w-6 max-w-6 min-w-6 rounded-full border text-xs"
                                 [matTooltip]="row.edge_id"
+                                [attr.aria-label]="
+                                    ('COMMON.EDGE' | translate) +
+                                    ' ' +
+                                    row.edge_id
+                                "
                                 [routerLink]="['/admin', 'edge', row.edge_id]"
                             >
                                 E
@@ -288,6 +300,9 @@ import { SystemStateService } from './system-state.service';
                         <mat-checkbox
                             [disabled]="!row.running"
                             [checked]="debugging()[row.id]"
+                            [aria-label]="
+                                'SYSTEMS.MODULE_FIELD_DEBUG' | translate
+                            "
                             [matTooltip]="
                                 (debugging()[row.id]
                                     ? 'SYSTEMS.DEBUG_DISABLE'
@@ -634,6 +649,15 @@ export class SystemModulesComponent extends AsyncHandler {
     public drop([previous, current]: [number, number]) {
         if (previous === current) return;
         this._service.reorderModules(previous, current);
+    }
+
+    /** Locale key for the state the status dot shows by colour */
+    public moduleStatus(module: PlaceModule) {
+        if (!module.running) return 'MODULES.STATUS_STOPPED';
+        if (module.connected === undefined) return 'MODULES.STATUS_CONNECTING';
+        return module.connected
+            ? 'MODULES.STATUS_CONNECTED'
+            : 'MODULES.STATUS_DISCONNECTED';
     }
 
     public addModule() {

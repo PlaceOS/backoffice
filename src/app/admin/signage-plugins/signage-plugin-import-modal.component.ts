@@ -25,6 +25,7 @@ import { AsyncHandler } from '../../common/async-handler.class';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
+import { DialogTitleDirective } from '../../ui/dialog-title.directive';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { PluginLoadedPayload } from './signage-plugin-embed.component';
@@ -53,7 +54,7 @@ interface PluginProbe {
         <div
             class="bg-base-200 mx-2 mt-2 flex items-center justify-between rounded-sm px-4 py-2"
         >
-            <h3 class="text-xl font-medium">
+            <h3 appDialogTitle class="text-xl font-medium">
                 {{ 'ADMIN.SIGNAGE_PLUGINS_IMPORT' | translate }}
             </h3>
             <button
@@ -155,6 +156,7 @@ interface PluginProbe {
         `,
     ],
     imports: [
+        DialogTitleDirective,
         FormsModule,
         IconComponent,
         MatDialogModule,

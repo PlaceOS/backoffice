@@ -18,6 +18,7 @@ import { SignagePlugin } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../../common/async-handler.class';
 import { DialogEvent } from '../../common/types';
+import { DialogTitleDirective } from '../../ui/dialog-title.directive';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { SchemaFormComponent } from './schema-form.component';
@@ -184,7 +185,7 @@ export interface SignagePluginTestModalData {
                 <header
                     class="bg-base-100 border-base-300 flex items-center justify-between border-b px-4 py-2"
                 >
-                    <h2 class="text-xl font-medium">
+                    <h2 appDialogTitle class="text-xl font-medium">
                         {{ 'ADMIN.SIGNAGE_PLUGINS_TEST_HEADING' | translate }}
                         &mdash; {{ plugin().name }}
                     </h2>
@@ -247,6 +248,7 @@ export interface SignagePluginTestModalData {
         `,
     ],
     imports: [
+        DialogTitleDirective,
         FormsModule,
         MatDialogModule,
         MatRippleModule,

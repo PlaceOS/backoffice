@@ -49,6 +49,10 @@
         "CANCEL": "Cancel",
         "CLOSE": "Close",
         "MENU": "Menu",
+        "MAIN_MENU": "Main menu",
+        "SKIP_TO_CONTENT": "Skip to main content",
+        "SELECT_ALL_ROWS": "Select all rows",
+        "SELECT_ROW": "Select row",
         "CLEAR_VALUE": "Clear",
         "REMOVE": "Remove",
         "VIEW": "View",
@@ -395,7 +399,12 @@
         "STATE": "Module State",
         "STATE_UPDATE": "Update state",
         "STATE_LOADING": "Loading module's state...",
-        "ERROR": "Runtime error in the module"
+        "ERROR": "Runtime error in the module",
+        "STATUS_LABEL": "Connection status: {{ status }}",
+        "STATUS_STOPPED": "Stopped",
+        "STATUS_CONNECTING": "Connecting",
+        "STATUS_CONNECTED": "Connected",
+        "STATUS_DISCONNECTED": "Disconnected"
     },
     "ZONES": {
         "SINGULAR": "Zone",

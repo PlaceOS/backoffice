@@ -24,6 +24,7 @@ import {
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Subscribable } from '../common/signals';
 import { IconComponent } from './icon.component';
+import { TranslatePipe } from './translate.pipe';
 
 export interface TableColumn {
     key: string;
@@ -51,6 +52,9 @@ function sortKey(value: unknown): string {
     template: `
         <div
             role="table"
+            [attr.aria-rowcount]="
+                virtual_enabled() ? data_view().length + 1 : null
+            "
             [class.virtual-table]="virtual_enabled()"
             class="border-base-200 grid overflow-visible border text-left"
             [style.gridTemplateColumns]="column_template()"
@@ -59,70 +63,96 @@ function sortKey(value: unknown): string {
                 ondrop.emit([$event.previousIndex, $event.currentIndex])
             "
         >
-            @if (can_reorder()) {
-                <div
-                    class="border-base-200 bg-base-300 sticky top-0 z-10 flex min-h-full items-center justify-between border-r px-2"
-                    [style.gridArea]="gridSquare(1, 1)"
-                ></div>
-            }
-            @if (selectable()) {
-                <div
-                    class="border-base-200 bg-base-300 sticky top-0 z-10 flex min-h-full items-center justify-between border-r px-2"
-                    [style.gridArea]="
-                        gridSquare(1, 1 + (can_reorder() ? 1 : 0))
-                    "
-                >
-                    <mat-checkbox
-                        [checked]="selected().length === data_length()"
-                        [indeterminate]="
-                            selected().length > 0 &&
-                            selected().length < data_length()
+            <div
+                role="row"
+                class="contents"
+                [attr.aria-rowindex]="virtual_enabled() ? 1 : null"
+            >
+                @if (can_reorder()) {
+                    <div
+                        role="columnheader"
+                        class="border-base-200 bg-base-300 sticky top-0 z-10 flex min-h-full items-center justify-between border-r px-2"
+                        [style.gridArea]="gridSquare(1, 1)"
+                    ></div>
+                }
+                @if (selectable()) {
+                    <div
+                        role="columnheader"
+                        class="border-base-200 bg-base-300 sticky top-0 z-10 flex min-h-full items-center justify-between border-r px-2"
+                        [style.gridArea]="
+                            gridSquare(1, 1 + (can_reorder() ? 1 : 0))
                         "
-                        (change)="selectAll($event.checked)"
-                    />
-                </div>
-            }
-            @for (
-                column of active_columns();
-                track column.key;
-                let i = $index
-            ) {
-                <button
-                    header
-                    matRipple
-                    [id]="'column-' + column.key"
-                    class="border-base-200 bg-base-300 sticky top-0 z-10 flex min-h-full items-center justify-between p-4"
-                    [style.gridArea]="
-                        gridSquare(
-                            1,
-                            1 +
-                                i +
-                                (selectable() ? 1 : 0) +
-                                (can_reorder() ? 1 : 0)
-                        )
-                    "
-                    [class.pointer-events-none]="
-                        !can_sort() || column.sortable === false
-                    "
-                    (click)="setSort(column.key)"
-                    [class.active]="sort()?.key === column.key"
-                    [class.border-r]="i !== active_columns().length - 1"
-                    [class.width]="column.size"
-                >
-                    <div class="font-medium">
-                        {{ column.name || column.key }}
+                    >
+                        <mat-checkbox
+                            [checked]="selected().length === data_length()"
+                            [indeterminate]="
+                                selected().length > 0 &&
+                                selected().length < data_length()
+                            "
+                            [aria-label]="'COMMON.SELECT_ALL_ROWS' | translate"
+                            (change)="selectAll($event.checked)"
+                        />
                     </div>
-                    @if (can_sort() && column.sortable !== false) {
-                        <icon class="text-[1.25em]">
-                            {{
-                                sort()?.key === column.key && sort()?.reverse
-                                    ? 'arrow_upward'
-                                    : 'arrow_downward'
-                            }}
-                        </icon>
-                    }
-                </button>
-            }
+                }
+                @for (
+                    column of active_columns();
+                    track column.key;
+                    let i = $index
+                ) {
+                    @let sorted = sort()?.key === column.key;
+                    @let can_sort_column =
+                        can_sort() && column.sortable !== false;
+                    <div
+                        header
+                        role="columnheader"
+                        [id]="'column-' + column.key"
+                        class="border-base-200 bg-base-300 sticky top-0 z-10 flex min-h-full"
+                        [style.gridArea]="
+                            gridSquare(
+                                1,
+                                1 +
+                                    i +
+                                    (selectable() ? 1 : 0) +
+                                    (can_reorder() ? 1 : 0)
+                            )
+                        "
+                        [attr.aria-sort]="
+                            sorted
+                                ? sort().reverse
+                                    ? 'descending'
+                                    : 'ascending'
+                                : null
+                        "
+                        [class.active]="sorted"
+                        [class.border-r]="i !== active_columns().length - 1"
+                        [class.width]="column.size"
+                    >
+                        @if (can_sort_column) {
+                            <button
+                                type="button"
+                                matRipple
+                                class="flex w-full items-center justify-between p-4 text-left"
+                                (click)="setSort(column.key)"
+                            >
+                                <span class="font-medium">
+                                    {{ column.name || column.key }}
+                                </span>
+                                <icon class="text-[1.25em]">
+                                    {{
+                                        sorted && sort()?.reverse
+                                            ? 'arrow_upward'
+                                            : 'arrow_downward'
+                                    }}
+                                </icon>
+                            </button>
+                        } @else {
+                            <span class="flex items-center p-4 font-medium">
+                                {{ column.name || column.key }}
+                            </span>
+                        }
+                    </div>
+                }
+            </div>
             @if (virtual_enabled()) {
                 <cdk-virtual-scroll-viewport
                     [itemSize]="virtual_row_height()"
@@ -158,6 +188,7 @@ function sortKey(value: unknown): string {
                 ) {
                     @if (can_reorder()) {
                         <div
+                            role="row"
                             class="grid"
                             cdkDrag
                             [style.gridArea]="
@@ -178,6 +209,7 @@ function sortKey(value: unknown): string {
                                 "
                             ></div>
                             <div
+                                role="cell"
                                 class="border-base-200 z-0 flex min-h-full items-center justify-center border-r px-2"
                                 [style.gridArea]="gridSquare(2 + i, 1)"
                                 [class.border-b]="i !== data_length() - 1"
@@ -201,21 +233,26 @@ function sortKey(value: unknown): string {
                             />
                         </div>
                     } @else {
-                        <ng-container
-                            *ngTemplateOutlet="
-                                row_template;
-                                context: { row: row, index: i }
-                            "
-                        />
+                        <div role="row" class="contents">
+                            <ng-container
+                                *ngTemplateOutlet="
+                                    row_template;
+                                    context: { row: row, index: i }
+                                "
+                            />
+                        </div>
                     }
                 }
             }
             @if (!paginated_data()?.length) {
-                <div
-                    [style.gridArea]="2 + '/1/' + 2 + '/' + -1"
-                    class="flex items-center justify-center p-4 opacity-30"
-                >
-                    {{ empty_message() }}
+                <div role="row" class="contents">
+                    <div
+                        role="cell"
+                        [style.gridArea]="2 + '/1/' + 2 + '/' + -1"
+                        class="flex items-center justify-center p-4 opacity-30"
+                    >
+                        {{ empty_message() }}
+                    </div>
                 </div>
             }
             <!-- TODO: Add pagination -->
@@ -223,6 +260,7 @@ function sortKey(value: unknown): string {
         <ng-template #row_template let-row="row" let-i="index">
             @if (selectable()) {
                 <div
+                    role="cell"
                     class="border-base-200 z-0 flex min-h-full items-center justify-between border-r px-2"
                     [style.gridArea]="
                         gridSquare(
@@ -236,12 +274,14 @@ function sortKey(value: unknown): string {
                 >
                     <mat-checkbox
                         [checked]="selected().includes(i)"
+                        [aria-label]="'COMMON.SELECT_ROW' | translate"
                         (change)="select(i, $event.checked)"
                     />
                 </div>
             }
             @for (column of active_columns(); track column; let j = $index) {
                 <div
+                    role="cell"
                     class="border-base-200 relative z-0 flex min-h-full items-center justify-between"
                     [style.gridArea]="
                         gridSquare(
@@ -312,11 +352,9 @@ function sortKey(value: unknown): string {
             [header] icon {
                 opacity: 0;
             }
-            [header]:hover icon {
+            [header]:hover icon,
+            [header] button:focus-visible icon {
                 opacity: 0.3;
-            }
-            [header]:hover.pointer-events-none icon {
-                opacity: 0;
             }
             [header].active icon {
                 opacity: 1;
@@ -329,6 +367,7 @@ function sortKey(value: unknown): string {
         DragDropModule,
         IconComponent,
         NgTemplateOutlet,
+        TranslatePipe,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
