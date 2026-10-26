@@ -1,12 +1,12 @@
 import {
   AuthorisedUserGuard
-} from "./chunk-ADF32XDM.js";
+} from "./chunk-2RCXVRZV.js";
 import {
   AuthorisedAdminGuard
-} from "./chunk-24NSF32U.js";
+} from "./chunk-4DSTU5UX.js";
 import {
   BackofficeUsersService
-} from "./chunk-G7YFPNSL.js";
+} from "./chunk-YGOIQXKJ.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -22,10 +22,10 @@ import {
 } from "./chunk-VW74LF3A.js";
 import {
   setNotifyOutlet
-} from "./chunk-PK5A7L3I.js";
+} from "./chunk-OLETOVUH.js";
 import {
   SettingsService
-} from "./chunk-IID3C4LS.js";
+} from "./chunk-N3BYBOIX.js";
 import {
   currentUser
 } from "./chunk-PIRFEBZC.js";
@@ -38,12 +38,12 @@ import {
 } from "./chunk-E63CPPEP.js";
 import {
   TranslatePipe
-} from "./chunk-YGX4BAWE.js";
+} from "./chunk-54SNORV3.js";
 import {
   LocaleService,
   localeFromUrl,
   setTranslationService
-} from "./chunk-5AOS3OUL.js";
+} from "./chunk-ANULHLOS.js";
 import {
   detectIE,
   log
@@ -93,6 +93,7 @@ import {
   ɵsetClassDebugInfo,
   ɵɵInheritDefinitionFeature,
   ɵɵadvance,
+  ɵɵattribute,
   ɵɵconditional,
   ɵɵconditionalCreate,
   ɵɵdefer,
@@ -657,7 +658,9 @@ function GlobalLoadingComponent_Conditional_0_Template(rf, ctx) {
   if (rf & 2) {
     const ctx_r0 = \u0275\u0275nextContext();
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(ctx_r0.message());
+    \u0275\u0275textInterpolate1(" ", ctx_r0.message(), " ");
+    \u0275\u0275advance(2);
+    \u0275\u0275attribute("aria-label", ctx_r0.message());
   }
 }
 var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler {
@@ -696,9 +699,9 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
       return (\u0275GlobalLoadingComponent_BaseFactory || (\u0275GlobalLoadingComponent_BaseFactory = \u0275\u0275getInheritedFactory(_GlobalLoadingComponent)))(__ngFactoryType__ || _GlobalLoadingComponent);
     };
   })();
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _GlobalLoadingComponent, selectors: [["global-loading"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 1, vars: 1, consts: [["loader", "", 1, "bg-base-300", "pointer-events-auto", "fixed", "inset-0", "z-9998", "flex", "items-center", "justify-center"], [1, "border-base-300", "bg-base-100", "absolute", "bottom-5", "left-1/2", "w-[24rem]", "max-w-[calc(100vw-2rem)]", "-translate-x-1/2", "rounded-lg", "border", "p-2", "text-center", "text-xs", "shadow"], [1, "text-center", "font-mono"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "max-w-[calc(100vw-2rem)]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", 1, "scale-150", "rounded"]], template: function GlobalLoadingComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _GlobalLoadingComponent, selectors: [["global-loading"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 1, vars: 1, consts: [["loader", "", 1, "bg-base-300", "pointer-events-auto", "fixed", "inset-0", "z-9998", "flex", "items-center", "justify-center"], [1, "border-base-300", "bg-base-100", "absolute", "bottom-5", "left-1/2", "w-[24rem]", "max-w-[calc(100vw-2rem)]", "-translate-x-1/2", "rounded-lg", "border", "p-2", "text-center", "text-xs", "shadow"], ["role", "status", 1, "text-center", "font-mono"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "max-w-[calc(100vw-2rem)]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", 1, "scale-150", "rounded"]], template: function GlobalLoadingComponent_Template(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275conditionalCreate(0, GlobalLoadingComponent_Conditional_0_Template, 6, 1, "div", 0);
+      \u0275\u0275conditionalCreate(0, GlobalLoadingComponent_Conditional_0_Template, 6, 2, "div", 0);
     }
     if (rf & 2) {
       \u0275\u0275conditional(ctx.loading() ? 0 : -1);
@@ -717,7 +720,9 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
                 <div
                     class="border-base-300 bg-base-100 absolute bottom-5 left-1/2 w-[24rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border p-2 text-center text-xs shadow"
                 >
-                    <p class="text-center font-mono">{{ message() }}</p>
+                    <p role="status" class="text-center font-mono">
+                        {{ message() }}
+                    </p>
                 </div>
                 <div
                     class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-full border shadow"
@@ -725,6 +730,7 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
                     <mat-progress-bar
                         mode="indeterminate"
                         class="scale-150 rounded"
+                        [attr.aria-label]="message()"
                     />
                 </div>
             </div>
@@ -733,21 +739,21 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GlobalLoadingComponent, { className: "GlobalLoadingComponent", filePath: "src/app/ui/global-loading.component.ts", lineNumber: 51 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GlobalLoadingComponent, { className: "GlobalLoadingComponent", filePath: "src/app/ui/global-loading.component.ts", lineNumber: 54 });
 })();
 
 // src/app/app.ts
 var AppComponent_Conditional_1_Defer_1_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-QXXQP5DP.js").then((m) => m.GlobalBannerComponent)
+  import("./chunk-EWULGTGE.js").then((m) => m.GlobalBannerComponent)
 ];
 var AppComponent_Conditional_1_Conditional_5_Defer_1_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-3U4JBQDR.js").then((m) => m.UploadListComponent)
+  import("./chunk-6CFKQB5B.js").then((m) => m.UploadListComponent)
 ];
 var AppComponent_Conditional_5_Defer_1_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-KLA3WAD4.js").then((m) => m.IconComponent),
+  import("./chunk-JY4ZMLIM.js").then((m) => m.IconComponent),
   /* @ts-ignore */
   import("./chunk-37CKFYVI.js").then((m) => m.MatTooltip)
 ];
@@ -934,7 +940,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       return;
     const [tenants, { tenantExpiryBanner }] = await Promise.all([
       _("/api/staff/v1/tenants").catch(() => []),
-      import("./chunk-MXLPKF3N.js")
+      import("./chunk-T6JJYJNP.js")
     ]);
     const banner = tenantExpiryBanner(Array.isArray(tenants) ? tenants : []);
     if (banner)
@@ -981,7 +987,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       return (\u0275AppComponent_BaseFactory || (\u0275AppComponent_BaseFactory = \u0275\u0275getInheritedFactory(_AppComponent)))(__ngFactoryType__ || _AppComponent);
     };
   })();
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 6, vars: 3, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], ["loader", "", 1, "absolute", "inset-0", "z-50", "flex", "items-center", "justify-center"], [1, "bg-error", "text-error-content", "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "px-4", "py-2", "text-xs", "shadow-sm"], [1, "relative", "h-1/2", "w-full", "flex-1"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", 1, "scale-150", "rounded"], ["role", "status", "aria-live", "polite", 1, "border-info/30", "bg-base-100", "text-base-content", "fixed", "right-3", "bottom-3", "z-100", "w-88", "max-w-[calc(100vw-2rem)]", "rounded-md", "border", "p-3", "shadow-lg"], [1, "flex", "items-center", "gap-2"], [1, "min-w-0", "flex-1"], [1, "text-sm", "font-medium"], [1, "mt-0.5", "text-xs", "opacity-70"], ["icon", "", "default", "", "type", "button", "matTooltip", "Refresh", "matTooltipPosition", "left", 3, "click"]], template: function AppComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 6, vars: 3, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], ["loader", "", 1, "absolute", "inset-0", "z-50", "flex", "items-center", "justify-center"], ["role", "alert", 1, "bg-error", "text-error-content", "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "px-4", "py-2", "text-xs", "shadow-sm"], [1, "relative", "h-1/2", "w-full", "flex-1"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", "aria-label", "Loading", 1, "scale-150", "rounded"], ["role", "status", "aria-live", "polite", 1, "border-info/30", "bg-base-100", "text-base-content", "fixed", "right-3", "bottom-3", "z-100", "w-88", "max-w-[calc(100vw-2rem)]", "rounded-md", "border", "p-3", "shadow-lg"], [1, "flex", "items-center", "gap-2"], [1, "min-w-0", "flex-1"], [1, "text-sm", "font-medium"], [1, "mt-0.5", "text-xs", "opacity-70"], ["icon", "", "default", "", "type", "button", "matTooltip", "Refresh", "matTooltipPosition", "left", 3, "click"]], template: function AppComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0);
       \u0275\u0275conditionalCreate(1, AppComponent_Conditional_1_Template, 6, 1)(2, AppComponent_Conditional_2_Template, 3, 0, "div", 1);
@@ -1007,11 +1013,11 @@ var AppComponent = class _AppComponent extends AsyncHandler {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadataAsync(AppComponent, () => [
     /* @ts-ignore */
-    import("./chunk-QXXQP5DP.js").then((m) => m.GlobalBannerComponent),
+    import("./chunk-EWULGTGE.js").then((m) => m.GlobalBannerComponent),
     /* @ts-ignore */
-    import("./chunk-3U4JBQDR.js").then((m) => m.UploadListComponent),
+    import("./chunk-6CFKQB5B.js").then((m) => m.UploadListComponent),
     /* @ts-ignore */
-    import("./chunk-KLA3WAD4.js").then((m) => m.IconComponent),
+    import("./chunk-JY4ZMLIM.js").then((m) => m.IconComponent),
     /* @ts-ignore */
     import("./chunk-37CKFYVI.js").then((m) => m.MatTooltip)
   ], (GlobalBannerComponent, UploadListComponent, IconComponent, MatTooltip) => {
@@ -1039,9 +1045,11 @@ var AppComponent = class _AppComponent extends AsyncHandler {
                     <div
                         class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
                     >
+                        <!-- Translations are not loaded yet, so the label is English -->
                         <mat-progress-bar
                             mode="indeterminate"
                             class="scale-150 rounded"
+                            aria-label="Loading"
                         />
                     </div>
                 </div>
@@ -1050,6 +1058,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
         <global-loading />
         @if (!online() && !loading()) {
             <div
+                role="alert"
                 class="bg-error text-error-content fixed bottom-2 left-1/2 z-9999 -translate-x-1/2 rounded-3xl px-4 py-2 text-xs shadow-sm"
             >
                 Unable to reach server... Some features may not work.
@@ -1099,7 +1108,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 151 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 154 });
 })();
 
 // src/app/ui/unauthorised.component.ts
@@ -1166,55 +1175,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-3CNGY366.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-HU5FK4HX.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-NA63QXUQ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-ZNNMJLZ2.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-OZH7GEKX.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-2TSWLSPR.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-5Q3IXMAK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-OERVYXSC.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-SRFN22BM.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-LNRMSSZ4.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-6KQYXVC5.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-7DOOIRHX.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-SRFBSSKH.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-ZDEHDADR.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-K5NNFDGH.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-ZLLD4ECZ.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-7R33EAIC.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-BPXF2HC6.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-PWDYQQFR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-4GTJSSOC.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -1249,5 +1258,5 @@ var bootstrap = async () => {
   );
 };
 bootstrap();
-//# debugId=72a045a9-dbac-502f-9a8f-06337748ffe2
+//# debugId=72d533ce-0eba-5bb6-96b9-fff76c583dd4
 //# sourceMappingURL=main.js.map

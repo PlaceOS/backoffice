@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/loading-label.directive.ts"
+  ],
+  "sourcesContent": [
+    "import { Directive, inject } from '@angular/core';\nimport { LocaleService } from '../common/locale.service';\n\n/**\n * Give Material spinners and progress bars the name \"Loading\", as screen\n * readers need a name for each progress bar. Import it next to the Material\n * progress modules. Elements with their own `aria-label` keep it.\n */\n@Directive({\n    selector:\n        'mat-spinner:not([aria-label]), mat-progress-spinner:not([aria-label]), mat-progress-bar:not([aria-label])',\n    host: { '[attr.aria-label]': 'label' },\n})\nexport class LoadingLabelDirective {\n    protected readonly label = inject(LocaleService).get('COMMON.LOADING');\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;;AAaM,IAAO,wBAAP,MAAO,uBAAqB;EACX,QAAQ,OAAO,aAAa,EAAE,IAAI,gBAAgB;;qCAD5D,wBAAqB;EAAA;yEAArB,wBAAqB,WAAA,CAAA,CAAA,eAAA,GAAA,cAAA,EAAA,GAAA,CAAA,wBAAA,GAAA,cAAA,EAAA,GAAA,CAAA,oBAAA,GAAA,cAAA,EAAA,CAAA,GAAA,UAAA,GAAA,cAAA,SAAA,mCAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;;;;;;sEAArB,uBAAqB,CAAA;UALjC;WAAU;MACP,UACI;MACJ,MAAM,EAAE,qBAAqB,QAAO;KACvC;;;",
+  "names": [],
+  "debugId": "f472b6d9-f397-5a86-af59-c937a9374c31"
+}

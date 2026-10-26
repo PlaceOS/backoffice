@@ -1,0 +1,382 @@
+import {
+  toQueryString
+} from "./chunk-ZGCO6CER.js";
+import {
+  SimpleTableComponent
+} from "./chunk-CQ5BGNXD.js";
+import {
+  openConfirmModal
+} from "./chunk-PHIAGKW7.js";
+import {
+  describeError
+} from "./chunk-T3O7QHHC.js";
+import "./chunk-XQFILG7P.js";
+import "./chunk-VDHJ5GEA.js";
+import "./chunk-3KN73EXG.js";
+import {
+  LoadingLabelDirective
+} from "./chunk-I3T2QIIC.js";
+import {
+  MatProgressBar,
+  MatProgressBarModule
+} from "./chunk-VW74LF3A.js";
+import {
+  notifyError,
+  notifySuccess
+} from "./chunk-OLETOVUH.js";
+import "./chunk-E63CPPEP.js";
+import {
+  MatDialog
+} from "./chunk-ZQLZS64A.js";
+import "./chunk-27URU2VR.js";
+import "./chunk-TIDB3WEY.js";
+import {
+  TranslatePipe
+} from "./chunk-54SNORV3.js";
+import {
+  i18n
+} from "./chunk-ANULHLOS.js";
+import {
+  escapeHtml
+} from "./chunk-AOPYKUKV.js";
+import {
+  V,
+  _
+} from "./chunk-3QDC3AOP.js";
+import {
+  IconComponent
+} from "./chunk-NZZPTKBS.js";
+import {
+  MatTooltip,
+  MatTooltipModule
+} from "./chunk-GHTXYZBC.js";
+import {
+  MatRippleModule
+} from "./chunk-PQUI6ASX.js";
+import {
+  MatRipple
+} from "./chunk-OEQM55HS.js";
+import "./chunk-5JSUWHJB.js";
+import "./chunk-QAR3ZGTS.js";
+import "./chunk-33GRF44L.js";
+import {
+  Component,
+  inject,
+  setClassMetadata,
+  signal,
+  ɵsetClassDebugInfo,
+  ɵɵadvance,
+  ɵɵclassProp,
+  ɵɵconditional,
+  ɵɵconditionalCreate,
+  ɵɵdefineComponent,
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵgetCurrentView,
+  ɵɵlistener,
+  ɵɵnextContext,
+  ɵɵpipe,
+  ɵɵpipeBind1,
+  ɵɵproperty,
+  ɵɵpureFunction2,
+  ɵɵpureFunction4,
+  ɵɵreference,
+  ɵɵresetView,
+  ɵɵrestoreView,
+  ɵɵtemplate,
+  ɵɵtemplateRefExtractor,
+  ɵɵtext,
+  ɵɵtextInterpolate,
+  ɵɵtextInterpolate1
+} from "./chunk-TCVU4336.js";
+import "./chunk-RQBZITXC.js";
+
+// src/app/admin/build-list.component.ts
+var _c0 = (a0, a1) => ({ key: "repo", name: a0, content: a1 });
+var _c1 = (a0, a1) => ({ key: "driver", name: a0, content: a1 });
+var _c2 = (a0, a1) => ({ key: "message", name: a0, size: "32rem", content: a1 });
+var _c3 = (a0, a1) => ({ key: "actions", name: a0, hide_name: true, content: a1, size: "3.5rem", sortable: false });
+var _c4 = (a0, a1, a2, a3) => [a0, a1, a2, a3];
+function PlaceBuildListComponent_ng_template_13_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 10)(1, "div");
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 11);
+    \u0275\u0275text(4);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const row_r1 = ctx.row;
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(row_r1.repo);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(row_r1.branch);
+  }
+}
+function PlaceBuildListComponent_ng_template_15_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 10)(1, "div");
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 11);
+    \u0275\u0275text(4);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const row_r2 = ctx.row;
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(row_r2.driver);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(row_r2.commit);
+  }
+}
+function PlaceBuildListComponent_ng_template_17_Conditional_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "span", 13);
+    \u0275\u0275text(1);
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(2, 1, "COMMON.DESCRIPTION_EMPTY"), " ");
+  }
+}
+function PlaceBuildListComponent_ng_template_17_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 12);
+    \u0275\u0275text(1);
+    \u0275\u0275conditionalCreate(2, PlaceBuildListComponent_ng_template_17_Conditional_2_Template, 3, 3, "span", 13);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const data_r3 = ctx.data;
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", data_r3, " ");
+    \u0275\u0275advance();
+    \u0275\u0275conditional(!data_r3 ? 2 : -1);
+  }
+}
+function PlaceBuildListComponent_ng_template_19_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r4 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 14)(1, "button", 15);
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275listener("click", function PlaceBuildListComponent_ng_template_19_Template_button_click_1_listener() {
+      const row_r5 = \u0275\u0275restoreView(_r4).row;
+      const ctx_r5 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r5.remove(row_r5));
+    });
+    \u0275\u0275elementStart(3, "icon");
+    \u0275\u0275text(4, "delete");
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance();
+    \u0275\u0275property("matTooltip", \u0275\u0275pipeBind1(2, 1, "ADMIN.BUILD_LIST_REMOVE"));
+  }
+}
+function queryBuildJobs(q = {}) {
+  const query = toQueryString(q);
+  return _(`/api/build/v1/monitor${query ? "?" + query : ""}`);
+}
+function cancelBuildJob(id, q = {}) {
+  const query = toQueryString(q);
+  return V(`/api/build/v1/cancel/${id}${query ? "?" + query : ""}`);
+}
+var PlaceBuildListComponent = class _PlaceBuildListComponent {
+  _dialog = inject(MatDialog);
+  loading = signal(
+    "",
+    ...ngDevMode ? [{ debugName: "loading" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  job_list = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "job_list" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  ngOnInit() {
+    this.loadJobList();
+  }
+  async remove(i) {
+    const details = await openConfirmModal({
+      title: i18n("ADMIN.BUILD_LIST_REMOVE"),
+      content: i18n("ADMIN.BUILD_LIST_REMOVE_MSG", {
+        driver: escapeHtml(i.driver),
+        repo: escapeHtml(i.repo)
+      }),
+      icon: { type: "icon", content: "delete" }
+    }, this._dialog);
+    if (details.reason !== "done")
+      return;
+    details.loading(i18n("ADMIN.BUILD_LIST_REMOVE_LOADING"));
+    const err = await cancelBuildJob(i.id).catch((_2) => _2);
+    details.close();
+    if (err)
+      return notifyError(i18n("ADMIN.BUILD_LIST_REMOVE_ERROR", {
+        error: describeError(err)
+      }));
+    notifySuccess(i18n("ADMIN.BUILD_LIST_REMOVE_SUCCESS"));
+    this.job_list.update((list) => list.filter(({ id }) => id !== i.id));
+  }
+  async loadJobList() {
+    this.loading.set("Loading build jobs...");
+    const { data } = await queryBuildJobs().catch(() => ({ data: [] }));
+    this.job_list.set((data || []).sort((a, b) => a.id?.localeCompare(b.id)));
+    this.loading.set("");
+  }
+  static \u0275fac = function PlaceBuildListComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _PlaceBuildListComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _PlaceBuildListComponent, selectors: [["", "admin-build-list", ""]], decls: 21, vars: 36, consts: [["repo_template", ""], ["driver_template", ""], ["description_template", ""], ["actions_template", ""], [1, "flex", "h-full", "w-full", "flex-col"], [1, "my-4", "flex", "items-center", "justify-between", "space-x-2", "px-4"], [1, "text-2xl"], [1, "h-1/2", "w-full", "flex-1", "overflow-auto", "px-4"], ["mode", "indeterminate", 1, "w-full"], [1, "block", "min-w-5xl", "text-sm", 3, "data", "columns", "sortable", "empty_message"], [1, "flex", "flex-col", "px-4", "py-2"], [1, "text-xs", "opacity-30"], [1, "w-full", "overflow-hidden", "px-4", "py-2", "text-xs", "select-text"], [1, "opacity-30"], [1, "flex", "items-center", "space-x-2", "p-2"], ["icon", "", "matRipple", "", 1, "text-error", 3, "click", "matTooltip"]], template: function PlaceBuildListComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "div", 4)(1, "div", 5)(2, "div", 6);
+      \u0275\u0275text(3);
+      \u0275\u0275pipe(4, "translate");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(5, "div", 7);
+      \u0275\u0275element(6, "mat-progress-bar", 8)(7, "simple-table", 9);
+      \u0275\u0275pipe(8, "translate");
+      \u0275\u0275pipe(9, "translate");
+      \u0275\u0275pipe(10, "translate");
+      \u0275\u0275pipe(11, "translate");
+      \u0275\u0275pipe(12, "translate");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275template(13, PlaceBuildListComponent_ng_template_13_Template, 5, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor)(15, PlaceBuildListComponent_ng_template_15_Template, 5, 2, "ng-template", null, 1, \u0275\u0275templateRefExtractor)(17, PlaceBuildListComponent_ng_template_17_Template, 3, 2, "ng-template", null, 2, \u0275\u0275templateRefExtractor)(19, PlaceBuildListComponent_ng_template_19_Template, 5, 3, "ng-template", null, 3, \u0275\u0275templateRefExtractor);
+    }
+    if (rf & 2) {
+      const repo_template_r7 = \u0275\u0275reference(14);
+      const driver_template_r8 = \u0275\u0275reference(16);
+      const description_template_r9 = \u0275\u0275reference(18);
+      const actions_template_r10 = \u0275\u0275reference(20);
+      \u0275\u0275advance(3);
+      \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(4, 7, "ADMIN.BUILD_LIST_HEADER"), " ");
+      \u0275\u0275advance(3);
+      \u0275\u0275classProp("invisible", !ctx.loading());
+      \u0275\u0275advance();
+      \u0275\u0275property("data", ctx.job_list())("columns", \u0275\u0275pureFunction4(31, _c4, \u0275\u0275pureFunction2(19, _c0, \u0275\u0275pipeBind1(8, 9, "REPOS.SINGULAR"), repo_template_r7), \u0275\u0275pureFunction2(22, _c1, \u0275\u0275pipeBind1(9, 11, "DRIVERS.SINGULAR"), driver_template_r8), \u0275\u0275pureFunction2(25, _c2, \u0275\u0275pipeBind1(10, 13, "COMMON.FIELD_DESCRIPTION"), description_template_r9), \u0275\u0275pureFunction2(28, _c3, \u0275\u0275pipeBind1(11, 15, "COMMON.ACTIONS"), actions_template_r10)))("sortable", true)("empty_message", \u0275\u0275pipeBind1(12, 17, "ADMIN.BUILD_LIST_EMPTY"));
+    }
+  }, dependencies: [
+    LoadingLabelDirective,
+    IconComponent,
+    MatRippleModule,
+    MatRipple,
+    MatTooltipModule,
+    MatTooltip,
+    SimpleTableComponent,
+    MatProgressBarModule,
+    MatProgressBar,
+    TranslatePipe
+  ], styles: ["\n[_nghost-%COMP%] {\n  height: 100%;\n  width: 100%;\n  min-height: 10rem;\n}\n/*# sourceMappingURL=build-list.component.css.map */"] });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(PlaceBuildListComponent, [{
+    type: Component,
+    args: [{ selector: "[admin-build-list]", template: `
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2 px-4">
+                <div class="text-2xl">
+                    {{ 'ADMIN.BUILD_LIST_HEADER' | translate }}
+                </div>
+            </div>
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.invisible]="!loading()"
+                />
+                <simple-table
+                    class="block min-w-5xl text-sm"
+                    [data]="job_list()"
+                    [columns]="[
+                        {
+                            key: 'repo',
+                            name: 'REPOS.SINGULAR' | translate,
+                            content: repo_template,
+                        },
+                        {
+                            key: 'driver',
+                            name: 'DRIVERS.SINGULAR' | translate,
+                            content: driver_template,
+                        },
+                        {
+                            key: 'message',
+                            name: 'COMMON.FIELD_DESCRIPTION' | translate,
+                            size: '32rem',
+                            content: description_template,
+                        },
+                        {
+                            key: 'actions',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
+                            content: actions_template,
+                            size: '3.5rem',
+                            sortable: false,
+                        },
+                    ]"
+                    [sortable]="true"
+                    [empty_message]="'ADMIN.BUILD_LIST_EMPTY' | translate"
+                />
+            </div>
+        </div>
+        <ng-template #repo_template let-row="row">
+            <div class="flex flex-col px-4 py-2">
+                <div>{{ row.repo }}</div>
+                <div class="text-xs opacity-30">{{ row.branch }}</div>
+            </div>
+        </ng-template>
+        <ng-template #driver_template let-row="row">
+            <div class="flex flex-col px-4 py-2">
+                <div>{{ row.driver }}</div>
+                <div class="text-xs opacity-30">{{ row.commit }}</div>
+            </div>
+        </ng-template>
+        <ng-template #description_template let-data="data">
+            <div class="w-full overflow-hidden px-4 py-2 text-xs select-text">
+                {{ data }}
+                @if (!data) {
+                    <span class="opacity-30">
+                        {{ 'COMMON.DESCRIPTION_EMPTY' | translate }}
+                    </span>
+                }
+            </div>
+        </ng-template>
+        <ng-template #actions_template let-row="row">
+            <div class="flex items-center space-x-2 p-2">
+                <button
+                    icon
+                    matRipple
+                    class="text-error"
+                    [matTooltip]="'ADMIN.BUILD_LIST_REMOVE' | translate"
+                    (click)="remove(row)"
+                >
+                    <icon>delete</icon>
+                </button>
+            </div>
+        </ng-template>
+    `, imports: [
+      LoadingLabelDirective,
+      IconComponent,
+      MatRippleModule,
+      MatTooltipModule,
+      TranslatePipe,
+      SimpleTableComponent,
+      MatProgressBarModule
+    ], styles: ["/* angular:styles/component:css;ec8f84e53cdd709f;/home/runner/work/backoffice/backoffice/src/app/admin/build-list.component.ts */\n:host {\n  height: 100%;\n  width: 100%;\n  min-height: 10rem;\n}\n/*# sourceMappingURL=build-list.component.css.map */\n"] }]
+  }], null, null);
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(PlaceBuildListComponent, { className: "PlaceBuildListComponent", filePath: "src/app/admin/build-list.component.ts", lineNumber: 147 });
+})();
+export {
+  PlaceBuildListComponent
+};
+//# debugId=f7803366-9edb-5b6c-a6e0-fafbaf0b950d
+//# sourceMappingURL=chunk-GHC7U2BZ.js.map

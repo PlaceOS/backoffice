@@ -1152,6 +1152,17 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .visible {
   visibility: visible;
 }
+#placeos .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
 #placeos .absolute {
   position: absolute;
 }
@@ -1378,6 +1389,9 @@ input:where([type=button], [type=reset], [type=submit]),
 }
 #placeos .z-9999 {
   z-index: 9999;
+}
+#placeos .z-10000 {
+  z-index: 10000;
 }
 #placeos .col-span-2 {
   grid-column: span 2 / span 2;
@@ -2257,6 +2271,11 @@ input:where([type=button], [type=reset], [type=submit]),
   --tw-translate-y: calc(calc(1/2 * 100%) * -1);
   translate: var(--tw-translate-x) calc((1/2 * 100%) * -1);
   translate: var(--tw-translate-x) calc(calc(1/2 * 100%) * -1);
+  translate: var(--tw-translate-x) var(--tw-translate-y);
+}
+#placeos .-translate-y-\[200\%\] {
+  --tw-translate-y: calc(200% * -1);
+  translate: var(--tw-translate-x) calc(200% * -1);
   translate: var(--tw-translate-x) var(--tw-translate-y);
 }
 #placeos .-translate-y-full {
@@ -3701,6 +3720,10 @@ input:where([type=button], [type=reset], [type=submit]),
   border-color: hsl(0, 0%, 0%);
   border-color: var(--base-content);
 }
+#placeos .focus-within\:outline-2:focus-within {
+  outline-style: var(--tw-outline-style);
+  outline-width: 2px;
+}
 #placeos .focus-within\:outline-4:focus-within {
   outline-style: var(--tw-outline-style);
   outline-width: 4px;
@@ -3708,6 +3731,10 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .focus-within\:outline-base-content:focus-within {
   outline-color: hsl(0, 0%, 0%);
   outline-color: var(--base-content);
+}
+#placeos .focus-within\:outline-info:focus-within {
+  outline-color: hsla(217, 91%, 60%, 1);
+  outline-color: var(--info);
 }
 @media (hover: hover) {
   #placeos .hover\:border-info:hover {
@@ -3775,6 +3802,11 @@ input:where([type=button], [type=reset], [type=submit]),
   #placeos .hover\:opacity-100:hover {
     opacity: 1;
   }
+}
+#placeos .focus\:translate-y-0:focus {
+  --tw-translate-y: calc(var(--spacing) * 0);
+  translate: var(--tw-translate-x) calc(0.25rem * 0);
+  translate: var(--tw-translate-x) var(--tw-translate-y);
 }
 #placeos .focus\:bg-info\/10:focus {
   background-color: hsla(217, 91%, 60%, 1);

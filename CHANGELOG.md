@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
+#### A11y
+
+- Add landmarks, dialog names and table roles
+- Link tab panels, name loaders and reorder by keyboard
+- Set page language from the loaded translations
+
 #### Auth
 
 - Use the root redirect_uri on any localhost dev server
