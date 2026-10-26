@@ -13,6 +13,7 @@ import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
+import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -63,7 +64,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
                 <simple-table
                     class="block min-w-176 text-sm"
@@ -99,7 +100,8 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             size: '6.5rem',
                             sortable: false,
@@ -176,6 +178,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         MatRippleModule,
         TranslatePipe,

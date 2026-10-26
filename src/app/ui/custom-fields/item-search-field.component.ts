@@ -31,6 +31,7 @@ import { AsyncHandler } from '../../common/async-handler.class';
 import { escapeHtml } from '../../common/general';
 import { HashMap } from '../../common/types';
 import { IconComponent } from '../icon.component';
+import { LoadingLabelDirective } from '../loading-label.directive';
 import { SanitizePipe } from '../pipes/sanitise.pipe';
 
 interface SearchItem {
@@ -193,6 +194,7 @@ interface SearchItem {
         },
     ],
     imports: [
+        LoadingLabelDirective,
         MatAutocompleteModule,
         SanitizePipe,
         MatFormFieldModule,

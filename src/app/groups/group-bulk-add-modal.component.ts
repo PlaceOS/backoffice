@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import {
@@ -220,6 +221,7 @@ export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         DialogTitleDirective,
         FormsModule,
         IconComponent,

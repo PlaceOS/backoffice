@@ -46,6 +46,7 @@ import { DialogEvent, Identity } from '../common/types';
 import { isValidUrl } from '../common/validation';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -491,6 +492,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         MatFormFieldModule,
         MatInputModule,
         MatProgressSpinnerModule,

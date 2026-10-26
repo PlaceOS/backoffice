@@ -27,6 +27,7 @@ import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 /** Breakdown of what enabling a `ConfirmModalOption` would do */
@@ -400,6 +401,7 @@ export async function openConfirmModal(
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
         DialogTitleDirective,
         MatProgressSpinnerModule,
         MatCheckboxModule,

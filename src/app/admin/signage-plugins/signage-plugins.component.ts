@@ -17,6 +17,7 @@ import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { openConfirmModal } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
+import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { SignagePluginImportModalComponent } from './signage-plugin-import-modal.component';
@@ -66,7 +67,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
                 <simple-table
                     class="block min-w-6xl text-sm"
@@ -111,7 +112,8 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             size: '8.5rem',
                             content: actions_template,
                             sortable: false,
@@ -198,6 +200,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         MatRippleModule,
         MatTooltipModule,

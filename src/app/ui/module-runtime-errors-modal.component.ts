@@ -11,6 +11,7 @@ import {
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { DialogTitleDirective } from './dialog-title.directive';
 import { IconComponent } from './icon.component';
+import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
 
 @Component({
@@ -72,6 +73,7 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
         DialogTitleDirective,
         TranslatePipe,
         MatProgressSpinnerModule,

@@ -5,19 +5,21 @@ import {
 } from '@angular/cdk/scrolling';
 import { NgTemplateOutlet } from '@angular/common';
 import {
+    afterNextRender,
     ChangeDetectionStrategy,
     Component,
-    DestroyRef,
-    ElementRef,
-    Signal,
-    TemplateRef,
     computed,
+    DestroyRef,
     effect,
+    ElementRef,
     inject,
+    Injector,
     input,
     linkedSignal,
     output,
+    Signal,
     signal,
+    TemplateRef,
     untracked,
     viewChild,
 } from '@angular/core';
@@ -29,6 +31,8 @@ import { TranslatePipe } from './translate.pipe';
 export interface TableColumn {
     key: string;
     name: string;
+    /** Show the name only to screen readers, e.g. for a column of buttons */
+    hide_name?: boolean;
     sortable?: boolean;
     sort_fn?: (a: unknown, b: unknown) => number;
     filterable?: boolean;
@@ -73,7 +77,11 @@ function sortKey(value: unknown): string {
                         role="columnheader"
                         class="border-base-200 bg-base-300 sticky top-0 z-10 flex min-h-full items-center justify-between border-r px-2"
                         [style.gridArea]="gridSquare(1, 1)"
-                    ></div>
+                    >
+                        <span class="sr-only">
+                            {{ 'COMMON.MOVE_ROW' | translate }}
+                        </span>
+                    </div>
                 }
                 @if (selectable()) {
                     <div
@@ -134,7 +142,10 @@ function sortKey(value: unknown): string {
                                 class="flex w-full items-center justify-between p-4 text-left"
                                 (click)="setSort(column.key)"
                             >
-                                <span class="font-medium">
+                                <span
+                                    class="font-medium"
+                                    [class.sr-only]="column.hide_name"
+                                >
                                     {{ column.name || column.key }}
                                 </span>
                                 <icon class="text-[1.25em]">
@@ -146,7 +157,10 @@ function sortKey(value: unknown): string {
                                 </icon>
                             </button>
                         } @else {
-                            <span class="flex items-center p-4 font-medium">
+                            <span
+                                class="flex items-center p-4 font-medium"
+                                [class.sr-only]="column.hide_name"
+                            >
                                 {{ column.name || column.key }}
                             </span>
                         }
@@ -219,8 +233,14 @@ function sortKey(value: unknown): string {
                                     icon
                                     matRipple
                                     class="h-full w-full rounded-none"
-                                    aria-label="Drag to reorder"
+                                    [attr.aria-label]="
+                                        'COMMON.MOVE_ROW' | translate
+                                    "
+                                    aria-keyshortcuts="ArrowUp ArrowDown"
+                                    [attr.data-reorder]="i"
                                     cdkDragHandle
+                                    (keydown.arrowup)="moveRow(i, -1, $event)"
+                                    (keydown.arrowdown)="moveRow(i, 1, $event)"
                                 >
                                     <icon class="text-2xl">unfold_more</icon>
                                 </button>
@@ -472,6 +492,8 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
 
     private readonly _el = inject<ElementRef<HTMLElement>>(ElementRef);
     private _hover_row = -1;
+    /** Keyboard move waiting for the parent to update the data */
+    private _pending_move: { index: number; row: string } | null = null;
 
     constructor() {
         // One native listener for row hover. Template listeners on each cell
@@ -506,6 +528,29 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
             );
             observer.observe(viewport.elementRef.nativeElement);
             onCleanup(() => observer.disconnect());
+        });
+        // After a keyboard move, focus the handle of the moved row. Skip it if
+        // the move did not happen (e.g. the user cancelled it), or if the user
+        // has moved focus out of the table since.
+        const injector = inject(Injector);
+        effect(() => {
+            const rows = this.data_view();
+            const move = this._pending_move;
+            if (!move) return;
+            this._pending_move = null;
+            if (JSON.stringify(rows[move.index]) !== move.row) return;
+            afterNextRender(
+                () => {
+                    const active = document.activeElement;
+                    if (active && active !== document.body) {
+                        if (!el.contains(active)) return;
+                    }
+                    el.querySelector<HTMLElement>(
+                        `[data-reorder="${move.index}"]`,
+                    )?.focus();
+                },
+                { injector },
+            );
         });
         // Handle signal, subscribable, or array data input.
         effect((onCleanup) => {
@@ -619,6 +664,18 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
         } else {
             this.selected.set(current_selected.filter((i) => i !== index));
         }
+    }
+
+    /** Move a row up or down with the keyboard, like a drag and drop */
+    public moveRow(index: number, offset: 1 | -1, event: Event) {
+        event.preventDefault();
+        const target = index + offset;
+        if (target < 0 || target >= this.data_length()) return;
+        this._pending_move = {
+            index: target,
+            row: JSON.stringify(this.data_view()[index]),
+        };
+        this.ondrop.emit([index, target]);
     }
 
     public selectAll(state: boolean) {

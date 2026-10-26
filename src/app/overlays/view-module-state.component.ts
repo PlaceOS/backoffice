@@ -16,6 +16,7 @@ import { HashMap } from '../common/types';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ModuleStateModalData {
@@ -112,6 +113,7 @@ export interface ModuleStateModalData {
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
         DialogTitleDirective,
         MatDialogModule,
         MatProgressSpinnerModule,

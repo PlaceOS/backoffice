@@ -15,6 +15,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
@@ -86,7 +87,7 @@ export interface PlaceTenant {
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
                 <simple-table
                     class="block min-w-3xl text-sm"
@@ -113,7 +114,8 @@ export interface PlaceTenant {
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             sortable: false,
                             size: '8.75rem',
@@ -209,6 +211,7 @@ export interface PlaceTenant {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         MatRippleModule,
         TranslatePipe,

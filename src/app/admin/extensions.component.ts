@@ -22,6 +22,7 @@ import {
     ConfirmModalData,
 } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
@@ -83,7 +84,7 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
                 <simple-table
                     class="block min-w-4xl text-sm"
@@ -113,7 +114,8 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             size: '6rem',
                             content: actions_template,
                             sortable: false,
@@ -172,6 +174,7 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         MatRippleModule,
         MatTooltipModule,

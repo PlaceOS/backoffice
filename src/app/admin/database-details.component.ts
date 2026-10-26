@@ -21,6 +21,7 @@ import {
     notifyWarn,
 } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component';
 
 /** How often a running MQTT re-sync is checked on */
@@ -223,7 +224,12 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
             }
         `,
     ],
-    imports: [MatProgressSpinnerModule, MatRippleModule, MatDialogModule],
+    imports: [
+        LoadingLabelDirective,
+        MatProgressSpinnerModule,
+        MatRippleModule,
+        MatDialogModule,
+    ],
 })
 export class PlaceDatabaseDetailsComponent
     extends AsyncHandler

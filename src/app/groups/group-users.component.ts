@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { PlaceGroupUser, PlaceUser, queryUsers } from '@placeos/ts-client';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { groupPermissionLabels } from './group-permissions';
@@ -43,7 +44,7 @@ import { GroupStateService } from './group-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="loading() !== true"
+                    [class.invisible]="loading() !== true"
                 />
                 <simple-table
                     class="block min-h-0 w-full min-w-[56rem] flex-1 text-sm"
@@ -63,7 +64,8 @@ import { GroupStateService } from './group-state.service';
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             size: '7rem',
                             content: actions_template,
                         },
@@ -132,6 +134,7 @@ import { GroupStateService } from './group-state.service';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         FormsModule,
         IconComponent,
         ItemSearchFieldComponent,

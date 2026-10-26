@@ -33,6 +33,7 @@ import {
     ConfirmModalComponent,
 } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
+import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 
@@ -80,7 +81,7 @@ const task_details = {};
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
             </div>
             <div class="mb-4 w-full overflow-auto px-4">
@@ -113,7 +114,8 @@ const task_details = {};
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             size: '3.5rem',
                             sortable: false,
@@ -178,6 +180,7 @@ const task_details = {};
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         SimpleTableComponent,
         IconComponent,
         MatRippleModule,

@@ -20,6 +20,7 @@ import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 
 export interface DuplicateModalData {
     item: HashMap;
@@ -163,6 +164,7 @@ export interface DuplicateModalData {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         MatDialogModule,
         IconComponent,
         MatFormFieldModule,

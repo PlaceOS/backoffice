@@ -7,7 +7,7 @@ import {
     model,
     signal,
 } from '@angular/core';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabNavPanel, MatTabsModule } from '@angular/material/tabs';
 import {
     NavigationCancel,
     NavigationEnd,
@@ -40,7 +40,7 @@ export interface ItemTab {
                 <nav
                     mat-tab-nav-bar
                     [class.shadow]="scrolled()"
-                    [tabPanel]="tabPanel"
+                    [tabPanel]="panel()"
                 >
                     @for (link of tabs(); track link.id) {
                         <a
@@ -78,7 +78,6 @@ export interface ItemTab {
                 </nav>
             </div>
         </div>
-        <mat-tab-nav-panel #tabPanel class="hidden" />
     `,
     styles: [``],
     imports: [MatTabsModule, IconComponent, RouterModule],
@@ -93,6 +92,8 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
     public readonly base = input<string>('systems');
     public readonly item_id = model<string>('-');
     public readonly tabs = input<ItemTab[]>([]);
+    /** Panel that holds the content of the active tab */
+    public readonly panel = input.required<MatTabNavPanel>();
     public readonly scrolled = input(false);
     public readonly loading_route = signal('');
 

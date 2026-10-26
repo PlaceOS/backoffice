@@ -6,6 +6,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HashMap } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DomainStateService } from './domain-state.service';
@@ -27,7 +28,7 @@ import { DomainStateService } from './domain-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="loading() !== true"
+                    [class.invisible]="loading() !== true"
                 />
                 <simple-table
                     class="block min-w-160 text-sm"
@@ -46,7 +47,8 @@ import { DomainStateService } from './domain-state.service';
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             size: '6.5rem',
                             sortable: false,
@@ -99,6 +101,7 @@ import { DomainStateService } from './domain-state.service';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         SimpleTableComponent,
         IconComponent,
         TranslatePipe,

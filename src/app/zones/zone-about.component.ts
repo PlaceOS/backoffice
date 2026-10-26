@@ -21,6 +21,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { describeError } from '../common/errors';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -259,6 +260,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         MatProgressSpinnerModule,
         SettingsFormComponent,
         TranslatePipe,

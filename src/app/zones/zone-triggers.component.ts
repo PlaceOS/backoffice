@@ -9,6 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -40,7 +41,7 @@ import { ZonesStateService } from './zones-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
                 <simple-table
                     class="block min-w-lg text-sm"
@@ -58,7 +59,8 @@ import { ZonesStateService } from './zones-state.service';
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             size: '3.5rem',
                             sortable: false,
@@ -112,6 +114,7 @@ import { ZonesStateService } from './zones-state.service';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         MatRippleModule,
         DateFromPipe,

@@ -10,6 +10,7 @@ import {
 
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
+import { i18n } from '../../common/locale.service';
 import { HashMap, Identity } from '../../common/types';
 import { IconComponent } from '../../ui/icon.component';
 import {
@@ -234,7 +235,8 @@ export class ListComponent {
         }
         columns.push({
             key: '_actions',
-            name: ' ',
+            name: i18n('COMMON.ACTIONS'),
+            hide_name: true,
             content: this._actions_tmpl(),
             sortable: false,
             size: '4rem',

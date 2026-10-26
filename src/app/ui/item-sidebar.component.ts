@@ -33,6 +33,7 @@ import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { toSignal } from '../common/signals';
 import { IconComponent } from './icon.component';
+import { LoadingLabelDirective } from './loading-label.directive';
 import { SettingsToggleComponent } from './settings-toggle.component';
 import { SkipToContentComponent } from './skip-to-content.component';
 import { TranslatePipe } from './translate.pipe';
@@ -386,6 +387,7 @@ interface GroupTreeItem {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         CdkTreeModule,
         TranslatePipe,
         MatTooltipModule,

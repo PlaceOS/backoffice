@@ -15,6 +15,7 @@ import { i18n } from '../common/locale.service';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { DialogTitleDirective } from './dialog-title.directive';
 import { IconComponent } from './icon.component';
+import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
 
 /** Events in the form that may change a value */
@@ -100,6 +101,7 @@ const NAVIGATION_KEYS = new Set([
         </div>
     `,
     imports: [
+        LoadingLabelDirective,
         DialogTitleDirective,
         MatProgressSpinnerModule,
         TranslatePipe,

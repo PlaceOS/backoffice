@@ -8,6 +8,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { DialogEvent } from '../common/types';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface SelectItemModalData<T = unknown> {
@@ -73,6 +74,7 @@ export interface SelectItemModalData<T = unknown> {
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
         MatDialogModule,
         MatRippleModule,
         TranslatePipe,

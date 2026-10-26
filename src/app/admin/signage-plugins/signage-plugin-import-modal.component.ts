@@ -27,6 +27,7 @@ import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { DialogTitleDirective } from '../../ui/dialog-title.directive';
 import { IconComponent } from '../../ui/icon.component';
+import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { PluginLoadedPayload } from './signage-plugin-embed.component';
 import {
@@ -110,7 +111,7 @@ interface PluginProbe {
             <mat-progress-bar
                 [mode]="loading_files() ? 'indeterminate' : 'determinate'"
                 [value]="progress()"
-                [class.opacity-0]="!loading_files() && progress() >= 100"
+                [class.invisible]="!loading_files() && progress() >= 100"
             />
             <div class="flex-1 space-y-2 overflow-auto py-2">
                 @for (probe of plugins(); track probe.uri) {
@@ -156,6 +157,7 @@ interface PluginProbe {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         DialogTitleDirective,
         FormsModule,
         IconComponent,

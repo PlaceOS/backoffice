@@ -13,6 +13,7 @@ import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -160,6 +161,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         DialogTitleDirective,
         MatDialogModule,
         TranslatePipe,

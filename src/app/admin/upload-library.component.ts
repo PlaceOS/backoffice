@@ -30,6 +30,7 @@ import {
 import { UploadsService } from '../common/uploads.service';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
@@ -156,7 +157,7 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
                 @if (uploads_list()?.length > 0) {
                     <div
@@ -406,6 +407,7 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         ScrollingModule,
         TranslatePipe,

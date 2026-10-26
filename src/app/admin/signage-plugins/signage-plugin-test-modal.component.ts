@@ -20,6 +20,7 @@ import { AsyncHandler } from '../../common/async-handler.class';
 import { DialogEvent } from '../../common/types';
 import { DialogTitleDirective } from '../../ui/dialog-title.directive';
 import { IconComponent } from '../../ui/icon.component';
+import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { SchemaFormComponent } from './schema-form.component';
 import {
@@ -248,6 +249,7 @@ export interface SignagePluginTestModalData {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         DialogTitleDirective,
         FormsModule,
         MatDialogModule,

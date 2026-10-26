@@ -37,6 +37,7 @@ import { ContextMenuComponent } from '../ui/context-menu.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors-modal.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -99,7 +100,7 @@ import { SystemStateService } from './system-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
-                    [class.opacity-0]="!loading().modules"
+                    [class.invisible]="!loading().modules"
                 />
                 <mat-menu #context_menu="matMenu">
                     @if (active_item()) {
@@ -181,7 +182,8 @@ import { SystemStateService } from './system-state.service';
                             },
                             {
                                 key: 'actions',
-                                name: ' ',
+                                name: 'COMMON.ACTIONS' | translate,
+                                hide_name: true,
                                 size: '6.5rem',
                                 content: actions_template,
                             },
@@ -387,6 +389,7 @@ import { SystemStateService } from './system-state.service';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         MatMenuModule,
         IconComponent,
         MatRippleModule,

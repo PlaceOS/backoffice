@@ -9,6 +9,7 @@ import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -213,6 +214,7 @@ import { DriverStateService } from './driver-state.service';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         TranslatePipe,
         MatRippleModule,

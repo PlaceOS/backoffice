@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatRipple } from '@angular/material/core';
+import { MatTabNavPanel } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { extensionsForItem } from '../common/api';
@@ -60,6 +61,7 @@ import { DomainStateService } from './domain-state.service';
                         />
                         <item-tablist
                             [base]="name"
+                            [panel]="tab_panel"
                             [tabs]="tab_list()"
                             [scrolled]="scroll() > 0"
                             class="z-10"
@@ -69,7 +71,9 @@ import { DomainStateService } from './domain-state.service';
                             class="relative z-0 h-1/2 w-full flex-1 overflow-auto p-4"
                             (scroll)="scroll.set(el.scrollTop)"
                         >
-                            <router-outlet />
+                            <mat-tab-nav-panel #tab_panel class="block h-full">
+                                <router-outlet />
+                            </mat-tab-nav-panel>
                         </div>
                     }
                 </div>
@@ -87,6 +91,7 @@ import { DomainStateService } from './domain-state.service';
     `,
     styles: [``],
     imports: [
+        MatTabNavPanel,
         IconComponent,
         MatTooltipModule,
         MatRipple,

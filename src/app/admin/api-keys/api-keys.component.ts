@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { i18n } from '../../common/locale.service';
 import { notifyInfo } from '../../common/notifications';
 import { IconComponent } from '../../ui/icon.component';
+import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -95,7 +96,7 @@ import { APIKeyService } from './api-keys.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="loading() !== true"
+                    [class.invisible]="loading() !== true"
                 />
                 <simple-table
                     class="block min-w-7xl text-sm"
@@ -133,7 +134,8 @@ import { APIKeyService } from './api-keys.service';
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             size: '6rem',
                             sortable: false,
@@ -222,6 +224,7 @@ import { APIKeyService } from './api-keys.service';
     `,
     styles: [``],
     imports: [
+        LoadingLabelDirective,
         TranslatePipe,
         IconComponent,
         MatRippleModule,

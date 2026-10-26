@@ -143,6 +143,53 @@ describe('SimpleTableComponent', () => {
         expect(rows[1].querySelectorAll('[role="cell"]').length).toBe(2);
     });
 
+    it('moves rows with the arrow keys and keeps focus on the moved row', async () => {
+        // Without ids, rows are tracked by index and their elements do not move
+        const rows = [
+            { name: 'Item 1' },
+            { name: 'Item 2' },
+            { name: 'Item 3' },
+        ];
+        fixture.componentRef.setInput('data', rows);
+        fixture.componentRef.setInput('columns', [
+            { key: 'name', name: 'Name' },
+        ]);
+        fixture.componentRef.setInput('can_reorder', true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        document.body.appendChild(fixture.nativeElement);
+        const moves: [number, number][] = [];
+        component.ondrop.subscribe((move) => moves.push(move));
+        const handle = (i: number) =>
+            fixture.nativeElement.querySelector(
+                `[data-reorder="${i}"]`,
+            ) as HTMLElement;
+        const press = (i: number, key: string) =>
+            handle(i).dispatchEvent(new KeyboardEvent('keydown', { key }));
+
+        press(0, 'ArrowUp');
+        press(2, 'ArrowDown');
+        expect(moves).toEqual([]);
+
+        handle(0).focus();
+        press(0, 'ArrowDown');
+        expect(moves).toEqual([[0, 1]]);
+        // The parent applies the move
+        fixture.componentRef.setInput('data', [rows[1], rows[0], rows[2]]);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(document.activeElement).toBe(handle(1));
+
+        // A cancelled move leaves the data as it was and focus where it is
+        press(1, 'ArrowDown');
+        handle(0).focus();
+        fixture.componentRef.setInput('data', [rows[1], rows[0], rows[2]]);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(document.activeElement).toBe(handle(0));
+        fixture.nativeElement.remove();
+    });
+
     describe('default state', () => {
         it('should have empty selected array', () => {
             expect(component.selected()).toEqual([]);

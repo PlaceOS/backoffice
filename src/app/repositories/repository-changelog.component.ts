@@ -2,6 +2,7 @@ import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { RepositoriesStateService } from './repositories-state.service';
@@ -43,6 +44,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         AsyncPipe,
         IconComponent,
         MarkdownPipe,

@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
+import { MatTabNavPanel } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceTrigger } from '@placeos/ts-client';
@@ -65,6 +66,7 @@ import { TriggerStateService } from './trigger-state.service';
                                 />
                                 <item-tablist
                                     [base]="name"
+                                    [panel]="tab_panel"
                                     [tabs]="tab_list()"
                                     [scrolled]="scroll() > 0"
                                     class="z-10"
@@ -74,7 +76,12 @@ import { TriggerStateService } from './trigger-state.service';
                                     class="relative z-0 h-1/2 w-full flex-1 overflow-auto p-4"
                                     (scroll)="scroll.set(el.scrollTop)"
                                 >
-                                    <router-outlet />
+                                    <mat-tab-nav-panel
+                                        #tab_panel
+                                        class="block h-full"
+                                    >
+                                        <router-outlet />
+                                    </mat-tab-nav-panel>
                                 </div>
                             }
                         </div>
@@ -100,6 +107,7 @@ import { TriggerStateService } from './trigger-state.service';
     `,
     styles: [``],
     imports: [
+        MatTabNavPanel,
         DebugOutputComponent,
         IconComponent,
         TranslatePipe,

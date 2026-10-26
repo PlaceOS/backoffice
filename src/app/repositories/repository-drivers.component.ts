@@ -4,6 +4,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DriverFormatPipe } from '../ui/pipes/driver-format.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -18,7 +19,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         <mat-progress-bar
             mode="indeterminate"
             class="w-full"
-            [class.opacity-0]="!loading()"
+            [class.invisible]="!loading()"
         />
         @if (driver_list_error()) {
             <div
@@ -48,7 +49,8 @@ import { RepositoriesStateService } from './repositories-state.service';
                 },
                 {
                     key: 'actions',
-                    name: ' ',
+                    name: 'COMMON.ACTIONS' | translate,
+                    hide_name: true,
                     size: '3.25rem',
                     sortable: false,
                     content: actions_template,
@@ -88,6 +90,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         TranslatePipe,
         MatTooltipModule,

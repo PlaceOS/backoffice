@@ -16,6 +16,7 @@ import {
 } from '@placeos/ts-client';
 import { notifyError, notifySuccess } from '../../../common/notifications';
 import { ViewResponseModalComponent } from '../../../overlays/view-response-modal.component';
+import { LoadingLabelDirective } from '../../loading-label.directive';
 import { TranslatePipe } from '../../translate.pipe';
 import { FunctionArgumentComponent } from './function-argument.component';
 import { SelectMethodComponent } from './select-method.component';
@@ -95,6 +96,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
         },
     ],
     imports: [
+        LoadingLabelDirective,
         TranslatePipe,
         MatProgressSpinnerModule,
         MatRippleModule,

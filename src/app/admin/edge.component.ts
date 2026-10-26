@@ -11,6 +11,7 @@ import { escapeHtml } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -60,7 +61,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
                 <simple-table
                     class="block min-w-5xl text-sm"
@@ -68,7 +69,8 @@ import { EdgeModalComponent } from './edge-modal.component';
                     [columns]="[
                         {
                             key: 'online',
-                            name: ' ',
+                            name: 'COMMON.ONLINE' | translate,
+                            hide_name: true,
                             content: bool_template,
                         },
                         {
@@ -89,7 +91,8 @@ import { EdgeModalComponent } from './edge-modal.component';
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             size: '6rem',
                             sortable: false,
@@ -124,6 +127,12 @@ import { EdgeModalComponent } from './edge-modal.component';
                     [class.bg-success]="data"
                     [class.bg-error]="!data"
                 ></div>
+                <!-- The tooltip is not reachable, so name the state for screen readers -->
+                <span class="sr-only">
+                    {{
+                        (data ? 'COMMON.ONLINE' : 'COMMON.OFFLINE') | translate
+                    }}
+                </span>
             </div>
         </ng-template>
         <ng-template #description_template let-data="data">
@@ -170,6 +179,7 @@ import { EdgeModalComponent } from './edge-modal.component';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         TranslatePipe,
         MatRippleModule,

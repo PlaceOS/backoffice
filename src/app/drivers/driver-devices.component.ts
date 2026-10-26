@@ -14,6 +14,7 @@ import { toSignal } from '../common/signals';
 import { BindingDirective } from '../ui/binding.directive';
 import { CustomTooltipComponent } from '../ui/custom-tooltip.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
@@ -41,7 +42,7 @@ import { DriverStateService } from './driver-state.service';
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
                 <simple-table
                     class="block min-w-lg text-sm"
@@ -61,7 +62,8 @@ import { DriverStateService } from './driver-state.service';
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             size: '6rem',
                             sortable: false,
@@ -237,6 +239,7 @@ import { DriverStateService } from './driver-state.service';
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         MatMenuModule,
         RouterModule,
         MatRippleModule,

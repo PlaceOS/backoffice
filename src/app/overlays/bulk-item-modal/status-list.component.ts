@@ -14,6 +14,7 @@ import { PlaceResource } from '@placeos/ts-client';
 import { readError } from '../../common/errors';
 import { notifyError } from '../../common/notifications';
 import { IconComponent } from '../../ui/icon.component';
+import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { VirtualScrollComponent } from '../../ui/virtual-scroll.component';
 
@@ -116,6 +117,7 @@ const BATCH_SIZE = 5;
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         MatRippleModule,
         MatProgressSpinnerModule,
         IconComponent,

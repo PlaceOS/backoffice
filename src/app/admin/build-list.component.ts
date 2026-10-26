@@ -11,6 +11,7 @@ import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
+import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -52,7 +53,7 @@ function cancelBuildJob(id, q = {}) {
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
-                    [class.opacity-0]="!loading()"
+                    [class.invisible]="!loading()"
                 />
                 <simple-table
                     class="block min-w-5xl text-sm"
@@ -76,7 +77,8 @@ function cancelBuildJob(id, q = {}) {
                         },
                         {
                             key: 'actions',
-                            name: ' ',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
                             content: actions_template,
                             size: '3.5rem',
                             sortable: false,
@@ -133,6 +135,7 @@ function cancelBuildJob(id, q = {}) {
         `,
     ],
     imports: [
+        LoadingLabelDirective,
         IconComponent,
         MatRippleModule,
         MatTooltipModule,
