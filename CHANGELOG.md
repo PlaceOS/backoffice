@@ -34,6 +34,8 @@ All notable changes to this project will be documented in this file.
 - Name icon buttons, guard hotkeys and fix copy
 - Debug console text is readable in light mode
 
+### Documentation
+
 ### Features
 
 #### Admin

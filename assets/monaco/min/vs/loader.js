@@ -1365,4 +1365,6 @@ var define, AMDLoader;
 			typeof doNotInitLoader > 'u' && c());
 })(AMDLoader || (AMDLoader = {}));
 
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="a10ce5ef-f072-5a6e-97b9-1819e63bbc11")}catch(e){}}();
 //# sourceMappingURL=../../min-maps/vs/loader.js.map
+//# debugId=a10ce5ef-f072-5a6e-97b9-1819e63bbc11
