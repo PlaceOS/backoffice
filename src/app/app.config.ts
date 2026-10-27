@@ -1,5 +1,6 @@
 import {
     ApplicationConfig,
+    ErrorHandler,
     isDevMode,
     provideBrowserGlobalErrorListeners,
     provideZonelessChangeDetection,
@@ -12,10 +13,12 @@ import {
 import { provideServiceWorker } from '@angular/service-worker';
 import { appRoutes } from './app.routes';
 import { reloadApplicationOnChunkLoadError } from './common/application';
+import { SentryReportingErrorHandler } from './common/sentry';
 
 export const appConfig: ApplicationConfig = {
     providers: [
         provideBrowserGlobalErrorListeners(),
+        { provide: ErrorHandler, useClass: SentryReportingErrorHandler },
         provideZonelessChangeDetection(),
         provideRouter(
             appRoutes,
