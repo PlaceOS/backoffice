@@ -99,6 +99,7 @@ export class MyComponent extends AsyncHandler {
 - Service worker support for PWA functionality (production builds)
 - Custom localization support via `public/assets/locale`, **TranslatePipe** and **LocaleService**. `en-AU.json` is the fallback locale
 - Use **IconComponent** for icons
+- Use `feat/*`, `fix/*`, `perf/*`, or `refactor/*` for branch names
 
 ## Code styles
 
