@@ -90,6 +90,33 @@ jobs:
             - name: Add application changelog to build
               run: cp "${RUNNER_TEMP}/CHANGELOG.md" dist/backoffice/browser/CHANGELOG.md
 
+            # Upload source maps so Sentry shows the original code. Skipped
+            # until the SENTRY_* secrets are set. Debug IDs change the scripts,
+            # so the service worker hashes are updated after. Development
+            # builds have no service worker.
+            # The release name must match SENTRY_RELEASE in src/app/common/sentry.ts.
+            - name: Upload source maps to Sentry
+              env:
+                  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+                  SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+                  SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+              run: |
+                  if [ -z "$SENTRY_AUTH_TOKEN" ] || [ -z "$SENTRY_ORG" ] || [ -z "$SENTRY_PROJECT" ]; then
+                      echo "SENTRY_AUTH_TOKEN, SENTRY_ORG or SENTRY_PROJECT is not set. Skipping upload."
+                      exit 0
+                  fi
+                  release=$(bun -e "import { VERSION } from './src/env/version.ts'; console.log('backoffice@' + VERSION.hash)")
+                  bunx sentry-cli sourcemaps inject dist/backoffice/browser
+                  if [ -f dist/backoffice/browser/ngsw.json ]; then
+                      bun config/ngsw-rehash.js dist/backoffice/browser
+                  fi
+                  bunx sentry-cli sourcemaps upload --release="$release" dist/backoffice/browser
+
+            # Production builds make hidden source maps for Sentry only
+            - name: Remove hidden source maps
+              if: steps.build_ext.outputs.configuration != 'development'
+              run: find dist/backoffice/browser -name '*.map' -delete
+
             - name: Upload build artifact
               uses: actions/upload-artifact@v4
               with:

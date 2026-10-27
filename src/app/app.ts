@@ -21,6 +21,7 @@ import { AsyncHandler } from './common/async-handler.class';
 import { detectIE, log } from './common/general';
 import { setNotifyOutlet } from './common/notifications';
 import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
+import { initSentry } from './common/sentry';
 import { SettingsService } from './common/settings.service';
 import { signalFromClient, waitForSignalValue } from './common/signals';
 import { currentUser } from './common/user-state';
@@ -221,6 +222,9 @@ export class AppComponent extends AsyncHandler implements OnInit {
             30 * 1000,
         ).catch(() => false);
         if (!user_ready) return this.onInitError();
+        initSentry(this._injector, currentUser().id).catch((error) =>
+            log('Init', 'Failed to start Sentry', [error], 'warn'),
+        );
         setLoadingMessage('Initialising locales...');
         // TranslatePipe is pure, so load translations before the shell renders
         await this._initLocale();
