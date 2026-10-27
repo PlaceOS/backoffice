@@ -69,6 +69,11 @@ config/          Development proxy and build metadata scripts
 Most feature areas are lazy-loaded from `src/app/app.routes.ts`. The application
 uses hash-based routing and enables its service worker only in production.
 
+## Error reporting
+
+Backoffice sends errors to Sentry. See [`docs/sentry.md`](docs/sentry.md) to
+set the DSN for a domain and to set up source map uploads.
+
 ## Stack
 
 - Angular 22 and Angular Material
