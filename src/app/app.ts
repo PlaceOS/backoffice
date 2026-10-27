@@ -223,7 +223,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
         ).catch(() => false);
         if (!user_ready) return this.onInitError();
         initSentry(this._injector, currentUser().id).catch((error) =>
-            log('Init', 'Failed to start Sentry', [error], 'warn'),
+            log('Init', 'Failed to start Sentry', [error], 'warn', true),
         );
         setLoadingMessage('Initialising locales...');
         // TranslatePipe is pure, so load translations before the shell renders
