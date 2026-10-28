@@ -1,5 +1,5 @@
 import { FieldTree } from '@angular/forms/signals';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { MatChipEditedEvent, MatChipInputEvent } from '@angular/material/chips';
 
 export function addSignalChipItem<T = string>(
     items: T[],
@@ -15,6 +15,23 @@ export function addSignalChipItem<T = string>(
 
 export function removeSignalChipItem<T = string>(items: T[], item: T): T[] {
     return items.filter((existing) => existing !== item);
+}
+
+/**
+ * Replace a chip item with its edited value, keeping its position.
+ * An empty value removes the item. A value already in the list merges into it.
+ */
+export function editSignalChipItem(
+    items: string[],
+    item: string,
+    event: MatChipEditedEvent,
+): string[] {
+    const value = (event.value || '').trim();
+    if (!value) return removeSignalChipItem(items, item);
+    if (value !== item && items.includes(value)) {
+        return removeSignalChipItem(items, item);
+    }
+    return items.map((existing) => (existing === item ? value : existing));
 }
 
 /** Readable name for a form field key, e.g. `service_account` to "Service account" */

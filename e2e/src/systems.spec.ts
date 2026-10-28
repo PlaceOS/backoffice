@@ -110,6 +110,38 @@ test.describe('Systems', () => {
             await expect(systems.dialog).toBeHidden();
             await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_NAME);
         });
+
+        test('AC-SYS-003-5: a camera snapshot URL can be edited', async ({
+            page,
+        }) => {
+            await systems.gotoItem(ACTIVITY_SPACE);
+            await systems.openEditModal();
+            const input = systems.dialog.locator('#camera-snap-url');
+            await input.fill('https://cam.example.com/old.jpg');
+            await input.press('Enter');
+
+            await systems.dialog
+                .getByRole('button', {
+                    name: 'Edit https://cam.example.com/old.jpg',
+                })
+                .click();
+            const edit_input = systems.dialog.locator('.mat-chip-edit-input');
+            await expect(edit_input).toBeFocused();
+            await page.keyboard.press('ControlOrMeta+A');
+            await page.keyboard.type('https://cam.example.com/new.jpg');
+            await page.keyboard.press('Enter');
+            await systems.saveButton.click();
+            await expect(systems.dialog).toBeHidden();
+
+            await systems.openEditModal();
+            const chips = systems.dialog.locator(
+                '[aria-label="Camera Snapshot URL List"] mat-chip-row',
+            );
+            await expect(chips).toHaveCount(1);
+            await expect(chips).toContainText(
+                'https://cam.example.com/new.jpg',
+            );
+        });
     });
 
     test.describe('US-SYS-004: Delete System', () => {

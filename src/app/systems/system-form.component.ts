@@ -10,7 +10,11 @@ import {
     signal,
 } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import {
+    MatChipEditedEvent,
+    MatChipInputEvent,
+    MatChipsModule,
+} from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     addSystem,
@@ -27,6 +31,7 @@ import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from '../common/async-handler.class';
 import {
     addSignalChipItem,
+    editSignalChipItem,
     getInvalidSignalFields,
     removeSignalChipItem,
 } from '../common/forms';
@@ -530,10 +535,29 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                         track item
                                     ) {
                                         <mat-chip-row
+                                            [value]="item"
+                                            [editable]="true"
+                                            (edited)="
+                                                editCameraSnapshotUrl(
+                                                    item,
+                                                    $event
+                                                )
+                                            "
                                             (removed)="
                                                 removeCameraSnapshotUrl(item)
                                             "
                                         >
+                                            <button
+                                                type="button"
+                                                matChipEdit
+                                                [attr.aria-label]="
+                                                    'COMMON.EDIT_TYPE'
+                                                        | translate
+                                                            : { name: item }
+                                                "
+                                            >
+                                                <icon>edit</icon>
+                                            </button>
                                             <div class="max-w-md truncate">
                                                 {{ item }}
                                             </div>
@@ -607,6 +631,11 @@ const TIMEZONE_OPTION_LIMIT = 50;
             mat-checkbox {
                 margin-top: 2.5em;
                 margin-bottom: 1.5em;
+            }
+
+            /* Material's chip touch target paints over the leading edit button */
+            .mat-mdc-chip-edit {
+                z-index: 1;
             }
 
             @media screen and (max-width: 640px) {
@@ -775,6 +804,17 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
             ...value,
             camera_snapshot_urls: addSignalChipItem(
                 value.camera_snapshot_urls,
+                event,
+            ),
+        }));
+    }
+
+    public editCameraSnapshotUrl(url: string, event: MatChipEditedEvent): void {
+        this.formModel.update((value) => ({
+            ...value,
+            camera_snapshot_urls: editSignalChipItem(
+                value.camera_snapshot_urls,
+                url,
                 event,
             ),
         }));
