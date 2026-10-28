@@ -25,6 +25,10 @@ All notable changes to this project will be documented in this file.
 
 - Load admin tabs and reply to all frame requests
 
+#### Sentry
+
+- Ignore ResizeObserver loop errors in dev builds
+
 #### Ui
 
 - Stop the required-marker colour applying to checkboxes

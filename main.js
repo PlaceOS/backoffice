@@ -1,12 +1,12 @@
 import {
   AuthorisedUserGuard
-} from "./chunk-AHMQ6KUZ.js";
+} from "./chunk-UHI3OPJE.js";
 import {
   AuthorisedAdminGuard
-} from "./chunk-6ZDPAIXF.js";
+} from "./chunk-5BTRLS7D.js";
 import {
   BackofficeUsersService
-} from "./chunk-R3KIBYX2.js";
+} from "./chunk-IPP6E3HR.js";
 import "./chunk-F2UXRHVQ.js";
 import {
   ActivatedRoute,
@@ -26,7 +26,7 @@ import {
 import {
   SettingsService,
   VERSION
-} from "./chunk-WLIXIQFW.js";
+} from "./chunk-65NSHU36.js";
 import {
   currentUser
 } from "./chunk-KIA2WBKL.js";
@@ -691,6 +691,10 @@ async function initSentry(injector, user_id) {
     dsn,
     release: SENTRY_RELEASE,
     environment: isDevMode() ? "development" : "production",
+    // Chrome raises this when resize notifications move to the next frame.
+    // It does no harm. In dev mode Angular adds a prefix to the message,
+    // so Sentry's default filter does not match it.
+    ignoreErrors: [/ResizeObserver loop/],
     integrations: (defaults) => [
       // Angular's global error listeners already send window errors
       // to the error handler. This prevents duplicate events.
@@ -813,11 +817,11 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
 // src/app/app.ts
 var AppComponent_Conditional_1_Defer_1_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-BBFBUQLZ.js").then((m) => m.GlobalBannerComponent)
+  import("./chunk-PRI5MZR4.js").then((m) => m.GlobalBannerComponent)
 ];
 var AppComponent_Conditional_1_Conditional_5_Defer_1_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-DNZG3OEU.js").then((m) => m.UploadListComponent)
+  import("./chunk-7JEHD54B.js").then((m) => m.UploadListComponent)
 ];
 var AppComponent_Conditional_5_Defer_1_DepsFn = () => [
   /* @ts-ignore */
@@ -1082,9 +1086,9 @@ var AppComponent = class _AppComponent extends AsyncHandler {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadataAsync(AppComponent, () => [
     /* @ts-ignore */
-    import("./chunk-BBFBUQLZ.js").then((m) => m.GlobalBannerComponent),
+    import("./chunk-PRI5MZR4.js").then((m) => m.GlobalBannerComponent),
     /* @ts-ignore */
-    import("./chunk-DNZG3OEU.js").then((m) => m.UploadListComponent),
+    import("./chunk-7JEHD54B.js").then((m) => m.UploadListComponent),
     /* @ts-ignore */
     import("./chunk-A6H7QJJ5.js").then((m) => m.IconComponent),
     /* @ts-ignore */
@@ -1244,55 +1248,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-YQXTGATO.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-7JALPEJ2.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-U65DWJEY.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QFY4MFJU.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-72MM4YWK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-CQ6PMNMG.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-T67UXK3O.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-U4OVRE4K.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-5I2UUOGO.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YBHCBIGN.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-E7S3PVTR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-4DPPM4SU.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-J4RZ3F5J.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-TZDBULDV.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-J6I7BLPA.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-X3G3KYLR.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-N2I2AHMT.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-6TIS2CR4.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-Q2OF62WN.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-T36GLYWF.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -1328,5 +1332,5 @@ var bootstrap = async () => {
   );
 };
 bootstrap();
-//# debugId=394c45a9-9a9f-5671-bcdd-6f3d0f275d51
+//# debugId=159006db-44d1-539f-bdae-5fbc4482a7fe
 //# sourceMappingURL=main.js.map
