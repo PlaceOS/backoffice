@@ -64,6 +64,10 @@ export async function initSentry(injector: Injector, user_id: string) {
         dsn,
         release: SENTRY_RELEASE,
         environment: isDevMode() ? 'development' : 'production',
+        // Chrome raises this when resize notifications move to the next frame.
+        // It does no harm. In dev mode Angular adds a prefix to the message,
+        // so Sentry's default filter does not match it.
+        ignoreErrors: [/ResizeObserver loop/],
         integrations: (defaults) => [
             // Angular's global error listeners already send window errors
             // to the error handler. This prevents duplicate events.
