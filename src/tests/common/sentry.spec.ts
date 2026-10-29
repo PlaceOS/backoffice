@@ -63,6 +63,25 @@ describe('sentry', () => {
         expect(handle_error).toHaveBeenCalledWith('late');
     });
 
+    it('ignores Monaco cancellation errors', async () => {
+        const { initSentry, SentryReportingErrorHandler } = await loadSentry();
+        setAuthorityDsn(undefined);
+        await initSentry(injector, 'user-1');
+        const console_error = vi
+            .spyOn(console, 'error')
+            .mockImplementation(() => undefined);
+        const handler = new SentryReportingErrorHandler();
+        const canceled = new Error('Canceled');
+        canceled.name = 'Canceled';
+        handler.handleError(canceled);
+        expect(handle_error).not.toHaveBeenCalled();
+        expect(console_error).not.toHaveBeenCalled();
+        const error = new Error('Canceled');
+        handler.handleError(error);
+        expect(handle_error).toHaveBeenCalledWith(error);
+        console_error.mockRestore();
+    });
+
     it('does not load Sentry when the authority turns it off', async () => {
         const { initSentry, reportError } = await loadSentry();
         setAuthorityDsn('');
