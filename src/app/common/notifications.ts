@@ -1,5 +1,6 @@
 import type { MatSnackBar } from '@angular/material/snack-bar';
 
+import { log } from './general';
 import { ApplicationIcon } from './types';
 
 /** Snackbar service, or a promise of it while the snackbar module loads */
@@ -9,13 +10,25 @@ let _service: MatSnackBar | Promise<MatSnackBar> | null = null;
  * Set the snackbar used for notifications.
  * Pass a promise to load the snackbar module lazily.
  * Notifications made before it resolves open once it does.
+ * If the promise rejects (e.g. its chunk fails to load on a flaky network),
+ * those notifications are dropped with a warning.
  */
 export function setNotifyOutlet(snackbar: MatSnackBar | Promise<MatSnackBar>) {
     _service = snackbar;
     if (snackbar instanceof Promise) {
-        snackbar.then((service) => {
-            if (_service === snackbar) _service = service;
-        });
+        snackbar.then(
+            (service) => {
+                if (_service === snackbar) _service = service;
+            },
+            (error) =>
+                log(
+                    'Notify',
+                    'Failed to load the snackbar',
+                    [error],
+                    'warn',
+                    true,
+                ),
+        );
     }
 }
 
@@ -41,8 +54,11 @@ export function notify(
         throw new Error("Snackbar service hasn't been initialised");
     }
     if (_service instanceof Promise) {
-        _service.then((service) =>
-            openNotification(service, type, message, action, on_action),
+        // setNotifyOutlet logs a failed load, so ignore the rejection here
+        _service.then(
+            (service) =>
+                openNotification(service, type, message, action, on_action),
+            () => undefined,
         );
         return;
     }

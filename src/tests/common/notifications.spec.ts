@@ -82,6 +82,18 @@ describe('notifications.ts', () => {
                 expect.any(Object),
             );
         });
+
+        it('should not raise an unhandled rejection when the lazy snackbar fails to load', async () => {
+            const failed = Promise.reject(
+                new TypeError('Importing a module script failed.'),
+            );
+            setNotifyOutlet(failed as any);
+            notify('info', 'Lost message');
+            await failed.catch(() => undefined);
+            await new Promise((resolve) => setTimeout(resolve));
+            expect(mock_snackbar.open).not.toHaveBeenCalled();
+            expect(console.warn).toHaveBeenCalled();
+        });
     });
 
     describe('notify', () => {
