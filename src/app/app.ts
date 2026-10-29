@@ -61,16 +61,21 @@ function browserOnline() {
     template: `
         <div class="flex h-full w-full flex-col overflow-hidden">
             @if (!loading()) {
+                <!--
+                    Deferred blocks show optional UI. Empty @error blocks hide it
+                    when its chunk fails to load, e.g. on a flaky mobile network.
+                    Without them Angular raises an uncaught NG0750 error.
+                -->
                 @defer (on idle) {
                     <global-banner />
-                }
+                } @error {}
                 <div class="relative h-1/2 w-full flex-1">
                     <router-outlet />
                 </div>
                 @if (!simple()) {
                     @defer (on idle) {
                         <app-upload-list />
-                    }
+                    } @error {}
                 }
             } @else {
                 <div
@@ -128,7 +133,7 @@ function browserOnline() {
                         </button>
                     </div>
                 </section>
-            }
+            } @error {}
         }
     `,
     styles: [
