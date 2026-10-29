@@ -28,12 +28,27 @@ export function reportError(error: unknown) {
 }
 
 /**
+ * True for the error Monaco uses to cancel pending work. Monaco does not
+ * handle some of these rejections, for example when an editor is disposed
+ * while a word highlight is pending. They are not failures.
+ * Same check as Monaco's `isCancellationError`.
+ */
+function isMonacoCancellation(error: unknown) {
+    return (
+        error instanceof Error &&
+        error.name === 'Canceled' &&
+        error.message === 'Canceled'
+    );
+}
+
+/**
  * Angular error handler. Logs errors to the console as the default handler
- * does, and sends them to Sentry.
+ * does, and sends them to Sentry. Ignores Monaco cancellations.
  */
 @Injectable()
 export class SentryReportingErrorHandler implements ErrorHandler {
     public handleError(error: unknown) {
+        if (isMonacoCancellation(error)) return;
         console.error(error);
         reportError(error);
     }
