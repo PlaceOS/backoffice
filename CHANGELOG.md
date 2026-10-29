@@ -32,6 +32,7 @@ All notable changes to this project will be documented in this file.
 #### Sentry
 
 - Ignore ResizeObserver loop errors in dev builds
+- Stop reporting Monaco cancellations when an editor closes
 
 #### Settings
 
