@@ -1,12 +1,12 @@
 import {
   AuthorisedUserGuard
-} from "./chunk-3Q4PW3YC.js";
+} from "./chunk-SNIPWHDS.js";
 import {
   AuthorisedAdminGuard
-} from "./chunk-LYINTTIL.js";
+} from "./chunk-QKY424R3.js";
 import {
   BackofficeUsersService
-} from "./chunk-YYSTOJ3Q.js";
+} from "./chunk-I67FUPJX.js";
 import "./chunk-F2UXRHVQ.js";
 import {
   ActivatedRoute,
@@ -22,11 +22,11 @@ import {
 } from "./chunk-2VSGNNLN.js";
 import {
   setNotifyOutlet
-} from "./chunk-OLETOVUH.js";
+} from "./chunk-LKZDNNIZ.js";
 import {
   SettingsService,
   VERSION
-} from "./chunk-E2CKSIVS.js";
+} from "./chunk-HIOLOCMM.js";
 import {
   currentUser
 } from "./chunk-KIA2WBKL.js";
@@ -509,6 +509,7 @@ var ServiceWorkerModule = class _ServiceWorkerModule {
 var _timer;
 var _last_chunk_load_reload_key = "";
 var CHUNK_LOAD_RELOAD_KEY = "BACKOFFICE.chunk_load_reload";
+var _handled_chunk_errors = /* @__PURE__ */ new WeakSet();
 var updateAvailable = signal(
   false,
   ...ngDevMode ? [{ debugName: "updateAvailable" }] : (
@@ -557,6 +558,8 @@ function isChunkLoadError(error) {
 function reloadApplicationOnChunkLoadError(error, reload = () => location.reload()) {
   if (!isChunkLoadError(error))
     return false;
+  if (error && typeof error === "object")
+    _handled_chunk_errors.add(error);
   const reload_key = getChunkLoadReloadKey(error);
   if (getLastChunkLoadReloadKey() === reload_key) {
     return true;
@@ -565,6 +568,9 @@ function reloadApplicationOnChunkLoadError(error, reload = () => location.reload
   log("ROUTER", "Lazy route chunk failed to load. Reloading application...");
   reload();
   return true;
+}
+function isHandledChunkLoadError(error) {
+  return !!error && typeof error === "object" && _handled_chunk_errors.has(error);
 }
 async function checkForUpdate(cache) {
   if (cache.isEnabled && await cache.checkForUpdate()) {
@@ -664,8 +670,9 @@ function isMonacoCancellation(error) {
 }
 var SentryReportingErrorHandler = class _SentryReportingErrorHandler {
   handleError(error) {
-    if (isMonacoCancellation(error))
+    if (isMonacoCancellation(error) || isHandledChunkLoadError(error)) {
       return;
+    }
     console.error(error);
     reportError(error);
   }
@@ -822,11 +829,11 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
 // src/app/app.ts
 var AppComponent_Conditional_1_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-TGOZ47LH.js").then((m) => m.GlobalBannerComponent)
+  import("./chunk-3ZSC6BY5.js").then((m) => m.GlobalBannerComponent)
 ];
 var AppComponent_Conditional_1_Conditional_6_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-VPOWDAZB.js").then((m) => m.UploadListComponent)
+  import("./chunk-2YUORBIF.js").then((m) => m.UploadListComponent)
 ];
 var AppComponent_Conditional_5_Defer_2_DepsFn = () => [
   /* @ts-ignore */
@@ -1097,9 +1104,9 @@ var AppComponent = class _AppComponent extends AsyncHandler {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadataAsync(AppComponent, () => [
     /* @ts-ignore */
-    import("./chunk-TGOZ47LH.js").then((m) => m.GlobalBannerComponent),
+    import("./chunk-3ZSC6BY5.js").then((m) => m.GlobalBannerComponent),
     /* @ts-ignore */
-    import("./chunk-VPOWDAZB.js").then((m) => m.UploadListComponent),
+    import("./chunk-2YUORBIF.js").then((m) => m.UploadListComponent),
     /* @ts-ignore */
     import("./chunk-A6H7QJJ5.js").then((m) => m.IconComponent),
     /* @ts-ignore */
@@ -1264,55 +1271,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-CYMTJE2T.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-H3CLG5BK.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-FEFPQHH4.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YKXGLQXE.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-LPOEWUHP.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-PE6HEHHJ.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-YHQTSOQB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YF5F2MTJ.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-YWBKSEGQ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-Q67T7R7Y.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-ZX7A226M.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-UBXGS2FU.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-6B6POTDB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-4QDRWFGW.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-SBB7XMHW.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-4PX45G2Q.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-AHI4IALK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-I7HSEWMU.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-XNWAVDK7.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-6THHLZ6Y.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -1348,5 +1355,5 @@ var bootstrap = async () => {
   );
 };
 bootstrap();
-//# debugId=36c6a044-b063-5704-961a-abd570faae77
+//# debugId=ba8e3352-99f9-5bd3-a283-76e75fb07fe8
 //# sourceMappingURL=main.js.map
