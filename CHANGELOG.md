@@ -33,6 +33,10 @@ All notable changes to this project will be documented in this file.
 
 - Ignore ResizeObserver loop errors in dev builds
 
+#### Settings
+
+- Stop a failed user settings load from raising an unhandled error
+
 #### Ui
 
 - Stop the required-marker colour applying to checkboxes
