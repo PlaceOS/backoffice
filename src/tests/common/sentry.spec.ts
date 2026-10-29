@@ -82,6 +82,25 @@ describe('sentry', () => {
         console_error.mockRestore();
     });
 
+    it('ignores chunk load errors the router already handled', async () => {
+        const { initSentry, SentryReportingErrorHandler } = await loadSentry();
+        const { reloadApplicationOnChunkLoadError } = await import(
+            '../../app/common/application'
+        );
+        setAuthorityDsn(undefined);
+        await initSentry(injector, 'user-1');
+        vi.spyOn(console, 'error').mockImplementation(() => undefined);
+        const handler = new SentryReportingErrorHandler();
+        const handled = new TypeError('Importing a module script failed.');
+        reloadApplicationOnChunkLoadError(handled, vi.fn());
+        handler.handleError(handled);
+        expect(handle_error).not.toHaveBeenCalled();
+        const unhandled = new TypeError('Importing a module script failed.');
+        handler.handleError(unhandled);
+        expect(handle_error).toHaveBeenCalledWith(unhandled);
+        vi.mocked(console.error).mockRestore();
+    });
+
     it('does not load Sentry when the authority turns it off', async () => {
         const { initSentry, reportError } = await loadSentry();
         setAuthorityDsn('');

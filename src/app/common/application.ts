@@ -6,6 +6,8 @@ import { log } from './general';
 let _timer: ReturnType<typeof setInterval>;
 let _last_chunk_load_reload_key = '';
 const CHUNK_LOAD_RELOAD_KEY = 'BACKOFFICE.chunk_load_reload';
+/** Chunk load errors that the router error handler already handled */
+const _handled_chunk_errors = new WeakSet<object>();
 
 export const updateAvailable = signal(false);
 
@@ -55,11 +57,16 @@ export function isChunkLoadError(error: unknown): boolean {
     return false;
 }
 
+/**
+ * Router navigation error handler. Reloads the application once when a lazy
+ * route chunk fails to load. Returns true when the error is a chunk load error.
+ */
 export function reloadApplicationOnChunkLoadError(
     error: unknown,
     reload: () => void = () => location.reload(),
 ): boolean {
     if (!isChunkLoadError(error)) return false;
+    if (error && typeof error === 'object') _handled_chunk_errors.add(error);
 
     const reload_key = getChunkLoadReloadKey(error);
     if (getLastChunkLoadReloadKey() === reload_key) {
@@ -69,6 +76,17 @@ export function reloadApplicationOnChunkLoadError(
     log('ROUTER', 'Lazy route chunk failed to load. Reloading application...');
     reload();
     return true;
+}
+
+/**
+ * True for a chunk load error that `reloadApplicationOnChunkLoadError` handled.
+ * Angular still sends failed initial and back/forward navigations to the
+ * ErrorHandler after the router error handler runs.
+ */
+export function isHandledChunkLoadError(error: unknown): boolean {
+    return (
+        !!error && typeof error === 'object' && _handled_chunk_errors.has(error)
+    );
 }
 
 /**

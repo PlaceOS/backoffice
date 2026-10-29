@@ -2,6 +2,7 @@ import { ErrorHandler, Injectable, Injector, isDevMode } from '@angular/core';
 import { authority, isMock } from '@placeos/ts-client';
 
 import { VERSION } from '../../env/version';
+import { isHandledChunkLoadError } from './application';
 import { log } from './general';
 
 /** DSN for deployments that do not set `config.backoffice.sentry_dsn` */
@@ -43,12 +44,15 @@ function isMonacoCancellation(error: unknown) {
 
 /**
  * Angular error handler. Logs errors to the console as the default handler
- * does, and sends them to Sentry. Ignores Monaco cancellations.
+ * does, and sends them to Sentry. Ignores Monaco cancellations and lazy route
+ * chunk failures that the router error handler already handled.
  */
 @Injectable()
 export class SentryReportingErrorHandler implements ErrorHandler {
     public handleError(error: unknown) {
-        if (isMonacoCancellation(error)) return;
+        if (isMonacoCancellation(error) || isHandledChunkLoadError(error)) {
+            return;
+        }
         console.error(error);
         reportError(error);
     }
