@@ -116,7 +116,19 @@ export class SettingsService extends AsyncHandler {
             (user) => !!user,
         ).catch(() => null);
         if (!user) return;
-        const data = await showMetadata(user.id, 'settings');
+        // Nothing awaits init(), so a failed load must not reject.
+        // The defaults stay in use until the next page load.
+        const data = await showMetadata(user.id, 'settings').catch((err) => {
+            log(
+                'Settings',
+                'Failed to load user settings',
+                [err as object],
+                'warn',
+                true,
+            );
+            return null;
+        });
+        if (!data) return;
         this._user_settings.set((data.details || {}) as HashMap);
         this._initDarkMode();
         this._applyTheme();
