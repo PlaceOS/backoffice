@@ -1,12 +1,12 @@
 import {
   AuthorisedUserGuard
-} from "./chunk-IZWKK6EE.js";
+} from "./chunk-A5ICIA4D.js";
 import {
   AuthorisedAdminGuard
-} from "./chunk-UBNBKGSE.js";
+} from "./chunk-PEUTXSND.js";
 import {
   BackofficeUsersService
-} from "./chunk-2OXYU3AM.js";
+} from "./chunk-UABOPD54.js";
 import "./chunk-F2UXRHVQ.js";
 import {
   ActivatedRoute,
@@ -26,7 +26,7 @@ import {
 import {
   SettingsService,
   VERSION
-} from "./chunk-2NLG4OPM.js";
+} from "./chunk-X3VW2L3A.js";
 import {
   currentUser
 } from "./chunk-KIA2WBKL.js";
@@ -815,15 +815,15 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
 })();
 
 // src/app/app.ts
-var AppComponent_Conditional_1_Defer_1_DepsFn = () => [
+var AppComponent_Conditional_1_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-6Q7VRTL7.js").then((m) => m.GlobalBannerComponent)
+  import("./chunk-Z3DPXQMU.js").then((m) => m.GlobalBannerComponent)
 ];
-var AppComponent_Conditional_1_Conditional_5_Defer_1_DepsFn = () => [
+var AppComponent_Conditional_1_Conditional_6_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-NIMDBWLD.js").then((m) => m.UploadListComponent)
+  import("./chunk-OECEZ3U4.js").then((m) => m.UploadListComponent)
 ];
-var AppComponent_Conditional_5_Defer_1_DepsFn = () => [
+var AppComponent_Conditional_5_Defer_2_DepsFn = () => [
   /* @ts-ignore */
   import("./chunk-A6H7QJJ5.js").then((m) => m.IconComponent),
   /* @ts-ignore */
@@ -834,32 +834,36 @@ function AppComponent_Conditional_1_Defer_0_Template(rf, ctx) {
     \u0275\u0275element(0, "global-banner");
   }
 }
-function AppComponent_Conditional_1_Conditional_5_Defer_0_Template(rf, ctx) {
+function AppComponent_Conditional_1_DeferError_1_Template(rf, ctx) {
+}
+function AppComponent_Conditional_1_Conditional_6_Defer_0_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275element(0, "app-upload-list");
   }
 }
-function AppComponent_Conditional_1_Conditional_5_Template(rf, ctx) {
+function AppComponent_Conditional_1_Conditional_6_DeferError_1_Template(rf, ctx) {
+}
+function AppComponent_Conditional_1_Conditional_6_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275domTemplate(0, AppComponent_Conditional_1_Conditional_5_Defer_0_Template, 1, 0);
-    \u0275\u0275defer(1, 0, AppComponent_Conditional_1_Conditional_5_Defer_1_DepsFn);
+    \u0275\u0275domTemplate(0, AppComponent_Conditional_1_Conditional_6_Defer_0_Template, 1, 0)(1, AppComponent_Conditional_1_Conditional_6_DeferError_1_Template, 0, 0);
+    \u0275\u0275defer(2, 0, AppComponent_Conditional_1_Conditional_6_Defer_2_DepsFn, null, null, 1);
     \u0275\u0275deferOnIdle();
   }
 }
 function AppComponent_Conditional_1_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275domTemplate(0, AppComponent_Conditional_1_Defer_0_Template, 1, 0);
-    \u0275\u0275defer(1, 0, AppComponent_Conditional_1_Defer_1_DepsFn);
+    \u0275\u0275domTemplate(0, AppComponent_Conditional_1_Defer_0_Template, 1, 0)(1, AppComponent_Conditional_1_DeferError_1_Template, 0, 0);
+    \u0275\u0275defer(2, 0, AppComponent_Conditional_1_Defer_2_DepsFn, null, null, 1);
     \u0275\u0275deferOnIdle();
-    \u0275\u0275elementStart(3, "div", 3);
-    \u0275\u0275element(4, "router-outlet");
+    \u0275\u0275elementStart(4, "div", 3);
+    \u0275\u0275element(5, "router-outlet");
     \u0275\u0275elementEnd();
-    \u0275\u0275conditionalCreate(5, AppComponent_Conditional_1_Conditional_5_Template, 3, 0);
+    \u0275\u0275conditionalCreate(6, AppComponent_Conditional_1_Conditional_6_Template, 4, 0);
   }
   if (rf & 2) {
     const ctx_r0 = \u0275\u0275nextContext();
-    \u0275\u0275advance(5);
-    \u0275\u0275conditional(!ctx_r0.simple() ? 5 : -1);
+    \u0275\u0275advance(6);
+    \u0275\u0275conditional(!ctx_r0.simple() ? 6 : -1);
   }
 }
 function AppComponent_Conditional_2_Template(rf, ctx) {
@@ -896,10 +900,12 @@ function AppComponent_Conditional_5_Defer_0_Template(rf, ctx) {
     \u0275\u0275elementEnd()()()();
   }
 }
+function AppComponent_Conditional_5_DeferError_1_Template(rf, ctx) {
+}
 function AppComponent_Conditional_5_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275domTemplate(0, AppComponent_Conditional_5_Defer_0_Template, 10, 0);
-    \u0275\u0275defer(1, 0, AppComponent_Conditional_5_Defer_1_DepsFn);
+    \u0275\u0275domTemplate(0, AppComponent_Conditional_5_Defer_0_Template, 10, 0)(1, AppComponent_Conditional_5_DeferError_1_Template, 0, 0);
+    \u0275\u0275defer(2, 0, AppComponent_Conditional_5_Defer_2_DepsFn, null, null, 1);
     \u0275\u0275deferOnIdle();
   }
 }
@@ -1063,11 +1069,11 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], features: [\u0275\u0275InheritDefinitionFeature], decls: 6, vars: 3, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], ["loader", "", 1, "absolute", "inset-0", "z-50", "flex", "items-center", "justify-center"], ["role", "alert", 1, "bg-error", "text-error-content", "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "px-4", "py-2", "text-xs", "shadow-sm"], [1, "relative", "h-1/2", "w-full", "flex-1"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", "aria-label", "Loading", 1, "scale-150", "rounded"], ["role", "status", "aria-live", "polite", 1, "border-info/30", "bg-base-100", "text-base-content", "fixed", "right-3", "bottom-3", "z-100", "w-88", "max-w-[calc(100vw-2rem)]", "rounded-md", "border", "p-3", "shadow-lg"], [1, "flex", "items-center", "gap-2"], [1, "min-w-0", "flex-1"], [1, "text-sm", "font-medium"], [1, "mt-0.5", "text-xs", "opacity-70"], ["icon", "", "default", "", "type", "button", "matTooltip", "Refresh", "matTooltipPosition", "left", 3, "click"]], template: function AppComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0);
-      \u0275\u0275conditionalCreate(1, AppComponent_Conditional_1_Template, 6, 1)(2, AppComponent_Conditional_2_Template, 3, 0, "div", 1);
+      \u0275\u0275conditionalCreate(1, AppComponent_Conditional_1_Template, 7, 1)(2, AppComponent_Conditional_2_Template, 3, 0, "div", 1);
       \u0275\u0275elementEnd();
       \u0275\u0275element(3, "global-loading");
       \u0275\u0275conditionalCreate(4, AppComponent_Conditional_4_Template, 2, 0, "div", 2);
-      \u0275\u0275conditionalCreate(5, AppComponent_Conditional_5_Template, 3, 0);
+      \u0275\u0275conditionalCreate(5, AppComponent_Conditional_5_Template, 4, 0);
     }
     if (rf & 2) {
       \u0275\u0275advance();
@@ -1086,9 +1092,9 @@ var AppComponent = class _AppComponent extends AsyncHandler {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadataAsync(AppComponent, () => [
     /* @ts-ignore */
-    import("./chunk-6Q7VRTL7.js").then((m) => m.GlobalBannerComponent),
+    import("./chunk-Z3DPXQMU.js").then((m) => m.GlobalBannerComponent),
     /* @ts-ignore */
-    import("./chunk-NIMDBWLD.js").then((m) => m.UploadListComponent),
+    import("./chunk-OECEZ3U4.js").then((m) => m.UploadListComponent),
     /* @ts-ignore */
     import("./chunk-A6H7QJJ5.js").then((m) => m.IconComponent),
     /* @ts-ignore */
@@ -1099,16 +1105,21 @@ var AppComponent = class _AppComponent extends AsyncHandler {
       args: [{ selector: "placeos-root", template: `
         <div class="flex h-full w-full flex-col overflow-hidden">
             @if (!loading()) {
+                <!--
+                    Deferred blocks show optional UI. Empty @error blocks hide it
+                    when its chunk fails to load, e.g. on a flaky mobile network.
+                    Without them Angular raises an uncaught NG0750 error.
+                -->
                 @defer (on idle) {
                     <global-banner />
-                }
+                } @error {}
                 <div class="relative h-1/2 w-full flex-1">
                     <router-outlet />
                 </div>
                 @if (!simple()) {
                     @defer (on idle) {
                         <app-upload-list />
-                    }
+                    } @error {}
                 }
             } @else {
                 <div
@@ -1166,7 +1177,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
                         </button>
                     </div>
                 </section>
-            }
+            } @error {}
         }
     `, imports: [
         GlobalBannerComponent,
@@ -1181,7 +1192,7 @@ var AppComponent = class _AppComponent extends AsyncHandler {
   });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 155 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 160 });
 })();
 
 // src/app/ui/unauthorised.component.ts
@@ -1248,55 +1259,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-XGHQCXAK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-ZKV35LTX.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-CO2VQ7FR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-WCDRAD24.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-JCQC3F47.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-EECI36BZ.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-ROAAYLJK.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-JMWYXRFZ.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-R67RG7TS.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-KEWTIFIO.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-JOM4I3SV.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-M77TIJMI.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-U6GVBR7Q.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-3PTTSQVG.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-SFSBFGZR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-KXTLMRGL.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [AuthorisedUserGuard],
-    loadChildren: () => import("./chunk-WIKRTZ7S.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IAWCPZUE.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [AuthorisedAdminGuard],
-    loadChildren: () => import("./chunk-U4O6YWUG.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QZGL36J5.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -1332,5 +1343,5 @@ var bootstrap = async () => {
   );
 };
 bootstrap();
-//# debugId=159006db-44d1-539f-bdae-5fbc4482a7fe
+//# debugId=cc2b9eee-644a-5692-95d9-1e46376b6afb
 //# sourceMappingURL=main.js.map

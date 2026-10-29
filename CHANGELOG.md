@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 - Link tab panels, name loaders and reorder by keyboard
 - Set page language from the loaded translations
 
+#### App
+
+- Hide optional UI when its deferred chunk fails to load
+
 #### Auth
 
 - Use the root redirect_uri on any localhost dev server
