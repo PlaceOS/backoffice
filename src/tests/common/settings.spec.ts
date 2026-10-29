@@ -41,6 +41,9 @@ vi.mock('../../app/common/general', () => ({
     log: vi.fn(),
 }));
 
+import { showMetadata } from '@placeos/ts-client';
+
+import { log } from '../../app/common/general';
 import { DEFAULT_SETTINGS } from '../../app/common/settings';
 import { SettingsService } from '../../app/common/settings.service';
 
@@ -101,6 +104,20 @@ describe('SettingsService', () => {
         it('should have app_name property', () => {
             expect(service.app_name).toBeDefined();
             expect(typeof service.app_name).toBe('string');
+        });
+
+        it('should not reject when user settings fail to load', async () => {
+            vi.mocked(showMetadata).mockRejectedValueOnce(
+                new TypeError('Load failed'),
+            );
+            await expect(service.init()).resolves.toBeUndefined();
+            expect(log).toHaveBeenCalledWith(
+                'Settings',
+                'Failed to load user settings',
+                [expect.any(TypeError)],
+                'warn',
+                true,
+            );
         });
     });
 
