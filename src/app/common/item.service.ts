@@ -60,6 +60,16 @@ const receiptItems = (resources: CascadeResource[]) =>
         name: resource.name,
     }));
 
+/** Types a copy would lose data for. Trigger actions and conditions are getters that a copy drops. */
+const NO_COPY_TYPES = ['triggers'];
+/** Types with unique fields that a duplicate cannot change, e.g. user email */
+const NO_DUPLICATE_TYPES = [
+    'users',
+    'domains',
+    'repositories',
+    ...NO_COPY_TYPES,
+];
+
 /** Resource types whose items carry settings */
 const SETTINGS_TYPES = new Set<ResourceType>([
     'drivers',
@@ -154,6 +164,12 @@ export class ActiveItemService extends AsyncHandler {
 
     public get type() {
         return this._type;
+    }
+
+    /** Whether the active item can be copied, or duplicated without edits */
+    public canCopy(duplicate = false) {
+        const blocked = duplicate ? NO_DUPLICATE_TYPES : NO_COPY_TYPES;
+        return this.canMutate(2) && !blocked.includes(this._type);
     }
 
     public canMutate(permission: number) {
@@ -269,7 +285,7 @@ export class ActiveItemService extends AsyncHandler {
     }
 
     public create(item?: PlaceResource, copy = false) {
-        if (!this.canMutate(2)) return;
+        if (!(copy ? this.canCopy() : this.canMutate(2))) return;
         item = item || this._active_item();
         const actions =
             Object.values(ACTIONS).find(
@@ -576,7 +592,7 @@ export class ActiveItemService extends AsyncHandler {
     }
 
     public duplicate() {
-        if (!this._user.current().sys_admin) return;
+        if (!this.canCopy(true)) return;
         const item = this._active_item();
         if (item) {
             const ref = this._dialog.open(DuplicateModalComponent, {
@@ -588,8 +604,10 @@ export class ActiveItemService extends AsyncHandler {
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done' && e.metadata?.[0]) {
                     // Clear first so the copy is shown with its own settings
+                    const copy = e.metadata[0] as unknown as Identity;
                     this._active_item.set(null);
-                    this.replaceItem(e.metadata[0] as unknown as Identity);
+                    this.replaceItem(copy);
+                    this._router.navigate([`/${this._type}`, copy.id, 'about']);
                 }
             });
         }

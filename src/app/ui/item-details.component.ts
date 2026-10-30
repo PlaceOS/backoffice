@@ -124,30 +124,36 @@ export interface DisplayItem {
                     <span class="keycap">E</span>
                 </button>
             }
-            <button
-                mat-menu-item
-                class="flex items-center space-x-2"
-                disabled="true"
-                (click)="newFromItem()"
-            >
-                <icon class="text-2xl">add</icon>
-                <div>
-                    {{
-                        'COMMON.CREATE_FROM_TYPE' | translate: { name: type() }
-                    }}
-                </div>
-            </button>
-            <button
-                mat-menu-item
-                class="flex items-center space-x-2"
-                disabled="true"
-                (click)="duplicateItem()"
-            >
-                <icon class="text-2xl">call_split</icon>
-                <div>
-                    {{ 'COMMON.DUPLICATE_TYPE' | translate: { name: type() } }}
-                </div>
-            </button>
+            @if (canCopy()) {
+                <button
+                    mat-menu-item
+                    class="flex items-center space-x-2"
+                    (click)="newFromItem()"
+                >
+                    <icon class="text-2xl">add</icon>
+                    <div>
+                        {{
+                            'COMMON.CREATE_FROM_TYPE'
+                                | translate: { name: type() }
+                        }}
+                    </div>
+                </button>
+            }
+            @if (canCopy(true)) {
+                <button
+                    mat-menu-item
+                    class="flex items-center space-x-2"
+                    (click)="duplicateItem()"
+                >
+                    <icon class="text-2xl">call_split</icon>
+                    <div>
+                        {{
+                            'COMMON.DUPLICATE_TYPE'
+                                | translate: { name: type() }
+                        }}
+                    </div>
+                </button>
+            }
             <button
                 mat-menu-item
                 class="flex items-center space-x-2"
@@ -222,6 +228,8 @@ export class ItemDetailsComponent {
 
     public readonly canMutate = (permission: number) =>
         this._service.canMutate(permission);
+    public readonly canCopy = (duplicate = false) =>
+        this._service.canCopy(duplicate);
 
     public readonly copyID = () => {
         this._clipboard.copy(this.item()?.id || '');

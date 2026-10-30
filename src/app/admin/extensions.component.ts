@@ -17,10 +17,7 @@ import {
     DialogEvent,
     ExtensionSection,
 } from '../common/types';
-import {
-    ConfirmModalComponent,
-    ConfirmModalData,
-} from '../overlays/confirm-modal.component';
+import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -253,29 +250,23 @@ export class PlaceExtensionsComponent implements OnInit {
     }
 
     public async removeExtension(item: BackofficeExtension) {
-        const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
-            ConfirmModalComponent,
+        const details = await openConfirmModal(
             {
-                data: {
-                    title: 'Remove extension',
-                    content: `Are you sure you want to remove the extension "${escapeHtml(item.name)}" from ${escapeHtml(item.type)}?`,
-                    icon: { content: 'delete' },
-                },
+                title: 'Remove extension',
+                content: `Are you sure you want to remove the extension "${escapeHtml(item.name)}" from ${escapeHtml(item.type)}?`,
+                icon: { content: 'delete' },
             },
+            this._dialog,
         );
-        waitForEvent(
-            ref.componentInstance.event,
-            (__: DialogEvent) => __.reason === 'done',
-        ).then(async (__) => {
-            ref.componentInstance.loading.set('Removing extension...');
-            let ext_list = this.extensions();
-            ext_list = ext_list.filter((i) => !isSameExtension(i, item));
-            await this.updateDomain(ext_list).catch(async (e) =>
-                notifyError(`Error removing extension: ${await readError(e)}`),
-            );
-            ref.componentInstance?.loading.set('');
-            ref.close();
-        });
+        if (details?.reason !== 'done') return details?.close();
+        details.loading('Removing extension...');
+        const ext_list = this.extensions().filter(
+            (i) => !isSameExtension(i, item),
+        );
+        await this.updateDomain(ext_list).catch(async (e) =>
+            notifyError(`Error removing extension: ${await readError(e)}`),
+        );
+        details.close();
     }
 
     public async updateDomain(extension_list: BackofficeExtension[]) {

@@ -453,11 +453,9 @@ export class SystemStateService extends AsyncHandler {
         ]);
         if (details?.reason !== 'action') return ref.close();
         try {
-            const t = await this.addTrigger(
+            return await this.addTrigger(
                 ref.componentInstance.item as PlaceTrigger,
             );
-            this.triggersChanged();
-            return t;
         } catch (err) {
             notifyError(
                 `Error adding trigger to system. Error: ${describeError(err)}`,
