@@ -9,11 +9,10 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import { FormField, form, submit } from '@angular/forms/signals';
+import { FormField, form } from '@angular/forms/signals';
 import {
     PlaceZone,
     addZone as addZoneRequest,
-    cleanObject,
     showZone,
     updateZone as updateZoneRequest,
 } from '@placeos/ts-client';
@@ -25,18 +24,16 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AsyncHandler } from '../common/async-handler.class';
-import { readError } from '../common/errors';
 import {
     addSignalChipItem,
-    getInvalidSignalFields,
+    mergeFormItem,
+    onSaveHotkey,
     removeSignalChipItem,
+    submitFormDialog,
 } from '../common/forms';
-import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
-import { notifyError, notifySuccess } from '../common/notifications';
 import { TIMEZONES_IANA } from '../common/timezones';
-import { DialogEvent, Identity } from '../common/types';
+import { DialogEvent } from '../common/types';
 import { CounterComponent } from '../ui/counter.component';
 import { ImageListFieldComponent } from '../ui/custom-fields/image-list-field.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
@@ -344,12 +341,11 @@ const TIMEZONE_OPTION_LIMIT = 50;
         FullscreenModalShellComponent,
     ],
 })
-export class ZoneFormComponent extends AsyncHandler implements OnInit {
+export class ZoneFormComponent implements OnInit {
     private _dialog_ref = inject<MatDialogRef<ZoneFormComponent>>(MatDialogRef);
     private _data = inject<{ item: PlaceZone; readonly?: string }>(
         MAT_DIALOG_DATA,
     );
-    private _hotkey = inject(HotkeysService);
     private readonly _name = 'ZONES';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -372,7 +368,7 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
     );
 
     constructor() {
-        super();
+        onSaveHotkey(() => this.submit());
         effect(() => {
             // Sync only after the user changes the picker. The parent zone
             // loads async, so an early save must keep the stored `parent_id`.
@@ -414,52 +410,31 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
 
     public ngOnInit(): void {
         this.updateZone();
-        this.subscription(
-            'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
-        );
     }
 
     public async submit(): Promise<void> {
-        await submit(this.form, async () => {
-            const item: PlaceZone = this._data.item;
-            this.loading.set(i18n(`${this._name}.SAVING`));
-            const item_json = item.toJSON ? item.toJSON() : item;
-            // `parent_zone` is UI-only; the backend uses `parent_id`, which the
-            // effect keeps in sync. Strip it so we never POST `parent_zone: null`.
-            const { parent_zone: _parent_zone, ...form_value } =
-                this.formModel();
-            const form_item = (
-                item.id
-                    ? cleanObject({ ...item_json, ...form_value }, [undefined])
-                    : { ...item_json, ...form_value }
-            ) as Identity;
-            try {
-                const _item = await (form_item.id
-                    ? updateZoneRequest(
-                          form_item.id as string,
-                          form_item as unknown as PlaceZone,
-                      )
-                    : addZoneRequest(form_item as unknown as PlaceZone));
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            } catch (err) {
-                this.loading.set(null);
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: await readError(err),
-                    }),
-                );
-            }
-        });
-        if (this.form().invalid()) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidSignalFields(this.form).join(', '),
-                }),
-            );
-        }
+        await submitFormDialog(
+            this.form,
+            {
+                loading: this.loading,
+                event: this.event,
+                close: () => this._dialog_ref.close(),
+            },
+            `${this._name}.`,
+            () => {
+                // `parent_zone` is UI-only; the backend uses `parent_id`, which the
+                // effect keeps in sync. Strip it so we never POST `parent_zone: null`.
+                const { parent_zone: _parent_zone, ...form_value } =
+                    this.formModel();
+                const form_item = mergeFormItem(
+                    this._data.item,
+                    form_value,
+                ) as unknown as PlaceZone;
+                return form_item.id
+                    ? updateZoneRequest(form_item.id, form_item)
+                    : addZoneRequest(form_item);
+            },
+        );
     }
 
     /** Show the stored parent zone in the picker. `parent_id` stays as stored */

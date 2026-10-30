@@ -11,11 +11,10 @@ import {
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { form, FormField } from '@angular/forms/signals';
 import {
     addDriver,
     addSettings,
-    cleanObject,
     EncryptionLevel,
     GitCommitDetails,
     listRepositoryCommits,
@@ -33,17 +32,15 @@ import {
 } from '@placeos/ts-client';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { AsyncHandler } from '../common/async-handler.class';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import * as yaml from 'js-yaml';
-import { getInvalidSignalFields } from '../common/forms';
-import { HotkeysService } from '../common/hotkeys.service';
+import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
-import { notifyError, notifySuccess } from '../common/notifications';
+import { notifyError } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
 
 import { readError } from '../common/errors';
@@ -295,14 +292,13 @@ import {
         FullscreenModalShellComponent,
     ],
 })
-export class DriverFormComponent extends AsyncHandler implements OnInit {
+export class DriverFormComponent implements OnInit {
     private _dialog_ref =
         inject<MatDialogRef<DriverFormComponent>>(MatDialogRef);
     private _data = inject<{ item: PlaceDriver; readonly?: string }>(
         MAT_DIALOG_DATA,
     );
     private readonly _name = 'DRIVERS';
-    private _hotkey = inject(HotkeysService);
     private _date_pipe = new DatePipe('en');
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -401,14 +397,10 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
         const edit = !!item.id;
         this.heading.set(i18n(`${this._name}.${edit ? 'EDIT' : 'NEW'}`));
         this._loadDetailsFromForm();
-        this.subscription(
-            'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
-        );
     }
 
     constructor() {
-        super();
+        onSaveHotkey(() => this.submit());
         effect(() => {
             const module_name = this.formModel().module_name;
             const clean_name = module_name?.replace(/ /g, '_') || '';
@@ -479,55 +471,38 @@ export class DriverFormComponent extends AsyncHandler implements OnInit {
     }
 
     public async submit(): Promise<void> {
-        await submit(this.form, async () => {
-            const item = this._data.item;
-            this.saving.set(i18n(`${this._name}.SAVING`));
-            const item_json = item.toJSON ? item.toJSON() : item;
-            const form_value = { ...this.formModel() };
-            if (item.id) {
-                delete form_value.role;
-                delete form_value.class_name;
-            }
-            const form_item = (
-                item.id
-                    ? cleanObject({ ...item_json, ...form_value }, [undefined])
-                    : { ...item_json, ...form_value }
-            ) as Identity;
-            try {
-                const _item = await (form_item.id
-                    ? updateDriver(
-                          form_item.id as string,
-                          form_item as unknown as PlaceDriver,
-                      )
-                    : addDriver(form_item as unknown as PlaceDriver));
-                this.event.emit({
-                    reason: 'done',
-                    metadata: { item: _item as unknown as Identity },
-                });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
+        await submitFormDialog(
+            this.form,
+            {
+                loading: this.saving,
+                event: this.event,
+                close: () => this._dialog_ref.close(),
+            },
+            `${this._name}.`,
+            () => {
+                const item = this._data.item;
+                const form_value = { ...this.formModel() };
+                if (item.id) {
+                    delete form_value.role;
+                    delete form_value.class_name;
+                }
+                const form_item = mergeFormItem(
+                    item,
+                    form_value,
+                ) as unknown as PlaceDriver;
+                return form_item.id
+                    ? updateDriver(form_item.id, form_item)
+                    : addDriver(form_item);
+            },
+            async (item) => {
                 if (!this.formModel().id && this.formModel().settings) {
                     await this.newSettings(
-                        _item as unknown as Identity,
+                        item as unknown as Identity,
                         this.formModel().settings,
                     );
                 }
-                this._dialog_ref.close();
-            } catch (err) {
-                this.saving.set(null);
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: await readError(err),
-                    }),
-                );
-            }
-        });
-        if (this.form().invalid()) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidSignalFields(this.form).join(', '),
-                }),
-            );
-        }
+            },
+        );
     }
 
     private _applyDriverDetails(details: PlaceDriverDetails) {

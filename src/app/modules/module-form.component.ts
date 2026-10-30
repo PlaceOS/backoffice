@@ -9,10 +9,9 @@ import {
     signal,
     untracked,
 } from '@angular/core';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { form, FormField } from '@angular/forms/signals';
 import {
     addModule,
-    cleanObject,
     PlaceDriverRole,
     PlaceModule,
     queryDrivers,
@@ -30,13 +29,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { AsyncHandler } from '../common/async-handler.class';
-import { readError } from '../common/errors';
-import { getInvalidSignalFields } from '../common/forms';
-import { HotkeysService } from '../common/hotkeys.service';
+import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
-import { notifyError, notifySuccess } from '../common/notifications';
-import { DialogEvent, Identity } from '../common/types';
+import { DialogEvent } from '../common/types';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -363,14 +358,13 @@ import {
         FullscreenModalShellComponent,
     ],
 })
-export class ModuleFormComponent extends AsyncHandler implements OnInit {
+export class ModuleFormComponent implements OnInit {
     private _dialog_ref =
         inject<MatDialogRef<ModuleFormComponent>>(MatDialogRef);
     private _data = inject<{ item: PlaceModule; readonly?: string }>(
         MAT_DIALOG_DATA,
     );
     private readonly _name = 'MODULES';
-    private _hotkey = inject(HotkeysService);
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
@@ -425,10 +419,6 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
     });
 
     public ngOnInit(): void {
-        this.subscription(
-            'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
-        );
         const { system, control_system_id } = this.formModel();
         if (control_system_id && !system) {
             showSystem(control_system_id).then(
@@ -439,7 +429,7 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
     }
 
     constructor() {
-        super();
+        onSaveHotkey(() => this.submit());
         effect(() => {
             const custom_name = this.formModel().custom_name;
             const clean_name = custom_name?.replace(/ /g, '_') || '';
@@ -500,53 +490,35 @@ export class ModuleFormComponent extends AsyncHandler implements OnInit {
 
     public async submit(): Promise<void> {
         if (this.loading()) return;
-        await submit(this.form, async () => {
-            const item = this._data.item;
-            this.loading.set(i18n(`${this._name}.SAVING`));
-            const item_json = item.toJSON ? item.toJSON() : item;
-            const form_value: Partial<ModuleFormModel> = {
-                ...this.formModel(),
-            };
-            // UI-only fields; the backend uses the `*_id` values which are kept
-            // in sync by effects. Strip them so we never POST `driver: null`.
-            delete form_value.system;
-            delete form_value.driver;
-            delete form_value.edge;
-            const form_item = (
-                item.id
-                    ? cleanObject({ ...item_json, ...form_value }, [undefined])
-                    : { ...item_json, ...form_value }
-            ) as Identity;
-            // Strip the system after merging so the original item cannot restore it.
-            if (form_item.role !== PlaceDriverRole.Logic) {
-                delete form_item.control_system_id;
-            }
-            try {
-                const _item = await (form_item.id
-                    ? updateModule(
-                          form_item.id as string,
-                          form_item as unknown as PlaceModule,
-                      )
-                    : addModule(form_item as unknown as PlaceModule));
+        await submitFormDialog(
+            this.form,
+            {
+                loading: this.loading,
+                event: this.event,
+                close: () => this._dialog_ref.close(),
+            },
+            `${this._name}.`,
+            async () => {
+                const form_value: Partial<ModuleFormModel> = {
+                    ...this.formModel(),
+                };
+                // UI-only fields; the backend uses the `*_id` values which are kept
+                // in sync by effects. Strip them so we never POST `driver: null`.
+                delete form_value.system;
+                delete form_value.driver;
+                delete form_value.edge;
+                const form_item = mergeFormItem(this._data.item, form_value);
+                // Strip the system after merging so the original item cannot restore it.
+                if (form_item.role !== PlaceDriverRole.Logic) {
+                    delete form_item.control_system_id;
+                }
+                const module = form_item as unknown as PlaceModule;
+                const saved = await (module.id
+                    ? updateModule(module.id, module)
+                    : addModule(module));
                 clearSupportModuleCache();
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            } catch (err) {
-                this.loading.set(null);
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: await readError(err),
-                    }),
-                );
-            }
-        });
-        if (this.form().invalid()) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidSignalFields(this.form).join(', '),
-                }),
-            );
-        }
+                return saved;
+            },
+        );
     }
 }

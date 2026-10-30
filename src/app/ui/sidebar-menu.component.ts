@@ -39,7 +39,6 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 @Component({
     selector: 'sidebar-menu',
     template: `
-        <!-- eslint-disable @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
         <!-- Close the mobile menu so the content it skips to is visible -->
         <skip-to-content (click)="open.set(false)" />
         <div
