@@ -15,6 +15,7 @@ import {
     inject,
     Injector,
     input,
+    model,
     output,
     Signal,
     signal,
@@ -39,6 +40,9 @@ export interface TableColumn {
 }
 
 type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
+
+/** Sorted column of a table. Null when unsorted. */
+export type TableSort = { key: string; reverse: boolean } | null;
 
 /** Shared collator for the default sort. Same order as `localeCompare`. */
 const COLLATOR = new Intl.Collator();
@@ -358,9 +362,8 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
     public readonly active_columns = computed(() =>
         this.columns().filter((_) => _.show !== false),
     );
-    public readonly sort = signal<{ key: string; reverse: boolean } | null>(
-        null,
-    );
+    /** Sorted column. Bind it to keep the sort when the page closes. */
+    public readonly sort = model<TableSort>(null);
 
     // Internal signal to hold the actual data array
     private readonly _data = signal<T[]>([]);

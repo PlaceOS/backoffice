@@ -23,6 +23,7 @@ import {
     addSignalChipItem,
     mergeFormItem,
     onSaveHotkey,
+    removeSignalChipItem,
     submitFormDialog,
 } from '../common/forms';
 import { i18n } from '../common/locale.service';
@@ -443,31 +444,16 @@ export class BrokerFormComponent {
      * @param event Input event
      */
     public addFilter(event: MatChipInputEvent): void {
-        const value = (event.value || '').trim();
-        if (value) {
-            this.formModel.update((model) => ({
-                ...model,
-                filters: addSignalChipItem(model.filters, event),
-            }));
-        }
-        event.chipInput?.clear();
+        this.formModel.update((model) => ({
+            ...model,
+            filters: addSignalChipItem(model.filters, event),
+        }));
     }
 
-    /**
-     * Remove filter from the list
-     * @param existing_filter Filter to remove
-     */
     public removeFilter(existing_filter: string): void {
-        if (!this.filters().length) return;
-        const filter_list = [...this.filters()];
-        const index = filter_list.indexOf(existing_filter);
-
-        if (index >= 0) {
-            filter_list.splice(index, 1);
-            this.formModel.update((model) => ({
-                ...model,
-                filters: filter_list,
-            }));
-        }
+        this.formModel.update((model) => ({
+            ...model,
+            filters: removeSignalChipItem(model.filters, existing_filter),
+        }));
     }
 }

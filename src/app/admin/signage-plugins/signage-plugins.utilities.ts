@@ -90,17 +90,3 @@ export function probeSignagePlugin(
         document.body.appendChild(frame);
     });
 }
-
-/** Run `task` for each item with at most `limit` tasks in progress at once. */
-export async function forEachWithLimit<T>(
-    items: readonly T[],
-    limit: number,
-    task: (item: T) => Promise<void>,
-): Promise<void> {
-    let next = 0;
-    const worker = async () => {
-        while (next < items.length) await task(items[next++]);
-    };
-    const count = Math.max(1, Math.min(limit, items.length));
-    await Promise.all(Array.from({ length: count }, worker));
-}

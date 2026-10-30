@@ -1,17 +1,12 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { describeError } from '../../common/errors';
 import { escapeHtml } from '../../common/general';
 import { reportLoadError } from '../../common/load-error';
 import { i18n } from '../../common/locale.service';
-import { notifyError } from '../../common/notifications';
-import { openConfirmModal } from '../../overlays/confirm-modal.component';
+import { confirmAndRun } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
 import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
@@ -21,6 +16,7 @@ import { AdminDataService } from '../admin-data.service';
 import { StorageProviderModalComponent } from './storage-provider-modal.component';
 import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
 
+import { AdminDomainSelectComponent } from '../admin-domain-select.component';
 @Component({
     selector: 'app-storage',
     template: `
@@ -30,23 +26,12 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
                     {{ 'ADMIN.STORAGE_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <mat-form-field class="h-12" appearance="outline">
-                        <mat-select
-                            name="type"
-                            [(ngModel)]="domain"
-                            (ngModelChange)="loadStorage()"
-                            [placeholder]="'ADMIN.ALL_DOMAINS' | translate"
-                        >
-                            <mat-option [value]="{}">{{
-                                'ADMIN.ALL_DOMAINS' | translate
-                            }}</mat-option>
-                            @for (domain of domain_list(); track domain.id) {
-                                <mat-option [value]="domain">
-                                    {{ domain.name }}
-                                </mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
+                    <admin-domain-select
+                        key="storage"
+                        all
+                        field_class="h-12"
+                        (changed)="loadStorage()"
+                    />
                     <button
                         icon
                         default
@@ -178,6 +163,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
     `,
     styles: [``],
     imports: [
+        AdminDomainSelectComponent,
         LoadingLabelDirective,
         IconComponent,
         MatRippleModule,
@@ -185,9 +171,6 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
         MatTooltipModule,
         SimpleTableComponent,
         MatProgressBarModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        FormsModule,
         DateFromPipe,
     ],
 })
@@ -223,7 +206,8 @@ export class StorageComponent implements OnInit {
     }
 
     public async remove(item: PlaceStorage) {
-        const resp = await openConfirmModal(
+        const removed = await confirmAndRun(
+            this._dialog,
             {
                 title: i18n('ADMIN.STORAGE_REMOVE_TITLE'),
                 content: i18n('ADMIN.STORAGE_REMOVE_MSG', {
@@ -232,20 +216,14 @@ export class StorageComponent implements OnInit {
                 }),
                 icon: { content: 'delete_forever' },
             },
-            this._dialog,
+            {
+                loading: i18n('ADMIN.STORAGE_REMOVE_LOADING'),
+                action: () => removeStorage(item.id),
+                error: (reason) =>
+                    `Failed to remove storage provider. Error: ${reason}`,
+            },
         );
-        if (resp.reason !== 'done') return;
-        resp.loading(i18n('ADMIN.STORAGE_REMOVE_LOADING'));
-        try {
-            await removeStorage(item.id);
-        } catch (err) {
-            return notifyError(
-                `Failed to remove storage provider. Error: ${describeError(err)}`,
-            );
-        } finally {
-            resp.close();
-        }
-        this.loadStorage();
+        if (removed) this.loadStorage();
     }
 
     public async loadStorage() {

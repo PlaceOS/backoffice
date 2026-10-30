@@ -1,10 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, updateDomain } from '@placeos/ts-client';
 import { readError } from '../common/errors';
@@ -17,12 +14,13 @@ import {
     DialogEvent,
     ExtensionSection,
 } from '../common/types';
-import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
+import { AdminDomainSelectComponent } from './admin-domain-select.component';
 import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
 
 /** Extension from the domain config, with the keys it is stored under */
@@ -46,19 +44,7 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
                     {{ 'ADMIN.EXTENSIONS_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <mat-form-field appearance="outline" class="h-12">
-                        <mat-select
-                            name="type"
-                            [(ngModel)]="domain"
-                            [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
-                        >
-                            @for (domain of domain_list(); track domain.id) {
-                                <mat-option [value]="domain">
-                                    {{ domain.name }}
-                                </mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
+                    <admin-domain-select key="extensions" field_class="h-12" />
                     <button
                         icon
                         default
@@ -171,6 +157,7 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
         `,
     ],
     imports: [
+        AdminDomainSelectComponent,
         LoadingLabelDirective,
         IconComponent,
         MatRippleModule,
@@ -178,9 +165,6 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
         TranslatePipe,
         SimpleTableComponent,
         MatProgressBarModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        FormsModule,
     ],
 })
 export class PlaceExtensionsComponent implements OnInit {
@@ -191,7 +175,6 @@ export class PlaceExtensionsComponent implements OnInit {
     /** Loading state */
     public readonly loading = signal('');
     /** List of available domains */
-    public readonly domain_list = this._admin_data.domain_list;
     public readonly domain = this._admin_data.selectedDomain('extensions');
 
     public readonly extensions = computed(() => {
@@ -250,23 +233,24 @@ export class PlaceExtensionsComponent implements OnInit {
     }
 
     public async removeExtension(item: BackofficeExtension) {
-        const details = await openConfirmModal(
+        await confirmAndRun(
+            this._dialog,
             {
                 title: 'Remove extension',
                 content: `Are you sure you want to remove the extension "${escapeHtml(item.name)}" from ${escapeHtml(item.type)}?`,
                 icon: { content: 'delete' },
             },
-            this._dialog,
+            {
+                loading: 'Removing extension...',
+                action: () =>
+                    this.updateDomain(
+                        this.extensions().filter(
+                            (i) => !isSameExtension(i, item),
+                        ),
+                    ),
+                error: (reason) => `Error removing extension: ${reason}`,
+            },
         );
-        if (details?.reason !== 'done') return details?.close();
-        details.loading('Removing extension...');
-        const ext_list = this.extensions().filter(
-            (i) => !isSameExtension(i, item),
-        );
-        await this.updateDomain(ext_list).catch(async (e) =>
-            notifyError(`Error removing extension: ${await readError(e)}`),
-        );
-        details.close();
     }
 
     public async updateDomain(extension_list: BackofficeExtension[]) {

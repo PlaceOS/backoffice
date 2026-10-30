@@ -54,7 +54,7 @@ export class AdminPage extends BasePage {
      */
     async selectApiKeyDomain(domain = 'Place Technology'): Promise<void> {
         await this.page
-            .locator('admin-api-keys mat-select[name="type"]')
+            .locator('admin-api-keys admin-domain-select mat-select')
             .click();
         await this.page
             .locator('mat-option')

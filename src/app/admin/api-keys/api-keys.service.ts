@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import {
     create,
     get,
-    PlaceDomain,
     PlaceUser,
     query,
     remove,
@@ -16,7 +15,7 @@ import { notifyError, notifySuccess } from '../../common/notifications';
 import { waitForEvent } from '../../common/signals';
 import { DialogEvent } from '../../common/types';
 import { currentUser } from '../../common/user-state';
-import { openConfirmModal } from '../../overlays/confirm-modal.component';
+import { confirmAndRun } from '../../overlays/confirm-modal.component';
 import { AdminDataService } from '../admin-data.service';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyModalComponent } from './api-key-modal.component';
@@ -45,8 +44,6 @@ export class APIKeyService {
     public readonly last_key = this._last_key.asReadonly();
     public readonly active_domain = this._domain.asReadonly();
     public readonly loading = this._loading.asReadonly();
-
-    public readonly available_domains = this._admin_data.domain_list;
 
     private readonly _available_scopes = resource({
         loader: async () => (await get('/api/engine/v2/scopes')) as string[],
@@ -81,10 +78,6 @@ export class APIKeyService {
     public readonly available_keys = computed(() =>
         this._available_keys.hasValue() ? this._available_keys.value() : [],
     );
-
-    public setDomain(domain: PlaceDomain) {
-        this._admin_data.setDomain('api-keys', domain);
-    }
 
     public async selectDefaultDomain() {
         return this._admin_data.selectDefaultDomain('api-keys');
@@ -203,30 +196,23 @@ export class APIKeyService {
     }
 
     public async removeKey(key: PlaceAPIKeyDetails) {
-        const details = await openConfirmModal(
+        const removed = await confirmAndRun(
+            this._dialog,
             {
                 title: 'Remove API Key',
                 content: `Are you sure you wish to remove this API key?
                     Removing this key may result in applications using this key to stop working.`,
                 icon: { content: 'delete' },
             },
-            this._dialog,
+            {
+                loading: 'Removing API key...',
+                action: () =>
+                    remove({ id: key.id, query_params: {}, path: 'api_keys' }),
+                error: (reason) => reason,
+                success: 'Successfully removed API key.',
+            },
         );
-        if (details?.reason !== 'done') return;
-        details.loading('Removing API key...');
-        try {
-            await remove({
-                id: key.id,
-                query_params: {},
-                path: 'api_keys',
-            });
-        } catch (error) {
-            return notifyError(describeError(error));
-        } finally {
-            details.close();
-        }
-        notifySuccess('Successfully removed API key.');
-        this._change.set(Date.now());
+        if (removed) this._change.set(Date.now());
     }
 
     private async _currentUser() {

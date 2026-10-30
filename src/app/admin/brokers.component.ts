@@ -6,19 +6,15 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
-    addBroker,
     PlaceMQTTBroker,
     queryBrokers,
     removeBroker,
-    updateBroker,
 } from '@placeos/ts-client';
 
-import { AsyncHandler } from '../common/async-handler.class';
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
-import { notifyError, notifySuccess } from '../common/notifications';
-import { FormModalComponent } from '../common/types';
-import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { notifyError } from '../common/notifications';
+import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -39,7 +35,7 @@ import { BrokerFormComponent } from './broker-form.component';
                         default
                         matRipple
                         class="text-xl"
-                        (click)="newBroker()"
+                        (click)="editBroker()"
                         [matTooltip]="'ADMIN.BROKERS_ADD' | translate"
                         [attr.aria-label]="'ADMIN.BROKERS_ADD' | translate"
                     >
@@ -197,7 +193,7 @@ import { BrokerFormComponent } from './broker-form.component';
         JsonPipe,
     ],
 })
-export class AdminBrokersComponent extends AsyncHandler implements OnInit {
+export class AdminBrokersComponent implements OnInit {
     private _dialog = inject(MatDialog);
 
     public readonly loading = signal(false);
@@ -208,65 +204,33 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
         this.loadBrokers();
     }
 
-    public newBroker(): void {
-        const ref = this._dialog.open(BrokerFormComponent, {
-            data: {
-                item: new PlaceMQTTBroker(),
-                name: 'ADMIN.BROKERS',
-                save: (item) => addBroker(item),
-            },
+    /** Open the broker form for a new or existing broker */
+    public editBroker(item = new PlaceMQTTBroker()): void {
+        const ref = this._dialog.open(BrokerFormComponent, { data: { item } });
+        ref.componentInstance.event.subscribe((event) => {
+            if (event.reason === 'done') this.loadBrokers();
         });
-        this.subscription(
-            'modal_events',
-            (
-                ref.componentInstance as unknown as FormModalComponent
-            ).event.subscribe((event) => {
-                if (event.reason !== 'done') return;
-                this.loadBrokers();
-            }),
-        );
-    }
-
-    public editBroker(item: PlaceMQTTBroker): void {
-        const ref = this._dialog.open(BrokerFormComponent, {
-            data: {
-                item,
-                name: 'ADMIN.BROKERS',
-                save: (item) => updateBroker(item.id, item),
-            },
-        });
-        this.subscription(
-            'modal_events',
-            (
-                ref.componentInstance as unknown as FormModalComponent
-            ).event.subscribe((event) => {
-                if (event.reason !== 'done') return;
-                this.loadBrokers();
-            }),
-        );
     }
 
     public async deleteBroker(item: PlaceMQTTBroker): Promise<void> {
         if (item) {
-            const details = await openConfirmModal(
+            const removed = await confirmAndRun(
+                this._dialog,
                 {
                     title: `Delete MQTT Broker`,
                     content: `<p>Delete the broker <strong>${escapeHtml(item.name)}</strong>?</p><p>The broker is deleted <strong>immediately</strong>.</p>`,
                     icon: { type: 'icon', content: 'delete' },
                     destructive: true,
                 },
-                this._dialog,
+                {
+                    loading: 'Deleting broker...',
+                    action: () => removeBroker(item.id),
+                    error: (reason) =>
+                        `Error deleting broker. Error: ${reason}`,
+                    success: `Successfully deleted broker "${item.name}".`,
+                },
             );
-            if (details.reason !== 'done') return;
-            details.loading('Deleting broker...');
-            const err = await removeBroker(item.id).catch((_) => _);
-            details.close();
-            if (err)
-                return notifyError(
-                    `Error deleting broker. Error: ${describeError(err)}`,
-                );
-            notifySuccess(`Successfully deleted broker "${item.name}".`);
-            this.loadBrokers();
+            if (removed) this.loadBrokers();
         }
     }
 

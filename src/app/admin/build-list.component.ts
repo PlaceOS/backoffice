@@ -5,11 +5,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get } from '@placeos/ts-client';
 import { toQueryString } from '../common/api';
-import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
-import { notifyError, notifySuccess } from '../common/notifications';
-import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -155,7 +153,8 @@ export class PlaceBuildListComponent implements OnInit {
     }
 
     public async remove(i: BuildJob) {
-        const details = await openConfirmModal(
+        const removed = await confirmAndRun(
+            this._dialog,
             {
                 title: i18n('ADMIN.BUILD_LIST_REMOVE'),
                 content: i18n('ADMIN.BUILD_LIST_REMOVE_MSG', {
@@ -164,20 +163,19 @@ export class PlaceBuildListComponent implements OnInit {
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog,
+            {
+                loading: i18n('ADMIN.BUILD_LIST_REMOVE_LOADING'),
+                action: () => cancelBuildJob(i.id),
+                error: (error) =>
+                    i18n('ADMIN.BUILD_LIST_REMOVE_ERROR', { error }),
+                success: i18n('ADMIN.BUILD_LIST_REMOVE_SUCCESS'),
+            },
         );
-        if (details.reason !== 'done') return;
-        details.loading(i18n('ADMIN.BUILD_LIST_REMOVE_LOADING'));
-        const err = await cancelBuildJob(i.id).catch((_) => _);
-        details.close();
-        if (err)
-            return notifyError(
-                i18n('ADMIN.BUILD_LIST_REMOVE_ERROR', {
-                    error: describeError(err),
-                }),
+        if (removed) {
+            this.job_list.update((list) =>
+                list.filter(({ id }) => id !== i.id),
             );
-        notifySuccess(i18n('ADMIN.BUILD_LIST_REMOVE_SUCCESS'));
-        this.job_list.update((list) => list.filter(({ id }) => id !== i.id));
+        }
     }
 
     public async loadJobList() {

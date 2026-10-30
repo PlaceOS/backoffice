@@ -1,7 +1,6 @@
 import { Service, WritableSignal, signal } from '@angular/core';
 import { PlaceDomain, authority, queryDomains } from '@placeos/ts-client';
-
-export type AdminSortState = [string, boolean];
+import { TableSort } from '../ui/simple-table.component';
 
 @Service()
 export class AdminDataService {
@@ -11,7 +10,7 @@ export class AdminDataService {
         WritableSignal<PlaceDomain | null>
     >();
     private readonly _filters = new Map<string, WritableSignal<string>>();
-    private readonly _sorts = new Map<string, WritableSignal<AdminSortState>>();
+    private readonly _sorts = new Map<string, WritableSignal<TableSort>>();
     private _domain_request: Promise<PlaceDomain[]> | null = null;
 
     public readonly domain_list = this._domain_list.asReadonly();
@@ -34,23 +33,14 @@ export class AdminDataService {
         return filter;
     }
 
-    public sort(key: string): WritableSignal<AdminSortState> {
+    /** Table sort of an admin page, kept while the app is open */
+    public sort(key: string): WritableSignal<TableSort> {
         let sort = this._sorts.get(key);
         if (!sort) {
-            sort = signal<AdminSortState>(['', false]);
+            sort = signal<TableSort>(null);
             this._sorts.set(key, sort);
         }
         return sort;
-    }
-
-    public sortBy(key: string, new_field: string) {
-        const sort = this.sort(key);
-        const [field, asc] = sort();
-        if (field === new_field) {
-            sort.set(asc ? ['', false] : [new_field, true]);
-        } else {
-            sort.set([new_field, false]);
-        }
     }
 
     public async loadDomains(limit = 500): Promise<PlaceDomain[]> {

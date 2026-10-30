@@ -1,13 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { addSystem, query, querySystemsWithEmails } from '@placeos/ts-client';
+import { mapLimit } from '../common/cascade-delete';
 import { readError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
@@ -23,7 +21,7 @@ import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
-import { forEachWithLimit } from './signage-plugins/signage-plugins.utilities';
+import { AdminDomainSelectComponent } from './admin-domain-select.component';
 
 /** Max number of systems created at once */
 const IMPORT_LIMIT = 5;
@@ -53,23 +51,10 @@ export interface ExternalResource {
                     {{ 'ADMIN.RESOURCE_IMPORTS_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <mat-form-field
-                        class="no-subscript w-56"
-                        appearance="outline"
-                    >
-                        <mat-select
-                            name="type"
-                            [(ngModel)]="domain"
-                            (ngModelChange)="loadResourceList()"
-                            [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
-                        >
-                            @for (domain of domain_list(); track domain.id) {
-                                <mat-option [value]="domain">
-                                    {{ domain.name }}
-                                </mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
+                    <admin-domain-select
+                        key="resource-imports"
+                        (changed)="loadResourceList()"
+                    />
                     <button
                         icon
                         default
@@ -194,6 +179,7 @@ export interface ExternalResource {
     `,
     styles: [``],
     imports: [
+        AdminDomainSelectComponent,
         LoadingLabelDirective,
         IconComponent,
         RouterModule,
@@ -201,9 +187,6 @@ export interface ExternalResource {
         TranslatePipe,
         MatTooltipModule,
         SimpleTableComponent,
-        MatFormFieldModule,
-        MatSelectModule,
-        FormsModule,
         MatProgressBarModule,
     ],
 })
@@ -214,7 +197,6 @@ export class ResourceImportsComponent implements OnInit {
     public readonly loading = signal(false);
     public readonly domain =
         this._admin_data.selectedDomain('resource-imports');
-    public readonly domain_list = this._admin_data.domain_list;
     public readonly resource_list = signal<ExternalResource[]>([]);
 
     public async ngOnInit() {
@@ -252,7 +234,7 @@ export class ResourceImportsComponent implements OnInit {
         if (resp?.reason !== 'done') return;
         resp.loading(i18n('ADMIN.RESOURCE_IMPORTS_ALL_LOADING'));
         let failed = 0;
-        await forEachWithLimit(missing, IMPORT_LIMIT, async (resource) => {
+        await mapLimit(missing, IMPORT_LIMIT, async (resource) => {
             if (!(await this.importResource(resource, false))) failed += 1;
         });
         resp.close();
