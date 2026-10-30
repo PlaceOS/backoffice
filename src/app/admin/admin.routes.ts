@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
 
-import { AuthorisedAdminGuard } from '../ui/guards/authorised-admin.guard';
+import { authorisedAdminGuard } from '../ui/guards/authorised.guard';
 
 export const ROUTES: Routes = [
     {
         path: '',
         loadComponent: () =>
             import('./admin.component').then((m) => m.PlaceComponent),
-        canActivate: [AuthorisedAdminGuard],
+        canActivate: [authorisedAdminGuard],
         children: [
             {
                 path: 'about',

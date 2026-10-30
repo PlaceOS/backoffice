@@ -9,13 +9,13 @@ import {
     querySystems,
 } from '@placeos/ts-client';
 
-import { AsyncPipe, DatePipe, JsonPipe } from '@angular/common';
+import { AsyncPipe, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
-import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -29,38 +29,10 @@ import { TriggerStateService } from './trigger-state.service';
                 class="border-base-200 grid w-1/3 flex-1 gap-2 rounded-sm border p-4"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.CREATED_AT' | translate }}
-                </div>
-                <div class="flex items-center">
-                    <span
-                        class="select-text"
-                        [matTooltip]="
-                            (item.created_at * 1000 | date: 'mediumDate') +
-                            ', ' +
-                            (item.created_at * 1000 | date: 'shortTime')
-                        "
-                        matTooltipPosition="right"
-                    >
-                        {{ item.created_at * 1000 | dateFrom }}
-                    </span>
-                </div>
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.UPDATED_AT' | translate }}
-                </div>
-                <div class="flex items-center">
-                    <span
-                        class="select-text"
-                        [matTooltip]="
-                            (item.updated_at * 1000 | date: 'mediumDate') +
-                            ', ' +
-                            (item.updated_at * 1000 | date: 'shortTime')
-                        "
-                        matTooltipPosition="right"
-                    >
-                        {{ item.updated_at * 1000 | dateFrom }}
-                    </span>
-                </div>
+                <item-timestamps
+                    [created_at]="item.created_at"
+                    [updated_at]="item.updated_at"
+                />
             </div>
         </section>
         @if (item?.description) {
@@ -317,6 +289,7 @@ import { TriggerStateService } from './trigger-state.service';
         `,
     ],
     imports: [
+        ItemTimestampsComponent,
         TranslatePipe,
         IconComponent,
         MatRippleModule,
@@ -324,10 +297,8 @@ import { TriggerStateService } from './trigger-state.service';
         SimpleTableComponent,
         ItemSearchFieldComponent,
         FormsModule,
-        DateFromPipe,
         MarkdownPipe,
         AsyncPipe,
-        DatePipe,
         JsonPipe,
     ],
 })

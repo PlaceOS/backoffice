@@ -23,14 +23,14 @@ import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openedTabs } from '../common/opened-tabs';
-import { waitForEvent } from '../common/signals';
+import { waitForDialog } from '../common/signals';
 import {
     collectPages,
     isSubsystemUser,
     querySupportSystems as querySystems,
     querySupportZones as queryZones,
 } from '../common/support-access';
-import { DialogEvent, Identity } from '../common/types';
+import { Identity } from '../common/types';
 import { groupMembership } from '../groups/group-membership';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {
@@ -220,13 +220,7 @@ export class ZonesStateService {
                     queryTriggers({ q: _ }).then((resp) => resp.data),
             },
         });
-        const details = await Promise.race([
-            waitForEvent(
-                ref.componentInstance.event,
-                (_: DialogEvent) => _.reason === 'action',
-            ),
-            waitForEvent(ref.afterClosed()),
-        ]);
+        const details = await waitForDialog(ref, 'action');
         if (details?.reason !== 'action') return ref.close();
         try {
             const zone = await this.addTrigger(

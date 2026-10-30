@@ -10,18 +10,17 @@ import { PlaceSystem, PlaceZone, showZone } from '@placeos/ts-client';
 
 import { ZonesStateService } from './zones-state.service';
 
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { describeError } from '../common/errors';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
+import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
-import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -139,42 +138,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 }
                             </div>
                         }
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'COMMON.CREATED_AT' | translate }}
-                        </div>
-                        <div class="flex items-center">
-                            <span
-                                class="select-text"
-                                [matTooltip]="
-                                    (item().created_at * 1000
-                                        | date: 'mediumDate') +
-                                    ', ' +
-                                    (item().created_at * 1000
-                                        | date: 'shortTime')
-                                "
-                                matTooltipPosition="right"
-                            >
-                                {{ item().created_at * 1000 | dateFrom }}
-                            </span>
-                        </div>
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'COMMON.UPDATED_AT' | translate }}
-                        </div>
-                        <div class="flex items-center">
-                            <span
-                                class="select-text"
-                                [matTooltip]="
-                                    (item().updated_at * 1000
-                                        | date: 'mediumDate') +
-                                    ', ' +
-                                    (item().updated_at * 1000
-                                        | date: 'shortTime')
-                                "
-                                matTooltipPosition="right"
-                            >
-                                {{ item()?.updated_at * 1000 | dateFrom }}
-                            </span>
-                        </div>
+                        <item-timestamps
+                            [created_at]="item()?.created_at"
+                            [updated_at]="item()?.updated_at"
+                        />
                     </div>
                 </div>
                 @if (systems().length) {
@@ -259,12 +226,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
         `,
     ],
     imports: [
+        ItemTimestampsComponent,
         LoadingLabelDirective,
         MatProgressSpinnerModule,
         SettingsFormComponent,
         TranslatePipe,
-        MatTooltipModule,
-        DateFromPipe,
         MarkdownPipe,
         ExecuteMethodFieldComponent,
         MatFormFieldModule,
@@ -272,7 +238,6 @@ import { TranslatePipe } from '../ui/translate.pipe';
         FormsModule,
         RouterModule,
         AsyncPipe,
-        DatePipe,
     ],
 })
 export class ZoneAboutComponent {

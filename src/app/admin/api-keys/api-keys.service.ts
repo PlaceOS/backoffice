@@ -12,8 +12,7 @@ import {
 import { addDays, getUnixTime } from 'date-fns';
 import { describeError } from '../../common/errors';
 import { notifyError, notifySuccess } from '../../common/notifications';
-import { waitForEvent } from '../../common/signals';
-import { DialogEvent } from '../../common/types';
+import { waitForDialog } from '../../common/signals';
 import { currentUser } from '../../common/user-state';
 import { confirmAndRun } from '../../overlays/confirm-modal.component';
 import { AdminDataService } from '../admin-data.service';
@@ -24,6 +23,9 @@ import { APIKeyModalComponent } from './api-key-modal.component';
  * Expiry for a new API key in unix seconds, or `undefined` if it never expires.
  * An explicit `expires_at` wins. Otherwise `ttl` (seconds) counts from `now` (ms).
  */
+/** Values the API key modal saves */
+type APIKeyFormData = Partial<PlaceAPIKeyDetails> & { ttl?: number | null };
+
 export function apiKeyExpiry(
     { expires_at, ttl }: { expires_at?: number | null; ttl?: number | null },
     now = Date.now(),
@@ -87,18 +89,12 @@ export class APIKeyService {
         const ref = this._dialog.open(APIKeyModalComponent, {
             data: { domain: this._domain() },
         });
-        const details = await Promise.race([
-            waitForEvent(
-                ref.componentInstance.event,
-                (_: DialogEvent) => _.reason === 'done',
-            ),
-            waitForEvent(ref.afterClosed()),
-        ]);
+        const details = await waitForDialog<APIKeyFormData>(ref, 'done');
         if (details?.reason !== 'done') return;
         ref.componentInstance.loading.set('Creating new API key...');
         const domain = this._domain();
         const api_key = details.metadata;
-        const key = await create({
+        const key = await create<PlaceAPIKeyDetails>({
             query_params: {},
             fn: (d) => new PlaceAPIKeyDetails(d),
             path: 'api_keys',
@@ -164,13 +160,7 @@ export class APIKeyService {
         const ref = this._dialog.open(APIKeyModalComponent, {
             data: { domain: this._domain(), key },
         });
-        const details = await Promise.race([
-            waitForEvent(
-                ref.componentInstance.event,
-                (_: DialogEvent) => _.reason === 'done',
-            ),
-            waitForEvent(ref.afterClosed()),
-        ]);
+        const details = await waitForDialog<APIKeyFormData>(ref, 'done');
         if (details?.reason !== 'done') return;
         ref.componentInstance.loading.set('Updating API key...');
         const domain = this._domain();

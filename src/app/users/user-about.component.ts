@@ -2,14 +2,12 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, computed, inject, resource } from '@angular/core';
 import { PlaceUser, showDomain } from '@placeos/ts-client';
 
-import { DatePipe } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifySuccess } from '../common/notifications';
-import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 @Component({
@@ -118,40 +116,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         {{ 'USERS.NO_GROUPS' | translate }}
                     </div>
                 }
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.CREATED_AT' | translate }}
-                </div>
-                <div class="flex items-center">
-                    <span
-                        class="select-text"
-                        [matTooltip]="
-                            (item.created_at * 1000 | date: 'mediumDate') +
-                            ', ' +
-                            (item.created_at * 1000 | date: 'shortTime')
-                        "
-                        matTooltipPosition="right"
-                    >
-                        {{ item.created_at * 1000 | dateFrom }}
-                    </span>
-                </div>
-                @if (item.updated_at) {
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'COMMON.UPDATED_AT' | translate }}
-                    </div>
-                    <div class="flex items-center">
-                        <span
-                            class="select-text"
-                            [matTooltip]="
-                                (item.updated_at * 1000 | date: 'mediumDate') +
-                                ', ' +
-                                (item.updated_at * 1000 | date: 'shortTime')
-                            "
-                            matTooltipPosition="right"
-                        >
-                            {{ item.updated_at * 1000 | dateFrom }}
-                        </span>
-                    </div>
-                }
+                <item-timestamps
+                    [created_at]="item.created_at"
+                    [updated_at]="item.updated_at"
+                />
             </div>
         </section>
     `,
@@ -164,12 +132,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
         `,
     ],
     imports: [
+        ItemTimestampsComponent,
         TranslatePipe,
-        DateFromPipe,
-        MatTooltipModule,
         MatRippleModule,
         RouterLink,
-        DatePipe,
     ],
 })
 export class UserAboutComponent {

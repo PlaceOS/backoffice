@@ -37,8 +37,8 @@ import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { waitForEvent } from '../common/signals';
-import { DialogEvent, FormModalComponent, Identity } from '../common/types';
+import { waitForDialog } from '../common/signals';
+import { FormModalComponent, Identity } from '../common/types';
 import { AuthSourceModalComponent } from '../overlays/auth-source-modal.component';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ApplicationFormComponent } from './application-form.component';
@@ -252,13 +252,7 @@ export class DomainStateService {
             },
         });
         const instance = ref.componentInstance as unknown as FormModalComponent;
-        const details = await Promise.race([
-            waitForEvent(
-                instance.event,
-                (_: DialogEvent) => _.reason === 'done',
-            ),
-            waitForEvent(ref.afterClosed()),
-        ]);
+        const details = await waitForDialog(ref, 'done');
         if (details?.reason !== 'done') return;
         this._changed.set(new Date().valueOf());
     }
@@ -300,13 +294,7 @@ export class DomainStateService {
                 domain: this.active_item,
             },
         });
-        const details = await Promise.race([
-            waitForEvent(
-                ref.componentInstance.event,
-                (_: DialogEvent) => _.reason === 'done',
-            ),
-            waitForEvent(ref.afterClosed()),
-        ]);
+        const details = await waitForDialog(ref, 'done');
         if (details?.reason !== 'done') return;
         this._changed.set(new Date().valueOf());
     }

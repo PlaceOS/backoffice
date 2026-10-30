@@ -1,5 +1,6 @@
 import { DestroyRef, Signal, inject, signal } from '@angular/core';
 import type { Signal as ClientSignal } from '@placeos/ts-client';
+import type { DialogEvent } from './types';
 
 export interface SubscriptionLike {
     unsubscribe(): void;
@@ -86,4 +87,21 @@ export function waitForClientSignalValue<T>(
         },
         predicate,
     );
+}
+
+/**
+ * Wait until a dialog emits an event with the given `reason`, or closes.
+ * Resolves to that event, or to the close result when the dialog closes first.
+ */
+export function waitForDialog<T = unknown>(
+    ref: {
+        componentInstance: { event: Subscribable<DialogEvent> };
+        afterClosed: () => Subscribable<unknown>;
+    },
+    reason: DialogEvent['reason'],
+): Promise<DialogEvent<T> | undefined> {
+    return Promise.race([
+        waitForEvent(ref.componentInstance.event, (e) => e.reason === reason),
+        waitForEvent(ref.afterClosed()),
+    ]) as Promise<DialogEvent<T> | undefined>;
 }

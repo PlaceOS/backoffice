@@ -21,7 +21,7 @@ import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { waitForEvent } from '../common/signals';
+import { waitForDialog } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {
@@ -85,13 +85,9 @@ export class TriggerStateService {
             },
         });
         const result: DialogEvent<{ trigger: PlaceTrigger }> | null =
-            (await Promise.race([
-                waitForEvent(
-                    ref.componentInstance.event,
-                    (event: DialogEvent) => event.reason === 'done',
-                ),
-                waitForEvent(ref.afterClosed()),
-            ])) as DialogEvent<{ trigger: PlaceTrigger }> | null;
+            (await waitForDialog(ref, 'done')) as DialogEvent<{
+                trigger: PlaceTrigger;
+            }> | null;
         if (!result?.reason || !result.metadata?.trigger) return;
         this._service.replaceItem(
             result.metadata.trigger as unknown as Identity,
@@ -118,13 +114,9 @@ export class TriggerStateService {
             },
         });
         const result: DialogEvent<{ trigger: PlaceTrigger }> | null =
-            (await Promise.race([
-                waitForEvent(
-                    ref.componentInstance.event,
-                    (event: DialogEvent) => event.reason === 'done',
-                ),
-                waitForEvent(ref.afterClosed()),
-            ])) as DialogEvent<{ trigger: PlaceTrigger }> | null;
+            (await waitForDialog(ref, 'done')) as DialogEvent<{
+                trigger: PlaceTrigger;
+            }> | null;
         if (!result?.reason || !result.metadata?.trigger) return;
         this._service.replaceItem(
             result.metadata.trigger as unknown as Identity,

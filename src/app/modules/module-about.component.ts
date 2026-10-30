@@ -2,7 +2,6 @@ import { Component, inject, signal } from '@angular/core';
 import { PlaceModule } from '@placeos/ts-client';
 import { hasSupportRole } from '../common/support-access';
 
-import { DatePipe } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -11,9 +10,9 @@ import { RouterModule } from '@angular/router';
 import { CustomTooltipComponent } from '../ui/custom-tooltip.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { IconComponent } from '../ui/icon.component';
+import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors-modal.component';
-import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { ModuleStateService } from './module-state.service';
 
@@ -139,38 +138,10 @@ import { ModuleStateService } from './module-state.service';
                             </div>
                         </ng-template>
                     }
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'COMMON.CREATED_AT' | translate }}
-                    </div>
-                    <div class="flex items-center">
-                        <span
-                            class="select-text"
-                            [matTooltip]="
-                                (item.created_at * 1000 | date: 'mediumDate') +
-                                ', ' +
-                                (item.created_at * 1000 | date: 'shortTime')
-                            "
-                            matTooltipPosition="right"
-                        >
-                            {{ item.created_at * 1000 | dateFrom }}
-                        </span>
-                    </div>
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'COMMON.UPDATED_AT' | translate }}
-                    </div>
-                    <div class="flex items-center">
-                        <span
-                            class="select-text"
-                            [matTooltip]="
-                                (item.updated_at * 1000 | date: 'mediumDate') +
-                                ', ' +
-                                (item.updated_at * 1000 | date: 'shortTime')
-                            "
-                            matTooltipPosition="right"
-                        >
-                            {{ item.updated_at * 1000 | dateFrom }}
-                        </span>
-                    </div>
+                    <item-timestamps
+                        [created_at]="item.created_at"
+                        [updated_at]="item.updated_at"
+                    />
                     @if (item.has_runtime_error && hasSupportRole()) {
                         <button
                             btn
@@ -253,6 +224,7 @@ import { ModuleStateService } from './module-state.service';
         `,
     ],
     imports: [
+        ItemTimestampsComponent,
         LoadingLabelDirective,
         TranslatePipe,
         MatProgressSpinnerModule,
@@ -262,8 +234,6 @@ import { ModuleStateService } from './module-state.service';
         CustomTooltipComponent,
         IconComponent,
         RouterModule,
-        DateFromPipe,
-        DatePipe,
     ],
 })
 export class ModuleAboutComponent {

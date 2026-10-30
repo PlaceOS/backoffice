@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -9,8 +9,8 @@ import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { IconComponent } from '../ui/icon.component';
+import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
-import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
@@ -69,42 +69,10 @@ import { DriverStateService } from './driver-state.service';
                         <div class="mono truncate text-sm select-text">
                             {{ item()?.module_name }}
                         </div>
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'COMMON.CREATED_AT' | translate }}
-                        </div>
-                        <div class="flex items-center">
-                            <span
-                                class="select-text"
-                                [matTooltip]="
-                                    (item().created_at * 1000
-                                        | date: 'mediumDate') +
-                                    ', ' +
-                                    (item().created_at * 1000
-                                        | date: 'shortTime')
-                                "
-                                matTooltipPosition="right"
-                            >
-                                {{ item().created_at * 1000 | dateFrom }}
-                            </span>
-                        </div>
-                        <div class="flex items-center text-sm font-medium">
-                            {{ 'COMMON.UPDATED_AT' | translate }}
-                        </div>
-                        <div class="flex items-center">
-                            <span
-                                class="select-text"
-                                [matTooltip]="
-                                    (item().updated_at * 1000
-                                        | date: 'mediumDate') +
-                                    ', ' +
-                                    (item().updated_at * 1000
-                                        | date: 'shortTime')
-                                "
-                                matTooltipPosition="right"
-                            >
-                                {{ item().updated_at * 1000 | dateFrom }}
-                            </span>
-                        </div>
+                        <item-timestamps
+                            [created_at]="item().created_at"
+                            [updated_at]="item().updated_at"
+                        />
                     </div>
                 </div>
                 <div class="flex-1 sm:w-1/3">
@@ -214,18 +182,17 @@ import { DriverStateService } from './driver-state.service';
         `,
     ],
     imports: [
+        ItemTimestampsComponent,
         LoadingLabelDirective,
         IconComponent,
         TranslatePipe,
         MatRippleModule,
         SettingsFormComponent,
         MatTooltipModule,
-        DateFromPipe,
         MarkdownPipe,
         RouterModule,
         MatProgressSpinnerModule,
         AsyncPipe,
-        DatePipe,
     ],
 })
 export class DriverAboutComponent {
