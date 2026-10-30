@@ -170,14 +170,14 @@ describe('group membership actions', () => {
     });
 
     it('does not send an add request for an unsaved user', async () => {
-        await service.addUser(new PlaceUser());
+        await service.user_members.add(new PlaceUser());
         expect(mocks.addGroupUser).not.toHaveBeenCalled();
     });
 
     it('reports a failed add without claiming success', async () => {
         const error = new Error('Forbidden');
         mocks.addGroupUser.mockRejectedValue(error);
-        await service.addUser(new PlaceUser({ id: 'user-1' }));
+        await service.user_members.add(new PlaceUser({ id: 'user-1' }));
         expect(mocks.addGroupUser).toHaveBeenCalledExactlyOnceWith({
             group_id: 'group-1',
             user_id: 'user-1',
@@ -196,8 +196,8 @@ describe('group membership actions', () => {
                 close,
                 loading,
             });
-            if (kind === 'user') await service.removeUser(user);
-            else await service.removeZone(zone);
+            if (kind === 'user') await service.user_members.remove(user);
+            else await service.zone_members.remove(zone);
             expect(mocks.removeGroupUser).not.toHaveBeenCalled();
             expect(mocks.removeGroupZone).not.toHaveBeenCalled();
             expect(loading).not.toHaveBeenCalled();
@@ -205,7 +205,7 @@ describe('group membership actions', () => {
     );
 
     it('removes a confirmed user membership with the correct user and group IDs', async () => {
-        await service.removeUser(user);
+        await service.user_members.remove(user);
         expect(mocks.removeGroupUser).toHaveBeenCalledExactlyOnceWith(
             'user-1',
             'group-1',
@@ -219,7 +219,7 @@ describe('group membership actions', () => {
     it('closes the confirmation and reports a failed zone removal', async () => {
         const error = new Error('Forbidden');
         mocks.removeGroupZone.mockRejectedValue(error);
-        await service.removeZone(zone);
+        await service.zone_members.remove(zone);
         expect(mocks.removeGroupZone).toHaveBeenCalledExactlyOnceWith(
             'group-1',
             'zone-1',
@@ -235,7 +235,7 @@ describe('group membership actions', () => {
         mocks.open.mockReturnValue({
             afterClosed: () => of({ permissions: 0 }),
         });
-        await service.editUserPermissions(user);
+        await service.user_members.editPermissions(user);
         expect(mocks.updateGroupUser).toHaveBeenCalledExactlyOnceWith(
             'user-1',
             'group-1',
@@ -247,7 +247,7 @@ describe('group membership actions', () => {
         mocks.open.mockReturnValue({
             afterClosed: () => of({ permissions: 16, deny: false }),
         });
-        await service.editZonePermissions(zone);
+        await service.zone_members.editPermissions(zone);
         expect(mocks.updateGroupZone).toHaveBeenCalledExactlyOnceWith(
             'group-1',
             'zone-1',
@@ -256,8 +256,8 @@ describe('group membership actions', () => {
     });
 
     it('does not save permissions when either dialog is cancelled', async () => {
-        await service.editUserPermissions(user);
-        await service.editZonePermissions(zone);
+        await service.user_members.editPermissions(user);
+        await service.zone_members.editPermissions(zone);
         expect(mocks.updateGroupUser).not.toHaveBeenCalled();
         expect(mocks.updateGroupZone).not.toHaveBeenCalled();
     });
@@ -276,7 +276,7 @@ describe('group membership actions', () => {
         mocks.addGroupUser
             .mockResolvedValueOnce(user)
             .mockRejectedValueOnce(new Error('Forbidden'));
-        await service.bulkAddUsers();
+        await service.user_members.bulkAdd();
         expect(mocks.addGroupUser).toHaveBeenCalledTimes(2);
         expect(mocks.addGroupUser).toHaveBeenCalledWith({
             group_id: 'group-1',
@@ -295,13 +295,13 @@ describe('group membership actions', () => {
     });
 
     it('starts bulk user permissions at the group default permissions', async () => {
-        await service.bulkAddUsers();
+        await service.user_members.bulkAdd();
         expect(mocks.open.mock.calls[0][1].data.permissions).toBe(5);
     });
 
     it('does not add memberships after a bulk dialog is cancelled', async () => {
-        await service.bulkAddUsers();
-        await service.bulkAddZones();
+        await service.user_members.bulkAdd();
+        await service.zone_members.bulkAdd();
         expect(mocks.addGroupUser).not.toHaveBeenCalled();
         expect(mocks.addGroupZone).not.toHaveBeenCalled();
     });

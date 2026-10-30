@@ -21,7 +21,6 @@ import { describeError, readError } from '../common/errors';
 import { escapeHtml, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
-import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openedTabs } from '../common/opened-tabs';
 import { waitForEvent } from '../common/signals';
@@ -32,12 +31,7 @@ import {
     querySupportZones as queryZones,
 } from '../common/support-access';
 import { DialogEvent, Identity } from '../common/types';
-import {
-    GroupBulkAddModalComponent,
-    GroupBulkAddModalData,
-    GroupBulkAddResult,
-} from '../groups/group-bulk-add-modal.component';
-import { GroupPermissionsModalComponent } from '../groups/group-permissions-modal.component';
+import { groupMembership } from '../groups/group-membership';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {
     SelectItemModalComponent,
@@ -49,13 +43,11 @@ export class ZonesStateService {
     private _service = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    /** Set while a bulk add runs */
-    private _saving = signal(false);
     private _change = signal(0);
 
     public readonly loading = computed(
         () =>
-            this._saving() ||
+            this.group_members.saving() ||
             this._systems.isLoading() ||
             this._triggers.isLoading() ||
             this._metadata_count.isLoading() ||
@@ -294,146 +286,40 @@ export class ZonesStateService {
         if (zone) this._service.replaceItem(zone as unknown as Identity);
     }
 
-    public async addGroup(group: PlaceGroup) {
-        if (!group?.id) return;
-        try {
-            await addGroupZone({
-                group_id: group.id,
-                zone_id: this.active_item.id,
-            });
-        } catch (error) {
-            return notifyError(
-                i18n('ZONES.GROUP_ADD_ERROR', { error: describeError(error) }),
-            );
-        }
-        notifySuccess(i18n('ZONES.GROUP_ADD_SUCCESS'));
-        this.changed();
-    }
-
-    public async bulkAddGroups(existing_groups: PlaceGroupZone[] = []) {
-        const result = await waitForEvent(
-            this._dialog
-                .open<
-                    GroupBulkAddModalComponent<PlaceGroup>,
-                    GroupBulkAddModalData<PlaceGroup>,
-                    GroupBulkAddResult<PlaceGroup>
-                >(GroupBulkAddModalComponent<PlaceGroup>, {
-                    data: {
-                        title: 'ZONES.GROUPS_BULK',
-                        placeholder: 'GROUPS.SEARCH',
-                        empty_message: 'ZONES.GROUPS_BULK_EMPTY',
-                        query_fn: (query: string) =>
-                            queryGroups({
-                                q: query,
-                                limit: 20,
-                                authority_id: this.authority_id,
-                            } as Record<string, unknown>).then(
-                                (response) => response.data,
-                            ),
-                        exclude: (group: PlaceGroup) => {
-                            const authority_id = this.authority_id;
-                            return (
-                                !!existing_groups.find(
-                                    (_) => _.group_id === group.id,
-                                ) ||
-                                (!!authority_id &&
-                                    group.authority_id !== authority_id)
-                            );
-                        },
-                    },
-                    height: 'auto',
-                    width: 'auto',
-                    maxHeight: 'calc(100vh - 2em)',
-                    maxWidth: 'calc(100vw - 2em)',
-                })
-                .afterClosed(),
-        );
-        const groups = result?.items;
-        if (!groups?.length) return;
-        this._saving.set(true);
-        const results = await Promise.allSettled(
-            groups.map((group) =>
-                addGroupZone({
-                    group_id: group.id,
-                    zone_id: this.active_item.id,
+    /** Group memberships of the active zone */
+    public readonly group_members = groupMembership<PlaceGroupZone, PlaceGroup>(
+        this._dialog,
+        {
+            one: 'ZONES.GROUP',
+            many: 'ZONES.GROUPS',
+            search: 'GROUPS.SEARCH',
+            column: 'GROUPS.SINGULAR',
+            member_key: 'group',
+            route: 'groups',
+            no_permissions: 'COMMON.DEFAULT',
+            show_deny: true,
+            rows: () => this.groups(),
+            authority_id: () => this.authority_id,
+            query: (q, authority_id) =>
+                queryGroups({ q, limit: 20, authority_id } as Record<
+                    string,
+                    unknown
+                >).then((response) => response.data),
+            member_id: (row) => row.group_id,
+            member_name: (row) => row.group?.name || row.group_id,
+            member_detail: (row) => row.group_id,
+            item_authority: (group) => group.authority_id,
+            add: (group_id) =>
+                addGroupZone({ group_id, zone_id: this.active_item.id }),
+            remove: (row) => removeGroupZone(row.group_id, row.zone_id),
+            update: (row, { permissions, deny }) =>
+                updateGroupZone(row.group_id, row.zone_id, {
+                    permissions,
+                    deny,
                 }),
-            ),
-        );
-        this._saving.set(false);
-        const failed = results.filter((_) => _.status === 'rejected').length;
-        if (failed) {
-            notifyError(i18n('ZONES.GROUPS_BULK_ERROR', { count: failed }));
-        }
-        const added = results.length - failed;
-        if (added) {
-            notifySuccess(i18n('ZONES.GROUPS_BULK_SUCCESS', { count: added }));
-        }
-        this.changed();
-    }
-
-    public async removeGroup(item: PlaceGroupZone) {
-        const details = await openConfirmModal(
-            {
-                title: i18n('ZONES.GROUP_REMOVE'),
-                content: i18n('ZONES.GROUP_REMOVE_MSG', {
-                    name: escapeHtml(item.group?.name || item.group_id),
-                }),
-                icon: { type: 'icon', content: 'delete' },
-            },
-            this._dialog,
-        );
-        if (details.reason !== 'done') return;
-        details.loading(i18n('ZONES.GROUP_REMOVE_LOADING'));
-        try {
-            await removeGroupZone(item.group_id, item.zone_id);
-        } catch (error) {
-            details.close();
-            return notifyError(
-                i18n('ZONES.GROUP_REMOVE_ERROR', {
-                    error: describeError(error),
-                }),
-            );
-        }
-        details.close();
-        notifySuccess(i18n('ZONES.GROUP_REMOVE_SUCCESS'));
-        this.changed();
-    }
-
-    public async updateGroup(item: PlaceGroupZone) {
-        try {
-            await updateGroupZone(item.group_id, item.zone_id, {
-                permissions: +item.permissions || 0,
-                deny: !!item.deny,
-            });
-        } catch (error) {
-            return notifyError(
-                i18n('ZONES.GROUP_SAVE_ERROR', { error: describeError(error) }),
-            );
-        }
-        notifySuccess(i18n('ZONES.GROUP_SAVE_SUCCESS'));
-        this.changed();
-    }
-
-    public async editGroupPermissions(item: PlaceGroupZone) {
-        const result = await waitForEvent(
-            this._dialog
-                .open(GroupPermissionsModalComponent, {
-                    data: {
-                        title: 'ZONES.GROUP_PERMISSIONS',
-                        permissions: item.permissions,
-                        deny: item.deny,
-                        show_deny: true,
-                    },
-                })
-                .afterClosed(),
-        );
-        if (!result) return;
-        await this.updateGroup({
-            ...item,
-            permissions: result.permissions,
-            deny: result.deny,
-        });
-    }
+            changed: () => this.changed(),
+        },
+    );
 
     private changed() {
         this._change.set(Date.now());

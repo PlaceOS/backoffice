@@ -1,5 +1,5 @@
-import { PlaceZone } from '@placeos/ts-client';
 import { required, SchemaFn } from '@angular/forms/signals';
+import { PlaceZone } from '@placeos/ts-client';
 
 export interface ZoneFormModel {
     id: string;

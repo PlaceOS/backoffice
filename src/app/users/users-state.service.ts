@@ -18,13 +18,7 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openedTabs } from '../common/opened-tabs';
-import { waitForEvent } from '../common/signals';
-import {
-    GroupBulkAddModalComponent,
-    GroupBulkAddModalData,
-    GroupBulkAddResult,
-} from '../groups/group-bulk-add-modal.component';
-import { GroupPermissionsModalComponent } from '../groups/group-permissions-modal.component';
+import { groupMembership } from '../groups/group-membership';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 
 @Service()
@@ -32,13 +26,11 @@ export class UsersStateService {
     private _service = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    /** Set while a bulk add runs */
-    private _saving = signal(false);
     private _change = signal(0);
 
     public readonly loading = computed(
         () =>
-            this._saving() ||
+            this.group_members.saving() ||
             this._metadata_count.isLoading() ||
             this._groups.isLoading(),
     );
@@ -117,142 +109,36 @@ export class UsersStateService {
         return this._service.active_item as unknown as PlaceUser;
     }
 
-    public async addGroup(group: PlaceGroup) {
-        if (!group?.id) return;
-        try {
-            await addGroupUser({
-                user_id: this.active_item.id,
-                group_id: group.id,
-            });
-        } catch (error) {
-            return notifyError(
-                i18n('USERS.GROUP_ADD_ERROR', { error: describeError(error) }),
-            );
-        }
-        notifySuccess(i18n('USERS.GROUP_ADD_SUCCESS'));
-        this.changed();
-    }
-
-    public async bulkAddGroups(existing_groups: PlaceGroupUser[] = []) {
-        const result = await waitForEvent(
-            this._dialog
-                .open<
-                    GroupBulkAddModalComponent<PlaceGroup>,
-                    GroupBulkAddModalData<PlaceGroup>,
-                    GroupBulkAddResult<PlaceGroup>
-                >(GroupBulkAddModalComponent<PlaceGroup>, {
-                    data: {
-                        title: 'USERS.GROUPS_BULK',
-                        placeholder: 'GROUPS.SEARCH',
-                        empty_message: 'USERS.GROUPS_BULK_EMPTY',
-                        query_fn: (query: string) =>
-                            queryGroups({
-                                q: query,
-                                limit: 20,
-                                authority_id: this.active_item?.authority_id,
-                            } as Record<string, unknown>).then(
-                                (response) => response.data,
-                            ),
-                        exclude: (group: PlaceGroup) => {
-                            const authority_id = this.active_item?.authority_id;
-                            return (
-                                !!existing_groups.find(
-                                    (_) => _.group_id === group.id,
-                                ) ||
-                                (!!authority_id &&
-                                    group.authority_id !== authority_id)
-                            );
-                        },
-                    },
-                    height: 'auto',
-                    width: 'auto',
-                    maxHeight: 'calc(100vh - 2em)',
-                    maxWidth: 'calc(100vw - 2em)',
-                })
-                .afterClosed(),
-        );
-        const groups = result?.items;
-        if (!groups?.length) return;
-        // Only send permissions when set so the backend default applies
-        const permissions = +result.permissions || 0;
-        this._saving.set(true);
-        const results = await Promise.allSettled(
-            groups.map((group) =>
-                addGroupUser({
-                    user_id: this.active_item.id,
-                    group_id: group.id,
-                    ...(permissions ? { permissions } : {}),
-                }),
-            ),
-        );
-        this._saving.set(false);
-        const failed = results.filter((_) => _.status === 'rejected').length;
-        if (failed) {
-            notifyError(i18n('USERS.GROUPS_BULK_ERROR', { count: failed }));
-        }
-        const added = results.length - failed;
-        if (added) {
-            notifySuccess(i18n('USERS.GROUPS_BULK_SUCCESS', { count: added }));
-        }
-        this.changed();
-    }
-
-    public async removeGroup(item: PlaceGroupUser) {
-        const details = await openConfirmModal(
-            {
-                title: i18n('USERS.GROUP_REMOVE'),
-                content: i18n('USERS.GROUP_REMOVE_MSG', {
-                    name: escapeHtml(item.group?.name || item.group_id),
-                }),
-                icon: { type: 'icon', content: 'delete' },
-            },
-            this._dialog,
-        );
-        if (details.reason !== 'done') return;
-        details.loading(i18n('USERS.GROUP_REMOVE_LOADING'));
-        try {
-            await removeGroupUser(item.user_id, item.group_id);
-        } catch (error) {
-            details.close();
-            return notifyError(
-                i18n('USERS.GROUP_REMOVE_ERROR', {
-                    error: describeError(error),
-                }),
-            );
-        }
-        details.close();
-        notifySuccess(i18n('USERS.GROUP_REMOVE_SUCCESS'));
-        this.changed();
-    }
-
-    public async updateGroup(item: PlaceGroupUser) {
-        try {
-            await updateGroupUser(item.user_id, item.group_id, {
-                permissions: +item.permissions || 0,
-            });
-        } catch (error) {
-            return notifyError(
-                i18n('USERS.GROUP_SAVE_ERROR', { error: describeError(error) }),
-            );
-        }
-        notifySuccess(i18n('USERS.GROUP_SAVE_SUCCESS'));
-        this.changed();
-    }
-
-    public async editGroupPermissions(item: PlaceGroupUser) {
-        const result = await waitForEvent(
-            this._dialog
-                .open(GroupPermissionsModalComponent, {
-                    data: {
-                        title: 'USERS.GROUP_PERMISSIONS',
-                        permissions: item.permissions,
-                    },
-                })
-                .afterClosed(),
-        );
-        if (!result) return;
-        await this.updateGroup({ ...item, permissions: result.permissions });
-    }
+    /** Group memberships of the active user */
+    public readonly group_members = groupMembership<PlaceGroupUser, PlaceGroup>(
+        this._dialog,
+        {
+            one: 'USERS.GROUP',
+            many: 'USERS.GROUPS',
+            search: 'GROUPS.SEARCH',
+            column: 'GROUPS.SINGULAR',
+            member_key: 'group',
+            route: 'groups',
+            no_permissions: 'COMMON.DEFAULT',
+            rows: () => this.groups(),
+            authority_id: () => this.active_item?.authority_id,
+            query: (q, authority_id) =>
+                queryGroups({ q, limit: 20, authority_id } as Record<
+                    string,
+                    unknown
+                >).then((response) => response.data),
+            member_id: (row) => row.group_id,
+            member_name: (row) => row.group?.name || row.group_id,
+            member_detail: (row) => row.group_id,
+            item_authority: (group) => group.authority_id,
+            add: (group_id) =>
+                addGroupUser({ user_id: this.active_item.id, group_id }),
+            remove: (row) => removeGroupUser(row.user_id, row.group_id),
+            update: (row, { permissions }) =>
+                updateGroupUser(row.user_id, row.group_id, { permissions }),
+            changed: () => this.changed(),
+        },
+    );
 
     /** Restore the selected user after confirmation. */
     public async revive() {

@@ -74,7 +74,7 @@ describe('zone group bulk add', () => {
                     permissions: 0,
                 }),
         });
-        await service.bulkAddGroups();
+        await service.group_members.bulkAdd();
         expect(mocks.addGroupZone).toHaveBeenCalledTimes(2);
         expect(mocks.addGroupZone).toHaveBeenCalledWith({
             group_id: 'group-2',

@@ -91,10 +91,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     </div>
                     <div class="mono text-sm">
                         <a
-                            [routerLink]="[
-                                '/domains',
-                                item?.authority_id,
-                            ]"
+                            [routerLink]="['/domains', item?.authority_id]"
                             class="underline select-text"
                         >
                             {{ domain_value.name }} ({{ domain_value.domain }})
