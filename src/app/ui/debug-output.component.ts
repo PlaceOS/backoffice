@@ -3,7 +3,6 @@ import {
     ElementRef,
     Renderer2,
     inject,
-    input,
     signal,
     viewChild,
 } from '@angular/core';
@@ -30,7 +29,7 @@ import { TranslatePipe } from './translate.pipe';
                 (window:resize)="onWindowResize()"
             >
                 <div
-                    class="animate-fade-in border-base-300 bg-base-100 relative z-10 flex flex-col overflow-hidden border text-base-content shadow-sm"
+                    class="animate-fade-in border-base-300 bg-base-100 text-base-content relative z-10 flex flex-col overflow-hidden border shadow-sm"
                     content
                     #content
                     [style.height]="
@@ -196,7 +195,6 @@ export class DebugOutputComponent extends AsyncHandler {
     private _service = inject(PlaceDebugService);
     private _renderer = inject(Renderer2);
 
-    public readonly compact = input(false);
     /** Display string for debug logs */
     public readonly logs = this._service.terminal_lines;
     /** Height of the debug console */
@@ -214,17 +212,6 @@ export class DebugOutputComponent extends AsyncHandler {
 
     private readonly _content_el =
         viewChild<ElementRef<HTMLDivElement>>('content');
-
-    public get modules() {
-        return this._service.modules;
-    }
-
-    public get module_list() {
-        const o = this._service.module_names;
-        return Object.keys(o)
-            .map((k) => `${o[k]} (${k})`)
-            .join('\n');
-    }
 
     public readonly debug_position = this._service.position;
 

@@ -4,7 +4,6 @@ import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 
 import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AsyncHandler } from '../common/async-handler.class';
 import { DialogEvent } from '../common/types';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
@@ -84,7 +83,7 @@ export interface SelectItemModalData<T = unknown> {
         IconComponent,
     ],
 })
-export class SelectItemModalComponent extends AsyncHandler {
+export class SelectItemModalComponent {
     private _data = inject<SelectItemModalData>(MAT_DIALOG_DATA);
 
     /** Emitter for user action on the modal */

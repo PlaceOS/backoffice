@@ -148,7 +148,6 @@ export function numberToPosition(num: number): string {
     return `${num}th`;
 }
 
-export const csvToJson = parseCSV;
 /**
  * Parses a CSV string back into an array of JavaScript objects.
  * - It assumes the first row is the header row.
@@ -360,19 +359,3 @@ If applicable, add screenshots to help explain your problem.
 **Hash:** ${hash}
 **Built:** ${date}
 `;
-
-/**
- * Pad the start of a string or number with given character
- * @param value String or number to pad
- * @param length Length of the final string
- * @param character Character to pad output string with. Defaults to `0`.
- */
-export function padLength(
-    value: number | string,
-    length = 2,
-    character = '0',
-): string {
-    let str = `${value}`;
-    while (str.length < length) str = `${character}${str}`;
-    return str;
-}

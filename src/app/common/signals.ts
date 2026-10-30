@@ -1,4 +1,4 @@
-import { DestroyRef, Injector, Signal, inject, signal } from '@angular/core';
+import { DestroyRef, Signal, inject, signal } from '@angular/core';
 import type { Signal as ClientSignal } from '@placeos/ts-client';
 
 export interface SubscriptionLike {
@@ -17,18 +17,6 @@ function disposeSubscription(subscription: SubscriptionLike | (() => void)) {
     }
 }
 
-export function signalFromSubscribable<T>(
-    source: Subscribable<T>,
-    initialValue: T,
-    injector = inject(Injector),
-): Signal<T> {
-    const destroyRef = injector.get(DestroyRef);
-    const state = signal(initialValue);
-    const subscription = source.subscribe((value) => state.set(value));
-    destroyRef.onDestroy(() => disposeSubscription(subscription));
-    return state.asReadonly();
-}
-
 export function signalFromClient<T>(
     source: ClientSignal<T>,
     initialValue: T = source.value,
@@ -40,18 +28,6 @@ export function signalFromClient<T>(
     });
     destroyRef.onDestroy(unsubscribe);
     return state.asReadonly();
-}
-
-export function toSignal<T>(
-    source: Signal<T> | Subscribable<T>,
-    options: { initialValue?: T; injector?: Injector } = {},
-): Signal<T> {
-    if (typeof source === 'function') return source as Signal<T>;
-    return signalFromSubscribable(
-        source,
-        options.initialValue,
-        options.injector,
-    );
 }
 
 export function waitForEvent<T>(

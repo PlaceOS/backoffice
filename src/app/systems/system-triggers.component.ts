@@ -2,7 +2,6 @@ import { Component, computed, inject, model } from '@angular/core';
 import { PlaceTrigger } from '@placeos/ts-client';
 import { copyToClipboard, unique } from '../common/general';
 import { notifyInfo } from '../common/notifications';
-import { toSignal } from '../common/signals';
 
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -234,9 +233,7 @@ export class SystemTriggersComponent {
 
     public readonly loading = this._service.loading;
 
-    public readonly service_triggers = toSignal(this._service.triggers, {
-        initialValue: [] as (PlaceTrigger & { name: string })[],
-    });
+    public readonly service_triggers = this._service.triggers;
 
     public readonly trigger_state: HashMap<TriggerInstanceState> = {};
 

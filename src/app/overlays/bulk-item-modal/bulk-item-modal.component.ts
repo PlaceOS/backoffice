@@ -238,7 +238,7 @@ export class BulkItemModalComponent<
             const Resource = this._data.constr;
             this.item_list.set(
                 data.map((item) => {
-                    // Values are already parsed by csvToJson/parseCSV,
+                    // Values are already parsed by parseCSV,
                     // so no need for additional JSON.parse here
                     return new Resource(item);
                 }),

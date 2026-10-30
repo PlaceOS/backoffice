@@ -4,7 +4,6 @@ import { MatTabNavPanel } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { IconComponent } from '../ui/icon.component';
@@ -54,7 +53,6 @@ import { DomainStateService } from './domain-state.service';
                         <item-details-skeleton />
                     } @else if (item()?.id) {
                         <item-details
-                            [can_edit]="true"
                             [item]="item()"
                             [extra_actions]="extra_actions"
                             [type]="'DOMAINS.SINGULAR' | translate"
@@ -105,7 +103,7 @@ import { DomainStateService } from './domain-state.service';
         SidebarMenuComponent,
     ],
 })
-export class DomainsComponent extends AsyncHandler {
+export class DomainsComponent {
     private _service = inject(DomainStateService);
     protected _item = inject(ActiveItemService);
 

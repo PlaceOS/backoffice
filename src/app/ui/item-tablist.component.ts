@@ -7,6 +7,7 @@ import {
     model,
     signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTabNavPanel, MatTabsModule } from '@angular/material/tabs';
 import {
     NavigationCancel,
@@ -19,7 +20,6 @@ import {
 } from '@angular/router';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
-import { toSignal } from '../common/signals';
 import { ApplicationIcon } from '../common/types';
 import { IconComponent } from './icon.component';
 

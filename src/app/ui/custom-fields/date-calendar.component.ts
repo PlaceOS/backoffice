@@ -21,7 +21,6 @@ import {
     startOfMonth,
     startOfWeek,
 } from 'date-fns';
-import { AsyncHandler } from '../../common/async-handler.class';
 import { SettingsService } from '../../common/settings.service';
 import { IconComponent } from '../icon.component';
 
@@ -45,10 +44,7 @@ interface DateItem {
                         icon
                         matRipple
                         name="schedule-next-month"
-                        [disabled]="
-                            disabled() ||
-                            date_list()[0]?.id < from()
-                        "
+                        [disabled]="disabled() || date_list()[0]?.id < from()"
                         (click)="changeMonth(-1)"
                     >
                         <icon>chevron_left</icon>
@@ -58,10 +54,7 @@ interface DateItem {
                         icon
                         matRipple
                         name="schedule-previous-month"
-                        [disabled]="
-                            disabled() ||
-                            date_list()[34]?.id > to()
-                        "
+                        [disabled]="disabled() || date_list()[34]?.id > to()"
                         (click)="changeMonth(1)"
                     >
                         <icon>chevron_right</icon>
@@ -124,7 +117,6 @@ interface DateItem {
     imports: [IconComponent, DatePipe, SlicePipe],
 })
 export class DateCalendarComponent
-    extends AsyncHandler
     implements ControlValueAccessor, OnChanges, OnInit
 {
     private _settings = inject(SettingsService);

@@ -2,10 +2,9 @@ import { Component, computed, inject, resource, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTabNavPanel } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { listZoneTags, PlaceZone } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -62,7 +61,6 @@ import { ZonesStateService } from './zones-state.service';
                                 <item-details-skeleton />
                             } @else if (item()?.id) {
                                 <item-details
-                                    [can_edit]="true"
                                     [item]="item()"
                                     [type]="'ZONES.SINGULAR' | translate"
                                 />
@@ -135,11 +133,9 @@ import { ZonesStateService } from './zones-state.service';
         ItemSelectionComponent,
     ],
 })
-export class ZonesComponent extends AsyncHandler {
+export class ZonesComponent {
     protected _service = inject(ZonesStateService);
     protected _item = inject(ActiveItemService);
-    protected _route = inject(ActivatedRoute);
-    protected _router = inject(Router);
     private _debug = inject(PlaceDebugService);
     private _users = inject(BackofficeUsersService);
 
@@ -156,59 +152,62 @@ export class ZonesComponent extends AsyncHandler {
         const details = this.counts();
         const is_admin = !!this._users.user()?.sys_admin;
         return (
-            [
-                {
-                    id: 'about',
-                    name: i18n('ZONES.TAB_ABOUT'),
-                    icon: { content: 'info' },
-                },
-                {
-                    id: 'systems',
-                    name: i18n('ZONES.TAB_SYSTEMS'),
-                    count: details.systems ?? '?',
-                    icon: { content: 'meeting_room' },
-                },
-                {
-                    id: 'triggers',
-                    name: i18n('ZONES.TAB_TRIGGERS'),
-                    count: details.triggers ?? '?',
-                    icon: { content: 'timer' },
-                },
-                {
-                    id: 'metadata',
-                    name: i18n('ZONES.TAB_METADATA'),
-                    count: details.metadata ?? '?',
-                    icon: { content: 'code_blocks' },
-                },
-                {
-                    id: 'groups',
-                    name: i18n('ZONES.TAB_GROUPS'),
-                    count: details.groups ?? '?',
-                    icon: { content: 'groups' },
-                },
-                {
-                    id: 'children',
-                    name: i18n('ZONES.TAB_CHILDREN'),
-                    count: details.children ?? '?',
-                    icon: { content: 'account_tree' },
-                },
-                {
-                    id: 'history',
-                    name: i18n('ZONES.TAB_SETTINGS_HISTORY'),
-                    icon: { content: 'schedule' },
-                },
-            ] as ItemTab[]
-        )
-            .concat(extensionsForItem(this.item(), this.name))
-            .filter(
-                (tab) =>
-                    !isSubsystemUser() ||
-                    !['history', 'triggers', 'groups'].includes(tab.id),
+            (
+                [
+                    {
+                        id: 'about',
+                        name: i18n('ZONES.TAB_ABOUT'),
+                        icon: { content: 'info' },
+                    },
+                    {
+                        id: 'systems',
+                        name: i18n('ZONES.TAB_SYSTEMS'),
+                        count: details.systems ?? '?',
+                        icon: { content: 'meeting_room' },
+                    },
+                    {
+                        id: 'triggers',
+                        name: i18n('ZONES.TAB_TRIGGERS'),
+                        count: details.triggers ?? '?',
+                        icon: { content: 'timer' },
+                    },
+                    {
+                        id: 'metadata',
+                        name: i18n('ZONES.TAB_METADATA'),
+                        count: details.metadata ?? '?',
+                        icon: { content: 'code_blocks' },
+                    },
+                    {
+                        id: 'groups',
+                        name: i18n('ZONES.TAB_GROUPS'),
+                        count: details.groups ?? '?',
+                        icon: { content: 'groups' },
+                    },
+                    {
+                        id: 'children',
+                        name: i18n('ZONES.TAB_CHILDREN'),
+                        count: details.children ?? '?',
+                        icon: { content: 'account_tree' },
+                    },
+                    {
+                        id: 'history',
+                        name: i18n('ZONES.TAB_SETTINGS_HISTORY'),
+                        icon: { content: 'schedule' },
+                    },
+                ] as ItemTab[]
             )
-            // Groups and history routes are admin only
-            .filter(
-                (tab) => is_admin || !['history', 'groups'].includes(tab.id),
-            );
+                .concat(extensionsForItem(this.item(), this.name))
+                .filter(
+                    (tab) =>
+                        !isSubsystemUser() ||
+                        !['history', 'triggers', 'groups'].includes(tab.id),
+                )
+                // Groups and history routes are admin only
+                .filter(
+                    (tab) =>
+                        is_admin || !['history', 'groups'].includes(tab.id),
+                )
+        );
     });
 
     public readonly canCreate = () => this._item.canMutate(2);

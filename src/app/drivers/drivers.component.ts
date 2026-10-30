@@ -57,7 +57,6 @@ import { DriverStateService } from './driver-state.service';
                                 <item-details-skeleton />
                             } @else if (item()?.id) {
                                 <item-details
-                                    [can_edit]="true"
                                     [item]="item()"
                                     [type]="'DRIVERS.SINGULAR' | translate"
                                 />

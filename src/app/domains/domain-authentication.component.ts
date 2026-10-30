@@ -1,10 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { PlaceDomain } from '@placeos/ts-client';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { HashMap } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -116,16 +114,10 @@ export class DomainAuthenticationComponent {
     /** List of auth sources associated with the active domain */
     public readonly auth_sources = this._service.auth_sources;
     public readonly loading = this._service.loading;
-    /** Mapping of auth sources to their type */
-    public source_types: HashMap<'oauth' | 'saml' | 'ldap'> = {};
 
     public readonly newAuthSource = () => this._service.editAuthSource();
     public readonly editAuthSource = (source) =>
         this._service.editAuthSource(source);
     public readonly removeAuthSource = (source) =>
         this._service.deleteAuthSource(source);
-
-    public get item(): PlaceDomain {
-        return this._service.active_item as PlaceDomain;
-    }
 }

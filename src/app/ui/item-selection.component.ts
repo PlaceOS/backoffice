@@ -13,6 +13,7 @@ import {
     SimpleChanges,
     viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -26,7 +27,6 @@ import { isBefore } from 'date-fns';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
-import { toSignal } from '../common/signals';
 import { IconComponent } from './icon.component';
 import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';

@@ -3,13 +3,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { apiEndpoint, get } from '@placeos/ts-client';
 
 import { VERSION } from '../../env/version';
-import { AsyncHandler } from '../common/async-handler.class';
 import { notifyError, notifyInfo } from '../common/notifications';
 import {
     ChangelogModalComponent,
     ChangelogModalData,
 } from '../overlays/changelog-modal.component';
-import { BackofficeUsersService } from '../users/users.service';
 
 import { DatePipe, SlicePipe } from '@angular/common';
 import { format } from 'date-fns';
@@ -197,8 +195,7 @@ export interface PlaceServiceDetails {
     ],
     imports: [TranslatePipe, DatePipe, SlicePipe],
 })
-export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
-    private _users = inject(BackofficeUsersService);
+export class PlaceDetailsComponent implements OnInit {
     private _dialog = inject(MatDialog);
 
     /** Current details about the API */
@@ -206,10 +203,6 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     public readonly changelog_data = signal('');
     public readonly backend_version = signal('');
     public readonly backoffice_logs = signal('');
-
-    public get user() {
-        return this._users.user;
-    }
 
     public get backoffice_version() {
         return VERSION?.stamp || '';

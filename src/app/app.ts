@@ -17,7 +17,6 @@ import {
     RouterOutlet,
 } from '@angular/router';
 import { setupCache, updateAvailable } from './common/application';
-import { AsyncHandler } from './common/async-handler.class';
 import { log } from './common/general';
 import { setNotifyOutlet } from './common/notifications';
 import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
@@ -157,7 +156,7 @@ function browserOnline() {
         MatTooltip,
     ],
 })
-export class AppComponent extends AsyncHandler implements OnInit {
+export class AppComponent implements OnInit {
     private _settings = inject(SettingsService);
     private _users = inject(BackofficeUsersService);
     private _cache = inject(SwUpdate);

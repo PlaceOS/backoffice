@@ -3,7 +3,6 @@ import { MatRipple } from '@angular/material/core';
 import { MatTabNavPanel } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { IconComponent } from '../ui/icon.component';
@@ -56,7 +55,6 @@ import { GroupStateService } from './group-state.service';
                         <item-details-skeleton />
                     } @else if (item()?.id) {
                         <item-details
-                            [can_edit]="true"
                             [item]="display_item()"
                             [type]="'GROUPS.SINGULAR' | translate"
                         />
@@ -106,7 +104,7 @@ import { GroupStateService } from './group-state.service';
         SidebarMenuComponent,
     ],
 })
-export class GroupsComponent extends AsyncHandler {
+export class GroupsComponent {
     private _service = inject(GroupStateService);
     protected _item = inject(ActiveItemService);
 

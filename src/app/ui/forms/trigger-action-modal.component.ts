@@ -25,7 +25,6 @@ import { MatChipGrid, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { AsyncHandler } from '../../common/async-handler.class';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
@@ -211,10 +210,7 @@ export interface TriggerActionModalData {
         MatSelectModule,
     ],
 })
-export class TriggerActionModalComponent
-    extends AsyncHandler
-    implements OnInit
-{
+export class TriggerActionModalComponent implements OnInit {
     private _dialog =
         inject<MatDialogRef<TriggerActionModalComponent>>(MatDialogRef);
     private _data = inject<TriggerActionModalData>(MAT_DIALOG_DATA);

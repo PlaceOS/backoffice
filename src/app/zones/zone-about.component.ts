@@ -17,7 +17,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { AsyncHandler } from '../common/async-handler.class';
 import { describeError } from '../common/errors';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
@@ -276,7 +275,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         DatePipe,
     ],
 })
-export class ZoneAboutComponent extends AsyncHandler {
+export class ZoneAboutComponent {
     private _service = inject(ZonesStateService);
 
     /** List of associated systems */
@@ -301,7 +300,6 @@ export class ZoneAboutComponent extends AsyncHandler {
     });
 
     constructor() {
-        super();
         effect(() => {
             const item = this.item();
             this.parent.set(undefined);

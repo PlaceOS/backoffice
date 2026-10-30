@@ -8,17 +8,14 @@ import {
     TriggerTimeCondition,
     querySystems,
 } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 
 import { AsyncPipe, DatePipe, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AsyncHandler } from '../common/async-handler.class';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
-import { FormatListPipe } from '../ui/pipes/format-list.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -274,7 +271,13 @@ import { TriggerStateService } from './trigger-state.service';
             </ng-template>
             <ng-template #email_call_template let-row="row">
                 <div class="flex items-center space-x-2 p-4 select-text">
-                    <span [matTooltip]="row.emails | formatList"
+                    <span
+                        [matTooltip]="
+                            row.emails.join(
+                                '
+'
+                            )
+                        "
                         >{{ row.emails.length }} Address(es)</span
                     >&nbsp; | Body Length: {{ row.content.length }}
                 </div>
@@ -318,7 +321,6 @@ import { TriggerStateService } from './trigger-state.service';
         IconComponent,
         MatRippleModule,
         MatTooltipModule,
-        FormatListPipe,
         SimpleTableComponent,
         ItemSearchFieldComponent,
         FormsModule,
@@ -329,16 +331,14 @@ import { TriggerStateService } from './trigger-state.service';
         JsonPipe,
     ],
 })
-export class TriggerAboutComponent extends AsyncHandler {
+export class TriggerAboutComponent {
     private _service = inject(TriggerStateService);
 
     /** System to use for conditions with systen variables and functions */
     public readonly template_system = signal<PlaceSystem | undefined>(
         undefined,
     );
-    private readonly _item = toSignal(this._service.item, {
-        initialValue: {} as PlaceTrigger,
-    });
+    private readonly _item = this._service.item;
     public get item(): PlaceTrigger {
         return this._item();
     }

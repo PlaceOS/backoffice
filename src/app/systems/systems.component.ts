@@ -57,7 +57,6 @@ import { SystemStateService } from './system-state.service';
                                 <item-details-skeleton />
                             } @else if (item()?.id) {
                                 <item-details
-                                    [can_edit]="true"
                                     [item]="item()"
                                     [type]="'SYSTEMS.SINGULAR' | translate"
                                 />

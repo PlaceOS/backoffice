@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     copyToClipboard,
-    csvToJson,
     downloadFile,
     escapeHtml,
     eventToPoint,
@@ -10,7 +9,6 @@ import {
     jsonToCsv,
     log,
     numberToPosition,
-    padLength,
     parseCSV,
     randomInt,
     unique,
@@ -233,7 +231,7 @@ describe('general.ts utilities', () => {
         });
     });
 
-    describe('parseCSV / csvToJson', () => {
+    describe('parseCSV', () => {
         it('should parse simple CSV', () => {
             const csv = 'name,age\nJohn,30\nJane,25';
             const result = parseCSV(csv);
@@ -323,10 +321,6 @@ describe('general.ts utilities', () => {
             ];
             expect(parseCSV(jsonToCsv(data))).toEqual(data);
             expect(parseCSV(jsonToCsv(data, [], '\t'), '\t')).toEqual(data);
-        });
-
-        it('csvToJson should be alias for parseCSV', () => {
-            expect(csvToJson).toBe(parseCSV);
         });
     });
 
@@ -473,32 +467,6 @@ describe('general.ts utilities', () => {
             downloadFile('test.txt', 'file contents');
 
             expect(createElement_spy).toHaveBeenCalledWith('a');
-        });
-    });
-
-    describe('padLength', () => {
-        it('should pad number to specified length', () => {
-            expect(padLength(5, 3)).toBe('005');
-        });
-
-        it('should pad string to specified length', () => {
-            expect(padLength('5', 3)).toBe('005');
-        });
-
-        it('should not pad if already at length', () => {
-            expect(padLength(123, 3)).toBe('123');
-        });
-
-        it('should not pad if longer than length', () => {
-            expect(padLength(12345, 3)).toBe('12345');
-        });
-
-        it('should use custom character', () => {
-            expect(padLength(5, 3, '*')).toBe('**5');
-        });
-
-        it('should default to length 2', () => {
-            expect(padLength(5)).toBe('05');
         });
     });
 

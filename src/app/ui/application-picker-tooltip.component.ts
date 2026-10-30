@@ -17,6 +17,17 @@ interface SidebarApplication {
 
 const PAGE_SIZE = 9;
 
+/** Whether an application redirect URI can open in a browser tab */
+export function isSupportedRedirectUri(uri: string) {
+    if (!uri) return false;
+    try {
+        const protocol = new URL(uri, location.origin).protocol;
+        return protocol === 'http:' || protocol === 'https:';
+    } catch {
+        return false;
+    }
+}
+
 @Component({
     selector: 'application-picker-tooltip',
     template: `
@@ -141,7 +152,7 @@ export class ApplicationPickerTooltipComponent implements OnInit {
             authority_id: active_authority.id,
         } as Record<string, unknown>).catch(() => null);
         const applications = (response?.data || [])
-            .filter((app) => this.isSupportedRedirectUri(app?.redirect_uri))
+            .filter((app) => isSupportedRedirectUri(app?.redirect_uri))
             .sort((lhs, rhs) =>
                 (lhs.name || this.nameFromUri(lhs.redirect_uri)).localeCompare(
                     rhs.name || this.nameFromUri(rhs.redirect_uri),
@@ -206,16 +217,6 @@ export class ApplicationPickerTooltipComponent implements OnInit {
             return new URL(uri, location.origin).hostname;
         } catch {
             return 'Application';
-        }
-    }
-
-    private isSupportedRedirectUri(uri: string) {
-        if (!uri) return false;
-        try {
-            const protocol = new URL(uri, location.origin).protocol;
-            return protocol === 'http:' || protocol === 'https:';
-        } catch {
-            return false;
         }
     }
 

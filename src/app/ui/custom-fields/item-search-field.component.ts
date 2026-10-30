@@ -32,7 +32,6 @@ import { escapeHtml } from '../../common/general';
 import { HashMap } from '../../common/types';
 import { IconComponent } from '../icon.component';
 import { LoadingLabelDirective } from '../loading-label.directive';
-import { SanitizePipe } from '../pipes/sanitise.pipe';
 
 interface SearchItem {
     id: string;
@@ -144,10 +143,7 @@ interface SearchItem {
             </mat-autocomplete>
             <ng-template #item_option let-option="option">
                 <div class="flex h-5 items-center justify-between">
-                    <div
-                        name
-                        [innerHTML]="item_name()[option.id] | sanitize"
-                    ></div>
+                    <div name [innerHTML]="item_name()[option.id]"></div>
                     @if (option.notes) {
                         <code class="truncate text-xs!">{{
                             option.notes
@@ -196,7 +192,6 @@ interface SearchItem {
     imports: [
         LoadingLabelDirective,
         MatAutocompleteModule,
-        SanitizePipe,
         MatFormFieldModule,
         MatInputModule,
         FormsModule,
@@ -263,9 +258,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
                     options && options.length > 0
                         ? options
                         : !min_length || trimmed_query.length >= min_length
-                          ? await query_fn(trimmed_query).catch(
-                                () => [] as T[],
-                            )
+                          ? await query_fn(trimmed_query).catch(() => [] as T[])
                           : [];
                 const search = trimmed_query.toLowerCase();
                 return list.filter((item: T) =>
@@ -315,7 +308,6 @@ export class ItemSearchFieldComponent<T extends SearchItem>
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.service) this.search_str.set('');
         if (changes.options) this._changed.set(Date.now());
     }
 

@@ -3,13 +3,10 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatTabNavPanel } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { PlaceTrigger } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
-import { toSignal } from '../common/signals';
 import { DebugOutputComponent } from '../ui/debug-output.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
@@ -60,7 +57,6 @@ import { TriggerStateService } from './trigger-state.service';
                                 <item-details-skeleton />
                             } @else if (item()?.id) {
                                 <item-details
-                                    [can_edit]="true"
                                     [item]="item()"
                                     [type]="'TRIGGERS.SINGULAR' | translate"
                                 />
@@ -122,7 +118,7 @@ import { TriggerStateService } from './trigger-state.service';
         SidebarMenuComponent,
     ],
 })
-export class TriggersComponent extends AsyncHandler {
+export class TriggersComponent {
     protected _service = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
     private _state = inject(TriggerStateService);
@@ -133,13 +129,9 @@ export class TriggersComponent extends AsyncHandler {
     public readonly instance_count = computed(
         () => this._state.instances().length,
     );
-    public readonly loading = toSignal(this._service.loading, {
-        initialValue: false,
-    });
+    public readonly loading = this._service.loading;
     public readonly debug_position = this._debug.position;
-    public readonly item = toSignal(this._service.item, {
-        initialValue: null as PlaceTrigger | null,
-    });
+    public readonly item = this._service.item;
     public readonly newItem = () => this._service.create();
     public readonly scroll = signal(0);
     public readonly tab_list = computed(() => [

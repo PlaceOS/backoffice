@@ -54,7 +54,6 @@ import { RepositoriesStateService } from './repositories-state.service';
                         <item-details-skeleton />
                     } @else if (item()?.id) {
                         <item-details
-                            [can_edit]="true"
                             [item]="item()"
                             [type]="'REPOS.SINGULAR' | translate"
                         />
@@ -118,7 +117,6 @@ export class RepositoriesComponent {
     public readonly loading = this._item.loading;
     public readonly driver_list_loading = this._service.loading;
     public readonly driver_list = this._service.driver_list;
-    public readonly driver_list_error = this._service.driver_list_error;
     public readonly has_changelog = this._service.has_changelog;
     public readonly driver_count = computed(() => {
         const list = this.driver_list();

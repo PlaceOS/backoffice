@@ -24,7 +24,6 @@ import {
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { AsyncHandler } from '../common/async-handler.class';
 import { readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -123,7 +122,7 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
         OauthSourceFormComponent,
     ],
 })
-export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
+export class AuthSourceModalComponent implements OnInit {
     private _dialog =
         inject<MatDialogRef<AuthSourceModalComponent>>(MatDialogRef);
     private _data = inject<AuthSourceModalData>(MAT_DIALOG_DATA);

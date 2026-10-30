@@ -235,7 +235,6 @@ export class DriverAboutComponent {
     public readonly updateDriver = () => this._service.updateDriver();
     public readonly recompile = () => this._service.recompileDriver();
     public readonly reload = () => this._service.reloadDriver();
-    public readonly viewErrors = () => this._service.viewError();
 
     public readonly item = this._service.item;
     public copyCommit(): void {

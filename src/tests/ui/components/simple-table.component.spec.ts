@@ -46,7 +46,6 @@ describe('SimpleTableComponent', () => {
             { key: 'name', name: 'Name' },
         ]);
         fixture.componentRef.setInput('virtual_row_height', 64);
-        fixture.componentRef.setInput('selectable', true);
         fixture.detectChanges();
         await fixture.whenStable();
         const viewport = fixture.debugElement.query(
@@ -61,36 +60,10 @@ describe('SimpleTableComponent', () => {
         expect(rows.length).toBe(12);
         expect(rows[0].textContent).toContain('User 500');
         expect(rows[0].getAttribute('aria-rowindex')).toBe('502');
-        rows[0]
-            .querySelector<HTMLInputElement>('input[type="checkbox"]')
-            ?.click();
-        fixture.detectChanges();
-        expect(component.selected()).toEqual([500]);
         component.setSort('name');
         fixture.detectChanges();
         await fixture.whenStable();
         expect(component.data_view()).toHaveLength(1000);
-        expect(component.selected()).toEqual([]);
-    });
-
-    it('keeps the selection when the data refreshes', async () => {
-        const data = signal([
-            { id: '1', name: 'Item 1' },
-            { id: '2', name: 'Item 2' },
-        ]);
-        fixture.componentRef.setInput('data', data);
-        fixture.componentRef.setInput('selectable', true);
-        fixture.detectChanges();
-        await fixture.whenStable();
-        component.select(1, true);
-        data.set([{ id: '1', name: 'Item 1' }, ...data().slice(1)]);
-        fixture.detectChanges();
-        await fixture.whenStable();
-        expect(component.selected()).toEqual([1]);
-        data.set([{ id: '1', name: 'Item 1' }]);
-        fixture.detectChanges();
-        await fixture.whenStable();
-        expect(component.selected()).toEqual([]);
     });
 
     it('emits enter_row once per hovered row', async () => {
@@ -190,10 +163,6 @@ describe('SimpleTableComponent', () => {
     });
 
     describe('default state', () => {
-        it('should have empty selected array', () => {
-            expect(component.selected()).toEqual([]);
-        });
-
         it('should have undefined data by default', () => {
             expect(component.data()).toBeUndefined();
         });
@@ -202,20 +171,12 @@ describe('SimpleTableComponent', () => {
             expect(component.columns()).toEqual([]);
         });
 
-        it('should not be selectable by default', () => {
-            expect(component.selectable()).toBe(false);
-        });
-
         it('should not be sortable by default', () => {
             expect(component.sortable()).toBe(false);
         });
 
         it('should have default empty message', () => {
             expect(component.empty_message()).toBe('No data to list');
-        });
-
-        it('should have page 0 by default', () => {
-            expect(component.page()).toBe(0);
         });
 
         it('should have null sort by default', () => {
@@ -311,60 +272,6 @@ describe('SimpleTableComponent', () => {
 
             expect(component.column('name')).toEqual(columns[0]);
             expect(component.column('nonexistent')).toBeUndefined();
-        });
-    });
-
-    describe('filtering', () => {
-        const test_columns: TableColumn[] = [
-            { key: 'name', name: 'Name' },
-            { key: 'category', name: 'Category' },
-        ];
-
-        it('should filter data based on filter string', async () => {
-            const data = [
-                { id: '1', name: 'Apple', category: 'Fruit' },
-                { id: '2', name: 'Banana', category: 'Fruit' },
-                { id: '3', name: 'Carrot', category: 'Vegetable' },
-            ];
-            fixture.componentRef.setInput('data', data);
-            fixture.componentRef.setInput('columns', test_columns);
-            fixture.componentRef.setInput('filter', 'apple');
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            expect(component.data_view().length).toBe(1);
-            expect(component.data_view()[0].name).toBe('Apple');
-        });
-
-        it('should filter case-insensitively', async () => {
-            const data = [
-                { id: '1', name: 'APPLE', category: 'Fruit' },
-                { id: '2', name: 'banana', category: 'Fruit' },
-            ];
-            fixture.componentRef.setInput('data', data);
-            fixture.componentRef.setInput('columns', test_columns);
-            fixture.componentRef.setInput('filter', 'BANANA');
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            expect(component.data_view().length).toBe(1);
-        });
-
-        it('should filter only on specified fields when filter_on is set', async () => {
-            const data = [
-                { id: '1', name: 'Apple', category: 'Fruit' },
-                { id: '2', name: 'Fruit Cake', category: 'Dessert' },
-            ];
-            fixture.componentRef.setInput('data', data);
-            fixture.componentRef.setInput('columns', test_columns);
-            fixture.componentRef.setInput('filter', 'Fruit');
-            fixture.componentRef.setInput('filter_on', ['category']);
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            // Only "Apple" has category "Fruit"
-            expect(component.data_view().length).toBe(1);
-            expect(component.data_view()[0].name).toBe('Apple');
         });
     });
 
@@ -526,103 +433,6 @@ describe('SimpleTableComponent', () => {
         });
     });
 
-    describe('selection', () => {
-        const test_columns: TableColumn[] = [{ key: 'name', name: 'Name' }];
-        const data = [
-            { id: '1', name: 'Item 1' },
-            { id: '2', name: 'Item 2' },
-            { id: '3', name: 'Item 3' },
-        ];
-
-        it('should select an item', async () => {
-            fixture.componentRef.setInput('data', data);
-            fixture.componentRef.setInput('columns', test_columns);
-            fixture.componentRef.setInput('selectable', true);
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            component.select(0, true);
-
-            expect(component.selected()).toEqual([0]);
-        });
-
-        it('should unselect an item', async () => {
-            fixture.componentRef.setInput('data', data);
-            fixture.componentRef.setInput('columns', test_columns);
-            fixture.componentRef.setInput('selectable', true);
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            component.select(0, true);
-            component.select(1, true);
-            component.select(0, false);
-
-            expect(component.selected()).toEqual([1]);
-        });
-
-        it('should select all items', async () => {
-            fixture.componentRef.setInput('data', data);
-            fixture.componentRef.setInput('columns', test_columns);
-            fixture.componentRef.setInput('selectable', true);
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            component.selectAll(true);
-
-            expect(component.selected()).toEqual([0, 1, 2]);
-        });
-
-        it('should unselect all items', async () => {
-            fixture.componentRef.setInput('data', data);
-            fixture.componentRef.setInput('columns', test_columns);
-            fixture.componentRef.setInput('selectable', true);
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            component.selectAll(true);
-            component.selectAll(false);
-
-            expect(component.selected()).toEqual([]);
-        });
-    });
-
-    describe('pagination', () => {
-        const test_columns: TableColumn[] = [{ key: 'name', name: 'Name' }];
-
-        it('should paginate data when page_size is set', async () => {
-            const data = [
-                { id: '1', name: 'Item 1' },
-                { id: '2', name: 'Item 2' },
-                { id: '3', name: 'Item 3' },
-                { id: '4', name: 'Item 4' },
-                { id: '5', name: 'Item 5' },
-            ];
-            fixture.componentRef.setInput('data', data);
-            fixture.componentRef.setInput('columns', test_columns);
-            fixture.componentRef.setInput('page_size', 2);
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            expect(component.paginated_data().length).toBe(2);
-            expect(component.total_pages()).toBe(3);
-        });
-
-        it('should not paginate when page_size is 0', async () => {
-            const data = [
-                { id: '1', name: 'Item 1' },
-                { id: '2', name: 'Item 2' },
-                { id: '3', name: 'Item 3' },
-            ];
-            fixture.componentRef.setInput('data', data);
-            fixture.componentRef.setInput('columns', test_columns);
-            fixture.componentRef.setInput('page_size', 0);
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            expect(component.paginated_data().length).toBe(3);
-        });
-    });
-
     describe('column template', () => {
         it('should generate grid template with column sizes', async () => {
             const columns: TableColumn[] = [
@@ -646,16 +456,6 @@ describe('SimpleTableComponent', () => {
             await fixture.whenStable();
 
             expect(component.column_template()).toBe('auto 100px');
-        });
-
-        it('should prepend selectable column width', async () => {
-            const columns: TableColumn[] = [{ key: 'name', name: 'Name' }];
-            fixture.componentRef.setInput('columns', columns);
-            fixture.componentRef.setInput('selectable', true);
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            expect(component.column_template()).toBe('3.5rem auto');
         });
 
         it('should prepend reorder column width', async () => {
@@ -709,16 +509,6 @@ describe('SimpleTableComponent', () => {
                 { key: 'b', name: 'B' },
             ];
             fixture.componentRef.setInput('columns', columns);
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            expect(component.column_count()).toBe(2);
-        });
-
-        it('should add 1 for selectable', async () => {
-            const columns: TableColumn[] = [{ key: 'a', name: 'A' }];
-            fixture.componentRef.setInput('columns', columns);
-            fixture.componentRef.setInput('selectable', true);
             fixture.detectChanges();
             await fixture.whenStable();
 

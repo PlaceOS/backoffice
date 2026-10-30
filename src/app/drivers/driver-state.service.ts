@@ -16,7 +16,7 @@ import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { collectPages } from '../common/support-access';
-import { HashMap, Identity } from '../common/types';
+import { Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 import { DriverUpdateListModalComponent } from './driver-update-list-modal.component';
@@ -26,7 +26,6 @@ export class DriverStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
 
-    private _last_error = signal<HashMap>(null);
     private _poll = signal(0);
     private _modules_change = signal(0);
 
@@ -37,8 +36,6 @@ export class DriverStateService {
     public readonly loading = computed(
         () => this._modules.isLoading() || this._docs.isLoading(),
     );
-    /** Bumped each time a module of the driver is removed */
-    public readonly modules_change = this._modules_change.asReadonly();
 
     private readonly _updates_available = resource({
         params: () => this._poll(),
@@ -93,17 +90,6 @@ export class DriverStateService {
         this._dialog.open(DriverUpdateListModalComponent, {});
     }
 
-    public viewError() {
-        const error = this._last_error();
-        if (!error) return;
-        this._dialog.open<ViewResponseModalComponent>(
-            ViewResponseModalComponent,
-            {
-                data: { title: 'Driver Compilation Error', content: error },
-            },
-        );
-    }
-
     public async updateDriver() {
         const item = this._state.active_item as PlaceDriver;
         if (!item.update_available) return notifyError('No update available.');
@@ -147,7 +133,6 @@ export class DriverStateService {
             .catch(async (e) => {
                 console.log('Error:', e);
                 const content = e instanceof Response ? await e.text() : e;
-                this._last_error.set(content);
                 notifyError('Failed to recompile driver.', 'View Error', () =>
                     this._dialog.open<ViewResponseModalComponent>(
                         ViewResponseModalComponent,

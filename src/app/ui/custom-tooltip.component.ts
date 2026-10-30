@@ -11,25 +11,18 @@ import {
     input,
     OnChanges,
     OnDestroy,
-    signal,
     SimpleChanges,
     TemplateRef,
     Type,
     viewChild,
-    WritableSignal,
 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
-import { SanitizePipe } from './pipes/sanitise.pipe';
 
-export class CustomTooltipData<T = unknown> {
-    data: T;
-    close: () => void;
-    constructor(d) {
-        this.data = d.data;
-        this.close = d.close || (() => null);
-    }
+/** Injected into tooltip content so it can close its tooltip */
+export abstract class CustomTooltipData {
+    abstract close: () => void;
 }
 
 @Component({
@@ -45,21 +38,16 @@ export class CustomTooltipData<T = unknown> {
                             *ngComponentOutlet="component(); injector: injector"
                         />
                     }
-                    @case ('html') {
-                        <div [innerHTML]="html() | sanitize"></div>
-                    }
                     @default {
-                        <ng-container
-                            *ngTemplateOutlet="template(); context: data()"
-                        />
+                        <ng-container *ngTemplateOutlet="template()" />
                     }
                 }
             </div>
         </ng-template>
     `,
-    imports: [PortalModule, SanitizePipe, NgComponentOutlet, NgTemplateOutlet],
+    imports: [PortalModule, NgComponentOutlet, NgTemplateOutlet],
 })
-export class CustomTooltipComponent<T = unknown>
+export class CustomTooltipComponent
     extends AsyncHandler
     implements OnChanges, OnDestroy
 {
@@ -73,11 +61,9 @@ export class CustomTooltipComponent<T = unknown>
     /** Vertical position of the rendered overlay */
     public readonly yPosition = input<'top' | 'center' | 'bottom'>('top');
     /** Content to render in the tooltip */
-    public readonly content = input<
-        TemplateRef<unknown> | Type<unknown> | string
-    >(undefined);
-    /** Data associated with the tooltip content */
-    public readonly data = input<T>(undefined);
+    public readonly content = input<TemplateRef<unknown> | Type<unknown>>(
+        undefined,
+    );
     /** Whether tooltip has a backdrop */
     public readonly backdrop = input(true);
     /** Whether tooltip has a backdrop */
@@ -85,13 +71,13 @@ export class CustomTooltipComponent<T = unknown>
     /** Delay time in milliseconds to close after hover */
     public readonly delay = input(0);
     /** Type of content to render */
-    public readonly type: WritableSignal<'template' | 'component' | 'html'> =
-        signal('template');
+    public readonly type = computed(() =>
+        this.content() instanceof TemplateRef ? 'template' : 'component',
+    );
     public readonly template = computed(
         () => this.content() as TemplateRef<unknown>,
     );
     public readonly component = computed(() => this.content() as Type<unknown>);
-    public readonly html = computed(() => this.content() as string);
 
     public injector: Injector;
 
@@ -131,7 +117,6 @@ export class CustomTooltipComponent<T = unknown>
                 if (hover && delay) {
                     this.timeout('onclose', () => this.close(), delay);
                 }
-                this._updateType();
                 if (this._overlay_ref) this.close();
                 const _portal = this._portal();
                 if (!_portal) return;
@@ -197,23 +182,12 @@ export class CustomTooltipComponent<T = unknown>
         }
     }
 
-    private _updateType() {
-        const content = this.content();
-        this.type.set(
-            typeof content === 'string'
-                ? 'html'
-                : content instanceof TemplateRef
-                  ? 'template'
-                  : 'component',
-        );
-    }
-
     private _updateInjector() {
         this.injector = Injector.create({
             providers: [
                 {
                     provide: CustomTooltipData,
-                    useValue: { data: this.data(), close: () => this.close() },
+                    useValue: { close: () => this.close() },
                 },
             ],
             parent: this._injector,

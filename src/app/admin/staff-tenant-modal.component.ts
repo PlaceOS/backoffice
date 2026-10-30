@@ -1,11 +1,4 @@
-import {
-    Component,
-    computed,
-    inject,
-    model,
-    output,
-    signal,
-} from '@angular/core';
+import { Component, computed, inject, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
     email,
@@ -24,7 +17,7 @@ import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
 import { getInvalidSignalFields } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { DialogEvent, HashMap } from '../common/types';
+import { HashMap } from '../common/types';
 import { ObjectListFieldComponent } from '../ui/custom-fields/object-list-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
@@ -607,8 +600,6 @@ export class StaffTenantModalComponent {
     private _data = inject<StaffTenantModalData>(MAT_DIALOG_DATA);
     private _dialog_ref =
         inject<MatDialogRef<StaffTenantModalComponent>>(MatDialogRef);
-
-    public readonly event = output<DialogEvent>();
 
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;

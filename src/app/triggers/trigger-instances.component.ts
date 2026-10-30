@@ -1,6 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { PlaceTrigger } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 
 import { HashMap } from '../common/types';
 
@@ -8,7 +6,6 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { AsyncHandler } from '../common/async-handler.class';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
@@ -112,21 +109,15 @@ import { TriggerStateService } from './trigger-state.service';
         DateFromPipe,
     ],
 })
-export class TriggerInstancesComponent extends AsyncHandler {
+export class TriggerInstancesComponent {
     private _service = inject(TriggerStateService);
 
     /** List of systems associated with the trigger */
     public readonly instances = this._service.instances;
-    public readonly loading = toSignal(this._service.loading, {
-        initialValue: false,
-    });
+    public readonly loading = this._service.loading;
     /** Map of systems ids to connected status */
     public connected: HashMap<boolean> = {};
 
     public readonly deleteTrigger = (s) =>
         this._service.removeTriggerFromParent(s);
-
-    public get item(): PlaceTrigger {
-        return this._service.active_item as PlaceTrigger;
-    }
 }

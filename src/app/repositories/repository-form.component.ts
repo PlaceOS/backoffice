@@ -47,7 +47,6 @@ import { isValidUrl } from '../common/validation';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
-import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import {
@@ -578,7 +577,6 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     /** List of available types of repositories */
     public readonly repo_types: WritableSignal<Identity[]> = signal([]);
     public readonly show_password = signal(false);
-    public date_pipe = new DateFromPipe();
     public readonly is_editing = signal(false);
     /** Emits when URI, username, or password fields lose focus */
     public readonly credentials_blur = signal(0);

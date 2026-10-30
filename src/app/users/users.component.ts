@@ -5,10 +5,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceUser } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
-import { toSignal } from '../common/signals';
 import { isSubsystemUser } from '../common/support-access';
 import { IconComponent } from '../ui/icon.component';
 import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
@@ -57,7 +55,6 @@ import { UsersStateService } from './users-state.service';
                         <item-details-skeleton />
                     } @else if (item()?.id) {
                         <item-details
-                            [can_edit]="true"
                             [extra_actions]="userActions()"
                             [item]="item()"
                             [type]="'USERS.SINGULAR' | translate"
@@ -119,22 +116,16 @@ import { UsersStateService } from './users-state.service';
         SidebarMenuComponent,
     ],
 })
-export class UsersComponent extends AsyncHandler {
+export class UsersComponent {
     protected _service = inject(ActiveItemService);
     private _state = inject(UsersStateService);
 
     public readonly name = 'users';
     public open_menu = false;
     public readonly scroll = signal(0);
-    public readonly loading = toSignal(this._service.loading, {
-        initialValue: false,
-    });
-    public readonly item = toSignal(this._service.item, {
-        initialValue: null as PlaceUser | null,
-    });
-    public readonly counts = toSignal(this._state.counts, {
-        initialValue: {} as { metadata?: number; groups?: number },
-    });
+    public readonly loading = this._service.loading;
+    public readonly item = this._service.item;
+    public readonly counts = this._state.counts;
 
     public userActions() {
         const item = this.item();

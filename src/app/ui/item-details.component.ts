@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -8,7 +8,6 @@ import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
-import { BackofficeUsersService } from '../users/users.service';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 
@@ -112,11 +111,11 @@ export interface DisplayItem {
             </button>
         </div>
         <mat-menu #action_menu="matMenu" class="min-w-88">
-            @if (can_edit() && canMutate(4)) {
+            @if (canMutate(4)) {
                 <button
                     mat-menu-item
                     class="flex items-center space-x-2"
-                    (click)="edit.emit(); editItem()"
+                    (click)="editItem()"
                 >
                     <icon class="text-2xl">edit</icon>
                     <div class="flex-1">
@@ -129,7 +128,7 @@ export interface DisplayItem {
                 mat-menu-item
                 class="flex items-center space-x-2"
                 disabled="true"
-                (click)="create.emit(false); newFromItem()"
+                (click)="newFromItem()"
             >
                 <icon class="text-2xl">add</icon>
                 <div>
@@ -142,7 +141,7 @@ export interface DisplayItem {
                 mat-menu-item
                 class="flex items-center space-x-2"
                 disabled="true"
-                (click)="create.emit(true); duplicateItem()"
+                (click)="duplicateItem()"
             >
                 <icon class="text-2xl">call_split</icon>
                 <div>
@@ -181,11 +180,11 @@ export interface DisplayItem {
                     }
                 </button>
             }
-            @if (can_edit() && canMutate(8)) {
+            @if (canMutate(8)) {
                 <button
                     mat-menu-item
                     class="flex items-center space-x-2"
-                    (click)="delete.emit(); deleteItem()"
+                    (click)="deleteItem()"
                 >
                     <icon class="text-error text-2xl">delete</icon>
                     <div class="flex-1">
@@ -207,12 +206,10 @@ export interface DisplayItem {
 })
 export class ItemDetailsComponent {
     private _service = inject(ActiveItemService);
-    private _users = inject(BackofficeUsersService);
     private _clipboard = inject(Clipboard);
 
     public readonly type = input('system');
     public readonly item = input<DisplayItem>(undefined);
-    public readonly can_edit = input(false);
     public readonly extra_actions = input<
         {
             label: string;
@@ -222,9 +219,6 @@ export class ItemDetailsComponent {
             destructive?: boolean;
         }[]
     >([]);
-    public readonly create = output<boolean>();
-    public readonly edit = output();
-    public readonly delete = output();
 
     public readonly canMutate = (permission: number) =>
         this._service.canMutate(permission);
@@ -242,10 +236,6 @@ export class ItemDetailsComponent {
     public readonly duplicateItem = () => this._service.duplicate();
     /** Create a new item using the current as a template */
     public readonly newFromItem = () => this._service.create(undefined, true);
-
-    public get is_admin() {
-        return this._users.current().sys_admin;
-    }
 
     public get domain() {
         return this.item()?.domain || '';

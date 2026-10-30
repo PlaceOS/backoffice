@@ -6,8 +6,6 @@ export type AdminSortState = [string, boolean];
 @Service()
 export class AdminDataService {
     private readonly _domain_list = signal<PlaceDomain[]>([]);
-    private readonly _loading_domains = signal(false);
-    private readonly _domain_error = signal<unknown>(null);
     private readonly _selected_domains = new Map<
         string,
         WritableSignal<PlaceDomain | null>
@@ -17,8 +15,6 @@ export class AdminDataService {
     private _domain_request: Promise<PlaceDomain[]> | null = null;
 
     public readonly domain_list = this._domain_list.asReadonly();
-    public readonly loading_domains = this._loading_domains.asReadonly();
-    public readonly domain_error = this._domain_error.asReadonly();
 
     public selectedDomain(key: string): WritableSignal<PlaceDomain | null> {
         let selected = this._selected_domains.get(key);
@@ -60,20 +56,14 @@ export class AdminDataService {
     public async loadDomains(limit = 500): Promise<PlaceDomain[]> {
         if (this._domain_list().length) return this._domain_list();
         if (this._domain_request) return this._domain_request;
-        this._loading_domains.set(true);
-        this._domain_error.set(null);
         this._domain_request = queryDomains({ limit })
             .then((response) => response.data || [])
-            .catch((error) => {
-                this._domain_error.set(error);
-                return [] as PlaceDomain[];
-            })
+            .catch(() => [] as PlaceDomain[])
             .then((domains) => {
                 this._domain_list.set(domains);
                 return domains;
             })
             .finally(() => {
-                this._loading_domains.set(false);
                 this._domain_request = null;
             });
         return this._domain_request;

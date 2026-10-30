@@ -241,8 +241,6 @@ export class TriggerConditionComparisonFormComponent
     /** Type of value to compare the left hand side to */
     public readonly rhs_type: WritableSignal<'constant' | 'status_var'> =
         signal('constant');
-    /** Type of value to compare the left hand side to */
-    public rhs_value: string;
     /** Status variable details for the left side of the comparison */
     public left_side: TriggerStatusVariable = { mod: '', status: '', keys: [] };
     /** Status variable details for the right side of the comparison */
@@ -257,13 +255,6 @@ export class TriggerConditionComparisonFormComponent
 
     /** Allowed comparison operators */
     public readonly compare_types: WritableSignal<Identity[]> = signal([]);
-
-    public get left_keys(): string {
-        return this.left_side?.keys?.join(',') || '';
-    }
-    public get right_keys(): string {
-        return this.right_side?.keys?.join(',') || '';
-    }
 
     public ngOnInit() {
         this.right_var_type.set([
