@@ -6,7 +6,6 @@ import {
     MatDialogModule,
     MatDialogRef,
 } from '@angular/material/dialog';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -64,11 +63,7 @@ describe('ConfirmModalComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            imports: [
-                ConfirmModalComponent,
-                MatDialogModule,
-                NoopAnimationsModule,
-            ],
+            imports: [ConfirmModalComponent, MatDialogModule],
             providers: [
                 { provide: MatDialogRef, useValue: dialog_ref_mock },
                 { provide: MAT_DIALOG_DATA, useValue: default_data },
@@ -113,11 +108,7 @@ describe('ConfirmModalComponent', () => {
         it('label the confirm button Delete and style it as an error', async () => {
             await TestBed.resetTestingModule();
             await TestBed.configureTestingModule({
-                imports: [
-                    ConfirmModalComponent,
-                    MatDialogModule,
-                    NoopAnimationsModule,
-                ],
+                imports: [ConfirmModalComponent, MatDialogModule],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
                     {
@@ -153,11 +144,7 @@ describe('ConfirmModalComponent', () => {
             await TestBed.resetTestingModule();
 
             await TestBed.configureTestingModule({
-                imports: [
-                    ConfirmModalComponent,
-                    MatDialogModule,
-                    NoopAnimationsModule,
-                ],
+                imports: [ConfirmModalComponent, MatDialogModule],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
                     { provide: MAT_DIALOG_DATA, useValue: {} },
@@ -206,11 +193,7 @@ describe('ConfirmModalComponent', () => {
             await TestBed.resetTestingModule();
 
             await TestBed.configureTestingModule({
-                imports: [
-                    ConfirmModalComponent,
-                    MatDialogModule,
-                    NoopAnimationsModule,
-                ],
+                imports: [ConfirmModalComponent, MatDialogModule],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
                     {
@@ -266,11 +249,7 @@ describe('ConfirmModalComponent', () => {
         const build = async (option_overrides = {}) => {
             await TestBed.resetTestingModule();
             await TestBed.configureTestingModule({
-                imports: [
-                    ConfirmModalComponent,
-                    MatDialogModule,
-                    NoopAnimationsModule,
-                ],
+                imports: [ConfirmModalComponent, MatDialogModule],
                 providers: [
                     { provide: MatDialogRef, useValue: dialog_ref_mock },
                     {

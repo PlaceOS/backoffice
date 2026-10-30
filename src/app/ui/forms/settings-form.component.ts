@@ -681,7 +681,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             .concat(local_settings)
             .reduce((m, i) => ({ ...m, ...i }), {});
         const settings_string = Object.keys(merged_settings).length
-            ? yaml.dump(merged_settings, { strict: true })
+            ? yaml.dump(merged_settings)
             : '';
         this.merge_decorations.set(
             this._decorationForSettings(

@@ -356,7 +356,7 @@ export class ZoneFormComponent extends AsyncHandler implements OnInit {
 
     public readonly formModel = signal(generateZoneFormModel(this._data.item));
     public readonly form = form(this.formModel, applyZoneFormSchema);
-    public readonly timezones = TIMEZONES_IANA as string[];
+    public readonly timezones = TIMEZONES_IANA;
     public readonly timezone = computed(
         () => `${this.formModel().timezone || ''}`,
     );

@@ -18,7 +18,7 @@ import {
 } from '@angular/router';
 import { setupCache, updateAvailable } from './common/application';
 import { AsyncHandler } from './common/async-handler.class';
-import { detectIE, log } from './common/general';
+import { log } from './common/general';
 import { setNotifyOutlet } from './common/notifications';
 import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
 import { initSentry } from './common/sentry';
@@ -185,11 +185,6 @@ export class AppComponent extends AsyncHandler implements OnInit {
 
     public async ngOnInit() {
         setLoadingMessage('Initialising application...');
-        /* istanbul ignore if */
-        if (detectIE() && detectIE() < 12) {
-            location.href = `${location.origin}${location.pathname}assets/not-supported.html`;
-            return;
-        }
         this._route.queryParamMap.subscribe((params) => {
             if (params.has('lang')) {
                 const locale = params.get('lang');

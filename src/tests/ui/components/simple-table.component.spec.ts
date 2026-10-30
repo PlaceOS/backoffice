@@ -2,7 +2,6 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     SimpleTableComponent,
@@ -21,7 +20,7 @@ describe('SimpleTableComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [SimpleTableComponent, NoopAnimationsModule],
+            imports: [SimpleTableComponent],
         }).compileComponents();
 
         fixture = TestBed.createComponent(SimpleTableComponent);

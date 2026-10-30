@@ -37,37 +37,6 @@ export function log(
     }
 }
 
-/* istanbul ignore next */
-/**
- * detect IE
- * returns version of IE or false, if browser is not Internet Explorer
- */
-export function detectIE(): number {
-    const ua = window.navigator.userAgent;
-
-    const msie = ua.indexOf('MSIE ');
-    if (msie > 0) {
-        // IE 10 or older => return version number
-        return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
-    }
-
-    const trident = ua.indexOf('Trident/');
-    if (trident > 0) {
-        // IE 11 => return version number
-        const rv = ua.indexOf('rv:');
-        return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
-    }
-
-    const edge = ua.indexOf('Edge/');
-    if (edge > 0) {
-        // Edge (IE 12+) => return version number
-        return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-    }
-
-    // other browser
-    return 0;
-}
-
 /**
  * Get item from the nested object
  * @param keys List of sub-keys to search for
@@ -356,28 +325,6 @@ export function downloadFile(filename: string, contents: string) {
     element.click();
 
     document.body.removeChild(element);
-}
-
-/* istanbul ignore next */
-/**
- * Flatten nested array
- * @param an_array Array to flatten
- */
-export function flatten<T = unknown>(an_array: T[]) {
-    const stack = [...an_array];
-    const res = [];
-    while (stack.length) {
-        // pop value from stack
-        const next = stack.pop();
-        if (Array.isArray(next)) {
-            // push back array items, won't modify the original input
-            stack.push(...next);
-        } else {
-            res.push(next);
-        }
-    }
-    // reverse to restore input order
-    return res.reverse();
 }
 
 export const issueDescription = (hash, date) => `

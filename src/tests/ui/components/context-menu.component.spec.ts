@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ContextMenuComponent } from '../../../app/ui/context-menu.component';
 
@@ -9,7 +8,7 @@ describe('ContextMenuComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [ContextMenuComponent, NoopAnimationsModule],
+            imports: [ContextMenuComponent],
         }).compileComponents();
 
         fixture = TestBed.createComponent(ContextMenuComponent);
