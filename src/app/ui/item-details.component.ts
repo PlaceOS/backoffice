@@ -25,6 +25,15 @@ export interface DisplayItem {
     toJSON: () => Record<string, unknown>;
 }
 
+/** Extra entry for the item actions menu */
+export interface ItemAction {
+    label: string;
+    action: () => void;
+    icon: string;
+    keycap?: string;
+    destructive?: boolean;
+}
+
 @Component({
     selector: 'item-details',
     template: `
@@ -216,15 +225,7 @@ export class ItemDetailsComponent {
 
     public readonly type = input('system');
     public readonly item = input<DisplayItem>(undefined);
-    public readonly extra_actions = input<
-        {
-            label: string;
-            action: () => void;
-            icon: string;
-            keycap?: string;
-            destructive?: boolean;
-        }[]
-    >([]);
+    public readonly extra_actions = input<ItemAction[]>([]);
 
     public readonly canMutate = (permission: number) =>
         this._service.canMutate(permission);
