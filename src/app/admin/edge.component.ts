@@ -9,7 +9,7 @@ import { PlaceEdge, queryEdges, removeEdge } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
@@ -225,25 +225,23 @@ export class PlaceEdgeComponent implements OnInit {
     }
 
     public async remove(i: PlaceEdge) {
-        const details = await openConfirmModal(
+        const removed = await confirmAndRun(
+            this._dialog,
             {
                 title: 'Remove edge?',
                 content: `Remove <strong>${escapeHtml(i.name)}</strong>?<br>You or your users may lose access to some data.`,
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog,
+            {
+                loading: 'Removing edge...',
+                action: () => removeEdge(i.id),
+                error: (reason) => `Error removing edge. Error: ${reason}`,
+                success: 'Successfully removed Edge.',
+            },
         );
-        if (details.reason !== 'done') return;
-        details.loading('Removing edge...');
-        const err = await removeEdge(i.id).catch((_) => _);
-        details.close();
-        if (err)
-            return notifyError(
-                `Error removing edge. Error: ${describeError(err)}`,
-            );
+        if (!removed) return;
         sessionStorage.removeItem('BACKOFFICE.last_edge');
         this.last_change.set(null);
-        notifySuccess('Successfully removed Edge.');
         this.edge_list.update((list) => list.filter(({ id }) => id !== i.id));
     }
 

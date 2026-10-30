@@ -41,8 +41,8 @@ import { describeError, readError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { waitForEvent } from '../common/signals';
-import { DialogEvent, HashMap, Identity } from '../common/types';
+import { waitForDialog } from '../common/signals';
+import { HashMap, Identity } from '../common/types';
 import {
     ConfirmModalData,
     openConfirmModal,
@@ -403,13 +403,7 @@ export class SystemStateService extends AsyncHandler {
                     ),
             },
         });
-        const details = await Promise.race([
-            waitForEvent(
-                ref.componentInstance.event,
-                (_: DialogEvent) => _.reason === 'action',
-            ),
-            waitForEvent(ref.afterClosed()),
-        ]);
+        const details = await waitForDialog(ref, 'action');
         if (details?.reason !== 'action') return ref.close();
         const system = ref.componentInstance.item as PlaceSystem;
         if (!system) return ref.close();
@@ -444,20 +438,12 @@ export class SystemStateService extends AsyncHandler {
                     queryTriggers({ q: _ }).then((resp) => resp.data),
             },
         });
-        const details = await Promise.race([
-            waitForEvent(
-                ref.componentInstance.event,
-                (_: DialogEvent) => _.reason === 'action',
-            ),
-            waitForEvent(ref.afterClosed()),
-        ]);
+        const details = await waitForDialog(ref, 'action');
         if (details?.reason !== 'action') return ref.close();
         try {
-            const t = await this.addTrigger(
+            return await this.addTrigger(
                 ref.componentInstance.item as PlaceTrigger,
             );
-            this.triggersChanged();
-            return t;
         } catch (err) {
             notifyError(
                 `Error adding trigger to system. Error: ${describeError(err)}`,
@@ -489,13 +475,7 @@ export class SystemStateService extends AsyncHandler {
                 },
             });
             const instance = ref.componentInstance;
-            const details = await Promise.race([
-                waitForEvent(
-                    instance.event,
-                    (_: DialogEvent) => _.reason === 'action',
-                ),
-                waitForEvent(ref.afterClosed()),
-            ]);
+            const details = await waitForDialog(ref, 'action');
             if (details?.reason !== 'action') return;
             instance.loading.set('Saving trigger settings...');
 

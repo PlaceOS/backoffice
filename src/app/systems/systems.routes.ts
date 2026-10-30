@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { AuthorisedAdminGuard } from '../ui/guards/authorised-admin.guard';
+import { authorisedAdminGuard } from '../ui/guards/authorised.guard';
 
 export const ROUTES: Routes = [
     {
@@ -38,8 +38,8 @@ export const ROUTES: Routes = [
             {
                 path: 'metadata',
                 loadComponent: () =>
-                    import('./system-metadata.component').then(
-                        (m) => m.SystemMetadataComponent,
+                    import('../ui/item-metadata.component').then(
+                        (m) => m.ItemMetadataComponent,
                     ),
             },
             {
@@ -51,7 +51,7 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'history',
-                canActivate: [AuthorisedAdminGuard],
+                canActivate: [authorisedAdminGuard],
                 loadComponent: () =>
                     import('../ui/settings-history-view.component').then(
                         (m) => m.SettingsHistoryViewComponent,

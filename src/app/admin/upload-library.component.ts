@@ -1,5 +1,4 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import {
     Component,
@@ -15,12 +14,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { apiKey, cleanObject, query, remove, token } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
-import { escapeHtml } from '../common/general';
 import { readError } from '../common/errors';
+import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import {
     notifyError,
@@ -28,12 +26,14 @@ import {
     notifySuccess,
 } from '../common/notifications';
 import { UploadsService } from '../common/uploads.service';
-import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
+import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
+import { AdminDomainSelectComponent } from './admin-domain-select.component';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 
 function getMimeType(filename: string): string {
@@ -102,22 +102,7 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                     {{ 'ADMIN.UPLOADS_LIB_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <mat-form-field
-                        class="no-subscript w-56"
-                        appearance="outline"
-                    >
-                        <mat-select
-                            name="type"
-                            [(ngModel)]="domain"
-                            [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
-                        >
-                            @for (domain of domain_list(); track domain.id) {
-                                <mat-option [value]="domain">
-                                    {{ domain.name }}
-                                </mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
+                    <admin-domain-select key="upload-library" />
                     <button
                         icon
                         default
@@ -153,233 +138,55 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                     />
                 </mat-form-field>
             </div>
-            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
+            <div class="flex h-1/2 min-h-0 w-full flex-1 flex-col px-4 pb-4">
                 <mat-progress-bar
                     mode="indeterminate"
-                    class="sticky left-0 w-full"
+                    class="w-full"
                     [class.invisible]="!loading()"
                 />
-                @if (uploads_list()?.length > 0) {
-                    <div
-                        role="table"
-                        [attr.aria-rowcount]="sorted_uploads().length + 1"
-                        class="mb-4 block min-w-240 overflow-hidden text-sm"
-                    >
-                        <div
-                            header
-                            role="row"
-                            aria-rowindex="1"
-                            class="divide-base-100 border-base-300 bg-base-200 grid min-w-full grid-cols-5 divide-x border"
-                            [style.grid-template-columns]="
-                                'auto 10rem 7rem 8rem 11.5rem'
-                            "
-                        >
-                            <div
-                                role="columnheader"
-                                class="flex"
-                                [attr.aria-sort]="ariaSort('file_name')"
-                            >
-                                <button
-                                    type="button"
-                                    class="flex flex-1 items-center justify-between p-2"
-                                    (click)="sortBy('file_name')"
-                                    [class.active]="
-                                        sorted_by()[0] === 'file_name'
-                                    "
-                                >
-                                    <div class="p-2">
-                                        {{ 'COMMON.FIELD_NAME' | translate }}
-                                    </div>
-                                    <icon class="text-xl">{{
-                                        sorted_by()[1]
-                                            ? 'arrow_downward'
-                                            : 'arrow_upward'
-                                    }}</icon>
-                                </button>
-                            </div>
-                            <div
-                                role="columnheader"
-                                class="flex"
-                                [attr.aria-sort]="ariaSort('mime_type')"
-                            >
-                                <button
-                                    type="button"
-                                    class="flex flex-1 items-center justify-between p-2"
-                                    (click)="sortBy('mime_type')"
-                                    [class.active]="
-                                        sorted_by()[0] === 'mime_type'
-                                    "
-                                >
-                                    <div class="p-2">
-                                        {{
-                                            'ADMIN.UPLOADS_LIB_FIELD_TYPE'
-                                                | translate
-                                        }}
-                                    </div>
-                                    <icon class="text-xl">{{
-                                        sorted_by()[1]
-                                            ? 'arrow_downward'
-                                            : 'arrow_upward'
-                                    }}</icon>
-                                </button>
-                            </div>
-                            <div
-                                role="columnheader"
-                                class="flex"
-                                [attr.aria-sort]="ariaSort('file_size')"
-                            >
-                                <button
-                                    type="button"
-                                    class="flex flex-1 items-center justify-between p-2"
-                                    (click)="sortBy('file_size')"
-                                    [class.active]="
-                                        sorted_by()[0] === 'file_size'
-                                    "
-                                >
-                                    <div class="p-2">
-                                        {{
-                                            'ADMIN.UPLOADS_LIB_FIELD_SIZE'
-                                                | translate
-                                        }}
-                                    </div>
-                                    <icon class="text-xl">{{
-                                        sorted_by()[1]
-                                            ? 'arrow_downward'
-                                            : 'arrow_upward'
-                                    }}</icon>
-                                </button>
-                            </div>
-                            <div
-                                role="columnheader"
-                                class="flex"
-                                [attr.aria-sort]="ariaSort('created_at')"
-                            >
-                                <button
-                                    type="button"
-                                    class="flex flex-1 items-center justify-between p-2"
-                                    (click)="sortBy('created_at')"
-                                    [class.active]="
-                                        sorted_by()[0] === 'created_at'
-                                    "
-                                >
-                                    <div class="p-2">
-                                        {{ 'COMMON.CREATED_AT' | translate }}
-                                    </div>
-                                    <icon class="text-xl">{{
-                                        sorted_by()[1]
-                                            ? 'arrow_downward'
-                                            : 'arrow_upward'
-                                    }}</icon>
-                                </button>
-                            </div>
-                            <div role="columnheader" class="p-4"></div>
-                        </div>
-                        <cdk-virtual-scroll-viewport
-                            itemSize="48"
-                            class="min-h-[calc(100vh-13.25rem)]"
-                        >
-                            <div
-                                *cdkVirtualFor="
-                                    let upload of sorted_uploads();
-                                    let i = index
-                                "
-                                role="row"
-                                [attr.aria-rowindex]="i + 2"
-                                class="divide-base-300 border-base-300 grid h-12 min-w-full grid-cols-5 divide-x overflow-hidden border-x border-b"
-                                [style.grid-template-columns]="
-                                    'auto 10rem 7rem 8rem 11.5rem'
-                                "
-                            >
-                                <div
-                                    role="cell"
-                                    class="flex h-full items-center p-4 text-xs"
-                                >
-                                    <div
-                                        class="mono w-px flex-1 truncate"
-                                        [matTooltip]="upload.file_name"
-                                    >
-                                        {{ upload.file_name }}
-                                    </div>
-                                </div>
-                                <div
-                                    role="cell"
-                                    class="mono flex h-full items-center truncate p-4 text-xs"
-                                >
-                                    {{ upload.mime_type }}
-                                </div>
-                                <div
-                                    role="cell"
-                                    class="mono flex h-full w-full items-center justify-end p-4 text-xs"
-                                >
-                                    {{ sizeOf(upload.file_size) }}
-                                </div>
-                                <div
-                                    role="cell"
-                                    class="flex h-full items-center p-4"
-                                >
-                                    {{ +upload.created_at * 1000 | dateFrom }}
-                                </div>
-                                <div
-                                    role="cell"
-                                    class="flex w-full items-center justify-end space-x-2 px-2"
-                                >
-                                    <button
-                                        icon
-                                        default
-                                        matRipple
-                                        (click)="downloadUpload(upload)"
-                                        [matTooltip]="
-                                            'ADMIN.UPLOADS_LIB_DOWNLOAD'
-                                                | translate
-                                        "
-                                    >
-                                        <icon>download</icon>
-                                    </button>
-                                    <button
-                                        icon
-                                        default
-                                        matRipple
-                                        (click)="copyLink(upload)"
-                                        [matTooltip]="
-                                            'ADMIN.UPLOADS_LIB_COPY' | translate
-                                        "
-                                    >
-                                        <icon>content_copy</icon>
-                                    </button>
-                                    <button
-                                        icon
-                                        default
-                                        matRipple
-                                        (click)="viewUpload(upload)"
-                                        [disabled]="
-                                            !upload.mime_type.includes(
-                                                'image'
-                                            ) &&
-                                            !upload.mime_type.includes('video')
-                                        "
-                                        [matTooltip]="
-                                            'ADMIN.UPLOADS_LIB_VIEW' | translate
-                                        "
-                                    >
-                                        <icon>visibility</icon>
-                                    </button>
-                                    <button
-                                        icon
-                                        default
-                                        error
-                                        matRipple
-                                        (click)="removeUpload(upload)"
-                                        [matTooltip]="
-                                            'ADMIN.UPLOADS_LIB_REMOVE'
-                                                | translate
-                                        "
-                                    >
-                                        <icon>delete</icon>
-                                    </button>
-                                </div>
-                            </div>
-                        </cdk-virtual-scroll-viewport>
-                    </div>
+                @if (uploads_list().length > 0) {
+                    <simple-table
+                        class="block min-h-0 w-full min-w-240 flex-1 text-sm"
+                        [virtual_row_height]="48"
+                        [data]="uploads_list()"
+                        [columns]="[
+                            {
+                                key: 'file_name',
+                                name: 'COMMON.FIELD_NAME' | translate,
+                                content: name_template,
+                            },
+                            {
+                                key: 'mime_type',
+                                name:
+                                    'ADMIN.UPLOADS_LIB_FIELD_TYPE' | translate,
+                                content: type_template,
+                                size: '10rem',
+                            },
+                            {
+                                key: 'file_size',
+                                name:
+                                    'ADMIN.UPLOADS_LIB_FIELD_SIZE' | translate,
+                                content: size_template,
+                                size: '7rem',
+                            },
+                            {
+                                key: 'created_at',
+                                name: 'COMMON.CREATED_AT' | translate,
+                                content: date_template,
+                                size: '8rem',
+                            },
+                            {
+                                key: 'actions',
+                                name: 'COMMON.ACTIONS' | translate,
+                                hide_name: true,
+                                sortable: false,
+                                content: actions_template,
+                                size: '11.5rem',
+                            },
+                        ]"
+                        [sortable]="true"
+                        [(sort)]="sort"
+                    />
                 } @else {
                     <div
                         class="bg-base-200 flex flex-col items-center justify-center space-y-4 rounded-xl p-16"
@@ -392,31 +199,84 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                 }
             </div>
         </div>
+        <ng-template #name_template let-upload="row">
+            <div class="flex h-full w-full items-center p-4 text-xs">
+                <div
+                    class="mono w-px flex-1 truncate"
+                    [matTooltip]="upload.file_name"
+                >
+                    {{ upload.file_name }}
+                </div>
+            </div>
+        </ng-template>
+        <ng-template #type_template let-upload="row">
+            <div class="mono truncate p-4 text-xs">{{ upload.mime_type }}</div>
+        </ng-template>
+        <ng-template #size_template let-upload="row">
+            <div class="mono w-full p-4 text-right text-xs">
+                {{ sizeOf(upload.file_size) }}
+            </div>
+        </ng-template>
+        <ng-template #date_template let-upload="row">
+            <div class="p-4">{{ +upload.created_at * 1000 | dateFrom }}</div>
+        </ng-template>
+        <ng-template #actions_template let-upload="row">
+            <div class="flex w-full items-center justify-end space-x-2 px-2">
+                <button
+                    icon
+                    default
+                    matRipple
+                    (click)="downloadUpload(upload)"
+                    [matTooltip]="'ADMIN.UPLOADS_LIB_DOWNLOAD' | translate"
+                >
+                    <icon>download</icon>
+                </button>
+                <button
+                    icon
+                    default
+                    matRipple
+                    (click)="copyLink(upload)"
+                    [matTooltip]="'ADMIN.UPLOADS_LIB_COPY' | translate"
+                >
+                    <icon>content_copy</icon>
+                </button>
+                <button
+                    icon
+                    default
+                    matRipple
+                    (click)="viewUpload(upload)"
+                    [disabled]="
+                        !upload.mime_type.includes('image') &&
+                        !upload.mime_type.includes('video')
+                    "
+                    [matTooltip]="'ADMIN.UPLOADS_LIB_VIEW' | translate"
+                >
+                    <icon>visibility</icon>
+                </button>
+                <button
+                    icon
+                    default
+                    error
+                    matRipple
+                    (click)="removeUpload(upload)"
+                    [matTooltip]="'ADMIN.UPLOADS_LIB_REMOVE' | translate"
+                >
+                    <icon>delete</icon>
+                </button>
+            </div>
+        </ng-template>
     `,
-    styles: [
-        `
-            [header] icon {
-                opacity: 0;
-            }
-            [header] button.active icon {
-                opacity: 1;
-            }
-            [header] button:hover icon {
-                opacity: 0.3;
-            }
-        `,
-    ],
     imports: [
+        AdminDomainSelectComponent,
         LoadingLabelDirective,
         IconComponent,
-        ScrollingModule,
+        SimpleTableComponent,
         TranslatePipe,
         MatRippleModule,
         MatTooltipModule,
         MatProgressBarModule,
         MatFormFieldModule,
         MatInputModule,
-        MatSelectModule,
         FormsModule,
         DateFromPipe,
     ],
@@ -433,23 +293,8 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     public readonly domain = this._admin_data.selectedDomain('upload-library');
     public readonly refresh = signal(0);
     public readonly loading = signal(false);
-    public readonly sorted_by = this._admin_data.sort('upload-library:uploads');
-    public readonly sorted_uploads = computed(() => {
-        const [field, asc] = this.sorted_by();
-        if (!field) return this.uploads_list();
-        return [...this.uploads_list()].sort((a, b) => {
-            if (!field) return 0;
-            const value_a = a[field];
-            const value_b = b[field];
-            const is_number = typeof value_a === 'number';
-            let result = 0;
-            if (is_number) result = value_a - value_b;
-            else result = `${value_a}`.localeCompare(`${value_b}`);
-            return result * (asc ? 1 : -1);
-        });
-    });
-
-    public readonly domain_list = this._admin_data.domain_list;
+    /** Table sort, kept when the user leaves the page */
+    public readonly sort = this._admin_data.sort('upload-library:uploads');
 
     private readonly _uploads_list = resource({
         params: () => ({
@@ -498,17 +343,6 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         const divisor = Math.pow(1024, level);
         const short_bytes = Math.floor((bytes / divisor) * 100) / 100;
         return `${short_bytes} ${sizes[level]}`;
-    }
-
-    /** Sort state of a column for screen readers */
-    public ariaSort(field: string) {
-        const [sorted_field, asc] = this.sorted_by();
-        if (sorted_field !== field) return null;
-        return asc ? 'ascending' : 'descending';
-    }
-
-    public sortBy(new_field: string) {
-        this._admin_data.sortBy('upload-library:uploads', new_field);
     }
 
     public copyLink(upload: UploadInfo) {
@@ -616,7 +450,8 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     }
 
     public async removeUpload(upload: UploadInfo) {
-        const result = await openConfirmModal(
+        const removed = await confirmAndRun(
+            this._dialog,
             {
                 title: i18n('ADMIN.UPLOADS_LIB_REMOVE'),
                 content: i18n('ADMIN.UPLOADS_LIB_REMOVE_MSG', {
@@ -624,23 +459,17 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog,
+            {
+                loading: i18n('ADMIN.UPLOADS_LIB_REMOVE_LOADING'),
+                action: () =>
+                    remove({
+                        id: upload.id,
+                        query_params: {},
+                        path: 'uploads',
+                    }),
+                error: (reason) => `Failed to remove upload. Error: ${reason}`,
+            },
         );
-        if (result?.reason !== 'done') return;
-        result.loading(i18n('ADMIN.UPLOADS_LIB_REMOVE_LOADING'));
-        try {
-            await remove({
-                id: upload.id,
-                query_params: {},
-                path: 'uploads',
-            });
-        } catch (err) {
-            return notifyError(
-                `Failed to remove upload. Error: ${await readError(err)}`,
-            );
-        } finally {
-            result.close();
-        }
-        this.refresh.update((value) => value + 1);
+        if (removed) this.refresh.update((value) => value + 1);
     }
 }

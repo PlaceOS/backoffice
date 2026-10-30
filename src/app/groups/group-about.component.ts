@@ -8,7 +8,6 @@ import {
     showDomain,
     showGroup,
 } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -193,9 +192,7 @@ import { GroupStateService } from './group-state.service';
 export class GroupAboutComponent {
     private _service = inject(GroupStateService);
 
-    public readonly item = toSignal(this._service.item, {
-        initialValue: null as PlaceGroup | null,
-    });
+    public readonly item = this._service.item;
     public readonly parent = signal<PlaceGroup | null>(null);
     public readonly authority = signal<PlaceDomain | null>(null);
     public readonly permissionLabels = groupPermissionLabels;

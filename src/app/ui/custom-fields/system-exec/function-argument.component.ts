@@ -16,7 +16,6 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { PlaceModuleFunction } from '@placeos/ts-client';
-import { AsyncHandler } from '../../../common/async-handler.class';
 import { HashMap } from '../../../common/types';
 import { TranslatePipe } from '../../translate.pipe';
 
@@ -114,7 +113,6 @@ const validateType = (type: string, raw_value: unknown) => {
     imports: [TranslatePipe, MatFormFieldModule, MatInputModule, FormsModule],
 })
 export class FunctionArgumentComponent
-    extends AsyncHandler
     implements OnChanges, ControlValueAccessor
 {
     public readonly method = input<PlaceModuleFunction>(undefined);

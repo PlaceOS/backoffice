@@ -23,11 +23,10 @@ import {
     queryModules,
     showModule,
 } from '@placeos/ts-client';
-import { AsyncHandler } from '../common/async-handler.class';
 import { describeError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { AppLink, HashMap } from '../common/types';
+import { AppLink } from '../common/types';
 import {
     ModuleStateModalData,
     ViewModuleStateModalComponent,
@@ -407,12 +406,10 @@ import { SystemStateService } from './system-state.service';
         MatProgressBarModule,
     ],
 })
-export class SystemModulesComponent extends AsyncHandler {
+export class SystemModulesComponent {
     private _service = inject(SystemStateService);
     private _dialog = inject(MatDialog);
 
-    /** Whether a device should be listened to */
-    public device_listener: HashMap<boolean> = {};
     /** Store for ID of new module to add to system */
     public readonly new_module = signal('');
     /** Whether to show exec block */
@@ -562,7 +559,6 @@ export class SystemModulesComponent extends AsyncHandler {
     }
 
     constructor() {
-        super();
         // Tab is reused across systems. Drop the pending module on change.
         effect(() => {
             this._item_id();

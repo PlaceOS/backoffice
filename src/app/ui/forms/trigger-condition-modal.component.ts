@@ -12,7 +12,6 @@ import {
     TriggerTimeConditionType,
     updateTrigger,
 } from '@placeos/ts-client';
-import { AsyncHandler } from '../../common/async-handler.class';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
@@ -102,7 +101,7 @@ export interface TriggerConditionData {
         TranslatePipe,
     ],
 })
-export class TriggerConditionModalComponent extends AsyncHandler {
+export class TriggerConditionModalComponent {
     private _dialog =
         inject<MatDialogRef<TriggerConditionModalComponent>>(MatDialogRef);
     private _data = inject<TriggerConditionData>(MAT_DIALOG_DATA);

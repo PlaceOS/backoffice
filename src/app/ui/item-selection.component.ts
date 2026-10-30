@@ -13,6 +13,7 @@ import {
     SimpleChanges,
     viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -22,11 +23,9 @@ import {
     PlaceModule,
     PlaceRepository,
 } from '@placeos/ts-client';
-import { isBefore } from 'date-fns';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
-import { toSignal } from '../common/signals';
 import { IconComponent } from './icon.component';
 import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
@@ -306,7 +305,7 @@ export class ItemSelectionComponent
         const last_check = this.last_check;
         return (
             this.last_total !== this._service.list_items().length ||
-            isBefore(now, last_check + 60 * 1000)
+            now - last_check > 60 * 1000
         );
     }
 
@@ -323,7 +322,7 @@ export class ItemSelectionComponent
                 if (end >= items.length) {
                     this.last_total = items.length;
                     this.last_check = Date.now();
-                    if (this.last_total !== this._service.total) {
+                    if (this.last_total < this.total()) {
                         this._service.moreItems();
                     }
                 }

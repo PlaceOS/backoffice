@@ -63,7 +63,6 @@ export class VirtualScrollComponent implements AfterViewInit, OnDestroy {
 
     public readonly range = signal(0);
     public readonly offset = signal(0);
-    public readonly extra_height = signal(0);
     public readonly offset_start = computed(() =>
         Math.max(this.offset() - this.buffer(), 0),
     );
@@ -71,7 +70,7 @@ export class VirtualScrollComponent implements AfterViewInit, OnDestroy {
         () => this.offset_start() + (this.range() + 2 * (this.buffer() || 2)),
     );
     public readonly scroll_area = computed(
-        () => this.items().length * this.item_size() + this.extra_height(),
+        () => this.items().length * this.item_size(),
     );
 
     private _el = inject(ElementRef<HTMLElement>);

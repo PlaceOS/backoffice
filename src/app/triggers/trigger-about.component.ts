@@ -8,17 +8,14 @@ import {
     TriggerTimeCondition,
     querySystems,
 } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 
-import { AsyncPipe, DatePipe, JsonPipe } from '@angular/common';
+import { AsyncPipe, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AsyncHandler } from '../common/async-handler.class';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
-import { DateFromPipe } from '../ui/pipes/date-from.pipe';
-import { FormatListPipe } from '../ui/pipes/format-list.pipe';
+import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -32,38 +29,10 @@ import { TriggerStateService } from './trigger-state.service';
                 class="border-base-200 grid w-1/3 flex-1 gap-2 rounded-sm border p-4"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.CREATED_AT' | translate }}
-                </div>
-                <div class="flex items-center">
-                    <span
-                        class="select-text"
-                        [matTooltip]="
-                            (item.created_at * 1000 | date: 'mediumDate') +
-                            ', ' +
-                            (item.created_at * 1000 | date: 'shortTime')
-                        "
-                        matTooltipPosition="right"
-                    >
-                        {{ item.created_at * 1000 | dateFrom }}
-                    </span>
-                </div>
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.UPDATED_AT' | translate }}
-                </div>
-                <div class="flex items-center">
-                    <span
-                        class="select-text"
-                        [matTooltip]="
-                            (item.updated_at * 1000 | date: 'mediumDate') +
-                            ', ' +
-                            (item.updated_at * 1000 | date: 'shortTime')
-                        "
-                        matTooltipPosition="right"
-                    >
-                        {{ item.updated_at * 1000 | dateFrom }}
-                    </span>
-                </div>
+                <item-timestamps
+                    [created_at]="item.created_at"
+                    [updated_at]="item.updated_at"
+                />
             </div>
         </section>
         @if (item?.description) {
@@ -274,7 +243,13 @@ import { TriggerStateService } from './trigger-state.service';
             </ng-template>
             <ng-template #email_call_template let-row="row">
                 <div class="flex items-center space-x-2 p-4 select-text">
-                    <span [matTooltip]="row.emails | formatList"
+                    <span
+                        [matTooltip]="
+                            row.emails.join(
+                                '
+'
+                            )
+                        "
                         >{{ row.emails.length }} Address(es)</span
                     >&nbsp; | Body Length: {{ row.content.length }}
                 </div>
@@ -314,31 +289,27 @@ import { TriggerStateService } from './trigger-state.service';
         `,
     ],
     imports: [
+        ItemTimestampsComponent,
         TranslatePipe,
         IconComponent,
         MatRippleModule,
         MatTooltipModule,
-        FormatListPipe,
         SimpleTableComponent,
         ItemSearchFieldComponent,
         FormsModule,
-        DateFromPipe,
         MarkdownPipe,
         AsyncPipe,
-        DatePipe,
         JsonPipe,
     ],
 })
-export class TriggerAboutComponent extends AsyncHandler {
+export class TriggerAboutComponent {
     private _service = inject(TriggerStateService);
 
     /** System to use for conditions with systen variables and functions */
     public readonly template_system = signal<PlaceSystem | undefined>(
         undefined,
     );
-    private readonly _item = toSignal(this._service.item, {
-        initialValue: {} as PlaceTrigger,
-    });
+    private readonly _item = this._service.item;
     public get item(): PlaceTrigger {
         return this._item();
     }

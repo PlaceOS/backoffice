@@ -4,11 +4,10 @@ import {
     computed,
     EventEmitter,
     inject,
-    OnInit,
     Output,
     signal,
 } from '@angular/core';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { form, FormField } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,17 +16,18 @@ import { MatSelectModule } from '@angular/material/select';
 import {
     addBroker,
     AuthType,
-    cleanObject,
     PlaceMQTTBroker,
     updateBroker,
 } from '@placeos/ts-client';
-import { AsyncHandler } from '../common/async-handler.class';
-import { readError } from '../common/errors';
-import { addSignalChipItem, getInvalidSignalFields } from '../common/forms';
-import { HotkeysService } from '../common/hotkeys.service';
+import {
+    addSignalChipItem,
+    mergeFormItem,
+    onSaveHotkey,
+    removeSignalChipItem,
+    submitFormDialog,
+} from '../common/forms';
 import { i18n } from '../common/locale.service';
-import { notifyError, notifySuccess } from '../common/notifications';
-import { DialogEvent, Identity } from '../common/types';
+import { DialogEvent } from '../common/types';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -374,14 +374,13 @@ import {
         FullscreenModalShellComponent,
     ],
 })
-export class BrokerFormComponent extends AsyncHandler implements OnInit {
+export class BrokerFormComponent {
     private _dialog_ref =
         inject<MatDialogRef<BrokerFormComponent>>(MatDialogRef);
     private _data = inject<{ item: PlaceMQTTBroker; readonly?: string }>(
         MAT_DIALOG_DATA,
     );
     private readonly _name = 'ADMIN.BROKERS';
-    private _hotkey = inject(HotkeysService);
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
@@ -415,53 +414,29 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
     public readonly auth_type = computed(() => this.formModel().auth_type);
     public readonly filters = computed(() => this.formModel().filters || []);
 
-    public ngOnInit(): void {
-        this.subscription(
-            'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
-        );
+    constructor() {
+        onSaveHotkey(() => this.submit());
     }
 
     public async submit(): Promise<void> {
-        await submit(this.form, async () => {
-            const item = this._data.item;
-            this.loading.set(i18n(`${this._name}_SAVING`));
-            const item_json = item.toJSON ? item.toJSON() : item;
-            const form_item = (
-                item.id
-                    ? cleanObject({ ...item_json, ...this.formModel() }, [
-                          undefined,
-                      ])
-                    : { ...item_json, ...this.formModel() }
-            ) as Identity;
-            const result = await (
-                form_item.id
-                    ? updateBroker(
-                          form_item.id as string,
-                          form_item as unknown as PlaceMQTTBroker,
-                      )
-                    : addBroker(form_item as unknown as PlaceMQTTBroker)
-            ).catch(async (err) => {
-                this.loading.set(null);
-                notifyError(
-                    i18n(`${this._name}_SAVE_ERROR`, {
-                        error: await readError(err),
-                    }),
-                );
-                return null;
-            });
-            if (!result) return;
-            this.event.emit({ reason: 'done', metadata: { item: result } });
-            notifySuccess(i18n(`${this._name}_SAVE_SUCCESS`));
-            this._dialog_ref.close();
-        });
-        if (this.form().invalid()) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidSignalFields(this.form).join(', '),
-                }),
-            );
-        }
+        await submitFormDialog(
+            this.form,
+            {
+                loading: this.loading,
+                event: this.event,
+                close: () => this._dialog_ref.close(),
+            },
+            `${this._name}_`,
+            () => {
+                const form_item = mergeFormItem(
+                    this._data.item,
+                    this.formModel(),
+                ) as unknown as PlaceMQTTBroker;
+                return form_item.id
+                    ? updateBroker(form_item.id, form_item)
+                    : addBroker(form_item);
+            },
+        );
     }
 
     /**
@@ -469,31 +444,16 @@ export class BrokerFormComponent extends AsyncHandler implements OnInit {
      * @param event Input event
      */
     public addFilter(event: MatChipInputEvent): void {
-        const value = (event.value || '').trim();
-        if (value) {
-            this.formModel.update((model) => ({
-                ...model,
-                filters: addSignalChipItem(model.filters, event),
-            }));
-        }
-        event.chipInput?.clear();
+        this.formModel.update((model) => ({
+            ...model,
+            filters: addSignalChipItem(model.filters, event),
+        }));
     }
 
-    /**
-     * Remove filter from the list
-     * @param existing_filter Filter to remove
-     */
     public removeFilter(existing_filter: string): void {
-        if (!this.filters().length) return;
-        const filter_list = [...this.filters()];
-        const index = filter_list.indexOf(existing_filter);
-
-        if (index >= 0) {
-            filter_list.splice(index, 1);
-            this.formModel.update((model) => ({
-                ...model,
-                filters: filter_list,
-            }));
-        }
+        this.formModel.update((model) => ({
+            ...model,
+            filters: removeSignalChipItem(model.filters, existing_filter),
+        }));
     }
 }

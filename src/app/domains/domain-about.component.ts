@@ -8,7 +8,6 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AsyncHandler } from '../common/async-handler.class';
 import { readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -121,7 +120,7 @@ import { DomainStateService } from './domain-state.service';
         MarkdownPipe,
     ],
 })
-export class DomainAboutComponent extends AsyncHandler {
+export class DomainAboutComponent {
     private _service = inject(DomainStateService);
     private _clipboard = inject(Clipboard);
 
@@ -153,7 +152,6 @@ export class DomainAboutComponent extends AsyncHandler {
     }
 
     constructor() {
-        super();
         effect(() => {
             if (this._item()) this.loadForm();
         });

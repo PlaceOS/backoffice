@@ -14,8 +14,8 @@ import {
 import { AsyncHandler } from '../../common/async-handler.class';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
-import { notifyError, notifySuccess } from '../../common/notifications';
-import { openConfirmModal } from '../../overlays/confirm-modal.component';
+import { notifyError } from '../../common/notifications';
+import { confirmAndRun } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
 import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
@@ -278,26 +278,22 @@ export class AdminSignagePluginsComponent
 
     public async deletePlugin(item: SignagePlugin): Promise<void> {
         if (!item) return;
-        const details = await openConfirmModal(
+        const removed = await confirmAndRun(
+            this._dialog,
             {
                 title: i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE'),
                 content: i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_MSG'),
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog,
+            {
+                loading: i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_LOADING'),
+                action: () => removeSignagePlugin(item.id),
+                error: (error) =>
+                    i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_ERROR', { error }),
+                success: i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_SUCCESS'),
+            },
         );
-        if (details.reason !== 'done') return;
-        details.loading(i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_LOADING'));
-        const err = await removeSignagePlugin(item.id).catch((_) => _);
-        details.close();
-        if (err)
-            return notifyError(
-                i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_ERROR', {
-                    error: describeError(err),
-                }),
-            );
-        notifySuccess(i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_SUCCESS'));
-        this.loadPlugins();
+        if (removed) this.loadPlugins();
     }
 
     public async loadPlugins(): Promise<void> {

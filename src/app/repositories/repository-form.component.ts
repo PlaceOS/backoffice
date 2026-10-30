@@ -13,7 +13,7 @@ import {
     viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FormField, disabled, form, submit } from '@angular/forms/signals';
+import { FormField, disabled, form } from '@angular/forms/signals';
 
 import { DatePipe, SlicePipe } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -27,7 +27,6 @@ import {
     PlaceRepository,
     PlaceRepositoryType,
     addRepository,
-    cleanObject,
     listRemoteRepositoryBranches,
     listRemoteRepositoryCommits,
     listRemoteRepositoryDefaultBranch,
@@ -37,17 +36,14 @@ import {
     updateRepository,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
-import { readError } from '../common/errors';
-import { getInvalidSignalFields } from '../common/forms';
-import { HotkeysService } from '../common/hotkeys.service';
+import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
-import { notifyError, notifySuccess } from '../common/notifications';
+import { notifyError } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
 import { isValidUrl } from '../common/validation';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
-import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import {
@@ -514,7 +510,6 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     private _data = inject<{ item: PlaceRepository; readonly?: string }>(
         MAT_DIALOG_DATA,
     );
-    private _hotkey = inject(HotkeysService);
     private _injector = inject(Injector);
     private readonly _name = 'REPOS';
 
@@ -578,7 +573,6 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     /** List of available types of repositories */
     public readonly repo_types: WritableSignal<Identity[]> = signal([]);
     public readonly show_password = signal(false);
-    public date_pipe = new DateFromPipe();
     public readonly is_editing = signal(false);
     /** Emits when URI, username, or password fields lose focus */
     public readonly credentials_blur = signal(0);
@@ -610,6 +604,11 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         return !this.is_interface() && this.formModel().id;
     }
 
+    constructor() {
+        super();
+        onSaveHotkey(() => this.submit());
+    }
+
     public ngOnInit(): void {
         const item = this._data.item;
         const edit = !!item.id;
@@ -624,63 +623,43 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         this.follow_latest.set(this.formModel().commit_hash === 'HEAD');
         this.is_editing.set(!!this.formModel().id);
         this._setupBranchAndCommitStreams();
-        this.subscription(
-            'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
-        );
     }
 
     public async submit(): Promise<void> {
-        await submit(this.form, async () => {
-            // A disabled branch field skips validation, e.g. when branches fail to load
-            if (!this.formModel().branch) {
-                notifyError(i18n(`${this._name}.BRANCH_REQUIRED`));
-                return;
-            }
-            const item = this._data.item;
-            this.saving.set(i18n(`${this._name}.SAVING`));
-            const item_json = item.toJSON ? item.toJSON() : item;
-            const form_value = { ...this.formModel() };
-            if (form_value.root_path) {
-                form_value.root_path = form_value.root_path.replace(
-                    /^\/+|\/+$/g,
-                    '',
-                );
-            }
-            if (item.id) {
-                delete form_value.folder_name;
-            }
-            const form_item = (
-                item.id
-                    ? cleanObject({ ...item_json, ...form_value }, [undefined])
-                    : { ...item_json, ...form_value }
-            ) as PlaceRepository;
-            try {
-                const _item = await (form_item.id
-                    ? updateRepository(
-                          form_item.id,
-                          form_item as unknown as PlaceRepository,
-                      )
-                    : addRepository(form_item as unknown as PlaceRepository));
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            } catch (err) {
-                this.saving.set(null);
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: await readError(err),
-                    }),
-                );
-            }
-        });
-        if (this.form().invalid()) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidSignalFields(this.form).join(', '),
-                }),
-            );
-        }
+        await submitFormDialog(
+            this.form,
+            {
+                loading: this.saving,
+                event: this.event,
+                close: () => this._dialog_ref.close(),
+            },
+            `${this._name}.`,
+            () => {
+                // A disabled branch field skips validation, e.g. when branches fail to load
+                if (!this.formModel().branch) {
+                    notifyError(i18n(`${this._name}.BRANCH_REQUIRED`));
+                    return undefined;
+                }
+                const item = this._data.item;
+                const form_value = { ...this.formModel() };
+                if (form_value.root_path) {
+                    form_value.root_path = form_value.root_path.replace(
+                        /^\/+|\/+$/g,
+                        '',
+                    );
+                }
+                if (item.id) {
+                    delete form_value.folder_name;
+                }
+                const form_item = mergeFormItem(
+                    item,
+                    form_value,
+                ) as unknown as PlaceRepository;
+                return form_item.id
+                    ? updateRepository(form_item.id, form_item)
+                    : addRepository(form_item);
+            },
+        );
     }
 
     public setFollow(value: boolean) {

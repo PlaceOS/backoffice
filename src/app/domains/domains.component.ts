@@ -1,119 +1,27 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { MatRipple } from '@angular/material/core';
-import { MatTabNavPanel } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterModule } from '@angular/router';
+import { Component, computed, inject } from '@angular/core';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/async-handler.class';
-import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
-import { IconComponent } from '../ui/icon.component';
-import { ItemDetailsSkeletonComponent } from '../ui/item-details-skeleton.component';
-import { ItemDetailsComponent } from '../ui/item-details.component';
-import { ItemSelectionComponent } from '../ui/item-selection.component';
-import { ItemSidebarComponent } from '../ui/item-sidebar.component';
-import { ItemTablistComponent } from '../ui/item-tablist.component';
-import { SidebarMenuComponent } from '../ui/sidebar-menu.component';
-import { TranslatePipe } from '../ui/translate.pipe';
+import { ItemShellComponent } from '../ui/item-shell.component';
 import { DomainStateService } from './domain-state.service';
 
 @Component({
     selector: 'new-domains-view',
     template: `
-        <div
-            class="divide-base-200 bg-base-100 absolute inset-0 flex items-center divide-y sm:divide-x sm:divide-y-0"
-        >
-            <sidebar-menu [(open)]="open_menu" class="sm:h-full" />
-            <item-sidebar
-                class="hidden lg:block"
-                [route]="name"
-                [title]="'DOMAINS.PLURAL' | translate"
-            />
-            <main
-                id="main-content"
-                tabindex="-1"
-                class="relative z-0 flex h-full w-1/2 flex-1 flex-col outline-none"
-            >
-                <item-selection
-                    class="z-20 lg:hidden"
-                    [route]="name"
-                    [title]="'DOMAINS.PLURAL' | translate"
-                >
-                    <button
-                        btn
-                        icon
-                        class="mr-2 sm:hidden"
-                        (click)="open_menu = true"
-                        [attr.aria-label]="'COMMON.MENU' | translate"
-                    >
-                        <icon>menu</icon>
-                    </button>
-                </item-selection>
-                <div class="flex h-1/2 flex-1 flex-col">
-                    @if (loading()) {
-                        <item-details-skeleton />
-                    } @else if (item()?.id) {
-                        <item-details
-                            [can_edit]="true"
-                            [item]="item()"
-                            [extra_actions]="extra_actions"
-                            [type]="'DOMAINS.SINGULAR' | translate"
-                        />
-                        <item-tablist
-                            [base]="name"
-                            [panel]="tab_panel"
-                            [tabs]="tab_list()"
-                            [scrolled]="scroll() > 0"
-                            class="z-10"
-                        />
-                        <div
-                            #el
-                            class="relative z-0 h-1/2 w-full flex-1 overflow-auto p-4"
-                            (scroll)="scroll.set(el.scrollTop)"
-                        >
-                            <mat-tab-nav-panel #tab_panel class="block h-full">
-                                <router-outlet />
-                            </mat-tab-nav-panel>
-                        </div>
-                    }
-                </div>
-                <button
-                    class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm lg:-left-9"
-                    [matTooltip]="'DOMAINS.NEW' | translate"
-                    matTooltipPosition="right"
-                    matRipple
-                    (click)="newItem()"
-                >
-                    <icon class="text-3xl">add</icon>
-                </button>
-            </main>
-        </div>
+        <item-shell
+            name="domains"
+            i18n_key="DOMAINS"
+            [tabs]="tab_list()"
+            [extra_actions]="extra_actions"
+            padded
+        />
     `,
-    styles: [``],
-    imports: [
-        MatTabNavPanel,
-        IconComponent,
-        MatTooltipModule,
-        MatRipple,
-        TranslatePipe,
-        RouterModule,
-        ItemTablistComponent,
-        ItemDetailsComponent,
-        ItemDetailsSkeletonComponent,
-        ItemSelectionComponent,
-        ItemSidebarComponent,
-        SidebarMenuComponent,
-    ],
+    imports: [ItemShellComponent],
 })
-export class DomainsComponent extends AsyncHandler {
+export class DomainsComponent {
     private _service = inject(DomainStateService);
-    protected _item = inject(ActiveItemService);
 
     public readonly name = 'domains';
 
-    public open_menu = false;
-    public readonly scroll = signal(0);
-    public readonly loading = this._item.loading;
     public readonly counts = this._service.counts;
     public readonly item = this._service.item;
     public readonly extra_actions = [
@@ -152,6 +60,4 @@ export class DomainsComponent extends AsyncHandler {
             ...extensionsForItem(this.item(), this.name),
         ];
     });
-
-    public readonly newItem = () => this._item.create();
 }

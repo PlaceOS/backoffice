@@ -8,7 +8,6 @@ import {
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AsyncHandler } from '../../common/async-handler.class';
 import { HashMap } from '../../common/types';
 import { IconComponent } from '../icon.component';
 import { TranslatePipe } from '../translate.pipe';
@@ -135,10 +134,7 @@ import { TranslatePipe } from '../translate.pipe';
         MatInputModule,
     ],
 })
-export class ObjectListFieldComponent
-    extends AsyncHandler
-    implements ControlValueAccessor
-{
+export class ObjectListFieldComponent implements ControlValueAccessor {
     /** List of fields that can be populated for each object */
     public readonly fields = input<string[]>(undefined);
     public readonly disabled = signal(false);

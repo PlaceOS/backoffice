@@ -22,10 +22,9 @@ import {
     updateMetadata,
 } from '@placeos/ts-client';
 import { VERSION } from '../../env/version';
-import { escapeHtml } from '../common/general';
-// import { SchemaStateService } from '../admin/schema-state.service';
 import { AsyncHandler } from '../common/async-handler.class';
 import { describeError, readError } from '../common/errors';
+import { escapeHtml } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { currentUser } from '../common/user-state';
@@ -197,7 +196,6 @@ function replaceDescTag(inputString, newContent) {
                                                 standalone: true,
                                             }"
                                             lang="json"
-                                            [schema]="schema_map()[item.name]"
                                             [readonly]="false"
                                         />
                                     }
@@ -243,7 +241,6 @@ export class MetadataDisplayComponent
     implements OnChanges
 {
     private _dialog = inject(MatDialog);
-    // private _schemas = inject(SchemaStateService);
     public readonly item = input<PlaceResource>();
     /** List of metadata associated with the zone */
     public readonly metadata = signal<Metadata[]>([]);
@@ -255,8 +252,6 @@ export class MetadataDisplayComponent
     public readonly loading = signal<HashMap<boolean>>({});
     /** Whether the metadata list is loading */
     public readonly loading_list = signal(false);
-    /** Map of metadata schemas to the associated metadata */
-    public readonly schema_map = signal<HashMap<HashMap | string>>({});
     /** Metadata contents to view */
     public readonly show_view = signal('');
     /** Search text for filtering metadata */
@@ -479,22 +474,6 @@ export class MetadataDisplayComponent
                 };
                 return m;
             });
-            // this.subscription(
-            //     `${group.name}_schema`,
-            //     this.form_map()[
-            //         group.name
-            //     ].controls.schema.valueChanges.subscribe((_) => {
-            //         let schema = this._schemas.getSchema(_);
-            //         if (!schema) {
-            //             try {
-            //                 schema = JSON.parse(_);
-            //             } catch (e) {
-            //                 schema = {};
-            //             }
-            //         }
-            //         this.schema_map[group.name] = schema;
-            //     }),
-            // );
         });
     }
 

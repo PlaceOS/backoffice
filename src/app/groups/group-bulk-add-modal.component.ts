@@ -254,7 +254,6 @@ export class GroupBulkAddModalComponent<T extends GroupBulkAddItem> {
     public readonly show_permissions = !!this._data.show_permissions;
     public readonly permission_flags = GROUP_PERMISSION_FLAGS;
     public readonly hasPermission = hasGroupPermission;
-    public readonly selected_count = computed(() => this.selected().length);
     private readonly _items = resource({
         params: () => this.search().trim(),
         loader: async ({ params }) => {

@@ -1,18 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     copyToClipboard,
-    csvToJson,
-    detectIE,
     downloadFile,
     escapeHtml,
     eventToPoint,
-    flatten,
     getItemWithKeys,
     issueDescription,
     jsonToCsv,
     log,
     numberToPosition,
-    padLength,
     parseCSV,
     randomInt,
     unique,
@@ -84,45 +80,6 @@ describe('general.ts utilities', () => {
                 expect.any(String),
                 expect.any(String),
             );
-        });
-    });
-
-    describe('detectIE', () => {
-        const original_user_agent = navigator.userAgent;
-
-        afterEach(() => {
-            Object.defineProperty(navigator, 'userAgent', {
-                value: original_user_agent,
-                writable: true,
-            });
-        });
-
-        it('should return 0 for non-IE browsers', () => {
-            expect(detectIE()).toBe(0);
-        });
-
-        it('should detect MSIE version', () => {
-            Object.defineProperty(navigator, 'userAgent', {
-                value: 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)',
-                writable: true,
-            });
-            expect(detectIE()).toBe(10);
-        });
-
-        it('should detect Trident (IE 11)', () => {
-            Object.defineProperty(navigator, 'userAgent', {
-                value: 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko',
-                writable: true,
-            });
-            expect(detectIE()).toBe(11);
-        });
-
-        it('should detect Edge', () => {
-            Object.defineProperty(navigator, 'userAgent', {
-                value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Edge/12.0',
-                writable: true,
-            });
-            expect(detectIE()).toBe(12);
         });
     });
 
@@ -274,7 +231,7 @@ describe('general.ts utilities', () => {
         });
     });
 
-    describe('parseCSV / csvToJson', () => {
+    describe('parseCSV', () => {
         it('should parse simple CSV', () => {
             const csv = 'name,age\nJohn,30\nJane,25';
             const result = parseCSV(csv);
@@ -364,10 +321,6 @@ describe('general.ts utilities', () => {
             ];
             expect(parseCSV(jsonToCsv(data))).toEqual(data);
             expect(parseCSV(jsonToCsv(data, [], '\t'), '\t')).toEqual(data);
-        });
-
-        it('csvToJson should be alias for parseCSV', () => {
-            expect(csvToJson).toBe(parseCSV);
         });
     });
 
@@ -514,62 +467,6 @@ describe('general.ts utilities', () => {
             downloadFile('test.txt', 'file contents');
 
             expect(createElement_spy).toHaveBeenCalledWith('a');
-        });
-    });
-
-    describe('flatten', () => {
-        it('should flatten nested arrays', () => {
-            const arr = [1, [2, 3], [4, [5, 6]]];
-            expect(flatten(arr)).toEqual([1, 2, 3, 4, 5, 6]);
-        });
-
-        it('should handle empty array', () => {
-            expect(flatten([])).toEqual([]);
-        });
-
-        it('should handle already flat array', () => {
-            expect(flatten([1, 2, 3])).toEqual([1, 2, 3]);
-        });
-
-        it('should handle deeply nested arrays', () => {
-            const arr = [[[[1]]]];
-            expect(flatten(arr)).toEqual([1]);
-        });
-
-        it('should preserve order', () => {
-            const arr = [1, [2, 3], 4];
-            expect(flatten(arr)).toEqual([1, 2, 3, 4]);
-        });
-
-        it('should handle mixed types', () => {
-            const arr = [1, ['a', 'b'], [true, false]];
-            expect(flatten(arr)).toEqual([1, 'a', 'b', true, false]);
-        });
-    });
-
-    describe('padLength', () => {
-        it('should pad number to specified length', () => {
-            expect(padLength(5, 3)).toBe('005');
-        });
-
-        it('should pad string to specified length', () => {
-            expect(padLength('5', 3)).toBe('005');
-        });
-
-        it('should not pad if already at length', () => {
-            expect(padLength(123, 3)).toBe('123');
-        });
-
-        it('should not pad if longer than length', () => {
-            expect(padLength(12345, 3)).toBe('12345');
-        });
-
-        it('should use custom character', () => {
-            expect(padLength(5, 3, '*')).toBe('**5');
-        });
-
-        it('should default to length 2', () => {
-            expect(padLength(5)).toBe('05');
         });
     });
 

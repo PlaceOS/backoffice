@@ -1,9 +1,16 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, provideRouter, Router } from '@angular/router';
+import {
+    ActivatedRouteSnapshot,
+    provideRouter,
+    Router,
+    RouterStateSnapshot,
+} from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { AuthorisedAdminGuard } from '../../../app/ui/guards/authorised-admin.guard';
-import { AuthorisedUserGuard } from '../../../app/ui/guards/authorised-user.guard';
+import {
+    authorisedAdminGuard,
+    authorisedUserGuard,
+} from '../../../app/ui/guards/authorised.guard';
 import { BackofficeUsersService } from '../../../app/users/users.service';
 
 const subsystem = vi.hoisted(() => ({ allowed: false }));
@@ -36,16 +43,20 @@ const roles = [
 describe.each([
     {
         name: 'admin routes',
-        guard: AuthorisedAdminGuard,
+        guard: authorisedAdminGuard,
         allowed: [true, false, true, false],
     },
     {
         name: 'support routes',
-        guard: AuthorisedUserGuard,
+        guard: authorisedUserGuard,
         allowed: [true, true, true, false],
     },
 ])('$name', ({ guard, allowed }) => {
     const user = signal<{ sys_admin: boolean; support: boolean } | null>(null);
+    const canActivate = (route: ActivatedRouteSnapshot) =>
+        TestBed.runInInjectionContext(() =>
+            guard(route, {} as RouterStateSnapshot),
+        ) as Promise<boolean>;
 
     beforeEach(() => {
         subsystem.allowed = false;
@@ -54,7 +65,6 @@ describe.each([
         TestBed.configureTestingModule({
             providers: [
                 provideRouter([]),
-                guard,
                 { provide: BackofficeUsersService, useValue: { user } },
             ],
         });
@@ -68,14 +78,8 @@ describe.each([
     for (const [index, role] of roles.entries()) {
         it(`checks ${role.name} access before activate`, async () => {
             user.set(role);
-            const instance = TestBed.inject<
-                AuthorisedAdminGuard | AuthorisedUserGuard
-            >(guard);
             const router = TestBed.inject(Router);
-            const result = await instance.canActivate(
-                new ActivatedRouteSnapshot(),
-                router.routerState.snapshot,
-            );
+            const result = await canActivate(new ActivatedRouteSnapshot());
             expect(result).toBe(allowed[index]);
             if (allowed[index]) expect(router.navigate).not.toHaveBeenCalled();
             else
@@ -88,48 +92,26 @@ describe.each([
     it('admits subsystem members only on subsystem routes', async () => {
         user.set({ sys_admin: false, support: false });
         subsystem.allowed = true;
-        const instance = TestBed.inject<
-            AuthorisedAdminGuard | AuthorisedUserGuard
-        >(guard);
-        expect(
-            await instance.canActivate(
-                new ActivatedRouteSnapshot(),
-                TestBed.inject(Router).routerState.snapshot,
-            ),
-        ).toBe(guard === AuthorisedUserGuard);
+        expect(await canActivate(new ActivatedRouteSnapshot())).toBe(
+            guard === authorisedUserGuard,
+        );
         const route = new ActivatedRouteSnapshot();
         route.data = { role_only: true };
-        expect(
-            await instance.canActivate(
-                route,
-                TestBed.inject(Router).routerState.snapshot,
-            ),
-        ).toBe(false);
+        expect(await canActivate(route)).toBe(false);
     });
 
     it('requires an explicit route opt-in for admin routes', async () => {
-        if (guard !== AuthorisedAdminGuard) return;
+        if (guard !== authorisedAdminGuard) return;
         user.set({ sys_admin: false, support: false });
         subsystem.allowed = true;
-        const instance = TestBed.inject(AuthorisedAdminGuard);
         const opted_in = Object.assign(new ActivatedRouteSnapshot(), {
             routeConfig: { data: { allow_subsystem: true } },
         });
-        expect(
-            await instance.canActivate(
-                opted_in,
-                TestBed.inject(Router).routerState.snapshot,
-            ),
-        ).toBe(true);
+        expect(await canActivate(opted_in)).toBe(true);
         // Inherited data is not an opt-in; only the route's own config is
         const child = new ActivatedRouteSnapshot();
         child.data = { allow_subsystem: true };
-        expect(
-            await instance.canActivate(
-                child,
-                TestBed.inject(Router).routerState.snapshot,
-            ),
-        ).toBe(false);
+        expect(await canActivate(child)).toBe(false);
     });
 
     it('waits for the connection and user before deciding access', async () => {
@@ -137,14 +119,7 @@ describe.each([
         connection.set(false);
         const router = TestBed.inject(Router);
         const settled = vi.fn();
-        const result = TestBed.inject<
-            AuthorisedAdminGuard | AuthorisedUserGuard
-        >(guard)
-            .canActivate(
-                new ActivatedRouteSnapshot(),
-                router.routerState.snapshot,
-            )
-            .then(settled);
+        const result = canActivate(new ActivatedRouteSnapshot()).then(settled);
         await vi.advanceTimersByTimeAsync(100);
         expect(settled).not.toHaveBeenCalled();
         connection.set(true);

@@ -1,24 +1,20 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { del, get, PlaceDomain } from '@placeos/ts-client';
-import { readError } from '../common/errors';
+import { del, get } from '@placeos/ts-client';
 import { escapeHtml } from '../common/general';
 import { reportLoadError } from '../common/load-error';
-import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
-import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
+import { AdminDomainSelectComponent } from './admin-domain-select.component';
 import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 import {
     formatMinutes,
@@ -53,23 +49,10 @@ export interface PlaceTenant {
                     {{ 'ADMIN.TENANTS_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <mat-form-field
-                        class="no-subscript w-56"
-                        appearance="outline"
-                    >
-                        <mat-select
-                            name="type"
-                            [ngModel]="domain()"
-                            (ngModelChange)="setDomain($event)"
-                            [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
-                        >
-                            @for (domain of domain_list(); track domain.id) {
-                                <mat-option [value]="domain">
-                                    {{ domain.name }}
-                                </mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
+                    <admin-domain-select
+                        key="staff-api"
+                        (changed)="loadTenants()"
+                    />
                     <button
                         icon
                         default
@@ -211,6 +194,7 @@ export interface PlaceTenant {
         `,
     ],
     imports: [
+        AdminDomainSelectComponent,
         LoadingLabelDirective,
         IconComponent,
         MatRippleModule,
@@ -218,9 +202,6 @@ export interface PlaceTenant {
         MatTooltipModule,
         SimpleTableComponent,
         MatProgressBarModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        FormsModule,
         DatePipe,
     ],
 })
@@ -231,7 +212,6 @@ export class PlaceStaffAPIComponent implements OnInit {
     /** Loading state */
     public readonly loading = signal('');
     /** List of available domains */
-    public readonly domain_list = this._admin_data.domain_list;
     /** Currently active domain */
     public readonly domain = this._admin_data.selectedDomain('staff-api');
     public readonly tenants = signal<PlaceTenant[]>([]);
@@ -258,11 +238,6 @@ export class PlaceStaffAPIComponent implements OnInit {
         this.loading.set('');
     }
 
-    public async setDomain(domain: PlaceDomain) {
-        this._admin_data.setDomain('staff-api', domain);
-        await this.loadTenants();
-    }
-
     public editTenant(tenant?: PlaceTenant) {
         const ref = this._dialog.open(StaffTenantModalComponent, {
             data: { tenant, domain: this.domain() },
@@ -278,7 +253,8 @@ export class PlaceStaffAPIComponent implements OnInit {
     }
 
     public async removeTenant(tenant: PlaceTenant) {
-        const details = await openConfirmModal(
+        const removed = await confirmAndRun(
+            this._dialog,
             {
                 title: 'Remove tenant?',
                 content: `Remove <strong>${escapeHtml(tenant.name)}</strong> from this domain?<br>
@@ -292,24 +268,15 @@ export class PlaceStaffAPIComponent implements OnInit {
                 icon: { type: 'icon', content: 'delete' },
                 confirm_text: 'Delete',
             },
-            this._dialog,
+            {
+                loading: 'Removing tenant from domain...',
+                action: () => del(`/api/staff/v1/tenants/${tenant.id}`),
+                error: (reason) =>
+                    `Error removing tenant ${tenant.name}. Error: ${reason}`,
+                success: 'Successfully removed tenant from domain.',
+            },
         );
-        if (details.reason !== 'done') return;
-        details.loading('Removing tenant from domain...');
-        const failed = await del(`/api/staff/v1/tenants/${tenant.id}`)
-            .then(() => false)
-            .catch(async (err) => {
-                notifyError(
-                    `Error removing tenant ${tenant.name}. Error: ${await readError(
-                        err,
-                    )}`,
-                );
-                return true;
-            });
-        details.close();
-        if (failed) return;
-        notifySuccess(`Successfully removed tenant from domain.`);
-        await this.loadTenants();
+        if (removed) await this.loadTenants();
     }
 
     private async loadTenants() {

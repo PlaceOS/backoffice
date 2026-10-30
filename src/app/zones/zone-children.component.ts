@@ -1,5 +1,4 @@
 import { Component, computed, inject, model } from '@angular/core';
-import { PlaceZone } from '@placeos/ts-client';
 
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -116,8 +115,4 @@ export class ZoneChildrenComponent {
             ? zones
             : zones.filter((sys) => sys.name.toLowerCase().includes(filter));
     });
-
-    public get item(): PlaceZone {
-        return this._state.active_item as PlaceZone;
-    }
 }

@@ -23,11 +23,11 @@ import {
 } from '../common/support-access';
 import { ApplicationIcon } from '../common/types';
 import { BackofficeUsersService } from '../users/users.service';
-import { ApplicationPickerTooltipComponent } from './application-picker-tooltip.component';
 import {
-    CustomTooltipComponent,
-    CustomTooltipData,
-} from './custom-tooltip.component';
+    ApplicationPickerTooltipComponent,
+    isSupportedRedirectUri,
+} from './application-picker-tooltip.component';
+import { CustomTooltipComponent } from './custom-tooltip.component';
 import { DebugInfoComponent } from './debug-info.component';
 import { IconComponent } from './icon.component';
 import { SkipToContentComponent } from './skip-to-content.component';
@@ -39,7 +39,6 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 @Component({
     selector: 'sidebar-menu',
     template: `
-        <!-- eslint-disable @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
         <!-- Close the mobile menu so the content it skips to is visible -->
         <skip-to-content (click)="open.set(false)" />
         <div
@@ -49,7 +48,6 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             [class.sm:w-52]="!compact()"
             [class.!flex]="open()"
             [class.pointer-events-auto!]="open()"
-            (click)="close()"
         >
             <nav
                 class="flex h-1/2 flex-1 flex-col items-center space-y-2"
@@ -285,7 +283,6 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     ],
 })
 export class SidebarMenuComponent extends AsyncHandler implements OnInit {
-    private _tooltip = inject(CustomTooltipData, { optional: true });
     private _settings = inject(SettingsService);
     private _users = inject(BackofficeUsersService);
     private _router = inject(Router);
@@ -387,10 +384,6 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         return this._users.current()?.sys_admin;
     }
 
-    public get is_support() {
-        return this._users.current()?.support;
-    }
-
     public get alerts_url(): string {
         return authority()?.config?.backoffice?.alerts_url;
     }
@@ -398,8 +391,6 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     public get metrics_url(): string {
         return authority()?.config?.backoffice?.metrics_url;
     }
-
-    public readonly close = () => this._tooltip?.close();
 
     public switchGroup() {
         this._dialog
@@ -453,18 +444,8 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         } as Record<string, unknown>).catch(() => null);
         this.show_application_picker.set(
             !!(response?.data || []).find((app) =>
-                this.isSupportedRedirectUri(app?.redirect_uri),
+                isSupportedRedirectUri(app?.redirect_uri),
             ),
         );
-    }
-
-    private isSupportedRedirectUri(uri: string) {
-        if (!uri) return false;
-        try {
-            const protocol = new URL(uri, location.origin).protocol;
-            return protocol === 'http:' || protocol === 'https:';
-        } catch {
-            return false;
-        }
     }
 }

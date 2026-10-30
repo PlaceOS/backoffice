@@ -2,7 +2,7 @@ import { Component, input, output, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { csvToJson, downloadFile, jsonToCsv } from '../../common/general';
+import { downloadFile, jsonToCsv, parseCSV } from '../../common/general';
 import { notifyError, notifyWarn } from '../../common/notifications';
 import { HashMap } from '../../common/types';
 import { IconComponent } from '../../ui/icon.component';
@@ -157,7 +157,7 @@ export class CsvUploadComponent {
 
     private processCSVData(data: string, seperator: '\t' | ',' | '  ' = '\t') {
         try {
-            const list = csvToJson(data, seperator) || [];
+            const list = parseCSV(data, seperator) || [];
             this.loading = false;
             if (!list.length) {
                 notifyWarn('No rows were found in the uploaded file.');

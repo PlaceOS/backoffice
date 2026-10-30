@@ -20,9 +20,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { lastValueFrom } from 'rxjs';
-import { describeError } from '../common/errors';
+import { describeError, readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
-import { notifyInfo } from '../common/notifications';
+import {
+    notifyError,
+    notifyInfo,
+    notifySuccess,
+} from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
@@ -173,6 +177,37 @@ export async function openConfirmModal(
         loading: (s) => ref.componentInstance?.loading.set(s),
         close: () => ref.close(),
     };
+}
+
+/**
+ * Ask the user to confirm, then run `action` while the modal shows `loading`.
+ * The modal closes when the action ends. A failed action shows
+ * `error(reason)`; a successful one shows `success`, if set.
+ * @returns Whether the action ran and succeeded
+ */
+export async function confirmAndRun(
+    dialog: MatDialog,
+    data: ConfirmModalData,
+    options: {
+        loading: string;
+        action: () => Promise<unknown>;
+        error: (reason: string) => string;
+        success?: string;
+    },
+): Promise<boolean> {
+    const details = await openConfirmModal(data, dialog);
+    if (details.reason !== 'done') return false;
+    details.loading(options.loading);
+    try {
+        await options.action();
+    } catch (err) {
+        notifyError(options.error(await readError(err)));
+        return false;
+    } finally {
+        details.close();
+    }
+    if (options.success) notifySuccess(options.success);
+    return true;
 }
 
 @Component({
