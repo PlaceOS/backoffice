@@ -13,7 +13,7 @@ import { DomainStateService } from './domain-state.service';
     selector: 'domain-authentication',
     template: `
         <div class="flex h-full w-full flex-col">
-            <div header class="">
+            <div header class="p-4">
                 <button
                     btn
                     class="mb-4 w-full sm:w-48"
@@ -22,7 +22,7 @@ import { DomainStateService } from './domain-state.service';
                     {{ 'DOMAINS.AUTHENTICATION_NEW' | translate }}
                 </button>
             </div>
-            <div class="h-1/2 w-full flex-1 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"

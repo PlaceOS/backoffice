@@ -9,7 +9,7 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'domain-users',
     template: `
-        <div class="flex h-full min-h-0 w-full flex-col">
+        <div class="flex h-full min-h-0 w-full flex-col p-4">
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"

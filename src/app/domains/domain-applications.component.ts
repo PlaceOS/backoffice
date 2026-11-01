@@ -19,7 +19,7 @@ import { DomainStateService } from './domain-state.service';
     selector: 'domain-applications',
     template: `
         <div class="flex h-full w-full flex-col">
-            <div header class="">
+            <div header class="px-4 pt-4">
                 <button
                     btn
                     class="mb-4 w-full sm:w-40"
@@ -28,7 +28,7 @@ import { DomainStateService } from './domain-state.service';
                     {{ 'DOMAINS.APPLICATION_NEW' | translate }}
                 </button>
             </div>
-            <div class="h-1/2 w-full flex-1 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4 pb-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"

@@ -78,7 +78,7 @@ export interface ExternalResource {
                     [class.invisible]="!loading()"
                 />
                 <simple-table
-                    class="mb-4 block min-w-3xl text-sm"
+                    class="mb-4 block min-w-5xl text-sm"
                     [data]="resource_list()"
                     [columns]="[
                         {

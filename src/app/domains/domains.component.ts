@@ -12,7 +12,6 @@ import { DomainStateService } from './domain-state.service';
             i18n_key="DOMAINS"
             [tabs]="tab_list()"
             [extra_actions]="extra_actions"
-            padded
         />
     `,
     imports: [ItemShellComponent],

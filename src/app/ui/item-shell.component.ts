@@ -86,7 +86,6 @@ import { TranslatePipe } from './translate.pipe';
                                 <div
                                     #el
                                     class="relative z-0 h-1/2 w-full flex-1 overflow-auto"
-                                    [class.p-4]="padded()"
                                     (scroll)="scroll.set(el.scrollTop)"
                                 >
                                     <mat-tab-nav-panel
@@ -165,8 +164,6 @@ export class ItemShellComponent {
     public readonly bulk = input(false, { transform: booleanAttribute });
     /** Show the debug console */
     public readonly debug = input(false, { transform: booleanAttribute });
-    /** Pad the tab content */
-    public readonly padded = input(false, { transform: booleanAttribute });
 
     public readonly open_menu = signal(false);
     public readonly scroll = signal(0);

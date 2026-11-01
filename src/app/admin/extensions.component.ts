@@ -70,7 +70,7 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
                     [class.invisible]="!loading()"
                 />
                 <simple-table
-                    class="block min-w-4xl text-sm"
+                    class="block min-w-5xl text-sm"
                     [data]="extensions()"
                     [columns]="[
                         {

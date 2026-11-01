@@ -12,7 +12,6 @@ import { TriggerStateService } from './trigger-state.service';
             name="triggers"
             i18n_key="TRIGGERS"
             [tabs]="tab_list()"
-            padded
             debug
         />
     `,

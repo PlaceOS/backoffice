@@ -13,7 +13,6 @@ import { RepositoriesStateService } from './repositories-state.service';
             name="repositories"
             i18n_key="REPOS"
             [tabs]="tab_list()"
-            padded
         />
     `,
     imports: [ItemShellComponent],
