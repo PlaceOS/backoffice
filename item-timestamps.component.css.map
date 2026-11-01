@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["item-timestamps.component.ts"],
+  "sourcesContent": [":host { display: contents; }"],
+  "mappings": ";AAAA;AAAQ,WAAA;AAAmB;",
+  "names": []
+}

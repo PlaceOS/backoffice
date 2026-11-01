@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/zones/zone-groups.component.ts"
+  ],
+  "sourcesContent": [
+    "import { Component, inject } from '@angular/core';\nimport { GroupMembershipComponent } from '../groups/group-membership.component';\nimport { ZonesStateService } from './zones-state.service';\n\n@Component({\n    selector: 'zone-groups',\n    template: `\n        <group-membership [members]=\"members\" [loading]=\"loading()\" />\n    `,\n    imports: [GroupMembershipComponent],\n})\nexport class ZoneGroupsComponent {\n    private _service = inject(ZonesStateService);\n\n    public readonly members = this._service.group_members;\n    public readonly loading = this._service.loading;\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAWM,IAAO,sBAAP,MAAO,qBAAmB;EACpB,WAAW,OAAO,iBAAiB;EAE3B,UAAU,KAAK,SAAS;EACxB,UAAU,KAAK,SAAS;;qCAJ/B,sBAAmB;EAAA;yEAAnB,sBAAmB,WAAA,CAAA,CAAA,aAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,QAAA,CAAA,CAAA,GAAA,WAAA,SAAA,CAAA,GAAA,UAAA,SAAA,6BAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAJxB,MAAA,oBAAA,GAAA,oBAAA,CAAA;;;AAAkB,MAAA,qBAAA,WAAA,IAAA,OAAA,EAAmB,WAAA,IAAA,QAAA,CAAA;;oBAE/B,wBAAwB,GAAA,eAAA,EAAA,CAAA;;;sEAEzB,qBAAmB,CAAA;UAP/B;WAAU;MACP,UAAU;MACV,UAAU;;;MAGV,SAAS,CAAC,wBAAwB;KACrC;;;;6EACY,qBAAmB,EAAA,WAAA,uBAAA,UAAA,0CAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
+  "names": [],
+  "debugId": "83a6d34e-8142-5a3e-b895-9b0886544b82"
+}

@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/common/timezones.ts"
+  ],
+  "sourcesContent": [
+    "/** Sorted IANA timezone names that the browser supports. Used for timezone autocomplete. */\nexport const TIMEZONES_IANA: readonly string[] =\n    Intl.supportedValuesOf('timeZone');\n"
+  ],
+  "mappings": ";AACO,IAAM,iBACT,KAAK,kBAAkB,UAAU;",
+  "names": [],
+  "debugId": "82850b98-a1fb-5036-aca6-1ac33f213d4a"
+}

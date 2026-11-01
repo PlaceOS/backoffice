@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/groups/group-users.component.ts"
+  ],
+  "sourcesContent": [
+    "import { Component, inject } from '@angular/core';\nimport { GroupMembershipComponent } from './group-membership.component';\nimport { GroupStateService } from './group-state.service';\n\n@Component({\n    selector: 'group-users',\n    template: `\n        <group-membership [members]=\"members\" [loading]=\"loading()\" />\n    `,\n    imports: [GroupMembershipComponent],\n})\nexport class GroupUsersComponent {\n    private _service = inject(GroupStateService);\n\n    public readonly members = this._service.user_members;\n    public readonly loading = this._service.loading;\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAWM,IAAO,sBAAP,MAAO,qBAAmB;EACpB,WAAW,OAAO,iBAAiB;EAE3B,UAAU,KAAK,SAAS;EACxB,UAAU,KAAK,SAAS;;qCAJ/B,sBAAmB;EAAA;yEAAnB,sBAAmB,WAAA,CAAA,CAAA,aAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,QAAA,CAAA,CAAA,GAAA,WAAA,SAAA,CAAA,GAAA,UAAA,SAAA,6BAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAJxB,MAAA,oBAAA,GAAA,oBAAA,CAAA;;;AAAkB,MAAA,qBAAA,WAAA,IAAA,OAAA,EAAmB,WAAA,IAAA,QAAA,CAAA;;oBAE/B,wBAAwB,GAAA,eAAA,EAAA,CAAA;;;sEAEzB,qBAAmB,CAAA;UAP/B;WAAU;MACP,UAAU;MACV,UAAU;;;MAGV,SAAS,CAAC,wBAAwB;KACrC;;;;6EACY,qBAAmB,EAAA,WAAA,uBAAA,UAAA,2CAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
+  "names": [],
+  "debugId": "85dd8821-cf5b-5385-b614-45cc2a63403a"
+}

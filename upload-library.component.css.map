@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["upload-library.component.ts"],
-  "sourcesContent": ["\n            [header] icon {\n                opacity: 0;\n            }\n            [header] button.active icon {\n                opacity: 1;\n            }\n            [header] button:hover icon {\n                opacity: 0.3;\n            }\n        "],
-  "mappings": ";AACY,CAAA,QAAA;AACI,WAAA;AACJ;AACA,CAAA,QAAA,MAAA,CAAA,OAAA;AACI,WAAA;AACJ;AACA,CAAA,QAAA,MAAA,OAAA;AACI,WAAA;AACJ;",
-  "names": []
-}

@@ -77,6 +77,24 @@ All notable changes to this project will be documented in this file.
 - Cut per-tick work in tables, forms and lists
 - Virtual rows for large lists and a lazy markdown renderer
 
+### Refactor
+
+#### Admin
+
+- Share confirm flow, domain picker and table
+
+#### Forms
+
+- Share dialog form submit and save hotkey
+
+#### Groups
+
+- Share group membership logic and table
+
+#### Ui
+
+- Share one item page shell across features
+
 ## [2610.1] - 2026-10-08
 
 ### Bug Fixes

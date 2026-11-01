@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/guards/authorised.guard.ts"
+  ],
+  "sourcesContent": [
+    "import { inject } from '@angular/core';\nimport { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';\nimport { PlaceUser, onlineState } from '@placeos/ts-client';\nimport {\n    waitForClientSignalValue,\n    waitForSignalValue,\n} from '../../common/signals';\nimport { hasSupportSubsystem } from '../../common/support-access';\nimport { BackofficeUsersService } from '../../users/users.service';\n\n/**\n * Route guard that waits for the connection and the user, then admits the\n * user when `allowed` returns true. Other users go to `/unauthorised`.\n */\nfunction authorisedGuard(\n    allowed: (user: PlaceUser, route: ActivatedRouteSnapshot) => boolean,\n): CanActivateFn {\n    return async (route) => {\n        const router = inject(Router);\n        const users = inject(BackofficeUsersService);\n        await waitForClientSignalValue(onlineState(), (_) => _);\n        const user: PlaceUser = await waitForSignalValue(\n            users.user,\n            (_) => !!_,\n        ).catch(() => null);\n        const can_activate = !!user && allowed(user, route);\n        if (!can_activate) router.navigate(['/unauthorised']);\n        return can_activate;\n    };\n}\n\n/** Admins and support users. Subsystem members too, unless `role_only` is set. */\nexport const authorisedUserGuard = authorisedGuard(\n    (user, route) =>\n        user.sys_admin ||\n        user.support ||\n        (!route.data?.['role_only'] && hasSupportSubsystem()),\n);\n\n/** Admins. Subsystem members only on routes that set `allow_subsystem`. */\nexport const authorisedAdminGuard = authorisedGuard(\n    (user, route) =>\n        user.sys_admin ||\n        (!!route.routeConfig?.data?.['allow_subsystem'] &&\n            hasSupportSubsystem()),\n);\n"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;AAcA,SAAS,gBACL,SACa;AACb,SAAO,OAAO,UAAU;AACpB,UAAM,SAAS,OAAO,MAAM;AAC5B,UAAM,QAAQ,OAAO,sBAAsB;AAC3C,UAAM,yBAAyB,GAAY,GAAG,CAAC,MAAM,CAAC;AACtD,UAAM,OAAkB,MAAM;AAAA,MAC1B,MAAM;AAAA,MACN,CAAC,MAAM,CAAC,CAAC;AAAA,IACb,EAAE,MAAM,MAAM,IAAI;AAClB,UAAM,eAAe,CAAC,CAAC,QAAQ,QAAQ,MAAM,KAAK;AAClD,QAAI,CAAC,aAAc,QAAO,SAAS,CAAC,eAAe,CAAC;AACpD,WAAO;AAAA,EACX;AACJ;AAGO,IAAM,sBAAsB;AAAA,EAC/B,CAAC,MAAM,UACH,KAAK,aACL,KAAK,WACJ,CAAC,MAAM,OAAO,WAAW,KAAK,oBAAoB;AAC3D;AAGO,IAAM,uBAAuB;AAAA,EAChC,CAAC,MAAM,UACH,KAAK,aACJ,CAAC,CAAC,MAAM,aAAa,OAAO,iBAAiB,KAC1C,oBAAoB;AAChC;",
+  "names": [],
+  "debugId": "0ee84069-a15b-5156-a5d3-4cf6335f0957"
+}
