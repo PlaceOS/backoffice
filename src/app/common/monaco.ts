@@ -19,6 +19,36 @@ declare global {
 
 let loading: Promise<void> | undefined;
 
+/**
+ * Stop errors from editor workers that Monaco already stopped.
+ * Monaco stops its worker when the last model closes, for example when the
+ * user leaves a page with an editor. If the worker script is still loading,
+ * the browser then reports a failed `importScripts` on the window. Monaco
+ * removed its own listener first, so the error was unhandled. Errors from
+ * workers that still run are not changed.
+ */
+export function ignoreStoppedWorkerErrors(
+    environment: monaco.Environment | undefined,
+) {
+    const getWorker = environment?.getWorker;
+    if (!getWorker) return;
+    environment.getWorker = (worker_id, label) => {
+        const worker = getWorker.call(environment, worker_id, label);
+        void Promise.resolve(worker).then((created) => {
+            let stopped = false;
+            const terminate = created.terminate.bind(created);
+            created.terminate = () => {
+                stopped = true;
+                terminate();
+            };
+            created.addEventListener('error', (event) => {
+                if (stopped) event.preventDefault();
+            });
+        });
+        return worker;
+    };
+}
+
 /** Share one editor download across fields and allow retry after a failed load. */
 export function loadMonaco(): Promise<void> {
     if (loading) return loading;
@@ -51,7 +81,14 @@ export function loadMonaco(): Promise<void> {
                     vs: new URL('assets/monaco/min/vs', document.baseURI).href,
                 },
             });
-            loader(['vs/editor/editor.main'], () => finish(), finish);
+            loader(
+                ['vs/editor/editor.main'],
+                () => {
+                    ignoreStoppedWorkerErrors(globalThis.MonacoEnvironment);
+                    finish();
+                },
+                finish,
+            );
         };
         if (window.require) return loadEditor();
         script.src = new URL(
