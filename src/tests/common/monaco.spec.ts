@@ -63,6 +63,27 @@ describe('Monaco loading', () => {
         await second;
     });
 
+    it('only stops errors from workers that Monaco stopped', async () => {
+        const { ignoreStoppedWorkerErrors } =
+            await import('../../app/common/monaco');
+        const terminate = vi.fn();
+        const worker = Object.assign(new EventTarget(), {
+            terminate,
+        }) as unknown as Worker;
+        const environment = { getWorker: () => worker };
+        ignoreStoppedWorkerErrors(environment);
+        expect(environment.getWorker()).toBe(worker);
+        await Promise.resolve();
+        const running = new Event('error', { cancelable: true });
+        worker.dispatchEvent(running);
+        expect(running.defaultPrevented).toBe(false);
+        worker.terminate();
+        expect(terminate).toHaveBeenCalledOnce();
+        const stopped = new Event('error', { cancelable: true });
+        worker.dispatchEvent(stopped);
+        expect(stopped.defaultPrevented).toBe(true);
+    });
+
     it('stops waiting when the editor does not respond', async () => {
         const { loadMonaco } = await import('../../app/common/monaco');
         const failure = expect(loadMonaco()).rejects.toThrow(
