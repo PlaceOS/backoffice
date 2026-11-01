@@ -30,6 +30,10 @@ All notable changes to this project will be documented in this file.
 
 - Load admin tabs and reply to all frame requests
 
+#### Monaco
+
+- Stop reporting worker load errors after an editor closes
+
 #### Sentry
 
 - Ignore ResizeObserver loop errors in dev builds
