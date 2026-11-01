@@ -14,7 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AsyncHandler } from '../common/async-handler.class';
 import { mapLimit } from '../common/cascade-delete';
 import { readError } from '../common/errors';
-import { csvToJson, downloadFile, jsonToCsv } from '../common/general';
+import { downloadFile, jsonToCsv, parseCSV } from '../common/general';
 import {
     notifyError,
     notifySuccess,
@@ -380,10 +380,7 @@ export class PlaceDatabaseDetailsComponent
             const separator = file.name.toLowerCase().endsWith('.tsv')
                 ? '\t'
                 : ',';
-            const zones = csvToJson(
-                contents,
-                separator,
-            ) as ZoneTreeExportItem[];
+            const zones = parseCSV(contents, separator) as ZoneTreeExportItem[];
             await this.importZoneTree(zones);
         } catch (err) {
             notifyError(

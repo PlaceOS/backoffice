@@ -31,6 +31,7 @@ import {
     showUser,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { getInvalidSignalFields } from '../../common/forms';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { DialogEvent } from '../../common/types';
@@ -540,7 +541,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         if (this.form().invalid()) {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
-                    field_list: this._invalidFields().join(', '),
+                    field_list: getInvalidSignalFields(this.form).join(', '),
                 }),
             );
         }
@@ -589,13 +590,5 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
 
     private _userLabel(user: PlaceUser) {
         return user?.name || user?.email || '';
-    }
-
-    private _invalidFields() {
-        const fields: string[] = [];
-        if (this.form.name().invalid()) fields.push('name');
-        if (this.form.user_id().invalid()) fields.push('user_id');
-        if (this.form.scopes().invalid()) fields.push('scopes');
-        return fields;
     }
 }

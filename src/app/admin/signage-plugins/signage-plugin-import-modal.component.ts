@@ -22,6 +22,7 @@ import {
 } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../../common/async-handler.class';
+import { mapLimit } from '../../common/cascade-delete';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
@@ -30,10 +31,7 @@ import { IconComponent } from '../../ui/icon.component';
 import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { PluginLoadedPayload } from './signage-plugin-embed.component';
-import {
-    forEachWithLimit,
-    probeSignagePlugin,
-} from './signage-plugins.utilities';
+import { probeSignagePlugin } from './signage-plugins.utilities';
 
 /** Number of plugin files loaded at the same time */
 const PROBE_LIMIT = 6;
@@ -252,7 +250,7 @@ export class SignagePluginImportModalComponent
         if (controller.signal.aborted) return;
         this.loading_files.set(false);
         this.probes.set(files.map((uri) => ({ uri, status: 'loading' })));
-        await forEachWithLimit(files, PROBE_LIMIT, async (uri) => {
+        await mapLimit(files, PROBE_LIMIT, async (uri) => {
             const details = await probeSignagePlugin(uri, {
                 signal: controller.signal,
             });

@@ -15,7 +15,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
 import { format, setDay, setMonth } from 'date-fns';
-import { AsyncHandler } from '../../../common/async-handler.class';
 import { numberToPosition } from '../../../common/general';
 import { i18n } from '../../../common/locale.service';
 import { TIMEZONES_IANA } from '../../../common/timezones';
@@ -320,10 +319,7 @@ const TIMEZONE_OPTION_LIMIT = 50;
         IconComponent,
     ],
 })
-export class TriggerConditionTimeFormComponent
-    extends AsyncHandler
-    implements OnChanges, OnInit
-{
+export class TriggerConditionTimeFormComponent implements OnChanges, OnInit {
     /** Signal form fields used for editing the trigger condition */
     public readonly form =
         input<FieldTree<TriggerConditionFormModel>>(undefined);

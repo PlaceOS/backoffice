@@ -1,5 +1,6 @@
-import { DestroyRef, Injector, Signal, inject, signal } from '@angular/core';
+import { DestroyRef, Signal, inject, signal } from '@angular/core';
 import type { Signal as ClientSignal } from '@placeos/ts-client';
+import type { DialogEvent } from './types';
 
 export interface SubscriptionLike {
     unsubscribe(): void;
@@ -17,18 +18,6 @@ function disposeSubscription(subscription: SubscriptionLike | (() => void)) {
     }
 }
 
-export function signalFromSubscribable<T>(
-    source: Subscribable<T>,
-    initialValue: T,
-    injector = inject(Injector),
-): Signal<T> {
-    const destroyRef = injector.get(DestroyRef);
-    const state = signal(initialValue);
-    const subscription = source.subscribe((value) => state.set(value));
-    destroyRef.onDestroy(() => disposeSubscription(subscription));
-    return state.asReadonly();
-}
-
 export function signalFromClient<T>(
     source: ClientSignal<T>,
     initialValue: T = source.value,
@@ -40,18 +29,6 @@ export function signalFromClient<T>(
     });
     destroyRef.onDestroy(unsubscribe);
     return state.asReadonly();
-}
-
-export function toSignal<T>(
-    source: Signal<T> | Subscribable<T>,
-    options: { initialValue?: T; injector?: Injector } = {},
-): Signal<T> {
-    if (typeof source === 'function') return source as Signal<T>;
-    return signalFromSubscribable(
-        source,
-        options.initialValue,
-        options.injector,
-    );
 }
 
 export function waitForEvent<T>(
@@ -110,4 +87,21 @@ export function waitForClientSignalValue<T>(
         },
         predicate,
     );
+}
+
+/**
+ * Wait until a dialog emits an event with the given `reason`, or closes.
+ * Resolves to that event, or to the close result when the dialog closes first.
+ */
+export function waitForDialog<T = unknown>(
+    ref: {
+        componentInstance: { event: Subscribable<DialogEvent> };
+        afterClosed: () => Subscribable<unknown>;
+    },
+    reason: DialogEvent['reason'],
+): Promise<DialogEvent<T> | undefined> {
+    return Promise.race([
+        waitForEvent(ref.componentInstance.event, (e) => e.reason === reason),
+        waitForEvent(ref.afterClosed()),
+    ]) as Promise<DialogEvent<T> | undefined>;
 }

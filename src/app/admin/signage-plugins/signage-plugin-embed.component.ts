@@ -42,13 +42,6 @@ export type SignagePluginMessageType =
     | 'error';
 export type SignageHostMessageType = 'config' | 'play';
 
-export type SignageMessage<T = unknown> = {
-    api: 'signage-plugin/v1';
-    type: SignagePluginMessageType | SignageHostMessageType;
-    request_id?: string;
-    payload?: T;
-};
-
 export type PluginLoadedPayload = {
     plugin: {
         name: string;

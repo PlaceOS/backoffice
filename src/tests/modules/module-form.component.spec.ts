@@ -1,7 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { PlaceDriverRole, type PlaceDriver } from '@placeos/ts-client';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -60,7 +59,6 @@ describe('ModuleFormComponent', () => {
             imports: [ModuleFormComponent],
             providers: [
                 provideZonelessChangeDetection(),
-                provideNoopAnimations(),
                 {
                     provide: MatDialogRef,
                     useValue: {
@@ -144,7 +142,6 @@ describe('creating a module', () => {
             imports: [ModuleFormComponent],
             providers: [
                 provideZonelessChangeDetection(),
-                provideNoopAnimations(),
                 {
                     provide: MatDialogRef,
                     useValue: {

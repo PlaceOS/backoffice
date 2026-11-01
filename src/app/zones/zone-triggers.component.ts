@@ -1,5 +1,4 @@
 import { Component, computed, inject, model } from '@angular/core';
-import { PlaceZone } from '@placeos/ts-client';
 
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -145,8 +144,4 @@ export class ZoneTriggersComponent {
 
     public readonly selectTrigger = () => this._state.selectTrigger();
     public readonly deleteTrigger = (t) => this._state.removeTrigger(t);
-
-    public get item(): PlaceZone {
-        return this._state.active_item as PlaceZone;
-    }
 }

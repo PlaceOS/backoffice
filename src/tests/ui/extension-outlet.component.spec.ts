@@ -3,6 +3,7 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { PlaceResource, updateMetadata } from '@placeos/ts-client';
+import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
 import {
@@ -84,14 +85,9 @@ describe('ExtensionOutletComponent', () => {
                 {
                     provide: ActivatedRoute,
                     useValue: {
-                        queryParamMap: {
-                            subscribe: (next: (value: unknown) => void) => {
-                                next(
-                                    convertToParamMap({ embed: EXTENSION_URL }),
-                                );
-                                return { unsubscribe: () => undefined };
-                            },
-                        },
+                        queryParamMap: of(
+                            convertToParamMap({ embed: EXTENSION_URL }),
+                        ),
                     },
                 },
                 {

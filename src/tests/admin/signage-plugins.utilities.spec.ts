@@ -1,7 +1,6 @@
 import type { SignagePlugin } from '@placeos/ts-client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-    forEachWithLimit,
     generateSignagePluginFormModel,
     probeSignagePlugin,
 } from '../../app/admin/signage-plugins/signage-plugins.utilities';
@@ -18,24 +17,6 @@ describe('signage-plugins.utilities', () => {
             expect(generateSignagePluginFormModel(plugin).plugin_type).toBe(
                 'widget',
             );
-        });
-    });
-
-    describe('forEachWithLimit', () => {
-        it('runs every item without exceeding the limit', async () => {
-            let running = 0;
-            let max_running = 0;
-            const done: number[] = [];
-            await forEachWithLimit([1, 2, 3, 4, 5], 2, async (item) => {
-                running++;
-                max_running = Math.max(max_running, running);
-                await new Promise((resolve) => setTimeout(resolve));
-                done.push(item);
-                running--;
-            });
-
-            expect(max_running).toBe(2);
-            expect(done.sort()).toEqual([1, 2, 3, 4, 5]);
         });
     });
 

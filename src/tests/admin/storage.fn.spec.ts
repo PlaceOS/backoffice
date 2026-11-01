@@ -25,7 +25,6 @@ import {
     queryStorage,
     removeStorage,
     saveStorage,
-    showStorage,
     updateStorage,
 } from '../../app/admin/storage/storage.fn';
 
@@ -113,36 +112,6 @@ describe('storage.fn', () => {
         it('should include process function', () => {
             queryStorage();
             expect(client.query).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    fn: expect.any(Function),
-                }),
-            );
-        });
-    });
-
-    describe('showStorage', () => {
-        it('should call show with id and path', () => {
-            showStorage('storage-123');
-            expect(client.show).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    id: 'storage-123',
-                    path: 'storages',
-                }),
-            );
-        });
-
-        it('should pass query_params', () => {
-            showStorage('storage-123', { q: 'test' });
-            expect(client.show).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    query_params: { q: 'test' },
-                }),
-            );
-        });
-
-        it('should include process function', () => {
-            showStorage('storage-123');
-            expect(client.show).toHaveBeenCalledWith(
                 expect.objectContaining({
                     fn: expect.any(Function),
                 }),

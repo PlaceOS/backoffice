@@ -4,36 +4,25 @@ import {
     computed,
     EventEmitter,
     inject,
-    OnInit,
     Output,
     signal,
 } from '@angular/core';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { form, FormField } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import {
-    addDomain,
-    cleanObject,
-    PlaceDomain,
-    updateDomain,
-} from '@placeos/ts-client';
-import { AsyncHandler } from '../common/async-handler.class';
-import { readError } from '../common/errors';
+import { addDomain, PlaceDomain, updateDomain } from '@placeos/ts-client';
 import {
     addSignalChipItem,
-    getInvalidSignalFields,
+    mergeFormItem,
+    onSaveHotkey,
     removeSignalChipItem,
+    submitFormDialog,
 } from '../common/forms';
-import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
-import {
-    notifyError,
-    notifySuccess,
-    notifyWarn,
-} from '../common/notifications';
-import { DialogEvent, Identity } from '../common/types';
+import { notifyWarn } from '../common/notifications';
+import { DialogEvent } from '../common/types';
 import { isValidDomain } from '../common/validation';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
@@ -278,13 +267,12 @@ import {
         FullscreenModalShellComponent,
     ],
 })
-export class DomainFormComponent extends AsyncHandler implements OnInit {
+export class DomainFormComponent {
     private _dialog_ref =
         inject<MatDialogRef<DomainFormComponent>>(MatDialogRef);
     private _data = inject<{ item: PlaceDomain; readonly?: string }>(
         MAT_DIALOG_DATA,
     );
-    private _hotkey = inject(HotkeysService);
     private readonly _name = 'DOMAINS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -320,50 +308,28 @@ export class DomainFormComponent extends AsyncHandler implements OnInit {
         () => this.formModel().email_domains || [],
     );
 
-    public ngOnInit(): void {
-        this.subscription(
-            'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
-        );
+    constructor() {
+        onSaveHotkey(() => this.submit());
     }
 
     public async submit(): Promise<void> {
-        await submit(this.form, async () => {
-            const item = this._data.item;
-            this.loading.set(i18n(`${this._name}.SAVING`));
-            const item_json = item.toJSON ? item.toJSON() : item;
-            const form_item = (
-                item.id
-                    ? cleanObject({ ...item_json, ...this.formModel() }, [
-                          undefined,
-                      ])
-                    : { ...item_json, ...this.formModel() }
-            ) as Identity;
-            try {
-                const _item = await (form_item.id
-                    ? updateDomain(
-                          form_item.id as string,
-                          form_item as unknown as PlaceDomain,
-                      )
-                    : addDomain(form_item as unknown as PlaceDomain));
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            } catch (err) {
-                this.loading.set(null);
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: await readError(err),
-                    }),
-                );
-            }
-        });
-        if (this.form().invalid()) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidSignalFields(this.form).join(', '),
-                }),
-            );
-        }
+        await submitFormDialog(
+            this.form,
+            {
+                loading: this.loading,
+                event: this.event,
+                close: () => this._dialog_ref.close(),
+            },
+            `${this._name}.`,
+            () => {
+                const form_item = mergeFormItem(
+                    this._data.item,
+                    this.formModel(),
+                ) as unknown as PlaceDomain;
+                return form_item.id
+                    ? updateDomain(form_item.id, form_item)
+                    : addDomain(form_item);
+            },
+        );
     }
 }

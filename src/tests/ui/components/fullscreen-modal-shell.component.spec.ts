@@ -9,7 +9,6 @@ import { TestBed } from '@angular/core/testing';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { openConfirmModal } from '../../../app/overlays/confirm-modal.component';
@@ -65,7 +64,6 @@ describe('FullscreenModalShellComponent', () => {
             imports: [TestFormComponent],
             providers: [
                 provideZonelessChangeDetection(),
-                provideNoopAnimations(),
                 { provide: MatDialogRef, useValue: ref },
                 { provide: MatDialog, useValue: {} },
             ],

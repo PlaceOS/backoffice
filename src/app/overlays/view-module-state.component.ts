@@ -9,7 +9,6 @@ import {
 
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
-import { AsyncHandler } from '../common/async-handler.class';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { HashMap } from '../common/types';
@@ -124,10 +123,7 @@ export interface ModuleStateModalData {
         IconComponent,
     ],
 })
-export class ViewModuleStateModalComponent
-    extends AsyncHandler
-    implements OnInit
-{
+export class ViewModuleStateModalComponent implements OnInit {
     private _data = inject<ModuleStateModalData>(MAT_DIALOG_DATA);
 
     /** Current state of the selected module */

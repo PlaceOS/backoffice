@@ -1,9 +1,6 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { PlaceUser } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 
 import { DatePipe } from '@angular/common';
-import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -64,17 +61,14 @@ interface UserLogEntry {
     ],
     imports: [TranslatePipe, SimpleTableComponent, DatePipe],
 })
-export class UserHistoryComponent extends AsyncHandler {
+export class UserHistoryComponent {
     private _service = inject(ActiveItemService);
 
     public readonly logs = signal<UserLogEntry[]>([]);
 
-    public readonly item = toSignal(this._service.item, {
-        initialValue: null as PlaceUser | null,
-    });
+    public readonly item = this._service.item;
 
     constructor() {
-        super();
         effect(() => {
             if (this.item()) this.loadUserLogs();
         });

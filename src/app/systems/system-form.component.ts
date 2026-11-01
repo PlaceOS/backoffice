@@ -5,11 +5,10 @@ import {
     effect,
     EventEmitter,
     inject,
-    OnInit,
     Output,
     signal,
 } from '@angular/core';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { form, FormField } from '@angular/forms/signals';
 import {
     MatChipEditedEvent,
     MatChipInputEvent,
@@ -18,7 +17,6 @@ import {
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     addSystem,
-    cleanObject,
     PlaceResource,
     PlaceSystem,
     updateSystem,
@@ -28,20 +26,18 @@ import { querySupportZones as queryZones } from '../common/support-access';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AsyncHandler } from '../common/async-handler.class';
 import {
     addSignalChipItem,
     editSignalChipItem,
-    getInvalidSignalFields,
+    mergeFormItem,
+    onSaveHotkey,
     removeSignalChipItem,
+    submitFormDialog,
 } from '../common/forms';
-import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
-import { notifyError, notifySuccess } from '../common/notifications';
 import { TIMEZONES_IANA } from '../common/timezones';
-import { DialogEvent, Identity } from '../common/types';
+import { DialogEvent } from '../common/types';
 
-import { readError } from '../common/errors';
 import { CounterComponent } from '../ui/counter.component';
 import { ImageListFieldComponent } from '../ui/custom-fields/image-list-field.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
@@ -660,14 +656,13 @@ const TIMEZONE_OPTION_LIMIT = 50;
         FullscreenModalShellComponent,
     ],
 })
-export class SystemFormComponent extends AsyncHandler implements OnInit {
+export class SystemFormComponent {
     private _dialog_ref =
         inject<MatDialogRef<SystemFormComponent>>(MatDialogRef);
     private _data = inject<{ item: PlaceSystem; readonly?: string }>(
         MAT_DIALOG_DATA,
     );
     private readonly _name = 'SYSTEMS';
-    private _hotkey = inject(HotkeysService);
     public readonly item = signal(this._data.item);
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -704,7 +699,7 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
     });
 
     constructor() {
-        super();
+        onSaveHotkey(() => this.submit());
         effect(() => {
             const model = this.formModel();
             const zone = model.zone;
@@ -720,61 +715,36 @@ export class SystemFormComponent extends AsyncHandler implements OnInit {
         });
     }
 
-    public ngOnInit(): void {
-        this.subscription(
-            'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
-        );
-    }
-
     public async submit(): Promise<void> {
         if (this.loading()) return;
-        await submit(this.form, async () => {
-            const item = this._data.item as unknown as PlaceResource;
-            this.loading.set(i18n(`${this._name}.SAVING`));
-            const item_json = item.toJSON ? item.toJSON() : item;
-            // `zone` is UI-only; the backend uses `zones`, which the effect
-            // keeps in sync. Strip it so we never POST `zone: null`.
-            const { zone: _zone, ...form_value } = this.formModel();
-            const form_item = (
-                item.id
-                    ? cleanObject({ ...item_json, ...form_value }, [undefined])
-                    : { ...item_json, ...form_value }
-            ) as Identity;
-            const processed_item = {
-                ...form_item,
-                support_url: this.processURL(
-                    form_item as unknown as PlaceSystem,
-                    (form_item as Identity & { support_url?: string })
-                        .support_url || '',
-                ),
-            };
-            try {
-                const _item = await (processed_item.id
-                    ? updateSystem(
-                          processed_item.id as string,
-                          processed_item as unknown as PlaceSystem,
-                      )
-                    : addSystem(processed_item as unknown as PlaceSystem));
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            } catch (err) {
-                this.loading.set(null);
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: await readError(err),
-                    }),
-                );
-            }
-        });
-        if (this.form().invalid()) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidSignalFields(this.form).join(', '),
-                }),
-            );
-        }
+        await submitFormDialog(
+            this.form,
+            {
+                loading: this.loading,
+                event: this.event,
+                close: () => this._dialog_ref.close(),
+            },
+            `${this._name}.`,
+            () => {
+                // `zone` is UI-only; the backend uses `zones`, which the effect
+                // keeps in sync. Strip it so we never POST `zone: null`.
+                const { zone: _zone, ...form_value } = this.formModel();
+                const form_item = mergeFormItem(
+                    this._data.item as unknown as PlaceResource,
+                    form_value,
+                ) as unknown as PlaceSystem;
+                const processed_item = {
+                    ...form_item,
+                    support_url: this.processURL(
+                        form_item,
+                        form_item.support_url || '',
+                    ),
+                } as unknown as PlaceSystem;
+                return processed_item.id
+                    ? updateSystem(processed_item.id, processed_item)
+                    : addSystem(processed_item);
+            },
+        );
     }
 
     /**

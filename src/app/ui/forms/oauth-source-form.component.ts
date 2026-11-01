@@ -12,7 +12,6 @@ import { FieldTree, FormField } from '@angular/forms/signals';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { AsyncHandler } from '../../common/async-handler.class';
 import { HashMap, Identity } from '../../common/types';
 import { OAuthSourceFormModel } from '../../domains/auth-sources.utilities';
 import { ObjectListFieldComponent } from '../custom-fields/object-list-field.component';
@@ -297,10 +296,7 @@ import { TranslatePipe } from '../translate.pipe';
         MatSelectModule,
     ],
 })
-export class OauthSourceFormComponent
-    extends AsyncHandler
-    implements OnChanges
-{
+export class OauthSourceFormComponent implements OnChanges {
     /** Signal form fields used for editing the OAuth source */
     public readonly form = input<FieldTree<OAuthSourceFormModel>>(undefined);
     public readonly formModel =

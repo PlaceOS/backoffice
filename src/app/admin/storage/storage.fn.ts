@@ -1,11 +1,4 @@
-import {
-    cleanObject,
-    create,
-    query,
-    remove,
-    show,
-    update,
-} from '@placeos/ts-client';
+import { cleanObject, create, query, remove, update } from '@placeos/ts-client';
 
 const PATH = 'storages';
 
@@ -60,18 +53,6 @@ export interface StorageQueryParameters {
  */
 export function queryStorage(query_params: StorageQueryParameters = {}) {
     return query({ query_params, fn: process, path: PATH });
-}
-
-/**
- * Get the data for a system
- * @param id ID of the system to retrieve
- * @param query_params Query parameters to add the to request URL
- */
-export function showStorage(
-    id: string,
-    query_params: StorageQueryParameters = {},
-) {
-    return show({ id, query_params, fn: process, path: PATH });
 }
 
 /**

@@ -1,15 +1,15 @@
 import { AbstractControl } from '@angular/forms';
 import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
 
-import * as yaml from 'js-yaml';
 import { email, required, SchemaFn, validate } from '@angular/forms/signals';
+import * as yaml from 'js-yaml';
 import { isValidUrl } from '../common/validation';
 
 export function validateYAML(control: AbstractControl) {
     const value = control.value || '';
     let message = '';
     try {
-        yaml.load(value, { strict: true });
+        yaml.load(value);
     } catch (e) {
         // console.error(e);
         message = e.message;

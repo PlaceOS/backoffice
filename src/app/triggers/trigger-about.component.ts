@@ -8,17 +8,14 @@ import {
     TriggerTimeCondition,
     querySystems,
 } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 
-import { AsyncPipe, DatePipe, JsonPipe } from '@angular/common';
+import { AsyncPipe, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AsyncHandler } from '../common/async-handler.class';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
-import { DateFromPipe } from '../ui/pipes/date-from.pipe';
-import { FormatListPipe } from '../ui/pipes/format-list.pipe';
+import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -27,283 +24,269 @@ import { TriggerStateService } from './trigger-state.service';
 @Component({
     selector: 'trigger-about',
     template: `
-        <section class="mb-4 flex space-x-2">
-            <div
-                class="border-base-200 grid w-1/3 flex-1 gap-2 rounded-sm border p-4"
-                [style.gridTemplateColumns]="'5.5rem auto'"
-            >
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.CREATED_AT' | translate }}
-                </div>
-                <div class="flex items-center">
-                    <span
-                        class="select-text"
-                        [matTooltip]="
-                            (item.created_at * 1000 | date: 'mediumDate') +
-                            ', ' +
-                            (item.created_at * 1000 | date: 'shortTime')
-                        "
-                        matTooltipPosition="right"
-                    >
-                        {{ item.created_at * 1000 | dateFrom }}
-                    </span>
-                </div>
-                <div class="flex items-center text-sm font-medium">
-                    {{ 'COMMON.UPDATED_AT' | translate }}
-                </div>
-                <div class="flex items-center">
-                    <span
-                        class="select-text"
-                        [matTooltip]="
-                            (item.updated_at * 1000 | date: 'mediumDate') +
-                            ', ' +
-                            (item.updated_at * 1000 | date: 'shortTime')
-                        "
-                        matTooltipPosition="right"
-                    >
-                        {{ item.updated_at * 1000 | dateFrom }}
-                    </span>
-                </div>
-            </div>
-        </section>
-        @if (item?.description) {
-            <hr class="text-base-300 my-4" />
-            <div class="border-base-200 w-full rounded-sm border">
-                <h3
-                    class="bg-base-200 w-full rounded-sm p-4 text-lg font-medium"
-                >
-                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
-                </h3>
+        <div class="h-full w-full overflow-auto p-4">
+            <section class="mb-4 flex space-x-2">
                 <div
-                    class="markdown selectable w-full overflow-auto p-4 text-sm"
-                    [innerHTML]="item.description | markdown | async"
-                ></div>
-            </div>
-        }
-        <hr class="my-4" />
-        <div class="flex flex-col">
-            <label
-                for="reference-system"
-                id="reference-system-label"
-                class="max-w-[50%]"
-                [matTooltip]="'TRIGGERS.REFERENCE_SYSTEM_MSG' | translate"
-            >
-                {{ 'TRIGGERS.REFERENCE_SYSTEM' | translate }}
-            </label>
-            <item-search-field
-                id="reference-system"
-                role="group"
-                aria-labelledby="reference-system-label"
-                [placeholder]="'SYSTEMS.SEARCH' | translate"
-                class="w-full"
-                [query_fn]="query_fn"
-                [(ngModel)]="template_system"
-            />
-        </div>
-        <header class="my-4 flex items-center">
-            <div class="flex-1 text-lg font-medium">
-                {{ 'TRIGGERS.CONDITIONS' | translate }}
-            </div>
-            <button
-                icon
-                default
-                matRipple
-                [disabled]="!template_system()"
-                (click)="editCondition()"
-                [matTooltip]="'TRIGGERS.CONDITION_ADD' | translate"
-                matTooltipPosition="left"
-            >
-                <icon>add</icon>
-            </button>
-        </header>
-        <section>
-            <simple-table
-                class="mb-4 block w-full min-w-lg text-sm"
-                [data]="comparisons()"
-                [columns]="[
-                    {
-                        key: 'operator',
-                        name: 'TRIGGERS.FIELD_VAR_COMPARE' | translate,
-                        content: comparison_template,
-                    },
-                    {
-                        key: 'actions',
-                        name: 'COMMON.ACTIONS' | translate,
-                        hide_name: true,
-                        size: '6rem',
-                        sortable: false,
-                        content: actions_template,
-                    },
-                ]"
-                [sortable]="true"
-                [empty_message]="'TRIGGERS.CONDITION_COMPARE_EMPTY' | translate"
-            />
-            <simple-table
-                class="block w-full min-w-lg text-sm"
-                [data]="time_dependents()"
-                [columns]="[
-                    {
-                        key: 'time',
-                        name: 'TRIGGERS.FIELD_TIME_DEPS' | translate,
-                        content: time_dep_template,
-                    },
-                    {
-                        key: 'actions',
-                        name: 'COMMON.ACTIONS' | translate,
-                        hide_name: true,
-                        size: '6rem',
-                        sortable: false,
-                        content: actions_template,
-                    },
-                ]"
-                [sortable]="true"
-                [empty_message]="'TRIGGERS.CONDITION_TIME_EMPTY' | translate"
-            />
-            <ng-template #time_dep_template let-row="row">
-                <div
-                    class="mono flex items-center space-x-2 p-4 text-sm select-text"
+                    class="border-base-200 grid w-1/3 flex-1 gap-2 rounded-sm border p-4"
+                    [style.gridTemplateColumns]="'5.5rem auto'"
                 >
-                    {{ row.type === 'at' ? 'At time' : 'CRON' }}
-                    {{ row.type === 'at' ? row.time : row.cron }}
+                    <item-timestamps
+                        [created_at]="item.created_at"
+                        [updated_at]="item.updated_at"
+                    />
                 </div>
-            </ng-template>
-            <ng-template #comparison_template let-row="row">
-                <div class="mono flex items-center space-x-4 p-4 text-xs">
-                    <pre class="select-text">{{ row.left | json }}</pre>
-                    <code class="bg-success text-success-content select-text">
-                        {{ row.operator }}
-                    </code>
-                    <pre class="select-text">{{ row.right | json }}</pre>
-                </div>
-            </ng-template>
-            <ng-template #actions_template let-row="row">
-                <div class="mx-auto flex items-center space-x-2 p-2">
-                    <button
-                        icon
-                        default
-                        matRipple
-                        [disabled]="!template_system()"
-                        (click)="editCondition(row)"
-                        [attr.aria-label]="'COMMON.EDIT' | translate"
+            </section>
+            @if (item?.description) {
+                <hr class="text-base-300 my-4" />
+                <div class="border-base-200 w-full rounded-sm border">
+                    <h3
+                        class="bg-base-200 w-full rounded-sm p-4 text-lg font-medium"
                     >
-                        <icon>edit</icon>
-                    </button>
-                    <button
-                        icon
-                        default
-                        error
-                        matRipple
-                        (click)="removeCondition(row)"
-                        [attr.aria-label]="'COMMON.DELETE' | translate"
-                    >
-                        <icon>delete</icon>
-                    </button>
+                        {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                    </h3>
+                    <div
+                        class="markdown selectable w-full overflow-auto p-4 text-sm"
+                        [innerHTML]="item.description | markdown | async"
+                    ></div>
                 </div>
-            </ng-template>
-        </section>
-        <header class="my-4 flex items-center space-x-2">
-            <div class="flex-1 text-lg font-medium">
-                {{ 'TRIGGERS.ACTIONS' | translate }}
+            }
+            <hr class="my-4" />
+            <div class="flex flex-col">
+                <label
+                    for="reference-system"
+                    id="reference-system-label"
+                    class="max-w-[50%]"
+                    [matTooltip]="'TRIGGERS.REFERENCE_SYSTEM_MSG' | translate"
+                >
+                    {{ 'TRIGGERS.REFERENCE_SYSTEM' | translate }}
+                </label>
+                <item-search-field
+                    id="reference-system"
+                    role="group"
+                    aria-labelledby="reference-system-label"
+                    [placeholder]="'SYSTEMS.SEARCH' | translate"
+                    class="w-full"
+                    [query_fn]="query_fn"
+                    [(ngModel)]="template_system"
+                />
             </div>
-            <button
-                icon
-                default
-                matRipple
-                [disabled]="!template_system()"
-                (click)="editAction()"
-                [matTooltip]="'TRIGGERS.ACTION_ADD' | translate"
-                matTooltipPosition="left"
-            >
-                <icon>add</icon>
-            </button>
-        </header>
-        <section>
-            <simple-table
-                class="mb-4 block w-full min-w-lg text-sm"
-                [data]="functions()"
-                [columns]="[
-                    {
-                        key: 'time',
-                        name: 'TRIGGERS.FIELD_ACTION_FN_CALL' | translate,
-                        content: function_call_template,
-                    },
-                    {
-                        key: 'actions',
-                        name: 'COMMON.ACTIONS' | translate,
-                        hide_name: true,
-                        size: '6rem',
-                        sortable: false,
-                        content: fn_actions_template,
-                    },
-                ]"
-                [can_reorder]="true"
-                (ondrop)="confirmReorder('function', $event)"
-                [empty_message]="'TRIGGERS.ACTION_FN_EMPTY' | translate"
-            />
-            <simple-table
-                class="mb-4 block w-full min-w-lg text-sm"
-                [data]="mailers()"
-                [columns]="[
-                    {
-                        key: 'time',
-                        name: 'TRIGGERS.FIELD_ACTION_EMAIL' | translate,
-                        content: email_call_template,
-                    },
-                    {
-                        key: 'actions',
-                        name: 'COMMON.ACTIONS' | translate,
-                        hide_name: true,
-                        size: '6rem',
-                        sortable: false,
-                        content: fn_actions_template,
-                    },
-                ]"
-                [can_reorder]="true"
-                (ondrop)="confirmReorder('mailer', $event)"
-                [empty_message]="'TRIGGERS.ACTION_EMAIL_EMPTY' | translate"
-            />
-            <ng-template #function_call_template let-row="row">
-                <div class="mono flex space-x-2 p-4 text-xs">
-                    <div>
-                        <code class="select-text">{{ row.mod }}</code>
+            <header class="my-4 flex items-center">
+                <div class="flex-1 text-lg font-medium">
+                    {{ 'TRIGGERS.CONDITIONS' | translate }}
+                </div>
+                <button
+                    icon
+                    default
+                    matRipple
+                    [disabled]="!template_system()"
+                    (click)="editCondition()"
+                    [matTooltip]="'TRIGGERS.CONDITION_ADD' | translate"
+                    matTooltipPosition="left"
+                >
+                    <icon>add</icon>
+                </button>
+            </header>
+            <section>
+                <simple-table
+                    class="mb-4 block w-full min-w-lg text-sm"
+                    [data]="comparisons()"
+                    [columns]="[
+                        {
+                            key: 'operator',
+                            name: 'TRIGGERS.FIELD_VAR_COMPARE' | translate,
+                            content: comparison_template,
+                        },
+                        {
+                            key: 'actions',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
+                            size: '6rem',
+                            sortable: false,
+                            content: actions_template,
+                        },
+                    ]"
+                    [sortable]="true"
+                    [empty_message]="
+                        'TRIGGERS.CONDITION_COMPARE_EMPTY' | translate
+                    "
+                />
+                <simple-table
+                    class="block w-full min-w-lg text-sm"
+                    [data]="time_dependents()"
+                    [columns]="[
+                        {
+                            key: 'time',
+                            name: 'TRIGGERS.FIELD_TIME_DEPS' | translate,
+                            content: time_dep_template,
+                        },
+                        {
+                            key: 'actions',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
+                            size: '6rem',
+                            sortable: false,
+                            content: actions_template,
+                        },
+                    ]"
+                    [sortable]="true"
+                    [empty_message]="
+                        'TRIGGERS.CONDITION_TIME_EMPTY' | translate
+                    "
+                />
+                <ng-template #time_dep_template let-row="row">
+                    <div
+                        class="mono flex items-center space-x-2 p-4 text-sm select-text"
+                    >
+                        {{ row.type === 'at' ? 'At time' : 'CRON' }}
+                        {{ row.type === 'at' ? row.time : row.cron }}
                     </div>
-                    <pre class="select-text"
-                        >{{ row.method }}({{ row.args | json }})</pre
-                    >
+                </ng-template>
+                <ng-template #comparison_template let-row="row">
+                    <div class="mono flex items-center space-x-4 p-4 text-xs">
+                        <pre class="select-text">{{ row.left | json }}</pre>
+                        <code
+                            class="bg-success text-success-content select-text"
+                        >
+                            {{ row.operator }}
+                        </code>
+                        <pre class="select-text">{{ row.right | json }}</pre>
+                    </div>
+                </ng-template>
+                <ng-template #actions_template let-row="row">
+                    <div class="mx-auto flex items-center space-x-2 p-2">
+                        <button
+                            icon
+                            default
+                            matRipple
+                            [disabled]="!template_system()"
+                            (click)="editCondition(row)"
+                            [attr.aria-label]="'COMMON.EDIT' | translate"
+                        >
+                            <icon>edit</icon>
+                        </button>
+                        <button
+                            icon
+                            default
+                            error
+                            matRipple
+                            (click)="removeCondition(row)"
+                            [attr.aria-label]="'COMMON.DELETE' | translate"
+                        >
+                            <icon>delete</icon>
+                        </button>
+                    </div>
+                </ng-template>
+            </section>
+            <header class="my-4 flex items-center space-x-2">
+                <div class="flex-1 text-lg font-medium">
+                    {{ 'TRIGGERS.ACTIONS' | translate }}
                 </div>
-            </ng-template>
-            <ng-template #email_call_template let-row="row">
-                <div class="flex items-center space-x-2 p-4 select-text">
-                    <span [matTooltip]="row.emails | formatList"
-                        >{{ row.emails.length }} Address(es)</span
-                    >&nbsp; | Body Length: {{ row.content.length }}
-                </div>
-            </ng-template>
-            <ng-template #fn_actions_template let-row="row">
-                <div class="mx-auto flex items-center space-x-2 p-2">
-                    <button
-                        icon
-                        default
-                        matRipple
-                        [disabled]="!template_system()"
-                        (click)="editAction(row)"
-                        [attr.aria-label]="'COMMON.EDIT' | translate"
-                    >
-                        <icon>edit</icon>
-                    </button>
-                    <button
-                        icon
-                        default
-                        error
-                        matRipple
-                        (click)="removeAction(row)"
-                        [attr.aria-label]="'COMMON.DELETE' | translate"
-                    >
-                        <icon>delete</icon>
-                    </button>
-                </div>
-            </ng-template>
-        </section>
+                <button
+                    icon
+                    default
+                    matRipple
+                    [disabled]="!template_system()"
+                    (click)="editAction()"
+                    [matTooltip]="'TRIGGERS.ACTION_ADD' | translate"
+                    matTooltipPosition="left"
+                >
+                    <icon>add</icon>
+                </button>
+            </header>
+            <section>
+                <simple-table
+                    class="mb-4 block w-full min-w-lg text-sm"
+                    [data]="functions()"
+                    [columns]="[
+                        {
+                            key: 'time',
+                            name: 'TRIGGERS.FIELD_ACTION_FN_CALL' | translate,
+                            content: function_call_template,
+                        },
+                        {
+                            key: 'actions',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
+                            size: '6rem',
+                            sortable: false,
+                            content: fn_actions_template,
+                        },
+                    ]"
+                    [can_reorder]="true"
+                    (ondrop)="confirmReorder('function', $event)"
+                    [empty_message]="'TRIGGERS.ACTION_FN_EMPTY' | translate"
+                />
+                <simple-table
+                    class="mb-4 block w-full min-w-lg text-sm"
+                    [data]="mailers()"
+                    [columns]="[
+                        {
+                            key: 'time',
+                            name: 'TRIGGERS.FIELD_ACTION_EMAIL' | translate,
+                            content: email_call_template,
+                        },
+                        {
+                            key: 'actions',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
+                            size: '6rem',
+                            sortable: false,
+                            content: fn_actions_template,
+                        },
+                    ]"
+                    [can_reorder]="true"
+                    (ondrop)="confirmReorder('mailer', $event)"
+                    [empty_message]="'TRIGGERS.ACTION_EMAIL_EMPTY' | translate"
+                />
+                <ng-template #function_call_template let-row="row">
+                    <div class="mono flex space-x-2 p-4 text-xs">
+                        <div>
+                            <code class="select-text">{{ row.mod }}</code>
+                        </div>
+                        <pre class="select-text"
+                            >{{ row.method }}({{ row.args | json }})</pre
+                        >
+                    </div>
+                </ng-template>
+                <ng-template #email_call_template let-row="row">
+                    <div class="flex items-center space-x-2 p-4 select-text">
+                        <span
+                            [matTooltip]="
+                                row.emails.join(
+                                    '
+'
+                                )
+                            "
+                            >{{ row.emails.length }} Address(es)</span
+                        >&nbsp; | Body Length: {{ row.content.length }}
+                    </div>
+                </ng-template>
+                <ng-template #fn_actions_template let-row="row">
+                    <div class="mx-auto flex items-center space-x-2 p-2">
+                        <button
+                            icon
+                            default
+                            matRipple
+                            [disabled]="!template_system()"
+                            (click)="editAction(row)"
+                            [attr.aria-label]="'COMMON.EDIT' | translate"
+                        >
+                            <icon>edit</icon>
+                        </button>
+                        <button
+                            icon
+                            default
+                            error
+                            matRipple
+                            (click)="removeAction(row)"
+                            [attr.aria-label]="'COMMON.DELETE' | translate"
+                        >
+                            <icon>delete</icon>
+                        </button>
+                    </div>
+                </ng-template>
+            </section>
+        </div>
     `,
     styles: [
         `
@@ -314,31 +297,27 @@ import { TriggerStateService } from './trigger-state.service';
         `,
     ],
     imports: [
+        ItemTimestampsComponent,
         TranslatePipe,
         IconComponent,
         MatRippleModule,
         MatTooltipModule,
-        FormatListPipe,
         SimpleTableComponent,
         ItemSearchFieldComponent,
         FormsModule,
-        DateFromPipe,
         MarkdownPipe,
         AsyncPipe,
-        DatePipe,
         JsonPipe,
     ],
 })
-export class TriggerAboutComponent extends AsyncHandler {
+export class TriggerAboutComponent {
     private _service = inject(TriggerStateService);
 
     /** System to use for conditions with systen variables and functions */
     public readonly template_system = signal<PlaceSystem | undefined>(
         undefined,
     );
-    private readonly _item = toSignal(this._service.item, {
-        initialValue: {} as PlaceTrigger,
-    });
+    private readonly _item = this._service.item;
     public get item(): PlaceTrigger {
         return this._item();
     }

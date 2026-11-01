@@ -11,31 +11,28 @@ import {
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { form, FormField, submit } from '@angular/forms/signals';
+import { form, FormField } from '@angular/forms/signals';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import {
     addApplication,
-    cleanObject,
     PlaceApplication,
     PlaceResource,
     updateApplication,
 } from '@placeos/ts-client';
-import { AsyncHandler } from '../common/async-handler.class';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Md5 } from 'ts-md5';
-import { readError } from '../common/errors';
 import {
     addSignalChipItem,
-    getInvalidSignalFields,
+    mergeFormItem,
+    onSaveHotkey,
     removeSignalChipItem,
+    submitFormDialog,
 } from '../common/forms';
-import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
-import { notifyError, notifySuccess } from '../common/notifications';
-import { DialogEvent, Identity } from '../common/types';
+import { DialogEvent } from '../common/types';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -227,14 +224,13 @@ import {
         FullscreenModalShellComponent,
     ],
 })
-export class ApplicationFormComponent extends AsyncHandler implements OnInit {
+export class ApplicationFormComponent implements OnInit {
     private _dialog_ref =
         inject<MatDialogRef<ApplicationFormComponent>>(MatDialogRef);
     private _data = inject<{ item: PlaceApplication; readonly?: string }>(
         MAT_DIALOG_DATA,
     );
     private readonly _name = 'DOMAINS.APPLICATION';
-    private _hotkey = inject(HotkeysService);
     private _injector = inject(Injector);
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -259,6 +255,10 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
             ...value,
             subsystems: removeSignalChipItem(value.subsystems, i),
         }));
+
+    constructor() {
+        onSaveHotkey(() => this.submit());
+    }
 
     public ngOnInit(): void {
         const item = this._data.item;
@@ -289,51 +289,30 @@ export class ApplicationFormComponent extends AsyncHandler implements OnInit {
             },
             { injector: this._injector },
         );
-        this.subscription(
-            'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
-        );
     }
 
     public async submit(): Promise<void> {
-        await submit(this.form, async () => {
-            const item = this._data.item as unknown as PlaceResource;
-            this.loading.set(i18n(`${this._name}_SAVING`));
-            const item_json = item.toJSON ? item.toJSON() : item;
-            const form_item = (
-                item.id
-                    ? cleanObject({ ...item_json, ...this.formModel() }, [
-                          undefined,
-                      ])
-                    : { ...item_json, ...this.formModel() }
-            ) as Identity;
-            const save_item = { ...form_item, uid: this.client_id() };
-            delete (save_item as Identity & { client_id?: unknown }).client_id;
-            try {
-                const _item = await (save_item.id
-                    ? updateApplication(
-                          save_item.id as string,
-                          save_item as unknown as PlaceApplication,
-                      )
-                    : addApplication(save_item as unknown as PlaceApplication));
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}_SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            } catch (err) {
-                this.loading.set(null);
-                notifyError(
-                    i18n(`${this._name}_SAVE_ERROR`, {
-                        error: await readError(err),
-                    }),
-                );
-            }
-        });
-        if (this.form().invalid()) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidSignalFields(this.form).join(', '),
-                }),
-            );
-        }
+        await submitFormDialog(
+            this.form,
+            {
+                loading: this.loading,
+                event: this.event,
+                close: () => this._dialog_ref.close(),
+            },
+            `${this._name}_`,
+            () => {
+                const save_item = {
+                    ...mergeFormItem(
+                        this._data.item as unknown as PlaceResource,
+                        this.formModel(),
+                    ),
+                    uid: this.client_id(),
+                } as unknown as PlaceApplication & { client_id?: unknown };
+                delete save_item.client_id;
+                return save_item.id
+                    ? updateApplication(save_item.id, save_item)
+                    : addApplication(save_item);
+            },
+        );
     }
 }

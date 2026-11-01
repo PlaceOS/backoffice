@@ -9,7 +9,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
-import { toSignal } from '../common/signals';
 
 import { BindingDirective } from '../ui/binding.directive';
 import { CustomTooltipComponent } from '../ui/custom-tooltip.component';
@@ -264,17 +263,13 @@ export class DriverModulesComponent {
     /** Signal holding the value of the search */
     public readonly filter = model('');
     /** Whether systems are being loaded */
-    public readonly loading = toSignal(this._service.loading, {
-        initialValue: false,
-    });
+    public readonly loading = this._service.loading;
     /** Currently active driver */
     public readonly item = this._service.item;
     /** List of systems associated with modules */
     public readonly systems = signal<Record<string, PlaceSystem[]>>({});
     /** List of modules */
-    public readonly module_list = toSignal(this._service.modules, {
-        initialValue: [] as PlaceModule[],
-    });
+    public readonly module_list = this._service.modules;
     public readonly modules = computed(() => {
         const filter = this.filter().toLowerCase();
         const modules = this.module_list();

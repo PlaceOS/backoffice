@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
-import { AuthorisedAdminGuard } from '../ui/guards/authorised-admin.guard';
-import { AuthorisedUserGuard } from '../ui/guards/authorised-user.guard';
+import {
+    authorisedAdminGuard,
+    authorisedUserGuard,
+} from '../ui/guards/authorised.guard';
 
 export const ROUTES: Routes = [
     {
@@ -24,7 +26,7 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'triggers',
-                canActivate: [AuthorisedUserGuard],
+                canActivate: [authorisedUserGuard],
                 data: { role_only: true },
                 loadComponent: () =>
                     import('./zone-triggers.component').then(
@@ -41,13 +43,13 @@ export const ROUTES: Routes = [
             {
                 path: 'metadata',
                 loadComponent: () =>
-                    import('./zone-metadata.component').then(
-                        (m) => m.ZoneMetadataComponent,
+                    import('../ui/item-metadata.component').then(
+                        (m) => m.ItemMetadataComponent,
                     ),
             },
             {
                 path: 'groups',
-                canActivate: [AuthorisedAdminGuard],
+                canActivate: [authorisedAdminGuard],
                 loadComponent: () =>
                     import('./zone-groups.component').then(
                         (m) => m.ZoneGroupsComponent,
@@ -62,7 +64,7 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'history',
-                canActivate: [AuthorisedAdminGuard],
+                canActivate: [authorisedAdminGuard],
                 loadComponent: () =>
                     import('../ui/settings-history-view.component').then(
                         (m) => m.SettingsHistoryViewComponent,

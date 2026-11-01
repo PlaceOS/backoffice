@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { PlaceUser } from '@placeos/ts-client';
+import { PlaceResource } from '@placeos/ts-client';
 import { ActiveItemService } from '../common/item.service';
-import { MetadataDisplayComponent } from '../ui/metadata-display.component';
+import { MetadataDisplayComponent } from './metadata-display.component';
 
+/** Metadata tab of the active item */
 @Component({
-    selector: 'user-metadata',
+    selector: 'item-metadata',
     template: `
         <div class="h-full w-full p-4">
             @if (item) {
@@ -12,14 +13,12 @@ import { MetadataDisplayComponent } from '../ui/metadata-display.component';
             }
         </div>
     `,
-    styles: [``],
     imports: [MetadataDisplayComponent],
 })
-export class UserMetadataComponent {
+export class ItemMetadataComponent {
     private _service = inject(ActiveItemService);
 
-    public get item(): PlaceUser {
-        const active_item = this._service.active_item;
-        return (active_item || { id: '' }) as PlaceUser;
+    public get item(): PlaceResource | null {
+        return this._service.active_item;
     }
 }

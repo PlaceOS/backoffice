@@ -23,8 +23,6 @@ const MAX_LOAD_ATTEMPTS = 12;
 export class BackofficeUsersService extends AsyncHandler {
     private _settings = inject(SettingsService);
 
-    /** Name for a single user */
-    public readonly singular: string = 'user';
     /** Signal with the currently available list of users */
     public readonly listing = signal<ServiceItem[]>([]);
 
@@ -39,7 +37,6 @@ export class BackofficeUsersService extends AsyncHandler {
     public readonly state = signal('');
 
     public readonly can_create: boolean = false;
-    public readonly can_edit: boolean = true;
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {

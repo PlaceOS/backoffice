@@ -5,8 +5,8 @@ import {
     provideZonelessChangeDetection,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { MATERIAL_ANIMATIONS } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SupportGroupPickerComponent } from '../../../app/ui/support-group-picker.component';
 import { TranslatePipe } from '../../../app/ui/translate.pipe';
@@ -53,7 +53,10 @@ describe('support group picker', () => {
             imports: [SupportGroupPickerComponent],
             providers: [
                 provideZonelessChangeDetection(),
-                provideNoopAnimations(),
+                {
+                    provide: MATERIAL_ANIMATIONS,
+                    useValue: { animationsDisabled: true },
+                },
             ],
         }).overrideComponent(SupportGroupPickerComponent, {
             remove: { imports: [TranslatePipe] },

@@ -1,10 +1,8 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
 import {
     DomSanitizer,
-    SafeHtml,
     SafeResourceUrl,
-    SafeScript,
-    SafeStyle,
+    SafeUrl,
 } from '@angular/platform-browser';
 
 @Pipe({
@@ -16,23 +14,14 @@ export class SafePipe implements PipeTransform {
     /**
      * Sanitizes the string allowing it to be injected into a template
      * @param value String to sanitize
-     * @param type Type of value to sanitise. `resource`, `url`, `script`, `style` or `html`
+     * @param type Type of value to trust. `resource` or `url`
      */
     public transform(
         value: string,
-        type: 'resource' | 'url' | 'script' | 'style' | 'html' = 'html',
-    ): SafeHtml | SafeResourceUrl | SafeScript | SafeStyle {
-        switch (type) {
-            case 'resource':
-                return this.sanitizer.bypassSecurityTrustResourceUrl(value);
-            case 'url':
-                return this.sanitizer.bypassSecurityTrustUrl(value);
-            case 'script':
-                return this.sanitizer.bypassSecurityTrustScript(value);
-            case 'style':
-                return this.sanitizer.bypassSecurityTrustStyle(value);
-            default:
-                return this.sanitizer.bypassSecurityTrustHtml(value);
-        }
+        type: 'resource' | 'url',
+    ): SafeResourceUrl | SafeUrl {
+        return type === 'resource'
+            ? this.sanitizer.bypassSecurityTrustResourceUrl(value)
+            : this.sanitizer.bypassSecurityTrustUrl(value);
     }
 }

@@ -1,11 +1,8 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 
 import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { i18n } from '../../common/locale.service';
 import { notifyInfo } from '../../common/notifications';
@@ -16,6 +13,7 @@ import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { APIKeyService } from './api-keys.service';
 
+import { AdminDomainSelectComponent } from '../admin-domain-select.component';
 @Component({
     selector: 'admin-api-keys',
     template: `
@@ -25,20 +23,7 @@ import { APIKeyService } from './api-keys.service';
                     {{ 'ADMIN.APP_KEYS_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <mat-form-field appearance="outline" class="h-12">
-                        <mat-select
-                            name="type"
-                            [ngModel]="domain()"
-                            (ngModelChange)="setDomain($event)"
-                            [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
-                        >
-                            @for (domain of domain_list(); track domain.id) {
-                                <mat-option [value]="domain">
-                                    {{ domain.name }}
-                                </mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
+                    <admin-domain-select key="api-keys" field_class="h-12" />
                     <button
                         icon
                         default
@@ -224,6 +209,7 @@ import { APIKeyService } from './api-keys.service';
     `,
     styles: [``],
     imports: [
+        AdminDomainSelectComponent,
         LoadingLabelDirective,
         TranslatePipe,
         IconComponent,
@@ -232,9 +218,6 @@ import { APIKeyService } from './api-keys.service';
         DateFromPipe,
         SimpleTableComponent,
         MatProgressBarModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        FormsModule,
     ],
 })
 export class AdminAPIKeysComponent implements OnInit {
@@ -242,13 +225,11 @@ export class AdminAPIKeysComponent implements OnInit {
     private _clipboard = inject(Clipboard);
 
     public readonly domain = this._service.active_domain;
-    public readonly domain_list = this._service.available_domains;
     public readonly key_list = this._service.available_keys;
     public readonly last_key = this._service.last_key;
 
     public readonly loading = this._service.loading;
 
-    public readonly setDomain = (d) => this._service.setDomain(d);
     public readonly newKey = () => this._service.newKey();
     public readonly quickCreateKey = () => this._service.quickCreateKey();
     public readonly editKey = (k) => this._service.editKey(k);

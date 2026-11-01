@@ -2,9 +2,6 @@ import { DatePipe } from '@angular/common';
 import {
     Component,
     forwardRef,
-    inject,
-    Injector,
-    input,
     model,
     OnInit,
     signal,
@@ -14,21 +11,12 @@ import {
     ControlValueAccessor,
     FormsModule,
     NG_VALUE_ACCESSOR,
-    NgControl,
 } from '@angular/forms';
 import { addYears, endOfDay, set, startOfDay } from 'date-fns';
-import { AsyncHandler } from '../../common/async-handler.class';
-import { getTimezoneOffsetString } from '../../common/timezone-helpers';
 import { CustomTooltipComponent } from '../custom-tooltip.component';
 import { IconComponent } from '../icon.component';
 import { TranslatePipe } from '../translate.pipe';
 import { DateCalendarComponent } from './date-calendar.component';
-
-export enum TimezoneDiffRange {
-    Both,
-    Start,
-    End,
-}
 
 @Component({
     selector: 'a-date-field',
@@ -48,43 +36,25 @@ export enum TimezoneDiffRange {
             >
                 <div class="text-base font-normal">
                     @if (date()) {
-                        {{ date() | date: date_format }}
+                        {{ date() | date: 'MMMM d, yyyy' }}
                     } @else {
                         <span class="opacity-30">{{
                             'COMMON.DATE_EMPTY' | translate
                         }}</span>
                     }
                 </div>
-                @if (timezone() && tz) {
-                    <div class="truncate text-xs opacity-30">
-                        @if (range() !== 2) {
-                            <span>{{ start_of_day }}</span>
-                        }
-                        @if (range() === 0) {
-                            <span> - </span>
-                        }
-                        @if (range() !== 1) {
-                            <span>{{ end_of_day }}</span>
-                        }
-                    </div>
-                }
             </div>
             <div class="flex h-10 w-10 items-center justify-center text-2xl">
                 <icon>today</icon>
             </div>
         </button>
-        <div class="error text-error h-5 p-1 text-xs">
-            @if (has_error) {
-                <span><ng-content /></span>
-            }
-        </div>
+        <div class="h-5"></div>
         <ng-template #calendar_picker>
             <div class="bg-base-100 relative w-[18rem] rounded-sm px-2 py-4">
                 <date-calendar
                     [ngModel]="date() || now"
-                    [from]="fromDate"
+                    [from]="from"
                     [to]="until"
-                    [offset_weekday]="week_start()"
                     (ngModelChange)="setValue($event)"
                 />
             </div>
@@ -107,91 +77,26 @@ export enum TimezoneDiffRange {
         DatePipe,
     ],
 })
-export class DateFieldComponent
-    extends AsyncHandler
-    implements OnInit, ControlValueAccessor
-{
-    private _injector = inject(Injector);
-
-    /** Earliest date available the user is allowed to pick */
-    public readonly from = input<number>(startOfDay(Date.now()).valueOf());
-    /** Latest date available the user is allowed to pick */
-    public readonly to = input<number>(undefined);
-    /** Index of the day to start the week on when displaying the calendar */
-    public readonly week_start = input(0);
-    public readonly use_24hr = input(false);
+export class DateFieldComponent implements OnInit, ControlValueAccessor {
     /** Whether form control is disabled */
     public readonly disabled = model<boolean>(false);
-    public readonly short = input(false);
-    public readonly timezone = input('');
-    public readonly range = input<TimezoneDiffRange>(TimezoneDiffRange.Both);
     /** Currently selected date */
     public readonly date = signal<number | null>(null);
 
     public readonly now = Date.now();
+    /** Earliest date the user is allowed to pick */
+    public readonly from = startOfDay(this.now).valueOf();
+    /** Latest date the user is allowed to pick */
+    public readonly until = addYears(endOfDay(this.now), 1).valueOf();
 
     /** Form control on change handler */
     private _onChange: (_: number) => void;
     /** Form control on touch handler */
     private _onTouch: (_: number) => void;
-    private _control?: NgControl;
-
-    public get date_format() {
-        return this.short() ? 'MMM d, yyyy' : 'MMMM d, yyyy';
-    }
-
-    public get time_format() {
-        return this.use_24hr() ? 'HH : mm' : 'h : mm a';
-    }
-
-    private _date_pipe = new DatePipe('en');
-
-    public get start_of_day() {
-        const start = startOfDay(this.date()).valueOf();
-        const format = `MMM d, ${this.time_format}${this.range() === 1 ? ' (z)' : ''}`;
-        return this._date_pipe.transform(start, format, this.tz);
-    }
-
-    public get end_of_day() {
-        const end = endOfDay(this.date()).valueOf();
-        const format = `MMM d, ${this.time_format}${this.range() === 1 ? ' (z)' : ''}`;
-        return this._date_pipe.transform(end, format, this.tz);
-    }
-
-    public get has_error(): boolean {
-        return this._control?.invalid && this._control?.touched;
-    }
-
-    private _local_tz = getTimezoneOffsetString(
-        Intl.DateTimeFormat().resolvedOptions().timeZone,
-    );
-
-    public get tz() {
-        const tz = this.timezone();
-        if (!tz) return '';
-        const tz_offset = getTimezoneOffsetString(tz);
-        return tz_offset === this._local_tz ? '' : tz_offset;
-    }
 
     private readonly _tooltip = viewChild(CustomTooltipComponent);
 
-    /** First allowed date on the calendar */
-    public get fromDate(): number {
-        const date = new Date(this.from());
-        return (
-            isNaN(date.getTime()) ? startOfDay(new Date()) : date
-        ).valueOf();
-    }
-    /** Current date value */
-    public get until(): number {
-        const date = new Date(this.to());
-        return (
-            isNaN(date.getTime()) ? addYears(endOfDay(new Date()), 1) : date
-        ).valueOf();
-    }
-
     public ngOnInit() {
-        this._control = this._injector.get(NgControl);
         this.date.set(Date.now());
     }
 
@@ -208,9 +113,7 @@ export class DateFieldComponent
             minutes: old_date.getMinutes(),
         }).valueOf();
         // Check that new date is before from
-        if (new_date < this.fromDate.valueOf()) {
-            new_date = this.fromDate.valueOf();
-        }
+        if (new_date < this.from) new_date = this.from;
         this.date.set(new_date);
         if (this._onChange) {
             this._onChange(new_date);

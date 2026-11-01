@@ -15,6 +15,7 @@ import {
     terminateProcess,
 } from '@placeos/ts-client';
 
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,7 +28,6 @@ import { describeError } from '../../common/errors';
 import { reportLoadError } from '../../common/load-error';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
-import { signalFromSubscribable } from '../../common/signals';
 import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
@@ -207,10 +207,9 @@ export class PlaceClusterTaskListComponent
 
     public readonly process_list = signal([]);
     public readonly filter = signal('');
-    private readonly _param_map = signalFromSubscribable(
-        this._route.paramMap,
-        this._route.snapshot.paramMap,
-    );
+    private readonly _param_map = toSignal(this._route.paramMap, {
+        initialValue: this._route.snapshot.paramMap,
+    });
     private readonly _cluster_id = computed(() => this._param_map().get('id'));
 
     public readonly filtered_list = computed(() =>

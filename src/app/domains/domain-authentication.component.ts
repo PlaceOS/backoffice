@@ -1,10 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { PlaceDomain } from '@placeos/ts-client';
 
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { HashMap } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
@@ -15,7 +13,7 @@ import { DomainStateService } from './domain-state.service';
     selector: 'domain-authentication',
     template: `
         <div class="flex h-full w-full flex-col">
-            <div header class="">
+            <div header class="p-4">
                 <button
                     btn
                     class="mb-4 w-full sm:w-48"
@@ -24,7 +22,7 @@ import { DomainStateService } from './domain-state.service';
                     {{ 'DOMAINS.AUTHENTICATION_NEW' | translate }}
                 </button>
             </div>
-            <div class="h-1/2 w-full flex-1 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
@@ -116,16 +114,10 @@ export class DomainAuthenticationComponent {
     /** List of auth sources associated with the active domain */
     public readonly auth_sources = this._service.auth_sources;
     public readonly loading = this._service.loading;
-    /** Mapping of auth sources to their type */
-    public source_types: HashMap<'oauth' | 'saml' | 'ldap'> = {};
 
     public readonly newAuthSource = () => this._service.editAuthSource();
     public readonly editAuthSource = (source) =>
         this._service.editAuthSource(source);
     public readonly removeAuthSource = (source) =>
         this._service.deleteAuthSource(source);
-
-    public get item(): PlaceDomain {
-        return this._service.active_item as PlaceDomain;
-    }
 }

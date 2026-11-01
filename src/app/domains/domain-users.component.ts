@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { PlaceDomain } from '@placeos/ts-client';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
@@ -10,7 +9,7 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'domain-users',
     template: `
-        <div class="flex h-full min-h-0 w-full flex-col">
+        <div class="flex h-full min-h-0 w-full flex-col p-4">
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
@@ -85,8 +84,4 @@ export class DomainUsersComponent {
 
     public readonly users = this._service.users;
     public readonly loading = this._service.loading;
-
-    public get item(): PlaceDomain {
-        return this._service.active_item as PlaceDomain;
-    }
 }

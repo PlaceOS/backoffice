@@ -2,10 +2,8 @@ import {
     Component,
     computed,
     effect,
-    EventEmitter,
     inject,
     OnInit,
-    Output,
     signal,
     viewChild,
 } from '@angular/core';
@@ -23,7 +21,6 @@ import { getInvalidSignalFields } from '../../common/forms';
 import { HotkeysService } from '../../common/hotkeys.service';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
-import { DialogEvent } from '../../common/types';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { SettingsToggleComponent } from '../../ui/settings-toggle.component';
@@ -265,8 +262,6 @@ export class SignagePluginModalComponent
     private readonly _schema_form_el =
         viewChild<SchemaFormComponent>('schema_form_el');
 
-    @Output() public event = new EventEmitter<DialogEvent>();
-
     public edit: boolean;
     public readonly formModel = signal(
         generateSignagePluginFormModel(this._data.item),
@@ -377,10 +372,6 @@ export class SignagePluginModalComponent
             };
             try {
                 const result = await this._data.save(payload);
-                this.event.emit({
-                    reason: 'done',
-                    metadata: { item: result },
-                });
                 notifySuccess(i18n('ADMIN.SIGNAGE_PLUGINS_SAVE_SUCCESS'));
                 this._dialog_ref.close({
                     reason: 'done',

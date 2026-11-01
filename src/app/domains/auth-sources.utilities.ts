@@ -52,11 +52,6 @@ export interface LDAPSourceFormModel {
     filter: string;
 }
 
-export type AuthSourceFormModel =
-    | OAuthSourceFormModel
-    | SAMLSourceFormModel
-    | LDAPSourceFormModel;
-
 /**
  * Generate form model for an OAuth authentication source
  * @param auth_source Auth source to apply changes to

@@ -20,7 +20,6 @@ import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 
 export interface DuplicateModalData {
     item: HashMap;
@@ -35,51 +34,43 @@ export interface DuplicateModalData {
         </header>
         <mat-dialog-content>
             @if (!loading()) {
-                <div class="body">
-                    <div class="content">
-                        <p>
-                            How many times would you like to duplicate this
-                            item?
-                        </p>
-                        <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                name="times"
-                                type="number"
-                                min="1"
-                                [max]="MAX_TIMES"
-                                step="1"
-                                [(ngModel)]="times"
-                                placeholder="Number of duplications"
-                                required
-                            />
-                        </mat-form-field>
-                    </div>
+                <div class="flex flex-col items-center p-4 text-center">
+                    <p>How many times would you like to duplicate this item?</p>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="times"
+                            type="number"
+                            min="1"
+                            [max]="MAX_TIMES"
+                            step="1"
+                            [(ngModel)]="times"
+                            placeholder="Number of duplications"
+                            required
+                        />
+                    </mat-form-field>
                 </div>
             } @else {
-                <div class="body">
+                <div class="flex flex-col items-center px-2 py-4">
                     @if (!done()) {
-                        <div class="info">Creating item duplicates...</div>
+                        <div class="mb-4 text-sm opacity-60">
+                            Creating item duplicates...
+                        </div>
                     }
                     @for (itm of temp(); track $index; let i = $index) {
-                        <div class="item">
-                            <div class="name">
+                        <div
+                            class="odd:bg-base-200 flex w-80 items-center rounded px-4 py-2"
+                        >
+                            <div class="flex-1 truncate">
                                 {{ item.name }} ({{ i + 1 }})
                             </div>
-                            <div class="status">
-                                @if (status()[i] !== 'loading') {
-                                    <icon [class]="status()[i]">
-                                        {{
-                                            status()[i] === 'done'
-                                                ? 'done'
-                                                : 'close'
-                                        }}
-                                    </icon>
-                                }
-                                @if (status()[i] === 'loading') {
-                                    <mat-spinner diameter="24" />
-                                }
-                            </div>
+                            @if (status()[i] === 'loading') {
+                                <mat-spinner diameter="24" />
+                            } @else if (status()[i] === 'done') {
+                                <icon class="text-success">done</icon>
+                            } @else {
+                                <icon class="text-error">close</icon>
+                            }
                         </div>
                     }
                 </div>
@@ -87,10 +78,13 @@ export interface DuplicateModalData {
         </mat-dialog-content>
         @if (!loading()) {
             <mat-dialog-actions>
-                <button btn class="inverse" mat-dialog-close>Cancel</button>
+                <button btn class="inverse min-w-32" mat-dialog-close>
+                    Cancel
+                </button>
                 <button
                     btn
                     name="accept"
+                    class="min-w-32"
                     [disabled]="!validTimes()"
                     (click)="duplicate()"
                 >
@@ -99,72 +93,7 @@ export interface DuplicateModalData {
             </mat-dialog-actions>
         }
     `,
-    styles: [
-        `
-            .body {
-                display: flex;
-                align-items: center;
-                flex-direction: column;
-                padding: 1em 0.5em;
-            }
-
-            .icon {
-                height: 1.2em;
-                width: 1.2em;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 2em;
-            }
-
-            .content {
-                min-width: 16rem;
-                text-align: center;
-                padding: 1em;
-            }
-
-            .info {
-                font-size: 0.8em;
-                opacity: 0.65;
-                margin-bottom: 1em;
-            }
-
-            .item {
-                display: flex;
-                align-items: center;
-                min-width: 20em;
-                max-width: 24em;
-                padding: 0.5em 1em;
-                border-radius: 4px;
-                &:nth-child(2) {
-                    background-color: rgba(#000, 0.1);
-                }
-
-                .name {
-                    flex: 1;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-            }
-
-            .status {
-                color: var(--error);
-            }
-
-            .done {
-                color: var(--success);
-            }
-
-            mat-dialog-actions {
-                button {
-                    min-width: 8em;
-                }
-            }
-        `,
-    ],
     imports: [
-        LoadingLabelDirective,
         MatDialogModule,
         IconComponent,
         MatFormFieldModule,

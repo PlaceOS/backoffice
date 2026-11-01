@@ -11,6 +11,7 @@ import {
     signal,
     viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,7 +32,6 @@ import {
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
-import { toSignal } from '../common/signals';
 import { IconComponent } from './icon.component';
 import { LoadingLabelDirective } from './loading-label.directive';
 import { SettingsToggleComponent } from './settings-toggle.component';
@@ -207,7 +207,6 @@ interface GroupTreeItem {
                                                 ? 'page'
                                                 : null
                                         "
-                                        (click)="show.set(false)"
                                     >
                                         <div
                                             class="flex min-w-0 items-center gap-2"
@@ -283,7 +282,6 @@ interface GroupTreeItem {
                             "
                             [class.bg-base-200]="idx % 2 === 1"
                             class="border-base-100 hover:border-info relative m-1 flex h-16 w-92 max-w-[calc(100%-0.5rem)] flex-col justify-center rounded-sm border px-2 py-1"
-                            (click)="show.set(false)"
                         >
                             <div class="flex min-w-0 items-center gap-2">
                                 <p class="min-w-0 flex-1 truncate">
@@ -417,7 +415,6 @@ export class ItemSidebarComponent
     public readonly title = input('Systems');
     public readonly route = input('systems');
     public readonly filter_options = input<string[]>([]);
-    public readonly show = signal(true);
     public readonly group_hierarchy = signal<PlaceGroup[]>([]);
     /** Whether the group tree is loading */
     public readonly group_hierarchy_loading = signal(false);
@@ -533,10 +530,6 @@ export class ItemSidebarComponent
             } else search_str += str.trim();
         }
         this._service.setSearch(search_str);
-    }
-
-    public trackByFn(item: Record<string, unknown>, index: number) {
-        return item.id || index;
     }
 
     public displayName(item: { display_name?: string; name?: string }) {

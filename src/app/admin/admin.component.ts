@@ -3,7 +3,6 @@ import { Component, OnInit, computed, inject } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -80,12 +79,6 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 width: 100%;
                 height: 100%;
             }
-
-            .active {
-                background-color: var(--secondary) !important;
-                color: var(--secondary-content);
-                margin-right: -1px;
-            }
         `,
     ],
     imports: [
@@ -97,7 +90,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         RouterModule,
     ],
 })
-export class PlaceComponent extends AsyncHandler implements OnInit {
+export class PlaceComponent implements OnInit {
     private _settings = inject(SettingsService);
     private _service = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);

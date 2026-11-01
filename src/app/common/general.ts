@@ -37,37 +37,6 @@ export function log(
     }
 }
 
-/* istanbul ignore next */
-/**
- * detect IE
- * returns version of IE or false, if browser is not Internet Explorer
- */
-export function detectIE(): number {
-    const ua = window.navigator.userAgent;
-
-    const msie = ua.indexOf('MSIE ');
-    if (msie > 0) {
-        // IE 10 or older => return version number
-        return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
-    }
-
-    const trident = ua.indexOf('Trident/');
-    if (trident > 0) {
-        // IE 11 => return version number
-        const rv = ua.indexOf('rv:');
-        return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
-    }
-
-    const edge = ua.indexOf('Edge/');
-    if (edge > 0) {
-        // Edge (IE 12+) => return version number
-        return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-    }
-
-    // other browser
-    return 0;
-}
-
 /**
  * Get item from the nested object
  * @param keys List of sub-keys to search for
@@ -179,7 +148,6 @@ export function numberToPosition(num: number): string {
     return `${num}th`;
 }
 
-export const csvToJson = parseCSV;
 /**
  * Parses a CSV string back into an array of JavaScript objects.
  * - It assumes the first row is the header row.
@@ -358,28 +326,6 @@ export function downloadFile(filename: string, contents: string) {
     document.body.removeChild(element);
 }
 
-/* istanbul ignore next */
-/**
- * Flatten nested array
- * @param an_array Array to flatten
- */
-export function flatten<T = unknown>(an_array: T[]) {
-    const stack = [...an_array];
-    const res = [];
-    while (stack.length) {
-        // pop value from stack
-        const next = stack.pop();
-        if (Array.isArray(next)) {
-            // push back array items, won't modify the original input
-            stack.push(...next);
-        } else {
-            res.push(next);
-        }
-    }
-    // reverse to restore input order
-    return res.reverse();
-}
-
 export const issueDescription = (hash, date) => `
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -413,19 +359,3 @@ If applicable, add screenshots to help explain your problem.
 **Hash:** ${hash}
 **Built:** ${date}
 `;
-
-/**
- * Pad the start of a string or number with given character
- * @param value String or number to pad
- * @param length Length of the final string
- * @param character Character to pad output string with. Defaults to `0`.
- */
-export function padLength(
-    value: number | string,
-    length = 2,
-    character = '0',
-): string {
-    let str = `${value}`;
-    while (str.length < length) str = `${character}${str}`;
-    return str;
-}

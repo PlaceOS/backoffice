@@ -8,6 +8,7 @@ import {
     signal,
     viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import {
     apiKey,
@@ -23,7 +24,7 @@ import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { signalFromClient, toSignal } from '../common/signals';
+import { signalFromClient } from '../common/signals';
 import { HashMap } from '../common/types';
 import { SafePipe } from './pipes/safe.pipe';
 

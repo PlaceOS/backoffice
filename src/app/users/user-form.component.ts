@@ -2,7 +2,6 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
     Component,
     EventEmitter,
-    OnInit,
     Output,
     computed,
     effect,
@@ -10,12 +9,11 @@ import {
     resource,
     signal,
 } from '@angular/core';
-import { FormField, form, submit } from '@angular/forms/signals';
+import { FormField, form } from '@angular/forms/signals';
 import {
     PlaceUser,
     addUser,
     authority,
-    cleanObject,
     queryDomains,
     updateUser,
 } from '@placeos/ts-client';
@@ -26,17 +24,15 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { AsyncHandler } from '../common/async-handler.class';
-import { readError } from '../common/errors';
 import {
     addSignalChipItem,
-    getInvalidSignalFields,
+    mergeFormItem,
+    onSaveHotkey,
     removeSignalChipItem,
+    submitFormDialog,
 } from '../common/forms';
-import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
-import { notifyError, notifySuccess } from '../common/notifications';
-import { DialogEvent, Identity } from '../common/types';
+import { DialogEvent } from '../common/types';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -410,14 +406,13 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
         FullscreenModalShellComponent,
     ],
 })
-export class UserFormComponent extends AsyncHandler implements OnInit {
+export class UserFormComponent {
     public readonly isSubsystemUser = isSubsystemUser;
     private _dialog_ref = inject<MatDialogRef<UserFormComponent>>(MatDialogRef);
     private _data = inject<{ item: PlaceUser; readonly?: string }>(
         MAT_DIALOG_DATA,
     );
     private readonly _name = 'USERS';
-    private _hotkey = inject(HotkeysService);
 
     @Output() public event = new EventEmitter<DialogEvent>();
 
@@ -460,7 +455,7 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
         }));
 
     constructor() {
-        super();
+        onSaveHotkey(() => this.submit());
         effect(() => {
             const domains = this.domain_list();
             if (!this.formModel().authority_id && domains[0]) {
@@ -472,62 +467,34 @@ export class UserFormComponent extends AsyncHandler implements OnInit {
         });
     }
 
-    public async ngOnInit() {
-        this.subscription(
-            'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
-        );
-    }
-
     public async submit(): Promise<void> {
-        await submit(this.form, async () => {
-            const item = this._data.item;
-            this.loading.set(i18n(`${this._name}.SAVING`));
-            const item_json = item.toJSON ? item.toJSON() : item;
-            const form_item = (
-                item.id
-                    ? cleanObject({ ...item_json, ...this.formModel() }, [
-                          undefined,
-                          null,
-                          '',
-                      ])
-                    : { ...item_json, ...this.formModel() }
-            ) as Identity;
-            if (isSubsystemUser()) {
-                for (const key of [
-                    'sys_admin',
-                    'support',
-                    'groups',
-                    'login_name',
-                ])
-                    delete form_item[key];
-                form_item.authority_id = authority()?.id;
-            }
-            try {
-                const _item = await (form_item.id
-                    ? updateUser(
-                          form_item.id as string,
-                          form_item as unknown as PlaceUser,
-                      )
-                    : addUser(form_item as unknown as PlaceUser));
-                this.event.emit({ reason: 'done', metadata: { item: _item } });
-                notifySuccess(i18n(`${this._name}.SAVE_SUCCESS`));
-                this._dialog_ref.close();
-            } catch (err) {
-                this.loading.set(null);
-                notifyError(
-                    i18n(`${this._name}.SAVE_ERROR`, {
-                        error: await readError(err),
-                    }),
+        await submitFormDialog(
+            this.form,
+            {
+                loading: this.loading,
+                event: this.event,
+                close: () => this._dialog_ref.close(),
+            },
+            `${this._name}.`,
+            () => {
+                const form_item = mergeFormItem(
+                    this._data.item,
+                    this.formModel(),
+                    [undefined, null, ''],
                 );
-            }
-        });
-        if (this.form().invalid()) {
-            return notifyError(
-                i18n('COMMON.INVALID_FIELDS', {
-                    field_list: getInvalidSignalFields(this.form).join(', '),
-                }),
-            );
-        }
+                if (isSubsystemUser()) {
+                    for (const key of [
+                        'sys_admin',
+                        'support',
+                        'groups',
+                        'login_name',
+                    ])
+                        delete form_item[key];
+                    form_item.authority_id = authority()?.id;
+                }
+                const user = form_item as unknown as PlaceUser;
+                return user.id ? updateUser(user.id, user) : addUser(user);
+            },
+        );
     }
 }

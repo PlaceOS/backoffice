@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { authority, isOnline, token } from '@placeos/ts-client';
+import { authority, token } from '@placeos/ts-client';
 
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -55,7 +55,6 @@ export class GlobalLoadingComponent extends AsyncHandler implements OnInit {
     private _settings = inject(SettingsService);
 
     public loading = signal(true);
-    public readonly online = signal(true);
     public readonly message = getLoadingMessage();
 
     public async ngOnInit() {
@@ -64,14 +63,11 @@ export class GlobalLoadingComponent extends AsyncHandler implements OnInit {
         await waitForSignalValue(this._settings.initialised, (_) => _).catch(
             () => null,
         );
-        this.online.set(isOnline());
         this.interval(
             'has_token',
             () => {
-                this.online.set(isOnline());
                 if (!authority() || !token()) return;
                 this.loading.set(false);
-                this.online.set(isOnline());
                 this.clearInterval('has_token');
             },
             1000,

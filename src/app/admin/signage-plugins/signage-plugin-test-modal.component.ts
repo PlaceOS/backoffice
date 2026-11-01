@@ -1,11 +1,4 @@
-import {
-    Component,
-    EventEmitter,
-    OnInit,
-    Output,
-    inject,
-    signal,
-} from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import {
@@ -17,7 +10,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SignagePlugin } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../../common/async-handler.class';
-import { DialogEvent } from '../../common/types';
 import { DialogTitleDirective } from '../../ui/dialog-title.directive';
 import { IconComponent } from '../../ui/icon.component';
 import { LoadingLabelDirective } from '../../ui/loading-label.directive';
@@ -268,8 +260,6 @@ export class SignagePluginTestModalComponent
     private _dialog_ref =
         inject<MatDialogRef<SignagePluginTestModalComponent>>(MatDialogRef);
     private _data = inject<SignagePluginTestModalData>(MAT_DIALOG_DATA);
-
-    @Output() public event = new EventEmitter<DialogEvent>();
 
     public readonly sidebar_open = signal(true);
     public readonly schema_loading = signal(false);

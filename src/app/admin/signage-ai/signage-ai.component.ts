@@ -4,10 +4,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { escapeHtml } from '../../common/general';
-import { readError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
-import { openConfirmModal } from '../../overlays/confirm-modal.component';
+import {
+    confirmAndRun,
+    openConfirmModal,
+} from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
 import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
@@ -315,7 +317,8 @@ export class SignageAIComponent implements OnInit {
     }
 
     public async remove(item: SignageAIProvider) {
-        const resp = await openConfirmModal(
+        const removed = await confirmAndRun(
+            this._dialog,
             {
                 title: i18n('ADMIN.AI_PROVIDER_REMOVE_TITLE'),
                 content: i18n('ADMIN.AI_PROVIDER_REMOVE_MSG', {
@@ -323,22 +326,14 @@ export class SignageAIComponent implements OnInit {
                 }),
                 icon: { content: 'delete_forever' },
             },
-            this._dialog,
+            {
+                loading: i18n('ADMIN.AI_PROVIDER_REMOVING'),
+                action: () => removeSignageAIProvider(item.id),
+                error: (reason) =>
+                    `${i18n('ADMIN.AI_PROVIDER_REMOVE_FAILED')}: ${reason}`,
+            },
         );
-        if (resp.reason !== 'done') return;
-        resp.loading(i18n('ADMIN.AI_PROVIDER_REMOVING'));
-        try {
-            await removeSignageAIProvider(item.id);
-        } catch (error) {
-            // the confirm modal owns its own spinner, so it has to be told
-            resp.close();
-            notifyError(
-                `${i18n('ADMIN.AI_PROVIDER_REMOVE_FAILED')}: ${await readError(error)}`,
-            );
-            return;
-        }
-        resp.close();
-        this.load();
+        if (removed) this.load();
     }
 
     public async load() {

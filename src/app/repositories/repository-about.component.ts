@@ -1,12 +1,12 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceRepositoryType } from '@placeos/ts-client';
 import { IconComponent } from '../ui/icon.component';
+import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
 import { LoadingLabelDirective } from '../ui/loading-label.directive';
-import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { RepositoriesStateService } from './repositories-state.service';
@@ -15,185 +15,167 @@ import { maskUriCredentials } from './repositories.utilities';
 @Component({
     selector: 'repository-about',
     template: `
-        <section class="mb-4 flex space-x-2">
-            <div class="w-1/3 flex-1">
-                <div
-                    class="border-base-200 grid gap-4 rounded-sm border p-4"
-                    [style.gridTemplateColumns]="'5.5rem auto'"
-                >
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'REPOS.FIELD_TYPE' | translate }}
-                    </div>
-                    <div class="select-text">
-                        {{
-                            (is_interface()
-                                ? 'REPOS.INTERFACE_REPO'
-                                : 'REPOS.DRIVER_REPO'
-                            ) | translate
-                        }}
-                    </div>
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'REPOS.FOLDER_NAME' | translate }}
-                    </div>
+        <div class="h-full w-full overflow-auto p-4">
+            <section class="mb-4 flex space-x-2">
+                <div class="w-1/3 flex-1">
                     <div
-                        class="select-all"
-                        [class.underline]="item().type === 'interface'"
-                        [class.pointer-events-none]="
-                            item().type !== 'interface'
-                        "
+                        class="border-base-200 grid gap-4 rounded-sm border p-4"
+                        [style.gridTemplateColumns]="'5.5rem auto'"
                     >
-                        <a [href]="local_url()" target="_blank">
-                            {{ item().folder_name }}
-                            @if (!item().folder_name) {
-                                <span class="opacity-30">
-                                    {{ 'REPOS.FOLDER_NAME_EMPTY' | translate }}
-                                </span>
+                        <div class="flex items-center text-sm font-medium">
+                            {{ 'REPOS.FIELD_TYPE' | translate }}
+                        </div>
+                        <div class="select-text">
+                            {{
+                                (is_interface()
+                                    ? 'REPOS.INTERFACE_REPO'
+                                    : 'REPOS.DRIVER_REPO'
+                                ) | translate
+                            }}
+                        </div>
+                        <div class="flex items-center text-sm font-medium">
+                            {{ 'REPOS.FOLDER_NAME' | translate }}
+                        </div>
+                        <div
+                            class="select-all"
+                            [class.underline]="item().type === 'interface'"
+                            [class.pointer-events-none]="
+                                item().type !== 'interface'
+                            "
+                        >
+                            <a [href]="local_url()" target="_blank">
+                                {{ item().folder_name }}
+                                @if (!item().folder_name) {
+                                    <span class="opacity-30">
+                                        {{
+                                            'REPOS.FOLDER_NAME_EMPTY'
+                                                | translate
+                                        }}
+                                    </span>
+                                }
+                            </a>
+                        </div>
+                        <div class="flex items-center text-sm font-medium">
+                            {{ 'REPOS.ROOT_PATH' | translate }}
+                        </div>
+                        <div
+                            class="flex items-center font-mono text-sm select-text"
+                        >
+                            {{ item().root_path }}
+                            @if (item().root_path === '') {
+                                <span class="opacity-30">Not set</span>
                             }
-                        </a>
-                    </div>
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'REPOS.ROOT_PATH' | translate }}
-                    </div>
-                    <div
-                        class="flex items-center font-mono text-sm select-text"
-                    >
-                        {{ item().root_path }}
-                        @if (item().root_path === '') {
-                            <span class="opacity-30">Not set</span>
-                        }
-                    </div>
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'COMMON.CREATED_AT' | translate }}
-                    </div>
-                    <div class="flex items-center">
-                        <span
-                            class="select-text"
-                            [matTooltip]="
-                                (item().created_at * 1000
-                                    | date: 'mediumDate') +
-                                ', ' +
-                                (item().created_at * 1000 | date: 'shortTime')
-                            "
-                            matTooltipPosition="right"
-                        >
-                            {{ item().created_at * 1000 | dateFrom }}
-                        </span>
-                    </div>
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'COMMON.UPDATED_AT' | translate }}
-                    </div>
-                    <div class="flex items-center">
-                        <span
-                            class="select-text"
-                            [matTooltip]="
-                                (item().updated_at * 1000
-                                    | date: 'mediumDate') +
-                                ', ' +
-                                (item().updated_at * 1000 | date: 'shortTime')
-                            "
-                            matTooltipPosition="right"
-                        >
-                            {{ item().updated_at * 1000 | dateFrom }}
-                        </span>
+                        </div>
+                        <item-timestamps
+                            [created_at]="item().created_at"
+                            [updated_at]="item().updated_at"
+                        />
                     </div>
                 </div>
-            </div>
-            <div class="w-1/3 flex-1">
-                <div
-                    class="border-base-200 grid gap-4 overflow-hidden rounded-sm border p-4"
-                    [style.gridTemplateColumns]="'6.5rem auto'"
-                >
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'REPOS.URI' | translate }}
-                    </div>
-                    <div class="overflow-hidden underline select-all">
-                        <a
-                            class="block w-full truncate"
-                            [href]="repo_uri()"
-                            target="_blank"
-                            >{{ repo_uri() || 'No URI set' }}</a
-                        >
-                    </div>
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'COMMON.GIT_BRANCH' | translate }}
-                    </div>
-                    <div class="flex items-center overflow-hidden">
-                        <code
-                            class="inline-block max-w-full truncate text-xs select-text"
-                            [matTooltip]="item().branch"
-                        >
-                            {{ item().branch }}
-                        </code>
-                    </div>
-                    <div class="flex items-center text-sm font-medium">
-                        {{ 'COMMON.GIT_COMMIT' | translate }}
-                    </div>
-                    <div class="flex items-center overflow-hidden">
-                        <code
-                            class="inline-block max-w-full truncate text-xs select-text"
-                            [matTooltip]="
-                                commit() && commit() !== item().commit_hash
-                                    ? commit()
-                                    : item().commit_hash
-                            "
-                        >
-                            {{ item().commit_hash || 'HEAD' }}
-                            @if (commit() && commit() !== item().commit_hash) {
-                                <span class="mono wrap-break-word select-text">
-                                    ({{ commit() }})
-                                </span>
-                            }
-                        </code>
-                    </div>
-                    @if (commit_error()) {
-                        <div
-                            class="border-error bg-error/10 text-error col-span-2 flex items-start space-x-2 rounded-sm border p-2 text-xs"
-                        >
-                            <icon class="text-lg">error</icon>
-                            <div class="min-w-0 flex-1">
-                                <div class="mt-0.75 font-medium">
-                                    {{ 'REPOS.COMMIT_LOAD_ERROR' | translate }}
-                                </div>
-                                <div
-                                    class="mt-2 font-mono text-[0.625rem] break-words select-text"
-                                >
-                                    {{ commit_error() }}
+                <div class="w-1/3 flex-1">
+                    <div
+                        class="border-base-200 grid gap-4 overflow-hidden rounded-sm border p-4"
+                        [style.gridTemplateColumns]="'6.5rem auto'"
+                    >
+                        <div class="flex items-center text-sm font-medium">
+                            {{ 'REPOS.URI' | translate }}
+                        </div>
+                        <div class="overflow-hidden underline select-all">
+                            <a
+                                class="block w-full truncate"
+                                [href]="repo_uri()"
+                                target="_blank"
+                                >{{ repo_uri() || 'No URI set' }}</a
+                            >
+                        </div>
+                        <div class="flex items-center text-sm font-medium">
+                            {{ 'COMMON.GIT_BRANCH' | translate }}
+                        </div>
+                        <div class="flex items-center overflow-hidden">
+                            <code
+                                class="inline-block max-w-full truncate text-xs select-text"
+                                [matTooltip]="item().branch"
+                            >
+                                {{ item().branch }}
+                            </code>
+                        </div>
+                        <div class="flex items-center text-sm font-medium">
+                            {{ 'COMMON.GIT_COMMIT' | translate }}
+                        </div>
+                        <div class="flex items-center overflow-hidden">
+                            <code
+                                class="inline-block max-w-full truncate text-xs select-text"
+                                [matTooltip]="
+                                    commit() && commit() !== item().commit_hash
+                                        ? commit()
+                                        : item().commit_hash
+                                "
+                            >
+                                {{ item().commit_hash || 'HEAD' }}
+                                @if (
+                                    commit() && commit() !== item().commit_hash
+                                ) {
+                                    <span
+                                        class="mono wrap-break-word select-text"
+                                    >
+                                        ({{ commit() }})
+                                    </span>
+                                }
+                            </code>
+                        </div>
+                        @if (commit_error()) {
+                            <div
+                                class="border-error bg-error/10 text-error col-span-2 flex items-start space-x-2 rounded-sm border p-2 text-xs"
+                            >
+                                <icon class="text-lg">error</icon>
+                                <div class="min-w-0 flex-1">
+                                    <div class="mt-0.75 font-medium">
+                                        {{
+                                            'REPOS.COMMIT_LOAD_ERROR'
+                                                | translate
+                                        }}
+                                    </div>
+                                    <div
+                                        class="mt-2 font-mono text-[0.625rem] break-words select-text"
+                                    >
+                                        {{ commit_error() }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
-                    @if (is_interface()) {
-                        <button
-                            btn
-                            matRipple
-                            class="col-span-2 w-full"
-                            [disabled]="pulling()"
-                            (click)="pullLatestCommit()"
-                        >
-                            @if (!pulling()) {
-                                {{ 'COMMON.GIT_PULL_LATEST' | translate }}
-                            } @else {
-                                <mat-spinner diameter="32" />
-                            }
-                        </button>
-                    }
+                        }
+                        @if (is_interface()) {
+                            <button
+                                btn
+                                matRipple
+                                class="col-span-2 w-full"
+                                [disabled]="pulling()"
+                                (click)="pullLatestCommit()"
+                            >
+                                @if (!pulling()) {
+                                    {{ 'COMMON.GIT_PULL_LATEST' | translate }}
+                                } @else {
+                                    <mat-spinner diameter="32" />
+                                }
+                            </button>
+                        }
+                    </div>
                 </div>
-            </div>
-        </section>
-        @if (item()?.description) {
-            <hr class="text-base-300 my-4" />
-            <div class="border-base-200 w-full rounded-sm border">
-                <h3
-                    class="bg-base-200 w-full rounded-sm p-4 text-lg font-medium"
-                >
-                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
-                </h3>
-                <div
-                    class="markdown selectable w-full overflow-auto p-4 text-sm"
-                    [innerHTML]="item()?.description | markdown | async"
-                ></div>
-            </div>
-        }
+            </section>
+            @if (item()?.description) {
+                <hr class="text-base-300 my-4" />
+                <div class="border-base-200 w-full rounded-sm border">
+                    <h3
+                        class="bg-base-200 w-full rounded-sm p-4 text-lg font-medium"
+                    >
+                        {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                    </h3>
+                    <div
+                        class="markdown selectable w-full overflow-auto p-4 text-sm"
+                        [innerHTML]="item()?.description | markdown | async"
+                    ></div>
+                </div>
+            }
+        </div>
     `,
     styles: [
         `
@@ -213,15 +195,14 @@ import { maskUriCredentials } from './repositories.utilities';
         `,
     ],
     imports: [
+        ItemTimestampsComponent,
         LoadingLabelDirective,
         MarkdownPipe,
         TranslatePipe,
         MatProgressSpinnerModule,
         MatRippleModule,
         MatTooltipModule,
-        DateFromPipe,
         AsyncPipe,
-        DatePipe,
         IconComponent,
     ],
 })

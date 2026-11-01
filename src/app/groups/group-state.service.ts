@@ -18,30 +18,25 @@ import {
     updateGroupZone,
 } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
-import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
-import { notifyError, notifySuccess } from '../common/notifications';
+import { notifyError } from '../common/notifications';
 import { openedTabs } from '../common/opened-tabs';
-import { waitForEvent } from '../common/signals';
-import { openConfirmModal } from '../overlays/confirm-modal.component';
-import { GroupBulkAddModalComponent } from './group-bulk-add-modal.component';
-import { GroupPermissionsModalComponent } from './group-permissions-modal.component';
+import { groupMembership } from './group-membership';
 
 @Service()
 export class GroupStateService {
     private _state = inject(ActiveItemService);
     private _dialog = inject(MatDialog);
     private _changed = signal(0);
-    /** Set while a bulk add runs */
-    private _saving = signal(false);
 
     public readonly item = computed(
         () => this._state.item() as unknown as PlaceGroup,
     );
     public readonly loading = computed(
         () =>
-            this._saving() ||
+            this.user_members.saving() ||
+            this.zone_members.saving() ||
             this._users.isLoading() ||
             this._zones.isLoading(),
     );
@@ -141,280 +136,76 @@ export class GroupStateService {
         return this._state.active_item as unknown as PlaceGroup;
     }
 
-    public async addUser(user: PlaceUser) {
-        if (!user?.id) return;
-        try {
-            await addGroupUser({
-                group_id: this.active_item.id,
-                user_id: user.id,
-            });
-        } catch (error) {
-            return notifyError(
-                i18n('GROUPS.USER_ADD_ERROR', { error: describeError(error) }),
-            );
-        }
-        notifySuccess(i18n('GROUPS.USER_ADD_SUCCESS'));
-        this.changed();
-    }
-
-    public async bulkAddUsers(existing_users: PlaceGroupUser[] = []) {
-        const result = await waitForEvent(
-            this._dialog
-                .open(GroupBulkAddModalComponent<PlaceUser>, {
-                    data: {
-                        title: 'GROUPS.USERS_BULK',
-                        placeholder: 'GROUPS.USER_SEARCH',
-                        empty_message: 'GROUPS.USERS_BULK_EMPTY',
-                        show_permissions: true,
-                        permissions: this.active_item?.default_permissions,
-                        query_fn: (query: string) =>
-                            queryUsers({
-                                q: query,
-                                limit: 20,
-                                authority_id: this.active_item?.authority_id,
-                            }).then((response) => response.data),
-                        exclude: (user: PlaceUser) => {
-                            const authority_id = this.active_item?.authority_id;
-                            return (
-                                !!existing_users.find(
-                                    (_) => _.user_id === user.id,
-                                ) ||
-                                (!!authority_id &&
-                                    user.authority_id !== authority_id)
-                            );
-                        },
-                    },
-                    panelClass: 'bulk-add-dialog',
-                    height: 'auto',
-                    width: 'auto',
-                    maxHeight: 'calc(100vh - 2em)',
-                    maxWidth: 'calc(100vw - 2em)',
-                })
-                .afterClosed(),
-        );
-        const users = result?.items;
-        if (!users?.length) return;
-        const permissions = +result.permissions || 0;
-        this._saving.set(true);
-        const results = await Promise.allSettled(
-            users.map((user) =>
+    /** User memberships of the active group */
+    public readonly user_members = groupMembership<PlaceGroupUser, PlaceUser>(
+        this._dialog,
+        {
+            one: 'GROUPS.USER',
+            many: 'GROUPS.USERS',
+            search: 'GROUPS.USER_SEARCH',
+            column: 'GROUPS.FIELD_USER',
+            member_key: 'user',
+            route: 'users',
+            no_permissions: 'COMMON.NONE',
+            rows: () => this.users(),
+            authority_id: () => this.active_item?.authority_id,
+            query: (q, authority_id) =>
+                queryUsers({ q, limit: 20, authority_id }).then(
+                    (response) => response.data,
+                ),
+            member_id: (row) => row.user_id,
+            member_name: (row) => row.user?.name || row.user_id,
+            member_detail: (row) => row.user?.email,
+            item_authority: (user) => user.authority_id,
+            bulk_permissions: () => this.active_item?.default_permissions,
+            add: (user_id, permissions) =>
                 addGroupUser({
                     group_id: this.active_item.id,
-                    user_id: user.id,
+                    user_id,
+                    ...(permissions === undefined ? {} : { permissions }),
+                }),
+            remove: (row) => removeGroupUser(row.user_id, row.group_id),
+            update: (row, { permissions }) =>
+                updateGroupUser(row.user_id, row.group_id, { permissions }),
+            changed: () => this.changed(),
+        },
+    );
+
+    /** Zone memberships of the active group */
+    public readonly zone_members = groupMembership<PlaceGroupZone, PlaceZone>(
+        this._dialog,
+        {
+            one: 'GROUPS.ZONE',
+            many: 'GROUPS.ZONES',
+            search: 'GROUPS.ZONE_SEARCH',
+            column: 'GROUPS.FIELD_ZONE',
+            member_key: 'zone',
+            route: 'zones',
+            no_permissions: 'COMMON.DEFAULT',
+            show_deny: true,
+            rows: () => this.zones(),
+            authority_id: () => this.active_item?.authority_id,
+            query: (q, authority_id) =>
+                queryZones({ q, limit: 20, authority_id } as Record<
+                    string,
+                    unknown
+                >).then((response) => response.data),
+            member_id: (row) => row.zone_id,
+            member_name: (row) => row.zone?.name || row.zone_id,
+            member_detail: (row) => row.zone_id,
+            item_authority: (zone) =>
+                (zone as PlaceZone & { authority_id?: string }).authority_id,
+            add: (zone_id) =>
+                addGroupZone({ group_id: this.active_item.id, zone_id }),
+            remove: (row) => removeGroupZone(row.group_id, row.zone_id),
+            update: (row, { permissions, deny }) =>
+                updateGroupZone(row.group_id, row.zone_id, {
                     permissions,
+                    deny,
                 }),
-            ),
-        );
-        this._saving.set(false);
-        const failed = results.filter((_) => _.status === 'rejected').length;
-        if (failed) {
-            notifyError(i18n('GROUPS.USERS_BULK_ERROR', { count: failed }));
-        }
-        const added = results.length - failed;
-        if (added) {
-            notifySuccess(i18n('GROUPS.USERS_BULK_SUCCESS', { count: added }));
-        }
-        this.changed();
-    }
-
-    public async bulkAddZones(existing_zones: PlaceGroupZone[] = []) {
-        const result = await waitForEvent(
-            this._dialog
-                .open(GroupBulkAddModalComponent<PlaceZone>, {
-                    data: {
-                        title: 'GROUPS.ZONES_BULK',
-                        placeholder: 'GROUPS.ZONE_SEARCH',
-                        empty_message: 'GROUPS.ZONES_BULK_EMPTY',
-                        query_fn: (query: string) =>
-                            queryZones({
-                                q: query,
-                                limit: 20,
-                                authority_id: this.active_item?.authority_id,
-                            } as Record<string, unknown>).then(
-                                (response) => response.data,
-                            ),
-                        exclude: (zone: PlaceZone) => {
-                            const authority_id = this.active_item?.authority_id;
-                            const zone_authority_id = (
-                                zone as PlaceZone & { authority_id?: string }
-                            ).authority_id;
-                            return (
-                                !!existing_zones.find(
-                                    (_) => _.zone_id === zone.id,
-                                ) ||
-                                (!!authority_id &&
-                                    !!zone_authority_id &&
-                                    zone_authority_id !== authority_id)
-                            );
-                        },
-                    },
-                    panelClass: 'bulk-add-dialog',
-                    height: 'auto',
-                    width: 'auto',
-                    maxHeight: 'calc(100vh - 2em)',
-                    maxWidth: 'calc(100vw - 2em)',
-                })
-                .afterClosed(),
-        );
-        const zones = result?.items;
-        if (!zones?.length) return;
-        this._saving.set(true);
-        const results = await Promise.allSettled(
-            zones.map((zone) =>
-                addGroupZone({
-                    group_id: this.active_item.id,
-                    zone_id: zone.id,
-                }),
-            ),
-        );
-        this._saving.set(false);
-        const failed = results.filter((_) => _.status === 'rejected').length;
-        if (failed) {
-            notifyError(i18n('GROUPS.ZONES_BULK_ERROR', { count: failed }));
-        }
-        const added = results.length - failed;
-        if (added) {
-            notifySuccess(i18n('GROUPS.ZONES_BULK_SUCCESS', { count: added }));
-        }
-        this.changed();
-    }
-
-    public async removeUser(item: PlaceGroupUser) {
-        const details = await openConfirmModal(
-            {
-                title: i18n('GROUPS.USER_REMOVE'),
-                content: i18n('GROUPS.USER_REMOVE_MSG', {
-                    name: escapeHtml(item.user?.name || item.user_id),
-                }),
-                icon: { type: 'icon', content: 'delete' },
-            },
-            this._dialog,
-        );
-        if (details.reason !== 'done') return;
-        details.loading(i18n('GROUPS.USER_REMOVE_LOADING'));
-        try {
-            await removeGroupUser(item.user_id, item.group_id);
-        } catch (error) {
-            details.close();
-            return notifyError(
-                i18n('GROUPS.USER_REMOVE_ERROR', {
-                    error: describeError(error),
-                }),
-            );
-        }
-        details.close();
-        notifySuccess(i18n('GROUPS.USER_REMOVE_SUCCESS'));
-        this.changed();
-    }
-
-    public async updateUser(item: PlaceGroupUser) {
-        try {
-            await updateGroupUser(item.user_id, item.group_id, {
-                permissions: +item.permissions || 0,
-            });
-        } catch (error) {
-            return notifyError(
-                i18n('GROUPS.USER_SAVE_ERROR', { error: describeError(error) }),
-            );
-        }
-        notifySuccess(i18n('GROUPS.USER_SAVE_SUCCESS'));
-        this.changed();
-    }
-
-    public async editUserPermissions(item: PlaceGroupUser) {
-        const result = await waitForEvent(
-            this._dialog
-                .open(GroupPermissionsModalComponent, {
-                    data: {
-                        title: 'GROUPS.USER_PERMISSIONS',
-                        permissions: item.permissions,
-                    },
-                })
-                .afterClosed(),
-        );
-        if (!result) return;
-        await this.updateUser({ ...item, permissions: result.permissions });
-    }
-
-    public async addZone(zone: PlaceZone) {
-        if (!zone?.id) return;
-        try {
-            await addGroupZone({
-                group_id: this.active_item.id,
-                zone_id: zone.id,
-            });
-        } catch (error) {
-            return notifyError(
-                i18n('GROUPS.ZONE_ADD_ERROR', { error: describeError(error) }),
-            );
-        }
-        notifySuccess(i18n('GROUPS.ZONE_ADD_SUCCESS'));
-        this.changed();
-    }
-
-    public async removeZone(item: PlaceGroupZone) {
-        const details = await openConfirmModal(
-            {
-                title: i18n('GROUPS.ZONE_REMOVE'),
-                content: i18n('GROUPS.ZONE_REMOVE_MSG', {
-                    name: escapeHtml(item.zone?.name || item.zone_id),
-                }),
-                icon: { type: 'icon', content: 'delete' },
-            },
-            this._dialog,
-        );
-        if (details.reason !== 'done') return;
-        details.loading(i18n('GROUPS.ZONE_REMOVE_LOADING'));
-        try {
-            await removeGroupZone(item.group_id, item.zone_id);
-        } catch (error) {
-            details.close();
-            return notifyError(
-                i18n('GROUPS.ZONE_REMOVE_ERROR', {
-                    error: describeError(error),
-                }),
-            );
-        }
-        details.close();
-        notifySuccess(i18n('GROUPS.ZONE_REMOVE_SUCCESS'));
-        this.changed();
-    }
-
-    public async updateZone(item: PlaceGroupZone) {
-        try {
-            await updateGroupZone(item.group_id, item.zone_id, {
-                permissions: +item.permissions || 0,
-                deny: !!item.deny,
-            });
-        } catch (error) {
-            return notifyError(
-                i18n('GROUPS.ZONE_SAVE_ERROR', { error: describeError(error) }),
-            );
-        }
-        notifySuccess(i18n('GROUPS.ZONE_SAVE_SUCCESS'));
-        this.changed();
-    }
-
-    public async editZonePermissions(item: PlaceGroupZone) {
-        const result = await waitForEvent(
-            this._dialog
-                .open(GroupPermissionsModalComponent, {
-                    data: {
-                        title: 'GROUPS.ZONE_PERMISSIONS',
-                        permissions: item.permissions,
-                        deny: item.deny,
-                        show_deny: true,
-                    },
-                })
-                .afterClosed(),
-        );
-        if (!result) return;
-        await this.updateZone({
-            ...item,
-            permissions: result.permissions,
-            deny: result.deny,
-        });
-    }
+            changed: () => this.changed(),
+        },
+    );
 
     private changed() {
         this._changed.set(new Date().valueOf());

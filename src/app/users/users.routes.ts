@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { AuthorisedAdminGuard } from '../ui/guards/authorised-admin.guard';
+import { authorisedAdminGuard } from '../ui/guards/authorised.guard';
 
 export const ROUTES: Routes = [
     {
@@ -17,13 +17,13 @@ export const ROUTES: Routes = [
             {
                 path: 'metadata',
                 loadComponent: () =>
-                    import('./user-metadata.component').then(
-                        (m) => m.UserMetadataComponent,
+                    import('../ui/item-metadata.component').then(
+                        (m) => m.ItemMetadataComponent,
                     ),
             },
             {
                 path: 'groups',
-                canActivate: [AuthorisedAdminGuard],
+                canActivate: [authorisedAdminGuard],
                 loadComponent: () =>
                     import('./user-groups.component').then(
                         (m) => m.UserGroupsComponent,
@@ -31,7 +31,7 @@ export const ROUTES: Routes = [
             },
             {
                 path: 'history',
-                canActivate: [AuthorisedAdminGuard],
+                canActivate: [authorisedAdminGuard],
                 loadComponent: () =>
                     import('./user-history.component').then(
                         (m) => m.UserHistoryComponent,

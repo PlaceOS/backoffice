@@ -1,24 +1,19 @@
 import { Service, WritableSignal, signal } from '@angular/core';
 import { PlaceDomain, authority, queryDomains } from '@placeos/ts-client';
-
-export type AdminSortState = [string, boolean];
+import { TableSort } from '../ui/simple-table.component';
 
 @Service()
 export class AdminDataService {
     private readonly _domain_list = signal<PlaceDomain[]>([]);
-    private readonly _loading_domains = signal(false);
-    private readonly _domain_error = signal<unknown>(null);
     private readonly _selected_domains = new Map<
         string,
         WritableSignal<PlaceDomain | null>
     >();
     private readonly _filters = new Map<string, WritableSignal<string>>();
-    private readonly _sorts = new Map<string, WritableSignal<AdminSortState>>();
+    private readonly _sorts = new Map<string, WritableSignal<TableSort>>();
     private _domain_request: Promise<PlaceDomain[]> | null = null;
 
     public readonly domain_list = this._domain_list.asReadonly();
-    public readonly loading_domains = this._loading_domains.asReadonly();
-    public readonly domain_error = this._domain_error.asReadonly();
 
     public selectedDomain(key: string): WritableSignal<PlaceDomain | null> {
         let selected = this._selected_domains.get(key);
@@ -38,42 +33,27 @@ export class AdminDataService {
         return filter;
     }
 
-    public sort(key: string): WritableSignal<AdminSortState> {
+    /** Table sort of an admin page, kept while the app is open */
+    public sort(key: string): WritableSignal<TableSort> {
         let sort = this._sorts.get(key);
         if (!sort) {
-            sort = signal<AdminSortState>(['', false]);
+            sort = signal<TableSort>(null);
             this._sorts.set(key, sort);
         }
         return sort;
     }
 
-    public sortBy(key: string, new_field: string) {
-        const sort = this.sort(key);
-        const [field, asc] = sort();
-        if (field === new_field) {
-            sort.set(asc ? ['', false] : [new_field, true]);
-        } else {
-            sort.set([new_field, false]);
-        }
-    }
-
     public async loadDomains(limit = 500): Promise<PlaceDomain[]> {
         if (this._domain_list().length) return this._domain_list();
         if (this._domain_request) return this._domain_request;
-        this._loading_domains.set(true);
-        this._domain_error.set(null);
         this._domain_request = queryDomains({ limit })
             .then((response) => response.data || [])
-            .catch((error) => {
-                this._domain_error.set(error);
-                return [] as PlaceDomain[];
-            })
+            .catch(() => [] as PlaceDomain[])
             .then((domains) => {
                 this._domain_list.set(domains);
                 return domains;
             })
             .finally(() => {
-                this._loading_domains.set(false);
                 this._domain_request = null;
             });
         return this._domain_request;
