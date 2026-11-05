@@ -1,11 +1,11 @@
 import {
   authorisedAdminGuard,
   authorisedUserGuard
-} from "./chunk-TA6MYQG4.js";
+} from "./chunk-TUU5Z5CD.js";
 import {
   BackofficeUsersService
-} from "./chunk-BQR7GTXP.js";
-import "./chunk-GR7PR5Q6.js";
+} from "./chunk-G5H4NNFS.js";
+import "./chunk-Y35KTWST.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -14,40 +14,37 @@ import {
   provideRouter,
   withHashLocation,
   withNavigationErrorHandler
-} from "./chunk-WDXKFFYO.js";
+} from "./chunk-2HWH2YE2.js";
 import {
   MatProgressBar
-} from "./chunk-2VSGNNLN.js";
+} from "./chunk-T674EZ22.js";
 import {
   setNotifyOutlet
-} from "./chunk-3SL5US3K.js";
+} from "./chunk-XTVPLVG6.js";
 import {
   SettingsService
-} from "./chunk-GZ3GGYHY.js";
+} from "./chunk-W43UPD5R.js";
 import {
   currentUser
-} from "./chunk-VLLM34JN.js";
+} from "./chunk-GHI5JNAC.js";
 import {
   VERSION
-} from "./chunk-3SXDXCO7.js";
+} from "./chunk-IGJQLGMT.js";
 import {
   AsyncHandler
-} from "./chunk-HASFJPLN.js";
+} from "./chunk-6UTRGHRC.js";
 import {
   signalFromClient,
   waitForSignalValue
-} from "./chunk-7CC5FNME.js";
+} from "./chunk-3VVTXJY2.js";
 import {
   TranslatePipe
-} from "./chunk-4ZLGHXUI.js";
+} from "./chunk-33ALCS4C.js";
 import {
   LocaleService,
   localeFromUrl,
   setTranslationService
-} from "./chunk-XJOCECBM.js";
-import {
-  log
-} from "./chunk-J5ZLUQMI.js";
+} from "./chunk-DIAVKJYC.js";
 import {
   Cn,
   J,
@@ -57,10 +54,13 @@ import {
   io,
   ro
 } from "./chunk-OTGYPXXQ.js";
-import "./chunk-S7Y6NAJI.js";
+import {
+  log
+} from "./chunk-DGKMQHVX.js";
+import "./chunk-MX6FO2VB.js";
 import {
   bootstrapApplication
-} from "./chunk-DKYBNEOC.js";
+} from "./chunk-UAEA3DWF.js";
 import {
   ApplicationRef,
   Component,
@@ -120,7 +120,7 @@ import {
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1
-} from "./chunk-HGOGRFKW.js";
+} from "./chunk-DTROA6L2.js";
 import {
   __spreadValues
 } from "./chunk-RQBZITXC.js";
@@ -696,7 +696,7 @@ async function initSentry(injector, user_id) {
     _queue = null;
     return;
   }
-  const Sentry = await import("./chunk-JVPGHP4X.js");
+  const Sentry = await import("./chunk-7P5ZJT4F.js");
   Sentry.init({
     dsn,
     release: SENTRY_RELEASE,
@@ -817,17 +817,17 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
 // src/app/app.ts
 var AppComponent_Conditional_1_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-X77GXLUR.js").then((m) => m.GlobalBannerComponent)
+  import("./chunk-U6MIWB6F.js").then((m) => m.GlobalBannerComponent)
 ];
 var AppComponent_Conditional_1_Conditional_6_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-ICB4RGLY.js").then((m) => m.UploadListComponent)
+  import("./chunk-EYS4C4M2.js").then((m) => m.UploadListComponent)
 ];
 var AppComponent_Conditional_5_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-WYMOD4BT.js").then((m) => m.IconComponent),
+  import("./chunk-GORI5PSY.js").then((m) => m.IconComponent),
   /* @ts-ignore */
-  import("./chunk-4XIEYITT.js").then((m) => m.MatTooltip)
+  import("./chunk-LCXQCZHC.js").then((m) => m.MatTooltip)
 ];
 function AppComponent_Conditional_1_Defer_0_Template(rf, ctx) {
   if (rf & 1) {
@@ -974,7 +974,7 @@ var AppComponent = class _AppComponent {
         localStorage.setItem("BACKOFFICE.locale", locale);
       }
     });
-    setNotifyOutlet(import("./chunk-LF4XPS3E.js").then(({ MatSnackBar }) => this._injector.get(MatSnackBar)));
+    setNotifyOutlet(import("./chunk-Y4MUEE2N.js").then(({ MatSnackBar }) => this._injector.get(MatSnackBar)));
     setTranslationService(this._locale);
     this.loading.set(true);
     setLoadingMessage("Loading application settings...");
@@ -994,6 +994,7 @@ var AppComponent = class _AppComponent {
     setLoadingMessage("Initialising locales...");
     await this._initLocale();
     this.loading.set(false);
+    document.getElementById("app-splash")?.remove();
     this._router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.simple.set(this._router.url.includes("mqtt"));
@@ -1015,7 +1016,7 @@ var AppComponent = class _AppComponent {
       return;
     const [tenants, { tenantExpiryBanner }] = await Promise.all([
       _("/api/staff/v1/tenants").catch(() => []),
-      import("./chunk-VFNQXQJP.js")
+      import("./chunk-4VXN5GL4.js")
     ]);
     const banner = tenantExpiryBanner(Array.isArray(tenants) ? tenants : []);
     if (banner)
@@ -1059,7 +1060,7 @@ var AppComponent = class _AppComponent {
   static \u0275fac = function AppComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _AppComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], decls: 6, vars: 3, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], ["loader", "", 1, "absolute", "inset-0", "z-50", "flex", "items-center", "justify-center"], ["role", "alert", 1, "bg-error", "text-error-content", "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "px-4", "py-2", "text-xs", "shadow-sm"], [1, "relative", "h-1/2", "w-full", "flex-1"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", "aria-label", "Loading", 1, "scale-150", "rounded"], ["role", "status", "aria-live", "polite", 1, "border-info/30", "bg-base-100", "text-base-content", "fixed", "right-3", "bottom-3", "z-100", "w-88", "max-w-[calc(100vw-2rem)]", "rounded-md", "border", "p-3", "shadow-lg"], [1, "flex", "items-center", "gap-2"], [1, "min-w-0", "flex-1"], [1, "text-sm", "font-medium"], [1, "mt-0.5", "text-xs", "opacity-70"], ["icon", "", "default", "", "type", "button", "matTooltip", "Refresh", "matTooltipPosition", "left", 3, "click"]], template: function AppComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["placeos-root"]], decls: 6, vars: 3, consts: [[1, "flex", "h-full", "w-full", "flex-col", "overflow-hidden"], [1, "absolute", "inset-0", "z-50"], ["role", "alert", 1, "bg-error", "text-error-content", "fixed", "bottom-2", "left-1/2", "z-9999", "-translate-x-1/2", "rounded-3xl", "px-4", "py-2", "text-xs", "shadow-sm"], [1, "relative", "h-1/2", "w-full", "flex-1"], [1, "border-base-300", "absolute", "bottom-2", "left-1/2", "w-[24rem]", "-translate-x-1/2", "overflow-hidden", "rounded-full", "border", "shadow"], ["mode", "indeterminate", "aria-label", "Loading", 1, "scale-150", "rounded"], ["role", "status", "aria-live", "polite", 1, "border-info/30", "bg-base-100", "text-base-content", "fixed", "right-3", "bottom-3", "z-100", "w-88", "max-w-[calc(100vw-2rem)]", "rounded-md", "border", "p-3", "shadow-lg"], [1, "flex", "items-center", "gap-2"], [1, "min-w-0", "flex-1"], [1, "text-sm", "font-medium"], [1, "mt-0.5", "text-xs", "opacity-70"], ["icon", "", "default", "", "type", "button", "matTooltip", "Refresh", "matTooltipPosition", "left", 3, "click"]], template: function AppComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0);
       \u0275\u0275conditionalCreate(1, AppComponent_Conditional_1_Template, 7, 1)(2, AppComponent_Conditional_2_Template, 3, 0, "div", 1);
@@ -1080,22 +1081,24 @@ var AppComponent = class _AppComponent {
     RouterOutlet,
     MatProgressBar,
     GlobalLoadingComponent
-  ], styles: ["\n[loader][_ngcontent-%COMP%] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=app.css.map */"] });
+  ], encapsulation: 2 });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadataAsync(AppComponent, () => [
     /* @ts-ignore */
-    import("./chunk-X77GXLUR.js").then((m) => m.GlobalBannerComponent),
+    import("./chunk-U6MIWB6F.js").then((m) => m.GlobalBannerComponent),
     /* @ts-ignore */
-    import("./chunk-ICB4RGLY.js").then((m) => m.UploadListComponent),
+    import("./chunk-EYS4C4M2.js").then((m) => m.UploadListComponent),
     /* @ts-ignore */
-    import("./chunk-WYMOD4BT.js").then((m) => m.IconComponent),
+    import("./chunk-GORI5PSY.js").then((m) => m.IconComponent),
     /* @ts-ignore */
-    import("./chunk-4XIEYITT.js").then((m) => m.MatTooltip)
+    import("./chunk-LCXQCZHC.js").then((m) => m.MatTooltip)
   ], (GlobalBannerComponent, UploadListComponent, IconComponent, MatTooltip) => {
     setClassMetadata(AppComponent, [{
       type: Component,
-      args: [{ selector: "placeos-root", template: `
+      args: [{
+        selector: "placeos-root",
+        template: `
         <div class="flex h-full w-full flex-col overflow-hidden">
             @if (!loading()) {
                 <!--
@@ -1115,10 +1118,8 @@ var AppComponent = class _AppComponent {
                     } @error {}
                 }
             } @else {
-                <div
-                    loader
-                    class="absolute inset-0 z-50 flex items-center justify-center"
-                >
+                <!-- The splash from index.html shows behind the progress bar -->
+                <div class="absolute inset-0 z-50">
                     <div
                         class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
                     >
@@ -1172,20 +1173,22 @@ var AppComponent = class _AppComponent {
                 </section>
             } @error {}
         }
-    `, imports: [
-        GlobalBannerComponent,
-        RouterOutlet,
-        UploadListComponent,
-        MatProgressBar,
-        GlobalLoadingComponent,
-        IconComponent,
-        MatTooltip
-      ], styles: ["/* angular:styles/component:css;fee6cccbb2295ae2;/home/runner/work/backoffice/backoffice/src/app/app.ts */\n[loader] {\n  background-image:\n    linear-gradient(\n      to right,\n      #c62828 0%,\n      #ef5350 100%);\n}\n/*# sourceMappingURL=app.css.map */\n"] }]
+    `,
+        imports: [
+          GlobalBannerComponent,
+          RouterOutlet,
+          UploadListComponent,
+          MatProgressBar,
+          GlobalLoadingComponent,
+          IconComponent,
+          MatTooltip
+        ]
+      }]
     }], null, null);
   });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 159 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 146 });
 })();
 
 // src/app/ui/unauthorised.component.ts
@@ -1252,55 +1255,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-YFY6DH4K.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-LWLQHKNK.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-DURQ6K3I.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IXLQ6LFT.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-CUXF657O.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-EE2I7YZQ.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-IOJLTNUA.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-5YJWODU6.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-CXSPORKS.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-NW772GOB.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-ALTDZVR2.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YIIF55CC.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-K4C4U7B6.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-ZQQBW3RF.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-D2D6XZKB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-TT74E7RR.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-GLHNU3Y5.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-K6H333HK.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-Y2W5VZ2I.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-KT4H4R5V.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -1329,12 +1332,12 @@ var appConfig = {
 var is_mock = location.href.includes("mock=true") || localStorage.getItem("BACKOFFICE.mock") === "true";
 var bootstrap = async () => {
   if (is_mock) {
-    await import("./chunk-B2ANYOT7.js");
+    await import("./chunk-3JHIWCEH.js");
   }
   bootstrapApplication(AppComponent, appConfig).catch(
     (err) => console.error(err)
   );
 };
 bootstrap();
-//# debugId=927c9b06-d259-54ef-9772-d22721e75a34
+//# debugId=449e3cf4-f06b-5a61-81b5-96b785883eeb
 //# sourceMappingURL=main.js.map

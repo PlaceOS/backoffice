@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/pipes/safe.pipe.ts"
+  ],
+  "sourcesContent": [
+    "import { Pipe, PipeTransform, inject } from '@angular/core';\nimport {\n    DomSanitizer,\n    SafeResourceUrl,\n    SafeUrl,\n} from '@angular/platform-browser';\n\n@Pipe({\n    name: 'safe',\n})\nexport class SafePipe implements PipeTransform {\n    private sanitizer = inject(DomSanitizer);\n\n    /**\n     * Sanitizes the string allowing it to be injected into a template\n     * @param value String to sanitize\n     * @param type Type of value to trust. `resource` or `url`\n     */\n    public transform(\n        value: string,\n        type: 'resource' | 'url',\n    ): SafeResourceUrl | SafeUrl {\n        return type === 'resource'\n            ? this.sanitizer.bypassSecurityTrustResourceUrl(value)\n            : this.sanitizer.bypassSecurityTrustUrl(value);\n    }\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;AAUM,IAAO,WAAP,MAAO,UAAiC;EAClC,YAAY,OAAO,YAAY;;;;;;EAOhC,UACH,OACA,MACwB;AACxB,WAAO,SAAS,aACV,KAAK,UAAU,+BAA+B,KAAK,IACnD,KAAK,UAAU,uBAAuB,KAAK;EACrD;;qCAfS,WAAQ;EAAA;mFAAR,WAAQ,MAAA,KAAA,CAAA;;;sEAAR,UAAQ,CAAA;UAHpB;WAAK;MACF,MAAM;KACT;;;",
+  "names": [],
+  "debugId": "e9954c93-4314-555d-80f7-2f22107673f9"
+}

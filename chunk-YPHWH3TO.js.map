@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/dialog-title.directive.ts"
+  ],
+  "sourcesContent": [
+    "import { Directive, inject, OnDestroy, OnInit } from '@angular/core';\nimport { MatDialogRef } from '@angular/material/dialog';\n\nlet next_id = 0;\n\n/**\n * Use the element as the accessible name of the dialog it is in.\n * Put it on the dialog heading. It does the same as `mat-dialog-title`\n * without the Material title styles. Outside a dialog it does nothing.\n */\n@Directive({\n    selector: '[appDialogTitle]',\n    host: { '[id]': 'id' },\n})\nexport class DialogTitleDirective implements OnInit, OnDestroy {\n    public readonly id = `app-dialog-title-${next_id++}`;\n    private readonly _container = inject(MatDialogRef, { optional: true })\n        ?._containerInstance;\n\n    // Deferred like MatDialogTitle, so the dialog's host binding does not\n    // change while it is being checked\n    public ngOnInit() {\n        Promise.resolve().then(() =>\n            this._container?._addAriaLabelledBy(this.id),\n        );\n    }\n\n    public ngOnDestroy() {\n        Promise.resolve().then(() =>\n            this._container?._removeAriaLabelledBy(this.id),\n        );\n    }\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;;AAGA,IAAI,UAAU;AAWR,IAAO,uBAAP,MAAO,sBAAiD;EAC1C,KAAK,oBAAoB,SAAS;EACjC,aAAa,OAAO,cAAc,EAAE,UAAU,KAAI,CAAE,GAC/D;;;EAIC,WAAQ;AACX,YAAQ,QAAO,EAAG,KAAK,MACnB,KAAK,YAAY,mBAAmB,KAAK,EAAE,CAAC;EAEpD;EAEO,cAAW;AACd,YAAQ,QAAO,EAAG,KAAK,MACnB,KAAK,YAAY,sBAAsB,KAAK,EAAE,CAAC;EAEvD;;qCAjBS,uBAAoB;EAAA;yEAApB,uBAAoB,WAAA,CAAA,CAAA,IAAA,kBAAA,EAAA,CAAA,GAAA,UAAA,GAAA,cAAA,SAAA,kCAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAApB,MAAA,wBAAA,MAAA,IAAA,EAAA;;;;;sEAAA,sBAAoB,CAAA;UAJhC;WAAU;MACP,UAAU;MACV,MAAM,EAAE,QAAQ,KAAI;KACvB;;;",
+  "names": [],
+  "debugId": "51e40ee3-f9bd-5711-bc97-3a6e785c177f"
+}
