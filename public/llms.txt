@@ -1,0 +1,21 @@
+# PlaceOS Backoffice
+
+> Backoffice is the administration app of PlaceOS, a building automation platform. Administrators use it to manage the systems, modules, drivers, zones, triggers, domains and users of a PlaceOS instance. All pages need a PlaceOS account with admin or support access.
+
+The app has no public content. Use the documentation and the API references below to learn about PlaceOS and Backoffice.
+
+## Documentation
+
+- [Backoffice overview](https://docs.placeos.com/placeos/overview/backoffice/): What Backoffice is and what each section does
+- [PlaceOS overview](https://docs.placeos.com/placeos/overview/): The parts of PlaceOS and how they connect
+- [Add a domain](https://docs.placeos.com/placeos/how-to/backoffice/add-domain/): Set up a new domain in Backoffice
+- [PlaceOS reference](https://docs.placeos.com/placeos/reference/): Reference material for PlaceOS
+
+## API
+
+- [PlaceOS REST API](https://placeos.github.io/rest-api-swagger-ui/): The engine API that Backoffice uses
+- [Staff API](https://placeos.github.io/staff-api-swagger-ui/): The API for bookings, events and staff
+
+## Optional
+
+- [Source code](https://github.com/PlaceOS/backoffice): The Backoffice repository on GitHub

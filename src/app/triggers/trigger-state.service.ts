@@ -1,4 +1,3 @@
-import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Service, computed, inject, resource, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -16,7 +15,7 @@ import {
 } from '@placeos/ts-client';
 
 import { describeError } from '../common/errors';
-import { escapeHtml } from '../common/general';
+import { escapeHtml, moveItemInArray } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';

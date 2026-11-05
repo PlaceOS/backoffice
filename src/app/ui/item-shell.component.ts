@@ -2,6 +2,7 @@ import {
     booleanAttribute,
     Component,
     computed,
+    DestroyRef,
     inject,
     input,
     signal,
@@ -15,16 +16,30 @@ import { ActiveItemService } from '../common/item.service';
 import { DebugOutputComponent } from './debug-output.component';
 import { IconComponent } from './icon.component';
 import { ItemDetailsSkeletonComponent } from './item-details-skeleton.component';
-import {
-    DisplayItem,
-    ItemAction,
-    ItemDetailsComponent,
-} from './item-details.component';
+import type { DisplayItem, ItemAction } from './item-details.component';
+import { ItemDetailsComponent } from './item-details.component';
 import { ItemSelectionComponent } from './item-selection.component';
 import { ItemSidebarComponent } from './item-sidebar.component';
-import { ItemTab, ItemTablistComponent } from './item-tablist.component';
+import type { ItemTab } from './item-tablist.component';
+import { ItemTablistComponent } from './item-tablist.component';
 import { SidebarMenuComponent } from './sidebar-menu.component';
 import { TranslatePipe } from './translate.pipe';
+
+/** Tailwind `lg` breakpoint, where the item list moves to the sidebar */
+const LARGE_SCREEN = '(min-width: 64rem)';
+
+/** Signal of whether a CSS media query matches. Call in an injection context. */
+function mediaQuery(query: string) {
+    // jsdom has no matchMedia
+    const media = window.matchMedia?.(query);
+    const matches = signal(!!media?.matches);
+    const update = () => matches.set(!!media?.matches);
+    media?.addEventListener('change', update);
+    inject(DestroyRef).onDestroy(() =>
+        media?.removeEventListener('change', update),
+    );
+    return matches.asReadonly();
+}
 
 /**
  * Page layout for an item feature: main menu, item list, details header,
@@ -39,12 +54,20 @@ import { TranslatePipe } from './translate.pipe';
             <sidebar-menu [(open)]="open_menu" class="sm:h-full" />
             <div class="flex h-full w-px flex-1 flex-col overflow-hidden">
                 <div class="flex h-px flex-1">
-                    <item-sidebar
-                        class="hidden lg:block"
-                        [route]="name()"
-                        [title]="i18n_key() + '.PLURAL' | translate"
-                        [filter_options]="filter_options()"
-                    />
+                    <!-- Small screens show the list in item-selection, so do not load this -->
+                    @defer (when large_screen()) {
+                        <item-sidebar
+                            class="hidden lg:block"
+                            [route]="name()"
+                            [title]="i18n_key() + '.PLURAL' | translate"
+                            [filter_options]="filter_options()"
+                        />
+                    } @loading {
+                        <!-- Same size as the sidebar, so the page does not move when it loads -->
+                        <div
+                            class="border-base-200 bg-base-100 hidden h-full w-[24rem] max-w-[25vw] min-w-64 rounded-sm shadow-sm sm:border-r lg:block"
+                        ></div>
+                    }
                     <main
                         id="main-content"
                         tabindex="-1"
@@ -69,32 +92,37 @@ import { TranslatePipe } from './translate.pipe';
                             @if (loading()) {
                                 <item-details-skeleton />
                             } @else if (display_item()?.id) {
-                                <item-details
-                                    [item]="display_item()"
-                                    [extra_actions]="extra_actions()"
-                                    [type]="
-                                        i18n_key() + '.SINGULAR' | translate
-                                    "
-                                />
-                                <item-tablist
-                                    [base]="name()"
-                                    [panel]="tab_panel"
-                                    [tabs]="tabs()"
-                                    [scrolled]="scroll() > 0"
-                                    class="z-10"
-                                />
-                                <div
-                                    #el
-                                    class="relative z-0 h-1/2 w-full flex-1 overflow-auto"
-                                    (scroll)="scroll.set(el.scrollTop)"
-                                >
-                                    <mat-tab-nav-panel
-                                        #tab_panel
-                                        class="block h-full"
+                                <!-- Tabs and menus load once an item shows -->
+                                @defer (on immediate) {
+                                    <item-details
+                                        [item]="display_item()"
+                                        [extra_actions]="extra_actions()"
+                                        [type]="
+                                            i18n_key() + '.SINGULAR' | translate
+                                        "
+                                    />
+                                    <item-tablist
+                                        [base]="name()"
+                                        [panel]="tab_panel"
+                                        [tabs]="tabs()"
+                                        [scrolled]="scroll() > 0"
+                                        class="z-10"
+                                    />
+                                    <div
+                                        #el
+                                        class="relative z-0 h-1/2 w-full flex-1 overflow-auto"
+                                        (scroll)="scroll.set(el.scrollTop)"
                                     >
-                                        <router-outlet />
-                                    </mat-tab-nav-panel>
-                                </div>
+                                        <mat-tab-nav-panel
+                                            #tab_panel
+                                            class="block h-full"
+                                        >
+                                            <router-outlet />
+                                        </mat-tab-nav-panel>
+                                    </div>
+                                } @placeholder {
+                                    <item-details-skeleton />
+                                }
                             }
                         </div>
                         <button
@@ -166,6 +194,7 @@ export class ItemShellComponent {
     public readonly debug = input(false, { transform: booleanAttribute });
 
     public readonly open_menu = signal(false);
+    public readonly large_screen = mediaQuery(LARGE_SCREEN);
     public readonly scroll = signal(0);
     public readonly loading = this._service.loading;
     public readonly display_item = computed(

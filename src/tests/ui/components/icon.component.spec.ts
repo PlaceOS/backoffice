@@ -159,4 +159,29 @@ describe('IconComponent', () => {
             ).toBe('true');
         });
     });
+
+    describe('subset font', () => {
+        @Component({
+            imports: [IconComponent],
+            template: `
+                <icon>add</icon>
+                <icon>10mp</icon>
+                <icon className="material-symbols-outlined">10mp</icon>
+            `,
+        })
+        class TestFontsComponent {}
+
+        it('uses the full font only for names that are not in the subset', async () => {
+            const host = TestBed.createComponent(TestFontsComponent);
+            host.detectChanges();
+            await host.whenStable();
+            const [in_subset, not_in_subset, other_font] = [
+                ...host.nativeElement.querySelectorAll('i'),
+            ];
+            expect(in_subset.hasAttribute('data-full')).toBe(false);
+            expect(not_in_subset.hasAttribute('data-full')).toBe(true);
+            // Only the rounded font has a subset
+            expect(other_font.hasAttribute('data-full')).toBe(false);
+        });
+    });
 });

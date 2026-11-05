@@ -88,7 +88,7 @@ export class DiffViewerComponent
         this._editor = monaco.editor.createDiffEditor(
             this._editor_el().nativeElement,
             {
-                fontFamily: `"Fira Code", monospace`,
+                fontFamily: `"Fira Code Variable", monospace`,
                 theme: !this._users.dark_mode ? 'vs' : 'vs-dark',
                 readOnly: true,
                 // Monaco watches the container size, so resizes need no rebuild

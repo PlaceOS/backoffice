@@ -40,7 +40,7 @@
         'Roboto Variable', 'Roboto', 'Verdana', 'Helvetica Neue', Arial,
         sans-serif;
     --heading-font: 'Young', var(--font);
-    --mono-font: 'Fira Code', monospace;
+    --mono-font: 'Fira Code Variable', monospace;
 
     /* Brand */
     --brand-100: hsl(336, 57%, 48%); /* #C52B67 */
@@ -221,7 +221,7 @@ span.highlight {
 }
 
 .mono {
-    font-family: 'Fira Code', monospace;
+    font-family: 'Fira Code Variable', monospace;
 }
 
 @keyframes crossfade {
@@ -321,7 +321,7 @@ span.highlight {
     }
 
     code {
-        font-family: 'Fira Code', monospace;
+        font-family: 'Fira Code Variable', monospace;
         white-space: inherit; /* ensures consistency */
         font-size: 0.8em;
     }
@@ -545,7 +545,7 @@ span.highlight {
 }
 
 .mono {
-    font-family: 'Fira Code', monospace;
+    font-family: 'Fira Code Variable', monospace;
 }
 
 @keyframes crossfade {
@@ -644,7 +644,7 @@ span.highlight {
     }
 
     code {
-        font-family: 'Fira Code', monospace;
+        font-family: 'Fira Code Variable', monospace;
         white-space: inherit; /* ensures consistency */
     }
 }

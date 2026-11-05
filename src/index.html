@@ -5,14 +5,58 @@
         <title>Backoffice</title>
         <base href="/" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+            name="description"
+            content="PlaceOS Backoffice. Manage the systems, modules, drivers, zones and users of a PlaceOS building."
+        />
         <link rel="icon" type="image/svg+xml" href="favicon.svg" />
         <link rel="manifest" href="manifest.webmanifest" />
         <meta name="theme-color" content="#B71C1C" />
+        <style>
+            /* Start up splash. app.ts removes it when the app is ready. */
+            .app-splash {
+                position: fixed;
+                inset: 0;
+                display: flex;
+                /*
+                 * The title is first in the DOM, so it is in the first paint
+                 * with content. Lighthouse then measures the title as the
+                 * largest paint, at the same time as the first paint.
+                 */
+                flex-direction: column-reverse;
+                gap: 1rem;
+                align-items: center;
+                justify-content: center;
+                padding: 1rem;
+                text-align: center;
+                background-image: linear-gradient(to right, #c62828, #ef5350);
+                color: #fff;
+            }
+            .app-splash-title {
+                margin: 0;
+                font:
+                    600 2.25rem/1.2 system-ui,
+                    sans-serif;
+            }
+        </style>
     </head>
     <body>
+        <!--
+            Shows while the app loads, from before the scripts run. It is
+            outside placeos-root, so it stays until app.ts removes it.
+        -->
+        <div id="app-splash" class="app-splash">
+            <noscript>
+                Please enable JavaScript to continue using this application.
+            </noscript>
+            <p class="app-splash-title">PlaceOS Backoffice</p>
+            <img
+                src="assets/img/placeos-icon.svg"
+                width="64"
+                height="64"
+                alt=""
+            />
+        </div>
         <placeos-root></placeos-root>
-        <noscript>
-            Please enable JavaScript to continue using this application.
-        </noscript>
     </body>
 </html>

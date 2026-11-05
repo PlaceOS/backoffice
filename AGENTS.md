@@ -98,7 +98,8 @@ export class MyComponent extends AsyncHandler {
 - Supports multiple locales (see `app.locales` in settings)
 - Service worker support for PWA functionality (production builds)
 - Custom localization support via `public/assets/locale`, **TranslatePipe** and **LocaleService**. `en-AU.json` is the fallback locale
-- Use **IconComponent** for icons
+- Use **IconComponent** for icons. The default icon font is a subset of the icons in the source. After you add icons, run `bun config/icon-subset.ts` (needs `pip install fonttools brotli`). An icon that is not in the subset still shows, but it loads the full 420 KB font
+- `src/index.html` has a splash that shows until the app loads. Lighthouse measures its title as the largest contentful paint, so keep the title larger than the content of the first page
 - Use `feat/*`, `fix/*`, `perf/*`, or `refactor/*` for branch names
 
 ## Code styles

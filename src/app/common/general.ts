@@ -59,6 +59,19 @@ export function getItemWithKeys(
 }
 
 /**
+ * Move an array item from one index to another, in place.
+ * Same as `moveItemInArray` in `@angular/cdk/drag-drop`. State services use
+ * this copy, so pages that use them do not load the drag and drop code.
+ */
+export function moveItemInArray<T>(array: T[], from: number, to: number) {
+    const clamp = (i: number) => Math.max(0, Math.min(i, array.length - 1));
+    from = clamp(from);
+    to = clamp(to);
+    if (from === to) return;
+    array.splice(to, 0, ...array.splice(from, 1));
+}
+
+/**
  * Remove duplicates from the given array
  * @param array List of items to remove duplicates from
  * @param key Key on array objects to compare for uniqueness

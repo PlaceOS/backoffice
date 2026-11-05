@@ -47,7 +47,7 @@
                     "./node_modules/@fontsource-variable/roboto/index.css",
                     "./node_modules/@fontsource-variable/roboto/wght-italic.css",
                     "./src/fonts/material-symbols.css",
-                    "./node_modules/firacode/distr/fira_code.css",
+                    "./node_modules/@fontsource-variable/fira-code/index.css",
                     "./src/styles.css",
                     "./src/material-theme.scss"
                 ]
