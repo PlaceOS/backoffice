@@ -98,7 +98,7 @@ export class BasicLineGraphComponent {
         }
         ctx.setLineDash([]);
         // Draw Y-Axis Labels
-        ctx.font = '20px Fira Code';
+        ctx.font = '20px "Fira Code Variable"';
         ctx.fillStyle = color;
         ctx.fillText('50%', -4, (height - axis_start.y) / 2 + 8);
         ctx.fillText('100%', -12, 8);

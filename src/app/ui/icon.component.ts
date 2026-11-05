@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ApplicationIcon } from '../common/types';
+import { ICON_SUBSET } from './icon-subset';
 import { SafePipe } from './pipes/safe.pipe';
 
 /** Text of an element, leaving out the names of any icons inside it */
@@ -59,6 +60,21 @@ export class IconComponent {
 
     constructor() {
         afterNextRender(() => this._labelControl());
+        afterEveryRender(() => this._useFullFont());
+    }
+
+    /**
+     * The default icon font is a subset. Projected names are only known
+     * after render, so check the rendered name and use the full font for
+     * names that are not in the subset.
+     */
+    private _useFullFont() {
+        const glyph = this._element.nativeElement.querySelector('i');
+        if (!glyph?.classList.contains('material-symbols-rounded')) return;
+        const full = !ICON_SUBSET.has(glyph.textContent.trim());
+        if (glyph.hasAttribute('data-full') !== full) {
+            glyph.toggleAttribute('data-full', full);
+        }
     }
 
     /**

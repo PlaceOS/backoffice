@@ -176,16 +176,24 @@ import { SystemStateService } from './system-state.service';
             }
             <hr class="text-base-300 my-4" />
             @let other_settings_value = other_settings();
-            @if (item()?.settings && other_settings_value) {
-                <section>
-                    <a-settings-form
-                        [id]="item()?.id"
-                        [merge]="true"
-                        [settings]="item()?.settings"
-                        [merge_settings]="other_settings_value || []"
-                    />
-                </section>
-            } @else {
+            <!-- The settings editor is large, so it loads with the settings -->
+            @defer (on immediate) {
+                @if (item()?.settings && other_settings_value) {
+                    <section>
+                        <a-settings-form
+                            [id]="item()?.id"
+                            [merge]="true"
+                            [settings]="item()?.settings"
+                            [merge_settings]="other_settings_value || []"
+                        />
+                    </section>
+                } @else {
+                    <div class="flex flex-col items-center justify-center p-8">
+                        <mat-spinner class="mb-4" [diameter]="32" />
+                        <p>{{ 'SYSTEMS.LOADING_SETTINGS' | translate }}</p>
+                    </div>
+                }
+            } @placeholder {
                 <div class="flex flex-col items-center justify-center p-8">
                     <mat-spinner class="mb-4" [diameter]="32" />
                     <p>{{ 'SYSTEMS.LOADING_SETTINGS' | translate }}</p>

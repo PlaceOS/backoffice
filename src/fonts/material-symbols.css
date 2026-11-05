@@ -23,8 +23,20 @@
     font-feature-settings: 'liga';
 }
 
+/*
+ * The default face is a subset with the icons the app uses
+ * (see config/icon-subset.ts). IconComponent sets [data-full] on icons that
+ * are not in the subset, which loads the full font only when it is needed.
+ */
 @font-face {
     font-family: 'Material Symbols Rounded';
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url('./material-symbols-rounded-subset.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Material Symbols Rounded Full';
     font-style: normal;
     font-weight: 400;
     font-display: block;
@@ -46,6 +58,9 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     font-feature-settings: 'liga';
+}
+.material-symbols-rounded[data-full] {
+    font-family: 'Material Symbols Rounded Full';
 }
 
 @font-face {

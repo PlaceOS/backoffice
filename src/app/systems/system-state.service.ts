@@ -1,4 +1,3 @@
-import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { computed, inject, resource, Service, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -30,7 +29,7 @@ import {
 import { calculateModuleIndex } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
-import { escapeHtml, unique } from '../common/general';
+import { escapeHtml, moveItemInArray, unique } from '../common/general';
 import { openedTabs } from '../common/opened-tabs';
 import {
     isSubsystemUser,
@@ -43,16 +42,18 @@ import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForDialog } from '../common/signals';
 import { HashMap, Identity } from '../common/types';
-import {
-    ConfirmModalData,
-    openConfirmModal,
-} from '../overlays/confirm-modal.component';
-import {
+// Modals load on demand to keep them out of the first page load
+import type { ConfirmModalData } from '../overlays/confirm-modal.component';
+import type {
     SelectItemModalComponent,
     SelectItemModalData,
 } from '../overlays/select-item-modal.component';
-import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
-import { SystemTriggerFormComponent } from './system-trigger-form.component';
+
+/** Load the item picker modal */
+async function selectItemModal() {
+    const m = await import('../overlays/select-item-modal.component');
+    return m.SelectItemModalComponent;
+}
 
 @Service()
 export class SystemStateService extends AsyncHandler {
@@ -394,7 +395,7 @@ export class SystemStateService extends AsyncHandler {
         const ref = this._dialog.open<
             SelectItemModalComponent,
             SelectItemModalData
-        >(SelectItemModalComponent, {
+        >(await selectItemModal(), {
             data: {
                 service_name: 'module to system',
                 query_fn: (_) =>
@@ -431,7 +432,7 @@ export class SystemStateService extends AsyncHandler {
         const ref = this._dialog.open<
             SelectItemModalComponent,
             SelectItemModalData
-        >(SelectItemModalComponent, {
+        >(await selectItemModal(), {
             data: {
                 service_name: 'Triggers',
                 query_fn: (_) =>
@@ -466,6 +467,9 @@ export class SystemStateService extends AsyncHandler {
 
     public async editTrigger(trigger: PlaceTrigger) {
         if (this.item() && trigger) {
+            const { SystemTriggerFormComponent } = await import(
+                './system-trigger-form.component'
+            );
             const ref = this._dialog.open(SystemTriggerFormComponent, {
                 data: {
                     item: trigger,
@@ -776,16 +780,17 @@ export class SystemStateService extends AsyncHandler {
     }
 
     /** View Results of the execute */
-    private viewDetails(content: unknown) {
-        this._dialog.open<ViewResponseModalComponent>(
-            ViewResponseModalComponent,
-            {
-                data: { content },
-            },
+    private async viewDetails(content: unknown) {
+        const { ViewResponseModalComponent } = await import(
+            '../overlays/view-response-modal.component'
         );
+        this._dialog.open(ViewResponseModalComponent, { data: { content } });
     }
 
     private async confirm(data: ConfirmModalData) {
+        const { openConfirmModal } = await import(
+            '../overlays/confirm-modal.component'
+        );
         return openConfirmModal(data, this._dialog);
     }
 

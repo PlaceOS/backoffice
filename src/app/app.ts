@@ -77,10 +77,8 @@ function browserOnline() {
                     } @error {}
                 }
             } @else {
-                <div
-                    loader
-                    class="absolute inset-0 z-50 flex items-center justify-center"
-                >
+                <!-- The splash from index.html shows behind the progress bar -->
+                <div class="absolute inset-0 z-50">
                     <div
                         class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
                     >
@@ -135,17 +133,6 @@ function browserOnline() {
             } @error {}
         }
     `,
-    styles: [
-        `
-            [loader] {
-                background-image: linear-gradient(
-                    to right,
-                    #c62828 0%,
-                    #ef5350 100%
-                );
-            }
-        `,
-    ],
     imports: [
         GlobalBannerComponent,
         RouterOutlet,
@@ -228,6 +215,10 @@ export class AppComponent implements OnInit {
         // TranslatePipe is pure, so load translations before the shell renders
         await this._initLocale();
         this.loading.set(false);
+        // Remove it late. Chrome does not record the paint of an element
+        // removed soon after it shows, which makes it miss the splash as
+        // the largest contentful paint.
+        document.getElementById('app-splash')?.remove();
         this._router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.simple.set(this._router.url.includes('mqtt'));

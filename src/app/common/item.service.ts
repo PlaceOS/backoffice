@@ -17,13 +17,11 @@ import {
     HashMap,
     Identity,
 } from '../common/types';
-import { BulkItemModalComponent } from '../overlays/bulk-item-modal/bulk-item-modal.component';
-import {
-    CONFIRM_METADATA,
+// Modals load on demand to keep them out of the first page load
+import type {
     ConfirmModalComponent,
     ConfirmModalData,
 } from '../overlays/confirm-modal.component';
-import { DuplicateModalComponent } from '../overlays/duplicate-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
 import { ACTIONS, ItemActions } from './actions';
 import { AsyncHandler } from './async-handler.class';
@@ -302,9 +300,12 @@ export class ActiveItemService extends AsyncHandler {
         );
     }
 
-    public bulkAdd() {
+    public async bulkAdd() {
         if (!this.canMutate(2)) return;
         const actions = this.actions;
+        const { BulkItemModalComponent } = await import(
+            '../overlays/bulk-item-modal/bulk-item-modal.component'
+        );
         this._settings.post('disable_uploads', true);
         const ref = this._dialog.open(BulkItemModalComponent, {
             height: 'auto',
@@ -383,6 +384,9 @@ export class ActiveItemService extends AsyncHandler {
         // Resolved lazily, only if the user enables the option — a cascade
         // plan walks the whole zone subtree, which is not free.
         let plan: CascadePlan | null = null;
+        const { CONFIRM_METADATA, ConfirmModalComponent } = await import(
+            '../overlays/confirm-modal.component'
+        );
         const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
             ConfirmModalComponent,
             {
@@ -591,10 +595,13 @@ export class ActiveItemService extends AsyncHandler {
             });
     }
 
-    public duplicate() {
+    public async duplicate() {
         if (!this.canCopy(true)) return;
         const item = this._active_item();
         if (item) {
+            const { DuplicateModalComponent } = await import(
+                '../overlays/duplicate-modal.component'
+            );
             const ref = this._dialog.open(DuplicateModalComponent, {
                 data: {
                     item: item as PlaceResource,

@@ -237,7 +237,7 @@ export class SettingsFieldComponent
             this.editor = monaco.editor.create(element.nativeElement, {
                 value: this.settings_string || '',
                 language: this.lang() || 'yaml',
-                fontFamily: `"Fira Code", monospace`,
+                fontFamily: `"Fira Code Variable", monospace`,
                 lineNumbers: 'on',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
