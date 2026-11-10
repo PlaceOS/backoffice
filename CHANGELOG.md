@@ -30,6 +30,11 @@ All notable changes to this project will be documented in this file.
 
 - Load admin tabs and reply to all frame requests
 
+#### Mocks
+
+- Mock every endpoint the app calls and keep changes for the session
+- Make mock IDs and secrets with the crypto API
+
 #### Monaco
 
 - Stop reporting worker load errors after an editor closes
