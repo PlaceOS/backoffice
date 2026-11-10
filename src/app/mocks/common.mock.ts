@@ -103,15 +103,13 @@ const AVAILABLE_CHARS =
 export type FilterFn<T> = (item: T, query: HashMap) => boolean;
 
 /**
- * Generate an ID with length
+ * Generate an ID with length. Uses the crypto API, as mock keys and
+ * secrets are made with it too
  * @param length Length of the ID
  */
 export function generateID(length = 12, chars: string[] = AVAILABLE_CHARS) {
-    let id = '';
-    while (id.length < length) {
-        id += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return id;
+    const values = crypto.getRandomValues(new Uint32Array(length));
+    return Array.from(values, (value) => chars[value % chars.length]).join('');
 }
 
 /** Current time in seconds, which is what the API uses for timestamps */
