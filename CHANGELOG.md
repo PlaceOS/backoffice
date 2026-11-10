@@ -26,6 +26,10 @@ All notable changes to this project will be documented in this file.
 - Use node fs in the version script
 - Stop the @layer polyfill overriding Material styles
 
+#### Ci
+
+- Demo site deploys once a day, and build branches stop failing on Vercel
+
 #### Extensions
 
 - Load admin tabs and reply to all frame requests
