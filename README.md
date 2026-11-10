@@ -74,6 +74,15 @@ uses hash-based routing and enables its service worker only in production.
 Backoffice sends errors to Sentry. See [`docs/sentry.md`](docs/sentry.md) to
 set the DSN for a domain and to set up source map uploads.
 
+## Demo site
+
+The `backoffice` Vercel project serves [backoffice.demo.place.tech](https://backoffice.demo.place.tech/). Vercel deploys only the `backoffice-demo` branch. The Vercel team can create a limited number of deployments each day, and Vercel counts failed and canceled deployments too. Thus, other branches must not create Vercel deployments:
+
+- `vercel.json` turns off Vercel deployments for all branches except `backoffice-demo`.
+- The `BUILD` workflow adds a `vercel.json` that turns off Vercel deployments to each `build/*` branch commit. Vercel reads `vercel.json` from the pushed commit, and build branches do not contain the root file.
+
+The `Demo Site` workflow moves `backoffice-demo` to `develop` once per day (17:00 UTC), if `develop` changed. To update the site now, run the workflow manually. Do not push to `backoffice-demo` directly.
+
 ## Stack
 
 - Angular 22 and Angular Material
