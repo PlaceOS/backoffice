@@ -1,5 +1,11 @@
+import { registerMockEndpoint } from '@placeos/ts-client';
 import { HashMap } from '../../common/types';
-import { API, endpointData, generateBasicHandlers } from '../common.mock';
+import {
+    API,
+    endpointData,
+    generateBasicHandlers,
+    notFound,
+} from '../common.mock';
 import { ZONES as ZONE_DATA } from '../data/zones';
 
 const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
@@ -34,5 +40,35 @@ const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
     return match;
 };
 
-/** Add basic API handlers for systems */
-generateBasicHandlers(`${API}/zones`, ZONE_DATA, FILTER_FN);
+/** Tags used by the zones. Registered before `zones/:id` */
+registerMockEndpoint({
+    path: `${API}/zones/tags`,
+    method: 'GET',
+    callback: () =>
+        [
+            ...new Set(
+                endpointData(`${API}/zones`).flatMap((zone) => zone.tags || []),
+            ),
+        ].sort(),
+});
+
+/** Add basic API handlers for zones */
+generateBasicHandlers(`${API}/zones`, ZONE_DATA, {
+    filter: FILTER_FN,
+    id_prefix: 'zone-',
+});
+
+/** Triggers added to the zone */
+registerMockEndpoint({
+    path: `${API}/zones/:id/triggers`,
+    method: 'GET',
+    callback: (event) => {
+        const zone =
+            endpointData(`${API}/zones`).find(
+                ({ id }) => id === event.route_params.id,
+            ) || notFound('Zone');
+        return endpointData(`${API}/triggers`).filter(({ id }) =>
+            (zone.triggers || []).includes(id),
+        );
+    },
+});

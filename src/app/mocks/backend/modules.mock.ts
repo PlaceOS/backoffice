@@ -1,9 +1,12 @@
-import {
-    MockHttpRequestHandler,
-    registerMockEndpoint,
-} from '@placeos/ts-client';
+import { registerMockEndpoint } from '@placeos/ts-client';
 import { HashMap } from '../../common/types';
-import { API, endpointData, generateBasicHandlers } from '../common.mock';
+import {
+    API,
+    endpointData,
+    generateBasicHandlers,
+    notFound,
+    updateItem,
+} from '../common.mock';
 import { MODULES as MODULE_DATA } from '../data/modules';
 
 const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
@@ -34,72 +37,79 @@ const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
 };
 
 /** Add basic API handlers for modules */
-generateBasicHandlers(`${API}/modules`, MODULE_DATA, FILTER_FN);
+generateBasicHandlers(`${API}/modules`, MODULE_DATA, {
+    filter: FILTER_FN,
+    id_prefix: 'mod-',
+});
 
-/** Add handler for starting a module */
 registerMockEndpoint({
     path: `${API}/modules/:id/start`,
-    metadata: [],
     method: 'POST',
-    callback: (event) => {
-        if (event.route_params.id) {
-            const module = endpointData(`${API}/modules`).find(
-                (mod) => mod.id === event.route_params.id,
-            );
-            if (module) {
-                module.running = true;
-                return module;
-            }
-        }
-        throw { status: 404, message: 'Module not found' };
-    },
-} as MockHttpRequestHandler);
+    callback: (event) =>
+        updateItem(`${API}/modules`, event.route_params.id, { running: true }),
+});
 
-/** Add handler for stopping a module */
 registerMockEndpoint({
     path: `${API}/modules/:id/stop`,
-    metadata: [],
     method: 'POST',
-    callback: (event) => {
-        if (event.route_params.id) {
-            const module = endpointData(`${API}/modules`).find(
-                (mod) => mod.id === event.route_params.id,
-            );
-            if (module) {
-                module.running = false;
-                return module;
-            }
-        }
-        throw { status: 404, message: 'Module not found' };
-    },
-} as MockHttpRequestHandler);
+    callback: (event) =>
+        updateItem(`${API}/modules`, event.route_params.id, { running: false }),
+});
 
-/** Add handler for pinging a module */
+/** Load the module on the cluster */
+registerMockEndpoint({
+    path: `${API}/modules/:id/load`,
+    method: 'POST',
+    callback: (event) =>
+        updateItem(`${API}/modules`, event.route_params.id, { running: true }),
+});
+
 registerMockEndpoint({
     path: `${API}/modules/:id/ping`,
-    metadata: [],
     method: 'POST',
-    callback: (_event) => {
-        return { host: 'localhost', pingable: true, warning: null };
-    },
-} as MockHttpRequestHandler);
+    callback: () => ({ host: 'localhost', pingable: true, warning: null }),
+});
 
-/** Add handler for module settings */
 registerMockEndpoint({
     path: `${API}/modules/:id/settings`,
-    metadata: [],
     method: 'GET',
-    callback: (_event) => {
-        return [];
-    },
-} as MockHttpRequestHandler);
+    callback: (event) =>
+        endpointData(`${API}/settings`).filter(
+            (setting) => setting.parent_id === event.route_params.id,
+        ),
+});
 
-/** Add handler for module state */
 registerMockEndpoint({
     path: `${API}/modules/:id/state`,
-    metadata: [],
     method: 'GET',
-    callback: (_event) => {
-        return { connected: true, running: true };
+    callback: (event) => {
+        const module = findModule(event.route_params.id);
+        return {
+            connected: module.connected ?? true,
+            running: !!module.running,
+        };
     },
-} as MockHttpRequestHandler);
+});
+
+/** Runtime errors of the module. Modules with `has_runtime_error` have one */
+registerMockEndpoint({
+    path: `${API}/modules/:id/error`,
+    method: 'GET',
+    callback: (event) =>
+        findModule(event.route_params.id).has_runtime_error
+            ? [
+                  JSON.stringify({
+                      message: 'Connection refused',
+                      backtrace: ['mock.cr:1'],
+                  }),
+              ]
+            : [],
+});
+
+/** Find a module, or fail with a 404 */
+function findModule(id: string) {
+    return (
+        endpointData(`${API}/modules`).find((mod) => mod.id === id) ||
+        notFound('Module')
+    );
+}

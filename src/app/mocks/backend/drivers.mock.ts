@@ -26,7 +26,10 @@ const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
 };
 
 /** Add basic API handlers for drivers */
-generateBasicHandlers(`${API}/drivers`, DRIVER_DATA, FILTER_FN);
+generateBasicHandlers(`${API}/drivers`, DRIVER_DATA, {
+    filter: FILTER_FN,
+    id_prefix: 'driver-',
+});
 
 /** Check if driver is compiled */
 registerMockEndpoint({
