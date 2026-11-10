@@ -1,19 +1,17 @@
-import {
-    MockHttpRequestHandler,
-    registerMockEndpoint,
-} from '@placeos/ts-client';
+import { registerMockEndpoint } from '@placeos/ts-client';
 import { HashMap } from '../../common/types';
 import {
     DOMAIN,
-    generateID,
-    loadFromSession,
-    saveToSession,
+    STAFF_API,
+    endpointData,
+    generateBasicHandlers,
+    nameFilter,
+    updateItem,
 } from '../common.mock';
 
-const STAFF_API = '/api/staff/v1';
+// ============ TENANTS ============
 
-/** Default tenant data */
-const DEFAULT_TENANTS = [
+const TENANT_DATA = [
     {
         id: 'tenant-default',
         name: 'Default Tenant',
@@ -23,175 +21,108 @@ const DEFAULT_TENANTS = [
         booking_limits: {},
         early_checkin: 30,
         secret_expiry: null,
-        created_at: Date.now() / 1000,
-        updated_at: Date.now() / 1000,
+        created_at: 1709283600,
+        updated_at: 1709283600,
     },
 ];
 
-/** In-memory storage with session persistence */
-const TENANTS: Record<string, unknown>[] = loadFromSession(
-    'tenants',
-    DEFAULT_TENANTS,
-);
+/** Matches `q` against the name and `domain` against the tenant */
+const TENANT_FILTER = (item: Record<string, unknown>, q: HashMap) =>
+    nameFilter(item, q) && (!q.domain || item.domain === q.domain);
 
-const createFilter = (items: Record<string, unknown>[]) => (q: HashMap) => {
-    if (!q || Object.keys(q).length <= 0) {
-        return items;
-    }
-    return items.filter((item) => {
-        let match = true;
-        if (q.domain) {
-            match = match && item.domain === q.domain;
-        }
-        if (q.q) {
-            match =
-                match &&
-                `${item.name || ''}`
-                    .toLowerCase()
-                    .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
-        }
-        return match;
-    });
-};
+generateBasicHandlers(`${STAFF_API}/tenants`, TENANT_DATA, {
+    filter: TENANT_FILTER,
+    id_prefix: 'tenant-',
+});
 
-// ============ TENANTS ============
+/** Find a tenant, or fail with a 404 */
+function findTenant(id: string) {
+    const tenant = endpointData(`${STAFF_API}/tenants`).find(
+        (item) => item.id === id,
+    );
+    if (!tenant) throw { status: 404, message: 'Tenant not found' };
+    return tenant;
+}
 
-/** GET tenants list */
-registerMockEndpoint({
-    path: `${STAFF_API}/tenants`,
-    metadata: [],
-    method: 'GET',
-    callback: (event) => createFilter(TENANTS)(event.query_params),
-} as MockHttpRequestHandler);
-
-/** GET tenant by ID */
-registerMockEndpoint({
-    path: `${STAFF_API}/tenants/:id`,
-    metadata: [],
-    method: 'GET',
-    callback: (event) => {
-        const tenant = TENANTS.find((t) => t.id === event.route_params.id);
-        if (tenant) return tenant;
-        throw { status: 404, message: 'Tenant not found' };
-    },
-} as MockHttpRequestHandler);
-
-/** POST create tenant */
-registerMockEndpoint({
-    path: `${STAFF_API}/tenants`,
-    metadata: [],
-    method: 'POST',
-    callback: (event) => {
-        const tenant = {
-            id: `tenant-${generateID()}`,
-            ...event.body,
-            created_at: Date.now() / 1000,
-            updated_at: Date.now() / 1000,
-        };
-        TENANTS.push(tenant);
-        saveToSession('tenants', TENANTS);
-        return tenant;
-    },
-} as MockHttpRequestHandler);
-
-/** PUT/PATCH update tenant */
-registerMockEndpoint({
-    path: `${STAFF_API}/tenants/:id`,
-    metadata: [],
-    method: 'PUT',
-    callback: (event) => {
-        const index = TENANTS.findIndex((t) => t.id === event.route_params.id);
-        if (index >= 0) {
-            TENANTS[index] = {
-                ...TENANTS[index],
-                ...event.body,
-                updated_at: Date.now() / 1000,
-            };
-            saveToSession('tenants', TENANTS);
-            return TENANTS[index];
-        }
-        throw { status: 404, message: 'Tenant not found' };
-    },
-} as MockHttpRequestHandler);
-
-registerMockEndpoint({
-    path: `${STAFF_API}/tenants/:id`,
-    metadata: [],
-    method: 'PATCH',
-    callback: (event) => {
-        const index = TENANTS.findIndex((t) => t.id === event.route_params.id);
-        if (index >= 0) {
-            TENANTS[index] = {
-                ...TENANTS[index],
-                ...event.body,
-                updated_at: Date.now() / 1000,
-            };
-            saveToSession('tenants', TENANTS);
-            return TENANTS[index];
-        }
-        throw { status: 404, message: 'Tenant not found' };
-    },
-} as MockHttpRequestHandler);
-
-/** DELETE tenant */
-registerMockEndpoint({
-    path: `${STAFF_API}/tenants/:id`,
-    metadata: [],
-    method: 'DELETE',
-    callback: (event) => {
-        const index = TENANTS.findIndex((t) => t.id === event.route_params.id);
-        if (index >= 0) {
-            TENANTS.splice(index, 1);
-            saveToSession('tenants', TENANTS);
-            return {};
-        }
-        throw { status: 404, message: 'Tenant not found' };
-    },
-} as MockHttpRequestHandler);
-
-/** GET tenant booking limits */
 registerMockEndpoint({
     path: `${STAFF_API}/tenants/:id/limits`,
-    metadata: [],
     method: 'GET',
-    callback: (event) => {
-        const tenant = TENANTS.find((t) => t.id === event.route_params.id);
-        if (tenant) return tenant.booking_limits || {};
-        throw { status: 404, message: 'Tenant not found' };
-    },
-} as MockHttpRequestHandler);
+    callback: (event) => findTenant(event.route_params.id).booking_limits || {},
+});
 
-/** PUT update tenant booking limits */
 registerMockEndpoint({
     path: `${STAFF_API}/tenants/:id/limits`,
-    metadata: [],
     method: 'PUT',
-    callback: (event) => {
-        const index = TENANTS.findIndex((t) => t.id === event.route_params.id);
-        if (index >= 0) {
-            TENANTS[index].booking_limits = event.body;
-            saveToSession('tenants', TENANTS);
-            return TENANTS[index].booking_limits;
-        }
-        throw { status: 404, message: 'Tenant not found' };
-    },
-} as MockHttpRequestHandler);
+    callback: (event) =>
+        updateItem(
+            `${STAFF_API}/tenants`,
+            findTenant(event.route_params.id).id,
+            {
+                booking_limits: event.body,
+            },
+        ).booking_limits,
+});
+
+// ============ DIRECTORY ============
+
+/** Groups in the directory of the tenant */
+const DIRECTORY_GROUPS = [
+    'All Staff',
+    'Facilities',
+    'IT Support',
+    'Reception',
+    'Executive Assistants',
+].map((name) => ({
+    id: `directory-group-${name.toLowerCase().replace(/\W+/g, '-')}`,
+    name,
+    email: `${name.toLowerCase().replace(/\W+/g, '.')}@${DOMAIN}`,
+    description: `${name} directory group`,
+}));
+
+registerMockEndpoint({
+    path: `${STAFF_API}/groups`,
+    method: 'GET',
+    callback: (event) =>
+        DIRECTORY_GROUPS.filter((group) =>
+            nameFilter(group, event.query_params),
+        ),
+});
+
+/** Rooms in the calendar of the tenant, for the resource import page */
+const ROOM_RESOURCES = [
+    ['2.30.08 - Activity Space', 'room-2.30.08', 12],
+    ['Board Room', 'room-board', 20],
+    ['Focus Room 1', 'room-focus-1', 2],
+    ['Focus Room 2', 'room-focus-2', 2],
+].map(([name, user, capacity]) => ({
+    id: `resource-${user}`,
+    displayName: name,
+    emailAddress: `${user}@${DOMAIN}`,
+    capacity,
+    bookingType: 'standard',
+    isWheelChairAccessible: true,
+    nickname: name,
+    phone: '',
+    tags: [],
+}));
+
+registerMockEndpoint({
+    path: `${STAFF_API}/place`,
+    method: 'GET',
+    callback: () => ROOM_RESOURCES,
+});
 
 // ============ CURRENT USER ============
 
-/** GET current user */
 registerMockEndpoint({
     path: `${STAFF_API}/users/current`,
-    metadata: [],
     method: 'GET',
-    callback: (_event) => {
-        return {
-            id: 'current',
-            name: 'Place Admin',
-            email: 'admin@place.tech',
-            sys_admin: true,
-            support: true,
-            groups: [],
-        };
-    },
-} as MockHttpRequestHandler);
+    callback: () => ({
+        id: 'current',
+        name: 'Place Admin',
+        email: 'admin@place.tech',
+        sys_admin: true,
+        support: true,
+        groups: [],
+    }),
+});

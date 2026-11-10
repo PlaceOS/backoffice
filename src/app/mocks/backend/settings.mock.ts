@@ -1,68 +1,72 @@
+import { EncryptionLevel, registerMockEndpoint } from '@placeos/ts-client';
 import { HashMap } from '../../common/types';
 import {
     API,
+    createMockStore,
+    endpointData,
     generateBasicHandlers,
-    generateID,
-    listenToHandlerChanges,
+    nameFilter,
 } from '../common.mock';
 
-import { EncryptionLevel } from '@placeos/ts-client';
+/** Most old versions kept in the settings history */
+const HISTORY_LIMIT = 200;
 
-const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
-    if (!q || Object.keys(q).length <= 0) {
-        return true;
-    }
-    let match = true;
-    if (q.q) {
-        match =
-            match &&
-            `${item.name || ''}`
-                .toLowerCase()
-                .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
-    }
-    if (q.parent_id) {
-        match = match && item.parent_id === q.parent_id;
-    }
-    return match;
-};
+/** Matches `q` against the name and `parent_id` (a comma list) */
+const FILTER_FN = (item: Record<string, unknown>, q: HashMap) =>
+    nameFilter(item, q) &&
+    (!q.parent_id || `${q.parent_id}`.split(',').includes(`${item.parent_id}`));
 
-const SETTINGS_DATA: Record<string, unknown>[] = [];
+/** Settings of the seed systems, modules, zones and drivers */
+const SETTINGS_DATA = ['systems', 'modules', 'zones', 'drivers']
+    .flatMap((type) => endpointData(`${API}/${type}`))
+    .filter(
+        (item) =>
+            typeof item.settings === 'string' ||
+            Object.keys(item.settings || {}).length,
+    )
+    .map((item) => ({
+        id: `setting-${item.id}`,
+        parent_id: item.id,
+        encryption_level: EncryptionLevel.None,
+        settings_string:
+            typeof item.settings === 'string'
+                ? item.settings
+                : JSON.stringify(item.settings),
+        keys: Object.keys(
+            typeof item.settings === 'object' ? item.settings : {},
+        ),
+    }));
 
-const handle_items_fn = (list: Record<string, unknown>[]) => {
-    list.forEach((item) => {
-        if (
-            item.settings &&
-            !SETTINGS_DATA.find((s) => s.parent_id === item.id)
-        ) {
-            SETTINGS_DATA.push({
-                id: `setting-${generateID()}`,
-                parent_id: item.id,
-                encryption_level: EncryptionLevel.None,
-                settings_string:
-                    item.settings instanceof Object
-                        ? JSON.stringify(item.settings)
-                        : item.settings,
-            });
-        }
+type MockSetting = (typeof SETTINGS_DATA)[number];
+
+const settings = generateBasicHandlers<MockSetting>(
+    `${API}/settings`,
+    SETTINGS_DATA,
+    {
+        filter: FILTER_FN,
+        id_prefix: 'setting-',
+    },
+);
+
+/** Old versions of settings, newest first */
+const history = createMockStore<MockSetting[]>('settings_history', []);
+
+/** Keep the old version of each changed setting */
+let previous = settings();
+settings.subscribe((list) => {
+    const changed = previous.filter((old) => {
+        const item = list.find(({ id }) => id === old.id);
+        return item && item.settings_string !== old.settings_string;
     });
-};
+    previous = list;
+    if (changed.length) {
+        history.set([...changed, ...history()].slice(0, HISTORY_LIMIT));
+    }
+});
 
-let changes = listenToHandlerChanges(`${API}/systems`);
-if (changes) {
-    changes.subscribe(handle_items_fn);
-}
-changes = listenToHandlerChanges(`${API}/modules`);
-if (changes) {
-    changes.subscribe(handle_items_fn);
-}
-changes = listenToHandlerChanges(`${API}/zones`);
-if (changes) {
-    changes.subscribe(handle_items_fn);
-}
-changes = listenToHandlerChanges(`${API}/drivers`);
-if (changes) {
-    changes.subscribe(handle_items_fn);
-}
-
-/** Add basic API handlers for systems */
-generateBasicHandlers(`${API}/settings`, SETTINGS_DATA, FILTER_FN);
+registerMockEndpoint({
+    path: `${API}/settings/:id/history`,
+    method: 'GET',
+    callback: (event) =>
+        history().filter(({ id }) => id === event.route_params.id),
+});

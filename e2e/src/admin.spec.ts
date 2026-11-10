@@ -1,5 +1,10 @@
 import { Page } from '@playwright/test';
-import { expect, seedSession, test } from './fixtures/test-fixtures';
+import {
+    expect,
+    seedMockData,
+    seedSession,
+    test,
+} from './fixtures/test-fixtures';
 import { AdminPage } from './pages';
 
 /**
@@ -71,7 +76,10 @@ const TENANT = {
 /** Tenant as saved by the mock staff API */
 async function storedTenant(page: Page): Promise<typeof TENANT> {
     return page.evaluate(
-        () => JSON.parse(sessionStorage.getItem('PLACEOS.mocks.tenants'))[0],
+        () =>
+            JSON.parse(
+                sessionStorage.getItem('PLACEOS.mocks.api_staff_v1_tenants'),
+            )[0],
     );
 }
 
@@ -197,7 +205,7 @@ test.describe('Admin', () => {
 
         test.describe('Maximum booking length', () => {
             test.beforeEach(async ({ page }) => {
-                await seedSession(page, 'tenants', [TENANT]);
+                await seedSession(page, 'api_staff_v1_tenants', [TENANT]);
                 await admin.gotoSection('staff-api');
             });
 
@@ -289,7 +297,7 @@ test.describe('Admin', () => {
 
     test.describe('US-ADM-011: Manage API Keys', () => {
         test.beforeEach(async ({ page }) => {
-            await seedSession(page, 'api_keys', API_KEYS);
+            await seedMockData(page, 'api_keys', API_KEYS);
             await admin.gotoSection('api-keys');
             await admin.selectApiKeyDomain();
         });

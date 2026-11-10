@@ -2,10 +2,10 @@ import { MockHttpRequest, registerMockEndpoint } from '@placeos/ts-client';
 import { HashMap } from '../../common/types';
 import {
     API,
+    createMockStore,
     endpointData,
+    endpointToStorageKey,
     generateBasicHandlers,
-    loadFromSession,
-    saveToSession,
 } from '../common.mock';
 import { AUTHORITY_ID } from './domains.mock';
 
@@ -108,11 +108,34 @@ const GROUP_FILTER_FN = (item: MockGroup, q: HashMap) => {
     return true;
 };
 
-const groups = generateBasicHandlers<MockGroup>(
-    `${API}/groups`,
-    GROUP_DATA,
-    GROUP_FILTER_FN,
-);
+/**
+ * Groups of the current user, with their permissions.
+ * Registered before `groups/:id`. `subsystem` limits the list to groups
+ * that have the subsystem
+ */
+registerMockEndpoint({
+    path: `${API}/groups/current`,
+    method: 'GET',
+    callback: (event) => {
+        const { subsystem } = event.query_params;
+        return group_users()
+            .filter(({ user_id }) => user_id === 'current')
+            .map((row) => ({
+                group: findGroup(row.group_id),
+                permissions: row.permissions,
+            }))
+            .filter(
+                ({ group }) =>
+                    group &&
+                    (!subsystem || group.subsystems.includes(subsystem)),
+            );
+    },
+});
+
+const groups = generateBasicHandlers<MockGroup>(`${API}/groups`, GROUP_DATA, {
+    filter: GROUP_FILTER_FN,
+    id_prefix: 'group-',
+});
 
 /** Count of direct children, which the API adds to group details */
 function withChildCount(group: MockGroup) {
@@ -141,24 +164,21 @@ registerMockEndpoint({
  * tests can seed them with `seedMockData`.
  * @param endpoint API endpoint path
  * @param keys Names of the two ID fields, in path order
- * @param seed Rows used when session storage has none. Called on first use
+ * @param seed Rows used when session storage has none
  * @param create Makes a full row from the POST body
  * @param expand Adds related details to rows in responses
+ * @returns Store of the rows
  */
 function generateJoinHandlers<T extends object>(
     endpoint: string,
     keys: [keyof T & string, keyof T & string],
-    seed: () => T[],
+    seed: T[],
     create: (body: Partial<T>) => T,
     expand: (row: T) => T & Record<string, unknown>,
 ) {
-    const storage_key = endpoint.replace(/\//g, '_').replace(/^_/, '');
-    let rows: T[] | null = null;
-    const list = () => (rows ??= loadFromSession<T>(storage_key, seed()));
-    const save = (next: T[]) => {
-        rows = next;
-        saveToSession(storage_key, next);
-    };
+    const rows = createMockStore<T[]>(endpointToStorageKey(endpoint), seed);
+    const list = () => rows();
+    const save = (next: T[]) => rows.set(next);
     const matches = (row: T, ids: HashMap<string>) =>
         keys.every((key) => !ids[key] || `${row[key]}` === ids[key]);
     const indexOf = (event: MockHttpRequest) => {
@@ -224,6 +244,7 @@ function generateJoinHandlers<T extends object>(
             return null;
         },
     });
+    return rows;
 }
 
 /** Group details for the user and zone pages */
@@ -231,18 +252,17 @@ function findGroup(group_id: string) {
     return groups().find(({ id }) => id === group_id);
 }
 
-generateJoinHandlers<MockGroupUser>(
+const group_users = generateJoinHandlers<MockGroupUser>(
     `${API}/group_users`,
     ['user_id', 'group_id'],
-    () =>
-        GROUP_USER_SEED.map(([user_id, group_id, permissions]) => ({
-            user_id,
-            group_id,
-            permissions,
-            auto_assigned: '',
-            created_at: SEED_TIME,
-            updated_at: SEED_TIME,
-        })),
+    GROUP_USER_SEED.map(([user_id, group_id, permissions]) => ({
+        user_id,
+        group_id,
+        permissions,
+        auto_assigned: '',
+        created_at: SEED_TIME,
+        updated_at: SEED_TIME,
+    })),
     (body) => {
         const now = new Date().toISOString();
         return {
@@ -268,15 +288,14 @@ generateJoinHandlers<MockGroupUser>(
 generateJoinHandlers<MockGroupZone>(
     `${API}/group_zones`,
     ['group_id', 'zone_id'],
-    () =>
-        GROUP_ZONE_SEED.map(([group_id, zone_id, permissions, deny]) => ({
-            group_id,
-            zone_id,
-            permissions,
-            deny,
-            created_at: SEED_TIME,
-            updated_at: SEED_TIME,
-        })),
+    GROUP_ZONE_SEED.map(([group_id, zone_id, permissions, deny]) => ({
+        group_id,
+        zone_id,
+        permissions,
+        deny,
+        created_at: SEED_TIME,
+        updated_at: SEED_TIME,
+    })),
     (body) => {
         const now = new Date().toISOString();
         return {

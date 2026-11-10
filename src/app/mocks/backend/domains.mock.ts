@@ -1,20 +1,5 @@
-import { HashMap } from '../../common/types';
-import { API, DOMAIN, generateBasicHandlers } from '../common.mock';
-
-const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
-    if (!q || Object.keys(q).length <= 0) {
-        return true;
-    }
-    let match = true;
-    if (q.q) {
-        match =
-            match &&
-            `${item.name || ''}`
-                .toLowerCase()
-                .indexOf(((q.q as string) || '').toLowerCase()) >= 0;
-    }
-    return match;
-};
+import { registerMockEndpoint } from '@placeos/ts-client';
+import { API, DOMAIN, generateBasicHandlers, nameFilter } from '../common.mock';
 
 /** Id of the authority the ts-client mock signs in to. Every mock user and
  *  group belongs to it */
@@ -30,4 +15,14 @@ const DOMAIN_DATA = [
 ];
 
 /** Add basic API handlers for domains */
-generateBasicHandlers(`${API}/domains`, DOMAIN_DATA, FILTER_FN);
+generateBasicHandlers(`${API}/domains`, DOMAIN_DATA, {
+    filter: nameFilter,
+    id_prefix: 'authority-',
+});
+
+/** Azure admin consent link for the domain */
+registerMockEndpoint({
+    path: `${API}/admin_consent/:id`,
+    method: 'GET',
+    callback: () => ({ url: 'about:blank' }),
+});

@@ -11,6 +11,8 @@ The mock tests run the app against the mock backend in
 `src/app/mocks/`. Each test gets a new browser context, so it starts with
 fresh mock data. The mock backend keeps creates, edits and deletes in session
 storage, so a change stays after `page.reload()` in the same test.
+A request that has no mock handler fails with a 404 and writes
+`[mock] No handler for <method> <url>` to the browser console.
 
 ## Run the tests
 

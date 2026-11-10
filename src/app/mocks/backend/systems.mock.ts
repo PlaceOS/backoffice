@@ -1,11 +1,16 @@
+import { registerMockEndpoint } from '@placeos/ts-client';
 import { HashMap } from '../../common/types';
-import { API, endpointData, generateBasicHandlers } from '../common.mock';
-import { SYSTEMS as SYSTEM_DATA } from '../data/systems';
-
 import {
-    MockHttpRequestHandler,
-    registerMockEndpoint,
-} from '@placeos/ts-client';
+    API,
+    endpointData,
+    generateBasicHandlers,
+    generateID,
+    notFound,
+    now,
+    updateItem,
+} from '../common.mock';
+import { SYSTEMS as SYSTEM_DATA } from '../data/systems';
+import { TRIGGER_INSTANCES, expandInstance } from './triggers.mock';
 
 const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
@@ -29,151 +34,211 @@ const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
     return match;
 };
 
-/** Add basic API handlers for systems */
-generateBasicHandlers(`${API}/systems`, SYSTEM_DATA, FILTER_FN);
+/** Systems whose email is in the `in` list. Registered before `systems/:id` */
+registerMockEndpoint({
+    path: `${API}/systems/with_emails`,
+    method: 'GET',
+    callback: (event) => {
+        const emails = `${event.query_params.in || ''}`
+            .toLowerCase()
+            .split(',');
+        return endpointData(`${API}/systems`).filter((sys) =>
+            emails.includes(`${sys.email || ''}`.toLowerCase()),
+        );
+    },
+});
 
-/** Add handlers for getting system's zones */
+/** Add basic API handlers for systems */
+generateBasicHandlers(`${API}/systems`, SYSTEM_DATA, {
+    filter: FILTER_FN,
+    id_prefix: 'sys-',
+});
+
+/** Find a system, or fail with a 404 */
+export function findSystem(id: string) {
+    return (
+        endpointData(`${API}/systems`).find((sys) => sys.id === id) ||
+        notFound('System')
+    );
+}
+
 registerMockEndpoint({
     path: `${API}/systems/:id/zones`,
-    metadata: [],
     method: 'GET',
     callback: (event) => {
-        if (event.route_params.id) {
-            const system = endpointData(`${API}/systems`).find(
-                (sys) => sys.id === event.route_params.id,
-            );
-            if (system) {
-                const zones = endpointData(`${API}/zones`);
-                return zones.filter((item) => system.zones.includes(item.id));
-            }
-        }
-        throw { status: 404, message: 'System not found' };
+        const system = findSystem(event.route_params.id);
+        return endpointData(`${API}/zones`).filter((zone) =>
+            system.zones.includes(zone.id),
+        );
     },
-} as MockHttpRequestHandler);
+});
 
-/** Add handlers for getting system's modules */
 registerMockEndpoint({
     path: `${API}/systems/:id/modules`,
-    metadata: [],
     method: 'GET',
     callback: (event) => {
-        if (event.route_params.id) {
-            const system = endpointData(`${API}/systems`).find(
-                (sys) => sys.id === event.route_params.id,
-            );
-            if (system) {
-                const modules = endpointData(`${API}/modules`);
-                return modules.filter((item) =>
-                    system.modules.includes(item.id),
-                );
-            }
-        }
-        throw { status: 404, message: 'System not found' };
+        const system = findSystem(event.route_params.id);
+        return endpointData(`${API}/modules`).filter((mod) =>
+            system.modules.includes(mod.id),
+        );
     },
-} as MockHttpRequestHandler);
+});
 
-/** Add handlers for getting system's triggers */
+/** Add a module to the system */
+registerMockEndpoint({
+    path: `${API}/systems/:id/module/:module_id`,
+    method: 'PUT',
+    callback: (event) => {
+        const { id, module_id } = event.route_params;
+        const system = findSystem(id);
+        if (system.modules.includes(module_id)) return system;
+        return updateItem(`${API}/systems`, id, {
+            modules: [...system.modules, module_id],
+        });
+    },
+});
+
+/** Remove a module from the system */
+registerMockEndpoint({
+    path: `${API}/systems/:id/module/:module_id`,
+    method: 'DELETE',
+    callback: (event) => {
+        const { id, module_id } = event.route_params;
+        const system = findSystem(id);
+        return updateItem(`${API}/systems`, id, {
+            modules: system.modules.filter((mod: string) => mod !== module_id),
+        });
+    },
+});
+
+// ============ TRIGGERS ============
+
 registerMockEndpoint({
     path: `${API}/systems/:id/triggers`,
-    metadata: [],
     method: 'GET',
-    callback: (_event) => {
-        if (_event.route_params.id) {
-            return [];
-        }
-        throw { status: 404, message: 'System not found' };
+    callback: (event) => {
+        const { id } = findSystem(event.route_params.id);
+        return TRIGGER_INSTANCES()
+            .filter(({ control_system_id }) => control_system_id === id)
+            .map(expandInstance);
     },
-} as MockHttpRequestHandler);
+});
 
-/** Add handlers for getting system's inherited settings */
+registerMockEndpoint({
+    path: `${API}/systems/:id/triggers`,
+    method: 'POST',
+    callback: (event) => {
+        const { id } = findSystem(event.route_params.id);
+        const instance = {
+            enabled: true,
+            important: false,
+            triggered: false,
+            trigger_count: 0,
+            exec_enabled: false,
+            webhook_secret: generateID(32),
+            ...event.body,
+            id: `inst-${generateID()}`,
+            control_system_id: id,
+            created_at: now(),
+            updated_at: now(),
+        };
+        TRIGGER_INSTANCES.set([...TRIGGER_INSTANCES(), instance]);
+        return expandInstance(instance);
+    },
+});
+
+/** Find a trigger of a system, or fail with a 404 */
+function findInstance(system_id: string, id: string) {
+    return (
+        TRIGGER_INSTANCES().find(
+            (item) => item.id === id && item.control_system_id === system_id,
+        ) || notFound('Trigger')
+    );
+}
+
+for (const method of ['PUT', 'PATCH'] as const) {
+    registerMockEndpoint({
+        path: `${API}/systems/:id/triggers/:trigger_id`,
+        method,
+        callback: (event) => {
+            const { id, trigger_id } = event.route_params;
+            const old = findInstance(id, trigger_id);
+            const { enabled, important, exec_enabled } = {
+                ...old,
+                ...event.body,
+            };
+            const instance = {
+                ...old,
+                enabled,
+                important,
+                exec_enabled,
+                updated_at: now(),
+            };
+            TRIGGER_INSTANCES.set(
+                TRIGGER_INSTANCES().map((item) =>
+                    item === old ? instance : item,
+                ),
+            );
+            return expandInstance(instance);
+        },
+    });
+}
+
+registerMockEndpoint({
+    path: `${API}/systems/:id/triggers/:trigger_id`,
+    method: 'DELETE',
+    callback: (event) => {
+        const { id, trigger_id } = event.route_params;
+        const old = findInstance(id, trigger_id);
+        TRIGGER_INSTANCES.set(
+            TRIGGER_INSTANCES().filter((item) => item !== old),
+        );
+        return null;
+    },
+});
+
+// ============ SETTINGS AND CONTROL ============
+
+/** Settings of the system and of its zones, modules and drivers */
 registerMockEndpoint({
     path: `${API}/systems/:id/settings`,
-    metadata: [],
     method: 'GET',
     callback: (event) => {
-        if (event.route_params.id) {
-            const settings = endpointData(`${API}/settings`).filter(
-                (sys) => sys.id === event.route_params.id,
-            );
-            return settings.reduce((map, item) => ({
-                ...map,
-                ...JSON.parse(item.settings_string),
-            }));
-        }
-        throw { status: 404, message: 'System not found' };
+        const system = findSystem(event.route_params.id);
+        const drivers = endpointData(`${API}/modules`)
+            .filter((mod) => system.modules.includes(mod.id))
+            .map((mod) => mod.driver_id);
+        const parents = [
+            system.id,
+            ...system.zones,
+            ...system.modules,
+            ...drivers,
+        ];
+        return endpointData(`${API}/settings`).filter((setting) =>
+            parents.includes(setting.parent_id),
+        );
     },
-} as MockHttpRequestHandler);
+});
 
-/** Add handler for starting a system */
+/** Start or stop every module of the system */
+function setRunning(system_id: string, running: boolean) {
+    const system = findSystem(system_id);
+    for (const id of system.modules) {
+        if (endpointData(`${API}/modules`).some((mod) => mod.id === id)) {
+            updateItem(`${API}/modules`, id, { running });
+        }
+    }
+    return null;
+}
+
 registerMockEndpoint({
     path: `${API}/systems/:id/start`,
-    metadata: [],
     method: 'POST',
-    callback: (event) => {
-        if (event.route_params.id) {
-            const system = endpointData(`${API}/systems`).find(
-                (sys) => sys.id === event.route_params.id,
-            );
-            if (system) {
-                system.running = true;
-                return system;
-            }
-        }
-        throw { status: 404, message: 'System not found' };
-    },
-} as MockHttpRequestHandler);
+    callback: (event) => setRunning(event.route_params.id, true),
+});
 
-/** Add handler for stopping a system */
 registerMockEndpoint({
     path: `${API}/systems/:id/stop`,
-    metadata: [],
     method: 'POST',
-    callback: (event) => {
-        if (event.route_params.id) {
-            const system = endpointData(`${API}/systems`).find(
-                (sys) => sys.id === event.route_params.id,
-            );
-            if (system) {
-                system.running = false;
-                return system;
-            }
-        }
-        throw { status: 404, message: 'System not found' };
-    },
-} as MockHttpRequestHandler);
-
-/** Add handler for executing module methods on system */
-registerMockEndpoint({
-    path: `${API}/systems/:id/exec/:module/:index/:method`,
-    metadata: [],
-    method: 'POST',
-    callback: (_event) => {
-        return { result: 'ok' };
-    },
-} as MockHttpRequestHandler);
-
-/** Add handler for system functions list */
-registerMockEndpoint({
-    path: `${API}/systems/:id/funcs/:module/:index`,
-    metadata: [],
-    method: 'GET',
-    callback: (_event) => {
-        return {
-            functions: {
-                power: { arity: 1, params: ['state'] },
-                volume: { arity: 1, params: ['level'] },
-                mute: { arity: 1, params: ['state'] },
-            },
-        };
-    },
-} as MockHttpRequestHandler);
-
-/** Add handler for counting systems */
-registerMockEndpoint({
-    path: `${API}/systems/count`,
-    metadata: [],
-    method: 'GET',
-    callback: (_event) => {
-        return { count: endpointData(`${API}/systems`).length };
-    },
-} as MockHttpRequestHandler);
+    callback: (event) => setRunning(event.route_params.id, false),
+});

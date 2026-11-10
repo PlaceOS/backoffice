@@ -1,5 +1,6 @@
+import { registerMockEndpoint } from '@placeos/ts-client';
 import { HashMap } from '../../common/types';
-import { API, generateBasicHandlers, generateID } from '../common.mock';
+import { API, generateBasicHandlers, updateItem } from '../common.mock';
 import { AUTHORITY_ID } from './domains.mock';
 
 const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
@@ -32,7 +33,8 @@ function withNames(user: MockUser): MockUser {
     return { ...user, first_name, last_name: rest.join(' ') };
 }
 
-const PREDFINED_USERS = [
+/** Seed users. Jeremy West is a support user, Stephen von Takach an admin */
+const USER_DATA = [
     'Alex Sorafumo',
     'Jonathan McFarlane',
     'Stephen von Takach',
@@ -46,31 +48,16 @@ const PREDFINED_USERS = [
     name,
     email: `${name.split(' ').join('.')}@place.tech`,
     authority_id: AUTHORITY_ID,
-    support: Math.floor(Math.random() * 999_999) % 10 === 0,
-    sys_admin: Math.floor(Math.random() * 999_999) % 10 === 0,
+    support: name === 'Jeremy West',
+    sys_admin: name === 'Stephen von Takach',
 }));
-
-const USER_DATA = Array(0)
-    .fill(0)
-    .map((_, idx) => {
-        const name = `No. ${idx}`;
-        return {
-            id: `user-${generateID()}`,
-            name,
-            email: `${name.split(' ').join('.')}@place.tech`,
-            authority_id: AUTHORITY_ID,
-            support: Math.floor(Math.random() * 999_999) % 10 === 0,
-            sys_admin: Math.floor(Math.random() * 999_999) % 10 === 0,
-        };
-    })
-    .concat(PREDFINED_USERS);
 
 const CURRENT_USER = {
     id: `current`,
     name: 'Place Admin',
     email: `admin@place.tech`,
     authority_id: AUTHORITY_ID,
-    support: Math.floor(Math.random() * 999_999) % 10 === 0,
+    support: false,
     sys_admin: true,
 };
 
@@ -78,6 +65,13 @@ const CURRENT_USER = {
 generateBasicHandlers<MockUser>(
     `${API}/users`,
     [...USER_DATA, CURRENT_USER].map(withNames),
-    FILTER_FN,
-    withNames,
+    { filter: FILTER_FN, prepare: withNames, id_prefix: 'user-' },
 );
+
+/** Restore a deleted user */
+registerMockEndpoint({
+    path: `${API}/users/:id/revive`,
+    method: 'POST',
+    callback: (event) =>
+        updateItem(`${API}/users`, event.route_params.id, { deleted: false }),
+});
