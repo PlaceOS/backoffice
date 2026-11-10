@@ -1,0 +1,39 @@
+# Updates backoffice.demo.place.tech once per day.
+# Vercel deploys only the backoffice-demo branch (see vercel.json). This workflow
+# moves that branch to develop when develop changed since the last run.
+name: 'Demo Site'
+
+on:
+    schedule:
+        - cron: '0 17 * * *' # daily at 17:00 UTC (3–4 am Sydney)
+    workflow_dispatch: # manual run: updates now if develop changed
+
+permissions:
+    contents: write
+
+concurrency:
+    group: demo-site
+    cancel-in-progress: false
+
+jobs:
+    update_demo_site:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  ref: develop
+
+            - name: Move backoffice-demo to develop
+              shell: bash
+              run: |
+                  develop="$(git rev-parse HEAD)"
+                  current="$(git ls-remote origin refs/heads/backoffice-demo | cut -f1)"
+                  if [[ "${current}" == "${develop}" ]]; then
+                      echo "backoffice-demo is already at develop (${develop})."
+                      exit 0
+                  fi
+                  # The lease makes the push fail if backoffice-demo moved after the check.
+                  git push --force-with-lease="refs/heads/backoffice-demo:${current}" \
+                      origin "HEAD:refs/heads/backoffice-demo"
+                  echo "Moved backoffice-demo from ${current:-nothing} to ${develop}."
