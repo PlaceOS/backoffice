@@ -6,22 +6,23 @@ import { FeaturePage } from './pages';
  *
  * Tests for user stories US-ZON-001 through US-ZON-011.
  *
- * The mock zone tree these tests rely on:
+ * The mock zone tree (from the user-interfaces mocks) these tests rely on:
  *
- *   Place Technology (org)
- *   └── Tower 2 (building)
- *       ├── Level 30                     zone-LEHeo501Er
- *       │   └── L30 Activity Spaces      zone-iIdF20naW0
- *       └── Level 31                     zone-QjLXbYUxuC
- *           ├── L31 Activity Spaces
- *           ├── L31 Multifunction: 31.22
- *           └── L31 R7 Activity Space
- *   New Zone   (root, no children, no systems)  zone-lmhh_hVfz0
+ *   PlaceOS Global (org)                 zone-org
+ *   ├── Sydney Region                    region-sydney
+ *   │   ├── Innovation Hub (building)    bld-01
+ *   │   │   ├── Ground Floor             bld-01_lvl-G   (8 rooms)
+ *   │   │   ├── Level 1                  bld-01_lvl-1
+ *   │   │   ├── Level 2                  bld-01_lvl-2
+ *   │   │   └── Parking Level 1          bld-01_lvl-P1  (no children, no rooms)
+ *   │   └── ...
+ *   └── Melbourne Region                 region-melbourne
  */
 
-const L30_SPACES = 'zone-iIdF20naW0';
-const LEVEL_31 = 'zone-QjLXbYUxuC';
-const NEW_ZONE = 'zone-lmhh_hVfz0';
+const BUILDING = 'bld-01';
+const GROUND_FLOOR = 'bld-01_lvl-G';
+const LEVEL_1 = 'bld-01_lvl-1';
+const PARKING = 'bld-01_lvl-P1';
 
 test.describe('Zones', () => {
     let zones: FeaturePage;
@@ -34,33 +35,34 @@ test.describe('Zones', () => {
         test('AC-ZON-001-1: lists the zones', async () => {
             await zones.goto();
 
-            await expect(zones.itemLink('Place Technology')).toBeVisible();
-            await expect(zones.itemLink('Tower 2')).toBeVisible();
+            // Sorted by name. The list only renders the rows in view
+            await expect(zones.itemLink('Creative Campus')).toBeVisible();
+            await expect(zones.itemLink('Executive Center')).toBeVisible();
         });
 
         test('AC-ZON-001-3: search filters the list', async () => {
             await zones.goto();
-            await zones.search('Level 3');
+            await zones.search('Region');
 
-            await expect(zones.itemLink('Level 30')).toBeVisible();
-            await expect(zones.itemLink('Level 31')).toBeVisible();
-            await expect(zones.itemLink('Tower 2')).toHaveCount(0);
+            await expect(zones.itemLink('Sydney Region')).toBeVisible();
+            await expect(zones.itemLink('Melbourne Region')).toBeVisible();
+            await expect(zones.itemLink('Innovation Hub')).toHaveCount(0);
         });
 
         test('AC-ZON-001-4: selecting a zone opens its details', async ({
             page,
         }) => {
             await zones.goto();
-            await zones.itemLink('New Zone').click();
+            await zones.itemLink('Executive Center').click();
 
-            await expect(page).toHaveURL(new RegExp(`#/zones/${NEW_ZONE}/`));
-            await expect(zones.itemName).toHaveText('New Zone');
+            await expect(page).toHaveURL(/#\/zones\/bld-02\//);
+            await expect(zones.itemName).toHaveText('Executive Center');
         });
     });
 
     test.describe('US-ZON-002: View Zone Details', () => {
         test('AC-ZON-002-1: shows each tag once', async () => {
-            await zones.gotoItem(LEVEL_31);
+            await zones.gotoItem(LEVEL_1);
 
             await expect(
                 zones.itemDetails.getByText('level', { exact: true }),
@@ -68,15 +70,15 @@ test.describe('Zones', () => {
         });
 
         test('AC-ZON-002-2: links to the parent zone', async ({ page }) => {
-            await zones.gotoItem(L30_SPACES);
+            await zones.gotoItem(LEVEL_1);
 
             const parent = zones.tabContent.getByRole('link', {
-                name: 'Level 30 (zone-LEHeo501Er)',
+                name: 'Innovation Hub (bld-01)',
             });
             await parent.click();
 
-            await expect(page).toHaveURL(/#\/zones\/zone-LEHeo501Er\/about/);
-            await expect(zones.itemName).toHaveText('Level 30');
+            await expect(page).toHaveURL(/#\/zones\/bld-01\/about/);
+            await expect(zones.itemName).toHaveText('Innovation Hub');
         });
     });
 
@@ -97,17 +99,17 @@ test.describe('Zones', () => {
             await zones.createWith(async () => {
                 await zones.dialog
                     .getByRole('textbox', { name: 'Name*', exact: true })
-                    .fill('Level 32');
+                    .fill('Atrium');
             });
 
-            await expect(zones.itemName).toHaveText('Level 32');
-            await expect(zones.itemLink('Level 32')).toBeVisible();
+            await expect(zones.itemName).toHaveText('Atrium');
+            await expect(zones.itemLink('Atrium')).toBeVisible();
         });
     });
 
     test.describe('US-ZON-004: Edit Zone Details', () => {
         test('AC-ZON-004-1: the edit form holds the current name', async () => {
-            await zones.gotoItem(NEW_ZONE);
+            await zones.gotoItem(BUILDING);
             await zones.openEditModal();
 
             await expect(
@@ -115,13 +117,13 @@ test.describe('Zones', () => {
                     name: 'Name*',
                     exact: true,
                 }),
-            ).toHaveValue('New Zone');
+            ).toHaveValue('Innovation Hub');
         });
 
         test('AC-ZON-004-5: a renamed zone keeps its new name', async ({
             page,
         }) => {
-            await zones.gotoItem(NEW_ZONE);
+            await zones.gotoItem(PARKING);
             await zones.openEditModal();
             await zones.dialog
                 .getByRole('textbox', { name: 'Name*', exact: true })
@@ -129,15 +131,21 @@ test.describe('Zones', () => {
             await zones.saveButton.click();
             await expect(zones.dialog).toBeHidden();
 
-            await expect(zones.itemName).toHaveText('Basement');
+            // The heading shows the display name, which did not change
             await page.reload();
             await zones.waitForItemDetails();
-            await expect(zones.itemName).toHaveText('Basement');
-            await expect(zones.itemLink('New Zone')).toHaveCount(0);
+            await expect(zones.itemLink('Basement')).toBeVisible();
+            await zones.openEditModal();
+            await expect(
+                zones.dialog.getByRole('textbox', {
+                    name: 'Name*',
+                    exact: true,
+                }),
+            ).toHaveValue('Basement');
         });
 
         test('AC-ZON-004-6: closing the modal discards changes', async () => {
-            await zones.gotoItem(NEW_ZONE);
+            await zones.gotoItem(BUILDING);
             await zones.openEditModal();
             await zones.dialog
                 .getByRole('textbox', { name: 'Name*', exact: true })
@@ -145,44 +153,47 @@ test.describe('Zones', () => {
             await zones.discardChanges();
 
             await expect(zones.dialog).toBeHidden();
-            await expect(zones.itemName).toHaveText('New Zone');
+            await expect(zones.itemName).toHaveText('Innovation Hub');
         });
     });
 
     test.describe('US-ZON-005: Delete Zone', () => {
         test('AC-ZON-005-3: removes the zone from the list', async () => {
-            await zones.gotoItem(NEW_ZONE);
+            await zones.gotoItem(PARKING);
             await zones.deleteSelected();
+            await zones.search('Parking');
 
-            await expect(zones.itemLink('New Zone')).toHaveCount(0);
-            await expect(zones.itemLink('Tower 2')).toBeVisible();
+            // The other two buildings with parking keep theirs
+            await expect(zones.itemLink('Parking Level 1')).toHaveCount(2);
         });
 
         test('AC-ZON-005-4: keeps the zone when the confirmation is dismissed', async ({
             page,
         }) => {
-            await zones.gotoItem(NEW_ZONE);
+            await zones.gotoItem(PARKING);
             await zones.openDeleteConfirmation();
             await page.keyboard.press('Escape');
 
             await expect(page.locator('confirm-modal')).toHaveCount(0);
-            await expect(zones.itemName).toHaveText('New Zone');
-            await expect(zones.itemLink('New Zone')).toBeVisible();
+            await expect(zones.itemName).toHaveText('Parking Level 1');
+            await zones.search('Parking');
+            await expect(zones.itemLink('Parking Level 1')).toHaveCount(3);
         });
     });
 
     test.describe('US-ZON-006: View Child Zones', () => {
         test('AC-ZON-006-1: lists the child zones', async () => {
-            await zones.gotoItem(LEVEL_31);
+            await zones.gotoItem(BUILDING);
             await zones.openTab('children');
 
             for (const name of [
-                'L31 Activity Spaces',
-                'L31 Multifunction: 31.22',
-                'L31 R7 Activity Space',
+                'Ground Floor',
+                'Level 1',
+                'Level 2',
+                'Parking Level 1',
             ]) {
                 await expect(
-                    zones.tabContent.getByRole('link', { name }),
+                    zones.tabContent.getByRole('link', { name, exact: true }),
                 ).toBeVisible();
             }
         });
@@ -192,22 +203,22 @@ test.describe('Zones', () => {
         test('AC-ZON-007-1: lists the systems and links to them', async ({
             page,
         }) => {
-            await zones.gotoItem(L30_SPACES);
+            await zones.gotoItem(GROUND_FLOOR);
             await zones.openTab('systems');
 
             const system = zones.tabContent.getByRole('link', {
-                name: '2.30.08 - Activity Space',
+                name: '01.G.01 Sydney Harbour',
             });
             await system.click();
 
-            await expect(page).toHaveURL(/#\/systems\/sys-QjJvCH7_dA/);
-            await expect(zones.itemName).toHaveText('2.30.08 - Activity Space');
+            await expect(page).toHaveURL(/#\/systems\/space-1/);
+            await expect(zones.itemName).toHaveText('Sydney Harbour');
         });
     });
 
     test.describe('US-ZON-008: Manage Zone Triggers', () => {
         test('AC-ZON-008-1: shows the empty triggers list', async () => {
-            await zones.gotoItem(NEW_ZONE);
+            await zones.gotoItem(PARKING);
             await zones.openTab('triggers');
 
             await expect(zones.tabContent).toContainText(
@@ -218,7 +229,7 @@ test.describe('Zones', () => {
 
     test.describe('US-ZON-009: Manage Zone Metadata', () => {
         test('AC-ZON-009-1: shows the empty metadata list', async () => {
-            await zones.gotoItem(NEW_ZONE);
+            await zones.gotoItem(PARKING);
             await zones.openTab('metadata');
 
             await expect(zones.tabContent).toContainText(
@@ -232,7 +243,7 @@ test.describe('Zones', () => {
             await page.addInitScript(() => {
                 sessionStorage.setItem('PLACEOS.mocks.metadata_delay', '1000');
             });
-            await zones.gotoItem(NEW_ZONE);
+            await zones.gotoItem(PARKING);
             await zones.openTab('metadata');
 
             await expect(zones.metadataLoadingSpinner).toBeVisible();
@@ -242,7 +253,7 @@ test.describe('Zones', () => {
 
     test.describe('US-ZON-010: View Zone History', () => {
         test('AC-ZON-010-1: opens the settings history view', async () => {
-            await zones.gotoItem(NEW_ZONE);
+            await zones.gotoItem(PARKING);
             await zones.openTab('history');
 
             await expect(

@@ -8,9 +8,9 @@ import { FeaturePage } from './pages';
  * Uses the default mock modules from `src/app/mocks/data/modules.ts`.
  */
 
-/** Running logic module in system '2.30.Central-Core' */
+/** Running logic module in system '01.G.08 Strategy Center' */
 const LOGIC_ID = 'mod-lAHXR38sRX';
-const LOGIC_SYSTEM_ID = 'sys-l7lvddob4I';
+const LOGIC_SYSTEM_ID = 'space-8';
 /** Running device module with the custom name 'Door' */
 const DOOR_ID = 'mod-ke85vi5csE';
 /** Stopped device module */
@@ -208,13 +208,13 @@ test.describe('Modules', () => {
             await modules.gotoItem(LOGIC_ID);
             await modules.openTab('systems');
             await modules.tabContent
-                .getByRole('link', { name: '2.30.Central-Core' })
+                .getByRole('link', { name: '01.G.08 Strategy Center' })
                 .click();
 
             await expect(page).toHaveURL(
                 new RegExp(`#/systems/${LOGIC_SYSTEM_ID}/`),
             );
-            await expect(modules.itemName).toHaveText('2.30.Central-Core');
+            await expect(modules.itemName).toHaveText('Strategy Center');
         });
     });
 

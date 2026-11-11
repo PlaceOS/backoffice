@@ -1,6 +1,13 @@
 import { registerMockEndpoint } from '@placeos/ts-client';
 import { HashMap } from '../../common/types';
-import { API, generateBasicHandlers, updateItem } from '../common.mock';
+import {
+    API,
+    endpointData,
+    generateBasicHandlers,
+    notFound,
+    updateItem,
+} from '../common.mock';
+import { UI_MOCKS } from '../data/ui-mocks';
 import { AUTHORITY_ID } from './domains.mock';
 
 const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
@@ -33,40 +40,32 @@ function withNames(user: MockUser): MockUser {
     return { ...user, first_name, last_name: rest.join(' ') };
 }
 
-/** Seed users. Jeremy West is a support user, Stephen von Takach an admin */
-const USER_DATA = [
-    'Alex Sorafumo',
-    'Jonathan McFarlane',
-    'Stephen von Takach',
-    'Alexandre Chuvand',
-    'Jeremy West',
-    'Phil Kheav',
-    'Sravani Kotha',
-].map((name) => ({
-    // Stable ids, so saved data that points to a user survives a reload
-    id: `user-${name.toLowerCase().replace(/\W+/g, '-')}`,
-    name,
-    email: `${name.split(' ').join('.')}@place.tech`,
+/**
+ * Users of the user-interfaces mocks. IT staff are support users, and the
+ * user that the UI apps sign in as (`current_user_id`) is an admin
+ */
+const USER_DATA = UI_MOCKS.users.map((user) => ({
+    ...user,
     authority_id: AUTHORITY_ID,
-    support: name === 'Jeremy West',
-    sys_admin: name === 'Stephen von Takach',
+    support: user.department === 'IT',
 }));
 
-const CURRENT_USER = {
-    id: `current`,
-    name: 'Place Admin',
-    email: `admin@place.tech`,
-    authority_id: AUTHORITY_ID,
-    support: false,
-    sys_admin: true,
-};
+/** The signed-in user. Registered before `users/:id` */
+registerMockEndpoint({
+    path: `${API}/users/current`,
+    method: 'GET',
+    callback: () =>
+        endpointData(`${API}/users`).find(
+            ({ id }) => id === UI_MOCKS.current_user_id,
+        ) || notFound('User'),
+});
 
 /** Add basic API handlers for users */
-generateBasicHandlers<MockUser>(
-    `${API}/users`,
-    [...USER_DATA, CURRENT_USER].map(withNames),
-    { filter: FILTER_FN, prepare: withNames, id_prefix: 'user-' },
-);
+generateBasicHandlers<MockUser>(`${API}/users`, USER_DATA.map(withNames), {
+    filter: FILTER_FN,
+    prepare: withNames,
+    id_prefix: 'user-',
+});
 
 /** Restore a deleted user */
 registerMockEndpoint({

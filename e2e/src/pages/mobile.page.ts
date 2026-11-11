@@ -65,12 +65,16 @@ export class MobilePage extends BasePage {
         await expect(this.pickerInput).toBeVisible();
     }
 
-    /** Search for an item in the picker and pick it */
-    async pick(name: string): Promise<void> {
+    /**
+     * Search for an item in the picker and pick it
+     * @param heading Text of the details heading, which shows the display
+     *  name of the item when it has one
+     */
+    async pick(name: string, heading = name): Promise<void> {
         if (!(await this.pickerInput.isVisible())) await this.openPicker();
         await this.pickerInput.fill(name);
         await this.pickerItem(name).first().click();
-        await expect(this.itemName).toHaveText(name);
+        await expect(this.itemName).toHaveText(heading);
     }
 
     override async waitForLoad(): Promise<void> {

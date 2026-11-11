@@ -81,7 +81,7 @@ export const TRIGGER_INSTANCES = createMockStore<MockTriggerInstance[]>(
         {
             id: 'inst-room-occupied',
             trigger_id: 'trigger-room-occupied',
-            control_system_id: 'sys-QjJvCH7_dA',
+            control_system_id: 'space-1',
             enabled: true,
             important: false,
             triggered: false,

@@ -14,6 +14,11 @@ storage, so a change stays after `page.reload()` in the same test.
 A request that has no mock handler fails with a 404 and writes
 `[mock] No handler for <method> <url>` to the browser console.
 
+The mock zones, rooms and users are the same as in the user-interfaces mocks.
+They are in `src/app/mocks/data/ui-mocks.ts`, which
+`bun config/sync-ui-mocks.ts` makes. When you run the script again, the names
+and IDs can change, so update the tests that use them.
+
 ## Run the tests
 
 Install the browsers one time with `bunx playwright install`.

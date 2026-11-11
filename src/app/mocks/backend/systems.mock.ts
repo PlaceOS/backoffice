@@ -9,7 +9,8 @@ import {
     now,
     updateItem,
 } from '../common.mock';
-import { SYSTEMS as SYSTEM_DATA } from '../data/systems';
+import { AV_SETUPS } from '../data/systems';
+import { UI_MOCKS } from '../data/ui-mocks';
 import { TRIGGER_INSTANCES, expandInstance } from './triggers.mock';
 
 const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
@@ -47,6 +48,12 @@ registerMockEndpoint({
         );
     },
 });
+
+/** The rooms of the user-interfaces mocks, with room control on some */
+const SYSTEM_DATA = UI_MOCKS.systems.map((room) => ({
+    ...room,
+    ...AV_SETUPS[room.id],
+}));
 
 /** Add basic API handlers for systems */
 generateBasicHandlers(`${API}/systems`, SYSTEM_DATA, {

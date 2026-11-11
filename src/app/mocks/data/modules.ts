@@ -152,7 +152,7 @@ export const MODULES = [
     },
     {
         driver_id: 'dep-KvMtm2DJm8',
-        control_system_id: 'sys-l7lvddob4I',
+        control_system_id: 'space-8',
         edge_id: 'edge-KiBexw2DWK',
         ip: null,
         tls: null,
@@ -162,7 +162,7 @@ export const MODULES = [
         uri: null,
         custom_name: null,
         settings: {
-            joined: { initiator: 'sys-l7lvddob4I', rooms: ['sys-l7lvddob4I'] },
+            joined: { initiator: 'space-8', rooms: ['space-8'] },
         },
         updated_at: 1587515684,
         created_at: 1549322820,
@@ -205,7 +205,7 @@ export const MODULES = [
     },
     {
         driver_id: 'dep-hxXtCor9su',
-        control_system_id: 'sys-beJ1G79tKo',
+        control_system_id: 'space-12',
         edge_id: 'edge-KiBexw2DWK',
         ip: null,
         tls: null,
@@ -241,7 +241,7 @@ export const MODULES = [
     },
     {
         driver_id: 'dep-hxXtCor9su',
-        control_system_id: 'sys-beGO1NjTjy',
+        control_system_id: 'space-11',
         edge_id: 'edge-KiBexw2DWK',
         ip: null,
         tls: null,

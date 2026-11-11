@@ -8,7 +8,7 @@ export const AUTHORITY_ID = 'mock-authority';
 const DOMAIN_DATA = [
     {
         id: AUTHORITY_ID,
-        name: 'Place Technology',
+        name: 'PlaceOS Global',
         domain: DOMAIN,
         email_domains: [DOMAIN],
     },

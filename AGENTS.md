@@ -21,6 +21,7 @@ bun run e2e                            # Playwright E2E tests (mock backend)
 e2e/stack/up.sh                        # Local PlaceOS stack in Docker (https://localhost:9543)
 bun run e2e:local                      # Playwright E2E tests against the local stack
 e2e/stack/down.sh                      # Stop the stack (--volumes to remove its data)
+bun config/sync-ui-mocks.ts            # Copy the mock zones, rooms and users from ../user-interfaces
 
 # Linting
 bun run lint                           # ESLint
