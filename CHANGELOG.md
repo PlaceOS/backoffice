@@ -70,6 +70,10 @@ All notable changes to this project will be documented in this file.
 - MQTT re-sync and clear & re-sync on the database page
 - Configure tenant maximum booking length (#327)
 
+#### Mocks
+
+- Show the same buildings, rooms and staff as the other PlaceOS apps
+
 #### Systems
 
 - Allow editing camera snapshot URLs
