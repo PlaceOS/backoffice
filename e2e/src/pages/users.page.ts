@@ -28,7 +28,7 @@ export class UsersPage extends BasePage {
     }): Promise<void> {
         await expect(
             this.dialog.getByRole('combobox', { name: 'Domain' }),
-        ).toContainText('Place Technology');
+        ).toContainText('PlaceOS Global');
         await this.field('First Name*').fill(data.first_name);
         await this.field('Last Name*').fill(data.last_name);
         await this.field('Email*').fill(data.email);

@@ -14,7 +14,7 @@ const PLACE_ID = 'mock-authority';
 const DOMAINS = [
     {
         id: PLACE_ID,
-        name: 'Place Technology',
+        name: 'PlaceOS Global',
         domain: 'place.tech',
         description: 'Main tenant',
         email_domains: ['place.tech'],
@@ -40,7 +40,7 @@ test.describe('Domains', () => {
         test('AC-DOM-001-1: lists every domain', async () => {
             await domains.goto();
 
-            await expect(domains.itemLink('Place Technology')).toBeVisible();
+            await expect(domains.itemLink('PlaceOS Global')).toBeVisible();
             await expect(domains.itemLink('Acme Corporation')).toBeVisible();
         });
 
@@ -49,7 +49,7 @@ test.describe('Domains', () => {
             await domains.search('Acme');
 
             await expect(domains.itemLink('Acme Corporation')).toBeVisible();
-            await expect(domains.itemLink('Place Technology')).toHaveCount(0);
+            await expect(domains.itemLink('PlaceOS Global')).toHaveCount(0);
         });
 
         test('AC-DOM-001-3: selecting a domain opens its details', async ({
@@ -138,7 +138,7 @@ test.describe('Domains', () => {
             await domains.deleteSelected();
 
             await expect(domains.itemLink('Acme Corporation')).toHaveCount(0);
-            await expect(domains.itemLink('Place Technology')).toBeVisible();
+            await expect(domains.itemLink('PlaceOS Global')).toBeVisible();
         });
     });
 
@@ -179,11 +179,12 @@ test.describe('Domains', () => {
             await domains.gotoItem(PLACE_ID);
             await domains.openTab('users');
 
-            const admin = domains.tabContent.getByRole('row', {
-                name: /Place Admin/,
+            // Sorted by name. The table only renders the rows in view
+            const support = domains.tabContent.getByRole('row', {
+                name: /Adrian Kowalski/,
             });
-            await expect(admin).toContainText('admin@place.tech');
-            await expect(admin.locator('code')).toHaveText('Admin');
+            await expect(support).toContainText('adrian.kowalski@place.tech');
+            await expect(support.locator('code')).toHaveText('Support');
         });
 
         test('AC-DOM-010-1: leaves out users of other domains', async () => {

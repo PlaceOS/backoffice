@@ -1,6 +1,7 @@
 import { registerMockEndpoint } from '@placeos/ts-client';
 import { HashMap } from '../../common/types';
 import {
+    API,
     DOMAIN,
     STAFF_API,
     endpointData,
@@ -8,6 +9,7 @@ import {
     nameFilter,
     updateItem,
 } from '../common.mock';
+import { UI_MOCKS } from '../data/ui-mocks';
 
 // ============ TENANTS ============
 
@@ -114,15 +116,12 @@ registerMockEndpoint({
 
 // ============ CURRENT USER ============
 
+/** Same user as the engine `users/current` */
 registerMockEndpoint({
     path: `${STAFF_API}/users/current`,
     method: 'GET',
-    callback: () => ({
-        id: 'current',
-        name: 'Place Admin',
-        email: 'admin@place.tech',
-        sys_admin: true,
-        support: true,
-        groups: [],
-    }),
+    callback: () =>
+        endpointData(`${API}/users`).find(
+            ({ id }) => id === UI_MOCKS.current_user_id,
+        ),
 });

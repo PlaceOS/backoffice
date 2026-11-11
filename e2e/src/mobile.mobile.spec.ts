@@ -9,7 +9,12 @@ import { MobilePage } from './pages';
  * - items are picked from the `item-selection` overlay
  */
 
-const ACTIVITY_SPACE = '2.30.08 - Activity Space';
+const ACTIVITY_SPACE = '01.G.01 Sydney Harbour';
+/** The details heading shows the display name of the room */
+const ACTIVITY_SPACE_TITLE = 'Sydney Harbour';
+/** First room of the list, which is sorted by name. The list only renders
+ *  the rows in view */
+const FIRST_SPACE = '01.1.01 Think Tank';
 
 /** Sections reached from the menu and their route */
 const MENU_SECTIONS = [
@@ -37,7 +42,7 @@ test.describe('Mobile', () => {
 
         test('the menu opens and closes', async () => {
             await systems.goto();
-            await systems.pick(ACTIVITY_SPACE);
+            await systems.pick(ACTIVITY_SPACE, ACTIVITY_SPACE_TITLE);
 
             await systems.openMenu();
             await expect(
@@ -52,7 +57,7 @@ test.describe('Mobile', () => {
             for (const section of MENU_SECTIONS) {
                 await test.step(section.name, async () => {
                     // The picker covers the menu button until an item is picked
-                    await systems.gotoItem('sys-QjJvCH7_dA');
+                    await systems.gotoItem('space-1');
                     await systems.openMenu();
                     await systems.menuLink(section.name).click();
 
@@ -70,15 +75,15 @@ test.describe('Mobile', () => {
             await systems.goto();
 
             await expect(systems.pickerInput).toBeVisible();
-            await expect(systems.pickerItem(ACTIVITY_SPACE)).toBeVisible();
+            await expect(systems.pickerItem(FIRST_SPACE)).toBeVisible();
         });
 
         test('search filters the list', async () => {
             await systems.goto();
-            await systems.pickerInput.fill('2.30.09');
+            await systems.pickerInput.fill('01.G.02');
 
             await expect(
-                systems.pickerItem('2.30.09 - Activity Space'),
+                systems.pickerItem('01.G.02 Melbourne Cup'),
             ).toBeVisible();
             await expect(systems.pickerItem(ACTIVITY_SPACE)).toHaveCount(0);
         });
@@ -87,33 +92,34 @@ test.describe('Mobile', () => {
             page,
         }) => {
             await systems.goto();
+            await systems.pickerInput.fill('01.G.01');
             await systems.pickerItem(ACTIVITY_SPACE).tap();
 
-            await expect(page).toHaveURL(/#\/systems\/sys-QjJvCH7_dA\//);
-            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE);
+            await expect(page).toHaveURL(/#\/systems\/space-1\//);
+            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_TITLE);
             await expect(systems.pickerInput).toBeHidden();
         });
 
         test('the picker opens again after a pick', async () => {
             await systems.goto();
-            await systems.pick(ACTIVITY_SPACE);
+            await systems.pick(ACTIVITY_SPACE, ACTIVITY_SPACE_TITLE);
 
             await systems.openPicker();
             await expect(systems.pickerInput).toHaveValue(ACTIVITY_SPACE);
-            await systems.pick('2.30.09 - Activity Space');
+            await systems.pick('01.G.02 Melbourne Cup', 'Melbourne Cup');
         });
     });
 
     test.describe('Systems', () => {
         test('tabs show their content', async () => {
             await systems.goto();
-            await systems.pick(ACTIVITY_SPACE);
+            await systems.pick(ACTIVITY_SPACE, ACTIVITY_SPACE_TITLE);
 
             await systems.openTab('zones');
 
             await expect(
                 systems.tabContent.getByRole('link', {
-                    name: 'Tower 2',
+                    name: 'Innovation Hub',
                     exact: true,
                 }),
             ).toBeVisible();
@@ -121,7 +127,7 @@ test.describe('Mobile', () => {
 
         test('the edit form holds the current name', async () => {
             await systems.goto();
-            await systems.pick(ACTIVITY_SPACE);
+            await systems.pick(ACTIVITY_SPACE, ACTIVITY_SPACE_TITLE);
             await systems.openEditModal();
 
             await expect(
@@ -131,7 +137,7 @@ test.describe('Mobile', () => {
 
         test('closing the edit form keeps the system unchanged', async () => {
             await systems.goto();
-            await systems.pick(ACTIVITY_SPACE);
+            await systems.pick(ACTIVITY_SPACE, ACTIVITY_SPACE_TITLE);
             await systems.openEditModal();
 
             await systems.dialog
@@ -140,7 +146,7 @@ test.describe('Mobile', () => {
             await systems.discardChanges();
 
             await expect(systems.dialog).toBeHidden();
-            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE);
+            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_TITLE);
         });
     });
 });

@@ -6,7 +6,7 @@ import {
     generateBasicHandlers,
     notFound,
 } from '../common.mock';
-import { ZONES as ZONE_DATA } from '../data/zones';
+import { UI_MOCKS } from '../data/ui-mocks';
 
 const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
@@ -52,8 +52,9 @@ registerMockEndpoint({
         ].sort(),
 });
 
-/** Add basic API handlers for zones */
-generateBasicHandlers(`${API}/zones`, ZONE_DATA, {
+/** Add basic API handlers for zones. The zones are the same as in the
+ *  user-interfaces mocks */
+generateBasicHandlers(`${API}/zones`, UI_MOCKS.zones, {
     filter: FILTER_FN,
     id_prefix: 'zone-',
 });

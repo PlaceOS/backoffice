@@ -7,6 +7,7 @@ import {
     endpointToStorageKey,
     generateBasicHandlers,
 } from '../common.mock';
+import { UI_MOCKS } from '../data/ui-mocks';
 import { AUTHORITY_ID } from './domains.mock';
 
 const SEED_TIME = '2024-03-01T09:00:00.000Z';
@@ -79,18 +80,18 @@ const GROUP_DATA: MockGroup[] = [
     },
 ];
 
-/** User IDs are from `./users.mock` */
+/** User IDs are from `../data/ui-mocks` */
 const GROUP_USER_SEED: [string, string, number][] = [
-    ['user-alex-sorafumo', 'group-facilities', 1 | 4],
-    ['user-jeremy-west', 'group-av-technicians', 1 | 16],
-    ['current', 'group-reception', 255],
+    ['staff-9', 'group-facilities', 1 | 4], // Lisa Zhang
+    ['staff-12', 'group-av-technicians', 1 | 16], // Chris Anderson
+    [UI_MOCKS.current_user_id, 'group-reception', 255],
 ];
 
-/** Zone IDs are from `../data/zones` */
+/** Zone IDs are from `../data/ui-mocks` */
 const GROUP_ZONE_SEED: [string, string, number, boolean][] = [
-    ['group-facilities', 'zone-Kl0HN~nDwc', 1, false], // Tower 2
-    ['group-av-technicians', 'zone-LEHeo501Er', 1 | 16, false], // Level 30
-    ['group-av-technicians', 'zone-QjLXbYUxuC', 0, true], // Level 31
+    ['group-facilities', 'bld-01', 1, false], // Innovation Hub
+    ['group-av-technicians', 'bld-01_lvl-1', 1 | 16, false], // Level 1
+    ['group-av-technicians', 'bld-01_lvl-2', 0, true], // Level 2
 ];
 
 const GROUP_FILTER_FN = (item: MockGroup, q: HashMap) => {

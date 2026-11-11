@@ -1,21 +1,11 @@
-export const SYSTEMS = [
-    {
+/**
+ * Room control setup of the UI rooms that have AV equipment, by system ID.
+ * The rooms come from `./ui-mocks`. Module IDs are from `./modules`
+ */
+export const AV_SETUPS: Record<string, AvSetup> = {
+    'space-1': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.30.08 - Activity Space',
-        description:
-            'https://bookings.place.tech/bookings/#/sys-QjJvCH7_dA?trust=true&fixed_device=true',
-        email: 'room-2.30.08@place.tech',
-        capacity: 12,
-        features:
-            'System Display DigitalIO Camera Switcher Mixer Bookings Door Lighting',
-        bookable: true,
         installed_ui_devices: 0,
-        zones: [
-            'zone-iIdF20naW0',
-            'zone-LEHeo501Er',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-h4g~vwlgiC',
             'mod-hxOq9VU66_',
@@ -124,27 +114,12 @@ export const SYSTEMS = [
             vol_max: 200,
             doors: [{ title: 'Door', module: 'Door_1', feedback: 'relay1' }],
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-1',
         created_at: 1506944220,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-QjJvCH7_dA',
-        id: 'sys-QjJvCH7_dA',
     },
-    {
+    'space-2': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.30.09 - Activity Space',
-        description:
-            'https://bookings.place.tech/bookings/#/sys-QjKHN-ai1O?trust=true&fixed_device=true',
-        email: 'room-2.30.09@place.tech',
-        capacity: 6,
-        features: 'DigitalIO System Mixer Display Bookings Lighting',
-        bookable: true,
         installed_ui_devices: 0,
-        zones: [
-            'zone-iIdF20naW0',
-            'zone-LEHeo501Er',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-h4hCj7uTt9',
             'mod-hzYH2sYSXw',
@@ -191,27 +166,12 @@ export const SYSTEMS = [
                 },
             },
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-2',
         created_at: 1506944410,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-QjKHN-ai1O',
-        id: 'sys-QjKHN-ai1O',
     },
-    {
+    'space-3': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.30.10 - Activity Space',
-        description:
-            'https://bookings.place.tech/bookings/#/sys-QjKOiqWK8c?trust=true&fixed_device=true',
-        email: 'room-2.30.10@place.tech',
-        capacity: 6,
-        features: 'System Display DigitalIO Mixer Bookings Lighting',
-        bookable: true,
         installed_ui_devices: 0,
-        zones: [
-            'zone-iIdF20naW0',
-            'zone-LEHeo501Er',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-h4hIdyCaGK',
             'mod-hzpSvfLsFV',
@@ -255,27 +215,12 @@ export const SYSTEMS = [
                 },
             },
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-3',
         created_at: 1506944465,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-QjKOiqWK8c',
-        id: 'sys-QjKOiqWK8c',
     },
-    {
+    'space-4': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.30.11 - Activity Space',
-        description:
-            'https://bookings.place.tech/bookings/#/sys-QjKX8Lv9AH?trust=true&fixed_device=true',
-        email: 'room-2.30.11@place.tech',
-        capacity: 4,
-        features: 'Display DigitalIO Mixer System Bookings Lighting',
-        bookable: true,
         installed_ui_devices: 0,
-        zones: [
-            'zone-iIdF20naW0',
-            'zone-LEHeo501Er',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-h4hOgsNLpF',
             'mod-hztigUu7_J',
@@ -319,22 +264,12 @@ export const SYSTEMS = [
                 },
             },
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-4',
         created_at: 1506944529,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-QjKX8Lv9AH',
-        id: 'sys-QjKX8Lv9AH',
     },
-    {
+    'space-5': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.30.12',
-        description:
-            'No Control: Cisco VC Room\nhttps://bookings.place.tech/bookings/#/sys-QjKij0qSn8?trust=true&fixed_device=true',
-        email: 'room-2.30.12@place.tech',
-        capacity: 8,
-        features: 'Bookings System',
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-LEHeo501Er', 'zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: ['mod-R8pIEBAOS0', 'mod-SXos0Y6_16'],
         settings: {
             map_id: '2.30.12',
@@ -343,21 +278,12 @@ export const SYSTEMS = [
             ideal_for: 'Havin a swell time',
             contains: 'Cheese',
         },
-        created_at: 1506944616,
         support_url: null,
-        id: 'sys-QjKij0qSn8',
+        created_at: 1506944616,
     },
-    {
+    'space-6': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.30.13',
-        description:
-            'No Control: Crestron Control Room\nhttps://bookings.place.tech/bookings/#/sys-QjKsYeL1NZ?trust=true&fixed_device=true',
-        email: 'room-2.30.13@place.tech',
-        capacity: 4,
-        features: 'Bookings',
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-LEHeo501Er', 'zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: ['mod-kZFFJhqTZc'],
         settings: {
             map_id: '2.30.13',
@@ -366,21 +292,12 @@ export const SYSTEMS = [
             ideal_for: 'Havin a swell time',
             contains: 'Cheese',
         },
-        created_at: 1506944690,
         support_url: null,
-        id: 'sys-QjKsYeL1NZ',
+        created_at: 1506944690,
     },
-    {
+    'space-7': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.30.14',
-        description:
-            'No Control: Analogue Room\nhttps://bookings.place.tech/bookings/#/sys-QjL1Dac8-K?trust=true&fixed_device=true',
-        email: 'room-2.30.14@place.tech',
-        capacity: 5,
-        features: 'Display Bookings',
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-LEHeo501Er', 'zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: [
             'mod-hTbiw7m1x~',
             'mod-hTbkuuyqt-',
@@ -394,20 +311,12 @@ export const SYSTEMS = [
             ideal_for: 'Havin a swell time',
             contains: 'Cheese',
         },
-        created_at: 1506944778,
         support_url: null,
-        id: 'sys-QjL1Dac8-K',
+        created_at: 1506944778,
     },
-    {
+    'space-8': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.30.Central-Core',
-        description: null,
-        email: 'example@placeos.com',
-        capacity: 0,
-        features: null,
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-LEHeo501Er', 'zone-Kl0HN~nDwc'],
         modules: ['mod-l7l-m0gK7G', 'mod-lAHXR38sRX'],
         settings: {
             inputs: ['Laptop'],
@@ -441,41 +350,24 @@ export const SYSTEMS = [
             lighting_group: 1,
             touch_enabled: false,
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-8',
         created_at: 1549242116,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-l7lvddob4I',
-        id: 'sys-l7lvddob4I',
     },
-    {
+    'space-9': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.30.DS2',
-        description: null,
-        email: null,
-        capacity: 0,
-        features: null,
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-LEHeo501Er', 'zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: ['mod-SHo_IR~Dhf', 'mod-SHp8z9U30R'],
         settings: { ideal_for: 'Havin a swell time', contains: 'Cheese' },
-        created_at: 1510209559,
         support_url: null,
-        id: 'sys-SHoqafKa7Q',
+        created_at: 1510209559,
     },
-    {
+    'space-10': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.31.01 - Activity Space (A & B 20 pax)',
-        description: null,
-        email: 'room-2.31.01ab@place.tech',
-        capacity: 20,
-        features: ' presentation_screen video_conference',
-        bookable: true,
         installed_ui_devices: 0,
-        zones: ['zone-QjLXbYUxuC', 'zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: [],
         settings: {
             access_group: 'BB T1 CARPE DIEM Meeting Room 01 Level 31',
-            linked_rooms: ['sys-beGO1NjTjy', 'sys-beJ1G79tKo'],
+            linked_rooms: ['space-11', 'space-12'],
             ignore_modes: true,
             map_id: '2.31.01A',
             extra_features: 'presentation_screen video_conference',
@@ -486,10 +378,7 @@ export const SYSTEMS = [
                 'Working Kit (markers, butcher’s paper, etc)<br>Reconfigurable furniture<br>AV Screen with Plug n Play<br>Operable wall<br>Writable walls',
             defaults: { default_mode: 'standalone' },
             join_modes: {
-                joined: {
-                    rooms: ['sys-beGO1NjTjy', 'sys-beJ1G79tKo'],
-                    mode: 'joined',
-                },
+                joined: { rooms: ['space-11', 'space-12'], mode: 'joined' },
             },
             modes: {
                 standalone: {
@@ -539,28 +428,12 @@ export const SYSTEMS = [
                 },
             },
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-10',
         created_at: 1532266169,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-cx_shjA9zd',
-        id: 'sys-cx_shjA9zd',
     },
-    {
+    'space-11': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.31.01 A (Left Only 10 pax)',
-        description:
-            'https://bookings.place.tech/bookings/#/sys-beGO1NjTjy?trust=true&fixed_device=true',
-        email: 'room-2.31.01a@place.tech',
-        capacity: 10,
-        features:
-            'System Switcher Display Mixer Bookings Door Camera Lighting presentation_screen video_conference',
-        bookable: true,
         installed_ui_devices: 0,
-        zones: [
-            'zone-beI-19FMdl',
-            'zone-QjLXbYUxuC',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-beGTIJ6WjN',
             'mod-beHKasXG~1',
@@ -585,7 +458,7 @@ export const SYSTEMS = [
                 present: 6,
                 shutdown: 7,
             },
-            linked_rooms: ['sys-cx_shjA9zd'],
+            linked_rooms: ['space-10'],
             ignore_modes: true,
             map_id: '2.31.01A',
             extra_features: 'presentation_screen video_conference',
@@ -606,10 +479,7 @@ export const SYSTEMS = [
             ],
             defaults: { default_mode: 'standalone' },
             join_modes: {
-                joined: {
-                    rooms: ['sys-beGO1NjTjy', 'sys-beJ1G79tKo'],
-                    mode: 'joined',
-                },
+                joined: { rooms: ['space-11', 'space-12'], mode: 'joined' },
             },
             modes: {
                 standalone: {
@@ -689,28 +559,12 @@ export const SYSTEMS = [
                 },
             },
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-11',
         created_at: 1529566281,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-beGO1NjTjy',
-        id: 'sys-beGO1NjTjy',
     },
-    {
+    'space-12': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.31.01 B (Right Only 10 pax)',
-        description:
-            'https://bookings.place.tech/bookings/#/sys-beJ1G79tKo?trust=true&fixed_device=true',
-        email: 'room-2.31.01b@place.tech',
-        capacity: 10,
-        features:
-            'System Mixer Switcher Display Bookings Door Camera Lighting presentation_screen video_conference',
-        bookable: true,
         installed_ui_devices: 0,
-        zones: [
-            'zone-beI-19FMdl',
-            'zone-QjLXbYUxuC',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-beJ5HHkTd5',
             'mod-beHxMFgTG1',
@@ -735,7 +589,7 @@ export const SYSTEMS = [
                 present: 2,
                 shutdown: 3,
             },
-            linked_rooms: ['sys-cx_shjA9zd'],
+            linked_rooms: ['space-10'],
             is_slave_system: true,
             Laptop: ['floorbox_right'],
             Wireless: ['wepresent_right'],
@@ -769,28 +623,12 @@ export const SYSTEMS = [
             contains:
                 'Working Kit (markers, butcher’s paper, etc)<br>Reconfigurable furniture<br>AV Screen with Plug n Play<br>Operable wall<br>Writable walls',
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-12',
         created_at: 1529567580,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-beJ1G79tKo',
-        id: 'sys-beJ1G79tKo',
     },
-    {
+    'space-13': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.31.02 - Activity Space',
-        description:
-            'AV System Type 2/C\nArchitectural ID 31.05\nhttps://bookings.place.tech/bookings/#/sys-QjMD6Hns-x?trust=true&fixed_device=true',
-        email: 'room-2.31.02@place.tech',
-        capacity: 8,
-        features:
-            'Bookings System Display DigitalIO IPTV Lighting Mixer presentation_screen video_conference',
-        bookable: true,
         installed_ui_devices: 2,
-        zones: [
-            'zone-WjDE_sLQy8',
-            'zone-QjLXbYUxuC',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-R8yjCCzYu~',
             'mod-RyikzoKtfs',
@@ -899,28 +737,12 @@ export const SYSTEMS = [
             contains:
                 'Working Kit (markers, butcher’s paper, etc)<br>Reconfigurable furniture (jellybean tables and stools)<br>AV Screen with Plug n Play',
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-13',
         created_at: 1506945358,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-QjMD6Hns-x',
-        id: 'sys-QjMD6Hns-x',
     },
-    {
+    'space-14': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.31.03 - Activity Space',
-        description:
-            'AV System Type 2/B2\nArchitectural ID 31.06\nhttps://bookings.place.tech/bookings/#/sys-QjMMehsWRl?trust=true&fixed_device=true',
-        email: 'room-2.31.03@place.tech',
-        capacity: 6,
-        features:
-            'Bookings System Display IPTV DigitalIO Lighting Mixer presentation_screen video_conference',
-        bookable: true,
         installed_ui_devices: 2,
-        zones: [
-            'zone-WjDE_sLQy8',
-            'zone-QjLXbYUxuC',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-R8ykXZ6wm1',
             'mod-RyimFWj0FM',
@@ -966,28 +788,12 @@ export const SYSTEMS = [
             contains:
                 'Working Kit (markers, butcher’s paper, etc)<br>Reconfigurable furniture (jellybean tables and stools)<br>AV Screen with Plug n Play',
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-14',
         created_at: 1506945430,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-QjMMehsWRl',
-        id: 'sys-QjMMehsWRl',
     },
-    {
+    'space-15': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.31.04 - Activity Space',
-        description:
-            'AV System Type 2/B1\nArchitectural ID 31.07\nhttps://bookings.place.tech/bookings/#/sys-QjMct7gBbm?trust=true&fixed_device=true',
-        email: 'room-2.31.04@place.tech',
-        capacity: 6,
-        features:
-            'Bookings System Display DigitalIO Lighting Mixer presentation_screen video_conference',
-        bookable: true,
         installed_ui_devices: 2,
-        zones: [
-            'zone-WjDE_sLQy8',
-            'zone-QjLXbYUxuC',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-R8ym4MgENL',
             'mod-Ryin8Cj0Mr',
@@ -1032,28 +838,12 @@ export const SYSTEMS = [
             contains:
                 'Working Kit (markers, butcher’s paper, etc)<br>Fixed furniture<br>AV Screen with Plug n Play',
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-15',
         created_at: 1506945552,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-QjMct7gBbm',
-        id: 'sys-QjMct7gBbm',
     },
-    {
+    'space-16': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.31.05 - Activity Space',
-        description:
-            'AV System Type 2/A\nArchitectural ID 31.08\nhttps://bookings.place.tech/bookings/#/sys-QjMpUFeI_U?trust=true&fixed_device=true',
-        email: 'room-2.31.05@place.tech',
-        capacity: 8,
-        features:
-            'Bookings System Display DigitalIO Lighting Mixer presentation_screen video_conference',
-        bookable: true,
         installed_ui_devices: 2,
-        zones: [
-            'zone-WjDE_sLQy8',
-            'zone-QjLXbYUxuC',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-R8ynUyr4kp',
             'mod-Ryg~d3Ri1d',
@@ -1098,27 +888,12 @@ export const SYSTEMS = [
             contains:
                 'Working Kit (markers, butcher’s paper, etc)<br>Fixed furniture<br>AV Screen with Plug n Play',
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-16',
         created_at: 1506945648,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-QjMpUFeI_U',
-        id: 'sys-QjMpUFeI_U',
     },
-    {
+    'space-17': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.31.06 - Activity Space',
-        description:
-            'Booking only. No control.\nhttps://bookings.place.tech/bookings/#/sys-QjM_tz-YSt?trust=true&fixed_device=true',
-        email: 'room-2.31.06@place.tech',
-        capacity: 4,
-        features: 'System Bookings Door',
-        bookable: true,
         installed_ui_devices: 0,
-        zones: [
-            'zone-WjDE_sLQy8',
-            'zone-QjLXbYUxuC',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-h4fNMjyy~D',
             'mod-hxA4MQLRfz',
@@ -1135,26 +910,12 @@ export const SYSTEMS = [
             contains:
                 'Working Kit (markers, butcher’s paper, etc)<br>Analog Room (No AV)',
         },
-        created_at: 1506945741,
         support_url: null,
-        id: 'sys-QjM_tz-YSt',
+        created_at: 1506945741,
     },
-    {
+    'space-18': {
         edge_id: 'edge-KiBexw2DWK',
-        name: '2.31.07 - Activity Space',
-        description:
-            'https://bookings.place.tech/bookings/#/sys-QjN7-t7y5n?trust=true&fixed_device=true',
-        email: 'room-2.31.07@place.tech',
-        capacity: 4,
-        features: 'DigitalIO System Mixer Display Bookings Door',
-        bookable: true,
         installed_ui_devices: 0,
-        zones: [
-            'zone-kG8cn_fkH9',
-            'zone-QjLXbYUxuC',
-            'zone-Kl0HN~nDwc',
-            'zone-Kl0E0HmCJ3',
-        ],
         modules: [
             'mod-h4fQniTgxj',
             'mod-hTMwXPSGXn',
@@ -1176,21 +937,12 @@ export const SYSTEMS = [
                 'Working Kit (markers, butcher’s paper, etc)<br>Fixed Furniture<br>AV Screen with Plug n Play',
             doors: [{ title: 'Door', module: 'Door_1', feedback: 'relay1' }],
         },
+        support_url: 'https://control.place.tech/meeting/#/?ctrl=space-18',
         created_at: 1506945810,
-        support_url:
-            'https://control.place.tech/meeting/#/?ctrl=sys-QjN7-t7y5n',
-        id: 'sys-QjN7-t7y5n',
     },
-    {
+    'space-19': {
         edge_id: 'edge-KiBexw2DWK',
-        name: 'Barangaroo Tower 2',
-        description: null,
-        email: null,
-        capacity: 0,
-        features: null,
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-Kl0E0HmCJ3'],
         modules: ['mod-OMdzmCZQHy', 'mod-Oy7lt3wbhB'],
         settings: {
             terms: 'assets/terms.html',
@@ -1198,36 +950,20 @@ export const SYSTEMS = [
             ideal_for: 'Havin a swell time',
             contains: 'Cheese',
         },
-        created_at: 1501635849,
         support_url: null,
-        id: 'sys-O8kPamShYv',
+        created_at: 1501635849,
     },
-    {
+    'space-20': {
         edge_id: 'edge-KiBexw2DWK',
-        name: 'Level 31 Foyer',
-        description: null,
-        email: null,
-        capacity: 0,
-        features: null,
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-QjLXbYUxuC', 'zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: ['mod-c9he5pLs8H'],
         settings: { ideal_for: 'Havin a swell time', contains: 'Cheese' },
-        created_at: 1510790671,
         support_url: null,
-        id: 'sys-Sa1DsnvHbM',
+        created_at: 1510790671,
     },
-    {
+    'space-21': {
         edge_id: 'edge-KiBexw2DWK',
-        name: 'Sky Rise Board Room',
-        description: null,
-        email: 'mr-l41-br@place.tech',
-        capacity: 20,
-        features: 'Bookings presentation_screen',
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: ['mod-MOom7Q4xeI'],
         settings: {
             extra_features: 'presentation_screen',
@@ -1236,20 +972,12 @@ export const SYSTEMS = [
             ideal_for: 'Havin a swell time',
             contains: 'Cheese',
         },
-        created_at: 1494911022,
         support_url: null,
-        id: 'sys-KvhW3sI7z0',
+        created_at: 1494911022,
     },
-    {
+    'space-33': {
         edge_id: 'edge-KiBexw2DWK',
-        name: 'South West Meeting Table',
-        description: null,
-        email: 'mr-l38-sw@place.tech',
-        capacity: 12,
-        features: ' presentation_screen',
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: [],
         settings: {
             map_id: '38.SWMT',
@@ -1258,36 +986,20 @@ export const SYSTEMS = [
             ideal_for: 'Havin a swell time',
             contains: 'Cheese',
         },
-        created_at: 1498199348,
         support_url: null,
-        id: 'sys-MUuKLCkZCJ',
+        created_at: 1498199348,
     },
-    {
+    'space-34': {
         edge_id: 'edge-KiBexw2DWK',
-        name: 'Tower Two',
-        description: null,
-        email: 'towertwovisitors@place.tech',
-        capacity: 0,
-        features: null,
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-QjLXbYUxuC', 'zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: [],
         settings: { cost_hour: 0 },
-        created_at: 1545104999,
         support_url: null,
-        id: 'sys-j7wemZ_tPs',
+        created_at: 1545104999,
     },
-    {
+    'space-35': {
         edge_id: 'edge-KiBexw2DWK',
-        name: 'VC Meeting Room',
-        description: null,
-        email: 'mr-l30-vc@place.tech',
-        capacity: 8,
-        features: ' presentation_screen cisco_video_conference',
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-LEHeo501Er', 'zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: ['mod-R8p-DweT5-'],
         settings: {
             extra_features: 'presentation_screen cisco_video_conference',
@@ -1295,20 +1007,12 @@ export const SYSTEMS = [
             ideal_for: 'Havin a swell time',
             contains: 'Cheese',
         },
-        created_at: 1494911090,
         support_url: null,
-        id: 'sys-Kvhf1pPGNY',
+        created_at: 1494911090,
     },
-    {
+    'space-36': {
         edge_id: 'edge-KiBexw2DWK',
-        name: 'West Lounge Meeting Table',
-        description: null,
-        email: 'mr-l38-wl@place.tech',
-        capacity: 12,
-        features: ' presentation_screen',
-        bookable: false,
         installed_ui_devices: 0,
-        zones: ['zone-Kl0HN~nDwc', 'zone-Kl0E0HmCJ3'],
         modules: [],
         settings: {
             extra_features: 'presentation_screen',
@@ -1317,8 +1021,17 @@ export const SYSTEMS = [
             ideal_for: 'Havin a swell time',
             contains: 'Cheese',
         },
-        created_at: 1494911112,
         support_url: null,
-        id: 'sys-Kvhi3KT033',
+        created_at: 1494911112,
     },
-];
+};
+
+/** Fields of a system that the UI rooms do not have */
+export interface AvSetup {
+    edge_id: string;
+    installed_ui_devices: number;
+    modules: string[];
+    settings: Record<string, unknown>;
+    support_url: string;
+    created_at: number;
+}

@@ -41,7 +41,7 @@ const GROUPS = [
 
 const GROUP_USERS = [
     {
-        user_id: 'user-alex-sorafumo',
+        user_id: 'staff-9',
         group_id: 'group-facilities',
         permissions: 1 | 4,
     },
@@ -50,13 +50,13 @@ const GROUP_USERS = [
 const GROUP_ZONES = [
     {
         group_id: 'group-av-technicians',
-        zone_id: 'zone-LEHeo501Er', // Level 30
+        zone_id: 'bld-01_lvl-1', // Level 1
         permissions: 1 | 16,
         deny: false,
     },
     {
         group_id: 'group-av-technicians',
-        zone_id: 'zone-QjLXbYUxuC', // Level 31
+        zone_id: 'bld-01_lvl-2', // Level 2
         permissions: 0,
         deny: true,
     },
@@ -237,14 +237,14 @@ test.describe('Groups', () => {
         test('AC-GRP-006-1: users tab lists members and their permissions', async () => {
             await groups.gotoItem('group-facilities', 'users');
 
-            const row = await groups.tableRow('Alex Sorafumo');
+            const row = await groups.tableRow('Lisa Zhang');
             await expect(row.getByRole('link')).toHaveAttribute(
                 'href',
-                /#\/users\/user-alex-sorafumo\/about/,
+                /#\/users\/staff-9\/about/,
             );
-            await expect(row.nth(0)).toContainText('Alex.Sorafumo@place.tech');
+            await expect(row.nth(0)).toContainText('lisa.zhang@place.tech');
             await expect(row.nth(1)).toHaveText(/^\s*Read\s+Update\s*$/);
-            await expect(groups.tabContent).not.toContainText('Jeremy West');
+            await expect(groups.tabContent).not.toContainText('Chris Anderson');
         });
 
         test('AC-GRP-006-2: adds a user with the default permissions', async ({
@@ -258,16 +258,16 @@ test.describe('Groups', () => {
             await searchAndPick(
                 page,
                 page.getByPlaceholder('Search for users...'),
-                'Jeremy',
-                'Jeremy West',
+                'Chris',
+                'Chris Anderson',
             );
 
             // Reception gives Read to members by default
-            const row = await groups.tableRow('Jeremy West');
+            const row = await groups.tableRow('Chris Anderson');
             await expect(row.nth(1)).toHaveText(/^\s*Read\s*$/);
             await page.reload();
             await groups.waitForItemDetails();
-            await expect(groups.tabContent).toContainText('Jeremy West');
+            await expect(groups.tabContent).toContainText('Chris Anderson');
         });
 
         test('AC-GRP-006-3: removes a user from the group', async ({
@@ -275,7 +275,7 @@ test.describe('Groups', () => {
         }) => {
             await groups.gotoItem('group-facilities', 'users');
 
-            const row = await groups.tableRow('Alex Sorafumo');
+            const row = await groups.tableRow('Lisa Zhang');
             await row.locator('button:has(icon:has-text("delete"))').click();
             await groups.acceptButton.click();
 
@@ -294,10 +294,10 @@ test.describe('Groups', () => {
         test('AC-GRP-007-1: zones tab lists zones with their access', async () => {
             await groups.gotoItem('group-av-technicians', 'zones');
 
-            const allowed = await groups.tableRow('Level 30');
+            const allowed = await groups.tableRow('Level 1');
             await expect(allowed.nth(1)).toHaveText(/^\s*Read\s+Operate\s*$/);
             await expect(allowed.nth(2)).toHaveText('No');
-            const denied = await groups.tableRow('Level 31');
+            const denied = await groups.tableRow('Level 2');
             await expect(denied.nth(1)).toHaveText('Default');
             await expect(denied.nth(2)).toHaveText('Yes');
         });

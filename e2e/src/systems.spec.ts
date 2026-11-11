@@ -7,9 +7,16 @@ import { SystemsPage } from './pages';
  * Tests for user stories US-SYS-001 through US-SYS-012
  */
 
-/** 2.30.08 - Activity Space: 10 modules, 4 zones, no triggers */
-const ACTIVITY_SPACE = 'sys-QjJvCH7_dA';
-const ACTIVITY_SPACE_NAME = '2.30.08 - Activity Space';
+/** A UI mock room with room control: 10 modules, 4 zones, no triggers */
+const ACTIVITY_SPACE = 'space-1';
+const ACTIVITY_SPACE_NAME = '01.G.01 Sydney Harbour';
+/** The details heading shows the display name of the room */
+const ACTIVITY_SPACE_TITLE = 'Sydney Harbour';
+/** The room after it in the list */
+const NEXT_SPACE_NAME = '01.G.02 Melbourne Cup';
+/** The list is sorted by name and only renders the rows in view */
+const FIRST_SPACE = 'space-9';
+const FIRST_SPACE_NAME = '01.1.01 Think Tank';
 
 test.describe('Systems', () => {
     let systems: SystemsPage;
@@ -22,19 +29,17 @@ test.describe('Systems', () => {
         test('AC-SYS-001-1: lists the systems', async () => {
             await systems.goto();
 
-            await expect(systems.itemLink(ACTIVITY_SPACE_NAME)).toBeVisible();
+            await expect(systems.itemLink(FIRST_SPACE_NAME)).toBeVisible();
             await expect(
-                systems.itemLink('2.30.09 - Activity Space'),
+                systems.itemLink('01.1.02 Solution Studio'),
             ).toBeVisible();
         });
 
         test('AC-SYS-001-2: search filters the list', async () => {
             await systems.goto();
-            await systems.search('2.30.09');
+            await systems.search('01.G.02');
 
-            await expect(
-                systems.itemLink('2.30.09 - Activity Space'),
-            ).toBeVisible();
+            await expect(systems.itemLink(NEXT_SPACE_NAME)).toBeVisible();
             await expect(systems.itemLink(ACTIVITY_SPACE_NAME)).toHaveCount(0);
         });
 
@@ -42,12 +47,12 @@ test.describe('Systems', () => {
             page,
         }) => {
             await systems.goto();
-            await systems.itemLink(ACTIVITY_SPACE_NAME).click();
+            await systems.itemLink(FIRST_SPACE_NAME).click();
 
             await expect(page).toHaveURL(
-                new RegExp(`#/systems/${ACTIVITY_SPACE}/`),
+                new RegExp(`#/systems/${FIRST_SPACE}/`),
             );
-            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_NAME);
+            await expect(systems.itemName).toHaveText('Think Tank');
         });
     });
 
@@ -68,13 +73,13 @@ test.describe('Systems', () => {
             await systems.goto();
 
             await systems.createWith(async () => {
-                await systems.selectZone('Tower 2');
-                await systems.nameField.fill('Boardroom');
+                await systems.selectZone('Innovation Hub');
+                await systems.nameField.fill('Huddle Space');
             });
 
-            await expect(systems.itemName).toHaveText('Boardroom');
-            await systems.search('Boardroom');
-            await expect(systems.itemLink('Boardroom')).toBeVisible();
+            await expect(systems.itemName).toHaveText('Huddle Space');
+            await systems.search('Huddle Space');
+            await expect(systems.itemLink('Huddle Space')).toBeVisible();
         });
     });
 
@@ -91,14 +96,14 @@ test.describe('Systems', () => {
         }) => {
             await systems.gotoItem(ACTIVITY_SPACE);
             await systems.openEditModal();
-            await systems.nameField.fill('2.30.08 - Quiet Room');
+            await systems.nameField.fill('01.G.01 Quiet Room');
             await systems.saveButton.click();
             await expect(systems.dialog).toBeHidden();
 
-            await expect(systems.itemName).toHaveText('2.30.08 - Quiet Room');
             await page.reload();
             await systems.waitForItemDetails();
-            await expect(systems.itemName).toHaveText('2.30.08 - Quiet Room');
+            await systems.openEditModal();
+            await expect(systems.nameField).toHaveValue('01.G.01 Quiet Room');
         });
 
         test('AC-SYS-003-4: closing the modal discards changes', async () => {
@@ -108,7 +113,7 @@ test.describe('Systems', () => {
             await systems.discardChanges();
 
             await expect(systems.dialog).toBeHidden();
-            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_NAME);
+            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_TITLE);
         });
 
         test('AC-SYS-003-5: a camera snapshot URL can be edited', async ({
@@ -157,11 +162,10 @@ test.describe('Systems', () => {
         test('AC-SYS-004-2: removes the system from the list', async () => {
             await systems.gotoItem(ACTIVITY_SPACE);
             await systems.deleteSelected();
+            await systems.search('01.G.0');
 
+            await expect(systems.itemLink(NEXT_SPACE_NAME)).toBeVisible();
             await expect(systems.itemLink(ACTIVITY_SPACE_NAME)).toHaveCount(0);
-            await expect(
-                systems.itemLink('2.30.09 - Activity Space'),
-            ).toBeVisible();
         });
 
         test('AC-SYS-004-3: keeps the system when the confirmation is dismissed', async ({
@@ -172,7 +176,8 @@ test.describe('Systems', () => {
             await page.keyboard.press('Escape');
 
             await expect(page.locator('confirm-modal')).toHaveCount(0);
-            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_NAME);
+            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_TITLE);
+            await systems.search('01.G.01');
             await expect(systems.itemLink(ACTIVITY_SPACE_NAME)).toBeVisible();
         });
     });
@@ -223,10 +228,10 @@ test.describe('Systems', () => {
             await systems.openTab('zones');
 
             for (const name of [
-                'L30 Activity Spaces',
-                'Level 30',
-                'Tower 2',
-                'Place Technology',
+                'Ground Floor',
+                'Innovation Hub',
+                'Sydney Region',
+                'PlaceOS Global',
             ]) {
                 await expect(
                     systems.tabContent.getByRole('link', {
@@ -241,11 +246,11 @@ test.describe('Systems', () => {
             await systems.gotoItem(ACTIVITY_SPACE, 'zones');
 
             await systems.tabContent
-                .getByRole('link', { name: 'Tower 2' })
+                .getByRole('link', { name: 'Innovation Hub' })
                 .click();
 
-            await expect(page).toHaveURL(/#\/zones\/zone-Kl0HN~nDwc/);
-            await expect(systems.itemName).toHaveText('Tower 2');
+            await expect(page).toHaveURL(/#\/zones\/bld-01/);
+            await expect(systems.itemName).toHaveText('Innovation Hub');
         });
     });
 

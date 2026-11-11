@@ -339,9 +339,11 @@ test.describe('Admin', () => {
         test('AC-ADM-011-6: user search is not filtered by permission', async () => {
             await admin.apiKeyAddButton.click();
             await admin.selectApiKeyPermissions('admin');
-            await admin.searchApiKeyUser('Jeremy');
+            await admin.searchApiKeyUser('Chris');
 
-            await expect(admin.apiKeyUserOption('Jeremy West')).toBeVisible();
+            await expect(
+                admin.apiKeyUserOption('Chris Anderson'),
+            ).toBeVisible();
         });
     });
 });
