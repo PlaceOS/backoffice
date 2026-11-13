@@ -101,9 +101,9 @@ import { SystemStateService } from './system-state.service';
                 />
                 <ng-template #context_menu>
                     <div cdkMenu>
-                        @if (active_item()) {
+                        @if (menu_item()) {
                             @for (
-                                m_item of active_item().running
+                                m_item of menu_item().running
                                     ? menu_options
                                     : offline_options;
                                 track m_item
@@ -112,13 +112,10 @@ import { SystemStateService } from './system-state.service';
                                     cdkMenuItem
                                     [disabled]="
                                         m_item.enable_on &&
-                                        !active_item()[m_item.enable_on]
+                                        !menu_item()[m_item.enable_on]
                                     "
                                     (click)="
-                                        handleContextEvent(
-                                            m_item,
-                                            active_item()
-                                        )
+                                        handleContextEvent(m_item, menu_item())
                                     "
                                 >
                                     <div class="flex items-center space-x-2">
@@ -137,6 +134,7 @@ import { SystemStateService } from './system-state.service';
                 </ng-template>
                 <div
                     [context-menu]="context_menu"
+                    (contextmenu)="menu_item.set(active_item())"
                     class="flex"
                     [class.pointer-events-none]="loading().modules"
                     [class.opacity-60]="loading().modules"
@@ -224,6 +222,7 @@ import { SystemStateService } from './system-state.service';
                         "
                         (click)="setActive(index)"
                         [cdkMenuTriggerFor]="context_menu"
+                        (cdkMenuOpened)="menu_item.set(row)"
                         [cdkMenuPosition]="menu_positions"
                         [attr.aria-label]="status_label"
                         [appTooltip]="status_label"
@@ -339,6 +338,7 @@ import { SystemStateService } from './system-state.service';
                             ripple
                             (click)="setActive(i)"
                             [cdkMenuTriggerFor]="context_menu"
+                            (cdkMenuOpened)="menu_item.set(row)"
                             [cdkMenuPosition]="menu_positions"
                             [attr.aria-label]="
                                 'COMMON.MORE_ACTIONS' | translate
@@ -417,6 +417,11 @@ export class SystemModulesComponent {
     public hide_exec: boolean;
 
     public readonly active_item = signal<PlaceModule>(null);
+    /**
+     * Module of the open menu. Set when the menu opens, so hovering another
+     * row while it is open does not change it
+     */
+    public readonly menu_item = signal<PlaceModule>(null);
 
     public readonly item_signal = computed(
         () => this._service.item() as PlaceSystem,
