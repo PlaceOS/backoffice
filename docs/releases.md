@@ -48,5 +48,8 @@ Run `RELEASE` from the Actions tab, and enter a PlaceOS version.
 - To roll back, enter an earlier version. `build/prod` gets the backoffice
   of that version. `CHANGELOG.md` on `develop` does not change.
 
-`RELEASE` stops when the tag `v<version>` is on a different commit than the
-commit that PlaceOS pins.
+`RELEASE` stops when:
+
+- The commit that PlaceOS pins is not on `develop`. Only reviewed code ships.
+- The tag `v<version>` is on a different commit than the commit that PlaceOS
+  pins.

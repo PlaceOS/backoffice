@@ -52,6 +52,14 @@ jobs:
                       exit 1
                   fi
 
+                  # Release only reviewed code. The cache scope of develop is
+                  # shared, so a commit from a fork must not run here.
+                  status="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${sha}...develop" --jq .status)"
+                  if [[ "$status" != "ahead" && "$status" != "identical" ]]; then
+                      echo "::error::${sha} is not on develop"
+                      exit 1
+                  fi
+
                   # A retry can use the tag again. A tag on a different commit stops the release.
                   tag="v${VERSION}"
                   tagged="$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}" "refs/tags/${tag}" | cut -f1)"

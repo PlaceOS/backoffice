@@ -6,6 +6,9 @@ on:
     push:
         branches: [develop]
 
+permissions:
+    contents: read
+
 jobs:
     # Tests run in parallel with the build. The dev deploy does not wait for them.
     test:
@@ -19,6 +22,9 @@ jobs:
 
     deploy-dev:
         needs: [build]
+        # Pushes to build/dev
+        permissions:
+            contents: write
         runs-on: ubuntu-latest
         timeout-minutes: 3
         steps:
