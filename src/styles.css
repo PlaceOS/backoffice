@@ -875,6 +875,8 @@ form {
 app-form-field {
     display: flex;
     flex-direction: column;
+    /* Shrink in a row instead of growing to fit the input's default width */
+    min-width: 0;
     font-size: 0.875rem;
 
     &.no-subscript .field-subscript {

@@ -73,7 +73,7 @@ interface GroupTreeItem {
                 @if (filter_options()?.length) {
                     <!-- The select sits invisible on top of the button and takes all input -->
                     <div
-                        class="focus-within:outline-info relative flex overflow-hidden rounded-lg focus-within:outline-2"
+                        class="focus-within:outline-info relative flex shrink-0 overflow-hidden rounded-lg focus-within:outline-2"
                     >
                         <button
                             icon
