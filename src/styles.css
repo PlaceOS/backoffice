@@ -111,7 +111,8 @@
     --radius-md: 6px;
     --radius-lg: 8px;
     --motion-snap: 120ms cubic-bezier(0.8, -0.4, 0.5, 1);
-    --motion-enter: 160ms cubic-bezier(0.24, 1, 0.32, 1);
+    --ease-enter: cubic-bezier(0.24, 1, 0.32, 1);
+    --motion-enter: 160ms var(--ease-enter);
     /* Solid, unblurred shadows of raised surfaces */
     --shadow-high:
         0 4px 0 2px rgb(16 16 48 / 0.03), 0 1px 0 1px rgb(16 16 48 / 0.03);
@@ -1862,6 +1863,71 @@ a[icon] {
 
 #placeos .fade-in-out.visible {
     opacity: 1;
+}
+
+/* Page transitions. The router starts a view transition on each navigation
+   (withViewTransitions in app.config.ts). The rest of the window changes at
+   once. Only these parts animate:
+   - `[page-transition]`: the routed content. It crossfades.
+   - the active tab, admin page and main menu link. They move to the new link. */
+[page-transition] {
+    view-transition-name: page;
+}
+
+[admin-nav] a[aria-current='page'] {
+    view-transition-name: admin-nav-active;
+}
+
+[sidebar-menu] a[aria-current='page'] {
+    view-transition-name: menu-active;
+}
+
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+}
+
+/* The page area can change size, e.g. from admin to systems. Show the
+   snapshots at their own size, so they do not stretch. */
+::view-transition-group(page) {
+    animation: none;
+}
+
+::view-transition-old(page),
+::view-transition-new(page) {
+    height: 100%;
+    object-fit: none;
+    object-position: top left;
+}
+
+::view-transition-old(page) {
+    animation: fade-out 80ms ease-in both;
+}
+
+::view-transition-new(page) {
+    animation: fade-in var(--motion-enter) both;
+}
+
+::view-transition-group(tab-indicator),
+::view-transition-group(admin-nav-active),
+::view-transition-group(menu-active) {
+    animation-duration: 200ms;
+    animation-timing-function: var(--ease-enter);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}
+
+@keyframes fade-out {
+    to {
+        opacity: 0;
+    }
 }
 
 /* Keyframe animations for enter transitions */

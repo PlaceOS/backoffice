@@ -107,6 +107,7 @@ function mediaQuery(query: string) {
                                     />
                                     <div
                                         #el
+                                        page-transition
                                         class="relative z-0 h-1/2 w-full flex-1 overflow-auto"
                                         (scroll)="scroll.set(el.scrollTop)"
                                     >

@@ -22,6 +22,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <div class="flex h-full w-px flex-1 flex-col overflow-hidden">
                 <div class="z-0 flex h-1/2 flex-1">
                     <nav
+                        admin-nav
                         class="border-base-200 relative z-10 h-full space-y-2 overflow-auto border-r px-2 pt-10 sm:w-56 sm:py-4"
                         [attr.aria-label]="'COMMON.MANAGE' | translate"
                     >
@@ -47,6 +48,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     <main
                         id="main-content"
                         tabindex="-1"
+                        page-transition
                         class="relative z-0 h-full w-1/2 flex-1 overflow-auto outline-none"
                     >
                         <router-outlet />
