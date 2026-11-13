@@ -36,8 +36,20 @@ export interface SelectChange<T = unknown> {
 
 /** Panel positions below the trigger, then above it */
 export const PANEL_POSITIONS: ConnectedPosition[] = [
-    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
-    { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
+    {
+        originX: 'start',
+        originY: 'bottom',
+        overlayX: 'start',
+        overlayY: 'top',
+        offsetY: 4,
+    },
+    {
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'bottom',
+        offsetY: -4,
+    },
 ];
 
 let next_id = 0;

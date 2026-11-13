@@ -38,7 +38,7 @@ const NAVIGATION_KEYS = new Set([
                 class="border-base-300 bg-base-100 fixed top-0 mx-auto h-screen w-160 max-w-full border-x"
             ></div>
             <header
-                class="border-base-100 bg-base-200 sticky top-0 z-10 mx-auto my-2 flex w-156 max-w-full items-center justify-between rounded-sm border px-4 py-2"
+                class="border-base-300 bg-base-100 sticky top-0 z-10 mx-auto flex w-160 max-w-full items-center justify-between border-x border-b px-6 py-4"
             >
                 <h2 appDialogTitle class="text-xl font-medium">
                     {{ heading() }}
@@ -64,12 +64,12 @@ const NAVIGATION_KEYS = new Set([
             </main>
             @if (!loading() && !hide_confirm()) {
                 <footer
-                    class="border-base-100 bg-base-200 fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-156 max-w-full -translate-x-1/2 items-center justify-end rounded-sm border px-4 py-2"
+                    class="border-base-300 bg-base-100 fixed bottom-0 left-1/2 z-10 mx-auto flex w-160 max-w-full -translate-x-1/2 items-center justify-end border-x border-t px-6 py-4"
                 >
                     <button
                         btn
                         ripple
-                        class="w-32 pr-0"
+                        class="w-32 pr-2"
                         [disabled]="disable_confirm()"
                         (click)="save.emit()"
                     >

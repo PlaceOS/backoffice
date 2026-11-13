@@ -77,13 +77,32 @@ const FALLBACK: Record<TooltipPosition, TooltipPosition> = {
     after: 'before',
 };
 
+/** Side of the trigger that a tooltip in this position is on */
+function sideOf(
+    position: ConnectedPosition,
+): 'above' | 'below' | 'left' | 'right' {
+    if (position.overlayY === 'bottom' && position.originY === 'top') {
+        return 'above';
+    }
+    if (position.overlayY === 'top' && position.originY === 'bottom') {
+        return 'below';
+    }
+    return position.overlayX === 'end' ? 'left' : 'right';
+}
+
 @Component({
     selector: 'app-tooltip-panel',
     template: `{{ text }}`,
-    host: { class: 'tooltip-panel', 'aria-hidden': 'true' },
+    host: {
+        class: 'tooltip-panel',
+        'aria-hidden': 'true',
+        '[attr.data-side]': 'side',
+    },
 })
 export class TooltipPanelComponent {
     public text = '';
+    /** Side of the trigger the tooltip is on, which places its arrow */
+    public side = 'below';
 }
 
 /**
@@ -108,6 +127,7 @@ export class TooltipDirective implements OnDestroy {
     private readonly _focus = inject(FocusMonitor);
     private _overlay_ref: OverlayRef;
     private _panel: ComponentRef<TooltipPanelComponent>;
+    private _side = 'below';
     private _described = '';
 
     /** Text of the tooltip. Nothing shows when it is empty */
@@ -142,14 +162,21 @@ export class TooltipDirective implements OnDestroy {
         if (!text || this._panel) return;
         const position = this.position();
         if (!this._overlay_ref) {
+            const strategy = this._overlay
+                .position()
+                .flexibleConnectedTo(this._element)
+                .withPositions([
+                    POSITIONS[position],
+                    POSITIONS[FALLBACK[position]],
+                ]);
+            this._side = sideOf(POSITIONS[position]);
+            // Point the arrow at the trigger from the side used
+            strategy.positionChanges.subscribe(({ connectionPair }) => {
+                this._side = sideOf(connectionPair);
+                if (this._panel) this._setText(this._panel.instance.text);
+            });
             this._overlay_ref = this._overlay.create({
-                positionStrategy: this._overlay
-                    .position()
-                    .flexibleConnectedTo(this._element)
-                    .withPositions([
-                        POSITIONS[position],
-                        POSITIONS[FALLBACK[position]],
-                    ]),
+                positionStrategy: strategy,
                 scrollStrategy: this._overlay.scrollStrategies.close(),
                 panelClass: 'tooltip-pane',
             });
@@ -183,6 +210,7 @@ export class TooltipDirective implements OnDestroy {
 
     private _setText(text: string) {
         this._panel.instance.text = text;
+        this._panel.instance.side = this._side;
         this._panel.changeDetectorRef.detectChanges();
     }
 }
