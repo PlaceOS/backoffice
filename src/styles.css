@@ -1442,6 +1442,11 @@ input[type='checkbox'][role='switch'] {
     animation: fade-in-scale 150ms ease-out;
     @apply shadow-lg;
 
+    /* Set by animate.leave in the toast outlet while the toast closes */
+    &.toast-leave {
+        animation: fade-out 120ms ease-in forwards;
+    }
+
     &.success {
         background-color: var(--success);
         color: var(--success-content);
@@ -1984,7 +1989,8 @@ a[icon] {
 
 /* Fades stay. Motion that moves or scales stops. */
 @media (prefers-reduced-motion: reduce) {
-    #placeos .animate-dialog-enter {
+    #placeos .animate-dialog-enter,
+    #placeos .animate-slide-in-up {
         animation: none;
     }
 }

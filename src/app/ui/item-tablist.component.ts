@@ -81,7 +81,9 @@ export interface ItemTab {
                                         class="h-3 w-3 animate-spin rounded-full border-2 border-current/30 border-t-current"
                                     ></span>
                                 } @else {
-                                    {{ link.count || '0' }}
+                                    <span class="animate-fade-in">{{
+                                        link.count || '0'
+                                    }}</span>
                                 }
                             </div>
                         }
