@@ -19,7 +19,8 @@ import {
     ViewContainerRef,
 } from '@angular/core';
 import { OPTION_HOST, OptionComponent, OptionHost } from './option.component';
-import { PANEL_POSITIONS, SelectChange } from './select.component';
+import { PANEL_POSITIONS, VIEWPORT_MARGIN } from './overlay';
+import { SelectChange } from './select.component';
 
 let next_id = 0;
 
@@ -120,6 +121,9 @@ export class AutocompleteTriggerDirective<T = unknown> implements OnDestroy {
                 .position()
                 .flexibleConnectedTo(box)
                 .withPositions(PANEL_POSITIONS)
+                .withViewportMargin(VIEWPORT_MARGIN)
+                .withFlexibleDimensions(false)
+                .withPush(true)
                 // A popover next to the input, so the panel stays in the
                 // DOM of a dialog that the input is in
                 .withPopoverLocation('inline'),

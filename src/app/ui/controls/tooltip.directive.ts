@@ -11,6 +11,7 @@ import {
     input,
     OnDestroy,
 } from '@angular/core';
+import { VIEWPORT_MARGIN } from './overlay';
 
 export type TooltipPosition =
     | 'above'
@@ -21,6 +22,8 @@ export type TooltipPosition =
     | 'after';
 
 const GAP = 8;
+/** Least space between the arrow and the ends of the tooltip */
+const ARROW_INSET = 12;
 
 const POSITIONS: Record<TooltipPosition, ConnectedPosition> = {
     above: {
@@ -168,12 +171,18 @@ export class TooltipDirective implements OnDestroy {
                 .withPositions([
                     POSITIONS[position],
                     POSITIONS[FALLBACK[position]],
-                ]);
+                ])
+                .withViewportMargin(VIEWPORT_MARGIN)
+                // Keep its size and push it inside the viewport margin
+                .withFlexibleDimensions(false)
+                .withPush(true);
             this._side = sideOf(POSITIONS[position]);
             // Point the arrow at the trigger from the side used
             strategy.positionChanges.subscribe(({ connectionPair }) => {
                 this._side = sideOf(connectionPair);
-                if (this._panel) this._setText(this._panel.instance.text);
+                if (!this._panel) return;
+                this._setText(this._panel.instance.text);
+                this._placeArrow();
             });
             this._overlay_ref = this._overlay.create({
                 positionStrategy: strategy,
@@ -190,6 +199,7 @@ export class TooltipDirective implements OnDestroy {
         );
         this._setText(text);
         this._overlay_ref.updatePosition();
+        this._placeArrow();
     }
 
     public hide() {
@@ -206,6 +216,25 @@ export class TooltipDirective implements OnDestroy {
             );
         }
         this._overlay_ref?.dispose();
+    }
+
+    /**
+     * Point the arrow at the centre of the trigger. The tooltip is pushed
+     * inside the viewport near its edges, so its own centre may be off the
+     * trigger. The arrow stays clear of the rounded corners.
+     */
+    private _placeArrow() {
+        const panel: HTMLElement = this._panel?.location.nativeElement;
+        if (!panel) return;
+        const trigger = this._element.nativeElement.getBoundingClientRect();
+        const box = panel.getBoundingClientRect();
+        const vertical = this._side === 'above' || this._side === 'below';
+        const centre = vertical
+            ? trigger.left + trigger.width / 2 - box.left
+            : trigger.top + trigger.height / 2 - box.top;
+        const size = vertical ? box.width : box.height;
+        const at = Math.min(Math.max(centre, ARROW_INSET), size - ARROW_INSET);
+        panel.style.setProperty('--arrow-at', `${at}px`);
     }
 
     private _setText(text: string) {

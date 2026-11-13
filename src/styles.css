@@ -1449,7 +1449,8 @@ input[type='checkbox'][role='switch'] {
 }
 
 /* Tooltips. A bordered bubble with an arrow, after Sentry's.
-   `data-side` is the side of the trigger that the tooltip is on. */
+   `data-side` is the side of the trigger that the tooltip is on, and
+   `--arrow-at` is where the trigger's centre is along that side. */
 .tooltip-panel {
     --arrow: 6px;
     position: relative;
@@ -1460,7 +1461,8 @@ input[type='checkbox'][role='switch'] {
     border-radius: var(--radius-md);
     background-color: var(--base-100);
     color: var(--base-content);
-    box-shadow: 0 2px 0 var(--base-300);
+    /* A drop shadow follows the outline, so the arrow gets the same edge */
+    filter: drop-shadow(0 2px 0 var(--base-300));
     font-size: 0.875rem;
     line-height: 1.4;
     text-align: center;
@@ -1482,28 +1484,28 @@ input[type='checkbox'][role='switch'] {
 
     &[data-side='above']::before {
         bottom: calc(var(--arrow) * -0.8);
-        left: calc(50% - var(--arrow) * 0.75);
+        left: calc(var(--arrow-at, 50%) - var(--arrow) * 0.75);
         border-top-color: transparent;
         border-left-color: transparent;
     }
 
     &[data-side='below']::before {
         top: calc(var(--arrow) * -0.8);
-        left: calc(50% - var(--arrow) * 0.75);
+        left: calc(var(--arrow-at, 50%) - var(--arrow) * 0.75);
         border-bottom-color: transparent;
         border-right-color: transparent;
     }
 
     &[data-side='left']::before {
         right: calc(var(--arrow) * -0.8);
-        top: calc(50% - var(--arrow) * 0.75);
+        top: calc(var(--arrow-at, 50%) - var(--arrow) * 0.75);
         border-bottom-color: transparent;
         border-left-color: transparent;
     }
 
     &[data-side='right']::before {
         left: calc(var(--arrow) * -0.8);
-        top: calc(50% - var(--arrow) * 0.75);
+        top: calc(var(--arrow-at, 50%) - var(--arrow) * 0.75);
         border-top-color: transparent;
         border-right-color: transparent;
     }
@@ -1537,8 +1539,9 @@ input[type='checkbox'][role='switch'] {
         --lift: 3px;
     }
 
-    &:active,
-    &[aria-expanded='true'] {
+    /* Only while pressed. A trigger with an open panel stays at rest, so it
+       keeps its gap to the panel */
+    &:active {
         --lift: 0px;
     }
 

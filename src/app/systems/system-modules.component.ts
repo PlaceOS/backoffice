@@ -28,6 +28,7 @@ import {
 } from '../overlays/view-module-state.component';
 import { BindingDirective } from '../ui/binding.directive';
 import { ContextMenuComponent } from '../ui/context-menu.component';
+import { MENU_POSITIONS } from '../ui/controls/overlay';
 import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';
@@ -223,6 +224,7 @@ import { SystemStateService } from './system-state.service';
                         "
                         (click)="setActive(index)"
                         [cdkMenuTriggerFor]="context_menu"
+                        [cdkMenuPosition]="menu_positions"
                         [attr.aria-label]="status_label"
                         [appTooltip]="status_label"
                         appTooltipPosition="right"
@@ -337,6 +339,7 @@ import { SystemStateService } from './system-state.service';
                             ripple
                             (click)="setActive(i)"
                             [cdkMenuTriggerFor]="context_menu"
+                            [cdkMenuPosition]="menu_positions"
                             [attr.aria-label]="
                                 'COMMON.MORE_ACTIONS' | translate
                             "
@@ -403,6 +406,8 @@ import { SystemStateService } from './system-state.service';
     ],
 })
 export class SystemModulesComponent {
+    /** Menu positions with a gap from the trigger */
+    public readonly menu_positions = MENU_POSITIONS;
     private _service = inject(SystemStateService);
     private _dialog = inject(Dialog);
 

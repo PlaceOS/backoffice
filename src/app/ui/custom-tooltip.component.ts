@@ -19,6 +19,7 @@ import {
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { AsyncHandler } from '../common/async-handler.class';
+import { PANEL_GAP, VIEWPORT_MARGIN } from './controls/overlay';
 
 /** Injected into tooltip content so it can close its tooltip */
 export abstract class CustomTooltipData {
@@ -139,8 +140,16 @@ export class CustomTooltipComponent
                                           : y_position) || default_y,
                                 overlayX: this.xPosition() || default_x,
                                 overlayY: this.yPosition() || default_y,
+                                // A gap, so the edges of the panel and trigger do not merge
+                                offsetY:
+                                    y_position === 'top'
+                                        ? PANEL_GAP
+                                        : y_position === 'bottom'
+                                          ? -PANEL_GAP
+                                          : 0,
                             },
-                        ]),
+                        ])
+                        .withViewportMargin(VIEWPORT_MARGIN),
                 });
                 this._overlay_ref.attach(_portal);
                 // Close like a menu: on Escape and when the page changes

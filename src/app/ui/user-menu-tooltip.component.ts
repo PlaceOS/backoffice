@@ -1,5 +1,4 @@
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
-import { ConnectedPosition } from '@angular/cdk/overlay';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -9,6 +8,7 @@ import { VERSION } from '../../env/version';
 import { issueDescription } from '../common/general';
 import { i18n, LocaleService } from '../common/locale.service';
 import { SettingsService } from '../common/settings.service';
+import { PANEL_POSITIONS } from './controls/overlay';
 import { IconComponent } from './icon.component';
 import { SafePipe } from './pipes/safe.pipe';
 import { TranslatePipe } from './translate.pipe';
@@ -148,20 +148,7 @@ export class UserMenuTooltipComponent implements OnInit {
 
     public readonly github_icon = signal('');
     /** Opens the language menu above its button, and below when no space */
-    public readonly lang_menu_position: ConnectedPosition[] = [
-        {
-            originX: 'start',
-            originY: 'top',
-            overlayX: 'start',
-            overlayY: 'bottom',
-        },
-        {
-            originX: 'start',
-            originY: 'bottom',
-            overlayX: 'start',
-            overlayY: 'top',
-        },
-    ];
+    public readonly lang_menu_position = [...PANEL_POSITIONS].reverse();
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {

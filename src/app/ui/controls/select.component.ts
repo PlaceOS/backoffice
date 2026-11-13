@@ -1,7 +1,6 @@
 import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
 import {
     CdkConnectedOverlay,
-    ConnectedPosition,
     FlexibleConnectedPositionStrategyOrigin,
 } from '@angular/cdk/overlay';
 import {
@@ -24,6 +23,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { OPTION_HOST, OptionComponent, OptionHost } from './option.component';
+import { PANEL_POSITIONS, VIEWPORT_MARGIN } from './overlay';
 
 /** Custom content for the closed select. Put it inside `app-select`. */
 @Directive({ selector: 'app-select-trigger' })
@@ -33,24 +33,6 @@ export class SelectTriggerDirective {}
 export interface SelectChange<T = unknown> {
     value: T;
 }
-
-/** Panel positions below the trigger, then above it */
-export const PANEL_POSITIONS: ConnectedPosition[] = [
-    {
-        originX: 'start',
-        originY: 'bottom',
-        overlayX: 'start',
-        overlayY: 'top',
-        offsetY: 4,
-    },
-    {
-        originX: 'start',
-        originY: 'top',
-        overlayX: 'start',
-        overlayY: 'bottom',
-        offsetY: -4,
-    },
-];
 
 let next_id = 0;
 
@@ -77,6 +59,8 @@ let next_id = 0;
             [cdkConnectedOverlayOrigin]="origin()"
             [cdkConnectedOverlayOpen]="opened()"
             [cdkConnectedOverlayPositions]="positions"
+            [cdkConnectedOverlayViewportMargin]="viewport_margin"
+            [cdkConnectedOverlayPush]="true"
             [cdkConnectedOverlayMinWidth]="width()"
             [cdkConnectedOverlayDisposeOnNavigation]="true"
             cdkConnectedOverlayUsePopover="inline"
@@ -130,6 +114,7 @@ export class SelectComponent<T = unknown>
 
     public readonly panel_id = `app-select-panel-${next_id++}`;
     public readonly positions = PANEL_POSITIONS;
+    public readonly viewport_margin = VIEWPORT_MARGIN;
 
     /** Selected value. An array of option values when `multiple` is set */
     public readonly value = model<T>();

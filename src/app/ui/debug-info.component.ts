@@ -1,6 +1,7 @@
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { Component, inject, input } from '@angular/core';
 import { PlaceDebugService } from '../common/debug.service';
+import { MENU_POSITIONS } from './controls/overlay';
 import { TooltipDirective } from './controls/tooltip.directive';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
@@ -83,6 +84,7 @@ import { TranslatePipe } from './translate.pipe';
                         default
                         ripple
                         [cdkMenuTriggerFor]="menu"
+                        [cdkMenuPosition]="menu_positions"
                         [attr.aria-label]="'COMMON.MORE_ACTIONS' | translate"
                     >
                         <icon>more_horiz</icon>
@@ -159,6 +161,8 @@ import { TranslatePipe } from './translate.pipe';
     ],
 })
 export class DebugInfoComponent {
+    /** Menu positions with a gap from the trigger */
+    public readonly menu_positions = MENU_POSITIONS;
     private _debug = inject(PlaceDebugService);
 
     public readonly compact = input(false);

@@ -6,6 +6,7 @@ import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
+import { MENU_POSITIONS } from './controls/overlay';
 import { TooltipDirective } from './controls/tooltip.directive';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
@@ -113,6 +114,7 @@ export interface ItemAction {
                 default
                 ripple
                 [cdkMenuTriggerFor]="action_menu"
+                [cdkMenuPosition]="menu_positions"
                 [attr.aria-label]="'COMMON.MORE_ACTIONS' | translate"
             >
                 <icon>more_vert</icon>
@@ -227,6 +229,8 @@ export interface ItemAction {
     ],
 })
 export class ItemDetailsComponent {
+    /** Menu positions with a gap from the trigger */
+    public readonly menu_positions = MENU_POSITIONS;
     private _service = inject(ActiveItemService);
     private _clipboard = inject(Clipboard);
 
