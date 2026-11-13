@@ -111,7 +111,8 @@
     --radius-md: 6px;
     --radius-lg: 8px;
     --motion-snap: 120ms cubic-bezier(0.8, -0.4, 0.5, 1);
-    --motion-enter: 160ms cubic-bezier(0.24, 1, 0.32, 1);
+    --ease-enter: cubic-bezier(0.24, 1, 0.32, 1);
+    --motion-enter: 160ms var(--ease-enter);
     /* Solid, unblurred shadows of raised surfaces */
     --shadow-high:
         0 4px 0 2px rgb(16 16 48 / 0.03), 0 1px 0 1px rgb(16 16 48 / 0.03);
@@ -238,26 +239,6 @@ span.highlight {
     font-family: 'Fira Code Variable', monospace;
 }
 
-@keyframes crossfade {
-    0% {
-        background-color: #d32f2f;
-    }
-    20% {
-        background-color: #7b1fa2;
-    }
-    40% {
-        background-color: #1976d2;
-    }
-    60% {
-        background-color: #00796b;
-    }
-    80% {
-        background-color: #ff8f00;
-    }
-    100% {
-        background-color: #d32f2f;
-    }
-}
 
 #placeos .markdown {
     ol {
@@ -554,26 +535,6 @@ span.highlight {
     font-family: 'Fira Code Variable', monospace;
 }
 
-@keyframes crossfade {
-    0% {
-        background-color: #d32f2f;
-    }
-    20% {
-        background-color: #7b1fa2;
-    }
-    40% {
-        background-color: #1976d2;
-    }
-    60% {
-        background-color: #00796b;
-    }
-    80% {
-        background-color: #ff8f00;
-    }
-    100% {
-        background-color: #d32f2f;
-    }
-}
 
 #placeos .markdown {
     ol {
@@ -1012,6 +973,7 @@ app-select {
     color: var(--base-content);
     box-shadow: 0 2px 0 var(--base-300);
     font-size: 0.875rem;
+    animation: dialog-enter var(--motion-enter);
 }
 
 .select-panel {
@@ -1321,7 +1283,9 @@ input[type='checkbox'][role='switch'] {
         animation-duration: 4s;
     }
 
-    .cdk-dialog-container {
+    .cdk-dialog-container,
+    .select-panel,
+    .cdk-menu {
         animation: none;
     }
 }
@@ -1437,6 +1401,11 @@ input[type='checkbox'][role='switch'] {
     font-size: 0.875rem;
     animation: fade-in-scale 150ms ease-out;
     @apply shadow-lg;
+
+    /* Set by animate.leave in the toast outlet while the toast closes */
+    &.toast-leave {
+        animation: fade-out 120ms ease-in forwards;
+    }
 
     &.success {
         background-color: var(--success);
@@ -1833,35 +1802,69 @@ a[icon] {
     min-height: 0;
 }
 
-/* Expandable with width animation */
-#placeos .expandable-all {
-    display: grid;
-    grid-template-rows: 0fr;
-    width: 0;
-    overflow: hidden;
-    transition:
-        grid-template-rows 200ms ease-in-out,
-        width 200ms ease-in-out;
+/* Page transitions. The router starts a view transition on each navigation
+   (withViewTransitions in app.config.ts). The rest of the window changes at
+   once. Only these parts animate:
+   - `[page-transition]`: the routed content. It crossfades.
+   - the active tab, admin page and main menu link. They move to the new link. */
+[page-transition] {
+    view-transition-name: page;
 }
 
-#placeos .expandable-all.expanded {
-    grid-template-rows: 1fr;
-    width: auto;
+[admin-nav] a[aria-current='page'] {
+    view-transition-name: admin-nav-active;
 }
 
-#placeos .expandable-all > * {
-    overflow: hidden;
-    min-height: 0;
+[sidebar-menu] a[aria-current='page'] {
+    view-transition-name: menu-active;
 }
 
-/* Fade animation */
-#placeos .fade-in-out {
-    opacity: 0;
-    transition: opacity 200ms ease-in-out;
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
 }
 
-#placeos .fade-in-out.visible {
-    opacity: 1;
+/* The page area can change size, e.g. from admin to systems. Show the
+   snapshots at their own size, so they do not stretch. */
+::view-transition-group(page) {
+    animation: none;
+}
+
+::view-transition-old(page),
+::view-transition-new(page) {
+    height: 100%;
+    object-fit: none;
+    object-position: top left;
+}
+
+::view-transition-old(page) {
+    animation: fade-out 80ms ease-in both;
+}
+
+::view-transition-new(page) {
+    animation: fade-in var(--motion-enter) both;
+}
+
+::view-transition-group(tab-indicator),
+::view-transition-group(admin-nav-active),
+::view-transition-group(menu-active) {
+    animation-duration: 200ms;
+    animation-timing-function: var(--ease-enter);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}
+
+@keyframes fade-out {
+    to {
+        opacity: 0;
+    }
 }
 
 /* Keyframe animations for enter transitions */
@@ -1900,39 +1903,21 @@ a[icon] {
     animation: fade-in 200ms ease-out;
 }
 
-#placeos .animate-fade-in-scale {
-    animation: fade-in-scale 200ms ease-out;
+/* The same enter motion as dialogs, for panels that are not CDK dialogs */
+#placeos .animate-dialog-enter {
+    animation: dialog-enter var(--motion-enter);
 }
 
 #placeos .animate-slide-in-up {
     animation: slide-in-up 200ms ease-out;
 }
 
-/* Slide animations */
-#placeos .slide-up {
-    transform: translateY(100%);
-    opacity: 0;
-    transition:
-        transform 200ms ease-in-out,
-        opacity 200ms ease-in-out;
-}
-
-#placeos .slide-up.visible {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-#placeos .slide-down {
-    transform: translateY(-100%);
-    opacity: 0;
-    transition:
-        transform 200ms ease-in-out,
-        opacity 200ms ease-in-out;
-}
-
-#placeos .slide-down.visible {
-    transform: translateY(0);
-    opacity: 1;
+/* Fades stay. Motion that moves or scales stops. */
+@media (prefers-reduced-motion: reduce) {
+    #placeos .animate-dialog-enter,
+    #placeos .animate-slide-in-up {
+        animation: none;
+    }
 }
 
 #placeos {

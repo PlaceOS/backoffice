@@ -46,6 +46,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             [class.compact]="compact()"
             [class.sm:w-52]="!compact()"
             [class.!flex]="open()"
+            [class.open]="open()"
             [class.pointer-events-auto!]="open()"
         >
             <nav
@@ -265,6 +266,19 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             @media screen and (min-width: 512px) {
                 .compact {
                     width: 4.5rem;
+                }
+            }
+
+            /* On small screens the menu covers the page. It slides in when it opens. */
+            @media (max-width: 39.99rem) and (prefers-reduced-motion: no-preference) {
+                .open {
+                    animation: menu-enter 200ms var(--ease-enter);
+                }
+            }
+
+            @keyframes menu-enter {
+                from {
+                    transform: translateX(-100%);
                 }
             }
         `,

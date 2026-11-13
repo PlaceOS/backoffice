@@ -27,7 +27,11 @@ import { dismissToast, Toast, toasts } from '../../common/notifications';
         <ng-template #panel>
             <div class="toast-stack">
                 @for (toast of list(); track toast.id) {
-                    <div class="toast" [class]="toast.type">
+                    <div
+                        class="toast"
+                        [class]="toast.type"
+                        animate.leave="toast-leave"
+                    >
                         <span class="toast-message">{{ toast.message }}</span>
                         @if (toast.action) {
                             <button type="button" (click)="act(toast)">

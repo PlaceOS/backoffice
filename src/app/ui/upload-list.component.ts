@@ -18,7 +18,7 @@ import { TranslatePipe } from './translate.pipe';
         @if (show()) {
             <div
                 upload-list
-                class="border-base-300 bg-base-100 text-base-content pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded-sm border text-sm shadow-sm"
+                class="animate-slide-in-up border-base-300 bg-base-100 text-base-content pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded-sm border text-sm shadow-sm"
             >
                 <div
                     class="bg-base-200 text-base-content flex items-center gap-2 p-2"

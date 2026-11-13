@@ -90,9 +90,10 @@ function mediaQuery(query: string) {
                             @if (loading()) {
                                 <item-details-skeleton />
                             } @else if (display_item()?.id) {
-                                <!-- Tabs and menus load once an item shows -->
+                                <!-- Tabs and menus load once an item shows. They fade in over the skeleton. -->
                                 @defer (on immediate) {
                                     <item-details
+                                        class="animate-fade-in"
                                         [item]="display_item()"
                                         [extra_actions]="extra_actions()"
                                         [type]="
@@ -103,11 +104,12 @@ function mediaQuery(query: string) {
                                         [base]="name()"
                                         [tabs]="tabs()"
                                         [scrolled]="scroll() > 0"
-                                        class="z-10"
+                                        class="animate-fade-in z-10"
                                     />
                                     <div
                                         #el
-                                        class="relative z-0 h-1/2 w-full flex-1 overflow-auto"
+                                        page-transition
+                                        class="animate-fade-in relative z-0 h-1/2 w-full flex-1 overflow-auto"
                                         (scroll)="scroll.set(el.scrollTop)"
                                     >
                                         <router-outlet />

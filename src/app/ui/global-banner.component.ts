@@ -14,7 +14,7 @@ export interface BannerDetails {
     template: `
         @if (!has_viewed) {
             <div
-                class="flex w-full items-center space-x-4 p-4"
+                class="animate-fade-in flex w-full items-center space-x-4 p-4"
                 [class.bg-info]="banner.type === 'info' || !banner.type"
                 [class.text-info-content]="
                     banner.type === 'info' || !banner.type

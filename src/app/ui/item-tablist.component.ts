@@ -66,6 +66,8 @@ export interface ItemTab {
                         #rla="routerLinkActive"
                         [attr.aria-current]="rla.isActive ? 'page' : null"
                     >
+                        <!-- Moves to the new tab in the page transition -->
+                        <span indicator></span>
                         <icon class="text-xl" [icon]="link.icon" />&nbsp;
                         <div class="name">{{ link.name }}&nbsp;</div>
                         @if (link.count || link.count === 0) {
@@ -79,7 +81,9 @@ export interface ItemTab {
                                         class="h-3 w-3 animate-spin rounded-full border-2 border-current/30 border-t-current"
                                     ></span>
                                 } @else {
-                                    {{ link.count || '0' }}
+                                    <span class="animate-fade-in">{{
+                                        link.count || '0'
+                                    }}</span>
                                 }
                             </div>
                         }
@@ -123,6 +127,7 @@ export interface ItemTab {
             }
 
             a {
+                position: relative;
                 display: flex;
                 flex: 1 0 auto;
                 align-items: center;
@@ -133,7 +138,6 @@ export interface ItemTab {
                 letter-spacing: 0.09em;
                 white-space: nowrap;
                 color: var(--base-content);
-                border-bottom: 2px solid transparent;
             }
 
             a:hover {
@@ -146,7 +150,14 @@ export interface ItemTab {
 
             a.active {
                 color: var(--secondary);
-                border-bottom-color: var(--secondary);
+            }
+
+            a.active [indicator] {
+                position: absolute;
+                inset: auto 0 0;
+                height: 2px;
+                background-color: var(--secondary);
+                view-transition-name: tab-indicator;
             }
         `,
     ],
