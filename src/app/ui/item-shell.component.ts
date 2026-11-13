@@ -118,7 +118,9 @@ function mediaQuery(query: string) {
                             }
                         </div>
                         <button
-                            class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm lg:-left-9"
+                            icon
+                            primary
+                            class="absolute bottom-2 left-2 z-30 h-12 w-12 lg:-left-9"
                             [appTooltip]="i18n_key() + '.NEW' | translate"
                             appTooltipPosition="right"
                             ripple
@@ -129,7 +131,9 @@ function mediaQuery(query: string) {
                         </button>
                         @if (bulk()) {
                             <button
-                                class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm lg:-left-8"
+                                icon
+                                primary
+                                class="absolute bottom-16 left-2 z-30 h-10 w-10 lg:-left-8"
                                 [appTooltip]="i18n_key() + '.BULK' | translate"
                                 appTooltipPosition="right"
                                 ripple

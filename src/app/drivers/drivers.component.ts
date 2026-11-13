@@ -14,7 +14,9 @@ import { DriverStateService } from './driver-state.service';
         <item-shell name="drivers" i18n_key="DRIVERS" [tabs]="tab_list()" debug>
             @if (updates_available()) {
                 <button
-                    class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-1 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm lg:-left-8"
+                    icon
+                    primary
+                    class="absolute bottom-16 left-1 z-30 h-10 w-10 lg:-left-8"
                     [appTooltip]="'DRIVERS.UPDATE' | translate"
                     appTooltipPosition="right"
                     ripple

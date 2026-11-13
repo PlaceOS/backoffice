@@ -347,8 +347,10 @@ import { SystemStateService } from './system-state.service';
                 </ng-template>
                 <button
                     fab
+                    icon
+                    primary
                     ripple
-                    class="bg-secondary text-secondary-content fixed right-4 bottom-4 z-50 flex h-12 w-12 items-center justify-center rounded-lg shadow-lg"
+                    class="fixed right-4 bottom-4 z-50 h-12 w-12"
                     [appTooltip]="
                         'SYSTEMS.SORT_MODULES_BY_CLASS_TOOLTIP' | translate
                     "

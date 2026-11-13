@@ -52,32 +52,24 @@ interface GroupTreeItem {
             (click)="$event.stopPropagation()"
         >
             <div class="flex items-center gap-1 px-1 pt-1">
-                <div
-                    class="border-base-300 relative flex flex-1 items-center rounded-lg border shadow-sm"
-                >
-                    <icon
-                        class="pointer-events-none absolute top-1/2 left-1 -translate-y-1/2 text-2xl"
-                    >
+                <app-form-field class="no-subscript flex-1">
+                    <icon prefix class="pointer-events-none text-2xl">
                         search
                     </icon>
                     <input
                         #search_input
-                        class="w-full flex-1 rounded-lg border-none bg-transparent py-2.5 pr-4 pl-9"
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
                         [placeholder]="
                             'COMMON.SEARCH_FOR' | translate: { name: title() }
                         "
                     />
-                    <!-- The search has focus on load, so offer the skip next -->
-                    <skip-to-content />
                     @if (loading() || group_hierarchy_loading()) {
-                        <app-spinner
-                            diameter="24"
-                            class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
-                        />
+                        <app-spinner suffix diameter="24" />
                     }
-                </div>
+                </app-form-field>
+                <!-- The search has focus on load, so offer the skip next -->
+                <skip-to-content />
                 @if (filter_options()?.length) {
                     <!-- The select sits invisible on top of the button and takes all input -->
                     <div
@@ -87,7 +79,7 @@ interface GroupTreeItem {
                             icon
                             default
                             ripple
-                            class="h-11 w-11"
+                            class="h-12 w-12"
                             [class.border-info]="selected_filters.length"
                             [class.text-info]="selected_filters.length"
                             tabindex="-1"

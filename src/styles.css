@@ -1510,11 +1510,24 @@ input[type='checkbox'][role='switch'] {
 }
 
 /* Buttons. After Sentry's: the face sits on a darker base, lifts on hover
-   and presses flat on click. `--lift` is the height of the face. */
-:is(button[btn]:not([icon]), a[btn], button[icon][default], a[icon][default]) {
+   and presses flat on click. `--lift` is the height of the base. At rest the
+   base is drawn inside the button, so it fills the same box as other controls
+   and lines up with them. */
+:is(
+    button[btn]:not([icon]),
+    a[btn],
+    button[icon]:is([default], [primary]),
+    a[icon]:is([default], [primary])
+) {
     --lift: 2px;
-    transform: translateY(calc(-1 * var(--lift)));
-    box-shadow: 0 var(--lift) 0 0 var(--chonk);
+    transform: translateY(calc(2px - var(--lift)));
+    /* The seam is a thin line between the face and the base. It shows the
+       edge of the face on dark fills, where a darker base can not */
+    box-shadow:
+        inset 0 calc(-1 * min(var(--lift), 2px)) 0 0 var(--chonk),
+        inset 0 calc(-1 * min(var(--lift), 2px) - min(var(--lift), 1px)) 0 0
+            var(--seam, transparent),
+        0 max(0px, calc(var(--lift) - 2px)) 0 0 var(--chonk);
     transition:
         transform var(--motion-snap),
         box-shadow var(--motion-snap),
@@ -1544,12 +1557,14 @@ button[btn]:not([icon]),
 a[btn] {
     --bg-color: var(--secondary);
     --color: var(--secondary-content);
-    --chonk: color-mix(in srgb, var(--bg-color) 70%, black);
+    --chonk: color-mix(in srgb, var(--bg-color) 55%, black);
+    --seam: rgb(255 255 255 / 0.35);
     background-color: var(--bg-color);
     border: 1px solid var(--chonk);
     color: var(--color);
     padding: 0 1rem;
-    min-height: 2.25rem;
+    /* The old height, so buttons line up with fields and other controls */
+    min-height: 3rem;
     border-radius: var(--radius-lg);
     font-size: 0.875rem;
     font-weight: 500;
@@ -1560,16 +1575,18 @@ a[btn] {
     /* Neutral surface, with text in the variant colour */
     &.inverse {
         --chonk: var(--base-300);
+        --seam: transparent;
         color: var(--bg-color);
         background-color: var(--base-100);
     }
 
     /* Flat, like Sentry's transparent buttons */
     &.clear {
-        --lift: 0px;
         --color: var(--base-content);
         background: none;
         border: none;
+        box-shadow: none;
+        transform: none;
 
         &:hover {
             background-color: var(--base-200);
@@ -1595,10 +1612,10 @@ a[btn] {
         --bg-color: var(--base-100);
         --color: var(--base-content);
         --chonk: var(--base-300);
+        --seam: transparent;
     }
 
     &:not([disabled='false'])[disabled] {
-        --lift: 0px;
         opacity: 0.6;
         pointer-events: none;
     }
@@ -1609,20 +1626,20 @@ a[icon] {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 2.25em;
-    width: 2.25em;
-    min-width: 2.25em;
+    height: 2.5em;
+    width: 2.5em;
+    min-width: 2.5em;
     font-size: 1em;
     padding: 0;
     border-radius: var(--radius-md);
     transition: background-color var(--motion-snap);
 
     icon {
-        font-size: 1.375em;
+        font-size: 1.5em;
     }
 
     /* Plain icon buttons are flat and tint on hover */
-    &:not([default]):hover {
+    &:not([default], [primary]):hover {
         background-color: var(--base-200);
     }
 
@@ -1649,8 +1666,17 @@ a[icon] {
         }
     }
 
+    /* Filled in the secondary colour, e.g. floating action buttons */
+    &[primary] {
+        --chonk: color-mix(in srgb, var(--secondary) 55%, black);
+        --seam: rgb(255 255 255 / 0.35);
+        background: var(--secondary);
+        border: 1px solid var(--chonk);
+        border-radius: var(--radius-lg);
+        color: var(--secondary-content);
+    }
+
     &[disabled] {
-        --lift: 0px;
         opacity: 0.35;
         pointer-events: none;
     }
