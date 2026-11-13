@@ -1,7 +1,7 @@
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { Component, inject } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { AuthenticatedImageDirective } from '../ui/authenticated-image.directive';
+import { DialogCloseDirective } from '../ui/controls/dialog';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 import { UploadInfo } from './upload-library.component';
@@ -13,7 +13,7 @@ import { UploadInfo } from './upload-library.component';
             class="border-base-100 bg-base-200 sticky top-0 z-10 m-2 flex w-[calc(100%-1rem)] items-center justify-between rounded-lg border px-4 py-2"
         >
             <h2 appDialogTitle class="text-xl font-medium">View Upload</h2>
-            <button icon matRipple mat-dialog-close aria-label="Close">
+            <button icon ripple appDialogClose aria-label="Close">
                 <icon>close</icon>
             </button>
         </header>
@@ -48,17 +48,16 @@ import { UploadInfo } from './upload-library.component';
     `,
     styles: [``],
     imports: [
+        DialogCloseDirective,
         DialogTitleDirective,
-        MatDialogModule,
         AuthenticatedImageDirective,
         IconComponent,
-        MatRippleModule,
     ],
 })
 export class ViewUploadModalComponent {
     private _data = inject<{
         upload: UploadInfo;
-    }>(MAT_DIALOG_DATA);
+    }>(DIALOG_DATA);
 
     public readonly resource = `/api/engine/v2/uploads/${this._data.upload.id}/url`;
     public readonly type = this._data.upload.mime_type.split('/')[0];

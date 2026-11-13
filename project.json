@@ -48,8 +48,9 @@
                     "./node_modules/@fontsource-variable/roboto/wght-italic.css",
                     "./src/fonts/material-symbols.css",
                     "./node_modules/@fontsource-variable/fira-code/index.css",
-                    "./src/styles.css",
-                    "./src/material-theme.scss"
+                    "./node_modules/@angular/cdk/overlay-prebuilt.css",
+                    "./node_modules/@angular/cdk/a11y-prebuilt.css",
+                    "./src/styles.css"
                 ]
             },
             "configurations": {

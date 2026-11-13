@@ -8,21 +8,20 @@ import {
     viewChild,
 } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { SignagePlugin } from '@placeos/ts-client';
 
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { readError } from '../../common/errors';
 import { getInvalidSignalFields } from '../../common/forms';
 import { HotkeysService } from '../../common/hotkeys.service';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { FormFieldComponent } from '../../ui/controls/form-field.component';
+import { OptionComponent } from '../../ui/controls/option.component';
+import { ProgressBarComponent } from '../../ui/controls/progress-bar.component';
+import { SelectComponent } from '../../ui/controls/select.component';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
-import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { SettingsToggleComponent } from '../../ui/settings-toggle.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { SchemaFormComponent } from './schema-form.component';
@@ -65,52 +64,52 @@ export interface SignagePluginModalData {
                         >
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                         </label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [placeholder]="'COMMON.FIELD_NAME' | translate"
                                 [formField]="form.name"
                             />
-                            <mat-error>{{
-                                'ADMIN.SIGNAGE_PLUGINS_NAME_REQUIRED'
-                                    | translate
-                            }}</mat-error>
-                        </mat-form-field>
+                            <div error>
+                                {{
+                                    'ADMIN.SIGNAGE_PLUGINS_NAME_REQUIRED'
+                                        | translate
+                                }}
+                            </div>
+                        </app-form-field>
                     </div>
                     <div class="field">
                         <label for="description">
                             {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                         </label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <textarea
-                                matInput
                                 [placeholder]="
                                     'COMMON.FIELD_DESCRIPTION' | translate
                                 "
                                 [formField]="form.description"
                             ></textarea>
-                        </mat-form-field>
+                        </app-form-field>
                     </div>
                     <div class="field">
                         <label for="plugin-type">
                             {{ 'ADMIN.SIGNAGE_PLUGINS_FIELD_TYPE' | translate }}
                         </label>
-                        <mat-form-field appearance="outline">
-                            <mat-select [formField]="form.plugin_type">
-                                <mat-option value="plugin">
+                        <app-form-field>
+                            <app-select [formField]="form.plugin_type">
+                                <app-option value="plugin">
                                     {{
                                         'ADMIN.SIGNAGE_PLUGINS_TYPE_PLUGIN'
                                             | translate
                                     }}
-                                </mat-option>
-                                <mat-option value="widget">
+                                </app-option>
+                                <app-option value="widget">
                                     {{
                                         'ADMIN.SIGNAGE_PLUGINS_TYPE_WIDGET'
                                             | translate
                                     }}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
+                                </app-option>
+                            </app-select>
+                        </app-form-field>
                     </div>
                     <div class="field">
                         <label
@@ -122,19 +121,21 @@ export interface SignagePluginModalData {
                             {{ 'ADMIN.SIGNAGE_PLUGINS_FIELD_URI' | translate
                             }}<span>*</span>
                         </label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [placeholder]="
                                     'ADMIN.SIGNAGE_PLUGINS_FIELD_URI'
                                         | translate
                                 "
                                 [formField]="form.uri"
                             />
-                            <mat-error>{{
-                                'ADMIN.SIGNAGE_PLUGINS_URI_REQUIRED' | translate
-                            }}</mat-error>
-                        </mat-form-field>
+                            <div error>
+                                {{
+                                    'ADMIN.SIGNAGE_PLUGINS_URI_REQUIRED'
+                                        | translate
+                                }}
+                            </div>
+                        </app-form-field>
                     </div>
                     <div class="field">
                         <label for="playback-type">
@@ -143,15 +144,14 @@ export interface SignagePluginModalData {
                                     | translate
                             }}
                         </label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
                                 id="playback-type"
-                                matInput
                                 name="playback-type"
                                 [value]="playback_type_name()"
                                 readonly
                             />
-                        </mat-form-field>
+                        </app-form-field>
                     </div>
                     <div class="field mb-4">
                         <settings-toggle
@@ -175,7 +175,7 @@ export interface SignagePluginModalData {
                             <div
                                 class="flex items-center space-x-2 py-2 text-sm opacity-60"
                             >
-                                <mat-progress-bar
+                                <app-progress-bar
                                     mode="indeterminate"
                                     class="w-48"
                                 />
@@ -237,13 +237,12 @@ export interface SignagePluginModalData {
     `,
     styles: [``],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FullscreenModalShellComponent,
         FormField,
-        MatFormFieldModule,
-        MatInputModule,
-        MatProgressBarModule,
-        MatSelectModule,
         SchemaFormComponent,
         SettingsToggleComponent,
         SignagePluginEmbedComponent,
@@ -255,8 +254,8 @@ export class SignagePluginModalComponent
     implements OnInit
 {
     private _dialog_ref =
-        inject<MatDialogRef<SignagePluginModalComponent>>(MatDialogRef);
-    private _data = inject<SignagePluginModalData>(MAT_DIALOG_DATA);
+        inject<DialogRef<unknown, SignagePluginModalComponent>>(DialogRef);
+    private _data = inject<SignagePluginModalData>(DIALOG_DATA);
     private _hotkey = inject(HotkeysService);
 
     private readonly _schema_form_el =

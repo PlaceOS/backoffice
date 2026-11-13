@@ -6,7 +6,6 @@ import {
     OnInit,
     signal,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceCluster,
     PlaceProcess,
@@ -15,13 +14,9 @@ import {
     terminateProcess,
 } from '@placeos/ts-client';
 
+import { Dialog } from '@angular/cdk/dialog';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { describeError } from '../../common/errors';
@@ -32,8 +27,10 @@ import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
 } from '../../overlays/confirm-modal.component';
+import { FormFieldComponent } from '../../ui/controls/form-field.component';
+import { ProgressBarComponent } from '../../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../../ui/controls/tooltip.directive';
 import { IconComponent } from '../../ui/icon.component';
-import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 
@@ -48,7 +45,7 @@ const task_details = {};
             >
                 <a
                     icon
-                    matRipple
+                    ripple
                     [routerLink]="['/admin', 'clusters']"
                     [attr.aria-label]="'COMMON.BACK' | translate"
                 >
@@ -59,26 +56,22 @@ const task_details = {};
                     {{ cluster()?.hostname }}
                 </h3>
                 <div class="flex-1"></div>
-                <mat-form-field
-                    appearance="outline"
-                    class="no-subscript bg-base-100 rounded-sm"
-                >
-                    <div class="prefix" matPrefix>
+                <app-form-field class="no-subscript bg-base-100 rounded-sm">
+                    <div class="prefix" prefix>
                         <icon class="relative -left-0.5 text-2xl">
                             search
                         </icon>
                     </div>
                     <input
-                        matInput
                         [(ngModel)]="filter"
                         [placeholder]="
                             'ADMIN.CLUSTERS_SEARCH_PROCESSES' | translate
                         "
                     />
-                </mat-form-field>
+                </app-form-field>
             </div>
             <div class="px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -160,8 +153,8 @@ const task_details = {};
                     icon
                     default
                     error
-                    matRipple
-                    [matTooltip]="'ADMIN.CLUSTER_PROCESS_KILL' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.CLUSTER_PROCESS_KILL' | translate"
                     (click)="confirmKillProcess(row)"
                 >
                     <icon>delete</icon>
@@ -180,15 +173,12 @@ const task_details = {};
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
+        FormFieldComponent,
         SimpleTableComponent,
         IconComponent,
-        MatRippleModule,
-        MatTooltipModule,
         TranslatePipe,
-        MatProgressBarModule,
-        MatFormFieldModule,
-        MatInputModule,
         FormsModule,
         RouterModule,
     ],
@@ -197,7 +187,7 @@ export class PlaceClusterTaskListComponent
     extends AsyncHandler
     implements OnInit
 {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _route = inject(ActivatedRoute);
     public readonly cluster = signal<PlaceCluster>(null);
     /** Whether the task list is updating */

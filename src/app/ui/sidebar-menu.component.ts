@@ -9,9 +9,7 @@ import {
     RouterModule,
 } from '@angular/router';
 
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { Dialog } from '@angular/cdk/dialog';
 import { authority, queryApplications } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
@@ -27,6 +25,7 @@ import {
     ApplicationPickerTooltipComponent,
     isSupportedRedirectUri,
 } from './application-picker-tooltip.component';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { CustomTooltipComponent } from './custom-tooltip.component';
 import { DebugInfoComponent } from './debug-info.component';
 import { IconComponent } from './icon.component';
@@ -75,15 +74,15 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                 <a
                                     btn
                                     link
-                                    matRipple
+                                    ripple
                                     class="clear hover:bg-base-100 mx-auto w-[calc(100%-1rem)] text-left"
                                     [href]="link.external()"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    [matTooltip]="
+                                    [appTooltip]="
                                         compact() ? (link.name | translate) : ''
                                     "
-                                    matTooltipPosition="right"
+                                    appTooltipPosition="right"
                                     [attr.aria-label]="link.name | translate"
                                 >
                                     <div
@@ -105,15 +104,15 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                 <a
                                     btn
                                     link
-                                    matRipple
+                                    ripple
                                     class="clear hover:bg-base-100 relative mx-auto w-[calc(100%-1rem)] text-left"
                                     [routerLink]="[link.route]"
                                     routerLinkActive="bg-secondary! text-secondary-content"
                                     ariaCurrentWhenActive="page"
-                                    [matTooltip]="
+                                    [appTooltip]="
                                         compact() ? (link.name | translate) : ''
                                     "
-                                    matTooltipPosition="right"
+                                    appTooltipPosition="right"
                                     [attr.aria-label]="link.name | translate"
                                 >
                                     <div
@@ -154,7 +153,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     <button
                         class="absolute top-1 left-1 sm:hidden"
                         icon
-                        matRipple
+                        ripple
                         (click)="open.set(false)"
                      [attr.aria-label]="'COMMON.CLOSE' | translate">
                         <icon>close</icon>
@@ -165,12 +164,12 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 <button
                     btn
                     link
-                    matRipple
+                    ripple
                     customTooltip
                     class="clear hover:bg-base-100 mx-auto mb-2 w-[calc(100%-1rem)] text-left"
                     [content]="application_picker"
-                    [matTooltip]="compact() ? 'Applications' : ''"
-                    matTooltipPosition="right"
+                    [appTooltip]="compact() ? 'Applications' : ''"
+                    appTooltipPosition="right"
                     aria-label="Applications"
                     yPosition="bottom"
                 >
@@ -189,12 +188,12 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 </button>
             }
             @if (support_groups().length) {
-                <button matRipple type="button"
+                <button ripple type="button"
                     class="hover:bg-base-100 flex min-h-14 items-center gap-2 border-t border-base-300 p-3 text-left"
                     [class.justify-center]="compact()"
                     [attr.aria-label]="'GROUPS.SWITCH_GROUP' | translate"
-                    [matTooltip]="selected_group()?.group.name || ('GROUPS.ALL_GROUPS' | translate)"
-                    matTooltipPosition="right"
+                    [appTooltip]="selected_group()?.group.name || ('GROUPS.ALL_GROUPS' | translate)"
+                    appTooltipPosition="right"
                     (click)="switchGroup()">
                     <icon class="text-2xl">groups</icon>
                     <span class="min-w-0 flex-1 truncate" [class.sm:hidden]="compact()">
@@ -205,7 +204,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             }
             <debug-info [compact]="compact()" />
             <button
-                matRipple
+                ripple
                 class="border-base-300 flex min-h-16 items-center space-x-2 border-t p-2 text-left"
                 customTooltip
                 user
@@ -216,8 +215,8 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 <a-user-avatar
                     [user]="user"
                     [class.sm:pl-2]="compact()"
-                    [matTooltip]="compact() ? user?.name : ''"
-                    matTooltipPosition="right"
+                    [appTooltip]="compact() ? user?.name : ''"
+                    appTooltipPosition="right"
                  />
                 <div
                     class="flex w-1/2 flex-1 flex-col leading-tight"
@@ -238,7 +237,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             </button>
             <button
                 icon
-                matRipple
+                ripple
                 class="border-base-200 bg-base-100 hover:bg-base-200 absolute right-0 bottom-12 z-999 hidden h-6 w-6 min-w-6 translate-x-1/2 rounded-full border shadow-sm sm:flex"
                 [attr.aria-label]="
                     (compact() ? 'COMMON.MENU_EXPAND' : 'COMMON.MENU_COLLAPSE')
@@ -271,11 +270,10 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
         `,
     ],
     imports: [
+        TooltipDirective,
         IconComponent,
         TranslatePipe,
         UserAvatarComponent,
-        MatRippleModule,
-        MatTooltipModule,
         CustomTooltipComponent,
         RouterModule,
         DebugInfoComponent,
@@ -286,7 +284,7 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     private _settings = inject(SettingsService);
     private _users = inject(BackofficeUsersService);
     private _router = inject(Router);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _items = inject(ActiveItemService);
     public readonly support_groups = support_groups;
     public readonly selected_group = selected_support_group;
@@ -394,14 +392,13 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
 
     public switchGroup() {
         this._dialog
-            .open<SupportGroupPickerComponent, undefined, string>(
+            .open<string, undefined, SupportGroupPickerComponent>(
                 SupportGroupPickerComponent,
                 {
                     maxWidth: 'calc(100vw - 2rem)',
                 },
             )
-            .afterClosed()
-            .subscribe((id) => {
+            .closed.subscribe((id) => {
                 if (id !== undefined) this._items.switchGroup(id);
             });
     }

@@ -1,6 +1,6 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
@@ -67,7 +67,7 @@ describe('RepositoriesStateService', () => {
                         active_item: null,
                     },
                 },
-                { provide: MatDialog, useValue: {} },
+                { provide: Dialog, useValue: {} },
             ],
         });
     });

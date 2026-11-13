@@ -1,12 +1,12 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { readError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { FormFieldComponent } from '../../ui/controls/form-field.component';
+import { OptionComponent } from '../../ui/controls/option.component';
+import { SelectComponent } from '../../ui/controls/select.component';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../../ui/settings-toggle.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -26,53 +26,56 @@ import { PlaceStorage, saveStorage } from './storage.fn';
             <form class="w-full">
                 <div class="flex flex-col">
                     <label for="storage-type">Storage Type</label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
+                    <app-form-field>
+                        <app-select
                             [formField]="form.storage_type"
                             placeholder="None"
                         >
-                            <mat-option value="s3">Amazon S3</mat-option>
-                            <mat-option value="azure"
-                                >Microsoft Azure</mat-option
+                            <app-option value="s3">Amazon S3</app-option>
+                            <app-option value="azure"
+                                >Microsoft Azure</app-option
                             >
-                        </mat-select>
-                    </mat-form-field>
+                        </app-select>
+                    </app-form-field>
                 </div>
                 <div class="flex space-x-2">
                     <div class="flex flex-1 flex-col">
                         <label for="bucket-name">{{
                             'ADMIN.STORAGE_BUCKET_NAME_LABEL' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [formField]="form.bucket_name"
                                 [placeholder]="
                                     'ADMIN.STORAGE_BUCKET_NAME_LABEL'
                                         | translate
                                 "
                             />
-                            <mat-error>{{
-                                'ADMIN.STORAGE_BUCKET_NAME_REQUIRED' | translate
-                            }}</mat-error>
-                        </mat-form-field>
+                            <div error>
+                                {{
+                                    'ADMIN.STORAGE_BUCKET_NAME_REQUIRED'
+                                        | translate
+                                }}
+                            </div>
+                        </app-form-field>
                     </div>
                     <div class="flex flex-1 flex-col">
                         <label for="region">{{
                             'ADMIN.STORAGE_REGION_LABEL' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [formField]="form.region"
                                 [placeholder]="
                                     'ADMIN.STORAGE_REGION_LABEL' | translate
                                 "
                             />
-                            <mat-error>{{
-                                'ADMIN.STORAGE_REGION_REQUIRED' | translate
-                            }}</mat-error>
-                        </mat-form-field>
+                            <div error>
+                                {{
+                                    'ADMIN.STORAGE_REGION_REQUIRED' | translate
+                                }}
+                            </div>
+                        </app-form-field>
                     </div>
                 </div>
                 <div class="flex space-x-2">
@@ -80,57 +83,60 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                         <label for="access-key">{{
                             'ADMIN.STORAGE_ACCESS_KEY_LABEL' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [formField]="form.access_key"
                                 [placeholder]="
                                     'ADMIN.STORAGE_ACCESS_KEY_LABEL' | translate
                                 "
                             />
-                            <mat-error>{{
-                                'ADMIN.STORAGE_ACCESS_KEY_REQUIRED' | translate
-                            }}</mat-error>
-                        </mat-form-field>
+                            <div error>
+                                {{
+                                    'ADMIN.STORAGE_ACCESS_KEY_REQUIRED'
+                                        | translate
+                                }}
+                            </div>
+                        </app-form-field>
                     </div>
                     <div class="flex flex-1 flex-col">
                         <label for="access-secret">{{
                             'ADMIN.STORAGE_SECRET_LABEL' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [formField]="form.access_secret"
                                 [placeholder]="
                                     'ADMIN.STORAGE_SECRET_LABEL' | translate
                                 "
                             />
-                            <mat-error>{{
-                                'ADMIN.STORAGE_ACCESS_KEY_REQUIRED' | translate
-                            }}</mat-error>
-                        </mat-form-field>
+                            <div error>
+                                {{
+                                    'ADMIN.STORAGE_ACCESS_KEY_REQUIRED'
+                                        | translate
+                                }}
+                            </div>
+                        </app-form-field>
                     </div>
                 </div>
                 <div class="flex flex-col">
                     <label for="endpoint">{{
                         'ADMIN.STORAGE_ENDPOINT_LABEL' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
-                            matInput
                             [formField]="form.endpoint"
                             [placeholder]="
                                 'ADMIN.STORAGE_ENDPOINT_LABEL' | translate
                             "
                         />
-                    </mat-form-field>
+                    </app-form-field>
                 </div>
                 <div class="flex flex-col">
                     <label for="extensions">{{
                         'ADMIN.STORAGE_ALLOWED_EXTENSIONS_LABEL' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
+                    <app-form-field>
+                        <app-select
                             [formField]="form.ext_filter"
                             [placeholder]="
                                 'ADMIN.STORAGE_ALLOW_ALL_EXTENSIONS' | translate
@@ -138,19 +144,19 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                             [multiple]="true"
                         >
                             @for (ext of ALLOWED_FILE_EXTENSIONS; track ext) {
-                                <mat-option [value]="ext">
+                                <app-option [value]="ext">
                                     {{ ext }}
-                                </mat-option>
+                                </app-option>
                             }
-                        </mat-select>
-                    </mat-form-field>
+                        </app-select>
+                    </app-form-field>
                 </div>
                 <div class="flex flex-col">
                     <label for="mime-types">{{
                         'ADMIN.STORAGE_ALLOWED_MIME_LABEL' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
+                    <app-form-field>
+                        <app-select
                             [formField]="form.mime_filter"
                             [placeholder]="
                                 'ADMIN.STORAGE_ALLOW_ALL_MIME' | translate
@@ -158,12 +164,12 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                             [multiple]="true"
                         >
                             @for (mime of ALLOWED_MIME_TYPES; track mime) {
-                                <mat-option [value]="mime">
+                                <app-option [value]="mime">
                                     {{ mime }}
-                                </mat-option>
+                                </app-option>
                             }
-                        </mat-select>
-                    </mat-form-field>
+                        </app-select>
+                    </app-form-field>
                 </div>
                 <settings-toggle [formField]="form.is_default">{{
                     'ADMIN.STORAGE_IS_DEFAULT_LABEL' | translate
@@ -173,20 +179,22 @@ import { PlaceStorage, saveStorage } from './storage.fn';
     `,
     styles: [``],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FullscreenModalShellComponent,
         SettingsToggleComponent,
         TranslatePipe,
-        MatFormFieldModule,
-        MatSelectModule,
         FormField,
-        MatInputModule,
     ],
 })
 export class StorageProviderModalComponent {
     private _data = inject<{ item?: PlaceStorage; domain?: string }>(
-        MAT_DIALOG_DATA,
+        DIALOG_DATA,
     );
-    private _dialog_ref = inject(MatDialogRef<StorageProviderModalComponent>);
+    private _dialog_ref = inject(
+        DialogRef<unknown, StorageProviderModalComponent>,
+    );
 
     public readonly ALLOWED_FILE_EXTENSIONS = [
         'png',

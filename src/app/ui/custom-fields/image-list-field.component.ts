@@ -1,5 +1,4 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
     AfterViewInit,
     Component,
@@ -12,20 +11,18 @@ import {
     viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { unique } from '../../common/general';
 import { notifyInfo } from '../../common/notifications';
 import { UploadDetails } from '../../common/uploads';
 import { UploadsService } from '../../common/uploads.service';
 import { AuthenticatedImageDirective } from '../authenticated-image.directive';
+import { ChipListComponent } from '../controls/chip-list.component';
+import { FormFieldComponent } from '../controls/form-field.component';
+import { SpinnerComponent } from '../controls/spinner.component';
+import { TooltipDirective } from '../controls/tooltip.directive';
 import { IconComponent } from '../icon.component';
-import { LoadingLabelDirective } from '../loading-label.directive';
 import { TranslatePipe } from '../translate.pipe';
 
 @Component({
@@ -113,14 +110,14 @@ import { TranslatePipe } from '../translate.pipe';
                     image
                     class="border-base-content/10 /5 bg-base-200 flex h-32 w-36 shrink-0 items-center justify-center rounded-sm border bg-cover bg-center"
                     [style.transform]="'translate(-' + offset() + '00%)'"
-                    [matTooltip]="item.error"
+                    [appTooltip]="item.error"
                     (click)="retryUpload(item)"
                     [attr.aria-label]="
                         item.error ? ('COMMON.RETRY' | translate) : null
                     "
                 >
                     @if (!item.error) {
-                        <mat-progress-spinner
+                        <app-spinner
                             [value]="item.progress"
                             [diameter]="64"
                             mode="determinate"
@@ -143,7 +140,7 @@ import { TranslatePipe } from '../translate.pipe';
                 <button
                     type="button"
                     icon
-                    matRipple
+                    ripple
                     [disabled]="offset() === 0"
                     class="bg-base-100 absolute top-1/2 left-0 -translate-y-1/2 transform"
                     (click)="decrement()"
@@ -153,7 +150,7 @@ import { TranslatePipe } from '../translate.pipe';
                 <button
                     type="button"
                     icon
-                    matRipple
+                    ripple
                     [disabled]="offset() >= length() - view_space()"
                     class="bg-base-100 absolute top-1/2 right-0 -translate-y-1/2 transform"
                     (click)="increment()"
@@ -162,31 +159,15 @@ import { TranslatePipe } from '../translate.pipe';
                 </button>
             }
         </div>
-        <mat-form-field appearance="outline" class="w-full">
-            <mat-chip-grid #chipList aria-label="Image List">
-                @for (item of list(); track item) {
-                    <mat-chip-row (removed)="removeImage(item)">
-                        <div class="max-w-md truncate">{{ item }}</div>
-                        <button
-                            type="button"
-                            matChipRemove
-                            [attr.aria-label]="'Remove ' + item"
-                            [disabled]="disabled()"
-                        >
-                            <icon>cancel</icon>
-                        </button>
-                    </mat-chip-row>
-                }
-            </mat-chip-grid>
-            <input
+        <app-form-field class="w-full">
+            <app-chip-list
+                aria-label="Image List"
                 [placeholder]="'COMMON.IMAGE_ADD_URL' | translate"
-                [matChipInputFor]="chipList"
-                [matChipInputSeparatorKeyCodes]="separators"
-                [matChipInputAddOnBlur]="true"
                 [disabled]="disabled()"
-                (matChipInputTokenEnd)="addImage($event)"
+                [value]="list()"
+                (valueChange)="setValue($event)"
             />
-        </mat-form-field>
+        </app-form-field>
     `,
     styles: [
         `
@@ -225,15 +206,13 @@ import { TranslatePipe } from '../translate.pipe';
         },
     ],
     imports: [
-        LoadingLabelDirective,
+        SpinnerComponent,
+        TooltipDirective,
+        FormFieldComponent,
         TranslatePipe,
         IconComponent,
-        MatFormFieldModule,
-        MatChipsModule,
-        MatRippleModule,
-        MatProgressSpinnerModule,
+        ChipListComponent,
         AuthenticatedImageDirective,
-        MatTooltipModule,
     ],
 })
 export class ImageListFieldComponent
@@ -252,7 +231,6 @@ export class ImageListFieldComponent
     public readonly offset = signal(0);
     public readonly view_space = signal(0);
     public readonly disabled = signal(false);
-    public readonly separators = [COMMA, ENTER];
     public readonly length = computed(
         () => this.list().length + this.upload_list().length + 1,
     );
@@ -312,13 +290,6 @@ export class ImageListFieldComponent
     public removeImage(url: string) {
         if (this.disabled()) return;
         this.setValue(this.list().filter((_) => _ !== url));
-    }
-
-    public addImage(event: MatChipInputEvent) {
-        if (this.disabled()) return;
-        if (!event.value) return;
-        this.setValue(unique([...this.list(), event.value]) as string[]);
-        event.chipInput.inputElement.value = '';
     }
 
     public addImageUrl(url: string) {

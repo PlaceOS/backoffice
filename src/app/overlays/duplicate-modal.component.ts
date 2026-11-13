@@ -1,24 +1,21 @@
 import {
     Component,
+    DestroyRef,
     inject,
     output,
     signal,
     WritableSignal,
 } from '@angular/core';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogModule,
-    MatDialogRef,
-    MatDialogState,
-} from '@angular/material/dialog';
 
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
+import { DialogCloseDirective } from '../ui/controls/dialog';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 
 export interface DuplicateModalData {
@@ -30,15 +27,16 @@ export interface DuplicateModalData {
     selector: 'app-duplicate-modal',
     template: `
         <header>
-            <h3 mat-dialog-title>Duplicate Item</h3>
+            <h3 appDialogTitle class="px-6 pt-6 pb-4 text-xl font-medium">
+                Duplicate Item
+            </h3>
         </header>
-        <mat-dialog-content>
+        <div class="max-h-[65vh] overflow-auto px-6">
             @if (!loading()) {
                 <div class="flex flex-col items-center p-4 text-center">
                     <p>How many times would you like to duplicate this item?</p>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
-                            matInput
                             name="times"
                             type="number"
                             min="1"
@@ -48,7 +46,7 @@ export interface DuplicateModalData {
                             placeholder="Number of duplications"
                             required
                         />
-                    </mat-form-field>
+                    </app-form-field>
                 </div>
             } @else {
                 <div class="flex flex-col items-center px-2 py-4">
@@ -65,7 +63,7 @@ export interface DuplicateModalData {
                                 {{ item.name }} ({{ i + 1 }})
                             </div>
                             @if (status()[i] === 'loading') {
-                                <mat-spinner diameter="24" />
+                                <app-spinner diameter="24" />
                             } @else if (status()[i] === 'done') {
                                 <icon class="text-success">done</icon>
                             } @else {
@@ -75,10 +73,10 @@ export interface DuplicateModalData {
                     }
                 </div>
             }
-        </mat-dialog-content>
+        </div>
         @if (!loading()) {
-            <mat-dialog-actions>
-                <button btn class="inverse min-w-32" mat-dialog-close>
+            <div class="flex items-center gap-2 p-2">
+                <button btn class="inverse min-w-32" appDialogClose>
                     Cancel
                 </button>
                 <button
@@ -90,22 +88,29 @@ export interface DuplicateModalData {
                 >
                     Duplicate
                 </button>
-            </mat-dialog-actions>
+            </div>
         }
     `,
     imports: [
-        MatDialogModule,
+        DialogCloseDirective,
+        DialogTitleDirective,
+        SpinnerComponent,
+        FormFieldComponent,
         IconComponent,
-        MatFormFieldModule,
-        MatInputModule,
         FormsModule,
-        MatProgressSpinnerModule,
     ],
 })
 export class DuplicateModalComponent {
-    private _data = inject<DuplicateModalData>(MAT_DIALOG_DATA);
+    private _data = inject<DuplicateModalData>(DIALOG_DATA);
     private _dialog_ref =
-        inject<MatDialogRef<DuplicateModalComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, DuplicateModalComponent>>(DialogRef);
+    /** Whether the user closed the dialog */
+    private _closed = false;
+
+    constructor() {
+        // Closing the dialog destroys this component before `closed` emits
+        inject(DestroyRef).onDestroy(() => (this._closed = true));
+    }
 
     /** Emitter for user action on the modal */
     public readonly event = output<DialogEvent>();
@@ -151,7 +156,7 @@ export class DuplicateModalComponent {
         this.temp.set(new Array(this.times).fill({}));
         for (let i = 0; i < this.times; i++) {
             // Stop creating duplicates if the user closes the dialog
-            if (this._dialog_ref.getState() !== MatDialogState.OPEN) break;
+            if (this._closed) break;
             const new_item = new ItemConstructor({
                 ...item,
                 id: '',
@@ -167,6 +172,8 @@ export class DuplicateModalComponent {
                 this.setStatus(i, 'done');
             }
         }
+        // A closed dialog has no one to tell, and closing it again throws
+        if (this._closed) return;
         const clean_list = list.filter((item) => !!item);
         this.event.emit({
             reason: 'done',

@@ -5,15 +5,17 @@ import {
     signal,
     WritableSignal,
 } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
+import { DialogCloseDirective } from '../ui/controls/dialog';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { DiffViewerComponent } from '../ui/diff-viewer.component';
 import { IconComponent } from '../ui/icon.component';
@@ -33,8 +35,8 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 </h3>
                 <button
                     icon
-                    matRipple
-                    mat-dialog-close
+                    ripple
+                    appDialogClose
                     [attr.aria-label]="'COMMON.CLOSE' | translate"
                 >
                     <icon>close</icon>
@@ -75,8 +77,8 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 <div
                     class="mb-2 flex items-center justify-between space-x-2 px-4"
                 >
-                    <mat-form-field appearance="outline" class="w-[20rem]">
-                        <mat-select
+                    <app-form-field class="w-[20rem]">
+                        <app-select
                             [(ngModel)]="first"
                             (selectionChange)="select(0, $event.value)"
                             (openedChange)="first_open.set($event)"
@@ -92,7 +94,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                     i < CLOSED_OPTIONS ||
                                     item === first
                                 ) {
-                                    <mat-option
+                                    <app-option
                                         [value]="item"
                                         class="leading-tight"
                                     >
@@ -111,18 +113,18 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                         >
                                             {{ item.description }}
                                         </div>
-                                    </mat-option>
+                                    </app-option>
                                 }
                             }
-                        </mat-select>
+                        </app-select>
                         @if (first) {
-                            <mat-hint class="truncate">{{
-                                first.description
-                            }}</mat-hint>
+                            <div hint class="truncate">
+                                {{ first.description }}
+                            </div>
                         }
-                    </mat-form-field>
-                    <mat-form-field appearance="outline" class="w-[20rem]">
-                        <mat-select
+                    </app-form-field>
+                    <app-form-field class="w-[20rem]">
+                        <app-select
                             [(ngModel)]="second"
                             (selectionChange)="select(1, $event.value)"
                             (openedChange)="second_open.set($event)"
@@ -139,7 +141,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                         i < CLOSED_OPTIONS ||
                                         item === second())
                                 ) {
-                                    <mat-option
+                                    <app-option
                                         [value]="item"
                                         class="leading-tight"
                                     >
@@ -158,16 +160,16 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                         >
                                             {{ item.description }}
                                         </div>
-                                    </mat-option>
+                                    </app-option>
                                 }
                             }
-                        </mat-select>
+                        </app-select>
                         @if (second()) {
-                            <mat-hint class="truncate">{{
-                                second()?.description
-                            }}</mat-hint>
+                            <div hint class="truncate">
+                                {{ second()?.description }}
+                            </div>
                         }
-                    </mat-form-field>
+                    </app-form-field>
                 </div>
                 <div class="relative w-full flex-1 px-4">
                     @if (first_details() || second_details()) {
@@ -189,11 +191,12 @@ import { TranslatePipe } from '../ui/translate.pipe';
     `,
     styles: [``],
     imports: [
+        DialogCloseDirective,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         DialogTitleDirective,
-        MatDialogModule,
         DiffViewerComponent,
-        MatFormFieldModule,
-        MatSelectModule,
         FormsModule,
         TranslatePipe,
         IconComponent,
@@ -205,7 +208,7 @@ export class MetadataHistoryModalComponent implements OnInit {
         id: string;
         parent_name: string;
         name: string;
-    }>(MAT_DIALOG_DATA);
+    }>(DIALOG_DATA);
 
     public readonly id = this._data.id;
     public readonly parent_name = this._data.parent_name;
@@ -216,7 +219,7 @@ export class MetadataHistoryModalComponent implements OnInit {
     public first = null;
     public readonly second = signal(null);
     // The history can hold thousands of versions. A closed select renders
-    // only a few options and the selected one; mat-select does not open
+    // only a few options and the selected one; a select does not open
     // without options.
     public readonly CLOSED_OPTIONS = 20;
     public readonly first_open = signal(false);

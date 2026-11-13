@@ -1,3 +1,4 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
     Component,
     EventEmitter,
@@ -8,8 +9,6 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FormField, form, submit } from '@angular/forms/signals';
-import { MatRippleModule } from '@angular/material/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceTrigger,
     SignagePlaylist,
@@ -131,7 +130,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                         </div>
                                         <button
                                             icon
-                                            matRipple
+                                            ripple
                                             type="button"
                                             [attr.aria-label]="
                                                 'SYSTEMS.PLAYLIST_REMOVE'
@@ -185,16 +184,15 @@ import { TranslatePipe } from '../ui/translate.pipe';
         FormField,
         FormsModule,
         ItemSearchFieldComponent,
-        MatRippleModule,
         FullscreenModalShellComponent,
         IconComponent,
     ],
 })
 export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
     private _dialog_ref =
-        inject<MatDialogRef<SystemTriggerFormComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, SystemTriggerFormComponent>>(DialogRef);
     private _data = inject<{ item: PlaceTrigger; readonly?: string }>(
-        MAT_DIALOG_DATA,
+        DIALOG_DATA,
     );
     private _hotkey = inject(HotkeysService);
 

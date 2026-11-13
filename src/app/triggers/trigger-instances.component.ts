@@ -2,12 +2,10 @@ import { Component, inject } from '@angular/core';
 
 import { HashMap } from '../common/types';
 
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -17,7 +15,7 @@ import { TriggerStateService } from './trigger-state.service';
     selector: 'trigger-systems',
     template: `
         <div class="h-full w-full overflow-auto p-4">
-            <mat-progress-bar
+            <app-progress-bar
                 mode="indeterminate"
                 class="w-full"
                 [class.invisible]="!loading()"
@@ -65,7 +63,7 @@ import { TriggerStateService } from './trigger-state.service';
                             ? ['/zones', row.zone_id]
                             : ['/systems', row.control_system_id]
                     "
-                    [matTooltip]="row.zone_id || row.control_system_id"
+                    [appTooltip]="row.zone_id || row.control_system_id"
                 >
                     {{ row.name || row.zone_id || row.control_system_id }}
                 </a>
@@ -81,8 +79,8 @@ import { TriggerStateService } from './trigger-state.service';
                         icon
                         default
                         error
-                        matRipple
-                        [matTooltip]="'TRIGGERS.DELETE_INSTANCE' | translate"
+                        ripple
+                        [appTooltip]="'TRIGGERS.DELETE_INSTANCE' | translate"
                         (click)="deleteTrigger(row)"
                     >
                         <icon>delete</icon>
@@ -100,14 +98,12 @@ import { TriggerStateService } from './trigger-state.service';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
         IconComponent,
         TranslatePipe,
-        MatRippleModule,
         SimpleTableComponent,
-        MatProgressBarModule,
         RouterModule,
-        MatTooltipModule,
         DateFromPipe,
     ],
 })

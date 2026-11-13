@@ -12,10 +12,10 @@ import {
 } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { HashMap, Identity } from '../../common/types';
+import { FormFieldComponent } from '../../ui/controls/form-field.component';
+import { OptionComponent } from '../../ui/controls/option.component';
+import { SelectComponent } from '../../ui/controls/select.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 
 @Component({
@@ -59,21 +59,21 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                             <span class="text-error">Required</span>
                         }
                     </label>
-                    <mat-form-field appearance="outline" class="no-subscript">
-                        <mat-select
+                    <app-form-field class="no-subscript">
+                        <app-select
                             [name]="'' + field.id"
                             [ngModel]="field_mapping()[field.id]"
                             (ngModelChange)="setFieldMapping(field.id, $event)"
                             placeholder="Skip field"
                         >
-                            <mat-option value="">Skip field</mat-option>
+                            <app-option value="">Skip field</app-option>
                             @for (type of source_fields(); track type.id) {
-                                <mat-option [value]="type.id">
+                                <app-option [value]="type.id">
                                     {{ type.name }}
-                                </mat-option>
+                                </app-option>
                             }
-                        </mat-select>
-                    </mat-form-field>
+                        </app-select>
+                    </app-form-field>
                 </div>
             }
         </div>
@@ -83,25 +83,20 @@ import { TranslatePipe } from '../../ui/translate.pipe';
         <div
             class="bg-base-100 border-base-200 fixed right-0 bottom-0 left-0 z-20 flex items-center justify-end space-x-4 border-t px-4 py-4 shadow-lg"
         >
-            <button
-                btn
-                matRipple
-                class="inverse w-36"
-                (click)="previous.emit()"
-            >
+            <button btn ripple class="inverse w-36" (click)="previous.emit()">
                 {{ 'COMMON.BACK' | translate }}
             </button>
-            <button btn matRipple class="w-36" (click)="saveMapping()">
+            <button btn ripple class="w-36" (click)="saveMapping()">
                 {{ 'COMMON.CONTINUE' | translate }}
             </button>
         </div>
     `,
     styles: [``],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         TranslatePipe,
-        MatRippleModule,
-        MatFormFieldModule,
-        MatSelectModule,
         FormsModule,
     ],
 })
@@ -189,8 +184,7 @@ export class MatchFieldsComponent implements OnChanges, OnInit {
 
     public readonly mapped_field_count = computed(() => {
         const mapping = this.field_mapping();
-        return this.field_list().filter((field) => !!mapping[field.id])
-            .length;
+        return this.field_list().filter((field) => !!mapping[field.id]).length;
     });
 
     public isRequired(field: unknown): boolean {

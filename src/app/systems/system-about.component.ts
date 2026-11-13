@@ -1,12 +1,10 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { SystemStateService } from './system-state.service';
@@ -141,9 +139,9 @@ import { SystemStateService } from './system-state.service';
                         icon
                         default
                         start
-                        matRipple
+                        ripple
                         (click)="start()"
-                        [matTooltip]="'SYSTEMS.START' | translate"
+                        [appTooltip]="'SYSTEMS.START' | translate"
                     >
                         <icon>play_arrow</icon>
                     </button>
@@ -152,9 +150,9 @@ import { SystemStateService } from './system-state.service';
                         default
                         error
                         stop
-                        matRipple
+                        ripple
                         (click)="stop()"
-                        [matTooltip]="'SYSTEMS.STOP' | translate"
+                        [appTooltip]="'SYSTEMS.STOP' | translate"
                     >
                         <icon>stop</icon>
                     </button>
@@ -189,13 +187,13 @@ import { SystemStateService } from './system-state.service';
                     </section>
                 } @else {
                     <div class="flex flex-col items-center justify-center p-8">
-                        <mat-spinner class="mb-4" [diameter]="32" />
+                        <app-spinner class="mb-4" [diameter]="32" />
                         <p>{{ 'SYSTEMS.LOADING_SETTINGS' | translate }}</p>
                     </div>
                 }
             } @placeholder {
                 <div class="flex flex-col items-center justify-center p-8">
-                    <mat-spinner class="mb-4" [diameter]="32" />
+                    <app-spinner class="mb-4" [diameter]="32" />
                     <p>{{ 'SYSTEMS.LOADING_SETTINGS' | translate }}</p>
                 </div>
             }
@@ -210,14 +208,12 @@ import { SystemStateService } from './system-state.service';
         `,
     ],
     imports: [
+        SpinnerComponent,
+        TooltipDirective,
         ItemTimestampsComponent,
-        LoadingLabelDirective,
         TranslatePipe,
         MarkdownPipe,
-        MatProgressSpinnerModule,
         SettingsFormComponent,
-        MatRippleModule,
-        MatTooltipModule,
         IconComponent,
         AsyncPipe,
     ],

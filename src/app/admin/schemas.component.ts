@@ -1,13 +1,12 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { create, query, update } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -28,37 +27,34 @@ export interface JsonSchema {
                     {{ 'ADMIN.SCHEMA_HEADER' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <mat-form-field
-                        class="no-subscript w-56"
-                        appearance="outline"
-                    >
-                        <mat-select
+                    <app-form-field class="no-subscript w-56">
+                        <app-select
                             name="type"
                             [(ngModel)]="active_schema"
                             (ngModelChange)="copySchema()"
                             [placeholder]="'ADMIN.SCHEMA_SELECT' | translate"
                         >
                             @for (schema of schema_list(); track schema.id) {
-                                <mat-option [value]="schema">
+                                <app-option [value]="schema">
                                     {{ schema.name }}
-                                </mat-option>
+                                </app-option>
                             }
-                            <mat-option
+                            <app-option
                                 (click)="newSchema(); $event.preventDefault()"
                             >
                                 <span class="font-sans italic">{{
                                     'ADMIN.SCHEMA_NEW' | translate
                                 }}</span>
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                            </app-option>
+                        </app-select>
+                    </app-form-field>
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         (click)="newSchema()"
-                        [matTooltip]="'ADMIN.SCHEMA_ADD' | translate"
+                        [appTooltip]="'ADMIN.SCHEMA_ADD' | translate"
                         [attr.aria-label]="'ADMIN.SCHEMA_ADD' | translate"
                     >
                         <icon>add</icon>
@@ -71,20 +67,16 @@ export interface JsonSchema {
                         <label for="schema-name"
                             >{{ 'ADMIN.SCHEMA_NAME' | translate }}:
                         </label>
-                        <mat-form-field
-                            class="no-subscript w-full"
-                            appearance="outline"
-                        >
+                        <app-form-field class="no-subscript w-full">
                             <input
-                                matInput
                                 id="schema-name"
                                 [(ngModel)]="schema_copy().name"
                             />
-                        </mat-form-field>
+                        </app-form-field>
                     </div>
                     <button
                         btn
-                        matRipple
+                        ripple
                         class="mt-6 h-12 w-40"
                         (click)="saveSchema()"
                     >
@@ -125,15 +117,14 @@ export interface JsonSchema {
         `,
     ],
     imports: [
-        MatRippleModule,
-        MatTooltipModule,
+        TooltipDirective,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         IconComponent,
         TranslatePipe,
         SettingsFieldComponent,
-        MatFormFieldModule,
-        MatInputModule,
         FormsModule,
-        MatSelectModule,
     ],
 })
 export class AdminSchemasComponent implements OnInit {

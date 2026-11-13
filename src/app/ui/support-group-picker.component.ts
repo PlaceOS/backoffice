@@ -1,41 +1,45 @@
 import { Component, computed, signal } from '@angular/core';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import {
     hasSupportRole,
     selected_support_group_id,
     support_groups,
 } from '../common/support-access';
+import { DialogCloseDirective } from './controls/dialog';
+import { FormFieldComponent } from './controls/form-field.component';
+import { DialogTitleDirective } from './dialog-title.directive';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'app-support-group-picker',
     imports: [
-        MatDialogModule,
-        MatFormFieldModule,
-        MatInputModule,
+        DialogCloseDirective,
+        DialogTitleDirective,
+        FormFieldComponent,
         IconComponent,
         TranslatePipe,
     ],
     template: `
-        <h2 mat-dialog-title>{{ 'GROUPS.SWITCH_GROUP' | translate }}</h2>
-        <mat-dialog-content class="w-96 max-w-full">
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-label>{{ 'GROUPS.SEARCH_GROUPS' | translate }}</mat-label>
+        <h2 appDialogTitle class="px-6 pt-6 pb-4 text-xl font-medium">
+            {{ 'GROUPS.SWITCH_GROUP' | translate }}
+        </h2>
+        <div class="max-h-[65vh] w-96 max-w-full overflow-auto px-6 pb-2">
+            <label for="support-group-search">{{
+                'GROUPS.SEARCH_GROUPS' | translate
+            }}</label>
+            <app-form-field class="w-full">
                 <input
-                    matInput
+                    id="support-group-search"
                     #search_input
                     cdkFocusInitial
                     (input)="search.set(search_input.value)"
                 />
-            </mat-form-field>
-            <div class="flex flex-col gap-1">
+            </app-form-field>
+            <div class="flex flex-col gap-1" data-testid="support-groups">
                 @if (show_all() && !search()) {
                     <button
                         class="hover:bg-base-200 flex items-center gap-2 rounded p-3 text-left"
-                        [mat-dialog-close]="''"
+                        [appDialogClose]="''"
                         [attr.aria-current]="!selected_id() ? 'true' : null"
                     >
                         <icon>{{ !selected_id() ? 'check' : 'public' }}</icon>
@@ -45,7 +49,7 @@ import { TranslatePipe } from './translate.pipe';
                 @for (item of groups(); track item.group.id) {
                     <button
                         class="hover:bg-base-200 flex items-center gap-2 rounded p-3 text-left"
-                        [mat-dialog-close]="item.group.id"
+                        [appDialogClose]="item.group.id"
                         [attr.aria-current]="
                             selected_id() === item.group.id ? 'true' : null
                         "
@@ -68,12 +72,12 @@ import { TranslatePipe } from './translate.pipe';
                     </p>
                 }
             </div>
-        </mat-dialog-content>
-        <mat-dialog-actions align="end">
-            <button [mat-dialog-close]="undefined" class="rounded px-4 py-2">
+        </div>
+        <div class="flex justify-end gap-2 p-2" data-testid="support-actions">
+            <button [appDialogClose]="undefined" class="rounded px-4 py-2">
                 {{ 'COMMON.CANCEL' | translate }}
             </button>
-        </mat-dialog-actions>
+        </div>
     `,
 })
 export class SupportGroupPickerComponent {

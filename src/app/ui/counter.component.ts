@@ -10,20 +10,20 @@ import {
     FormsModule,
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 
 @Component({
     selector: 'a-counter',
     template: `
-        <div counter class="flex items-center text-base">
+        <!-- Looks like a form field, with the steppers inside it -->
+        <div counter class="field-box gap-1 px-1 text-sm">
             <button
                 decrease
                 icon
-                matRipple
+                ripple
                 type="button"
-                class="border-secondary text-secondary z-10 h-12 w-12 rounded-l rounded-r-none border"
+                class="text-secondary z-10"
                 [disabled]="disabled() || !value() || value() === min()"
                 (click)="remove()"
                 [attr.aria-label]="'COMMON.DECREASE' | translate"
@@ -32,7 +32,7 @@ import { TranslatePipe } from './translate.pipe';
             </button>
             <div
                 value
-                class="border-base-300 relative z-0 flex h-12 min-w-16 flex-1 items-center justify-center rounded-none border-y p-1 focus-within:z-20"
+                class="relative z-0 flex min-w-16 flex-1 items-center justify-center self-stretch"
             >
                 @if (!focused) {
                     <span>
@@ -44,7 +44,7 @@ import { TranslatePipe } from './translate.pipe';
                 }
                 <input
                     type="text"
-                    class="absolute inset-0 p-2 opacity-0 focus:opacity-100"
+                    class="absolute inset-0 bg-transparent text-center opacity-0 outline-none focus:opacity-100"
                     [disabled]="disabled()"
                     [(ngModel)]="value"
                     (focus)="focused = true"
@@ -55,9 +55,9 @@ import { TranslatePipe } from './translate.pipe';
             <button
                 increase
                 icon
-                matRipple
+                ripple
                 type="button"
-                class="border-secondary text-secondary z-10 h-12 w-12 rounded-l-none rounded-r border"
+                class="text-secondary z-10"
                 [disabled]="disabled() || value() === max()"
                 (click)="add()"
                 [attr.aria-label]="'COMMON.INCREASE' | translate"
@@ -75,7 +75,7 @@ import { TranslatePipe } from './translate.pipe';
             multi: true,
         },
     ],
-    imports: [TranslatePipe, IconComponent, MatRippleModule, FormsModule],
+    imports: [TranslatePipe, IconComponent, FormsModule],
 })
 export class CounterComponent implements ControlValueAccessor {
     /** Size of a single step */

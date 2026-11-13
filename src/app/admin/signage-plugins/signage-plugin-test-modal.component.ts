@@ -1,18 +1,13 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogModule,
-    MatDialogRef,
-} from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SignagePlugin } from '@placeos/ts-client';
 
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { DialogCloseDirective } from '../../ui/controls/dialog';
+import { ProgressBarComponent } from '../../ui/controls/progress-bar.component';
 import { DialogTitleDirective } from '../../ui/dialog-title.directive';
 import { IconComponent } from '../../ui/icon.component';
-import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { SchemaFormComponent } from './schema-form.component';
 import {
@@ -87,7 +82,7 @@ export interface SignagePluginTestModalData {
                             <div
                                 class="flex items-center gap-2 py-2 text-sm opacity-60"
                             >
-                                <mat-progress-bar
+                                <app-progress-bar
                                     mode="indeterminate"
                                     class="w-full"
                                 />
@@ -121,7 +116,7 @@ export interface SignagePluginTestModalData {
                     >
                         <button
                             btn
-                            matRipple
+                            ripple
                             class="flex-1"
                             (click)="sendConfig()"
                             [disabled]="status() === 'unknown'"
@@ -138,7 +133,7 @@ export interface SignagePluginTestModalData {
                         </button>
                         <button
                             btn
-                            matRipple
+                            ripple
                             class="flex-1"
                             (click)="sendPlay()"
                             [disabled]="status() === 'unknown'"
@@ -160,7 +155,7 @@ export interface SignagePluginTestModalData {
             <!-- Sidebar toggle (always visible) -->
             <button
                 icon
-                matRipple
+                ripple
                 class="bg-base-100 border-base-300 absolute bottom-4 left-2 z-20 border shadow-md transition-[left] duration-200"
                 [style.left]="sidebar_open() ? '22.5rem' : '0.5rem'"
                 (click)="sidebar_open.set(!sidebar_open())"
@@ -184,8 +179,8 @@ export interface SignagePluginTestModalData {
                     </h2>
                     <button
                         icon
-                        matRipple
-                        mat-dialog-close
+                        ripple
+                        appDialogClose
                         [attr.aria-label]="'COMMON.CLOSE' | translate"
                     >
                         <icon>close</icon>
@@ -241,12 +236,10 @@ export interface SignagePluginTestModalData {
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        DialogCloseDirective,
+        ProgressBarComponent,
         DialogTitleDirective,
         FormsModule,
-        MatDialogModule,
-        MatRippleModule,
-        MatProgressBarModule,
         IconComponent,
         TranslatePipe,
         SchemaFormComponent,
@@ -258,8 +251,8 @@ export class SignagePluginTestModalComponent
     implements OnInit
 {
     private _dialog_ref =
-        inject<MatDialogRef<SignagePluginTestModalComponent>>(MatDialogRef);
-    private _data = inject<SignagePluginTestModalData>(MAT_DIALOG_DATA);
+        inject<DialogRef<unknown, SignagePluginTestModalComponent>>(DialogRef);
+    private _data = inject<SignagePluginTestModalData>(DIALOG_DATA);
 
     public readonly sidebar_open = signal(true);
     public readonly schema_loading = signal(false);

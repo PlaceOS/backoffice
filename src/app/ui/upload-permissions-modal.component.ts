@@ -1,15 +1,11 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogModule,
-    MatDialogRef,
-} from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { UploadPermissions } from '../common/uploads';
+import { DialogCloseDirective } from './controls/dialog';
+import { FormFieldComponent } from './controls/form-field.component';
+import { OptionComponent } from './controls/option.component';
+import { SelectComponent } from './controls/select.component';
 import { DialogTitleDirective } from './dialog-title.directive';
 import { IconComponent } from './icon.component';
 import { SettingsToggleComponent } from './settings-toggle.component';
@@ -26,8 +22,8 @@ import { TranslatePipe } from './translate.pipe';
             </h2>
             <button
                 icon
-                matRipple
-                mat-dialog-close
+                ripple
+                appDialogClose
                 [attr.aria-label]="'COMMON.CLOSE' | translate"
             >
                 <icon>close</icon>
@@ -38,38 +34,37 @@ import { TranslatePipe } from './translate.pipe';
                 <label for="filename">{{
                     'COMMON.FILENAME' | translate
                 }}</label>
-                <mat-form-field appearance="outline">
+                <app-form-field>
                     <input
                         id="filename"
-                        matInput
                         [ngModel]="file.name"
                         disabled="true"
                         [placeholder]="'COMMON.FILENAME' | translate"
                     />
-                </mat-form-field>
+                </app-form-field>
             </div>
             @if (!is_public()) {
                 <div class="flex flex-col space-y-2">
                     <label for="permissions">{{
                         'COMMON.PERMISSIONS' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
-                        <mat-select id="permissions" [(ngModel)]="permissions">
-                            <mat-option value="none">
-                                {{ 'COMMON.NONE' | translate }}</mat-option
+                    <app-form-field>
+                        <app-select id="permissions" [(ngModel)]="permissions">
+                            <app-option value="none">
+                                {{ 'COMMON.NONE' | translate }}</app-option
                             >
-                            <mat-option value="support">
+                            <app-option value="support">
                                 {{
                                     'COMMON.USER_SUPPORT' | translate
-                                }}</mat-option
+                                }}</app-option
                             >
-                            <mat-option value="admin">
+                            <app-option value="admin">
                                 {{
                                     'COMMON.USER_ADMIN' | translate
-                                }}</mat-option
+                                }}</app-option
                             >
-                        </mat-select>
-                    </mat-form-field>
+                        </app-select>
+                    </app-form-field>
                 </div>
             }
             <div class="pb-4">
@@ -81,14 +76,14 @@ import { TranslatePipe } from './translate.pipe';
         <footer
             class="border-base-200 flex items-center justify-end space-x-2 border-t px-4 py-2"
         >
-            <button btn matRipple class="inverse w-32 flex-1" mat-dialog-close>
+            <button btn ripple class="inverse w-32 flex-1" appDialogClose>
                 {{ 'COMMON.CANCEL' | translate }}
             </button>
             <button
                 btn
-                matRipple
+                ripple
                 class="w-32 flex-1"
-                [mat-dialog-close]="{
+                [appDialogClose]="{
                     file,
                     is_public: is_public(),
                     permissions: permissions(),
@@ -100,13 +95,12 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [``],
     imports: [
+        DialogCloseDirective,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         DialogTitleDirective,
-        MatDialogModule,
         TranslatePipe,
-        MatRippleModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
         FormsModule,
         IconComponent,
         SettingsToggleComponent,
@@ -114,10 +108,10 @@ import { TranslatePipe } from './translate.pipe';
 })
 export class UploadPermissionsModalComponent {
     private _dialog_ref =
-        inject<MatDialogRef<UploadPermissionsModalComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, UploadPermissionsModalComponent>>(DialogRef);
     private _data = inject<{
         file: File;
-    }>(MAT_DIALOG_DATA);
+    }>(DIALOG_DATA);
 
     /** File to upload */
     public readonly file: File = this._data.file;

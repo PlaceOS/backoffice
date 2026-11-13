@@ -13,12 +13,6 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule } from '@angular/router';
 import {
     PlaceDriverRole,
@@ -32,8 +26,12 @@ import {
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
+import { FormFieldComponent } from './controls/form-field.component';
+import { OptionComponent } from './controls/option.component';
+import { SelectComponent } from './controls/select.component';
+import { SpinnerComponent } from './controls/spinner.component';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { IconComponent } from './icon.component';
-import { LoadingLabelDirective } from './loading-label.directive';
 import { SettingsToggleComponent } from './settings-toggle.component';
 import { SkipToContentComponent } from './skip-to-content.component';
 import { TranslatePipe } from './translate.pipe';
@@ -54,42 +52,34 @@ interface GroupTreeItem {
             (click)="$event.stopPropagation()"
         >
             <div class="flex items-center gap-1 px-1 pt-1">
-                <div
-                    class="border-base-300 relative flex flex-1 items-center rounded-lg border shadow-sm"
-                >
-                    <icon
-                        class="pointer-events-none absolute top-1/2 left-1 -translate-y-1/2 text-2xl"
-                    >
+                <app-form-field class="no-subscript flex-1">
+                    <icon prefix class="pointer-events-none text-2xl">
                         search
                     </icon>
                     <input
                         #search_input
-                        class="w-full flex-1 rounded-lg border-none bg-transparent py-2.5 pr-4 pl-9"
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
                         [placeholder]="
                             'COMMON.SEARCH_FOR' | translate: { name: title() }
                         "
                     />
-                    <!-- The search has focus on load, so offer the skip next -->
-                    <skip-to-content />
                     @if (loading() || group_hierarchy_loading()) {
-                        <mat-spinner
-                            diameter="24"
-                            class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
-                        />
+                        <app-spinner suffix diameter="24" />
                     }
-                </div>
+                </app-form-field>
+                <!-- The search has focus on load, so offer the skip next -->
+                <skip-to-content />
                 @if (filter_options()?.length) {
                     <!-- The select sits invisible on top of the button and takes all input -->
                     <div
-                        class="focus-within:outline-info relative flex overflow-hidden rounded-lg focus-within:outline-2"
+                        class="focus-within:outline-info relative flex shrink-0 overflow-hidden rounded-lg focus-within:outline-2"
                     >
                         <button
                             icon
                             default
-                            matRipple
-                            class="h-11 w-11"
+                            ripple
+                            class="h-12 w-12"
                             [class.border-info]="selected_filters.length"
                             [class.text-info]="selected_filters.length"
                             tabindex="-1"
@@ -97,13 +87,12 @@ interface GroupTreeItem {
                         >
                             <icon class="m-2 text-2xl">filter_list</icon>
                         </button>
-                        <mat-form-field
-                            appearance="outline"
+                        <app-form-field
                             class="no-subscript absolute top-1/2 -right-2 -translate-y-1/2 opacity-0"
                         >
-                            <mat-select
+                            <app-select
                                 multiple
-                                [aria-label]="'COMMON.FILTER' | translate"
+                                [attr.aria-label]="'COMMON.FILTER' | translate"
                                 [(ngModel)]="selected_filters"
                                 (ngModelChange)="updateSearch(search)"
                             >
@@ -111,14 +100,14 @@ interface GroupTreeItem {
                                     option of filter_options();
                                     track option
                                 ) {
-                                    <mat-option
+                                    <app-option
                                         [value]="option"
                                         class="capitalize"
-                                        >{{ option }}</mat-option
+                                        >{{ option }}</app-option
                                     >
                                 }
-                            </mat-select>
-                        </mat-form-field>
+                            </app-select>
+                        </app-form-field>
                     </div>
                 }
             </div>
@@ -274,7 +263,7 @@ interface GroupTreeItem {
                             "
                             routerLinkActive="active"
                             ariaCurrentWhenActive="page"
-                            [matTooltip]="
+                            [appTooltip]="
                                 item.update_available &&
                                 item.commit !== item.update_info.commit
                                     ? ('COMMON.UPDATE_AVAILABLE' | translate)
@@ -318,7 +307,7 @@ interface GroupTreeItem {
                             @if (item.zone_issues) {
                                 <div
                                     class="bg-warning text-warning-content absolute -top-1 -right-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full text-2xl"
-                                    [matTooltip]="
+                                    [appTooltip]="
                                         (item.zone_issues === 'system'
                                             ? 'SYSTEMS.MISCONFIGURED'
                                             : 'ZONES.MISCONFIGURED'
@@ -339,7 +328,7 @@ interface GroupTreeItem {
                             @if (item.has_runtime_error) {
                                 <div
                                     class="bg-error text-error-content absolute -top-1 -right-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full text-2xl"
-                                    [matTooltip]="'MODULES.ERROR' | translate"
+                                    [appTooltip]="'MODULES.ERROR' | translate"
                                 >
                                     <icon> error </icon>
                                     <span class="sr-only">
@@ -385,19 +374,17 @@ interface GroupTreeItem {
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        SpinnerComponent,
+        TooltipDirective,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         CdkTreeModule,
         TranslatePipe,
-        MatTooltipModule,
         IconComponent,
         RouterModule,
         FormsModule,
-        MatSlideToggleModule,
-        MatProgressSpinnerModule,
-        MatFormFieldModule,
-        MatSelectModule,
         VirtualScrollComponent,
-        MatRippleModule,
         SettingsToggleComponent,
         SkipToContentComponent,
     ],

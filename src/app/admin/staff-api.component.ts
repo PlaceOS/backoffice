@@ -1,16 +1,14 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get } from '@placeos/ts-client';
 import { escapeHtml } from '../common/general';
 import { reportLoadError } from '../common/load-error';
 import { HashMap } from '../common/types';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
@@ -56,10 +54,10 @@ export interface PlaceTenant {
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         (click)="editTenant()"
-                        [matTooltip]="'ADMIN.TENANTS_ADD' | translate"
+                        [appTooltip]="'ADMIN.TENANTS_ADD' | translate"
                         [attr.aria-label]="'ADMIN.TENANTS_ADD' | translate"
                     >
                         <icon>add</icon>
@@ -67,7 +65,7 @@ export interface PlaceTenant {
                 </div>
             </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -149,8 +147,8 @@ export interface PlaceTenant {
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="
+                    ripple
+                    [appTooltip]="
                         'ADMIN.TENANTS_EDIT_BOOKING_LIMITS' | translate
                     "
                     [attr.aria-label]="
@@ -163,8 +161,8 @@ export interface PlaceTenant {
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="'ADMIN.TENANTS_EDIT' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.TENANTS_EDIT' | translate"
                     [attr.aria-label]="'ADMIN.TENANTS_EDIT' | translate"
                     (click)="editTenant(row)"
                 >
@@ -174,8 +172,8 @@ export interface PlaceTenant {
                     icon
                     default
                     error
-                    matRipple
-                    [matTooltip]="'ADMIN.TENANTS_REMOVE' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.TENANTS_REMOVE' | translate"
                     [attr.aria-label]="'ADMIN.TENANTS_REMOVE' | translate"
                     (click)="removeTenant(row)"
                 >
@@ -194,19 +192,17 @@ export interface PlaceTenant {
         `,
     ],
     imports: [
+        ProgressBarComponent,
+        TooltipDirective,
         AdminDomainSelectComponent,
-        LoadingLabelDirective,
         IconComponent,
-        MatRippleModule,
         TranslatePipe,
-        MatTooltipModule,
         SimpleTableComponent,
-        MatProgressBarModule,
         DatePipe,
     ],
 })
 export class PlaceStaffAPIComponent implements OnInit {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _admin_data = inject(AdminDataService);
 
     /** Loading state */
@@ -242,14 +238,14 @@ export class PlaceStaffAPIComponent implements OnInit {
         const ref = this._dialog.open(StaffTenantModalComponent, {
             data: { tenant, domain: this.domain() },
         });
-        ref.afterClosed().subscribe((__) => this.loadTenants());
+        ref.closed.subscribe((__) => this.loadTenants());
     }
 
     public editLimits(tenant: PlaceTenant) {
         const ref = this._dialog.open(BookingLimitsModalComponent, {
             data: { tenant, domain: this.domain() },
         });
-        ref.afterClosed().subscribe((__) => this.loadTenants());
+        ref.closed.subscribe((__) => this.loadTenants());
     }
 
     public async removeTenant(tenant: PlaceTenant) {

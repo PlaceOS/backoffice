@@ -1,31 +1,15 @@
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import {
-    Component,
-    computed,
-    EventEmitter,
-    inject,
-    Output,
-    signal,
-} from '@angular/core';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { addDomain, PlaceDomain, updateDomain } from '@placeos/ts-client';
-import {
-    addSignalChipItem,
-    mergeFormItem,
-    onSaveHotkey,
-    removeSignalChipItem,
-    submitFormDialog,
-} from '../common/forms';
+import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { notifyWarn } from '../common/notifications';
 import { DialogEvent } from '../common/types';
 import { isValidDomain } from '../common/validation';
+import { ChipListComponent } from '../ui/controls/chip-list.component';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
-import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import {
     applyDomainFormSchema,
@@ -55,9 +39,8 @@ import {
                                     {{ 'COMMON.FIELD_NAME' | translate
                                     }}<span>*</span>
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="domain-name"
                                         [placeholder]="
                                             'COMMON.FIELD_NAME' | translate
@@ -65,14 +48,14 @@ import {
                                         [formField]="form.name"
                                     />
                                     @if (form.name().invalid()) {
-                                        <mat-error>
+                                        <div error>
                                             {{
                                                 'DOMAINS.NAME_REQUIRED'
                                                     | translate
                                             }}
-                                        </mat-error>
+                                        </div>
                                     }
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.domain) {
@@ -86,9 +69,8 @@ import {
                                 >
                                     {{ 'DOMAINS.NAME' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="domain"
                                         [placeholder]="
                                             'DOMAINS.NAME_PLACEHOLDER'
@@ -96,10 +78,13 @@ import {
                                         "
                                         [formField]="form.domain"
                                     />
-                                    <mat-error>{{
-                                        'DOMAINS.DOMAIN_REQUIRED' | translate
-                                    }}</mat-error>
-                                </mat-form-field>
+                                    <div error>
+                                        {{
+                                            'DOMAINS.DOMAIN_REQUIRED'
+                                                | translate
+                                        }}
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -114,9 +99,8 @@ import {
                             >
                                 {{ 'DOMAINS.LOGIN_URL' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="login-url"
                                     [placeholder]="
                                         'DOMAINS.LOGIN_URL' | translate
@@ -124,14 +108,14 @@ import {
                                     [formField]="form.login_url"
                                 />
                                 @if (form.login_url().invalid()) {
-                                    <mat-error>
+                                    <div error>
                                         {{
                                             'DOMAINS.LOGIN_URL_REQUIRED'
                                                 | translate
                                         }}
-                                    </mat-error>
+                                    </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.logout_url) {
@@ -145,9 +129,8 @@ import {
                             >
                                 {{ 'DOMAINS.LOGOUT_URL' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="logout-url"
                                     [placeholder]="
                                         'DOMAINS.LOGOUT_URL' | translate
@@ -155,14 +138,14 @@ import {
                                     [formField]="form.logout_url"
                                 />
                                 @if (form.logout_url().invalid()) {
-                                    <mat-error>
+                                    <div error>
                                         {{
                                             'DOMAINS.LOGOUT_URL_REQUIRED'
                                                 | translate
                                         }}
-                                    </mat-error>
+                                    </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.description) {
@@ -170,16 +153,15 @@ import {
                             <label for="description">{{
                                 'COMMON.FIELD_DESCRIPTION' | translate
                             }}</label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <textarea
-                                    matInput
                                     id="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
                                     [formField]="form.description"
                                 ></textarea>
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.email_domains) {
@@ -193,85 +175,39 @@ import {
                             >
                                 {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
                             </label>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-chip-grid
-                                    #chipList
+                            <app-form-field class="w-full">
+                                <app-chip-list
+                                    inputId="email-domains-input"
                                     [attr.aria-label]="
                                         'DOMAINS.EMAIL_DOMAINS' | translate
                                     "
-                                >
-                                    @for (
-                                        item of email_domain_list();
-                                        track item
-                                    ) {
-                                        <mat-chip-row
-                                            (removed)="removeEmailDomain(item)"
-                                        >
-                                            <div class="max-w-md truncate">
-                                                {{ item }}
-                                            </div>
-                                            <button
-                                                type="button"
-                                                matChipRemove
-                                                [attr.aria-label]="
-                                                    'COMMON.ITEM_REMOVE'
-                                                        | translate
-                                                            : { item: item }
-                                                "
-                                            >
-                                                <icon>cancel</icon>
-                                            </button>
-                                        </mat-chip-row>
-                                    }
-                                </mat-chip-grid>
-                                <input
-                                    id="email-domains-input"
                                     [placeholder]="
                                         'DOMAINS.EMAIL_DOMAINS' | translate
                                     "
-                                    [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separators"
-                                    [matChipInputAddOnBlur]="true"
-                                    (matChipInputTokenEnd)="
-                                        addEmailDomain($event)
-                                    "
+                                    [separators]="['Enter', ',', ' ']"
+                                    [value]="formModel().email_domains"
+                                    (valueChange)="setEmailDomains($event)"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </form>
             }
         </fullscreen-modal-shell>
     `,
-    styles: [
-        `
-            mat-checkbox {
-                margin-top: 2.5em;
-                margin-bottom: 1.5em;
-            }
-
-            @media screen and (max-width: 640px) {
-                mat-checkbox {
-                    margin-top: 0;
-                }
-            }
-        `,
-    ],
     imports: [
-        MatFormFieldModule,
-        MatChipsModule,
-        MatInputModule,
+        FormFieldComponent,
+        ChipListComponent,
         TranslatePipe,
         FormField,
-        IconComponent,
         FullscreenModalShellComponent,
     ],
 })
 export class DomainFormComponent {
     private _dialog_ref =
-        inject<MatDialogRef<DomainFormComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, DomainFormComponent>>(DialogRef);
     private _data = inject<{ item: PlaceDomain; readonly?: string }>(
-        MAT_DIALOG_DATA,
+        DIALOG_DATA,
     );
     private readonly _name = 'DOMAINS';
 
@@ -286,27 +222,18 @@ export class DomainFormComponent {
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
     );
 
-    /** List of separator characters for tags */
-    public readonly separators: number[] = [ENTER, COMMA, SPACE];
-
-    public readonly addEmailDomain = (e: MatChipInputEvent) => {
-        if (!e?.value) return;
-        if (!isValidDomain(e.value as string))
-            return notifyWarn('Invalid email');
-        this.formModel.update((value) => ({
-            ...value,
-            email_domains: addSignalChipItem(value.email_domains, e),
-        }));
-    };
-    public readonly removeEmailDomain = (i: string) =>
-        this.formModel.update((value) => ({
-            ...value,
-            email_domains: removeSignalChipItem(value.email_domains, i),
-        }));
-
-    public email_domain_list = computed(
-        () => this.formModel().email_domains || [],
-    );
+    /**
+     * Update the email domains from the chip list.
+     * New items that are not valid domains are dropped with a warning.
+     */
+    public setEmailDomains(list: string[]) {
+        const current = this.formModel().email_domains;
+        const email_domains = list.filter(
+            (item) => current.includes(item) || isValidDomain(item),
+        );
+        if (email_domains.length < list.length) notifyWarn('Invalid email');
+        this.formModel.update((value) => ({ ...value, email_domains }));
+    }
 
     constructor() {
         onSaveHotkey(() => this.submit());

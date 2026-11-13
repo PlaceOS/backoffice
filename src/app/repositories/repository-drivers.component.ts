@@ -1,10 +1,8 @@
 import { Component, inject } from '@angular/core';
 
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DriverFormatPipe } from '../ui/pipes/driver-format.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -17,7 +15,7 @@ import { RepositoriesStateService } from './repositories-state.service';
             <h3 class="mb-2 text-lg font-medium">
                 {{ 'REPOS.AVAILABLE_DRIVERS' | translate }}
             </h3>
-            <mat-progress-bar
+            <app-progress-bar
                 mode="indeterminate"
                 class="w-full"
                 [class.invisible]="!loading()"
@@ -72,9 +70,9 @@ import { RepositoriesStateService } from './repositories-state.service';
                     <button
                         icon
                         default
-                        matRipple
-                        [matTooltip]="'DRIVERS.NEW' | translate"
-                        matTooltipPosition="left"
+                        ripple
+                        [appTooltip]="'DRIVERS.NEW' | translate"
+                        appTooltipPosition="left"
                         (click)="newDriver(row)"
                     >
                         <icon>add</icon>
@@ -92,14 +90,12 @@ import { RepositoriesStateService } from './repositories-state.service';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
         IconComponent,
         TranslatePipe,
-        MatTooltipModule,
         DriverFormatPipe,
         SimpleTableComponent,
-        MatProgressBarModule,
-        MatRippleModule,
     ],
 })
 export class RepositoryDriversComponent {

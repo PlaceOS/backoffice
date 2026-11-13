@@ -1,16 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { PlaceApplication, PlaceDomain } from '@placeos/ts-client';
 
-import { MatChipsModule } from '@angular/material/chips';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
 import { HashMap } from '../common/types';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DomainStateService } from './domain-state.service';
@@ -29,7 +26,7 @@ import { DomainStateService } from './domain-state.service';
                 </button>
             </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4 pb-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="loading() !== true"
@@ -102,21 +99,21 @@ import { DomainStateService } from './domain-state.service';
                 <button
                     icon
                     default
-                    matRipple
+                    ripple
                     (click)="copySecret(row)"
-                    [matTooltip]="'DOMAINS.COPY_SECRET' | translate"
+                    [appTooltip]="'DOMAINS.COPY_SECRET' | translate"
                 >
                     <icon>content_copy</icon>
                 </button>
                 <button
                     icon
                     default
-                    matRipple
+                    ripple
                     (mousedown)="setShowSecret(row.id, true)"
                     (touchstart)="setShowSecret(row.id, true)"
                     (window:mouseup)="setShowSecret(row.id, false)"
                     (window:touchend)="setShowSecret(row.id, false)"
-                    [matTooltip]="'DOMAINS.VIEW_SECRET' | translate"
+                    [appTooltip]="'DOMAINS.VIEW_SECRET' | translate"
                 >
                     <icon>visibility</icon>
                 </button>
@@ -133,26 +130,34 @@ import { DomainStateService } from './domain-state.service';
             </div>
         </ng-template>
         <ng-template #subsystems_template let-row="row">
-            <mat-chip-set class="block max-w-80 p-2" aria-label="Subsystems">
+            <div
+                class="flex max-w-80 flex-wrap gap-2 p-2"
+                role="list"
+                aria-label="Subsystems"
+            >
                 @for (subsystem of row.subsystems || []; track subsystem) {
-                    <mat-chip>{{ subsystem }}</mat-chip>
+                    <span class="chip" role="listitem">{{ subsystem }}</span>
                 }
-            </mat-chip-set>
+            </div>
         </ng-template>
         <ng-template #scopes_template let-row="row">
-            <mat-chip-set class="block max-w-80 p-2" aria-label="Scopes">
+            <div
+                class="flex max-w-80 flex-wrap gap-2 p-2"
+                role="list"
+                aria-label="Scopes"
+            >
                 @for (scope of scopeList(row); track scope) {
-                    <mat-chip>{{ scope }}</mat-chip>
+                    <span class="chip" role="listitem">{{ scope }}</span>
                 }
-            </mat-chip-set>
+            </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="'DOMAINS.APPLICATION_EDIT' | translate"
+                    ripple
+                    [appTooltip]="'DOMAINS.APPLICATION_EDIT' | translate"
                     (click)="editApplication(row)"
                 >
                     <icon>edit</icon>
@@ -161,8 +166,8 @@ import { DomainStateService } from './domain-state.service';
                     icon
                     default
                     error
-                    matRipple
-                    [matTooltip]="'DOMAINS.APPLICATION_REMOVE' | translate"
+                    ripple
+                    [appTooltip]="'DOMAINS.APPLICATION_REMOVE' | translate"
                     (click)="removeApplication(row)"
                 >
                     <icon>delete</icon>
@@ -183,14 +188,11 @@ import { DomainStateService } from './domain-state.service';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
         SimpleTableComponent,
         IconComponent,
-        MatChipsModule,
-        MatRippleModule,
-        MatTooltipModule,
         TranslatePipe,
-        MatProgressBarModule,
     ],
 })
 export class DomainApplicationsComponent {

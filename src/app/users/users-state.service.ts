@@ -1,5 +1,5 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import {
     addGroupUser,
     listMetadata,
@@ -24,7 +24,7 @@ import { openConfirmModal } from '../overlays/confirm-modal.component';
 @Service()
 export class UsersStateService {
     private _service = inject(ActiveItemService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     private _change = signal(0);
 

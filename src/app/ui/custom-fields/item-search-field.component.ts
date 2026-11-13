@@ -23,15 +23,17 @@ import {
 import { PlaceDriverRole, PlaceModule } from '@placeos/ts-client';
 
 import { NgTemplateOutlet } from '@angular/common';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { escapeHtml } from '../../common/general';
 import { HashMap } from '../../common/types';
+import {
+    AutocompleteComponent,
+    AutocompleteTriggerDirective,
+} from '../controls/autocomplete.component';
+import { FormFieldComponent } from '../controls/form-field.component';
+import { OptionComponent } from '../controls/option.component';
+import { SpinnerComponent } from '../controls/spinner.component';
 import { IconComponent } from '../icon.component';
-import { LoadingLabelDirective } from '../loading-label.directive';
 
 interface SearchItem {
     id: string;
@@ -50,9 +52,8 @@ interface SearchItem {
             form-field
             [class.disabled]="is_disabled()"
         >
-            <mat-form-field appearance="outline">
+            <app-form-field>
                 <input
-                    matInput
                     name="item-search"
                     #input
                     [(ngModel)]="search_str"
@@ -64,27 +65,26 @@ interface SearchItem {
                               (label() ? ' for ' + label() : '') +
                               '...'
                     "
-                    [matAutocomplete]="auto"
-                    [matAutocompleteDisabled]="display_list()"
+                    [appAutocomplete]="display_list() ? undefined : auto"
                     (focus)="search_str.set('')"
                     (blur)="markTouched(); resetSearchString()"
                 />
-                <div class="prefix" matPrefix>
+                <div class="prefix" prefix>
                     <icon class="relative -left-0.5 text-2xl">search</icon>
                 </div>
                 @if (loading()) {
-                    <div class="suffix" matSuffix>
-                        <mat-spinner diameter="16" />
+                    <div class="suffix" suffix>
+                        <app-spinner diameter="16" />
                     </div>
                 }
-            </mat-form-field>
+            </app-form-field>
             @if (display_list()) {
                 @if (item_list()?.length) {
                     <div class="h-[50vh] flex-1 space-y-2 overflow-auto">
                         @for (option of item_list(); track option?.id) {
                             <button
                                 type="button"
-                                matRipple
+                                ripple
                                 (click)="
                                     search_str.set(
                                         option.name || '' + option.id
@@ -122,25 +122,21 @@ interface SearchItem {
                     </div>
                 }
             }
-            <mat-autocomplete #auto="matAutocomplete">
+            <app-autocomplete
+                #auto="appAutocomplete"
+                (optionSelected)="pickOption($event.value)"
+            >
                 @for (option of item_list(); track option.id) {
-                    <mat-option
-                        [value]="option.name || option.id"
-                        (click)="
-                            search_str.set(option.name || '' + option.id);
-                            setValue(option)
-                        "
-                        class="leading-tight"
-                    >
+                    <app-option [value]="option" class="leading-tight">
                         <ng-container
                             *ngTemplateOutlet="
                                 item_option;
                                 context: { option: option }
                             "
                         />
-                    </mat-option>
+                    </app-option>
                 }
-            </mat-autocomplete>
+            </app-autocomplete>
             <ng-template #item_option let-option="option">
                 <div class="flex h-5 items-center justify-between">
                     <div name [innerHTML]="item_name()[option.id]"></div>
@@ -159,8 +155,7 @@ interface SearchItem {
     `,
     styles: [
         `
-            :host,
-            mat-form-field {
+            :host {
                 width: 100%;
             }
 
@@ -190,12 +185,12 @@ interface SearchItem {
         },
     ],
     imports: [
-        LoadingLabelDirective,
-        MatAutocompleteModule,
-        MatFormFieldModule,
-        MatInputModule,
+        SpinnerComponent,
+        OptionComponent,
+        FormFieldComponent,
+        AutocompleteComponent,
+        AutocompleteTriggerDirective,
         FormsModule,
-        MatProgressSpinnerModule,
         IconComponent,
         NgTemplateOutlet,
     ],
@@ -332,6 +327,14 @@ export class ItemSearchFieldComponent<T extends SearchItem>
             },
             50,
         );
+    }
+
+    /** Select the item that the user picked in the autocomplete */
+    public pickOption(value: unknown) {
+        const item = this.item_list().find((option) => option === value);
+        if (!item) return;
+        this.search_str.set(item.name || '' + item.id);
+        this.setValue(item);
     }
 
     /**

@@ -1,16 +1,14 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
@@ -84,10 +82,10 @@ import { DriverStateService } from './driver-state.service';
                             {{ 'COMMON.GIT_COMMIT' | translate }}
                         </div>
                         <div class="flex items-center overflow-hidden">
-                            <button matRipple (click)="copyCommit()">
+                            <button ripple (click)="copyCommit()">
                                 <code
                                     class="inline-block max-w-full truncate text-xs select-all"
-                                    [matTooltip]="item().commit"
+                                    [appTooltip]="item().commit"
                                 >
                                     {{ item().commit }}
                                 </code>
@@ -99,7 +97,7 @@ import { DriverStateService } from './driver-state.service';
                         <div class="flex items-center overflow-hidden">
                             <div
                                 class="mono truncate text-sm select-text"
-                                [matTooltip]="item().file_name"
+                                [appTooltip]="item().file_name"
                             >
                                 {{ item().file_name }}
                             </div>
@@ -110,8 +108,8 @@ import { DriverStateService } from './driver-state.service';
                             <button
                                 icon
                                 default
-                                matRipple
-                                [matTooltip]="'COMMON.UPDATE' | translate"
+                                ripple
+                                [appTooltip]="'COMMON.UPDATE' | translate"
                                 (click)="updateDriver()"
                             >
                                 <icon>update</icon>
@@ -119,8 +117,8 @@ import { DriverStateService } from './driver-state.service';
                             <button
                                 icon
                                 default
-                                matRipple
-                                [matTooltip]="'DRIVERS.RECOMPILE' | translate"
+                                ripple
+                                [appTooltip]="'DRIVERS.RECOMPILE' | translate"
                                 (click)="recompile()"
                             >
                                 <icon>build</icon>
@@ -128,8 +126,8 @@ import { DriverStateService } from './driver-state.service';
                             <button
                                 icon
                                 default
-                                matRipple
-                                [matTooltip]="'DRIVERS.RELOAD' | translate"
+                                ripple
+                                [appTooltip]="'DRIVERS.RELOAD' | translate"
                                 (click)="reload()"
                             >
                                 <icon>refresh</icon>
@@ -163,7 +161,7 @@ import { DriverStateService } from './driver-state.service';
                 </section>
             } @else {
                 <div class="flex flex-col items-center justify-center">
-                    <mat-spinner class="mb-4" diameter="48" />
+                    <app-spinner class="mb-4" diameter="48" />
                     <p>{{ 'DRIVERS.LOADING_SETTINGS' | translate }}</p>
                 </div>
             }
@@ -182,16 +180,14 @@ import { DriverStateService } from './driver-state.service';
         `,
     ],
     imports: [
+        SpinnerComponent,
+        TooltipDirective,
         ItemTimestampsComponent,
-        LoadingLabelDirective,
         IconComponent,
         TranslatePipe,
-        MatRippleModule,
         SettingsFormComponent,
-        MatTooltipModule,
         MarkdownPipe,
         RouterModule,
-        MatProgressSpinnerModule,
         AsyncPipe,
     ],
 })

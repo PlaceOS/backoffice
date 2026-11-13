@@ -1,4 +1,3 @@
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
     EventEmitter,
@@ -19,21 +18,18 @@ import {
 import { subtreeFilter } from '../common/hierarchy';
 import { querySupportZones as queryZones } from '../common/support-access';
 
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import {
-    addSignalChipItem,
-    mergeFormItem,
-    onSaveHotkey,
-    removeSignalChipItem,
-    submitFormDialog,
-} from '../common/forms';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { TIMEZONES_IANA } from '../common/timezones';
 import { DialogEvent } from '../common/types';
+import {
+    AutocompleteComponent,
+    AutocompleteTriggerDirective,
+} from '../ui/controls/autocomplete.component';
+import { ChipListComponent } from '../ui/controls/chip-list.component';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
 import { CounterComponent } from '../ui/counter.component';
 import { ImageListFieldComponent } from '../ui/custom-fields/image-list-field.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
@@ -81,19 +77,18 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                     {{ 'COMMON.FIELD_NAME' | translate
                                     }}<span>*</span>
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="zone-name"
                                         [placeholder]="
                                             'COMMON.FIELD_NAME' | translate
                                         "
                                         [formField]="form.name"
                                     />
-                                    <mat-error>{{
-                                        'ZONES.NAME_REQUIRED' | translate
-                                    }}</mat-error>
-                                </mat-form-field>
+                                    <div error>
+                                        {{ 'ZONES.NAME_REQUIRED' | translate }}
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.display_name) {
@@ -107,16 +102,15 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                 >
                                     {{ 'ZONES.DISPLAY_NAME' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="zone-display"
                                         [placeholder]="
                                             'ZONES.DISPLAY_NAME' | translate
                                         "
                                         [formField]="form.display_name"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -131,38 +125,15 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             >
                                 {{ 'ZONES.TAGS' | translate }}
                             </label>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-chip-grid #chipList aria-label="Tag List">
-                                    @for (item of tag_list; track item) {
-                                        <mat-chip-row
-                                            (removed)="removeTag(item)"
-                                        >
-                                            <div class="max-w-md truncate">
-                                                {{ item }}
-                                            </div>
-                                            <button
-                                                type="button"
-                                                matChipRemove
-                                                [attr.aria-label]="
-                                                    'COMMON.ITEM_REMOVE'
-                                                        | translate
-                                                            : { item: item }
-                                                "
-                                            >
-                                                <icon>cancel</icon>
-                                            </button>
-                                        </mat-chip-row>
-                                    }
-                                </mat-chip-grid>
-                                <input
-                                    id="tags"
+                            <app-form-field class="w-full">
+                                <app-chip-list
+                                    inputId="tags"
+                                    aria-label="Tag List"
                                     [placeholder]="'ZONES.TAGS' | translate"
-                                    [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separators"
-                                    [matChipInputAddOnBlur]="true"
-                                    (matChipInputTokenEnd)="addTag($event)"
+                                    [separators]="['Enter', ',', ' ']"
+                                    [formField]="form.tags"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.description) {
@@ -170,16 +141,15 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             <label for="description">
                                 {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <textarea
-                                    matInput
                                     id="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
                                     [formField]="form.description"
                                 ></textarea>
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     <div class="fieldset">
@@ -188,9 +158,8 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                 <label for="location">{{
                                     'ZONES.LOCATION' | translate
                                 }}</label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="location"
                                         [placeholder]="
                                             'ZONES.LOCATION_PLACEHOLDER'
@@ -198,43 +167,42 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                         "
                                         [formField]="form.location"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         <div class="field">
                             <label for="timezone">
                                 {{ 'COMMON.TIMEZONE' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
-                                <div class="prefix" matPrefix>
+                            <app-form-field>
+                                <div class="prefix" prefix>
                                     <icon class="relative -left-0.5 text-2xl">
                                         search
                                     </icon>
                                 </div>
                                 <input
-                                    matInput
                                     id="timezone"
                                     [formField]="form.timezone"
                                     [placeholder]="
                                         'COMMON.TIMEZONE' | translate
                                     "
-                                    [matAutocomplete]="auto"
+                                    [appAutocomplete]="auto"
                                 />
-                            </mat-form-field>
-                            <mat-autocomplete #auto="matAutocomplete">
+                            </app-form-field>
+                            <app-autocomplete #auto="appAutocomplete">
                                 @for (tz of filtered_timezones(); track tz) {
-                                    <mat-option [value]="tz">{{
+                                    <app-option [value]="tz">{{
                                         tz
-                                    }}</mat-option>
+                                    }}</app-option>
                                 }
                                 @if (!filtered_timezones().length) {
-                                    <mat-option [disabled]="true">
+                                    <app-option [disabled]="true">
                                         {{
                                             'COMMON.TIMEZONE_EMPTY' | translate
                                         }}
-                                    </mat-option>
+                                    </app-option>
                                 }
-                            </mat-autocomplete>
+                            </app-autocomplete>
                         </div>
                     </div>
                     <div class="fieldset">
@@ -243,16 +211,15 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                 <label for="code">{{
                                     'ZONES.CODE' | translate
                                 }}</label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="code"
                                         [placeholder]="
                                             'ZONES.CODE_PLACEHOLDER' | translate
                                         "
                                         [formField]="form.code"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.type) {
@@ -260,16 +227,15 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                 <label for="type">{{
                                     'ZONES.TYPE' | translate
                                 }}</label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="type"
                                         [placeholder]="
                                             'ZONES.TYPE_PLACEHOLDER' | translate
                                         "
                                         [formField]="form.type"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -304,14 +270,13 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             <label for="map">{{
                                 'ZONES.MAP_URL' | translate
                             }}</label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="map"
                                     [placeholder]="'ZONES.MAP_URL' | translate"
                                     [formField]="form.map_id"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.images) {
@@ -328,24 +293,24 @@ const TIMEZONE_OPTION_LIMIT = 50;
     `,
     styles: [``],
     imports: [
+        OptionComponent,
+        FormFieldComponent,
         ImageListFieldComponent,
         FormField,
         TranslatePipe,
         IconComponent,
-        MatFormFieldModule,
-        MatInputModule,
         CounterComponent,
-        MatAutocompleteModule,
-        MatChipsModule,
+        AutocompleteComponent,
+        AutocompleteTriggerDirective,
+        ChipListComponent,
         ItemSearchFieldComponent,
         FullscreenModalShellComponent,
     ],
 })
 export class ZoneFormComponent implements OnInit {
-    private _dialog_ref = inject<MatDialogRef<ZoneFormComponent>>(MatDialogRef);
-    private _data = inject<{ item: PlaceZone; readonly?: string }>(
-        MAT_DIALOG_DATA,
-    );
+    private _dialog_ref =
+        inject<DialogRef<unknown, ZoneFormComponent>>(DialogRef);
+    private _data = inject<{ item: PlaceZone; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'ZONES';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -381,8 +346,6 @@ export class ZoneFormComponent implements OnInit {
         });
     }
 
-    /** List of separator characters for tags */
-    public readonly separators: number[] = [ENTER, COMMA, SPACE];
     private readonly _excludeSubtree = subtreeFilter((id) => showZone(id));
     /** Query function for zones. Hides this zone's descendants to prevent cycles */
     public readonly query_fn = (_: string) =>
@@ -392,21 +355,6 @@ export class ZoneFormComponent implements OnInit {
     /** Function to exclude zones */
     public readonly exclude = (zone: PlaceZone) =>
         zone.id === this.formModel().id;
-
-    public readonly addTag = (e: MatChipInputEvent) =>
-        this.formModel.update((value) => ({
-            ...value,
-            tags: addSignalChipItem(value.tags, e),
-        }));
-    public readonly removeTag = (i: string) =>
-        this.formModel.update((value) => ({
-            ...value,
-            tags: removeSignalChipItem(value.tags, i),
-        }));
-
-    public get tag_list(): string[] {
-        return this.formModel().tags;
-    }
 
     public ngOnInit(): void {
         this.updateZone();

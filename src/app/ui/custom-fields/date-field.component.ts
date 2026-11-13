@@ -29,7 +29,7 @@ import { DateCalendarComponent } from './date-calendar.component';
             yPosition="top"
             [disabled]="disabled()"
             [class.opacity-30]="disabled()"
-            matRipple
+            ripple
         >
             <div
                 class="flex w-1/2 flex-1 flex-col truncate px-4 py-2 text-left leading-tight"

@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import {
     Component,
     computed,
@@ -7,18 +8,18 @@ import {
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceGroupAdMappings } from '@placeos/ts-client';
 import { waitForEvent } from '../common/signals';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { groupPermissionLabels } from './group-permissions';
-import { GroupPermissionsModalComponent } from './group-permissions-modal.component';
+import {
+    GroupPermissionsModalComponent,
+    GroupPermissionsResult,
+} from './group-permissions-modal.component';
 import {
     removeAdGroupMapping,
     searchStaffGroups,
@@ -47,38 +48,30 @@ import {
                 />
             } @else if (searchable() === false) {
                 <div class="flex items-center gap-2">
-                    <mat-form-field
-                        appearance="outline"
-                        class="no-subscript flex-1"
-                    >
+                    <app-form-field class="no-subscript flex-1">
                         <input
-                            matInput
                             name="ad-group-id"
                             [placeholder]="'GROUPS.AD_GROUP_ID' | translate"
                             [(ngModel)]="new_id"
                             (keydown.enter)="addManual()"
                         />
-                    </mat-form-field>
-                    <mat-form-field
-                        appearance="outline"
-                        class="no-subscript flex-1"
-                    >
+                    </app-form-field>
+                    <app-form-field class="no-subscript flex-1">
                         <input
-                            matInput
                             name="ad-group-name"
                             [placeholder]="'GROUPS.AD_GROUP_NAME' | translate"
                             [(ngModel)]="new_name"
                             (keydown.enter)="addManual()"
                         />
-                    </mat-form-field>
+                    </app-form-field>
                     <button
                         type="button"
                         btn
                         icon
-                        matRipple
+                        ripple
                         class="h-12 w-12"
                         [disabled]="!new_id().trim()"
-                        [matTooltip]="'GROUPS.AD_GROUP_ADD' | translate"
+                        [appTooltip]="'GROUPS.AD_GROUP_ADD' | translate"
                         (click)="addManual()"
                     >
                         <icon>add</icon>
@@ -112,8 +105,8 @@ import {
                     <button
                         type="button"
                         icon
-                        matRipple
-                        [matTooltip]="'GROUPS.AD_GROUP_PERMISSIONS' | translate"
+                        ripple
+                        [appTooltip]="'GROUPS.AD_GROUP_PERMISSIONS' | translate"
                         (click)="editPermissions(row)"
                     >
                         <icon>edit</icon>
@@ -122,8 +115,8 @@ import {
                         type="button"
                         icon
                         error
-                        matRipple
-                        [matTooltip]="'GROUPS.AD_GROUP_REMOVE' | translate"
+                        ripple
+                        [appTooltip]="'GROUPS.AD_GROUP_REMOVE' | translate"
                         (click)="removeGroup(row.id)"
                     >
                         <icon>delete</icon>
@@ -138,18 +131,16 @@ import {
     `,
     styles: [``],
     imports: [
+        TooltipDirective,
+        FormFieldComponent,
         FormsModule,
         IconComponent,
         ItemSearchFieldComponent,
-        MatFormFieldModule,
-        MatInputModule,
-        MatRippleModule,
-        MatTooltipModule,
         TranslatePipe,
     ],
 })
 export class GroupAdGroupsFieldComponent {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     public readonly mappings = model<PlaceGroupAdMappings>({});
     public readonly default_permissions = input(0);
@@ -200,14 +191,15 @@ export class GroupAdGroupsFieldComponent {
         permissions: number;
     }) {
         const result = await waitForEvent(
-            this._dialog
-                .open(GroupPermissionsModalComponent, {
+            this._dialog.open<GroupPermissionsResult>(
+                GroupPermissionsModalComponent,
+                {
                     data: {
                         title: 'GROUPS.AD_GROUP_PERMISSIONS',
                         permissions: row.permissions,
                     },
-                })
-                .afterClosed(),
+                },
+            ).closed,
         );
         if (!result) return;
         this.mappings.update((mappings) =>

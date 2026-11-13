@@ -81,7 +81,9 @@ test.describe('Triggers', () => {
             await triggers.saveButton.click();
 
             await expect(triggers.dialog).toBeVisible();
-            await expect(triggers.dialog.locator('mat-error')).toBeVisible();
+            await expect(
+                triggers.dialog.locator('app-form-field [error]:visible'),
+            ).toBeVisible();
         });
 
         test('AC-TRG-003-5: saves the trigger and opens it', async () => {

@@ -42,7 +42,7 @@ interface DateItem {
                     <button
                         type="button"
                         icon
-                        matRipple
+                        ripple
                         name="schedule-next-month"
                         [disabled]="disabled() || date_list()[0]?.id < from()"
                         (click)="changeMonth(-1)"
@@ -52,7 +52,7 @@ interface DateItem {
                     <button
                         type="button"
                         icon
-                        matRipple
+                        ripple
                         name="schedule-previous-month"
                         [disabled]="disabled() || date_list()[34]?.id > to()"
                         (click)="changeMonth(1)"
@@ -94,12 +94,12 @@ interface DateItem {
                         @if (today === day.id) {
                             <div
                                 class="border-secondary absolute -inset-[2px] overflow-hidden rounded-full border"
-                                matRipple
+                                ripple
                             ></div>
                         }
                         <div
                             class="absolute inset-0 overflow-hidden rounded-full"
-                            matRipple
+                            ripple
                         ></div>
                     </button>
                 }

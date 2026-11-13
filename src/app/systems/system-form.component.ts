@@ -1,4 +1,3 @@
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
     computed,
@@ -10,12 +9,6 @@ import {
 } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import {
-    MatChipEditedEvent,
-    MatChipInputEvent,
-    MatChipsModule,
-} from '@angular/material/chips';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import {
     addSystem,
     PlaceResource,
     PlaceSystem,
@@ -23,21 +16,19 @@ import {
 } from '@placeos/ts-client';
 import { querySupportZones as queryZones } from '../common/support-access';
 
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import {
-    addSignalChipItem,
-    editSignalChipItem,
-    mergeFormItem,
-    onSaveHotkey,
-    removeSignalChipItem,
-    submitFormDialog,
-} from '../common/forms';
+import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { TIMEZONES_IANA } from '../common/timezones';
 import { DialogEvent } from '../common/types';
 
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import {
+    AutocompleteComponent,
+    AutocompleteTriggerDirective,
+} from '../ui/controls/autocomplete.component';
+import { ChipListComponent } from '../ui/controls/chip-list.component';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
 import { CounterComponent } from '../ui/counter.component';
 import { ImageListFieldComponent } from '../ui/custom-fields/image-list-field.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
@@ -104,19 +95,21 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                     {{ 'COMMON.FIELD_NAME' | translate
                                     }}<span>*</span>
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="system-name"
                                         placeholder="System Name"
                                         [formField]="form.name"
                                     />
                                     @if (form.name().invalid()) {
-                                        <mat-error>{{
-                                            'SYSTEMS.NAME_REQUIRED' | translate
-                                        }}</mat-error>
+                                        <div error>
+                                            {{
+                                                'SYSTEMS.NAME_REQUIRED'
+                                                    | translate
+                                            }}
+                                        </div>
                                     }
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.email) {
@@ -130,9 +123,8 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                 >
                                     {{ 'COMMON.FIELD_EMAIL' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="system-email"
                                         [placeholder]="
                                             'COMMON.FIELD_EMAIL' | translate
@@ -140,11 +132,14 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                         [formField]="form.email"
                                     />
                                     @if (form.email().invalid()) {
-                                        <mat-error>{{
-                                            'SYSTEMS.EMAIL_REQUIRED' | translate
-                                        }}</mat-error>
+                                        <div error>
+                                            {{
+                                                'SYSTEMS.EMAIL_REQUIRED'
+                                                    | translate
+                                            }}
+                                        </div>
                                     }
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -154,16 +149,15 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                 <label for="display-name">
                                     {{ 'SYSTEMS.DISPLAY_NAME' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="display-name"
                                         [placeholder]="
                                             'SYSTEMS.DISPLAY_NAME' | translate
                                         "
                                         [formField]="form.display_name"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.code) {
@@ -171,16 +165,15 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                 <label for="code-name"
                                     >{{ 'SYSTEMS.CODE' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="code-name"
                                         [placeholder]="
                                             'SYSTEMS.CODE' | translate
                                         "
                                         [formField]="form.code"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -195,19 +188,18 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             >
                                 {{ 'SYSTEMS.SUPPORT_URL' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="support-url"
                                     [placeholder]="
                                         'SYSTEMS.SUPPORT_URL' | translate
                                     "
                                     [formField]="form.support_url"
                                 />
-                                <mat-error>
+                                <div error>
                                     {{ 'SYSTEMS.URL_VALID' | translate }}
-                                </mat-error>
-                            </mat-form-field>
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     <div class="fieldset mb-4">
@@ -278,16 +270,15 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             <label for="description">
                                 {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <textarea
-                                    matInput
                                     id="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
                                     [formField]="form.description"
                                 ></textarea>
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.features) {
@@ -301,45 +292,19 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             >
                                 {{ 'SYSTEMS.FEATURES' | translate }}
                             </label>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-chip-grid
-                                    #chipList
+                            <app-form-field class="w-full">
+                                <app-chip-list
+                                    inputId="feature-list"
                                     [attr.aria-label]="
                                         'SYSTEMS.FEATURES' | translate
                                     "
-                                >
-                                    @for (item of feature_list(); track item) {
-                                        <mat-chip-row
-                                            (removed)="removeFeature(item)"
-                                        >
-                                            <div class="max-w-md truncate">
-                                                {{ item }}
-                                            </div>
-                                            <button
-                                                type="button"
-                                                matChipRemove
-                                                [attr.aria-label]="
-                                                    'SYSTEMS.REMOVE_ITEM'
-                                                        | translate
-                                                            : { item: item }
-                                                "
-                                            >
-                                                <icon>cancel</icon>
-                                            </button>
-                                        </mat-chip-row>
-                                    }
-                                </mat-chip-grid>
-                                <input
-                                    id="feature-list"
                                     [placeholder]="
                                         'SYSTEMS.FEATURES' | translate
                                     "
-                                    [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separators"
-                                    [matChipInputAddOnBlur]="true"
-                                    (matChipInputTokenEnd)="addFeature($event)"
+                                    [separators]="['Enter', ',', ' ']"
+                                    [formField]="form.features"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.security_groups) {
@@ -353,50 +318,17 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             >
                                 {{ 'SYSTEMS.SECURITY_GROUPS' | translate }}
                             </label>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-chip-grid
-                                    #securityGroupChipList
+                            <app-form-field class="w-full">
+                                <app-chip-list
+                                    inputId="security-group-list"
                                     aria-label="Security Group List"
-                                >
-                                    @for (
-                                        item of security_group_list();
-                                        track item
-                                    ) {
-                                        <mat-chip-row
-                                            (removed)="
-                                                removeSecurityGroup(item)
-                                            "
-                                        >
-                                            <div class="max-w-md truncate">
-                                                {{ item }}
-                                            </div>
-                                            <button
-                                                type="button"
-                                                matChipRemove
-                                                [attr.aria-label]="
-                                                    'SYSTEMS.REMOVE_ITEM'
-                                                        | translate
-                                                            : { item: item }
-                                                "
-                                            >
-                                                <icon>cancel</icon>
-                                            </button>
-                                        </mat-chip-row>
-                                    }
-                                </mat-chip-grid>
-                                <input
-                                    id="security-group-list"
                                     [placeholder]="
                                         'SYSTEMS.SECURITY_GROUPS' | translate
                                     "
-                                    [matChipInputFor]="securityGroupChipList"
-                                    [matChipInputSeparatorKeyCodes]="separators"
-                                    [matChipInputAddOnBlur]="true"
-                                    (matChipInputTokenEnd)="
-                                        addSecurityGroup($event)
-                                    "
+                                    [separators]="['Enter', ',', ' ']"
+                                    [formField]="form.security_groups"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.map_id) {
@@ -404,46 +336,44 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             <label for="map_id">{{
                                 'SYSTEMS.MAP_ID' | translate
                             }}</label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="map_id"
                                     placeholder="Map SVG ID selector e.g. area-01.10-status"
                                     [formField]="form.map_id"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     <div class="field">
                         <label for="timezone">{{
                             'COMMON.TIMEZONE' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
-                            <div class="prefix" matPrefix>
+                        <app-form-field>
+                            <div class="prefix" prefix>
                                 <icon class="relative -left-0.5 text-2xl">
                                     search
                                 </icon>
                             </div>
                             <input
-                                matInput
                                 id="timezone"
                                 [formField]="form.timezone"
                                 [placeholder]="'COMMON.TIMEZONE' | translate"
-                                [matAutocomplete]="auto"
+                                [appAutocomplete]="auto"
                             />
-                        </mat-form-field>
-                        <mat-autocomplete #auto="matAutocomplete">
+                        </app-form-field>
+                        <app-autocomplete #auto="appAutocomplete">
                             @for (tz of filtered_timezones(); track tz) {
-                                <mat-option [value]="tz">
+                                <app-option [value]="tz">
                                     {{ tz }}
-                                </mat-option>
+                                </app-option>
                             }
                             @if (!filtered_timezones().length) {
-                                <mat-option [disabled]="true">
+                                <app-option [disabled]="true">
                                     {{ 'COMMON.TIMEZONE_EMPTY' | translate }}
-                                </mat-option>
+                                </app-option>
                             }
-                        </mat-autocomplete>
+                        </app-autocomplete>
                     </div>
                     @if (form.images) {
                         <div class="field">
@@ -469,19 +399,18 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             >
                                 {{ 'SYSTEMS.TIMETABLE_URL' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="timetable-url"
                                     [placeholder]="
                                         'SYSTEMS.TIMETABLE_URL' | translate
                                     "
                                     [formField]="form.timetable_url"
                                 />
-                                <mat-error>
+                                <div error>
                                     {{ 'SYSTEMS.URL_VALID' | translate }}
-                                </mat-error>
-                            </mat-form-field>
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.camera_url) {
@@ -495,19 +424,18 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             >
                                 {{ 'SYSTEMS.CAMERA_URL' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="camera-url"
                                     [placeholder]="
                                         'SYSTEMS.CAMERA_URL' | translate
                                     "
                                     [formField]="form.camera_url"
                                 />
-                                <mat-error>
+                                <div error>
                                     {{ 'SYSTEMS.URL_VALID' | translate }}
-                                </mat-error>
-                            </mat-form-field>
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.camera_snapshot_urls) {
@@ -521,75 +449,24 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             >
                                 {{ 'SYSTEMS.CAMERA_SNAPSHOT_URL' | translate }}
                             </label>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-chip-grid
-                                    #cameraSnapshotChipList
+                            <app-form-field class="w-full">
+                                <app-chip-list
+                                    inputId="camera-snap-url"
                                     aria-label="Camera Snapshot URL List"
-                                >
-                                    @for (
-                                        item of camera_snapshot_url_list();
-                                        track item
-                                    ) {
-                                        <mat-chip-row
-                                            [value]="item"
-                                            [editable]="true"
-                                            (edited)="
-                                                editCameraSnapshotUrl(
-                                                    item,
-                                                    $event
-                                                )
-                                            "
-                                            (removed)="
-                                                removeCameraSnapshotUrl(item)
-                                            "
-                                        >
-                                            <button
-                                                type="button"
-                                                matChipEdit
-                                                [attr.aria-label]="
-                                                    'COMMON.EDIT_TYPE'
-                                                        | translate
-                                                            : { name: item }
-                                                "
-                                            >
-                                                <icon>edit</icon>
-                                            </button>
-                                            <div class="max-w-md truncate">
-                                                {{ item }}
-                                            </div>
-                                            <button
-                                                type="button"
-                                                matChipRemove
-                                                [attr.aria-label]="
-                                                    'SYSTEMS.REMOVE_ITEM'
-                                                        | translate
-                                                            : { item: item }
-                                                "
-                                            >
-                                                <icon>cancel</icon>
-                                            </button>
-                                        </mat-chip-row>
-                                    }
-                                </mat-chip-grid>
-                                <input
-                                    id="camera-snap-url"
+                                    editable
                                     [placeholder]="
                                         'SYSTEMS.CAMERA_SNAPSHOT_URL'
                                             | translate
                                     "
-                                    [matChipInputFor]="cameraSnapshotChipList"
-                                    [matChipInputSeparatorKeyCodes]="separators"
-                                    [matChipInputAddOnBlur]="true"
-                                    (matChipInputTokenEnd)="
-                                        addCameraSnapshotUrl($event)
-                                    "
+                                    [separators]="['Enter', ',', ' ']"
+                                    [formField]="form.camera_snapshot_urls"
                                 />
                                 @if (form.camera_snapshot_urls().invalid()) {
-                                    <mat-error>
+                                    <div error>
                                         {{ 'SYSTEMS.URL_VALID' | translate }}
-                                    </mat-error>
+                                    </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.room_booking_url) {
@@ -603,64 +480,45 @@ const TIMEZONE_OPTION_LIMIT = 50;
                             >
                                 {{ 'SYSTEMS.ROOM_BOOKING_URL' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="room-booking-url"
                                     [placeholder]="
                                         'SYSTEMS.ROOM_BOOKING_URL' | translate
                                     "
                                     [formField]="form.room_booking_url"
                                 />
-                                <mat-error>
+                                <div error>
                                     {{ 'SYSTEMS.URL_VALID' | translate }}
-                                </mat-error>
-                            </mat-form-field>
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                 </form>
             }
         </fullscreen-modal-shell>
     `,
-    styles: [
-        `
-            mat-checkbox {
-                margin-top: 2.5em;
-                margin-bottom: 1.5em;
-            }
-
-            /* Material's chip touch target paints over the leading edit button */
-            .mat-mdc-chip-edit {
-                z-index: 1;
-            }
-
-            @media screen and (max-width: 640px) {
-                mat-checkbox {
-                    margin-top: 0;
-                }
-            }
-        `,
-    ],
     imports: [
+        OptionComponent,
+        FormFieldComponent,
         ImageListFieldComponent,
         FormField,
         TranslatePipe,
-        MatFormFieldModule,
-        MatInputModule,
         IconComponent,
-        MatChipsModule,
+        ChipListComponent,
         SettingsToggleComponent,
         CounterComponent,
         ItemSearchFieldComponent,
-        MatAutocompleteModule,
+        AutocompleteComponent,
+        AutocompleteTriggerDirective,
         FullscreenModalShellComponent,
     ],
 })
 export class SystemFormComponent {
     private _dialog_ref =
-        inject<MatDialogRef<SystemFormComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, SystemFormComponent>>(DialogRef);
     private _data = inject<{ item: PlaceSystem; readonly?: string }>(
-        MAT_DIALOG_DATA,
+        DIALOG_DATA,
     );
     private readonly _name = 'SYSTEMS';
     public readonly item = signal(this._data.item);
@@ -676,19 +534,10 @@ export class SystemFormComponent {
     public heading = i18n(
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
     );
-    public feature_list = computed(() => this.formModel().features || []);
-    public camera_snapshot_url_list = computed(
-        () => this.formModel().camera_snapshot_urls || [],
-    );
-    public security_group_list = computed(
-        () => this.formModel().security_groups || [],
-    );
 
     /** Function for querying zones */
     public readonly query_fn = (_: string) =>
         queryZones({ q: _ }).then((resp) => resp.data);
-    /** List of separator characters for features */
-    public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
     private _timezone = computed(() => this.formModel().timezone || '');
     public filtered_timezones = computed(() => {
@@ -745,73 +594,6 @@ export class SystemFormComponent {
                     : addSystem(processed_item);
             },
         );
-    }
-
-    /**
-     * Add a feature to the list of features for the item
-     * @param event Input event
-     */
-    public addFeature(event: MatChipInputEvent): void {
-        this.formModel.update((value) => ({
-            ...value,
-            features: addSignalChipItem(value.features, event),
-        }));
-    }
-
-    /**
-     * Remove feature from the list
-     * @param existing_feature Feature to remove
-     */
-    public removeFeature(existing_feature: string): void {
-        this.formModel.update((value) => ({
-            ...value,
-            features: removeSignalChipItem(value.features, existing_feature),
-        }));
-    }
-
-    public addCameraSnapshotUrl(event: MatChipInputEvent): void {
-        this.formModel.update((value) => ({
-            ...value,
-            camera_snapshot_urls: addSignalChipItem(
-                value.camera_snapshot_urls,
-                event,
-            ),
-        }));
-    }
-
-    public editCameraSnapshotUrl(url: string, event: MatChipEditedEvent): void {
-        this.formModel.update((value) => ({
-            ...value,
-            camera_snapshot_urls: editSignalChipItem(
-                value.camera_snapshot_urls,
-                url,
-                event,
-            ),
-        }));
-    }
-
-    public removeCameraSnapshotUrl(url: string): void {
-        this.formModel.update((value) => ({
-            ...value,
-            camera_snapshot_urls: removeSignalChipItem(
-                value.camera_snapshot_urls,
-                url,
-            ),
-        }));
-    }
-
-    public addSecurityGroup(event: MatChipInputEvent): void {
-        this.formModel.update((value) => ({
-            ...value,
-            security_groups: addSignalChipItem(value.security_groups, event),
-        }));
-    }
-
-    public removeSecurityGroup(group: string): void {
-        this.formModel.update((value) => ({
-            ...value,
-            security_groups: removeSignalChipItem(value.security_groups, group),
-        }));
     }
 
     private processURL(system: PlaceSystem, url: string): string {

@@ -9,10 +9,6 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
 import { format, setDay, setMonth } from 'date-fns';
 import { numberToPosition } from '../../../common/general';
@@ -25,6 +21,16 @@ import {
     parseCronString,
     TriggerConditionFormModel,
 } from '../../../triggers/triggers.utilities';
+import {
+    AutocompleteComponent,
+    AutocompleteTriggerDirective,
+} from '../../controls/autocomplete.component';
+import { FormFieldComponent } from '../../controls/form-field.component';
+import { OptionComponent } from '../../controls/option.component';
+import {
+    SelectComponent,
+    SelectTriggerDirective,
+} from '../../controls/select.component';
 import { CronInputFieldComponent } from '../../custom-fields/cron-input-field.component';
 import { DateFieldComponent } from '../../custom-fields/date-field.component';
 import { TimeFieldComponent } from '../../custom-fields/time-field.component';
@@ -53,30 +59,29 @@ const TIMEZONE_OPTION_LIMIT = 50;
                         <label for="timezone">{{
                             'COMMON.TIMEZONE' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
-                            <icon matPrefix class="text-2xl">search</icon>
+                        <app-form-field>
+                            <icon prefix class="text-2xl">search</icon>
                             <input
-                                matInput
+                                #timezone_input
+                                id="timezone"
                                 [formField]="form().timezone"
                                 (input)="
-                                    updateTimezoneList(
-                                        $any($event.target).value
-                                    )
+                                    updateTimezoneList(timezone_input.value)
                                 "
                                 [placeholder]="'COMMON.TIMEZONE' | translate"
-                                [matAutocomplete]="auto"
+                                [appAutocomplete]="auto"
                             />
-                        </mat-form-field>
-                        <mat-autocomplete #auto="matAutocomplete">
+                        </app-form-field>
+                        <app-autocomplete #auto="appAutocomplete">
                             @for (tz of timezones(); track tz) {
-                                <mat-option [value]="tz">{{ tz }}</mat-option>
+                                <app-option [value]="tz">{{ tz }}</app-option>
                             }
                             @if (!timezones().length) {
-                                <mat-option [disabled]="true">{{
+                                <app-option [disabled]="true">{{
                                     'COMMON.TIMEZONE_EMPTY' | translate
-                                }}</mat-option>
+                                }}</app-option>
                             }
-                        </mat-autocomplete>
+                        </app-autocomplete>
                     </div>
                 }
                 @if (!is_cron()) {
@@ -107,20 +112,20 @@ const TIMEZONE_OPTION_LIMIT = 50;
                         <label for="type"
                             >{{ 'TRIGGERS.TIME_REPEAT' | translate }}:
                         </label>
-                        <mat-form-field appearance="outline">
-                            <mat-select
+                        <app-form-field>
+                            <app-select
                                 name="type"
                                 [(ngModel)]="cron_period"
                                 (ngModelChange)="updateCronString()"
                                 [ngModelOptions]="{ standalone: true }"
                             >
                                 @for (period of repeat_period(); track period) {
-                                    <mat-option [value]="period.id">
+                                    <app-option [value]="period.id">
                                         {{ period.name }}
-                                    </mat-option>
+                                    </app-option>
                                 }
-                            </mat-select>
-                        </mat-form-field>
+                            </app-select>
+                        </app-form-field>
                     </div>
                     @if (cron_period() !== 'custom') {
                         <div class="flex space-x-4">
@@ -132,8 +137,8 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                                 | translate
                                         }}
                                     </label>
-                                    <mat-form-field appearance="outline">
-                                        <mat-select
+                                    <app-form-field>
+                                        <app-select
                                             name="month"
                                             [(ngModel)]="cron_month"
                                             (ngModelChange)="updateCronString()"
@@ -146,12 +151,12 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                                 track month;
                                                 let i = $index
                                             ) {
-                                                <mat-option [value]="i + 1">
+                                                <app-option [value]="i + 1">
                                                     {{ month }}
-                                                </mat-option>
+                                                </app-option>
                                             }
-                                        </mat-select>
-                                    </mat-form-field>
+                                        </app-select>
+                                    </app-form-field>
                                 </div>
                             }
                             @if (
@@ -165,8 +170,8 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                                 | translate
                                         }}
                                     </label>
-                                    <mat-form-field appearance="outline">
-                                        <mat-select
+                                    <app-form-field>
+                                        <app-select
                                             name="day"
                                             [(ngModel)]="cron_date"
                                             (ngModelChange)="updateCronString()"
@@ -178,12 +183,12 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                                 period of days_of_month;
                                                 track period
                                             ) {
-                                                <mat-option [value]="period.id">
+                                                <app-option [value]="period.id">
                                                     {{ period.name }}
-                                                </mat-option>
+                                                </app-option>
                                             }
-                                        </mat-select>
-                                    </mat-form-field>
+                                        </app-select>
+                                    </app-form-field>
                                 </div>
                             }
                         </div>
@@ -194,8 +199,8 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                         'TRIGGERS.TIME_DAY_OF_WEEK' | translate
                                     }}
                                 </label>
-                                <mat-form-field appearance="outline">
-                                    <mat-select
+                                <app-form-field>
+                                    <app-select
                                         name="weekday"
                                         [(ngModel)]="cron_day"
                                         (ngModelChange)="updateCronString()"
@@ -206,12 +211,12 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                             track weekday;
                                             let i = $index
                                         ) {
-                                            <mat-option [value]="i">
+                                            <app-option [value]="i">
                                                 {{ weekday }}
-                                            </mat-option>
+                                            </app-option>
                                         }
-                                    </mat-select>
-                                </mat-form-field>
+                                    </app-select>
+                                </app-form-field>
                             </div>
                         }
                         <div class="flex items-center space-x-4">
@@ -223,8 +228,8 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                     <label for="hour">{{
                                         'TRIGGERS.TIME_HOUR_OF_DAY' | translate
                                     }}</label>
-                                    <mat-form-field appearance="outline">
-                                        <mat-select
+                                    <app-form-field>
+                                        <app-select
                                             name="hour"
                                             [(ngModel)]="cron_hour"
                                             (ngModelChange)="updateCronString()"
@@ -232,25 +237,25 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                                 standalone: true,
                                             }"
                                         >
-                                            <mat-select-trigger>
+                                            <app-select-trigger>
                                                 {{ pad(cron_hour()) }}:<span
                                                     class="opacity-30"
                                                     >00</span
                                                 >
-                                            </mat-select-trigger>
+                                            </app-select-trigger>
                                             @for (
                                                 hour of hours_in_day;
                                                 track hour
                                             ) {
-                                                <mat-option [value]="+hour">
+                                                <app-option [value]="+hour">
                                                     {{ pad(hour) }}:<span
                                                         class="opacity-30"
                                                         >00</span
                                                     >
-                                                </mat-option>
+                                                </app-option>
                                             }
-                                        </mat-select>
-                                    </mat-form-field>
+                                        </app-select>
+                                    </app-form-field>
                                 </div>
                             }
                             @if (cron_period() !== 'minute') {
@@ -259,8 +264,8 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                         'TRIGGERS.TIME_MINUTE_OF_HOUR'
                                             | translate
                                     }}</label>
-                                    <mat-form-field appearance="outline">
-                                        <mat-select
+                                    <app-form-field>
+                                        <app-select
                                             name="minute"
                                             [(ngModel)]="cron_minute"
                                             (ngModelChange)="updateCronString()"
@@ -268,25 +273,25 @@ const TIMEZONE_OPTION_LIMIT = 50;
                                                 standalone: true,
                                             }"
                                         >
-                                            <mat-select-trigger>
+                                            <app-select-trigger>
                                                 <span class="opacity-30">{{
                                                     pad(cron_hour())
                                                 }}</span
                                                 >:{{ pad(cron_minute()) }}
-                                            </mat-select-trigger>
+                                            </app-select-trigger>
                                             @for (
                                                 minute of minutes_in_hour;
                                                 track minute
                                             ) {
-                                                <mat-option [value]="+minute">
+                                                <app-option [value]="+minute">
                                                     <span class="opacity-30">{{
                                                         pad(cron_hour())
                                                     }}</span
                                                     >:{{ pad(minute) }}
-                                                </mat-option>
+                                                </app-option>
                                             }
-                                        </mat-select>
-                                    </mat-form-field>
+                                        </app-select>
+                                    </app-form-field>
                                 </div>
                             }
                         </div>
@@ -305,15 +310,17 @@ const TIMEZONE_OPTION_LIMIT = 50;
     `,
     styles: [],
     imports: [
+        SelectTriggerDirective,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FormsModule,
         CronInputFieldComponent,
-        MatFormFieldModule,
-        MatSelectModule,
         DateFieldComponent,
         TimeFieldComponent,
-        MatAutocompleteModule,
+        AutocompleteComponent,
+        AutocompleteTriggerDirective,
         SettingsToggleComponent,
-        MatInputModule,
         FormField,
         TranslatePipe,
         IconComponent,

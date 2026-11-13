@@ -30,7 +30,7 @@ export class SystemsPage extends BasePage {
      * Get the module selector used by execute method controls
      */
     get executeModuleSelect(): Locator {
-        return this.page.locator('select-system-module mat-select').first();
+        return this.page.locator('select-system-module app-select').first();
     }
 
     /**
@@ -49,7 +49,7 @@ export class SystemsPage extends BasePage {
             .first();
         await zone_input.fill(zone_name);
         await this.page
-            .locator('mat-option')
+            .locator('app-option')
             .filter({ hasText: zone_name })
             .first()
             .click();

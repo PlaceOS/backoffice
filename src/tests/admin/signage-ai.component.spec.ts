@@ -1,6 +1,6 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AdminDataService } from '../../app/admin/admin-data.service';
 import { SignageAIComponent } from '../../app/admin/signage-ai/signage-ai.component';
@@ -23,7 +23,7 @@ describe('SignageAIComponent', () => {
         await TestBed.configureTestingModule({
             imports: [SignageAIComponent],
             providers: [
-                { provide: MatDialog, useValue: { open: vi.fn() } },
+                { provide: Dialog, useValue: { open: vi.fn() } },
                 {
                     provide: AdminDataService,
                     useValue: {

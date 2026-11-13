@@ -1,5 +1,4 @@
 import { Service, inject, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlaceResource } from '@placeos/ts-client';
 
@@ -18,6 +17,7 @@ import {
     Identity,
 } from '../common/types';
 // Modals load on demand to keep them out of the first page load
+import { Dialog } from '@angular/cdk/dialog';
 import type {
     ConfirmModalComponent,
     ConfirmModalData,
@@ -93,7 +93,7 @@ export class ActiveItemService extends AsyncHandler {
     private _router = inject(Router);
     private _settings = inject(SettingsService);
     private _hotkey = inject(HotkeysService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _user = inject(BackofficeUsersService);
 
     /** Whether active item is loading */
@@ -318,7 +318,7 @@ export class ActiveItemService extends AsyncHandler {
                 save: actions.save,
             },
         });
-        ref.afterClosed().subscribe(() => {
+        ref.closed.subscribe(() => {
             this._settings.post('disable_uploads', false);
             this._items_changed.update((count) => count + 1);
         });
@@ -387,52 +387,53 @@ export class ActiveItemService extends AsyncHandler {
         const { CONFIRM_METADATA, ConfirmModalComponent } = await import(
             '../overlays/confirm-modal.component'
         );
-        const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
-            ConfirmModalComponent,
-            {
-                ...CONFIRM_METADATA,
-                data: {
-                    title: i18n(
-                        force_removal
-                            ? 'USERS.FORCE_DELETE'
-                            : `${actions.name}.DELETE`,
-                    ),
-                    content: i18n(
-                        force_removal
-                            ? 'USERS.FORCE_DELETE_MSG'
-                            : `${actions.name}.DELETE_MSG`,
-                        {
-                            name: escapeHtml(
-                                (
-                                    item as PlaceResource & {
-                                        display_name?: string;
-                                    }
-                                ).display_name || item.name,
-                            ),
-                        },
-                    ),
-                    extra: actions.delete_extra
-                        ? await actions.delete_extra(item)
-                        : null,
-                    options: cascade
-                        ? [
-                              {
-                                  id: CASCADE_OPTION,
-                                  label: i18n(cascade.label),
-                                  description: i18n(cascade.description),
-                                  details: async () => {
-                                      plan = await cascade.plan(item);
-                                      const { scope, summary, warnings } = plan;
-                                      return { scope, summary, warnings };
-                                  },
+        const ref = this._dialog.open<
+            unknown,
+            ConfirmModalData,
+            ConfirmModalComponent
+        >(ConfirmModalComponent, {
+            ...CONFIRM_METADATA,
+            data: {
+                title: i18n(
+                    force_removal
+                        ? 'USERS.FORCE_DELETE'
+                        : `${actions.name}.DELETE`,
+                ),
+                content: i18n(
+                    force_removal
+                        ? 'USERS.FORCE_DELETE_MSG'
+                        : `${actions.name}.DELETE_MSG`,
+                    {
+                        name: escapeHtml(
+                            (
+                                item as PlaceResource & {
+                                    display_name?: string;
+                                }
+                            ).display_name || item.name,
+                        ),
+                    },
+                ),
+                extra: actions.delete_extra
+                    ? await actions.delete_extra(item)
+                    : null,
+                options: cascade
+                    ? [
+                          {
+                              id: CASCADE_OPTION,
+                              label: i18n(cascade.label),
+                              description: i18n(cascade.description),
+                              details: async () => {
+                                  plan = await cascade.plan(item);
+                                  const { scope, summary, warnings } = plan;
+                                  return { scope, summary, warnings };
                               },
-                          ]
-                        : undefined,
-                    icon: { type: 'icon', content: 'delete' },
-                    destructive: true,
-                },
+                          },
+                      ]
+                    : undefined,
+                icon: { type: 'icon', content: 'delete' },
+                destructive: true,
             },
-        );
+        });
         waitForEvent(
             ref.componentInstance.event,
             (e: DialogEvent) => e.reason === 'done',

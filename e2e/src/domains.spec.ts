@@ -83,7 +83,9 @@ test.describe('Domains', () => {
             await domains.saveButton.click();
 
             await expect(domains.dialog).toBeVisible();
-            await expect(domains.dialog.locator('mat-error')).toHaveCount(2);
+            await expect(
+                domains.dialog.locator('app-form-field [error]:visible'),
+            ).toHaveCount(2);
         });
 
         test('AC-DOM-003-4: saves the domain and opens it', async () => {
@@ -193,7 +195,7 @@ test.describe('Domains', () => {
 
             // The list is empty while it loads, so wait for the load to end
             await expect(
-                domains.tabContent.locator('mat-progress-bar'),
+                domains.tabContent.locator('app-progress-bar'),
             ).toBeHidden();
             await expect(domains.tabContent).toContainText(
                 'No users associated with this domain',

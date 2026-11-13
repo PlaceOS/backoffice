@@ -1,11 +1,6 @@
 import { Component, Type, computed, inject, signal } from '@angular/core';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogModule,
-    MatDialogRef,
-} from '@angular/material/dialog';
 
-import { MatRippleModule } from '@angular/material/core';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
     PlaceDriver,
     PlaceModule,
@@ -17,6 +12,7 @@ import {
 import { unique } from '../../common/general';
 import { notifyError, notifyWarn } from '../../common/notifications';
 import { HashMap, Identity } from '../../common/types';
+import { DialogCloseDirective } from '../../ui/controls/dialog';
 import { DialogTitleDirective } from '../../ui/dialog-title.directive';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -69,8 +65,8 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
             @if (!loading) {
                 <button
                     icon
-                    matRipple
-                    mat-dialog-close
+                    ripple
+                    appDialogClose
                     [attr.aria-label]="'COMMON.CLOSE' | translate"
                 >
                     <icon>close</icon>
@@ -156,11 +152,10 @@ export interface BulkItemModalData<T = HashMap<unknown>> {
         `,
     ],
     imports: [
+        DialogCloseDirective,
         DialogTitleDirective,
-        MatDialogModule,
         TranslatePipe,
         IconComponent,
-        MatRippleModule,
         StatusListComponent,
         ListComponent,
         MatchFieldsComponent,
@@ -171,8 +166,8 @@ export class BulkItemModalComponent<
     T extends HashMap<unknown> = HashMap<unknown>,
 > {
     private _dialog_ref =
-        inject<MatDialogRef<BulkItemModalComponent>>(MatDialogRef);
-    private _data = inject<BulkItemModalData<T>>(MAT_DIALOG_DATA);
+        inject<DialogRef<unknown, BulkItemModalComponent>>(DialogRef);
+    private _data = inject<BulkItemModalData<T>>(DIALOG_DATA);
 
     /** Current step in the bulk add flow */
     public readonly flow_step = signal<BulkItemFlowStep>('upload');

@@ -1,5 +1,4 @@
 import { Service, computed, inject, resource, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceSystem,
     PlaceTrigger,
@@ -14,6 +13,7 @@ import {
     updateZone,
 } from '@placeos/ts-client';
 
+import { Dialog } from '@angular/cdk/dialog';
 import { describeError } from '../common/errors';
 import { escapeHtml, moveItemInArray } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
@@ -35,7 +35,7 @@ import {
 @Service()
 export class TriggerStateService {
     private _service = inject(ActiveItemService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     private _change = signal(0);
     public readonly item = computed(
@@ -70,8 +70,9 @@ export class TriggerStateService {
     ) {
         if (!template) return;
         const ref = this._dialog.open<
-            TriggerConditionModalComponent,
-            TriggerConditionData
+            unknown,
+            TriggerConditionData,
+            TriggerConditionModalComponent
         >(TriggerConditionModalComponent, {
             width: 'auto',
             height: 'auto',
@@ -103,8 +104,9 @@ export class TriggerStateService {
     ) {
         if (!template) return;
         const ref = this._dialog.open<
-            TriggerActionModalComponent,
-            TriggerActionModalData
+            unknown,
+            TriggerActionModalData,
+            TriggerActionModalComponent
         >(TriggerActionModalComponent, {
             data: {
                 trigger: this.active_item,

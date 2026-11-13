@@ -1,17 +1,16 @@
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
     moduleRuntimeError,
     PlaceModule,
     showModule,
 } from '@placeos/ts-client';
+import { DialogCloseDirective } from './controls/dialog';
+import { SpinnerComponent } from './controls/spinner.component';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { DialogTitleDirective } from './dialog-title.directive';
 import { IconComponent } from './icon.component';
-import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
 
 @Component({
@@ -32,8 +31,8 @@ import { TranslatePipe } from './translate.pipe';
             @if (!loading()) {
                 <button
                     icon
-                    matRipple
-                    mat-dialog-close
+                    ripple
+                    appDialogClose
                     [attr.aria-label]="'COMMON.CLOSE' | translate"
                 >
                     <icon>close</icon>
@@ -64,7 +63,7 @@ import { TranslatePipe } from './translate.pipe';
             <main
                 class="flex h-[calc(100vh-6rem)] w-[80vw] flex-col items-center justify-center"
             >
-                <mat-spinner diameter="32" />
+                <app-spinner diameter="32" />
                 <div class="opacity-30">
                     {{ 'MODULES.RUNTIME_ERRORS_LOADING' | translate }}
                 </div>
@@ -73,19 +72,17 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [``],
     imports: [
-        LoadingLabelDirective,
+        DialogCloseDirective,
+        SpinnerComponent,
         DialogTitleDirective,
         TranslatePipe,
-        MatProgressSpinnerModule,
         IconComponent,
-        MatDialogModule,
-        MatRippleModule,
         FormsModule,
         SettingsFieldComponent,
     ],
 })
 export class ModuleRuntimeErrorsModalComponent {
-    private _module_id = inject<string>(MAT_DIALOG_DATA);
+    private _module_id = inject<string>(DIALOG_DATA);
 
     public readonly loading = signal(true);
     public readonly module = signal<PlaceModule | null>(null);

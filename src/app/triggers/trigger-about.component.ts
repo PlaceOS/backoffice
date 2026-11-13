@@ -11,8 +11,7 @@ import {
 
 import { AsyncPipe, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
@@ -56,7 +55,7 @@ import { TriggerStateService } from './trigger-state.service';
                     for="reference-system"
                     id="reference-system-label"
                     class="max-w-[50%]"
-                    [matTooltip]="'TRIGGERS.REFERENCE_SYSTEM_MSG' | translate"
+                    [appTooltip]="'TRIGGERS.REFERENCE_SYSTEM_MSG' | translate"
                 >
                     {{ 'TRIGGERS.REFERENCE_SYSTEM' | translate }}
                 </label>
@@ -77,11 +76,11 @@ import { TriggerStateService } from './trigger-state.service';
                 <button
                     icon
                     default
-                    matRipple
+                    ripple
                     [disabled]="!template_system()"
                     (click)="editCondition()"
-                    [matTooltip]="'TRIGGERS.CONDITION_ADD' | translate"
-                    matTooltipPosition="left"
+                    [appTooltip]="'TRIGGERS.CONDITION_ADD' | translate"
+                    appTooltipPosition="left"
                 >
                     <icon>add</icon>
                 </button>
@@ -157,7 +156,7 @@ import { TriggerStateService } from './trigger-state.service';
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             [disabled]="!template_system()"
                             (click)="editCondition(row)"
                             [attr.aria-label]="'COMMON.EDIT' | translate"
@@ -168,7 +167,7 @@ import { TriggerStateService } from './trigger-state.service';
                             icon
                             default
                             error
-                            matRipple
+                            ripple
                             (click)="removeCondition(row)"
                             [attr.aria-label]="'COMMON.DELETE' | translate"
                         >
@@ -184,11 +183,11 @@ import { TriggerStateService } from './trigger-state.service';
                 <button
                     icon
                     default
-                    matRipple
+                    ripple
                     [disabled]="!template_system()"
                     (click)="editAction()"
-                    [matTooltip]="'TRIGGERS.ACTION_ADD' | translate"
-                    matTooltipPosition="left"
+                    [appTooltip]="'TRIGGERS.ACTION_ADD' | translate"
+                    appTooltipPosition="left"
                 >
                     <icon>add</icon>
                 </button>
@@ -251,7 +250,7 @@ import { TriggerStateService } from './trigger-state.service';
                 <ng-template #email_call_template let-row="row">
                     <div class="flex items-center space-x-2 p-4 select-text">
                         <span
-                            [matTooltip]="
+                            [appTooltip]="
                                 row.emails.join(
                                     '
 '
@@ -266,7 +265,7 @@ import { TriggerStateService } from './trigger-state.service';
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             [disabled]="!template_system()"
                             (click)="editAction(row)"
                             [attr.aria-label]="'COMMON.EDIT' | translate"
@@ -277,7 +276,7 @@ import { TriggerStateService } from './trigger-state.service';
                             icon
                             default
                             error
-                            matRipple
+                            ripple
                             (click)="removeAction(row)"
                             [attr.aria-label]="'COMMON.DELETE' | translate"
                         >
@@ -297,11 +296,10 @@ import { TriggerStateService } from './trigger-state.service';
         `,
     ],
     imports: [
+        TooltipDirective,
         ItemTimestampsComponent,
         TranslatePipe,
         IconComponent,
-        MatRippleModule,
-        MatTooltipModule,
         SimpleTableComponent,
         ItemSearchFieldComponent,
         FormsModule,

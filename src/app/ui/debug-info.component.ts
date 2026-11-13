@@ -1,8 +1,8 @@
+import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { Component, inject, input } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDebugService } from '../common/debug.service';
+import { MENU_POSITIONS } from './controls/overlay';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 
@@ -16,20 +16,20 @@ import { TranslatePipe } from './translate.pipe';
                 @if (compact()) {
                     <div
                         class="bg-info text-info-content flex h-10 w-10 items-center justify-center rounded-sm"
-                        [matTooltip]="'COMMON.DEBUG_ENABLED' | translate"
-                        matTooltipPosition="right"
+                        [appTooltip]="'COMMON.DEBUG_ENABLED' | translate"
+                        appTooltipPosition="right"
                     >
                         <icon class="text-2xl">bug_report</icon>
                     </div>
                     <div
                         class="relative flex h-10 w-10 items-center justify-center rounded-sm"
-                        [matTooltip]="
+                        [appTooltip]="
                             'COMMON.DEBUG_LISTENING_MSG'
                                 | translate
                                     : { modules: debug_module_count() }
                                     : debug_module_count()
                         "
-                        matTooltipPosition="right"
+                        appTooltipPosition="right"
                     >
                         <icon class="text-4xl opacity-10">sdk</icon>
                         <div
@@ -40,13 +40,13 @@ import { TranslatePipe } from './translate.pipe';
                     </div>
                     <div
                         class="relative flex h-10 w-10 items-center justify-center rounded-sm"
-                        [matTooltip]="
+                        [appTooltip]="
                             'COMMON.DEBUG_MSG_COUNT_MSG'
                                 | translate
                                     : { count: debug_message_count() }
                                     : debug_message_count()
                         "
-                        matTooltipPosition="right"
+                        appTooltipPosition="right"
                     >
                         <icon class="text-4xl opacity-10"
                             >business_messages</icon
@@ -82,43 +82,46 @@ import { TranslatePipe } from './translate.pipe';
                     <button
                         icon
                         default
-                        matRipple
-                        [matMenuTriggerFor]="menu"
+                        ripple
+                        [cdkMenuTriggerFor]="menu"
+                        [cdkMenuPosition]="menu_positions"
                         [attr.aria-label]="'COMMON.MORE_ACTIONS' | translate"
                     >
                         <icon>more_horiz</icon>
                     </button>
-                    <mat-menu #menu="matMenu">
-                        <button mat-menu-item (click)="toggleDebugPosition()">
-                            <icon class="text-2xl">{{
-                                debug_position() === 'side'
-                                    ? 'border_bottom'
-                                    : 'border_right'
-                            }}</icon>
-                            <div>Toggle Position</div>
-                        </button>
-                        <button mat-menu-item (click)="clearDebugMessages()">
-                            <icon class="text-2xl">clear_all</icon>
-                            <div>Clear Messages</div>
-                        </button>
-                        <button mat-menu-item (click)="clearBindings()">
-                            <icon class="text-2xl">hearing_disabled</icon>
-                            <div>Unbind Modules</div>
-                        </button>
-                        <button mat-menu-item (click)="openDebug()">
-                            <icon class="text-2xl">open_in_browser</icon>
-                            <div>Open Console</div>
-                        </button>
-                    </mat-menu>
+                    <ng-template #menu>
+                        <div cdkMenu>
+                            <button cdkMenuItem (click)="toggleDebugPosition()">
+                                <icon class="text-2xl">{{
+                                    debug_position() === 'side'
+                                        ? 'border_bottom'
+                                        : 'border_right'
+                                }}</icon>
+                                <div>Toggle Position</div>
+                            </button>
+                            <button cdkMenuItem (click)="clearDebugMessages()">
+                                <icon class="text-2xl">clear_all</icon>
+                                <div>Clear Messages</div>
+                            </button>
+                            <button cdkMenuItem (click)="clearBindings()">
+                                <icon class="text-2xl">hearing_disabled</icon>
+                                <div>Unbind Modules</div>
+                            </button>
+                            <button cdkMenuItem (click)="openDebug()">
+                                <icon class="text-2xl">open_in_browser</icon>
+                                <div>Open Console</div>
+                            </button>
+                        </div>
+                    </ng-template>
                 } @else {
                     <div actions class="flex items-center justify-center gap-1">
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             (click)="toggleDebugPosition()"
                         >
-                            <icon matTooltip="Toggle Position">{{
+                            <icon appTooltip="Toggle Position">{{
                                 debug_position() === 'side'
                                     ? 'border_bottom'
                                     : 'border_right'
@@ -127,23 +130,18 @@ import { TranslatePipe } from './translate.pipe';
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             (click)="clearDebugMessages()"
                         >
-                            <icon matTooltip="Clear Messages">clear_all</icon>
+                            <icon appTooltip="Clear Messages">clear_all</icon>
                         </button>
-                        <button
-                            icon
-                            default
-                            matRipple
-                            (click)="clearBindings()"
-                        >
-                            <icon matTooltip="Unbind Modules"
+                        <button icon default ripple (click)="clearBindings()">
+                            <icon appTooltip="Unbind Modules"
                                 >hearing_disabled</icon
                             >
                         </button>
-                        <button icon default matRipple (click)="openDebug()">
-                            <icon matTooltip="Open Console"
+                        <button icon default ripple (click)="openDebug()">
+                            <icon appTooltip="Open Console"
                                 >open_in_browser</icon
                             >
                         </button>
@@ -154,14 +152,17 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [],
     imports: [
+        TooltipDirective,
         IconComponent,
         TranslatePipe,
-        MatRippleModule,
-        MatTooltipModule,
-        MatMenuModule,
+        CdkMenu,
+        CdkMenuItem,
+        CdkMenuTrigger,
     ],
 })
 export class DebugInfoComponent {
+    /** Menu positions with a gap from the trigger */
+    public readonly menu_positions = MENU_POSITIONS;
     private _debug = inject(PlaceDebugService);
 
     public readonly compact = input(false);

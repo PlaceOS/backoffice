@@ -92,7 +92,7 @@ test.describe('Navigation', () => {
         await expect(zones.itemName).toHaveText('Level 1');
         await expect(
             page.locator('item-tablist a[href*="/systems"]'),
-        ).toHaveAttribute('aria-selected', 'true');
+        ).toHaveAttribute('aria-current', 'page');
     });
 
     test('browser back returns to the previous section', async ({ page }) => {

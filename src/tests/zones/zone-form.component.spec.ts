@@ -1,6 +1,6 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PlaceZone } from '@placeos/ts-client';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -36,8 +36,8 @@ describe('saving zones', () => {
     const dialog = {
         close: vi.fn(),
         disableClose: false,
-        backdropClick: () => EMPTY,
-        keydownEvents: () => EMPTY,
+        backdropClick: EMPTY,
+        keydownEvents: EMPTY,
     };
 
     beforeEach(async () => {
@@ -51,9 +51,9 @@ describe('saving zones', () => {
             imports: [ZoneFormComponent],
             providers: [
                 provideZonelessChangeDetection(),
-                { provide: MatDialogRef, useValue: dialog },
+                { provide: DialogRef, useValue: dialog },
                 {
-                    provide: MAT_DIALOG_DATA,
+                    provide: DIALOG_DATA,
                     useValue: {
                         item: new PlaceZone({ id: 'zone-1', name: 'Floor 1' }),
                     },
@@ -133,8 +133,8 @@ describe('saving zones with a stored parent', () => {
     const dialog = {
         close: vi.fn(),
         disableClose: false,
-        backdropClick: () => EMPTY,
-        keydownEvents: () => EMPTY,
+        backdropClick: EMPTY,
+        keydownEvents: EMPTY,
     };
 
     async function createForm() {
@@ -142,9 +142,9 @@ describe('saving zones with a stored parent', () => {
             imports: [ZoneFormComponent],
             providers: [
                 provideZonelessChangeDetection(),
-                { provide: MatDialogRef, useValue: dialog },
+                { provide: DialogRef, useValue: dialog },
                 {
-                    provide: MAT_DIALOG_DATA,
+                    provide: DIALOG_DATA,
                     useValue: {
                         item: new PlaceZone({
                             id: 'zone-1',

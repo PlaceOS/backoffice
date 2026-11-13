@@ -1,10 +1,6 @@
 import { Service, WritableSignal, inject, signal } from '@angular/core';
-import {
-    MatDialog,
-    MatDialogRef,
-    MatDialogState,
-} from '@angular/material/dialog';
 
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { unique } from '../common/general';
 import { SubscriptionLike } from '../common/signals';
 import { HashMap } from '../common/types';
@@ -34,7 +30,7 @@ const KEYBOARD_WIDGETS = [
 
 @Service()
 export class HotkeysService {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     /** Map of signals which store press states of keys */
     private keydown_states: HashMap<WritableSignal<number>> = {};
     /** Map of listeners for key state signals */
@@ -212,11 +208,9 @@ export class HotkeysService {
         return (this.keydown_states[key]?.() || 0) > 0;
     }
 
-    /** Top-most dialog that is open and not closing, or null if there is none */
-    private topDialog(): MatDialogRef<unknown> | null {
-        const open = this._dialog.openDialogs.filter(
-            (ref) => ref.getState() === MatDialogState.OPEN,
-        );
+    /** Top-most open dialog, or null if there is none. Closed dialogs leave the list at once */
+    private topDialog(): DialogRef<unknown, unknown> | null {
+        const open = this._dialog.openDialogs;
         return open[open.length - 1] || null;
     }
 
@@ -224,7 +218,7 @@ export class HotkeysService {
      * Whether a listener registered while `owner` was on top may fire now.
      * A listener from a dialog that has since closed is treated as page level.
      */
-    private isActiveLayer(owner: MatDialogRef<unknown> | null): boolean {
+    private isActiveLayer(owner: DialogRef<unknown, unknown> | null): boolean {
         const layer =
             owner && this._dialog.openDialogs.includes(owner) ? owner : null;
         return this.topDialog() === layer;

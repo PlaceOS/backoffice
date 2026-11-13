@@ -1,8 +1,4 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     SignagePlugin,
     addSignagePlugin,
@@ -11,13 +7,16 @@ import {
     updateSignagePlugin,
 } from '@placeos/ts-client';
 
+import { Dialog } from '@angular/cdk/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
+import { DialogEvent } from '../../common/types';
 import { confirmAndRun } from '../../overlays/confirm-modal.component';
+import { ProgressBarComponent } from '../../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../../ui/controls/tooltip.directive';
 import { IconComponent } from '../../ui/icon.component';
-import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { SignagePluginImportModalComponent } from './signage-plugin-import-modal.component';
@@ -36,10 +35,10 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         (click)="importPlugin()"
-                        [matTooltip]="
+                        [appTooltip]="
                             'ADMIN.SIGNAGE_PLUGINS_IMPORT' | translate
                         "
                         [attr.aria-label]="
@@ -51,10 +50,10 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         (click)="newPlugin()"
-                        [matTooltip]="'ADMIN.SIGNAGE_PLUGINS_ADD' | translate"
+                        [appTooltip]="'ADMIN.SIGNAGE_PLUGINS_ADD' | translate"
                         [attr.aria-label]="
                             'ADMIN.SIGNAGE_PLUGINS_ADD' | translate
                         "
@@ -64,7 +63,7 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                 </div>
             </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -165,8 +164,8 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="'ADMIN.SIGNAGE_PLUGINS_TEST' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.SIGNAGE_PLUGINS_TEST' | translate"
                     (click)="testPlugin(row)"
                 >
                     <icon>play_circle</icon>
@@ -174,8 +173,8 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="'ADMIN.SIGNAGE_PLUGINS_EDIT' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.SIGNAGE_PLUGINS_EDIT' | translate"
                     (click)="editPlugin(row)"
                 >
                     <icon>edit</icon>
@@ -184,8 +183,8 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
                     icon
                     default
                     error
-                    matRipple
-                    [matTooltip]="'ADMIN.SIGNAGE_PLUGINS_REMOVE' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.SIGNAGE_PLUGINS_REMOVE' | translate"
                     (click)="deletePlugin(row)"
                 >
                     <icon>delete</icon>
@@ -200,20 +199,18 @@ import { SignagePluginTestModalComponent } from './signage-plugin-test-modal.com
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
         IconComponent,
-        MatRippleModule,
-        MatTooltipModule,
         TranslatePipe,
         SimpleTableComponent,
-        MatProgressBarModule,
     ],
 })
 export class AdminSignagePluginsComponent
     extends AsyncHandler
     implements OnInit
 {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     public readonly loading = signal(false);
     public readonly plugins = signal<SignagePlugin[]>([]);
@@ -225,28 +222,32 @@ export class AdminSignagePluginsComponent
     /** Open the import wizard, then the new plugin form with the selected plugin details */
     public importPlugin(): void {
         const ref = this._dialog.open<
-            SignagePluginImportModalComponent,
+            SignagePlugin,
             void,
-            SignagePlugin
+            SignagePluginImportModalComponent
         >(SignagePluginImportModalComponent);
         this.subscription(
             'import_events',
-            ref.afterClosed().subscribe((item) => {
+            ref.closed.subscribe((item) => {
                 if (item) this.newPlugin(item);
             }),
         );
     }
 
     public newPlugin(item = new SignagePlugin()): void {
-        const ref = this._dialog.open(SignagePluginModalComponent, {
-            data: {
-                item,
-                save: (item: Partial<SignagePlugin>) => addSignagePlugin(item),
+        const ref = this._dialog.open<DialogEvent>(
+            SignagePluginModalComponent,
+            {
+                data: {
+                    item,
+                    save: (item: Partial<SignagePlugin>) =>
+                        addSignagePlugin(item),
+                },
             },
-        });
+        );
         this.subscription(
             'modal_events',
-            ref.afterClosed().subscribe((event) => {
+            ref.closed.subscribe((event) => {
                 if (event?.reason !== 'done') return;
                 this.loadPlugins();
             }),
@@ -260,16 +261,19 @@ export class AdminSignagePluginsComponent
     }
 
     public editPlugin(item: SignagePlugin): void {
-        const ref = this._dialog.open(SignagePluginModalComponent, {
-            data: {
-                item,
-                save: (updated: Partial<SignagePlugin>) =>
-                    updateSignagePlugin(item.id, updated),
+        const ref = this._dialog.open<DialogEvent>(
+            SignagePluginModalComponent,
+            {
+                data: {
+                    item,
+                    save: (updated: Partial<SignagePlugin>) =>
+                        updateSignagePlugin(item.id, updated),
+                },
             },
-        });
+        );
         this.subscription(
             'modal_events',
-            ref.afterClosed().subscribe((event) => {
+            ref.closed.subscribe((event) => {
                 if (event?.reason !== 'done') return;
                 this.loadPlugins();
             }),

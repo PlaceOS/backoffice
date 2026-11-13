@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
 import type { PlaceModule } from '@placeos/ts-client';
+import { describe, expect, it, vi } from 'vitest';
 import { generateModuleFormModel } from '../../app/modules/modules.utilities';
 
 const mocks = vi.hoisted(() => ({

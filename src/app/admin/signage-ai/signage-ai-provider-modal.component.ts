@@ -1,12 +1,12 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { readError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { FormFieldComponent } from '../../ui/controls/form-field.component';
+import { OptionComponent } from '../../ui/controls/option.component';
+import { SelectComponent } from '../../ui/controls/select.component';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../../ui/settings-toggle.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -46,157 +46,170 @@ const SIGNAGE_AI_CREDENTIAL_FIELDS: Record<
         >
             <form class="w-full">
                 <div class="flex flex-col">
-                    <mat-form-field appearance="outline">
-                        <mat-label>{{
-                            'ADMIN.AI_PROVIDER_NAME' | translate
-                        }}</mat-label>
-                        <input matInput [formField]="form.name" />
-                        <mat-error>{{
-                            'ADMIN.AI_PROVIDER_NAME_REQUIRED' | translate
-                        }}</mat-error>
-                    </mat-form-field>
+                    <label for="ai-name">{{
+                        'ADMIN.AI_PROVIDER_NAME' | translate
+                    }}</label>
+                    <app-form-field>
+                        <input id="ai-name" [formField]="form.name" />
+                        <div error>
+                            {{ 'ADMIN.AI_PROVIDER_NAME_REQUIRED' | translate }}
+                        </div>
+                    </app-form-field>
                 </div>
                 <div class="flex flex-col">
-                    <mat-form-field appearance="outline">
-                        <mat-label>{{
-                            'ADMIN.AI_PROVIDER_VENDOR' | translate
-                        }}</mat-label>
-                        <mat-select [formField]="form.provider">
-                            <mat-option value="OPENAI">OpenAI</mat-option>
-                            <mat-option value="AZURE_OPENAI"
-                                >Azure OpenAI</mat-option
+                    <label for="ai-provider" id="ai-provider-label">{{
+                        'ADMIN.AI_PROVIDER_VENDOR' | translate
+                    }}</label>
+                    <app-form-field>
+                        <app-select
+                            id="ai-provider"
+                            aria-labelledby="ai-provider-label"
+                            [formField]="form.provider"
+                        >
+                            <app-option value="OPENAI">OpenAI</app-option>
+                            <app-option value="AZURE_OPENAI"
+                                >Azure OpenAI</app-option
                             >
-                            <mat-option value="GOOGLE_VERTEX"
-                                >Google (Vertex)</mat-option
+                            <app-option value="GOOGLE_VERTEX"
+                                >Google (Vertex)</app-option
                             >
-                        </mat-select>
-                    </mat-form-field>
+                        </app-select>
+                    </app-form-field>
                 </div>
 
                 @if (is_google()) {
                     <div class="flex flex-col">
-                        <mat-form-field appearance="outline">
-                            <mat-label>{{
-                                'ADMIN.AI_PROVIDER_PROJECT' | translate
-                            }}</mat-label>
-                            <input matInput [formField]="form.project_id" />
-                        </mat-form-field>
+                        <label for="ai-project-id">{{
+                            'ADMIN.AI_PROVIDER_PROJECT' | translate
+                        }}</label>
+                        <app-form-field>
+                            <input
+                                id="ai-project-id"
+                                [formField]="form.project_id"
+                            />
+                        </app-form-field>
                     </div>
                     <div class="flex flex-col">
-                        <mat-form-field appearance="outline">
-                            <mat-label>{{
-                                'ADMIN.AI_PROVIDER_CLIENT_EMAIL' | translate
-                            }}</mat-label>
-                            <input matInput [formField]="form.client_email" />
-                        </mat-form-field>
+                        <label for="ai-client-email">{{
+                            'ADMIN.AI_PROVIDER_CLIENT_EMAIL' | translate
+                        }}</label>
+                        <app-form-field>
+                            <input
+                                id="ai-client-email"
+                                [formField]="form.client_email"
+                            />
+                        </app-form-field>
                     </div>
                     <div class="flex flex-col">
-                        <mat-form-field appearance="outline">
-                            <mat-label>{{
-                                'ADMIN.AI_PROVIDER_PRIVATE_KEY' | translate
-                            }}</mat-label>
+                        <label for="ai-private-key">{{
+                            'ADMIN.AI_PROVIDER_PRIVATE_KEY' | translate
+                        }}</label>
+                        <app-form-field>
                             <textarea
-                                matInput
+                                id="ai-private-key"
                                 rows="4"
                                 [formField]="form.private_key"
                             ></textarea>
-                        </mat-form-field>
+                        </app-form-field>
                     </div>
                     <div class="flex flex-col">
-                        <mat-form-field appearance="outline">
-                            <mat-label>{{
-                                'ADMIN.AI_PROVIDER_LOCATION' | translate
-                            }}</mat-label>
+                        <label for="ai-location">{{
+                            'ADMIN.AI_PROVIDER_LOCATION' | translate
+                        }}</label>
+                        <app-form-field>
                             <input
-                                matInput
+                                id="ai-location"
                                 [formField]="form.location"
                                 placeholder="us-central1"
                             />
-                            <mat-error>{{
-                                'ADMIN.AI_PROVIDER_LOCATION_REQUIRED'
-                                    | translate
-                            }}</mat-error>
-                        </mat-form-field>
+                            <div error>
+                                {{
+                                    'ADMIN.AI_PROVIDER_LOCATION_REQUIRED'
+                                        | translate
+                                }}
+                            </div>
+                        </app-form-field>
                     </div>
                 } @else {
                     <div class="flex flex-col">
-                        <mat-form-field appearance="outline">
-                            <mat-label>{{
-                                'ADMIN.AI_PROVIDER_API_KEY' | translate
-                            }}</mat-label>
-                            <input matInput [formField]="form.api_key" />
-                        </mat-form-field>
+                        <label for="ai-api-key">{{
+                            'ADMIN.AI_PROVIDER_API_KEY' | translate
+                        }}</label>
+                        <app-form-field>
+                            <input id="ai-api-key" [formField]="form.api_key" />
+                        </app-form-field>
                     </div>
                     @if (is_azure()) {
                         <div class="flex space-x-2">
                             <div class="flex flex-1 flex-col">
-                                <mat-form-field appearance="outline">
-                                    <mat-label>{{
-                                        'ADMIN.AI_PROVIDER_DEPLOYMENT'
-                                            | translate
-                                    }}</mat-label>
+                                <label for="ai-deployment">{{
+                                    'ADMIN.AI_PROVIDER_DEPLOYMENT' | translate
+                                }}</label>
+                                <app-form-field>
                                     <input
-                                        matInput
+                                        id="ai-deployment"
                                         [formField]="form.deployment"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                             <div class="flex flex-1 flex-col">
-                                <mat-form-field appearance="outline">
-                                    <mat-label>{{
-                                        'ADMIN.AI_PROVIDER_API_VERSION'
-                                            | translate
-                                    }}</mat-label>
+                                <label for="ai-api-version">{{
+                                    'ADMIN.AI_PROVIDER_API_VERSION' | translate
+                                }}</label>
+                                <app-form-field>
                                     <input
-                                        matInput
+                                        id="ai-api-version"
                                         [formField]="form.api_version"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         </div>
                     }
                 }
 
                 <div class="flex flex-col">
-                    <mat-form-field appearance="outline">
-                        <mat-label>{{
-                            'ADMIN.AI_PROVIDER_ENDPOINT' | translate
-                        }}</mat-label>
-                        <input matInput [formField]="form.endpoint" />
-                    </mat-form-field>
+                    <label for="ai-endpoint">{{
+                        'ADMIN.AI_PROVIDER_ENDPOINT' | translate
+                    }}</label>
+                    <app-form-field>
+                        <input id="ai-endpoint" [formField]="form.endpoint" />
+                    </app-form-field>
                 </div>
                 <div class="flex flex-col">
-                    <mat-form-field appearance="outline">
-                        <mat-label>{{
-                            'ADMIN.AI_PROVIDER_MODEL' | translate
-                        }}</mat-label>
-                        <input matInput [formField]="form.default_model" />
-                    </mat-form-field>
+                    <label for="ai-default-model">{{
+                        'ADMIN.AI_PROVIDER_MODEL' | translate
+                    }}</label>
+                    <app-form-field>
+                        <input
+                            id="ai-default-model"
+                            [formField]="form.default_model"
+                        />
+                    </app-form-field>
                 </div>
                 <div class="flex space-x-2">
                     <div class="flex flex-1 flex-col">
-                        <mat-form-field appearance="outline">
-                            <mat-label>{{
-                                'ADMIN.AI_PROVIDER_USER_QUOTA' | translate
-                            }}</mat-label>
+                        <label for="ai-user-per-day">{{
+                            'ADMIN.AI_PROVIDER_USER_QUOTA' | translate
+                        }}</label>
+                        <app-form-field>
                             <input
-                                matInput
+                                id="ai-user-per-day"
                                 type="number"
                                 [formField]="form.user_per_day"
                             />
-                        </mat-form-field>
+                        </app-form-field>
                     </div>
                     <div class="flex flex-1 flex-col">
-                        <mat-form-field appearance="outline">
-                            <mat-label>{{
-                                'ADMIN.AI_PROVIDER_DOMAIN_QUOTA' | translate
-                            }}</mat-label>
+                        <label for="ai-domain-per-month">{{
+                            'ADMIN.AI_PROVIDER_DOMAIN_QUOTA' | translate
+                        }}</label>
+                        <app-form-field>
                             <input
-                                matInput
+                                id="ai-domain-per-month"
                                 type="number"
                                 [formField]="form.domain_per_month"
                             />
-                        </mat-form-field>
+                        </app-form-field>
                     </div>
                 </div>
                 <settings-toggle [formField]="form.enabled">{{
@@ -210,18 +223,20 @@ const SIGNAGE_AI_CREDENTIAL_FIELDS: Record<
     `,
     styles: [``],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FullscreenModalShellComponent,
         SettingsToggleComponent,
         TranslatePipe,
-        MatFormFieldModule,
-        MatSelectModule,
         FormField,
-        MatInputModule,
     ],
 })
 export class SignageAIProviderModalComponent {
-    private _data = inject<{ item?: SignageAIProvider }>(MAT_DIALOG_DATA);
-    private _dialog_ref = inject(MatDialogRef<SignageAIProviderModalComponent>);
+    private _data = inject<{ item?: SignageAIProvider }>(DIALOG_DATA);
+    private _dialog_ref = inject(
+        DialogRef<unknown, SignageAIProviderModalComponent>,
+    );
 
     public readonly item = this._data.item;
     public readonly loading = signal('');

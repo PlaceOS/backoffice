@@ -1,3 +1,4 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, inject, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -8,16 +9,14 @@ import {
     submit,
     validate,
 } from '@angular/forms/signals';
-import { MatRippleModule } from '@angular/material/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
 import { getInvalidSignalFields } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
 import { ObjectListFieldComponent } from '../ui/custom-fields/object-list-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
@@ -108,128 +107,126 @@ export interface StaffTenantModalData {
                         <label for="tenant-name">
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                         </label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
                                 id="tenant-name"
-                                matInput
                                 [formField]="form.name"
                                 [placeholder]="
                                     'ADMIN.TENANTS_FIELD_NAME' | translate
                                 "
                             />
-                            <mat-error>{{
-                                'ADMIN.TENANTS_NAME_ERROR' | translate
-                            }}</mat-error>
-                        </mat-form-field>
+                            <div error>
+                                {{ 'ADMIN.TENANTS_NAME_ERROR' | translate }}
+                            </div>
+                        </app-form-field>
                     </div>
                     <div class="flex flex-1 flex-col">
                         <label for="tenant-platform">
                             {{ 'ADMIN.TENANTS_PLATFORM' | translate }}
                             <span>*</span>
                         </label>
-                        <mat-form-field appearance="outline">
-                            <mat-select
+                        <app-form-field>
+                            <app-select
                                 id="tenant-platform"
                                 [formField]="form.platform"
                             >
-                                <mat-option value="google">Google</mat-option>
-                                <mat-option value="office365">
+                                <app-option value="google">Google</app-option>
+                                <app-option value="office365">
                                     Office365
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
+                                </app-option>
+                            </app-select>
+                        </app-form-field>
                     </div>
                 </div>
                 <div class="flex flex-1 flex-col">
                     <label for="tenant-email-domain">
                         {{ 'ADMIN.TENANTS_EMAIL_DOMAIN' | translate }}
                     </label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
                             id="tenant-email-domain"
-                            matInput
                             [formField]="form.email_domain"
                             [placeholder]="
                                 'ADMIN.TENANTS_EMAIL_PLACEHOLDER' | translate
                             "
                         />
-                        <mat-error>{{
-                            'ADMIN.TENANTS_EMAIL_ERROR' | translate
-                        }}</mat-error>
-                    </mat-form-field>
+                        <div error>
+                            {{ 'ADMIN.TENANTS_EMAIL_ERROR' | translate }}
+                        </div>
+                    </app-form-field>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <label for="tenant-early-checkin">{{
                         'ADMIN.TENANTS_EARLY_CHECKIN' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
+                    <app-form-field>
+                        <app-select
                             id="tenant-early-checkin"
                             [formField]="form.early_checkin"
                             placeholder="Select time"
                         >
-                            <mat-option [value]="15 * 60">
+                            <app-option [value]="15 * 60">
                                 {{
                                     'ADMIN.TENANTS_MINUTES'
                                         | translate: { minute: 15 }
                                 }}
-                            </mat-option>
-                            <mat-option [value]="30 * 60">
+                            </app-option>
+                            <app-option [value]="30 * 60">
                                 {{
                                     'ADMIN.TENANTS_MINUTES'
                                         | translate: { minute: 30 }
                                 }}
-                            </mat-option>
-                            <mat-option [value]="45 * 60">
+                            </app-option>
+                            <app-option [value]="45 * 60">
                                 {{
                                     'ADMIN.TENANTS_MINUTES'
                                         | translate: { minute: 45 }
                                 }}
-                            </mat-option>
-                            <mat-option [value]="60 * 60">
+                            </app-option>
+                            <app-option [value]="60 * 60">
                                 {{
                                     'ADMIN.TENANTS_HOURS'
                                         | translate: { hour: 1 }
                                 }}
-                            </mat-option>
-                            <mat-option [value]="1.5 * 60 * 60">
+                            </app-option>
+                            <app-option [value]="1.5 * 60 * 60">
                                 {{
                                     'ADMIN.TENANTS_MINUTES_HOURS'
                                         | translate: { minute: 30, hour: 1 }
                                 }}
-                            </mat-option>
-                            <mat-option [value]="2 * 60 * 60">
+                            </app-option>
+                            <app-option [value]="2 * 60 * 60">
                                 {{
                                     'ADMIN.TENANTS_HOURS'
                                         | translate: { hour: 2 }
                                 }}
-                            </mat-option>
-                            <mat-option [value]="2.5 * 60 * 60">
+                            </app-option>
+                            <app-option [value]="2.5 * 60 * 60">
                                 {{
                                     'ADMIN.TENANTS_MINUTES_HOURS'
                                         | translate: { minute: 30, hour: 2 }
                                 }}
-                            </mat-option>
-                            <mat-option [value]="3 * 60 * 60">
+                            </app-option>
+                            <app-option [value]="3 * 60 * 60">
                                 {{
                                     'ADMIN.TENANTS_HOURS'
                                         | translate: { hour: 3 }
                                 }}
-                            </mat-option>
-                            <mat-option [value]="3.5 * 60 * 60">
+                            </app-option>
+                            <app-option [value]="3.5 * 60 * 60">
                                 {{
                                     'ADMIN.TENANTS_MINUTES_HOURS'
                                         | translate: { minute: 30, hour: 3 }
                                 }}
-                            </mat-option>
-                            <mat-option [value]="4 * 60 * 60">
+                            </app-option>
+                            <app-option [value]="4 * 60 * 60">
                                 {{
                                     'ADMIN.TENANTS_HOURS'
                                         | translate: { hour: 4 }
                                 }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                            </app-option>
+                        </app-select>
+                    </app-form-field>
                 </div>
                 @if (
                     formModel().platform !== 'google' && !formModel().delegated
@@ -243,23 +240,22 @@ export interface StaffTenantModalData {
                                     'ADMIN.TENANTS_SERVICE_ACCOUNT' | translate
                                 }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
                                     id="tenant-service-account"
-                                    matInput
                                     [formField]="form.service_account"
                                     [placeholder]="
                                         'ADMIN.TENANTS_SERVICE_ACCOUNT'
                                             | translate
                                     "
                                 />
-                                <mat-error>
+                                <div error>
                                     {{
                                         'ADMIN.TENANTS_SERVICE_ACCOUNT_ERROR'
                                             | translate
                                     }}
-                                </mat-error>
-                            </mat-form-field>
+                                </div>
+                            </app-form-field>
                         </div>
                     </div>
                 }
@@ -281,12 +277,11 @@ export interface StaffTenantModalData {
                                 <span>*</span>
                             }
                         </label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             @switch (item.key) {
                                 @default {
                                     <input
                                         [id]="'credential-' + item.key"
-                                        matInput
                                         [ngModel]="
                                             formModel().credentials[item.key] ||
                                             ''
@@ -305,7 +300,6 @@ export interface StaffTenantModalData {
                                 @case ('signing_key') {
                                     <textarea
                                         [id]="'credential-' + item.key"
-                                        matInput
                                         [ngModel]="
                                             formModel().credentials[item.key] ||
                                             ''
@@ -322,13 +316,13 @@ export interface StaffTenantModalData {
                                     ></textarea>
                                 }
                             }
-                            <mat-error>
+                            <div error>
                                 {{
                                     'ADMIN.TENANTS_ITEM_REQUIRED'
                                         | translate: { name: item.key }
                                 }}
-                            </mat-error>
-                        </mat-form-field>
+                            </div>
+                        </app-form-field>
                     </div>
                 }
                 @if (formModel().platform === 'office365') {
@@ -353,10 +347,9 @@ export interface StaffTenantModalData {
                                         <span>*</span>
                                     }
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
                                         [id]="'outlook-' + item"
-                                        matInput
                                         [ngModel]="
                                             formModel().outlook_config[item] ||
                                             ''
@@ -371,7 +364,7 @@ export interface StaffTenantModalData {
                                             outlookName(item) | translate
                                         "
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -421,12 +414,8 @@ export interface StaffTenantModalData {
                         let index = $index
                     ) {
                         <div class="flex items-center space-x-2" period-row>
-                            <mat-form-field
-                                appearance="outline"
-                                class="no-subscript min-w-0 flex-2"
-                            >
+                            <app-form-field class="no-subscript min-w-0 flex-2">
                                 <input
-                                    matInput
                                     [attr.aria-label]="
                                         'ADMIN.TENANTS_BOOKING_TYPE' | translate
                                     "
@@ -443,13 +432,9 @@ export interface StaffTenantModalData {
                                     "
                                     [ngModelOptions]="{ standalone: true }"
                                 />
-                            </mat-form-field>
-                            <mat-form-field
-                                appearance="outline"
-                                class="no-subscript min-w-0 flex-1"
-                            >
+                            </app-form-field>
+                            <app-form-field class="no-subscript min-w-0 flex-1">
                                 <input
-                                    matInput
                                     type="number"
                                     min="0"
                                     step="1"
@@ -466,16 +451,13 @@ export interface StaffTenantModalData {
                                     "
                                     [ngModelOptions]="{ standalone: true }"
                                 />
-                                <span matTextSuffix>{{
+                                <span suffix>{{
                                     'ADMIN.TENANTS_DAYS' | translate
                                 }}</span>
-                            </mat-form-field>
-                            <mat-form-field
-                                appearance="outline"
-                                class="no-subscript min-w-0 flex-1"
-                            >
-                                <mat-select
-                                    [aria-label]="
+                            </app-form-field>
+                            <app-form-field class="no-subscript min-w-0 flex-1">
+                                <app-select
+                                    [attr.aria-label]="
                                         'ADMIN.TENANTS_HOURS_LABEL' | translate
                                     "
                                     [ngModel]="item.hours"
@@ -489,23 +471,20 @@ export interface StaffTenantModalData {
                                     [ngModelOptions]="{ standalone: true }"
                                 >
                                     @for (hour of hour_options; track hour) {
-                                        <mat-option [value]="hour">
+                                        <app-option [value]="hour">
                                             {{
                                                 'ADMIN.TENANTS_DURATION_HOURS'
                                                     | translate
                                                         : { count: hour }
                                                         : hour
                                             }}
-                                        </mat-option>
+                                        </app-option>
                                     }
-                                </mat-select>
-                            </mat-form-field>
-                            <mat-form-field
-                                appearance="outline"
-                                class="no-subscript min-w-0 flex-1"
-                            >
-                                <mat-select
-                                    [aria-label]="
+                                </app-select>
+                            </app-form-field>
+                            <app-form-field class="no-subscript min-w-0 flex-1">
+                                <app-select
+                                    [attr.aria-label]="
                                         'ADMIN.TENANTS_MINUTES_LABEL'
                                             | translate
                                     "
@@ -523,21 +502,21 @@ export interface StaffTenantModalData {
                                         minute of minuteOptions(item.minutes);
                                         track minute
                                     ) {
-                                        <mat-option [value]="minute">
+                                        <app-option [value]="minute">
                                             {{
                                                 'ADMIN.TENANTS_DURATION_MINUTES'
                                                     | translate
                                                         : { count: minute }
                                                         : minute
                                             }}
-                                        </mat-option>
+                                        </app-option>
                                     }
-                                </mat-select>
-                            </mat-form-field>
+                                </app-select>
+                            </app-form-field>
                             <button
                                 type="button"
                                 icon
-                                matRipple
+                                ripple
                                 class="border-error text-error h-12 w-12 shrink-0 rounded-sm border"
                                 [attr.aria-label]="'COMMON.DELETE' | translate"
                                 (click)="removeBookingPeriod(index)"
@@ -583,23 +562,22 @@ export interface StaffTenantModalData {
         `,
     ],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FullscreenModalShellComponent,
         IconComponent,
-        MatRippleModule,
         ObjectListFieldComponent,
         FormField,
         TranslatePipe,
-        MatFormFieldModule,
-        MatInputModule,
         FormsModule,
         SettingsToggleComponent,
-        MatSelectModule,
     ],
 })
 export class StaffTenantModalComponent {
-    private _data = inject<StaffTenantModalData>(MAT_DIALOG_DATA);
+    private _data = inject<StaffTenantModalData>(DIALOG_DATA);
     private _dialog_ref =
-        inject<MatDialogRef<StaffTenantModalComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, StaffTenantModalComponent>>(DialogRef);
 
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;

@@ -1,4 +1,4 @@
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
     Component,
     computed,
@@ -8,26 +8,19 @@ import {
     signal,
 } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import {
     addBroker,
     AuthType,
     PlaceMQTTBroker,
     updateBroker,
 } from '@placeos/ts-client';
-import {
-    addSignalChipItem,
-    mergeFormItem,
-    onSaveHotkey,
-    removeSignalChipItem,
-    submitFormDialog,
-} from '../common/forms';
+import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { DialogEvent } from '../common/types';
+import { ChipListComponent } from '../ui/controls/chip-list.component';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -59,19 +52,21 @@ import {
                                 {{ 'COMMON.FIELD_NAME' | translate
                                 }}<span>*</span>
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="broker-name"
                                     [placeholder]="
                                         'COMMON.FIELD_NAME' | translate
                                     "
                                     [formField]="form.name"
                                 />
-                                <mat-error>{{
-                                    'ADMIN.BROKERS_NAME_REQUIRED' | translate
-                                }}</mat-error>
-                            </mat-form-field>
+                                <div error>
+                                    {{
+                                        'ADMIN.BROKERS_NAME_REQUIRED'
+                                            | translate
+                                    }}
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.description) {
@@ -79,16 +74,15 @@ import {
                             <label for="description">
                                 {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <textarea
-                                    matInput
                                     id="description"
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
                                     [formField]="form.description"
                                 ></textarea>
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.host) {
@@ -103,19 +97,21 @@ import {
                                 {{ 'ADMIN.BROKERS_FIELD_HOST' | translate
                                 }}<span>*</span>
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="host"
                                     [placeholder]="
                                         'ADMIN.BROKERS_FIELD_HOST' | translate
                                     "
                                     [formField]="form.host"
                                 />
-                                <mat-error>{{
-                                    'ADMIN.BROKERS_HOST_REQUIRED' | translate
-                                }}</mat-error>
-                            </mat-form-field>
+                                <div error>
+                                    {{
+                                        'ADMIN.BROKERS_HOST_REQUIRED'
+                                            | translate
+                                    }}
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     <div class="fieldset">
@@ -131,9 +127,8 @@ import {
                                     {{ 'ADMIN.BROKERS_FIELD_PORT' | translate }}
                                     <span>*</span>
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="port-number"
                                         type="number"
                                         [placeholder]="
@@ -142,13 +137,13 @@ import {
                                         "
                                         [formField]="form.port"
                                     />
-                                    <mat-error>
+                                    <div error>
                                         {{
                                             'ADMIN.BROKERS_PORT_REQUIRED'
                                                 | translate
                                         }}
-                                    </mat-error>
-                                </mat-form-field>
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.tls) {
@@ -170,19 +165,19 @@ import {
                                     'ADMIN.BROKERS_FIELD_AUTH_TYPE' | translate
                                 }}
                             </label>
-                            <mat-form-field appearance="outline">
-                                <mat-select
+                            <app-form-field>
+                                <app-select
                                     id="broker-auth-type"
                                     aria-labelledby="broker-auth-type-label"
                                     [formField]="form.auth_type"
                                 >
                                     @for (type of auth_types; track type) {
-                                        <mat-option [value]="type.id">
+                                        <app-option [value]="type.id">
                                             {{ type.name }}
-                                        </mat-option>
+                                        </app-option>
                                     }
-                                </mat-select>
-                            </mat-form-field>
+                                </app-select>
+                            </app-form-field>
                         </div>
                     }
                     @if (auth_type() === 2) {
@@ -201,9 +196,8 @@ import {
                                         }}
                                         <span>*</span>
                                     </label>
-                                    <mat-form-field appearance="outline">
+                                    <app-form-field>
                                         <input
-                                            matInput
                                             id="username"
                                             [placeholder]="
                                                 'ADMIN.BROKERS_USERNAME'
@@ -211,11 +205,13 @@ import {
                                             "
                                             [formField]="form.username"
                                         />
-                                        <mat-error>{{
-                                            'ADMIN.BROKERS_USERNAME_REQUIRED'
-                                                | translate
-                                        }}</mat-error>
-                                    </mat-form-field>
+                                        <div error>
+                                            {{
+                                                'ADMIN.BROKERS_USERNAME_REQUIRED'
+                                                    | translate
+                                            }}
+                                        </div>
+                                    </app-form-field>
                                 </div>
                             }
                             @if (form.password) {
@@ -231,9 +227,8 @@ import {
                                             'ADMIN.BROKERS_PASSWORD' | translate
                                         }}
                                     </label>
-                                    <mat-form-field appearance="outline">
+                                    <app-form-field>
                                         <input
-                                            matInput
                                             id="new-password"
                                             autocomplete="new-password"
                                             [type]="
@@ -248,7 +243,7 @@ import {
                                             [formField]="form.password"
                                         />
                                         <icon
-                                            matSuffix
+                                            suffix
                                             (mousedown)="
                                                 show_password.set(true)
                                             "
@@ -264,11 +259,13 @@ import {
                                         >
                                             visibility
                                         </icon>
-                                        <mat-error>{{
-                                            'ADMIN.BROKERS_PASSWORD_REQUIRED'
-                                                | translate
-                                        }}</mat-error>
-                                    </mat-form-field>
+                                        <div error>
+                                            {{
+                                                'ADMIN.BROKERS_PASSWORD_REQUIRED'
+                                                    | translate
+                                            }}
+                                        </div>
+                                    </app-form-field>
                                 </div>
                             }
                         </div>
@@ -279,20 +276,21 @@ import {
                                 <label for="cert">
                                     {{ 'ADMIN.BROKERS_CERT' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <textarea
-                                        matInput
                                         id="cert"
                                         [placeholder]="
                                             'ADMIN.BROKERS_CERT' | translate
                                         "
                                         [formField]="form.certificate"
                                     ></textarea>
-                                    <mat-error>{{
-                                        'ADMIN.BROKERS_CERT_REQUIRED'
-                                            | translate
-                                    }}</mat-error>
-                                </mat-form-field>
+                                    <div error>
+                                        {{
+                                            'ADMIN.BROKERS_CERT_REQUIRED'
+                                                | translate
+                                        }}
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                     }
@@ -301,54 +299,20 @@ import {
                             <label for="filters">
                                 {{ 'ADMIN.BROKERS_FIELD_FILTERS' | translate }}
                             </label>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-chip-grid
-                                    #chipGrid
+                            <app-form-field class="w-full">
+                                <app-chip-list
+                                    inputId="filters"
                                     [attr.aria-label]="
                                         'ADMIN.BROKERS_FIELD_FILTERS'
                                             | translate
                                     "
-                                >
-                                    @for (filter of filters(); track filter) {
-                                        <mat-chip-row
-                                            (removed)="removeFilter(filter)"
-                                            [aria-description]="
-                                                'Press enter to edit ' + filter
-                                            "
-                                        >
-                                            {{ filter }}
-                                            <button
-                                                type="button"
-                                                matChipRemove
-                                                [attr.aria-label]="
-                                                    'COMMON.ITEM_REMOVE'
-                                                        | translate
-                                                            : {
-                                                                  item: filter,
-                                                              }
-                                                "
-                                            >
-                                                <icon>cancel</icon>
-                                            </button>
-                                        </mat-chip-row>
-                                    }
-                                    <input
-                                        id="filters"
-                                        [placeholder]="
-                                            'ADMIN.BROKERS_FIELD_FILTERS'
-                                                | translate
-                                        "
-                                        [matChipInputFor]="chipGrid"
-                                        [matChipInputSeparatorKeyCodes]="
-                                            separators
-                                        "
-                                        [matChipInputAddOnBlur]="true"
-                                        (matChipInputTokenEnd)="
-                                            addFilter($event)
-                                        "
-                                    />
-                                </mat-chip-grid>
-                            </mat-form-field>
+                                    [placeholder]="
+                                        'ADMIN.BROKERS_FIELD_FILTERS'
+                                            | translate
+                                    "
+                                    [formField]="form.filters"
+                                />
+                            </app-form-field>
                         </div>
                     }
                 </form>
@@ -363,22 +327,22 @@ import {
         `,
     ],
     imports: [
-        MatFormFieldModule,
-        MatChipsModule,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
+        ChipListComponent,
         IconComponent,
         TranslatePipe,
         FormField,
-        MatInputModule,
-        MatSelectModule,
         SettingsToggleComponent,
         FullscreenModalShellComponent,
     ],
 })
 export class BrokerFormComponent {
     private _dialog_ref =
-        inject<MatDialogRef<BrokerFormComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, BrokerFormComponent>>(DialogRef);
     private _data = inject<{ item: PlaceMQTTBroker; readonly?: string }>(
-        MAT_DIALOG_DATA,
+        DIALOG_DATA,
     );
     private readonly _name = 'ADMIN.BROKERS';
 
@@ -407,12 +371,9 @@ export class BrokerFormComponent {
             name: i18n('ADMIN.BROKERS_AUTH_TYPE_PASS'),
         },
     ];
-    /** List of separator characters for filters */
-    public readonly separators = [ENTER, COMMA] as const;
     /** Whether to show password field value */
     public readonly show_password = signal(false);
     public readonly auth_type = computed(() => this.formModel().auth_type);
-    public readonly filters = computed(() => this.formModel().filters || []);
 
     constructor() {
         onSaveHotkey(() => this.submit());
@@ -437,23 +398,5 @@ export class BrokerFormComponent {
                     : addBroker(form_item);
             },
         );
-    }
-
-    /**
-     * Add a filter to the list of filters for the item
-     * @param event Input event
-     */
-    public addFilter(event: MatChipInputEvent): void {
-        this.formModel.update((model) => ({
-            ...model,
-            filters: addSignalChipItem(model.filters, event),
-        }));
-    }
-
-    public removeFilter(existing_filter: string): void {
-        this.formModel.update((model) => ({
-            ...model,
-            filters: removeSignalChipItem(model.filters, existing_filter),
-        }));
     }
 }

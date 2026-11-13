@@ -15,10 +15,6 @@ import {
     FormsModule,
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelect, MatSelectModule } from '@angular/material/select';
 import {
     addMinutes,
     endOfDay,
@@ -32,18 +28,19 @@ import {
 } from 'date-fns';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { Identity } from '../../common/types';
+import { FormFieldComponent } from '../controls/form-field.component';
+import { OptionComponent } from '../controls/option.component';
+import { SelectComponent } from '../controls/select.component';
 import { IconComponent } from '../icon.component';
 
 @Component({
     selector: 'a-time-field',
     template: `
-        <mat-form-field
-            appearance="outline"
+        <app-form-field
             [style.display]="show_select() ? 'none' : ''"
             (keydown.enter)="showSelect()"
         >
             <input
-                matInput
                 type="time"
                 [disabled]="disabled()"
                 [ngModel]="time()"
@@ -53,7 +50,7 @@ import { IconComponent } from '../icon.component';
                 type="button"
                 btn
                 icon
-                matSuffix
+                suffix
                 class="relative top-1 -right-1"
                 (click)="showSelect()"
             >
@@ -61,28 +58,29 @@ import { IconComponent } from '../icon.component';
                     arrow_drop_down
                 </icon>
             </button>
-            <mat-error><ng-content /></mat-error>
-        </mat-form-field>
+            <div error><ng-content /></div>
+        </app-form-field>
         @if (show_select()) {
-            <mat-form-field appearance="outline">
-                <mat-select
+            <app-form-field>
+                <app-select
                     #select
                     [value]="time()"
                     [disabled]="disabled()"
                     (valueChange)="setValue($event)"
+                    (openedChange)="!$event && show_select.set(false)"
                 >
                     @for (option of time_options; track option) {
-                        <mat-option [value]="option.id">
+                        <app-option [value]="option.id">
                             {{ option.name }}
-                        </mat-option>
+                        </app-option>
                     }
-                </mat-select>
-            </mat-form-field>
+                </app-select>
+            </app-form-field>
         }
     `,
     styles: [
         `
-            mat-form-field {
+            app-form-field {
                 width: 100%;
             }
         `,
@@ -95,12 +93,11 @@ import { IconComponent } from '../icon.component';
         },
     ],
     imports: [
-        MatFormFieldModule,
-        MatSelectModule,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         IconComponent,
-        MatRippleModule,
         FormsModule,
-        MatInputModule,
     ],
 })
 export class TimeFieldComponent
@@ -129,7 +126,7 @@ export class TimeFieldComponent
     private _onTouch: (_: number) => void;
 
     /** Select field for selecting the time */
-    private readonly select_field = viewChild<MatSelect>('select');
+    private readonly select_field = viewChild<SelectComponent>('select');
 
     public ngOnInit(): void {
         this.show_select.set(true);
@@ -236,14 +233,6 @@ export class TimeFieldComponent
             if (select_field) {
                 select_field.focus();
                 select_field.open();
-                this.subscription(
-                    'listen_close',
-                    select_field.openedChange.subscribe((state) => {
-                        if (!state) {
-                            this.show_select.set(false);
-                        }
-                    }),
-                );
             }
         });
     }

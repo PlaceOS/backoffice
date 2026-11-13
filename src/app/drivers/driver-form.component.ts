@@ -31,22 +31,20 @@ import {
     updateDriver,
 } from '@placeos/ts-client';
 
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import * as yaml from 'js-yaml';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
 
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { readError } from '../common/errors';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import {
@@ -128,36 +126,35 @@ import {
                         {{ 'COMMON.FIELD_NAME' | translate }}
                         <span required>*</span>
                     </label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
-                            matInput
                             [placeholder]="'COMMON.FIELD_NAME' | translate"
                             id="driver-name"
                             [formField]="form.name"
                         />
-                        <mat-error>
+                        <div error>
                             {{ 'DRIVERS.NAME_REQUIRED' | translate }}
-                        </mat-error>
-                    </mat-form-field>
+                        </div>
+                    </app-form-field>
                     <div class="flex space-x-4">
                         @if (!is_editing()) {
                             <div class="flex flex-1 flex-col">
                                 <label for="role" id="role-label">
                                     {{ 'DRIVERS.ROLE' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
-                                    <mat-select
+                                <app-form-field>
+                                    <app-select
                                         id="role"
                                         aria-labelledby="role-label"
                                         [formField]="form.role"
                                     >
                                         @for (type of role_types; track type) {
-                                            <mat-option [value]="type.id">
+                                            <app-option [value]="type.id">
                                                 {{ type.name | translate }}
-                                            </mat-option>
+                                            </app-option>
                                         }
-                                    </mat-select>
-                                </mat-form-field>
+                                    </app-select>
+                                </app-form-field>
                             </div>
                         }
                         <div class="flex flex-1 flex-col">
@@ -168,54 +165,51 @@ import {
                                 {{ 'DRIVERS.MODULE_NAME' | translate }}
                                 <span required>*</span>
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DRIVERS.MODULE_NAME' | translate
                                     "
                                     id="module-name"
                                     [formField]="form.module_name"
                                 />
-                                <mat-error>
+                                <div error>
                                     {{
                                         'DRIVERS.MODULE_NAME_REQUIRED'
                                             | translate
                                     }}
-                                </mat-error>
-                            </mat-form-field>
+                                </div>
+                            </app-form-field>
                         </div>
                     </div>
                     <label for="description">
                         {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                     </label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <textarea
-                            matInput
                             [placeholder]="
                                 'COMMON.FIELD_DESCRIPTION' | translate
                             "
                             id="description"
                             [formField]="form.description"
                         ></textarea>
-                    </mat-form-field>
+                    </app-form-field>
                     <label
                         for="default-uri"
                         [class.error]="fieldInvalid('default_uri')"
                     >
                         {{ 'DRIVERS.DEFAULT_URI' | translate }}
                     </label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
-                            matInput
                             [placeholder]="'DRIVERS.DEFAULT_URI' | translate"
                             id="default-uri"
                             [formField]="form.default_uri"
                         />
-                        <mat-error>
+                        <div error>
                             {{ 'MODULES.URI_REQUIRED' | translate }}
-                        </mat-error>
-                    </mat-form-field>
+                        </div>
+                    </app-form-field>
                     <div class="flex items-center space-x-4">
                         <div class="flex flex-1 flex-col">
                             <label
@@ -224,9 +218,8 @@ import {
                             >
                                 {{ 'DRIVERS.DEFAULT_PORT' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     type="number"
                                     [placeholder]="
                                         'DRIVERS.DEFAULT_PORT' | translate
@@ -234,10 +227,10 @@ import {
                                     id="default-port"
                                     [formField]="form.default_port"
                                 />
-                                <mat-error>
+                                <div error>
                                     {{ 'MODULES.PORT_REQUIRED' | translate }}
-                                </mat-error>
-                            </mat-form-field>
+                                </div>
+                            </app-form-field>
                         </div>
                         <div class="flex flex-1 flex-col">
                             <div class="h-1 w-full"></div>
@@ -251,19 +244,19 @@ import {
                     <label for="alert-level" id="alert-level-label">
                         {{ 'COMMON.ALERT_LEVEL' | translate }}
                     </label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
+                    <app-form-field>
+                        <app-select
                             id="alert-level"
                             aria-labelledby="alert-level-label"
                             [formField]="form.alert_level"
                         >
                             @for (level of alert_levels; track level.id) {
-                                <mat-option [value]="level.id">
+                                <app-option [value]="level.id">
                                     {{ level.name | translate }}
-                                </mat-option>
+                                </app-option>
                             }
-                        </mat-select>
-                    </mat-form-field>
+                        </app-select>
+                    </app-form-field>
                 </div>
             }
             <!-- Form fields go here -->
@@ -271,7 +264,7 @@ import {
                 <div
                     class="bg-base-200 flex w-full flex-col items-center justify-center space-y-4 rounded-xl px-8 py-16"
                 >
-                    <mat-spinner [diameter]="32" />
+                    <app-spinner [diameter]="32" />
                     <p>{{ loading() | translate }}</p>
                 </div>
             }
@@ -279,14 +272,13 @@ import {
     `,
     styles: [``],
     imports: [
-        LoadingLabelDirective,
+        SpinnerComponent,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         TranslatePipe,
-        MatProgressSpinnerModule,
         SettingsToggleComponent,
-        MatFormFieldModule,
-        MatInputModule,
         FormField,
-        MatSelectModule,
         ItemSearchFieldComponent,
         FormsModule,
         FullscreenModalShellComponent,
@@ -294,9 +286,9 @@ import {
 })
 export class DriverFormComponent implements OnInit {
     private _dialog_ref =
-        inject<MatDialogRef<DriverFormComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, DriverFormComponent>>(DialogRef);
     private _data = inject<{ item: PlaceDriver; readonly?: string }>(
-        MAT_DIALOG_DATA,
+        DIALOG_DATA,
     );
     private readonly _name = 'DRIVERS';
     private _date_pipe = new DatePipe('en');

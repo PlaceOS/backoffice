@@ -1,14 +1,11 @@
 import { Component, computed, inject, model } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -19,25 +16,24 @@ import { ZonesStateService } from './zones-state.service';
     template: `
         <div class="p-4">
             <section class="mb-4 flex items-center space-x-2">
-                <mat-form-field appearance="outline" class="h-12 flex-1">
-                    <div class="prefix" matPrefix>
+                <app-form-field class="h-12 flex-1">
+                    <div class="prefix" prefix>
                         <icon class="relative -left-0.5 text-2xl">
                             search
                         </icon>
                     </div>
                     <input
                         [(ngModel)]="filter"
-                        matInput
                         [placeholder]="'TRIGGERS.SEARCH' | translate"
                         class="rounded-none"
                     />
-                </mat-form-field>
-                <button btn matRipple class="w-32" (click)="selectTrigger()">
+                </app-form-field>
+                <button btn ripple class="w-32" (click)="selectTrigger()">
                     {{ 'TRIGGERS.ADD' | translate }}
                 </button>
             </section>
             <section>
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -93,8 +89,8 @@ import { ZonesStateService } from './zones-state.service';
                             icon
                             default
                             error
-                            matRipple
-                            [matTooltip]="'TRIGGERS.REMOVE' | translate"
+                            ripple
+                            [appTooltip]="'TRIGGERS.REMOVE' | translate"
                             (click)="deleteTrigger(row)"
                         >
                             <icon>delete</icon>
@@ -113,18 +109,15 @@ import { ZonesStateService } from './zones-state.service';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
+        FormFieldComponent,
         IconComponent,
-        MatRippleModule,
         DateFromPipe,
         RouterModule,
         TranslatePipe,
-        MatProgressBarModule,
         FormsModule,
-        MatFormFieldModule,
-        MatInputModule,
         SimpleTableComponent,
-        MatTooltipModule,
     ],
 })
 export class ZoneTriggersComponent {

@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { form, submit } from '@angular/forms/signals';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     addLDAPSource,
     addOAuthSource,
@@ -22,8 +21,7 @@ import {
     updateSAMLSource,
 } from '@placeos/ts-client';
 
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -36,6 +34,9 @@ import {
     generateOAuthSourceForm,
     generateSAMLSourceForm,
 } from '../domains/auth-sources.utilities';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
 import { LdapSourceFormComponent } from '../ui/forms/ldap-source-form.component';
 import { OauthSourceFormComponent } from '../ui/forms/oauth-source-form.component';
 import { SamlSourceFormComponent } from '../ui/forms/saml-source-form.component';
@@ -70,8 +71,8 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
                     <label for="type"
                         >{{ 'DOMAINS.AUTHENTICATION_SOURCE_TYPE' | translate }}:
                     </label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
+                    <app-form-field>
+                        <app-select
                             name="type"
                             [(ngModel)]="active_type"
                             (ngModelChange)="setType($event)"
@@ -81,12 +82,12 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
                             "
                         >
                             @for (type of source_types; track type.id) {
-                                <mat-option [value]="type.id">
+                                <app-option [value]="type.id">
                                     {{ type.name }}
-                                </mat-option>
+                                </app-option>
                             }
-                        </mat-select>
-                    </mat-form-field>
+                        </app-select>
+                    </app-form-field>
                 </div>
             }
             @if (item()) {
@@ -112,9 +113,10 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
     `,
     styles: [``],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FullscreenModalShellComponent,
-        MatFormFieldModule,
-        MatSelectModule,
         TranslatePipe,
         FormsModule,
         SamlSourceFormComponent,
@@ -124,8 +126,8 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
 })
 export class AuthSourceModalComponent implements OnInit {
     private _dialog =
-        inject<MatDialogRef<AuthSourceModalComponent>>(MatDialogRef);
-    private _data = inject<AuthSourceModalData>(MAT_DIALOG_DATA);
+        inject<DialogRef<unknown, AuthSourceModalComponent>>(DialogRef);
+    private _data = inject<AuthSourceModalData>(DIALOG_DATA);
 
     /** List of available authentication sources */
     public source_types: Identity[] = [

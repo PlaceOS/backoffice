@@ -8,8 +8,8 @@ import {
     Injector,
     input,
 } from '@angular/core';
-import { MatTooltip } from '@angular/material/tooltip';
 import { ApplicationIcon } from '../common/types';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { ICON_SUBSET } from './icon-subset';
 import { SafePipe } from './pipes/safe.pipe';
 
@@ -55,7 +55,7 @@ export class IconComponent {
     public readonly icon = input<ApplicationIcon>(undefined);
 
     private readonly _element = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly _tooltip = inject(MatTooltip, { optional: true });
+    private readonly _tooltip = inject(TooltipDirective, { optional: true });
     private readonly _injector = inject(Injector);
 
     constructor() {
@@ -88,7 +88,7 @@ export class IconComponent {
         const host = this._element.nativeElement;
         const control = host.parentElement?.closest<HTMLElement>('button, a');
         if (!control) {
-            if (host.classList.contains('mat-mdc-tooltip-trigger')) {
+            if (host.classList.contains('tooltip-trigger')) {
                 this._labelFromTooltip(host);
             }
             return;
@@ -99,7 +99,7 @@ export class IconComponent {
             return;
         }
         // The tooltip must be on the control itself, not an outer element
-        if (control.classList.contains('mat-mdc-tooltip-trigger')) {
+        if (control.classList.contains('tooltip-trigger')) {
             this._labelFromTooltip(control);
         }
     }
@@ -112,7 +112,7 @@ export class IconComponent {
         // Tooltip text can change, e.g. "Enable" and "Disable"
         afterEveryRender(
             () => {
-                const label = `${tooltip.message || ''}`.trim();
+                const label = `${tooltip.text() || ''}`.trim();
                 if (target.getAttribute('aria-label') === (label || null)) {
                     return;
                 }

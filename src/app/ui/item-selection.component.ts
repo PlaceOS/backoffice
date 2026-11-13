@@ -15,8 +15,6 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Router, RouterModule } from '@angular/router';
 import {
     PlaceDriverRole,
@@ -26,8 +24,8 @@ import {
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
+import { SpinnerComponent } from './controls/spinner.component';
 import { IconComponent } from './icon.component';
-import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
 import { VirtualScrollComponent } from './virtual-scroll.component';
 
@@ -77,19 +75,22 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                             "
                         />
                         @if (loading()) {
-                            <mat-spinner diameter="24"
+                            <app-spinner diameter="24"
                                 class="absolute top-1/2 right-2 mr-2 -translate-y-1/2"
                              />
                         }
                     </div>
                     @if (route() === 'users') {
-                        <mat-slide-toggle
-                            class="px-2"
-                            [checked]="include_deleted()"
-                            (change)="setIncludeDeleted($event.checked)"
-                        >
+                        <label class="flex items-center gap-2 px-2">
+                            <input
+                                #deleted_box
+                                type="checkbox"
+                                role="switch"
+                                [checked]="include_deleted()"
+                                (change)="setIncludeDeleted(deleted_box.checked)"
+                            />
                             {{ 'USERS.INCLUDE_DELETED' | translate }}
-                        </mat-slide-toggle>
+                        </label>
                     }
                     <p class="w-full px-4 text-sm opacity-60 text-left">
                         {{
@@ -190,14 +191,12 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        SpinnerComponent,
         TranslatePipe,
         IconComponent,
         VirtualScrollComponent,
         RouterModule,
-        MatProgressSpinnerModule,
         FormsModule,
-        MatSlideToggleModule,
     ],
 })
 export class ItemSelectionComponent

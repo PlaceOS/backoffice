@@ -1,8 +1,6 @@
+import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterModule } from '@angular/router';
 import { logout } from '@placeos/ts-client';
 import { format } from 'date-fns';
@@ -10,6 +8,7 @@ import { VERSION } from '../../env/version';
 import { issueDescription } from '../common/general';
 import { i18n, LocaleService } from '../common/locale.service';
 import { SettingsService } from '../common/settings.service';
+import { MENU_POSITIONS_ABOVE } from './controls/overlay';
 import { IconComponent } from './icon.component';
 import { SafePipe } from './pipes/safe.pipe';
 import { TranslatePipe } from './translate.pipe';
@@ -21,7 +20,7 @@ import { TranslatePipe } from './translate.pipe';
             class="divide-base-200 border-base-300 bg-base-100 m-2 divide-y rounded-sm border shadow-sm"
         >
             <a
-                matRipple
+                ripple
                 type="button"
                 profile
                 [routerLink]="['/users', 'current', 'about']"
@@ -30,15 +29,18 @@ import { TranslatePipe } from './translate.pipe';
                 <icon class="text-2xl">person</icon>
                 {{ 'COMMON.PROFILE' | translate }}
             </a>
-            <div dark-mode class="flex w-[16rem] items-center p-3">
+            <label
+                dark-mode
+                class="flex w-[16rem] cursor-pointer items-center p-3"
+            >
                 <icon class="text-2xl">dark_mode</icon>
-                <p class="w-1/2 flex-1">
+                <span class="w-1/2 flex-1">
                     {{ 'COMMON.DARK_MODE' | translate }}
-                </p>
-                <mat-slide-toggle [(ngModel)]="dark_mode" />
-            </div>
+                </span>
+                <input type="checkbox" role="switch" [(ngModel)]="dark_mode" />
+            </label>
             <button
-                matRipple
+                ripple
                 type="button"
                 class="space-x-2"
                 uploads
@@ -48,7 +50,12 @@ import { TranslatePipe } from './translate.pipe';
                 {{ 'COMMON.UPLOAD_HISTORY' | translate }}
             </button>
             @if (languages().length > 1) {
-                <button matRipple type="button" [matMenuTriggerFor]="lang_menu">
+                <button
+                    ripple
+                    type="button"
+                    [cdkMenuTriggerFor]="lang_menu"
+                    [cdkMenuPosition]="lang_menu_position"
+                >
                     <icon class="text-2xl">language</icon>
                     <div class="flex-1 text-left">
                         {{ 'COMMON.LANGUAGE' | translate }}
@@ -60,24 +67,26 @@ import { TranslatePipe } from './translate.pipe';
                     </div>
                 </button>
             }
-            <mat-menu #lang_menu="matMenu" xPosition="after" yPosition="above">
-                @for (language of languages(); track language) {
-                    <button
-                        mat-menu-item
-                        class="w-60"
-                        (click)="setLanguage(language.id)"
-                    >
-                        <div
-                            class="flex w-full items-center justify-between space-x-4"
+            <ng-template #lang_menu>
+                <div cdkMenu>
+                    @for (language of languages(); track language) {
+                        <button
+                            cdkMenuItem
+                            class="w-60"
+                            (click)="setLanguage(language.id)"
                         >
-                            <div>{{ language.name }}</div>
-                            <div>{{ language.flag }}</div>
-                        </div>
-                    </button>
-                }
-            </mat-menu>
+                            <div
+                                class="flex w-full items-center justify-between space-x-4"
+                            >
+                                <div>{{ language.name }}</div>
+                                <div>{{ language.flag }}</div>
+                            </div>
+                        </button>
+                    }
+                </div>
+            </ng-template>
             <a
-                matRipple
+                ripple
                 type="button"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -93,7 +102,7 @@ import { TranslatePipe } from './translate.pipe';
                 <div>{{ 'COMMON.REPORT_ISSUE' | translate }}</div>
             </a>
             <button
-                matRipple
+                ripple
                 type="button"
                 logout
                 class="space-x-2"
@@ -125,9 +134,9 @@ import { TranslatePipe } from './translate.pipe';
     imports: [
         TranslatePipe,
         IconComponent,
-        MatMenuModule,
-        MatRippleModule,
-        MatSlideToggleModule,
+        CdkMenu,
+        CdkMenuItem,
+        CdkMenuTrigger,
         RouterModule,
         SafePipe,
         FormsModule,
@@ -138,6 +147,8 @@ export class UserMenuTooltipComponent implements OnInit {
     private _locale = inject(LocaleService);
 
     public readonly github_icon = signal('');
+    /** Opens the language menu above its button, and below when no space */
+    public readonly lang_menu_position = MENU_POSITIONS_ABOVE;
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {

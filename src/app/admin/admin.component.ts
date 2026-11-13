@@ -1,6 +1,5 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
 
-import { MatRippleModule } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
 import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
@@ -29,7 +28,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         @for (item of tab_list(); track item.id) {
                             <a
                                 btn
-                                matRipple
+                                ripple
                                 class="clear hover:bg-base-200 w-auto min-w-full text-left"
                                 [routerLink]="'/admin/' + item.id"
                                 [queryParams]="item.query || {}"
@@ -54,7 +53,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     </main>
                     <button
                         icon
-                        matRipple
+                        ripple
                         class="absolute top-2 left-4 z-40 mr-2 sm:hidden"
                         (click)="open_menu = true"
                         [attr.aria-label]="'COMMON.MENU' | translate"
@@ -85,7 +84,6 @@ import { TranslatePipe } from '../ui/translate.pipe';
         TranslatePipe,
         DebugOutputComponent,
         IconComponent,
-        MatRippleModule,
         SidebarMenuComponent,
         RouterModule,
     ],

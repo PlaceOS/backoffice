@@ -5,10 +5,8 @@ import {
     OnInit,
     Output,
     signal,
-    viewChild,
     WritableSignal,
 } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceSystem,
     PlaceTrigger,
@@ -18,13 +16,8 @@ import {
     updateTrigger,
 } from '@placeos/ts-client';
 
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { FormsModule } from '@angular/forms';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { form, FormField, submit } from '@angular/forms/signals';
-import { MatChipGrid, MatChipsModule } from '@angular/material/chips';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
@@ -33,9 +26,12 @@ import {
     applyTriggerActionFormSchema,
     generateTriggerActionFormModel,
 } from '../../triggers/triggers.utilities';
+import { ChipListComponent } from '../controls/chip-list.component';
+import { FormFieldComponent } from '../controls/form-field.component';
+import { OptionComponent } from '../controls/option.component';
+import { SelectComponent } from '../controls/select.component';
 import { ExecuteMethodFieldComponent } from '../custom-fields/system-exec/execute-method-field.component';
 import { FullscreenModalShellComponent } from '../fullscreen-modal-shell.component';
-import { IconComponent } from '../icon.component';
 import { TranslatePipe } from '../translate.pipe';
 
 export interface TriggerActionModalData {
@@ -68,15 +64,15 @@ export interface TriggerActionModalData {
                             <label for="type">
                                 {{ 'TRIGGERS.ACTION_FIELD_TYPE' | translate }}:
                             </label>
-                            <mat-form-field appearance="outline">
-                                <mat-select [formField]="form.action_type">
+                            <app-form-field>
+                                <app-select [formField]="form.action_type">
                                     @for (type of action_types(); track type) {
-                                        <mat-option [value]="type.id">
+                                        <app-option [value]="type.id">
                                             {{ type.name }}
-                                        </mat-option>
+                                        </app-option>
                                     }
-                                </mat-select>
-                            </mat-form-field>
+                                </app-select>
+                            </app-form-field>
                         </div>
                     }
                     @switch (formModel().action_type) {
@@ -84,7 +80,7 @@ export interface TriggerActionModalData {
                             @if (form.emails) {
                                 <div class="field">
                                     <label
-                                        for="description"
+                                        for="emails"
                                         [class.error]="
                                             form.emails().touched() &&
                                             form.emails().invalid()
@@ -96,67 +92,21 @@ export interface TriggerActionModalData {
                                         }}
                                         <span>*</span>
                                     </label>
-                                    <mat-form-field
-                                        appearance="outline"
-                                        class="w-full"
-                                    >
-                                        <mat-chip-grid
-                                            #chipList
-                                            [aria-label]="
+                                    <app-form-field class="w-full">
+                                        <app-chip-list
+                                            inputId="emails"
+                                            [attr.aria-label]="
                                                 'TRIGGERS.ACTION_EMAIL_ADDRESS'
                                                     | translate
                                             "
-                                        >
-                                            @for (
-                                                item of email_list;
-                                                track item
-                                            ) {
-                                                <mat-chip-row
-                                                    (removed)="
-                                                        removeEmail(item)
-                                                    "
-                                                >
-                                                    <div
-                                                        class="max-w-md truncate"
-                                                    >
-                                                        {{ item }}
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        matChipRemove
-                                                        [attr.aria-label]="
-                                                            'COMMON.ITEM_REMOVE'
-                                                                | translate
-                                                                    : {
-                                                                          item: item,
-                                                                      }
-                                                        "
-                                                    >
-                                                        <icon>cancel</icon>
-                                                    </button>
-                                                </mat-chip-row>
-                                            }
-                                        </mat-chip-grid>
-                                        <input
-                                            [(ngModel)]="new_email"
-                                            [ngModelOptions]="{
-                                                standalone: true,
-                                            }"
                                             [placeholder]="
                                                 'TRIGGERS.ACTION_EMAIL_ADDRESS_LIST'
                                                     | translate
                                             "
-                                            [matChipInputFor]="chipList"
-                                            [matChipInputSeparatorKeyCodes]="
-                                                separators
-                                            "
-                                            [matChipInputAddOnBlur]="true"
-                                            (matChipInputTokenEnd)="
-                                                addEmail($event.value);
-                                                new_email = ''
-                                            "
+                                            [separators]="['Enter', ',', ' ']"
+                                            [formField]="form.emails"
                                         />
-                                    </mat-form-field>
+                                    </app-form-field>
                                 </div>
                             }
                             @if (form.content) {
@@ -164,13 +114,12 @@ export interface TriggerActionModalData {
                                     <label for="content">{{
                                         'TRIGGERS.ACTION_EMAIL_BODY' | translate
                                     }}</label>
-                                    <mat-form-field appearance="outline">
+                                    <app-form-field>
                                         <textarea
-                                            matInput
                                             placeholder="Email body contents..."
                                             [formField]="form.content"
                                         ></textarea>
-                                    </mat-form-field>
+                                    </app-form-field>
                                 </div>
                             }
                         }
@@ -198,22 +147,20 @@ export interface TriggerActionModalData {
     `,
     styles: [``],
     imports: [
-        FormsModule,
-        MatFormFieldModule,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FormField,
-        MatInputModule,
-        MatChipsModule,
+        ChipListComponent,
         FullscreenModalShellComponent,
         ExecuteMethodFieldComponent,
         TranslatePipe,
-        IconComponent,
-        MatSelectModule,
     ],
 })
 export class TriggerActionModalComponent implements OnInit {
     private _dialog =
-        inject<MatDialogRef<TriggerActionModalComponent>>(MatDialogRef);
-    private _data = inject<TriggerActionModalData>(MAT_DIALOG_DATA);
+        inject<DialogRef<unknown, TriggerActionModalComponent>>(DialogRef);
+    private _data = inject<TriggerActionModalData>(DIALOG_DATA);
 
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -224,13 +171,6 @@ export class TriggerActionModalComponent implements OnInit {
         generateTriggerActionFormModel(this._data.action),
     );
     public readonly form = form(this.formModel, applyTriggerActionFormSchema);
-    /** List of seperators for storing emails */
-    public readonly separators: number[] = [ENTER, COMMA, SPACE];
-    /** Variable to hold new email addresses */
-    public new_email = '';
-
-    private readonly chip_list = viewChild<MatChipGrid>('chipList');
-
     /** List of available trigger action types */
     public readonly action_types: WritableSignal<Identity[]> = signal([]);
 
@@ -249,45 +189,11 @@ export class TriggerActionModalComponent implements OnInit {
         return this._data.trigger;
     }
 
-    public get email_list(): string[] {
-        return (this.formModel().emails ? this.formModel().emails : null) || [];
-    }
-
     public ngOnInit() {
         this.action_types.set([
             { id: 'function', name: i18n('TRIGGERS.ACTION_EXECUTE') },
             { id: 'emails', name: i18n('TRIGGERS.ACTION_EMAIL') },
         ]);
-    }
-
-    /**
-     * Add the given emails to the list
-     * @param email New email
-     */
-    public addEmail(email: string): void {
-        if (!email) {
-            return;
-        }
-        const email_list = this.email_list;
-        if (email_list.indexOf(email) < 0) {
-            email_list.push(email);
-        }
-        this.formModel.update((model) => ({ ...model, emails: email_list }));
-        this.chip_list().errorState = this.form.emails().invalid();
-    }
-
-    /**
-     * Remove given email from the list
-     * @param email Exisiting email
-     */
-    public removeEmail(email: string): void {
-        const email_list = this.email_list;
-        const index = email_list.indexOf(email);
-        if (index >= 0) {
-            email_list.splice(index, 1);
-        }
-        this.formModel.update((model) => ({ ...model, emails: email_list }));
-        this.chip_list().errorState = this.form.emails().invalid();
     }
 
     public async save() {

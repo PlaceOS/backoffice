@@ -1,13 +1,14 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogRef,
-    MatDialogState,
-} from '@angular/material/dialog';
+import { Subject } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DialogEvent } from '../../app/common/types';
 import { DuplicateModalComponent } from '../../app/overlays/duplicate-modal.component';
+
+vi.mock('@placeos/ts-client', () =>
+    vi.importActual('@placeos/ts-client/dist/index.es.js'),
+);
 
 class Item {
     id: string;
@@ -29,16 +30,16 @@ describe('DuplicateModalComponent', () => {
             providers: [
                 provideZonelessChangeDetection(),
                 {
-                    provide: MAT_DIALOG_DATA,
+                    provide: DIALOG_DATA,
                     useValue: {
                         item: new Item({ id: 'sys-1', name: 'Room' }),
                         save,
                     },
                 },
                 {
-                    provide: MatDialogRef,
+                    provide: DialogRef,
                     useValue: {
-                        getState: () => MatDialogState.OPEN,
+                        closed: new Subject(),
                         close: vi.fn(),
                     },
                 },
@@ -68,5 +69,34 @@ describe('DuplicateModalComponent', () => {
                 ],
             },
         ]);
+    });
+
+    it('stops saving copies once the dialog is closed', async () => {
+        TestBed.configureTestingModule({
+            imports: [DuplicateModalComponent],
+            providers: [
+                provideZonelessChangeDetection(),
+                {
+                    provide: DIALOG_DATA,
+                    useValue: {
+                        item: new Item({ id: 'sys-1', name: 'Room' }),
+                        save: vi.fn(async (item: Item) => {
+                            // The user closes the dialog during the first save
+                            fixture.destroy();
+                            return { ...item, id: 'new' };
+                        }),
+                    },
+                },
+                { provide: DialogRef, useValue: { close: vi.fn() } },
+            ],
+        });
+        const fixture = TestBed.createComponent(DuplicateModalComponent);
+        const component = fixture.componentInstance;
+        const save = TestBed.inject(DIALOG_DATA).save;
+        component.times = 3;
+
+        await component.duplicate();
+
+        expect(save).toHaveBeenCalledTimes(1);
     });
 });

@@ -1,5 +1,5 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
@@ -12,7 +12,10 @@ import {
     GroupBulkAddModalData,
     GroupBulkAddResult,
 } from './group-bulk-add-modal.component';
-import { GroupPermissionsModalComponent } from './group-permissions-modal.component';
+import {
+    GroupPermissionsModalComponent,
+    GroupPermissionsResult,
+} from './group-permissions-modal.component';
 
 /** Settings for one kind of group membership, e.g. the users of a group */
 export interface GroupMembershipOptions<Row, Item extends GroupBulkAddItem> {
@@ -73,7 +76,7 @@ export type GroupMembership<
 export function groupMembership<
     Row extends { permissions?: number; deny?: boolean },
     Item extends GroupBulkAddItem,
->(dialog: MatDialog, options: GroupMembershipOptions<Row, Item>) {
+>(dialog: Dialog, options: GroupMembershipOptions<Row, Item>) {
     const { one, many } = options;
     const saving = signal(false);
 
@@ -105,29 +108,27 @@ export function groupMembership<
     const bulkAdd = async () => {
         const show_permissions = !!options.bulk_permissions;
         const result = await waitForEvent(
-            dialog
-                .open<
-                    GroupBulkAddModalComponent<Item>,
-                    GroupBulkAddModalData<Item>,
-                    GroupBulkAddResult<Item>
-                >(GroupBulkAddModalComponent<Item>, {
-                    data: {
-                        title: `${many}_BULK`,
-                        placeholder: options.search,
-                        empty_message: `${many}_BULK_EMPTY`,
-                        show_permissions,
-                        permissions: options.bulk_permissions?.(),
-                        query_fn: (q: string) =>
-                            options.query(q, options.authority_id()),
-                        exclude,
-                    },
-                    panelClass: 'bulk-add-dialog',
-                    height: 'auto',
-                    width: 'auto',
-                    maxHeight: 'calc(100vh - 2em)',
-                    maxWidth: 'calc(100vw - 2em)',
-                })
-                .afterClosed(),
+            dialog.open<
+                GroupBulkAddResult<Item>,
+                GroupBulkAddModalData<Item>,
+                GroupBulkAddModalComponent<Item>
+            >(GroupBulkAddModalComponent<Item>, {
+                data: {
+                    title: `${many}_BULK`,
+                    placeholder: options.search,
+                    empty_message: `${many}_BULK_EMPTY`,
+                    show_permissions,
+                    permissions: options.bulk_permissions?.(),
+                    query_fn: (q: string) =>
+                        options.query(q, options.authority_id()),
+                    exclude,
+                },
+                panelClass: 'bulk-add-dialog',
+                height: 'auto',
+                width: 'auto',
+                maxHeight: 'calc(100vh - 2em)',
+                maxWidth: 'calc(100vw - 2em)',
+            }).closed,
         );
         const items = result?.items;
         if (!items?.length) return;
@@ -178,16 +179,17 @@ export function groupMembership<
 
     const editPermissions = async (row: Row) => {
         const result = await waitForEvent(
-            dialog
-                .open(GroupPermissionsModalComponent, {
+            dialog.open<GroupPermissionsResult>(
+                GroupPermissionsModalComponent,
+                {
                     data: {
                         title: `${one}_PERMISSIONS`,
                         permissions: row.permissions,
                         deny: row.deny,
                         show_deny: !!options.show_deny,
                     },
-                })
-                .afterClosed(),
+                },
+            ).closed,
         );
         if (!result) return;
         try {

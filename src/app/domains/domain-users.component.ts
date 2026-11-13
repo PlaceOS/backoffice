@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DomainStateService } from './domain-state.service';
@@ -10,7 +9,7 @@ import { DomainStateService } from './domain-state.service';
     selector: 'domain-users',
     template: `
         <div class="flex h-full min-h-0 w-full flex-col p-4">
-            <mat-progress-bar
+            <app-progress-bar
                 mode="indeterminate"
                 class="w-full"
                 [class.invisible]="loading() !== true"
@@ -72,12 +71,7 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
-    imports: [
-        LoadingLabelDirective,
-        SimpleTableComponent,
-        TranslatePipe,
-        MatProgressBarModule,
-    ],
+    imports: [ProgressBarComponent, SimpleTableComponent, TranslatePipe],
 })
 export class DomainUsersComponent {
     private _service = inject(DomainStateService);

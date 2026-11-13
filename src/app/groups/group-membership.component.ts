@@ -6,11 +6,10 @@ import {
     viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { i18n } from '../common/locale.service';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
 import {
@@ -39,9 +38,9 @@ import { groupPermissionLabels } from './group-permissions';
                 />
                 <button
                     btn
-                    matRipple
+                    ripple
                     class="h-12"
-                    [matTooltip]="opts.many + '_BULK' | translate"
+                    [appTooltip]="opts.many + '_BULK' | translate"
                     (click)="members().bulkAdd()"
                 >
                     <icon class="mr-2">playlist_add</icon>
@@ -51,7 +50,7 @@ import { groupPermissionLabels } from './group-permissions';
             <section
                 class="flex h-1/2 min-h-0 w-full flex-1 flex-col overflow-auto px-4"
             >
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -120,8 +119,8 @@ import { groupPermissionLabels } from './group-permissions';
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="opts.one + '_PERMISSIONS' | translate"
+                    ripple
+                    [appTooltip]="opts.one + '_PERMISSIONS' | translate"
                     (click)="members().editPermissions(row)"
                 >
                     <icon>edit</icon>
@@ -130,8 +129,8 @@ import { groupPermissionLabels } from './group-permissions';
                     icon
                     default
                     error
-                    matRipple
-                    [matTooltip]="opts.one + '_REMOVE' | translate"
+                    ripple
+                    [appTooltip]="opts.one + '_REMOVE' | translate"
                     (click)="members().remove(row)"
                 >
                     <icon>delete</icon>
@@ -149,12 +148,11 @@ import { groupPermissionLabels } from './group-permissions';
         `,
     ],
     imports: [
+        ProgressBarComponent,
+        TooltipDirective,
         FormsModule,
         IconComponent,
         ItemSearchFieldComponent,
-        MatProgressBarModule,
-        MatRippleModule,
-        MatTooltipModule,
         RouterModule,
         SimpleTableComponent,
         TranslatePipe,

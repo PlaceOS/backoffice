@@ -1,6 +1,6 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceRepositoryType,
     listRepositoryBranches,
@@ -44,15 +44,15 @@ describe('RepositoryFormComponent', () => {
             providers: [
                 provideZonelessChangeDetection(),
                 {
-                    provide: MatDialogRef,
+                    provide: DialogRef,
                     useValue: {
                         close: vi.fn(),
-                        backdropClick: () => EMPTY,
-                        keydownEvents: () => EMPTY,
+                        backdropClick: EMPTY,
+                        keydownEvents: EMPTY,
                     },
                 },
                 {
-                    provide: MAT_DIALOG_DATA,
+                    provide: DIALOG_DATA,
                     useValue: {
                         item: {
                             id: 'repo-1',

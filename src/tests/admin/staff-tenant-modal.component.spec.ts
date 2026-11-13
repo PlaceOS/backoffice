@@ -1,5 +1,5 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { post, put } from '@placeos/ts-client';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -37,14 +37,14 @@ describe('Staff tenant advance booking limits', () => {
         await TestBed.configureTestingModule({
             imports: [StaffTenantModalComponent],
             providers: [
-                { provide: MAT_DIALOG_DATA, useValue: data },
+                { provide: DIALOG_DATA, useValue: data },
                 {
-                    provide: MatDialogRef,
+                    provide: DialogRef,
                     useValue: {
                         close: vi.fn(),
                         disableClose: false,
-                        backdropClick: () => EMPTY,
-                        keydownEvents: () => EMPTY,
+                        backdropClick: EMPTY,
+                        keydownEvents: EMPTY,
                     },
                 },
             ],

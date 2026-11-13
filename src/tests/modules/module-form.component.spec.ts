@@ -1,6 +1,6 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PlaceDriverRole, type PlaceDriver } from '@placeos/ts-client';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -60,14 +60,14 @@ describe('ModuleFormComponent', () => {
             providers: [
                 provideZonelessChangeDetection(),
                 {
-                    provide: MatDialogRef,
+                    provide: DialogRef,
                     useValue: {
                         close: vi.fn(),
-                        backdropClick: () => EMPTY,
-                        keydownEvents: () => EMPTY,
+                        backdropClick: EMPTY,
+                        keydownEvents: EMPTY,
                     },
                 },
-                { provide: MAT_DIALOG_DATA, useValue: { item } },
+                { provide: DIALOG_DATA, useValue: { item } },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(ModuleFormComponent);
@@ -143,14 +143,14 @@ describe('creating a module', () => {
             providers: [
                 provideZonelessChangeDetection(),
                 {
-                    provide: MatDialogRef,
+                    provide: DialogRef,
                     useValue: {
                         close: vi.fn(),
-                        backdropClick: () => EMPTY,
-                        keydownEvents: () => EMPTY,
+                        backdropClick: EMPTY,
+                        keydownEvents: EMPTY,
                     },
                 },
-                { provide: MAT_DIALOG_DATA, useValue: { item } },
+                { provide: DIALOG_DATA, useValue: { item } },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(ModuleFormComponent);

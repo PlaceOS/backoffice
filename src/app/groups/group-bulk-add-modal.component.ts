@@ -1,18 +1,12 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, inject, resource, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogModule,
-    MatDialogRef,
-} from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTabsModule } from '@angular/material/tabs';
+import { DialogCloseDirective } from '../ui/controls/dialog';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
+import { TabsComponent } from '../ui/controls/tabs.component';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import {
@@ -59,51 +53,50 @@ export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
             </h2>
             <button
                 icon
-                matRipple
-                mat-dialog-close
+                ripple
+                appDialogClose
                 [attr.aria-label]="'COMMON.CLOSE' | translate"
             >
                 <icon>close</icon>
             </button>
         </header>
         @if (show_permissions) {
-            <mat-tab-group
+            <app-tabs
                 class="border-base-200 shrink-0 border-b"
-                [selectedIndex]="tab()"
-                (selectedIndexChange)="tab.set($event)"
-            >
-                <mat-tab [label]="'GROUPS.TAB_USERS' | translate" />
-                <mat-tab [label]="'GROUPS.FIELD_PERMISSIONS' | translate" />
-            </mat-tab-group>
+                [labels]="[
+                    'GROUPS.TAB_USERS' | translate,
+                    'GROUPS.FIELD_PERMISSIONS' | translate,
+                ]"
+                [(selectedIndex)]="tab"
+            />
         }
         <main
             class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-2"
         >
             @if (!show_permissions || tab() === 0) {
-                <mat-form-field appearance="outline" class="no-subscript">
+                <app-form-field class="no-subscript">
                     <input
-                        matInput
                         name="group-bulk-add-search"
                         [placeholder]="placeholder | translate"
                         [ngModel]="search()"
                         (ngModelChange)="search.set($event)"
                     />
-                    <div class="prefix" matPrefix>
+                    <div class="prefix" prefix>
                         <icon class="relative -left-0.5 text-2xl">search</icon>
                     </div>
                     @if (loading()) {
-                        <div class="suffix" matSuffix>
-                            <mat-spinner diameter="16" />
+                        <div class="suffix" suffix>
+                            <app-spinner diameter="16" />
                         </div>
                     }
-                </mat-form-field>
+                </app-form-field>
                 <section
                     class="border-base-200 min-h-0 flex-1 overflow-auto rounded border sm:h-[45vh] sm:flex-none"
                 >
                     @if (list_items().length) {
                         @for (item of list_items(); track item.id) {
                             <button
-                                matRipple
+                                ripple
                                 class="border-base-200 hover:bg-base-200 flex w-full items-center gap-3 border-b px-3 py-2 text-left last:border-b-0"
                                 [class.bg-base-200]="isSelected(item.id)"
                                 (click)="toggleItem(item)"
@@ -178,15 +171,15 @@ export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
         >
             <button
                 btn
-                matRipple
+                ripple
                 class="inverse bg-base-100 flex-1"
-                mat-dialog-close
+                appDialogClose
             >
                 {{ 'COMMON.CANCEL' | translate }}
             </button>
             <button
                 btn
-                matRipple
+                ripple
                 class="flex-1"
                 [disabled]="!selected().length"
                 (click)="save()"
@@ -221,26 +214,23 @@ export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        DialogCloseDirective,
+        SpinnerComponent,
+        FormFieldComponent,
         DialogTitleDirective,
         FormsModule,
         IconComponent,
-        MatDialogModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatProgressSpinnerModule,
-        MatRippleModule,
-        MatTabsModule,
+        TabsComponent,
         SettingsToggleComponent,
         TranslatePipe,
     ],
 })
 export class GroupBulkAddModalComponent<T extends GroupBulkAddItem> {
     private _dialog_ref =
-        inject<
-            MatDialogRef<GroupBulkAddModalComponent<T>, GroupBulkAddResult<T>>
-        >(MatDialogRef);
-    private _data = inject<GroupBulkAddModalData<T>>(MAT_DIALOG_DATA);
+        inject<DialogRef<GroupBulkAddResult<T>, GroupBulkAddModalComponent<T>>>(
+            DialogRef,
+        );
+    private _data = inject<GroupBulkAddModalData<T>>(DIALOG_DATA);
 
     public readonly selected = signal<T[]>([]);
     public readonly search = signal('');

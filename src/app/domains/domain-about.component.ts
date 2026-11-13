@@ -5,13 +5,12 @@ import { form, FormField, submit, validate } from '@angular/forms/signals';
 import { PlaceDomain } from '@placeos/ts-client';
 
 import { Clipboard } from '@angular/cdk/clipboard';
-import { MatRippleModule } from '@angular/material/core';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { validateJSONString } from '../common/validation';
+import { TabsComponent } from '../ui/controls/tabs.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { IconComponent } from '../ui/icon.component';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
@@ -47,7 +46,7 @@ import { DomainStateService } from './domain-state.service';
                     </div>
                     @for (domain of item?.email_domains; track domain) {
                         <button
-                            matRipple
+                            ripple
                             class="mono hover:bg-base-200 rounded-sm p-2 text-left text-sm select-text"
                             (click)="copyEmailDomain(domain)"
                         >
@@ -65,8 +64,8 @@ import { DomainStateService } from './domain-state.service';
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="'COMMON.SAVE_CHANGES' | translate"
+                    ripple
+                    [appTooltip]="'COMMON.SAVE_CHANGES' | translate"
                     [disabled]="saving()"
                     (click)="saveChanges()"
                 >
@@ -75,17 +74,14 @@ import { DomainStateService } from './domain-state.service';
             </header>
             @if (form) {
                 <section>
-                    <mat-tab-group
-                        [(selectedIndex)]="index"
+                    <app-tabs
                         class="border-base-300 border-x border-t"
-                    >
-                        <mat-tab
-                            [label]="'DOMAINS.SETTINGS_CONFIG' | translate"
-                        />
-                        <mat-tab
-                            [label]="'DOMAINS.SETTINGS_INTERNALS' | translate"
-                        />
-                    </mat-tab-group>
+                        [labels]="[
+                            'DOMAINS.SETTINGS_CONFIG' | translate,
+                            'DOMAINS.SETTINGS_INTERNALS' | translate,
+                        ]"
+                        [(selectedIndex)]="index"
+                    />
                     @if (index !== 1) {
                         <settings-form-field
                             [formField]="form.config"
@@ -113,12 +109,11 @@ import { DomainStateService } from './domain-state.service';
         `,
     ],
     imports: [
+        TooltipDirective,
         SettingsFieldComponent,
-        MatTabsModule,
+        TabsComponent,
         FormField,
-        MatRippleModule,
         IconComponent,
-        MatTooltipModule,
         TranslatePipe,
         AsyncPipe,
         MarkdownPipe,
@@ -148,7 +143,7 @@ export class DomainAboutComponent {
     /** Whether a settings save is in flight */
     public readonly saving = signal(false);
     /** Index of the active tab */
-    public index: number;
+    public index = 0;
 
     private readonly _item = this._service.item;
     public get item(): PlaceDomain | null {

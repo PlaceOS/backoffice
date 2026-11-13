@@ -1,4 +1,4 @@
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
     Component,
     computed,
@@ -11,11 +11,6 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { disabled, form, FormField } from '@angular/forms/signals';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import {
     addGroup,
     cleanObject,
@@ -26,18 +21,16 @@ import {
     showGroup,
     updateGroup,
 } from '@placeos/ts-client';
-import {
-    addSignalChipItem,
-    onSaveHotkey,
-    removeSignalChipItem,
-    submitFormDialog,
-} from '../common/forms';
+import { onSaveHotkey, submitFormDialog } from '../common/forms';
 import { subtreeFilter } from '../common/hierarchy';
 import { i18n } from '../common/locale.service';
 import { DialogEvent } from '../common/types';
+import { ChipListComponent } from '../ui/controls/chip-list.component';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
-import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { GroupAdGroupsFieldComponent } from './group-ad-groups-field.component';
@@ -70,32 +63,30 @@ import {
                     >
                         {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                     </label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
-                            matInput
                             id="group-name"
                             [placeholder]="'COMMON.FIELD_NAME' | translate"
                             [formField]="form.name"
                         />
-                        <mat-error>{{
-                            'GROUPS.NAME_REQUIRED' | translate
-                        }}</mat-error>
-                    </mat-form-field>
+                        <div error>
+                            {{ 'GROUPS.NAME_REQUIRED' | translate }}
+                        </div>
+                    </app-form-field>
                 </div>
                 <div class="field">
                     <label for="group-description">{{
                         'COMMON.FIELD_DESCRIPTION' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <textarea
-                            matInput
                             id="group-description"
                             [placeholder]="
                                 'COMMON.FIELD_DESCRIPTION' | translate
                             "
                             [formField]="form.description"
                         ></textarea>
-                    </mat-form-field>
+                    </app-form-field>
                 </div>
                 <div class="fieldset">
                     <div class="field">
@@ -120,8 +111,8 @@ import {
                             id="group-authority-label"
                             >{{ 'GROUPS.AUTHORITY_ID' | translate }}</label
                         >
-                        <mat-form-field appearance="outline">
-                            <mat-select
+                        <app-form-field>
+                            <app-select
                                 [placeholder]="
                                     'GROUPS.AUTHORITY_SELECT' | translate
                                 "
@@ -134,53 +125,26 @@ import {
                                     domain of domain_list();
                                     track domain.id
                                 ) {
-                                    <mat-option [value]="domain.id">
+                                    <app-option [value]="domain.id">
                                         {{ domain.name }}
-                                    </mat-option>
+                                    </app-option>
                                 }
-                            </mat-select>
-                        </mat-form-field>
+                            </app-select>
+                        </app-form-field>
                     </div>
                 </div>
                 <div class="field">
                     <label for="group-subsystems">{{
                         'GROUPS.SUBSYSTEMS' | translate
                     }}</label>
-                    <mat-form-field appearance="outline" class="w-full">
-                        <mat-chip-grid #chipList aria-label="Subsystem List">
-                            @for (
-                                subsystem of subsystem_list();
-                                track subsystem
-                            ) {
-                                <mat-chip-row
-                                    (removed)="removeSubsystem(subsystem)"
-                                >
-                                    <div class="max-w-md truncate">
-                                        {{ subsystem }}
-                                    </div>
-                                    <button
-                                        type="button"
-                                        matChipRemove
-                                        [attr.aria-label]="
-                                            'COMMON.ITEM_REMOVE'
-                                                | translate: { item: subsystem }
-                                        "
-                                    >
-                                        <icon>cancel</icon>
-                                    </button>
-                                </mat-chip-row>
-                            }
-                        </mat-chip-grid>
-                        <input
-                            id="group-subsystems"
-                            name="group-subsystems"
+                    <app-form-field class="w-full">
+                        <app-chip-list
+                            inputId="group-subsystems"
+                            aria-label="Subsystem List"
                             [placeholder]="'GROUPS.SUBSYSTEMS_HINT' | translate"
-                            [matChipInputFor]="chipList"
-                            [matChipInputSeparatorKeyCodes]="separators"
-                            [matChipInputAddOnBlur]="true"
-                            (matChipInputTokenEnd)="addSubsystem($event)"
+                            [formField]="form.subsystems"
                         />
-                    </mat-form-field>
+                    </app-form-field>
                 </div>
                 <fieldset class="field">
                     <legend class="mb-1 text-[0.8em] font-medium">
@@ -233,13 +197,12 @@ import {
     `,
     styles: [``],
     imports: [
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatChipsModule,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
+        ChipListComponent,
         FormsModule,
         ItemSearchFieldComponent,
-        IconComponent,
         TranslatePipe,
         FormField,
         FullscreenModalShellComponent,
@@ -249,8 +212,8 @@ import {
 })
 export class GroupFormComponent implements OnInit {
     private _dialog_ref =
-        inject<MatDialogRef<GroupFormComponent>>(MatDialogRef);
-    private _data = inject<{ item: PlaceGroup }>(MAT_DIALOG_DATA);
+        inject<DialogRef<unknown, GroupFormComponent>>(DialogRef);
+    private _data = inject<{ item: PlaceGroup }>(DIALOG_DATA);
     private readonly _name = 'GROUPS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -272,10 +235,6 @@ export class GroupFormComponent implements OnInit {
         () => this._domain_list.value() || [],
     );
     public readonly parent_group = signal<PlaceGroup | null>(null);
-    public readonly subsystem_list = computed(
-        () => this.formModel().subsystems || [],
-    );
-    public readonly separators: number[] = [ENTER, COMMA];
     public readonly permission_flags = GROUP_PERMISSION_FLAGS;
     public readonly hasPermission = hasGroupPermission;
     /** Whether AD groups can be found with the staff API */
@@ -343,18 +302,6 @@ export class GroupFormComponent implements OnInit {
     public setAdGroupMappings(ad_group_mappings: PlaceGroupAdMappings) {
         this.formModel.update((value) => ({ ...value, ad_group_mappings }));
     }
-
-    public readonly addSubsystem = (event: MatChipInputEvent) =>
-        this.formModel.update((value) => ({
-            ...value,
-            subsystems: addSignalChipItem(value.subsystems, event),
-        }));
-
-    public readonly removeSubsystem = (subsystem: string) =>
-        this.formModel.update((value) => ({
-            ...value,
-            subsystems: removeSignalChipItem(value.subsystems, subsystem),
-        }));
 
     public async submit(): Promise<void> {
         await submitFormDialog(

@@ -1,15 +1,13 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { del, get } from '@placeos/ts-client';
 import { toQueryString } from '../common/api';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -48,7 +46,7 @@ function cancelBuildJob(id, q = {}) {
                 </div>
             </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -113,9 +111,9 @@ function cancelBuildJob(id, q = {}) {
             <div class="flex items-center space-x-2 p-2">
                 <button
                     icon
-                    matRipple
+                    ripple
                     class="text-error"
-                    [matTooltip]="'ADMIN.BUILD_LIST_REMOVE' | translate"
+                    [appTooltip]="'ADMIN.BUILD_LIST_REMOVE' | translate"
                     (click)="remove(row)"
                 >
                     <icon>delete</icon>
@@ -133,17 +131,15 @@ function cancelBuildJob(id, q = {}) {
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
         IconComponent,
-        MatRippleModule,
-        MatTooltipModule,
         TranslatePipe,
         SimpleTableComponent,
-        MatProgressBarModule,
     ],
 })
 export class PlaceBuildListComponent implements OnInit {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     public readonly loading = signal('');
     public readonly job_list = signal<BuildJob[]>([]);

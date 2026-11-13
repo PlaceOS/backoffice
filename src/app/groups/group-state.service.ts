@@ -1,5 +1,5 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import {
     addGroupUser,
     addGroupZone,
@@ -27,7 +27,7 @@ import { groupMembership } from './group-membership';
 @Service()
 export class GroupStateService {
     private _state = inject(ActiveItemService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _changed = signal(0);
 
     public readonly item = computed(

@@ -1,3 +1,4 @@
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import {
     Component,
     Pipe,
@@ -6,12 +7,12 @@ import {
     signal,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatSelectModule } from '@angular/material/select';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { openConfirmModal } from '../../../app/overlays/confirm-modal.component';
+import { ChipListComponent } from '../../../app/ui/controls/chip-list.component';
+import { OptionComponent } from '../../../app/ui/controls/option.component';
+import { SelectComponent } from '../../../app/ui/controls/select.component';
 import { FullscreenModalShellComponent } from '../../../app/ui/fullscreen-modal-shell.component';
 import { TranslatePipe } from '../../../app/ui/translate.pipe';
 
@@ -30,19 +31,19 @@ class TestTranslatePipe implements PipeTransform {
 }
 
 @Component({
-    imports: [FullscreenModalShellComponent, MatChipsModule, MatSelectModule],
+    imports: [
+        OptionComponent,
+        SelectComponent,
+        FullscreenModalShellComponent,
+        ChipListComponent,
+    ],
     template: `
         <fullscreen-modal-shell [loading]="loading()">
-            <mat-chip-set>
-                <mat-chip-row>
-                    Tag
-                    <button matChipRemove>x</button>
-                </mat-chip-row>
-            </mat-chip-set>
-            <mat-select value="a">
-                <mat-option value="a">A</mat-option>
-                <mat-option value="b">B</mat-option>
-            </mat-select>
+            <app-chip-list [value]="['Tag']" />
+            <app-select value="a">
+                <app-option value="a">A</app-option>
+                <app-option value="b">B</app-option>
+            </app-select>
         </fullscreen-modal-shell>
     `,
 })
@@ -55,8 +56,8 @@ describe('FullscreenModalShellComponent', () => {
     const ref = {
         close: vi.fn(),
         disableClose: false,
-        backdropClick: () => new Subject<MouseEvent>(),
-        keydownEvents: () => escape,
+        backdropClick: new Subject<MouseEvent>(),
+        keydownEvents: escape,
     };
 
     function createForm() {
@@ -64,8 +65,8 @@ describe('FullscreenModalShellComponent', () => {
             imports: [TestFormComponent],
             providers: [
                 provideZonelessChangeDetection(),
-                { provide: MatDialogRef, useValue: ref },
-                { provide: MatDialog, useValue: {} },
+                { provide: DialogRef, useValue: ref },
+                { provide: Dialog, useValue: {} },
             ],
         }).overrideComponent(FullscreenModalShellComponent, {
             remove: { imports: [TranslatePipe] },
@@ -110,7 +111,7 @@ describe('FullscreenModalShellComponent', () => {
 
     it('asks before closing after a chip was removed', async () => {
         const { element, shell } = createForm();
-        element.querySelector<HTMLElement>('[matChipRemove]').click();
+        element.querySelector<HTMLElement>('.chip-action').click();
         await shell.close();
         expect(openConfirmModal).toHaveBeenCalled();
         expect(ref.close).not.toHaveBeenCalled();
@@ -118,7 +119,7 @@ describe('FullscreenModalShellComponent', () => {
 
     it('asks before closing after a select was changed by keyboard', async () => {
         const { element, shell } = createForm();
-        const select = element.querySelector<HTMLElement>('mat-select');
+        const select = element.querySelector<HTMLElement>('app-select');
         select.focus();
         select.dispatchEvent(
             new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }),
@@ -130,7 +131,7 @@ describe('FullscreenModalShellComponent', () => {
     it('does not count moving between fields as an edit', async () => {
         const { element, shell } = createForm();
         element
-            .querySelector('mat-select')
+            .querySelector('app-select')
             .dispatchEvent(
                 new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }),
             );

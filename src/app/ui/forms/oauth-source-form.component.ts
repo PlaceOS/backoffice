@@ -9,11 +9,11 @@ import {
 import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
 
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { HashMap, Identity } from '../../common/types';
 import { OAuthSourceFormModel } from '../../domains/auth-sources.utilities';
+import { FormFieldComponent } from '../controls/form-field.component';
+import { OptionComponent } from '../controls/option.component';
+import { SelectComponent } from '../controls/select.component';
 import { ObjectListFieldComponent } from '../custom-fields/object-list-field.component';
 import { TranslatePipe } from '../translate.pipe';
 
@@ -33,21 +33,20 @@ import { TranslatePipe } from '../translate.pipe';
                         >
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                         </label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [placeholder]="'COMMON.FIELD_NAME' | translate"
                                 [formField]="form().name"
                             />
                             @if (form().name().invalid()) {
-                                <mat-error>
+                                <div error>
                                     {{
                                         'DOMAINS.AUTHENTICATION_NAME_REQUIRED'
                                             | translate
                                     }}
-                                </mat-error>
+                                </div>
                             }
-                        </mat-form-field>
+                        </app-form-field>
                     </div>
                 }
                 <div class="fieldset">
@@ -56,15 +55,14 @@ import { TranslatePipe } from '../translate.pipe';
                             <label for="client-id"
                                 >{{ 'DOMAINS.CLIENT_ID' | translate }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.CLIENT_ID' | translate
                                     "
                                     [formField]="form().client_id"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().client_secret) {
@@ -72,15 +70,14 @@ import { TranslatePipe } from '../translate.pipe';
                             <label for="client-secret"
                                 >{{ 'DOMAINS.CLIENT_SECRET' | translate }}:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.CLIENT_SECRET' | translate
                                     "
                                     [formField]="form().client_secret"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -90,16 +87,15 @@ import { TranslatePipe } from '../translate.pipe';
                             <label for="site"
                                 >{{ 'DOMAINS.OAUTH_SITE' | translate }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.OAUTH_SITE_PLACEHOLDER'
                                             | translate
                                     "
                                     [formField]="form().site"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().scope) {
@@ -109,15 +105,14 @@ import { TranslatePipe } from '../translate.pipe';
                                     'DOMAINS.OAUTH_SCOPES' | translate
                                 }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.OAUTH_SCOPES' | translate
                                     "
                                     [formField]="form().scope"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -127,15 +122,15 @@ import { TranslatePipe } from '../translate.pipe';
                             <label for="token-method"
                                 >{{ 'DOMAINS.OAUTH_TOKEN_METHOD' | translate }}:
                             </label>
-                            <mat-form-field appearance="outline">
-                                <mat-select [formField]="form().token_method">
+                            <app-form-field>
+                                <app-select [formField]="form().token_method">
                                     @for (type of token_methods; track type) {
-                                        <mat-option [value]="type.id">
+                                        <app-option [value]="type.id">
                                             {{ type.name }}
-                                        </mat-option>
+                                        </app-option>
                                     }
-                                </mat-select>
-                            </mat-form-field>
+                                </app-select>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().auth_scheme) {
@@ -143,20 +138,20 @@ import { TranslatePipe } from '../translate.pipe';
                             <label for="auth-scheme">
                                 Authentication Scheme:
                             </label>
-                            <mat-form-field appearance="outline">
-                                <mat-select [formField]="form().auth_scheme">
+                            <app-form-field>
+                                <app-select [formField]="form().auth_scheme">
                                     @for (type of auth_schemes; track type) {
-                                        <mat-option [value]="type.id">
+                                        <app-option [value]="type.id">
                                             {{
                                                 (type.id === 'request_body'
                                                     ? 'DOMAINS.OAUTH_SCHEME_BODY'
                                                     : 'DOMAINS.OAUTH_SCHEME_BASIC'
                                                 ) | translate
                                             }}
-                                        </mat-option>
+                                        </app-option>
                                     }
-                                </mat-select>
-                            </mat-form-field>
+                                </app-select>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -165,15 +160,14 @@ import { TranslatePipe } from '../translate.pipe';
                         <label for="token-url"
                             >{{ 'DOMAINS.OAUTH_TOKEN_URL' | translate }}:</label
                         >
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [placeholder]="
                                     'DOMAINS.OAUTH_TOKEN_URL' | translate
                                 "
                                 [formField]="form().token_url"
                             />
-                        </mat-form-field>
+                        </app-form-field>
                     </div>
                 }
                 <div class="fieldset">
@@ -184,16 +178,15 @@ import { TranslatePipe } from '../translate.pipe';
                                     'DOMAINS.OAUTH_AUTHORISE_URL' | translate
                                 }}:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.OAUTH_AUTHORISE_URL'
                                             | translate
                                     "
                                     [formField]="form().authorize_url"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().raw_info_url) {
@@ -203,15 +196,14 @@ import { TranslatePipe } from '../translate.pipe';
                                     'DOMAINS.OAUTH_PROFILE_URL' | translate
                                 }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.OAUTH_PROFILE_URL' | translate
                                     "
                                     [formField]="form().raw_info_url"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -287,13 +279,13 @@ import { TranslatePipe } from '../translate.pipe';
         `,
     ],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         ObjectListFieldComponent,
         FormsModule,
         TranslatePipe,
         FormField,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
     ],
 })
 export class OauthSourceFormComponent implements OnChanges {

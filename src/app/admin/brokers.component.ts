@@ -1,22 +1,20 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 
 import { JsonPipe } from '@angular/common';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     PlaceMQTTBroker,
     queryBrokers,
     removeBroker,
 } from '@placeos/ts-client';
 
+import { Dialog } from '@angular/cdk/dialog';
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { notifyError } from '../common/notifications';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { BrokerFormComponent } from './broker-form.component';
@@ -33,10 +31,10 @@ import { BrokerFormComponent } from './broker-form.component';
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         (click)="editBroker()"
-                        [matTooltip]="'ADMIN.BROKERS_ADD' | translate"
+                        [appTooltip]="'ADMIN.BROKERS_ADD' | translate"
                         [attr.aria-label]="'ADMIN.BROKERS_ADD' | translate"
                     >
                         <icon>add</icon>
@@ -44,7 +42,7 @@ import { BrokerFormComponent } from './broker-form.component';
                 </div>
             </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -157,8 +155,8 @@ import { BrokerFormComponent } from './broker-form.component';
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="'ADMIN.BROKERS_EDIT' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.BROKERS_EDIT' | translate"
                     (click)="editBroker(row)"
                 >
                     <icon>edit</icon>
@@ -167,8 +165,8 @@ import { BrokerFormComponent } from './broker-form.component';
                     icon
                     default
                     error
-                    matRipple
-                    [matTooltip]="'ADMIN.BROKERS_REMOVE' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.BROKERS_REMOVE' | translate"
                     (click)="deleteBroker(row)"
                 >
                     <icon>delete</icon>
@@ -183,18 +181,16 @@ import { BrokerFormComponent } from './broker-form.component';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
         IconComponent,
-        MatRippleModule,
-        MatTooltipModule,
         TranslatePipe,
         SimpleTableComponent,
-        MatProgressBarModule,
         JsonPipe,
     ],
 })
 export class AdminBrokersComponent implements OnInit {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     public readonly loading = signal(false);
 

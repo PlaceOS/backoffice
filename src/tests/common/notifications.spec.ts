@@ -1,54 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+    dismissToast,
+    MAX_TOASTS,
     notify,
     notifyError,
     notifyInfo,
     notifySuccess,
     notifyWarn,
-    setNotifyOutlet,
+    TOAST_DURATION_MS,
+    toasts,
 } from '../../app/common/notifications';
 
-const createActionSource = () => {
-    const listeners = new Set<() => void>();
-    return {
-        source: {
-            subscribe: (listener: () => void) => {
-                listeners.add(listener);
-                return { unsubscribe: () => listeners.delete(listener) };
-            },
-        },
-        next: () => {
-            for (const listener of listeners) listener();
-        },
-    };
-};
-
-// Create mock snackbar
-const createMockSnackbar = () => {
-    const action_source = createActionSource();
-    const mock_ref = {
-        dismiss: vi.fn(),
-        onAction: vi.fn(() => action_source.source),
-    };
-    const mock_snackbar = {
-        open: vi.fn(() => mock_ref),
-    };
-    return { mock_snackbar, mock_ref, action_source };
-};
-
 describe('notifications.ts', () => {
-    let mock_snackbar: any;
-    let mock_ref: any;
-    let action_source: ReturnType<typeof createActionSource>;
-
     beforeEach(() => {
-        const mocks = createMockSnackbar();
-        mock_snackbar = mocks.mock_snackbar;
-        mock_ref = mocks.mock_ref;
-        action_source = mocks.action_source;
-
-        setNotifyOutlet(mock_snackbar as any);
-
+        vi.useFakeTimers();
+        for (const toast of toasts()) dismissToast(toast.id);
         vi.spyOn(console, 'debug').mockImplementation(() => null);
         vi.spyOn(console, 'error').mockImplementation(() => null);
         vi.spyOn(console, 'warn').mockImplementation(() => null);
@@ -56,239 +22,64 @@ describe('notifications.ts', () => {
     });
 
     afterEach(() => {
+        vi.useRealTimers();
         vi.restoreAllMocks();
     });
 
-    describe('setNotifyOutlet', () => {
-        it('should set the snackbar service', () => {
-            setNotifyOutlet(mock_snackbar as any);
-            // If set correctly, notify should not throw
-            expect(() => notify('test', 'message')).not.toThrow();
-        });
-
-        it('should open notifications made while a lazy snackbar loads', async () => {
-            let resolve: (snackbar: unknown) => void;
-            const pending = new Promise((r) => (resolve = r));
-            setNotifyOutlet(pending as any);
-
-            notify('info', 'Early message');
-            expect(mock_snackbar.open).not.toHaveBeenCalled();
-
-            resolve(mock_snackbar);
-            await pending;
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Early message',
-                'OK',
-                expect.any(Object),
-            );
-        });
-
-        it('should not raise an unhandled rejection when the lazy snackbar fails to load', async () => {
-            const failed = Promise.reject(
-                new TypeError('Importing a module script failed.'),
-            );
-            setNotifyOutlet(failed as any);
-            notify('info', 'Lost message');
-            await failed.catch(() => undefined);
-            await new Promise((resolve) => setTimeout(resolve));
-            expect(mock_snackbar.open).not.toHaveBeenCalled();
-            expect(console.warn).toHaveBeenCalled();
-        });
+    it('shows a toast with the type, message and action', () => {
+        notify('info', 'Saved', 'Undo');
+        expect(toasts()).toMatchObject([
+            { type: 'info', message: 'Saved', action: 'Undo' },
+        ]);
     });
 
-    describe('notify', () => {
-        it('should throw if snackbar not initialized', () => {
-            setNotifyOutlet(null as any);
-            expect(() => notify('test', 'message')).toThrow(
-                "Snackbar service hasn't been initialised",
-            );
-            // Reset for other tests
-            setNotifyOutlet(mock_snackbar as any);
-        });
-
-        it('should call snackbar.open with correct parameters', () => {
-            notify('success', 'Test message');
-
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Test message',
-                'OK',
-                {
-                    panelClass: ['success'],
-                    duration: 5000,
-                    politeness: 'polite',
-                },
-            );
-        });
-
-        it('should use custom action text', () => {
-            notify('info', 'Test message', 'CLOSE');
-
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Test message',
-                'CLOSE',
-                expect.any(Object),
-            );
-        });
-
-        it('should call custom action callback on action', () => {
-            const on_action = vi.fn();
-            notify('info', 'Test message', 'ACTION', on_action);
-
-            action_source.next();
-
-            expect(on_action).toHaveBeenCalled();
-        });
-
-        it('should dismiss snackbar on action if no callback provided', () => {
-            notify('info', 'Test message', 'OK');
-
-            action_source.next();
-
-            expect(mock_ref.dismiss).toHaveBeenCalled();
-        });
+    it('removes a toast after its duration', () => {
+        notify('info', 'Saved');
+        vi.advanceTimersByTime(TOAST_DURATION_MS);
+        expect(toasts()).toEqual([]);
     });
 
-    describe('notifySuccess', () => {
-        it('should call notify with success type', () => {
-            notifySuccess('Success message');
-
-            // notify function defaults action to 'OK' when undefined
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Success message',
-                'OK',
-                expect.objectContaining({
-                    panelClass: ['success'],
-                }),
-            );
-        });
-
-        it('should log to console.debug', () => {
-            notifySuccess('Debug message');
-
-            expect(console.debug).toHaveBeenCalledWith('Debug message');
-        });
-
-        it('should pass action and callback', () => {
-            const callback = vi.fn();
-            notifySuccess('Message', 'ACTION', callback);
-
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Message',
-                'ACTION',
-                expect.any(Object),
-            );
-        });
+    it('keeps errors until they are dismissed', () => {
+        notifyError('Failed');
+        vi.advanceTimersByTime(TOAST_DURATION_MS * 10);
+        expect(toasts()).toHaveLength(1);
+        dismissToast(toasts()[0].id);
+        expect(toasts()).toEqual([]);
     });
 
-    describe('notifyError', () => {
-        it('should call notify with error type', () => {
-            notifyError('Error message');
-
-            // notify function defaults action to 'OK' when undefined
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Error message',
-                'OK',
-                expect.objectContaining({
-                    panelClass: ['error'],
-                }),
-            );
-        });
-
-        it('should stay open until dismissed', () => {
-            notifyError('Error message');
-
-            expect(
-                mock_snackbar.open.mock.calls[0][2].duration,
-            ).toBeUndefined();
-        });
-
-        it('should be announced at once', () => {
-            notifyError('Error message');
-
-            expect(mock_snackbar.open.mock.calls[0][2].politeness).toBe(
-                'assertive',
-            );
-        });
-
-        it('should log to console.error', () => {
-            notifyError('Error message');
-
-            expect(console.error).toHaveBeenCalledWith('Error message');
-        });
-
-        it('should pass action and callback', () => {
-            const callback = vi.fn();
-            notifyError('Error', 'RETRY', callback);
-
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Error',
-                'RETRY',
-                expect.any(Object),
-            );
-        });
+    it('closes the toast from the default action', () => {
+        notify('info', 'Saved');
+        toasts()[0].on_action();
+        expect(toasts()).toEqual([]);
     });
 
-    describe('notifyWarn', () => {
-        it('should call notify with warn type', () => {
-            notifyWarn('Warning message');
-
-            // notify function defaults action to 'OK' when undefined
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Warning message',
-                'OK',
-                expect.objectContaining({
-                    panelClass: ['warn'],
-                }),
-            );
-        });
-
-        it('should log to console.warn', () => {
-            notifyWarn('Warning message');
-
-            expect(console.warn).toHaveBeenCalledWith('Warning message');
-        });
-
-        it('should pass action and callback', () => {
-            const callback = vi.fn();
-            notifyWarn('Warning', 'IGNORE', callback);
-
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Warning',
-                'IGNORE',
-                expect.any(Object),
-            );
-        });
+    it('runs a custom action callback', () => {
+        const on_action = vi.fn();
+        notify('info', 'Saved', 'Undo', on_action);
+        toasts()[0].on_action();
+        expect(on_action).toHaveBeenCalledOnce();
     });
 
-    describe('notifyInfo', () => {
-        it('should call notify with info type', () => {
-            notifyInfo('Info message');
-
-            // notify function defaults action to 'OK' when undefined
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Info message',
-                'OK',
-                expect.objectContaining({
-                    panelClass: ['info'],
-                }),
-            );
-        });
-
-        it('should log to console.info', () => {
-            notifyInfo('Info message');
-
-            expect(console.info).toHaveBeenCalledWith('Info message');
-        });
-
-        it('should pass action and callback', () => {
-            const callback = vi.fn();
-            notifyInfo('Info', 'GOT IT', callback);
-
-            expect(mock_snackbar.open).toHaveBeenCalledWith(
-                'Info',
-                'GOT IT',
-                expect.any(Object),
-            );
-        });
+    it('keeps only the newest toasts', () => {
+        for (let i = 0; i < MAX_TOASTS + 2; i++) notifyError(`Error ${i}`);
+        expect(toasts().map((toast) => toast.message)).toEqual(
+            Array.from({ length: MAX_TOASTS }, (_, i) => `Error ${i + 2}`),
+        );
     });
+
+    it.each([
+        [notifySuccess, 'success', 'debug'],
+        [notifyError, 'error', 'error'],
+        [notifyWarn, 'warn', 'warn'],
+        [notifyInfo, 'info', 'info'],
+    ] as const)(
+        '%o sets type %s and logs with console.%s',
+        (fn, type, method) => {
+            fn('Message', 'Retry');
+            expect(toasts()).toMatchObject([
+                { type, message: 'Message', action: 'Retry' },
+            ]);
+            expect(console[method]).toHaveBeenCalledWith('Message');
+        },
+    );
 });

@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { AsyncPipe } from '@angular/common';
 import {
     Component,
@@ -9,11 +10,6 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     listMetadata,
     PlaceMetadata,
@@ -35,9 +31,11 @@ import {
     MetadataDetailsModalData,
 } from '../overlays/metadata-details-modal.component';
 import { MetadataHistoryModalComponent } from '../overlays/metadata-history-modal.component';
+import { FormFieldComponent } from './controls/form-field.component';
+import { SpinnerComponent } from './controls/spinner.component';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { IconComponent } from './icon.component';
-import { LoadingLabelDirective } from './loading-label.directive';
 import { DateFromPipe } from './pipes/date-from.pipe';
 import { UserPipe } from './pipes/user.pipe';
 import { TranslatePipe } from './translate.pipe';
@@ -66,19 +64,18 @@ function replaceDescTag(inputString, newContent) {
             <button btn (click)="newMetadata()">
                 {{ 'COMMON.METADATA_NEW' | translate }}
             </button>
-            <mat-form-field appearance="outline" class="no-subscript">
-                <icon matPrefix class="relative -left-1 text-2xl">search</icon>
+            <app-form-field class="no-subscript">
+                <icon prefix class="relative -left-1 text-2xl">search</icon>
                 <input
-                    matInput
                     [(ngModel)]="search_text"
                     (ngModelChange)="filterMetadata()"
                     placeholder="Search metadata blocks..."
                 />
-            </mat-form-field>
+            </app-form-field>
         </div>
         @if (loading_list()) {
             <div class="flex w-full items-center justify-center p-16">
-                <mat-spinner diameter="32" />
+                <app-spinner diameter="32" />
             </div>
         } @else if (metadata()?.length > 0) {
             <div class="mt-4 space-y-2">
@@ -110,10 +107,10 @@ function replaceDescTag(inputString, newContent) {
                             <div class="flex-1"></div>
                             <div
                                 class="border-base-300 rounded-sm border px-2 py-1 font-mono text-[0.625rem] whitespace-nowrap"
-                                [matTooltip]="
+                                [appTooltip]="
                                     (item.modified_by_id | user | async)?.name
                                 "
-                                matTooltipPosition="left"
+                                appTooltipPosition="left"
                             >
                                 {{ item.updated_at | dateFrom }}
                             </div>
@@ -123,21 +120,21 @@ function replaceDescTag(inputString, newContent) {
                             >
                                 <button
                                     icon
-                                    matRipple
+                                    ripple
                                     (click)="saveMetadata(item)"
                                     [disabled]="
                                         !edited()[item.name] ||
                                         loading()[item.name]
                                     "
-                                    [matTooltip]="'COMMON.SAVE' | translate"
+                                    [appTooltip]="'COMMON.SAVE' | translate"
                                 >
                                     <icon class="text-xl">save</icon>
                                 </button>
                                 <button
                                     icon
-                                    matRipple
+                                    ripple
                                     (click)="editMetadataDetails(item)"
-                                    [matTooltip]="
+                                    [appTooltip]="
                                         'COMMON.METADATA_EDIT' | translate
                                     "
                                 >
@@ -145,9 +142,9 @@ function replaceDescTag(inputString, newContent) {
                                 </button>
                                 <button
                                     icon
-                                    matRipple
+                                    ripple
                                     (click)="viewMetadataHistory(item)"
-                                    [matTooltip]="
+                                    [appTooltip]="
                                         'COMMON.METADATA_HISTORY' | translate
                                     "
                                 >
@@ -155,17 +152,17 @@ function replaceDescTag(inputString, newContent) {
                                 </button>
                                 <button
                                     icon
-                                    matRipple
+                                    ripple
                                     class="text-error"
                                     (click)="deleteMetadata(item.name)"
-                                    [matTooltip]="
+                                    [appTooltip]="
                                         'COMMON.METADATA_REMOVE' | translate
                                     "
                                 >
                                     <icon class="text-xl">delete</icon>
                                 </button>
                             </button>
-                            <button icon matRipple>
+                            <button icon ripple>
                                 <icon class="text-2xl">{{
                                     show_view() === item.name
                                         ? 'keyboard_arrow_down'
@@ -222,15 +219,13 @@ function replaceDescTag(inputString, newContent) {
         `,
     ],
     imports: [
-        LoadingLabelDirective,
-        MatProgressSpinnerModule,
+        SpinnerComponent,
+        TooltipDirective,
+        FormFieldComponent,
         TranslatePipe,
         IconComponent,
         SettingsFieldComponent,
-        MatTooltipModule,
         FormsModule,
-        MatFormFieldModule,
-        MatInputModule,
         DateFromPipe,
         UserPipe,
         AsyncPipe,
@@ -240,7 +235,7 @@ export class MetadataDisplayComponent
     extends AsyncHandler
     implements OnChanges
 {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     public readonly item = input<PlaceResource>();
     /** List of metadata associated with the zone */
     public readonly metadata = signal<Metadata[]>([]);
@@ -305,8 +300,9 @@ export class MetadataDisplayComponent
     public editMetadataDetails(field: PlaceMetadata) {
         const form = this.form_map()[field.name];
         this._dialog.open<
-            MetadataDetailsModalComponent,
-            MetadataDetailsModalData
+            unknown,
+            MetadataDetailsModalData,
+            MetadataDetailsModalComponent
         >(MetadataDetailsModalComponent, {
             maxWidth: '95vw',
             data: {

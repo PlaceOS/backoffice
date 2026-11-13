@@ -1,13 +1,12 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { FormsModule } from '@angular/forms';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DialogEvent } from '../common/types';
+import { DialogCloseDirective } from '../ui/controls/dialog';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface SelectItemModalData<T = unknown> {
@@ -27,8 +26,8 @@ export interface SelectItemModalData<T = unknown> {
             @if (!loading) {
                 <button
                     icon
-                    matRipple
-                    mat-dialog-close
+                    ripple
+                    appDialogClose
                     [attr.aria-label]="'COMMON.CLOSE' | translate"
                 >
                     <icon>close</icon>
@@ -50,7 +49,7 @@ export interface SelectItemModalData<T = unknown> {
                 class="flex w-full flex-col items-center justify-center p-16 opacity-30"
             >
                 <div class="icon">
-                    <mat-spinner diameter="32" />
+                    <app-spinner diameter="32" />
                 </div>
                 <div class="text">
                     {{ 'COMMON.PROCESSING_REQUEST' | translate }}
@@ -61,7 +60,7 @@ export interface SelectItemModalData<T = unknown> {
             <footer class="border-base-200 flex justify-end border-t px-4 py-2">
                 <button
                     btn
-                    matRipple
+                    ripple
                     type="submit"
                     (click)="submit()"
                     [disabled]="!item"
@@ -73,18 +72,16 @@ export interface SelectItemModalData<T = unknown> {
     `,
     styles: [``],
     imports: [
-        LoadingLabelDirective,
-        MatDialogModule,
-        MatRippleModule,
+        DialogCloseDirective,
+        SpinnerComponent,
         TranslatePipe,
-        MatProgressSpinnerModule,
         ItemSearchFieldComponent,
         FormsModule,
         IconComponent,
     ],
 })
 export class SelectItemModalComponent {
-    private _data = inject<SelectItemModalData>(MAT_DIALOG_DATA);
+    private _data = inject<SelectItemModalData>(DIALOG_DATA);
 
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();

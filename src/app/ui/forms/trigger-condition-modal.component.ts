@@ -1,8 +1,6 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import {
     PlaceSystem,
     PlaceTrigger,
@@ -20,6 +18,9 @@ import {
     applyTriggerConditionFormSchema,
     generateTriggerConditionFormModel,
 } from '../../triggers/triggers.utilities';
+import { FormFieldComponent } from '../controls/form-field.component';
+import { OptionComponent } from '../controls/option.component';
+import { SelectComponent } from '../controls/select.component';
 import { FullscreenModalShellComponent } from '../fullscreen-modal-shell.component';
 import { TranslatePipe } from '../translate.pipe';
 import { TriggerConditionComparisonFormComponent } from './trigger-condition-form/comparison-form.component';
@@ -58,20 +59,20 @@ export interface TriggerConditionData {
                                     'TRIGGERS.CONDITION_FIELD_TYPE' | translate
                                 }}
                             </label>
-                            <mat-form-field appearance="outline">
-                                <mat-select [formField]="form.condition_type">
+                            <app-form-field>
+                                <app-select [formField]="form.condition_type">
                                     @for (type of condition_types; track type) {
-                                        <mat-option [value]="type.id">
+                                        <app-option [value]="type.id">
                                             {{
                                                 (type.id === 'compare'
                                                     ? 'TRIGGERS.CONDITION_COMPARE'
                                                     : 'TRIGGERS.CONDITION_TIME'
                                                 ) | translate
                                             }}
-                                        </mat-option>
+                                        </app-option>
                                     }
-                                </mat-select>
-                            </mat-form-field>
+                                </app-select>
+                            </app-form-field>
                         </div>
                     }
                     @if (formModel().condition_type === 'compare') {
@@ -92,19 +93,20 @@ export interface TriggerConditionData {
     `,
     styles: [``],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FullscreenModalShellComponent,
         TriggerConditionComparisonFormComponent,
         TriggerConditionTimeFormComponent,
-        MatFormFieldModule,
-        MatSelectModule,
         FormField,
         TranslatePipe,
     ],
 })
 export class TriggerConditionModalComponent {
     private _dialog =
-        inject<MatDialogRef<TriggerConditionModalComponent>>(MatDialogRef);
-    private _data = inject<TriggerConditionData>(MAT_DIALOG_DATA);
+        inject<DialogRef<unknown, TriggerConditionModalComponent>>(DialogRef);
+    private _data = inject<TriggerConditionData>(DIALOG_DATA);
 
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();

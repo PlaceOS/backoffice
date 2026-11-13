@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { form, FormField, required, submit } from '@angular/forms/signals';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { HotkeysService } from '../../common/hotkeys.service';
 import {
@@ -17,10 +16,10 @@ import {
     ExtensionConditions,
 } from '../../common/types';
 
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { DIALOG_DATA } from '@angular/cdk/dialog';
+import { FormFieldComponent } from '../../ui/controls/form-field.component';
+import { OptionComponent } from '../../ui/controls/option.component';
+import { SelectComponent } from '../../ui/controls/select.component';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -44,40 +43,41 @@ import { BackofficeExtension } from '../extensions.component';
                             {{ 'ADMIN.EXTENSIONS_FIELD_TYPE' | translate }}
                             <span>*</span>
                         </label>
-                        <mat-form-field appearance="outline">
-                            <mat-select
+                        <app-form-field>
+                            <app-select
                                 id="extension-type"
                                 aria-labelledby="extension-type-label"
                                 [formField]="form.type"
                             >
                                 @for (type of available_types; track type) {
-                                    <mat-option [value]="type">
+                                    <app-option [value]="type">
                                         <span class="capitalize">{{
                                             type
                                         }}</span>
-                                    </mat-option>
+                                    </app-option>
                                 }
-                            </mat-select>
-                        </mat-form-field>
+                            </app-select>
+                        </app-form-field>
                     </div>
                     <div class="field">
                         <label for="extension-name">
                             {{ 'COMMON.FIELD_NAME' | translate }}
                             <span>*</span>
                         </label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [placeholder]="
                                     'ADMIN.EXTENSIONS_FIELD_NAME' | translate
                                 "
                                 id="extension-name"
                                 [formField]="form.name"
                             />
-                            <mat-error>{{
-                                'ADMIN.EXTENSIONS_NAME_REQUIRED' | translate
-                            }}</mat-error>
-                        </mat-form-field>
+                            <div error>
+                                {{
+                                    'ADMIN.EXTENSIONS_NAME_REQUIRED' | translate
+                                }}
+                            </div>
+                        </app-form-field>
                     </div>
                 </div>
                 <div class="field">
@@ -85,19 +85,18 @@ import { BackofficeExtension } from '../extensions.component';
                         {{ 'ADMIN.EXTENSIONS_FIELD_URL' | translate }}
                         <span>*</span>
                     </label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
-                            matInput
                             [placeholder]="
                                 'ADMIN.EXTENSIONS_FIELD_URL' | translate
                             "
                             id="extension-url"
                             [formField]="form.url"
                         />
-                        <mat-error>{{
-                            'ADMIN.EXTENSIONS_URL_REQUIRED' | translate
-                        }}</mat-error>
-                    </mat-form-field>
+                        <div error>
+                            {{ 'ADMIN.EXTENSIONS_URL_REQUIRED' | translate }}
+                        </div>
+                    </app-form-field>
                 </div>
                 <div class="w-full">
                     @if (formModel().conditions.length) {
@@ -113,9 +112,8 @@ import { BackofficeExtension } from '../extensions.component';
                     ) {
                         <div class="fieldset">
                             <div class="field">
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         name="condition-field"
                                         [(ngModel)]="condition[0]"
                                         [ngModelOptions]="{ standalone: true }"
@@ -124,11 +122,11 @@ import { BackofficeExtension } from '../extensions.component';
                                                 | translate
                                         "
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                             <div class="field">
-                                <mat-form-field appearance="outline">
-                                    <mat-select
+                                <app-form-field>
+                                    <app-select
                                         [(ngModel)]="condition[1]"
                                         [ngModelOptions]="{ standalone: true }"
                                         [placeholder]="
@@ -140,19 +138,18 @@ import { BackofficeExtension } from '../extensions.component';
                                             type of condition_ops;
                                             track type
                                         ) {
-                                            <mat-option [value]="type">
+                                            <app-option [value]="type">
                                                 <span class="capitalize">{{
                                                     type
                                                 }}</span>
-                                            </mat-option>
+                                            </app-option>
                                         }
-                                    </mat-select>
-                                </mat-form-field>
+                                    </app-select>
+                                </app-form-field>
                             </div>
                             <div class="field">
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         name="value"
                                         [disabled]="
                                             condition[1] === 'truthy' ||
@@ -165,12 +162,12 @@ import { BackofficeExtension } from '../extensions.component';
                                                 | translate
                                         "
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                             <button
                                 type="button"
                                 icon
-                                matRipple
+                                ripple
                                 class="border-error text-error h-12 w-12 rounded-sm border"
                                 (click)="removeCondition(condition)"
                                 [attr.aria-label]="'COMMON.DELETE' | translate"
@@ -182,7 +179,7 @@ import { BackofficeExtension } from '../extensions.component';
                     <button
                         type="button"
                         btn
-                        matRipple
+                        ripple
                         class="w-full"
                         (click)="addCondition()"
                     >
@@ -194,21 +191,20 @@ import { BackofficeExtension } from '../extensions.component';
     `,
     styles: [``],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FullscreenModalShellComponent,
         TranslatePipe,
-        MatRippleModule,
         IconComponent,
         FormsModule,
         FormField,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
     ],
 })
 export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     private _data = inject<{
         item: BackofficeExtension;
-    }>(MAT_DIALOG_DATA);
+    }>(DIALOG_DATA);
     private _hotkey = inject(HotkeysService);
 
     /** Emitter for user action on the modal */

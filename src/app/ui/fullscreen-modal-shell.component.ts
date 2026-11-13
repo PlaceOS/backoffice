@@ -1,3 +1,4 @@
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import {
     Component,
     DestroyRef,
@@ -7,15 +8,12 @@ import {
     output,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { filter, merge } from 'rxjs';
 import { i18n } from '../common/locale.service';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { SpinnerComponent } from './controls/spinner.component';
 import { DialogTitleDirective } from './dialog-title.directive';
 import { IconComponent } from './icon.component';
-import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
 
 /** Events in the form that may change a value */
@@ -40,7 +38,7 @@ const NAVIGATION_KEYS = new Set([
                 class="border-base-300 bg-base-100 fixed top-0 mx-auto h-screen w-160 max-w-full border-x"
             ></div>
             <header
-                class="border-base-100 bg-base-200 sticky top-0 z-10 mx-auto my-2 flex w-156 max-w-full items-center justify-between rounded-sm border px-4 py-2"
+                class="border-base-300 bg-base-100 sticky top-0 z-10 mx-auto flex w-160 max-w-full items-center justify-between border-x border-b px-6 py-4"
             >
                 <h2 appDialogTitle class="text-xl font-medium">
                     {{ heading() }}
@@ -48,7 +46,7 @@ const NAVIGATION_KEYS = new Set([
                 @if (!loading()) {
                     <button
                         icon
-                        matRipple
+                        ripple
                         [attr.aria-label]="'COMMON.CLOSE' | translate"
                         (click)="close()"
                     >
@@ -66,12 +64,12 @@ const NAVIGATION_KEYS = new Set([
             </main>
             @if (!loading() && !hide_confirm()) {
                 <footer
-                    class="border-base-100 bg-base-200 fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-156 max-w-full -translate-x-1/2 items-center justify-end rounded-sm border px-4 py-2"
+                    class="border-base-300 bg-base-100 fixed bottom-0 left-1/2 z-10 mx-auto flex w-160 max-w-full -translate-x-1/2 items-center justify-end border-x border-t px-6 py-4"
                 >
                     <button
                         btn
-                        matRipple
-                        class="w-32 pr-0"
+                        ripple
+                        class="w-32 pr-2"
                         [disabled]="disable_confirm()"
                         (click)="save.emit()"
                     >
@@ -94,24 +92,22 @@ const NAVIGATION_KEYS = new Set([
                 <div
                     class="bg-base-100/80 fixed inset-0 z-20 flex flex-col items-center justify-center space-y-2 p-12"
                 >
-                    <mat-spinner [diameter]="32" />
+                    <app-spinner [diameter]="32" />
                     <p class="text-center">{{ loading() }}</p>
                 </div>
             }
         </div>
     `,
     imports: [
-        LoadingLabelDirective,
+        SpinnerComponent,
         DialogTitleDirective,
-        MatProgressSpinnerModule,
         TranslatePipe,
         IconComponent,
-        MatRippleModule,
     ],
 })
 export class FullscreenModalShellComponent {
-    private _dialog_ref = inject(MatDialogRef, { optional: true });
-    private _dialog = inject(MatDialog);
+    private _dialog_ref = inject(DialogRef, { optional: true });
+    private _dialog = inject(Dialog);
     private _confirming = false;
 
     /** Set once the user edits a field, so closing asks before it drops them */
@@ -144,7 +140,7 @@ export class FullscreenModalShellComponent {
     public readonly save = output();
 
     constructor() {
-        // Capture phase, as Material stops some events (e.g. chip remove)
+        // Capture phase, so handlers that stop an event still count as edits
         const host: HTMLElement = inject(ElementRef).nativeElement;
         const mark = (event: Event) => {
             if (this._isEdit(event)) this.touched = true;
@@ -162,8 +158,8 @@ export class FullscreenModalShellComponent {
         // The shell owns closing so Escape and backdrop clicks can be guarded
         ref.disableClose = true;
         merge(
-            ref.backdropClick(),
-            ref.keydownEvents().pipe(filter((e) => e.key === 'Escape')),
+            ref.backdropClick,
+            ref.keydownEvents.pipe(filter((e) => e.key === 'Escape')),
         )
             .pipe(takeUntilDestroyed())
             .subscribe(() => this.close());

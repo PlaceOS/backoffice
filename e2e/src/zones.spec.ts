@@ -90,7 +90,9 @@ test.describe('Zones', () => {
             await zones.saveButton.click();
 
             await expect(zones.dialog).toBeVisible();
-            await expect(zones.dialog.locator('mat-error')).toBeVisible();
+            await expect(
+                zones.dialog.locator('app-form-field [error]:visible'),
+            ).toBeVisible();
         });
 
         test('AC-ZON-003-5: saves the zone and opens it', async () => {

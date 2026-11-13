@@ -114,7 +114,7 @@ function sortKey(value: unknown): string {
                         @if (can_sort_column) {
                             <button
                                 type="button"
-                                matRipple
+                                ripple
                                 class="flex w-full items-center justify-between p-4 text-left"
                                 (click)="setSort(column.key)"
                             >
@@ -207,7 +207,7 @@ function sortKey(value: unknown): string {
                             >
                                 <button
                                     icon
-                                    matRipple
+                                    ripple
                                     class="h-full w-full rounded-none"
                                     [attr.aria-label]="
                                         'COMMON.MOVE_ROW' | translate

@@ -1,5 +1,4 @@
 import { computed, inject, resource, Service, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import {
     listRepositoryCommits,
     listRepositoryDrivers,
@@ -10,6 +9,7 @@ import {
     showRepository,
 } from '@placeos/ts-client';
 
+import { Dialog } from '@angular/cdk/dialog';
 import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -20,7 +20,7 @@ import { DriverFormComponent } from '../drivers/driver-form.component';
 @Service()
 export class RepositoriesStateService {
     private _state = inject(ActiveItemService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     private _loading = signal(false);
     private _driver_list_error = signal('');

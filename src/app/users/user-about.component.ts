@@ -2,7 +2,6 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, computed, inject, resource } from '@angular/core';
 import { PlaceUser, showDomain } from '@placeos/ts-client';
 
-import { MatRippleModule } from '@angular/material/core';
 import { RouterLink } from '@angular/router';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -103,7 +102,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     <div class="-mx-1 flex flex-wrap">
                         @for (group of item.groups; track group) {
                             <button
-                                matRipple
+                                ripple
                                 class="mono bg-base-200 m-1 rounded-sm px-2 py-1 text-[0.625rem] select-text"
                                 (click)="copyGroup(group)"
                             >
@@ -131,12 +130,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             }
         `,
     ],
-    imports: [
-        ItemTimestampsComponent,
-        TranslatePipe,
-        MatRippleModule,
-        RouterLink,
-    ],
+    imports: [ItemTimestampsComponent, TranslatePipe, RouterLink],
 })
 export class UserAboutComponent {
     private _service = inject(ActiveItemService);

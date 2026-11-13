@@ -1,5 +1,5 @@
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ExtensionModalComponent } from '../../app/admin/extension-modal/extension-modal.component';
 import { HotkeysService } from '../../app/common/hotkeys.service';
@@ -15,7 +15,7 @@ describe('ExtensionModalComponent', () => {
             imports: [ExtensionModalComponent],
             providers: [
                 {
-                    provide: MAT_DIALOG_DATA,
+                    provide: DIALOG_DATA,
                     useValue: {
                         item: {
                             type: 'systems',

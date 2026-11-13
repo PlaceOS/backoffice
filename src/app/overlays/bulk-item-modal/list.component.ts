@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
 import { i18n } from '../../common/locale.service';
 import { HashMap, Identity } from '../../common/types';
 import { IconComponent } from '../../ui/icon.component';
@@ -118,17 +117,12 @@ import { TranslatePipe } from '../../ui/translate.pipe';
         <div
             class="bg-base-100 border-base-200 fixed right-0 bottom-0 left-0 z-20 flex items-center justify-end space-x-4 border-t px-4 py-4 shadow-lg"
         >
-            <button
-                btn
-                matRipple
-                class="inverse w-36"
-                (click)="previous.emit()"
-            >
+            <button btn ripple class="inverse w-36" (click)="previous.emit()">
                 {{ 'COMMON.BACK' | translate }}
             </button>
             <button
                 btn
-                matRipple
+                ripple
                 class="w-36"
                 [disabled]="!canSave()"
                 (click)="save()"
@@ -164,7 +158,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
         <ng-template #actions let-index="index">
             <button
                 icon
-                matRipple
+                ripple
                 class="text-error mx-auto"
                 title="Remove row"
                 (click)="removeItem(index); $event.stopPropagation()"
@@ -184,13 +178,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
             }
         `,
     ],
-    imports: [
-        FormsModule,
-        MatRippleModule,
-        SimpleTableComponent,
-        IconComponent,
-        TranslatePipe,
-    ],
+    imports: [FormsModule, SimpleTableComponent, IconComponent, TranslatePipe],
 })
 export class ListComponent {
     /** List of bulk items to add */

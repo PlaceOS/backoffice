@@ -7,12 +7,10 @@ import {
     input,
     signal,
 } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatTabNavPanel } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { DebugOutputComponent } from './debug-output.component';
 import { IconComponent } from './icon.component';
 import { ItemDetailsSkeletonComponent } from './item-details-skeleton.component';
@@ -103,7 +101,6 @@ function mediaQuery(query: string) {
                                     />
                                     <item-tablist
                                         [base]="name()"
-                                        [panel]="tab_panel"
                                         [tabs]="tabs()"
                                         [scrolled]="scroll() > 0"
                                         class="z-10"
@@ -113,12 +110,7 @@ function mediaQuery(query: string) {
                                         class="relative z-0 h-1/2 w-full flex-1 overflow-auto"
                                         (scroll)="scroll.set(el.scrollTop)"
                                     >
-                                        <mat-tab-nav-panel
-                                            #tab_panel
-                                            class="block h-full"
-                                        >
-                                            <router-outlet />
-                                        </mat-tab-nav-panel>
+                                        <router-outlet />
                                     </div>
                                 } @placeholder {
                                     <item-details-skeleton />
@@ -126,10 +118,12 @@ function mediaQuery(query: string) {
                             }
                         </div>
                         <button
-                            class="border-base-200 bg-secondary text-secondary-content absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border shadow-sm lg:-left-9"
-                            [matTooltip]="i18n_key() + '.NEW' | translate"
-                            matTooltipPosition="right"
-                            matRipple
+                            icon
+                            primary
+                            class="absolute bottom-2 left-2 z-30 h-12 w-12 lg:-left-9"
+                            [appTooltip]="i18n_key() + '.NEW' | translate"
+                            appTooltipPosition="right"
+                            ripple
                             [disabled]="!canCreate()"
                             (click)="newItem()"
                         >
@@ -137,10 +131,12 @@ function mediaQuery(query: string) {
                         </button>
                         @if (bulk()) {
                             <button
-                                class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-2 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm lg:-left-8"
-                                [matTooltip]="i18n_key() + '.BULK' | translate"
-                                matTooltipPosition="right"
-                                matRipple
+                                icon
+                                primary
+                                class="absolute bottom-16 left-2 z-30 h-10 w-10 lg:-left-8"
+                                [appTooltip]="i18n_key() + '.BULK' | translate"
+                                appTooltipPosition="right"
+                                ripple
                                 [disabled]="!canCreate()"
                                 (click)="bulkAdd()"
                             >
@@ -160,11 +156,9 @@ function mediaQuery(query: string) {
         </div>
     `,
     imports: [
-        MatTabNavPanel,
+        TooltipDirective,
         DebugOutputComponent,
         IconComponent,
-        MatRippleModule,
-        MatTooltipModule,
         TranslatePipe,
         ItemTablistComponent,
         ItemDetailsComponent,

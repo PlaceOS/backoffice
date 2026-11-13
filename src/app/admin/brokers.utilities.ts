@@ -1,5 +1,5 @@
-import { AuthType, PlaceMQTTBroker } from '@placeos/ts-client';
 import { required, SchemaFn } from '@angular/forms/signals';
+import { AuthType, PlaceMQTTBroker } from '@placeos/ts-client';
 
 export interface BrokerFormModel {
     name: string;

@@ -15,13 +15,8 @@ import {
 import { FormsModule } from '@angular/forms';
 import { FormField, disabled, form } from '@angular/forms/signals';
 
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { DatePipe, SlicePipe } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import {
     GitCommitDetails,
     PlaceRepository,
@@ -41,9 +36,16 @@ import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
 import { isValidUrl } from '../common/validation';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import {
+    SelectComponent,
+    SelectTriggerDirective,
+} from '../ui/controls/select.component';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import {
@@ -78,19 +80,18 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 {{ 'COMMON.FIELD_NAME' | translate
                                 }}<span>*</span>
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'COMMON.FIELD_NAME' | translate
                                     "
                                     id="repository-name"
                                     [formField]="form.name"
                                 />
-                                <mat-error>{{
-                                    'REPOS.NAME_REQUIRED' | translate
-                                }}</mat-error>
-                            </mat-form-field>
+                                <div error>
+                                    {{ 'REPOS.NAME_REQUIRED' | translate }}
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     <div class="fieldset">
@@ -101,8 +102,8 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 <label for="repo-type" id="repo-type-label">
                                     {{ 'REPOS.TYPE' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
-                                    <mat-select
+                                <app-form-field>
+                                    <app-select
                                         id="repo-type"
                                         aria-labelledby="repo-type-label"
                                         [formField]="form.repo_type"
@@ -111,12 +112,12 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                             type of repo_types();
                                             track type
                                         ) {
-                                            <mat-option [value]="type.id">
+                                            <app-option [value]="type.id">
                                                 {{ type.name }}
-                                            </mat-option>
+                                            </app-option>
                                         }
-                                    </mat-select>
-                                </mat-form-field>
+                                    </app-select>
+                                </app-form-field>
                             </div>
                         }
                         @if (!is_editing() && form.folder_name) {
@@ -131,19 +132,21 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                     {{ 'REPOS.FOLDER_NAME' | translate
                                     }}<span>*</span>
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         [placeholder]="
                                             'REPOS.FOLDER_NAME' | translate
                                         "
                                         id="folder-name"
                                         [formField]="form.folder_name"
                                     />
-                                    <mat-error>{{
-                                        'REPOS.FOLDER_NAME_REQUIRED' | translate
-                                    }}</mat-error>
-                                </mat-form-field>
+                                    <div error>
+                                        {{
+                                            'REPOS.FOLDER_NAME_REQUIRED'
+                                                | translate
+                                        }}
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -157,18 +160,17 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             >
                                 {{ 'REPOS.URI' | translate }}<span>*</span>
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="'REPOS.URI' | translate"
                                     id="uri"
                                     [formField]="form.uri"
                                     (blur)="markCredentialsBlur()"
                                 />
-                                <mat-error>{{
-                                    'REPOS.URI_REQUIRED' | translate
-                                }}</mat-error>
-                            </mat-form-field>
+                                <div error>
+                                    {{ 'REPOS.URI_REQUIRED' | translate }}
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     <div class="fieldset">
@@ -177,9 +179,8 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 <label for="repo-u"
                                     >{{ 'REPOS.USERNAME' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         autocomplete="off"
                                         [placeholder]="
                                             'REPOS.USERNAME' | translate
@@ -188,7 +189,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                         [formField]="form.username"
                                         (blur)="markCredentialsBlur()"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.password) {
@@ -196,9 +197,8 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                 <label for="repo-p">
                                     {{ 'REPOS.PASSWORD' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         autocomplete="new-password"
                                         [type]="
                                             show_password()
@@ -214,7 +214,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                     />
                                     <button
                                         type="button"
-                                        matSuffix
+                                        suffix
                                         [attr.aria-label]="
                                             'COMMON.PASSWORD_TOGGLE' | translate
                                         "
@@ -223,7 +223,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                     >
                                         <icon>visibility</icon>
                                     </button>
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -239,17 +239,15 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             >
                                 {{ 'REPOS.BRANCH' | translate }}<span>*</span>
                             </label>
-                            <mat-form-field appearance="outline">
-                                <mat-select
+                            <app-form-field>
+                                <app-select
                                     id="branch"
                                     aria-labelledby="branch-label"
                                     [formField]="form.branch"
                                     [placeholder]="'Select Branch'"
                                     (openedChange)="setBranchOpen($event)"
                                 >
-                                    <mat-option
-                                        class="bg-base-100 sticky -top-2 z-20"
-                                    >
+                                    <div select-search>
                                         <input
                                             #branch_search
                                             type="search"
@@ -266,7 +264,6 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                             "
                                             (click)="$event.stopPropagation()"
                                             (keydown)="$event.stopPropagation()"
-                                            class="option-search-input focus:bg-info/10 pointer-events-auto absolute inset-1 h-auto cursor-text rounded-sm p-4"
                                             [placeholder]="
                                                 'COMMON.SEARCH_FOR'
                                                     | translate
@@ -278,25 +275,32 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                                         : { name: 'branches' }
                                             "
                                         />
-                                    </mat-option>
+                                    </div>
+                                    <p select-empty>
+                                        {{
+                                            'COMMON.SEARCH_EMPTY'
+                                                | translate
+                                                    : { name: 'branches' }
+                                        }}
+                                    </p>
                                     @for (
                                         branch of filtered_branch_list();
                                         track branch
                                     ) {
-                                        <mat-option [value]="branch">
+                                        <app-option [value]="branch">
                                             {{ branch }}
-                                        </mat-option>
+                                        </app-option>
                                     }
-                                </mat-select>
+                                </app-select>
                                 @if (loading_branches()) {
-                                    <div class="suffix ml-2" matSuffix>
-                                        <mat-spinner diameter="24" />
+                                    <div class="suffix ml-2" suffix>
+                                        <app-spinner diameter="24" />
                                     </div>
                                 }
-                                <mat-error>{{
-                                    'REPOS.BRANCH_REQUIRED' | translate
-                                }}</mat-error>
-                            </mat-form-field>
+                                <div error>
+                                    {{ 'REPOS.BRANCH_REQUIRED' | translate }}
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     @if (is_interface()) {
@@ -304,15 +308,15 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             <label for="commit" id="commit-label">
                                 {{ 'REPOS.COMMIT' | translate }}</label
                             >
-                            <mat-form-field appearance="outline">
-                                <mat-select
+                            <app-form-field>
+                                <app-select
                                     id="commit"
                                     aria-labelledby="commit-label"
                                     [formField]="form.commit_hash"
                                     placeholder="Select commit"
                                     (openedChange)="setCommitOpen($event)"
                                 >
-                                    <mat-select-trigger>
+                                    <app-select-trigger>
                                         <div
                                             class="flex items-center space-x-4"
                                         >
@@ -331,10 +335,8 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                                 }}
                                             </div>
                                         </div>
-                                    </mat-select-trigger>
-                                    <mat-option
-                                        class="bg-base-100 sticky -top-2 z-20"
-                                    >
+                                    </app-select-trigger>
+                                    <div select-search>
                                         <input
                                             #commit_search
                                             type="search"
@@ -351,7 +353,6 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                             "
                                             (click)="$event.stopPropagation()"
                                             (keydown)="$event.stopPropagation()"
-                                            class="option-search-input focus:bg-info/10 pointer-events-auto absolute inset-1 h-auto cursor-text rounded-sm p-4"
                                             [placeholder]="
                                                 'COMMON.SEARCH_FOR'
                                                     | translate
@@ -363,12 +364,18 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                                         : { name: 'commits' }
                                             "
                                         />
-                                    </mat-option>
+                                    </div>
+                                    <p select-empty>
+                                        {{
+                                            'COMMON.SEARCH_EMPTY'
+                                                | translate: { name: 'commits' }
+                                        }}
+                                    </p>
                                     @for (
                                         commit of filtered_commit_list();
                                         track commit
                                     ) {
-                                        <mat-option [value]="commit.hash">
+                                        <app-option [value]="commit.hash">
                                             <!-- eslint-disable @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
                                             <div
                                                 class="flex w-[calc(100%-2.20rem)] flex-1 items-center space-x-2"
@@ -385,7 +392,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                                 >
                                                     <div
                                                         class="truncate text-sm"
-                                                        [matTooltip]="
+                                                        [appTooltip]="
                                                             commit.subject
                                                         "
                                                     >
@@ -416,15 +423,15 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                                     }}</code
                                                 >
                                             </div>
-                                        </mat-option>
+                                        </app-option>
                                     }
-                                </mat-select>
+                                </app-select>
                                 @if (loading_commits()) {
-                                    <div class="suffix ml-2" matSuffix>
-                                        <mat-spinner diameter="24" />
+                                    <div class="suffix ml-2" suffix>
+                                        <app-spinner diameter="24" />
                                     </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                         <div class="field">
                             <settings-toggle
@@ -441,16 +448,15 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             <label for="description">
                                 {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <textarea
-                                    matInput
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
                                     id="description"
                                     [formField]="form.description"
                                 ></textarea>
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.root_path) {
@@ -458,45 +464,31 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                             <label for="root-path">
                                 {{ 'REPOS.ROOT_PATH' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'REPOS.ROOT_PATH' | translate
                                     "
                                     id="root-path"
                                     [formField]="form.root_path"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </form>
             }
         </fullscreen-modal-shell>
     `,
-    styles: [
-        `
-            .option-search-input {
-                width: calc(100% - 0.5rem);
-                outline: none;
-            }
-
-            .option-search-input::placeholder {
-                color: var(--base-400, currentColor);
-                opacity: 0.65;
-            }
-        `,
-    ],
     imports: [
-        LoadingLabelDirective,
-        MatFormFieldModule,
-        MatInputModule,
-        MatProgressSpinnerModule,
+        SpinnerComponent,
+        TooltipDirective,
+        SelectTriggerDirective,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FormField,
         TranslatePipe,
         FormsModule,
-        MatSelectModule,
-        MatTooltipModule,
         IconComponent,
         SettingsToggleComponent,
         FullscreenModalShellComponent,
@@ -506,9 +498,9 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
 })
 export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     private _dialog_ref =
-        inject<MatDialogRef<RepositoryFormComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, RepositoryFormComponent>>(DialogRef);
     private _data = inject<{ item: PlaceRepository; readonly?: string }>(
-        MAT_DIALOG_DATA,
+        DIALOG_DATA,
     );
     private _injector = inject(Injector);
     private readonly _name = 'REPOS';

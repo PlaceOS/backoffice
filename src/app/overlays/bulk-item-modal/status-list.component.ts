@@ -7,14 +7,12 @@ import {
     signal,
     SimpleChanges,
 } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceResource } from '@placeos/ts-client';
 import { readError } from '../../common/errors';
 import { notifyError } from '../../common/notifications';
+import { SpinnerComponent } from '../../ui/controls/spinner.component';
+import { TooltipDirective } from '../../ui/controls/tooltip.directive';
 import { IconComponent } from '../../ui/icon.component';
-import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { VirtualScrollComponent } from '../../ui/virtual-scroll.component';
 
@@ -64,7 +62,7 @@ const BATCH_SIZE = 5;
                 >
                     <button
                         btn
-                        matRipple
+                        ripple
                         class="w-36"
                         (click)="close_modal.emit()"
                     >
@@ -94,7 +92,7 @@ const BATCH_SIZE = 5;
                             [class.text-error-content]="state !== 'done'"
                             [class.bg-success]="state === 'done'"
                             [class.text-success-content]="state === 'done'"
-                            [matTooltip]="state"
+                            [appTooltip]="state"
                         >
                             <icon>
                                 {{ state === 'done' ? 'done' : 'close' }}
@@ -102,7 +100,7 @@ const BATCH_SIZE = 5;
                         </div>
                     }
                     @if (state === 'loading') {
-                        <mat-spinner diameter="24" />
+                        <app-spinner diameter="24" />
                     }
                 </div>
             </div>
@@ -117,11 +115,9 @@ const BATCH_SIZE = 5;
         `,
     ],
     imports: [
-        LoadingLabelDirective,
-        MatRippleModule,
-        MatProgressSpinnerModule,
+        SpinnerComponent,
+        TooltipDirective,
         IconComponent,
-        MatTooltipModule,
         TranslatePipe,
         VirtualScrollComponent,
     ],

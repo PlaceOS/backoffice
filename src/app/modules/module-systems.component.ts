@@ -1,12 +1,10 @@
 import { Component, computed, inject, model } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterModule } from '@angular/router';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -17,22 +15,21 @@ import { ModuleStateService } from './module-state.service';
     template: `
         <div class="p-4">
             <section class="mb-4 flex items-center">
-                <mat-form-field appearance="outline" class="h-12 flex-1">
-                    <div class="prefix" matPrefix>
+                <app-form-field class="h-12 flex-1">
+                    <div class="prefix" prefix>
                         <icon class="relative -left-0.5 text-2xl">
                             search
                         </icon>
                     </div>
                     <input
                         [(ngModel)]="filter"
-                        matInput
                         [placeholder]="'SYSTEMS.SEARCH' | translate"
                         class="rounded-none"
                     />
-                </mat-form-field>
+                </app-form-field>
             </section>
             <section>
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="loading() !== true"
@@ -95,14 +92,12 @@ import { ModuleStateService } from './module-state.service';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        FormFieldComponent,
         DateFromPipe,
         SimpleTableComponent,
         RouterModule,
         TranslatePipe,
-        MatProgressBarModule,
-        MatFormFieldModule,
-        MatInputModule,
         FormsModule,
         IconComponent,
         RouterModule,

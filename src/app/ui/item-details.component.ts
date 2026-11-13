@@ -1,13 +1,13 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { Component, inject, input } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDriverRole } from '@placeos/ts-client';
 import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
+import { MENU_POSITIONS } from './controls/overlay';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 
@@ -92,7 +92,7 @@ export interface ItemAction {
                     @if (item()?.edge_id) {
                         <div
                             class="bg-info text-info-content rounded-xl px-2 py-1 text-xs"
-                            [matTooltip]="item()?.edge_id"
+                            [appTooltip]="item()?.edge_id"
                         >
                             {{ 'COMMON.EDGE' | translate }}
                         </div>
@@ -112,114 +112,125 @@ export interface ItemAction {
             <button
                 icon
                 default
-                matRipple
-                [matMenuTriggerFor]="action_menu"
+                ripple
+                [cdkMenuTriggerFor]="action_menu"
+                [cdkMenuPosition]="menu_positions"
                 [attr.aria-label]="'COMMON.MORE_ACTIONS' | translate"
             >
                 <icon>more_vert</icon>
             </button>
         </div>
-        <mat-menu #action_menu="matMenu" class="min-w-88">
-            @if (canMutate(4)) {
-                <button
-                    mat-menu-item
-                    class="flex items-center space-x-2"
-                    (click)="editItem()"
-                >
-                    <icon class="text-2xl">edit</icon>
-                    <div class="flex-1">
-                        {{ 'COMMON.EDIT_TYPE' | translate: { name: type() } }}
-                    </div>
-                    <span class="keycap">E</span>
-                </button>
-            }
-            @if (canCopy()) {
-                <button
-                    mat-menu-item
-                    class="flex items-center space-x-2"
-                    (click)="newFromItem()"
-                >
-                    <icon class="text-2xl">add</icon>
-                    <div>
-                        {{
-                            'COMMON.CREATE_FROM_TYPE'
-                                | translate: { name: type() }
-                        }}
-                    </div>
-                </button>
-            }
-            @if (canCopy(true)) {
-                <button
-                    mat-menu-item
-                    class="flex items-center space-x-2"
-                    (click)="duplicateItem()"
-                >
-                    <icon class="text-2xl">call_split</icon>
-                    <div>
-                        {{
-                            'COMMON.DUPLICATE_TYPE'
-                                | translate: { name: type() }
-                        }}
-                    </div>
-                </button>
-            }
-            <button
-                mat-menu-item
-                class="flex items-center space-x-2"
-                (click)="exportAsTSV()"
-            >
-                <icon class="text-2xl">download</icon>
-                <div>
-                    {{
-                        'COMMON.EXPORT_TYPE_AS_TSV'
-                            | translate: { name: type() }
-                    }}
-                </div>
-            </button>
-            @for (item of extra_actions(); track item.label) {
-                <button
-                    mat-menu-item
-                    class="flex items-center space-x-2"
-                    (click)="item.action()"
-                >
-                    <icon
-                        class="text-2xl"
-                        [class.text-error]="item.destructive"
-                        >{{ item.icon }}</icon
+        <ng-template #action_menu>
+            <div cdkMenu class="min-w-88">
+                @if (canMutate(4)) {
+                    <button
+                        cdkMenuItem
+                        class="flex items-center space-x-2"
+                        (click)="editItem()"
                     >
-                    <div class="flex-1">
-                        {{ item.label | translate }}
-                    </div>
-                    @if (item.keycap) {
-                        <span class="keycap">{{ item.keycap }}</span>
-                    }
-                </button>
-            }
-            @if (canMutate(8)) {
+                        <icon class="text-2xl">edit</icon>
+                        <div class="flex-1">
+                            {{
+                                'COMMON.EDIT_TYPE' | translate: { name: type() }
+                            }}
+                        </div>
+                        <span class="keycap">E</span>
+                    </button>
+                }
+                @if (canCopy()) {
+                    <button
+                        cdkMenuItem
+                        class="flex items-center space-x-2"
+                        (click)="newFromItem()"
+                    >
+                        <icon class="text-2xl">add</icon>
+                        <div>
+                            {{
+                                'COMMON.CREATE_FROM_TYPE'
+                                    | translate: { name: type() }
+                            }}
+                        </div>
+                    </button>
+                }
+                @if (canCopy(true)) {
+                    <button
+                        cdkMenuItem
+                        class="flex items-center space-x-2"
+                        (click)="duplicateItem()"
+                    >
+                        <icon class="text-2xl">call_split</icon>
+                        <div>
+                            {{
+                                'COMMON.DUPLICATE_TYPE'
+                                    | translate: { name: type() }
+                            }}
+                        </div>
+                    </button>
+                }
                 <button
-                    mat-menu-item
+                    cdkMenuItem
                     class="flex items-center space-x-2"
-                    (click)="deleteItem()"
+                    (click)="exportAsTSV()"
                 >
-                    <icon class="text-error text-2xl">delete</icon>
-                    <div class="flex-1">
-                        {{ 'COMMON.DELETE_TYPE' | translate: { name: type() } }}
+                    <icon class="text-2xl">download</icon>
+                    <div>
+                        {{
+                            'COMMON.EXPORT_TYPE_AS_TSV'
+                                | translate: { name: type() }
+                        }}
                     </div>
-                    <span class="keycap">⌦</span>
                 </button>
-            }
-        </mat-menu>
+                @for (item of extra_actions(); track item.label) {
+                    <button
+                        cdkMenuItem
+                        class="flex items-center space-x-2"
+                        (click)="item.action()"
+                    >
+                        <icon
+                            class="text-2xl"
+                            [class.text-error]="item.destructive"
+                            >{{ item.icon }}</icon
+                        >
+                        <div class="flex-1">
+                            {{ item.label | translate }}
+                        </div>
+                        @if (item.keycap) {
+                            <span class="keycap">{{ item.keycap }}</span>
+                        }
+                    </button>
+                }
+                @if (canMutate(8)) {
+                    <button
+                        cdkMenuItem
+                        class="flex items-center space-x-2"
+                        (click)="deleteItem()"
+                    >
+                        <icon class="text-error text-2xl">delete</icon>
+                        <div class="flex-1">
+                            {{
+                                'COMMON.DELETE_TYPE'
+                                    | translate: { name: type() }
+                            }}
+                        </div>
+                        <span class="keycap">⌦</span>
+                    </button>
+                }
+            </div>
+        </ng-template>
     `,
     styles: [``],
     imports: [
+        TooltipDirective,
         IconComponent,
         TranslatePipe,
-        MatMenuModule,
-        MatRippleModule,
-        MatTooltipModule,
+        CdkMenu,
+        CdkMenuItem,
+        CdkMenuTrigger,
     ],
 })
 export class ItemDetailsComponent {
+    /** Menu positions with a gap from the trigger */
+    public readonly menu_positions = MENU_POSITIONS;
     private _service = inject(ActiveItemService);
     private _clipboard = inject(Clipboard);
 

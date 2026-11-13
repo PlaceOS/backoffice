@@ -1,6 +1,6 @@
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { format, fromUnixTime, getUnixTime } from 'date-fns';
 
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 import {
     Component,
     computed,
@@ -18,12 +18,6 @@ import {
     required,
     submit,
 } from '@angular/forms/signals';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import {
     PlaceDomain,
     PlaceUser,
@@ -35,6 +29,14 @@ import { getInvalidSignalFields } from '../../common/forms';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
 import { DialogEvent } from '../../common/types';
+import {
+    AutocompleteComponent,
+    AutocompleteTriggerDirective,
+} from '../../ui/controls/autocomplete.component';
+import { ChipListComponent } from '../../ui/controls/chip-list.component';
+import { FormFieldComponent } from '../../ui/controls/form-field.component';
+import { OptionComponent } from '../../ui/controls/option.component';
+import { SelectComponent } from '../../ui/controls/select.component';
 import { FullscreenModalShellComponent } from '../../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -64,93 +66,69 @@ export interface APIKeyModalData {
                         >{{ 'COMMON.FIELD_NAME' | translate
                         }}<span>*</span></label
                     >
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
                             [placeholder]="'COMMON.FIELD_NAME' | translate"
                             [formField]="form.name"
-                            matInput
                         />
-                        <mat-error>{{
-                            'ADMIN.APP_KEYS_NAME_REQUIRED' | translate
-                        }}</mat-error>
-                    </mat-form-field>
+                        <div error>
+                            {{ 'ADMIN.APP_KEYS_NAME_REQUIRED' | translate }}
+                        </div>
+                    </app-form-field>
                 </div>
                 <div class="flex flex-col">
                     <label for="name">{{
                         'COMMON.FIELD_DESCRIPTION' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <textarea
                             [placeholder]="
                                 'COMMON.FIELD_DESCRIPTION' | translate
                             "
                             [formField]="form.description"
-                            matInput
                         ></textarea>
-                    </mat-form-field>
+                    </app-form-field>
                 </div>
                 <div class="flex flex-col">
                     <label for="scope"
                         >{{ 'ADMIN.APP_KEYS_FIELD_SCOPES' | translate
                         }}<span>*</span></label
                     >
-                    <mat-form-field appearance="outline">
-                        <mat-chip-grid #chipList aria-label="Scopes">
-                            @for (scope of scope_list; track scope) {
-                                <mat-chip
-                                    [removable]="true"
-                                    (removed)="removeScope(scope)"
-                                >
-                                    {{ scope }}
-                                    <icon matChipRemove>close</icon>
-                                </mat-chip>
-                            }
-                            <input
-                                #chip_input
-                                matInput
-                                placeholder="Scopes..."
-                                [matChipInputFor]="chipList"
-                                [matChipInputSeparatorKeyCodes]="separators"
-                                [matChipInputAddOnBlur]="true"
-                                (matChipInputTokenEnd)="addScope($event)"
-                                (input)="
-                                    scope_search.set($any($event.target).value)
-                                "
-                                [matAutocomplete]="auto"
-                            />
-                        </mat-chip-grid>
-                        <mat-error>{{
-                            'ADMIN.APP_KEYS_SCOPES_REQUIRED' | translate
-                        }}</mat-error>
-                        <mat-autocomplete #auto="matAutocomplete">
-                            @for (option of filtered_scopes(); track option) {
-                                <mat-option
-                                    (click)="
-                                        addScope({
-                                            input: chip_input,
-                                            value: option,
-                                        })
-                                    "
-                                >
-                                    {{ option }}
-                                </mat-option>
-                            }
-                        </mat-autocomplete>
-                    </mat-form-field>
+                    <app-form-field>
+                        <app-chip-list
+                            inputId="scope"
+                            aria-label="Scopes"
+                            placeholder="Scopes..."
+                            [separators]="['Enter', ',', ' ']"
+                            [autocomplete]="auto"
+                            [formField]="form.scopes"
+                            (textChange)="scope_search.set($event)"
+                        />
+                        <div error>
+                            {{ 'ADMIN.APP_KEYS_SCOPES_REQUIRED' | translate }}
+                        </div>
+                    </app-form-field>
+                    <app-autocomplete #auto="appAutocomplete">
+                        @for (option of filtered_scopes(); track option) {
+                            <app-option [value]="option">
+                                {{ option }}
+                            </app-option>
+                        }
+                    </app-autocomplete>
                 </div>
                 <div class="flex flex-col">
                     <label for="user">
                         {{ 'USERS.SINGULAR' | translate }}<span>*</span>
                     </label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         @if (formModel().user?.id) {
                             <a-user-avatar
-                                matPrefix
+                                prefix
                                 class="relative -left-1"
                                 [user]="formModel().user"
                             />
                         } @else {
-                            <div class="prefix" matPrefix>
+                            <div class="prefix" prefix>
                                 <icon class="relative -left-0.5 text-2xl">
                                     search
                                 </icon>
@@ -158,19 +136,18 @@ export interface APIKeyModalData {
                         }
                         <input
                             id="user"
-                            matInput
                             autocomplete="off"
                             [ngModel]="search_term()"
                             (ngModelChange)="setSearch($event)"
                             [ngModelOptions]="{ standalone: true }"
-                            [matAutocomplete]="userAuto"
+                            [appAutocomplete]="userAuto"
                             [placeholder]="'USERS.SEARCH' | translate"
                             (focus)="setSearch(search_term())"
                             (blur)="resetUserSearch()"
                         />
-                        <div matSuffix class="flex items-center gap-2">
+                        <div suffix class="flex items-center gap-2">
                             @if (user_list_loading()) {
-                                <span matSuffix class="px-2">
+                                <span suffix class="px-2">
                                     <span
                                         class="border-base-300 border-t-info inline-block h-4 w-4 animate-spin rounded-full border-2"
                                     ></span>
@@ -189,90 +166,87 @@ export interface APIKeyModalData {
                                 </button>
                             }
                         </div>
-                        <mat-error>{{
-                            'COMMON.FIELD_REQUIRED' | translate
-                        }}</mat-error>
-                        <mat-autocomplete
-                            #userAuto="matAutocomplete"
-                            (optionSelected)="selectUser($event.option.value)"
-                        >
-                            @for (item of users(); track item.id) {
-                                <mat-option [value]="item">
-                                    <div
-                                        class="flex min-w-0 items-center space-x-3 py-2"
-                                    >
-                                        <a-user-avatar
-                                            class="shrink-0"
-                                            [user]="item"
-                                        />
-                                        <div
-                                            class="min-w-0 flex-1 leading-tight"
-                                        >
-                                            <div class="truncate font-medium">
-                                                {{ item.name || item.email }}
-                                            </div>
-                                            <div
-                                                class="text-base-content/60 truncate text-xs"
-                                            >
-                                                {{ item.email }}
-                                            </div>
+                        <div error>
+                            {{ 'COMMON.FIELD_REQUIRED' | translate }}
+                        </div>
+                    </app-form-field>
+                    <app-autocomplete
+                        #userAuto="appAutocomplete"
+                        (optionSelected)="pickUser($event.value)"
+                    >
+                        @for (item of users(); track item.id) {
+                            <app-option [value]="item">
+                                <div
+                                    class="flex min-w-0 items-center space-x-3 py-2"
+                                >
+                                    <a-user-avatar
+                                        class="shrink-0"
+                                        [user]="item"
+                                    />
+                                    <div class="min-w-0 flex-1 leading-tight">
+                                        <div class="truncate font-medium">
+                                            {{ item.name || item.email }}
                                         </div>
-                                        @if (item.sys_admin || item.support) {
-                                            <code
-                                                class="border-base-300 border px-2"
-                                                >{{
-                                                    (item.sys_admin
-                                                        ? 'COMMON.USER_ADMIN'
-                                                        : 'COMMON.USER_SUPPORT'
-                                                    ) | translate
-                                                }}</code
-                                            >
-                                        }
+                                        <div
+                                            class="text-base-content/60 truncate text-xs"
+                                        >
+                                            {{ item.email }}
+                                        </div>
                                     </div>
-                                </mat-option>
-                            }
-                            @if (!users()?.length) {
-                                <mat-option [disabled]="true">
-                                    No results
-                                </mat-option>
-                            }
-                        </mat-autocomplete>
-                    </mat-form-field>
+                                    @if (item.sys_admin || item.support) {
+                                        <code
+                                            class="border-base-300 border px-2"
+                                            >{{
+                                                (item.sys_admin
+                                                    ? 'COMMON.USER_ADMIN'
+                                                    : 'COMMON.USER_SUPPORT'
+                                                ) | translate
+                                            }}</code
+                                        >
+                                    }
+                                </div>
+                            </app-option>
+                        }
+                        @if (!users()?.length) {
+                            <app-option [disabled]="true">
+                                No results
+                            </app-option>
+                        }
+                    </app-autocomplete>
                 </div>
                 <div class="flex flex-col">
                     <label for="permissions">{{
                         'ADMIN.PERMISSIONS' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
+                    <app-form-field>
+                        <app-select
                             id="permissions"
                             data-testid="api-key-permissions"
                             placeholder="None"
                             [formField]="form.permissions"
                         >
-                            <mat-option [value]="null">{{
+                            <app-option [value]="null">{{
                                 'ADMIN.PERMISSIONS_NONE' | translate
-                            }}</mat-option>
-                            <mat-option value="user">{{
+                            }}</app-option>
+                            <app-option value="user">{{
                                 'ADMIN.PERMISSIONS_USER' | translate
-                            }}</mat-option>
-                            <mat-option value="support">{{
+                            }}</app-option>
+                            <app-option value="support">{{
                                 'ADMIN.PERMISSIONS_SUPPORT' | translate
-                            }}</mat-option>
-                            <mat-option value="admin">{{
+                            }}</app-option>
+                            <app-option value="admin">{{
                                 'ADMIN.PERMISSIONS_ADMIN' | translate
-                            }}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                            }}</app-option>
+                        </app-select>
+                    </app-form-field>
                 </div>
                 <div class="flex flex-col">
                     <label for="expires_at">{{
                         'ADMIN.APP_KEYS_FIELD_EXPIRES_AT' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
                             id="expires_at"
-                            matInput
                             type="datetime-local"
                             [ngModel]="expires_at_input()"
                             (ngModelChange)="setExpiry($event)"
@@ -281,7 +255,7 @@ export interface APIKeyModalData {
                         @if (formModel().expires_at) {
                             <button
                                 icon
-                                matSuffix
+                                suffix
                                 type="button"
                                 (click)="setExpiry('')"
                                 [attr.aria-label]="
@@ -291,15 +265,15 @@ export interface APIKeyModalData {
                                 <icon>close</icon>
                             </button>
                         }
-                    </mat-form-field>
+                    </app-form-field>
                 </div>
                 @if (!editing) {
                     <div class="flex flex-col">
                         <label for="ttl">{{
                             'ADMIN.APP_KEYS_FIELD_TTL' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
-                            <mat-select
+                        <app-form-field>
+                            <app-select
                                 id="ttl"
                                 data-testid="api-key-ttl"
                                 [placeholder]="
@@ -309,19 +283,19 @@ export interface APIKeyModalData {
                                 (ngModelChange)="setTTL($event)"
                                 [ngModelOptions]="{ standalone: true }"
                             >
-                                <mat-option [value]="null">{{
+                                <app-option [value]="null">{{
                                     'ADMIN.APP_KEYS_TTL_NONE' | translate
-                                }}</mat-option>
+                                }}</app-option>
                                 @for (
                                     preset of ttl_presets;
                                     track preset.seconds
                                 ) {
-                                    <mat-option [value]="preset.seconds">{{
+                                    <app-option [value]="preset.seconds">{{
                                         preset.label | translate
-                                    }}</mat-option>
+                                    }}</app-option>
                                 }
-                            </mat-select>
-                        </mat-form-field>
+                            </app-select>
+                        </app-form-field>
                     </div>
                 }
             </form>
@@ -329,22 +303,23 @@ export interface APIKeyModalData {
     `,
     styles: [``],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         TranslatePipe,
         FormsModule,
         FormField,
         FullscreenModalShellComponent,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatAutocompleteModule,
-        MatInputModule,
-        MatChipsModule,
+        AutocompleteComponent,
+        AutocompleteTriggerDirective,
+        ChipListComponent,
         IconComponent,
         UserAvatarComponent,
     ],
 })
 export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     private _service = inject(APIKeyService);
-    private _data: APIKeyModalData = inject(MAT_DIALOG_DATA);
+    private _data: APIKeyModalData = inject(DIALOG_DATA);
 
     @Output() public event = new EventEmitter<DialogEvent>();
     public readonly scopes = this._service.available_scopes;
@@ -430,8 +405,6 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                 .includes(search),
         );
     });
-    /** List of separator characters for tags */
-    public readonly separators: number[] = [ENTER, COMMA, SPACE];
     /** Selectable TTL presets, value in seconds from creation */
     public readonly ttl_presets: { label: string; seconds: number }[] = [
         { label: 'ADMIN.APP_KEYS_TTL_HOUR', seconds: 3600 },
@@ -447,26 +420,6 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         this.search_term.set(term);
         this.loadUsers();
     };
-
-    public readonly addScope = (
-        e: MatChipInputEvent | { input: HTMLInputElement; value: string },
-    ) => {
-        const value = `${e.value || ''}`.trim();
-        if (!value) return;
-        this.formModel.update((model) => ({
-            ...model,
-            scopes: model.scopes.includes(value)
-                ? model.scopes
-                : [...model.scopes, value],
-        }));
-        e.input.value = '';
-        this.scope_search.set('');
-    };
-    public readonly removeScope = (i: string) =>
-        this.formModel.update((model) => ({
-            ...model,
-            scopes: model.scopes.filter((scope) => scope !== i),
-        }));
 
     public ngOnInit() {
         this.domain.set(this._data.domain);
@@ -509,6 +462,12 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         this.search_term.set(this._userLabel(user));
     }
 
+    /** Select the user that the user picked in the autocomplete */
+    public pickUser(value: unknown) {
+        const user = this.users().find((item) => item === value);
+        if (user) this.selectUser(user);
+    }
+
     public clearUser() {
         this.formModel.update((value) => ({
             ...value,
@@ -524,10 +483,6 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
             const user = this.formModel().user;
             this.search_term.set(user ? this._userLabel(user) : '');
         }, 150);
-    }
-
-    public get scope_list(): string[] {
-        return this.formModel().scopes;
     }
 
     public async save() {
