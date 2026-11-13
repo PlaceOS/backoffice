@@ -664,5 +664,45 @@ describe('cascade-delete', () => {
             expect(outcome.failures[0].resource.id).toBe('sys-broken');
             expect(outcome.skipped.map((_) => _.id)).toEqual(['zone-after']);
         });
+
+        it('lets running system removals finish after one fails and starts no more', async () => {
+            const removals = new Map<
+                string,
+                { resolve: () => void; reject: (error: Error) => void }
+            >();
+            const systems = ['s1', 's2', 's3', 's4', 's5'].map((id) => ({
+                resource: { type: 'system' as const, id, name: id },
+                run: vi.fn(
+                    () =>
+                        new Promise<void>((resolve, reject) =>
+                            removals.set(id, { resolve, reject }),
+                        ),
+                ),
+            }));
+            const zone = {
+                resource: { type: 'zone' as const, id: 'zone-1', name: 'zone' },
+                run: vi.fn(() => Promise.resolve()),
+            };
+            const running = runCascade({
+                scope: [],
+                summary: [],
+                warnings: [],
+                steps: [...systems, zone],
+            });
+            expect([...removals.keys()]).toEqual(['s1', 's2', 's3', 's4']);
+            removals.get('s1').reject(new Error('In use'));
+            await new Promise((resolve) => setTimeout(resolve));
+            expect(systems[4].run).not.toHaveBeenCalled();
+            for (const id of ['s2', 's3', 's4']) removals.get(id).resolve();
+            const outcome = await running;
+            expect(zone.run).not.toHaveBeenCalled();
+            expect(outcome.removed.map((_) => _.id)).toEqual([
+                's2',
+                's3',
+                's4',
+            ]);
+            expect(outcome.failures.map((_) => _.resource.id)).toEqual(['s1']);
+            expect(outcome.skipped.map((_) => _.id)).toEqual(['s5', 'zone-1']);
+        });
     });
 });

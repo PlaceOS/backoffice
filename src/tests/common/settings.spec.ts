@@ -41,7 +41,8 @@ vi.mock('../../app/common/general', () => ({
     log: vi.fn(),
 }));
 
-import { showMetadata } from '@placeos/ts-client';
+import type { PlaceMetadata } from '@placeos/ts-client';
+import { showMetadata, updateMetadata } from '@placeos/ts-client';
 
 import { log } from '../../app/common/general';
 import { DEFAULT_SETTINGS } from '../../app/common/settings';
@@ -338,5 +339,69 @@ describe('SettingsService', () => {
             service.saveUserSetting('object_setting', { key: 'value' });
             expect(service.get('object_setting')).toEqual({ key: 'value' });
         });
+    });
+});
+
+describe('SettingsService saving', () => {
+    let service: SettingsService;
+
+    beforeEach(async () => {
+        vi.useFakeTimers();
+        // A saved theme stops `init()` saving the OS theme as a change
+        vi.mocked(showMetadata).mockResolvedValueOnce({
+            details: { theme: 'dark', columns: 3 },
+        } as Partial<PlaceMetadata> as PlaceMetadata);
+        TestBed.configureTestingModule({
+            providers: [
+                SettingsService,
+                {
+                    provide: Title,
+                    useValue: { getTitle: () => '', setTitle: vi.fn() },
+                },
+            ],
+        });
+        service = TestBed.inject(SettingsService);
+        await vi.advanceTimersByTimeAsync(0);
+    });
+
+    afterEach(() => {
+        service.ngOnDestroy();
+        vi.clearAllMocks();
+        vi.useRealTimers();
+    });
+
+    it('saves every change with the loaded settings after the delay', async () => {
+        service.saveUserSetting('compact', true);
+        service.saveUserSetting('page_size', 50);
+        await vi.advanceTimersByTimeAsync(4999);
+        expect(updateMetadata).not.toHaveBeenCalled();
+        await vi.advanceTimersByTimeAsync(1);
+        expect(updateMetadata).toHaveBeenCalledExactlyOnceWith('user-123', {
+            name: 'settings',
+            description: '',
+            details: {
+                theme: 'dark',
+                columns: 3,
+                compact: true,
+                page_size: 50,
+            },
+        });
+    });
+
+    it('saves the newer value of a setting after a failed save', async () => {
+        let failSave: (error: Error) => void;
+        vi.mocked(updateMetadata).mockReturnValueOnce(
+            new Promise((_, reject) => (failSave = reject)),
+        );
+        service.saveUserSetting('columns', 4);
+        await vi.advanceTimersByTimeAsync(5000);
+        service.saveUserSetting('columns', 5);
+        failSave(new Error('Offline'));
+        await vi.advanceTimersByTimeAsync(5000);
+        expect(updateMetadata).toHaveBeenCalledTimes(2);
+        expect(updateMetadata).toHaveBeenLastCalledWith(
+            'user-123',
+            expect.objectContaining({ details: { theme: 'dark', columns: 5 } }),
+        );
     });
 });

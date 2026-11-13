@@ -229,41 +229,4 @@ describe('placeos.ts', () => {
             expect(typeof result.then).toBe('function');
         });
     });
-
-    describe('PlaceSettings interface', () => {
-        it('should accept all required properties', () => {
-            const settings: PlaceSettings = {
-                protocol: 'https:',
-                domain: 'example.com',
-                port: 443,
-                route: '/app',
-                use_domain: true,
-                local_login: false,
-                mock: false,
-            };
-
-            expect(settings.protocol).toBe('https:');
-            expect(settings.domain).toBe('example.com');
-            expect(settings.port).toBe(443);
-            expect(settings.route).toBe('/app');
-            expect(settings.use_domain).toBe(true);
-            expect(settings.local_login).toBe(false);
-            expect(settings.mock).toBe(false);
-        });
-
-        it('should accept optional ignore_api_key', () => {
-            const settings: PlaceSettings = {
-                protocol: 'http:',
-                domain: 'localhost',
-                port: 4200,
-                route: '',
-                use_domain: false,
-                local_login: true,
-                mock: true,
-                ignore_api_key: true,
-            };
-
-            expect(settings.ignore_api_key).toBe(true);
-        });
-    });
 });

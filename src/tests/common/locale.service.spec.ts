@@ -1,4 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { PlaceMetadata } from '@placeos/ts-client';
+import { showMetadata } from '@placeos/ts-client';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock @placeos/ts-client
 vi.mock('@placeos/ts-client', () => ({
@@ -163,52 +165,53 @@ describe('setTranslationService', () => {
     });
 });
 
-describe('LocaleService behavior patterns', () => {
-    it('should handle translation with variable replacement', () => {
-        const mock_service = {
-            get: vi.fn((key, args) => {
-                let value = 'Welcome {{ name }}';
-                for (const id in args) {
-                    value = value.replace(`{{ ${id} }}`, `${args[id]}`);
-                }
-                return value;
-            }),
-        };
-        setTranslationService(mock_service as any);
+describe('LocaleService translations', () => {
+    /** Serve `data` as the locale file */
+    const stubLocaleFile = (data: object) =>
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(() =>
+                Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(data),
+                }),
+            ),
+        );
 
-        const result = i18n('welcome', { name: 'Alice' });
-        expect(result).toBe('Welcome Alice');
+    beforeEach(() => localStorage.clear());
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        localStorage.clear();
     });
 
-    it('should handle multiple variable replacements', () => {
-        const mock_service = {
-            get: vi.fn((key, args) => {
-                let value = '{{ user }} has {{ count }} messages';
-                for (const id in args) {
-                    value = value.replace(`{{ ${id} }}`, `${args[id]}`);
-                }
-                return value;
-            }),
-        };
-        setTranslationService(mock_service as any);
-
-        const result = i18n('messages', { user: 'Bob', count: 5 });
-        expect(result).toBe('Bob has 5 messages');
+    it('fills in arguments and picks plural forms from the locale file', async () => {
+        stubLocaleFile({
+            INBOX: {
+                WELCOME: 'Bonjour {{ name }}',
+                ITEMS_1: '{{ count }} élément',
+                ITEMS_N: '{{ count }} éléments',
+            },
+        });
+        const service = new LocaleService();
+        await service.setLocale('fr');
+        expect(service.get('INBOX.WELCOME', { name: 'Alex' })).toBe(
+            'Bonjour Alex',
+        );
+        expect(service.get('INBOX.ITEMS', { count: 1 }, 1)).toBe('1 élément');
+        expect(service.get('INBOX.ITEMS', { count: 5 }, 5)).toBe('5 éléments');
     });
 
-    it('should handle plural forms', () => {
-        const mock_service = {
-            get: vi.fn((key, args, plural) => {
-                if (plural === 1) return '1 item';
-                if (plural > 1) return `${plural} items`;
-                return '0 items';
-            }),
-        };
-        setTranslationService(mock_service as any);
-
-        expect(i18n('items', {}, 0)).toBe('0 items');
-        expect(i18n('items', {}, 1)).toBe('1 item');
-        expect(i18n('items', {}, 5)).toBe('5 items');
+    it('lets zone metadata replace matching strings and keeps the others', async () => {
+        stubLocaleFile({ INBOX: { WELCOME: 'Bonjour', LEAVE: 'Au revoir' } });
+        vi.mocked(showMetadata).mockResolvedValueOnce({
+            details: { INBOX: { WELCOME: 'Salut' } },
+        } as Partial<PlaceMetadata> as PlaceMetadata);
+        const service = new LocaleService();
+        service.zone_id = 'zone-1';
+        await service.setLocale('fr');
+        expect(showMetadata).toHaveBeenCalledWith('zone-1', 'locale_fr');
+        expect(service.get('INBOX.WELCOME')).toBe('Salut');
+        expect(service.get('INBOX.LEAVE')).toBe('Au revoir');
     });
 });
 

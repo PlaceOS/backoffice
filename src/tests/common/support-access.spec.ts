@@ -4,6 +4,7 @@ import {
     canAccessSection,
     canUseSupportAction,
     clearSupportModuleCache,
+    hasSupportRole,
     hasSupportSubsystem,
     isSubsystemUser,
     loadSupportAccess,
@@ -119,6 +120,35 @@ describe('support subsystem access', () => {
             q: 'office',
             group_id: 'group-1',
         });
+    });
+
+    it('keeps the latest user access when an earlier admin group list arrives late', async () => {
+        let resolveAdminGroups: (page: {
+            data: PlaceGroup[];
+            total: number;
+            next: null;
+        }) => void;
+        api.queryGroups.mockReturnValueOnce(
+            new Promise((resolve) => (resolveAdminGroups = resolve)),
+        );
+        await loadSupportAccess(
+            new PlaceUser({ id: 'admin', sys_admin: true }),
+        );
+        api.currentGroups.mockResolvedValue([
+            membership(1, 'support', 'group-2'),
+        ]);
+        await loadSupportAccess(new PlaceUser({ id: 'user-2' }));
+        resolveAdminGroups({
+            data: [membership(1).group],
+            total: 1,
+            next: null,
+        });
+        await new Promise((resolve) => setTimeout(resolve));
+        expect(hasSupportRole()).toBe(false);
+        expect(support_groups().map(({ group }) => group.id)).toEqual([
+            'group-2',
+        ]);
+        expect(selected_support_group_id()).toBe('group-2');
     });
 
     it('returns an empty zone list without an unscoped request when there are no readable groups', async () => {
@@ -238,6 +268,32 @@ describe('selected support group', () => {
         expect(api.queryModules).toHaveBeenCalledWith({
             control_system_id: 'sys-2',
         });
+    });
+
+    it('lists modules from readable systems when another system has no read grant', async () => {
+        api.currentGroups.mockResolvedValue([membership(1)]);
+        await loadSupportAccess(new PlaceUser());
+        api.querySystems.mockResolvedValue({
+            data: [{ id: 'sys-1' }, { id: 'sys-2' }],
+            total: 2,
+            next: null,
+        });
+        api.queryModules.mockImplementation(
+            async ({ control_system_id }: { control_system_id: string }) => {
+                if (control_system_id === 'sys-1') {
+                    throw Object.assign(new Error('Forbidden'), {
+                        status: 403,
+                    });
+                }
+                return {
+                    data: [{ id: 'mod-2', name: 'Light' }],
+                    total: 1,
+                    next: null,
+                };
+            },
+        );
+        const result = await querySupportModules({});
+        expect(result.data.map(({ id }) => id)).toEqual(['mod-2']);
     });
 
     it('walks the group systems once for every search on the same group', async () => {

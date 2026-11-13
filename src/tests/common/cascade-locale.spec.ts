@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@placeos/ts-client', () => ({
     showMetadata: vi.fn(() => ({
@@ -19,6 +19,8 @@ describe('cascade locale strings', () => {
     const locale = new LocaleService();
     const get = (key: string, count: number) =>
         locale.get(key, { count }, count);
+    // The fallback translations load lazily
+    beforeAll(() => locale.ready);
 
     it.each([
         ['CASCADE.SCOPE_ZONES', 1, 'Scope: this zone and 1 zone beneath it.'],
