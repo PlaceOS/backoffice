@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { sourceResync, sourceResyncStatus } from '@placeos/ts-client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { Dialog } from '@angular/cdk/dialog';
 import { PlaceDatabaseDetailsComponent } from '../../app/admin/database-details.component';
 import {
     notifyError,
@@ -51,7 +51,7 @@ describe('Database details: MQTT re-sync', () => {
     async function createComponent() {
         await TestBed.configureTestingModule({
             imports: [PlaceDatabaseDetailsComponent],
-            providers: [{ provide: MatDialog, useValue: { open: vi.fn() } }],
+            providers: [{ provide: Dialog, useValue: { open: vi.fn() } }],
         }).compileComponents();
         const fixture = TestBed.createComponent(PlaceDatabaseDetailsComponent);
         fixture.detectChanges();

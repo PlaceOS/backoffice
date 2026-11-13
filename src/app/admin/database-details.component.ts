@@ -8,9 +8,7 @@ import {
     sourceResyncStatus,
 } from '@placeos/ts-client';
 
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Dialog } from '@angular/cdk/dialog';
 import { AsyncHandler } from '../common/async-handler.class';
 import { mapLimit } from '../common/cascade-delete';
 import { readError } from '../common/errors';
@@ -21,7 +19,7 @@ import {
     notifyWarn,
 } from '../common/notifications';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component';
 
 /** How often a running MQTT re-sync is checked on */
@@ -114,7 +112,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                 </p>
                 <button
                     btn
-                    matRipple
+                    ripple
                     class="w-[calc(100%-0.5rem)]"
                     [disabled]="exporting_zones() || importing_zones()"
                     (click)="exportZoneTree()"
@@ -123,7 +121,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                         Export Zone Tree
                     } @else {
                         <div class="my-1 flex w-full justify-center">
-                            <mat-spinner diameter="32" />
+                            <app-spinner diameter="32" />
                         </div>
                     }
                 </button>
@@ -145,7 +143,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                 />
                 <button
                     btn
-                    matRipple
+                    ripple
                     class="w-[calc(100%-0.5rem)]"
                     [disabled]="exporting_zones() || importing_zones()"
                     (click)="zoneImportFile.click()"
@@ -154,7 +152,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                         Import Zone Tree
                     } @else {
                         <div class="my-1 flex w-full justify-center">
-                            <mat-spinner diameter="32" />
+                            <app-spinner diameter="32" />
                         </div>
                     }
                 </button>
@@ -173,7 +171,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                 <div class="flex flex-wrap justify-center">
                     <button
                         btn
-                        matRipple
+                        ripple
                         mqtt-resync-button
                         [disabled]="mqtt_running()"
                         (click)="resyncMqtt(false)"
@@ -182,7 +180,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                     </button>
                     <button
                         btn
-                        matRipple
+                        ripple
                         mqtt-clear-button
                         class="error"
                         [disabled]="mqtt_running()"
@@ -197,7 +195,7 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                         class="flex items-center justify-center space-x-2 p-2 text-sm opacity-80"
                     >
                         @if (mqtt_running()) {
-                            <mat-spinner diameter="20" />
+                            <app-spinner diameter="20" />
                         }
                         <span>{{ mqtt_status_text() }}</span>
                     </div>
@@ -217,25 +215,15 @@ async function queryAllZones(query_params: Record<string, unknown> = {}) {
                 min-width: 10em;
                 margin: 0.25em;
             }
-
-            mat-card {
-                margin: 0.5em;
-                text-align: center;
-            }
         `,
     ],
-    imports: [
-        LoadingLabelDirective,
-        MatProgressSpinnerModule,
-        MatRippleModule,
-        MatDialogModule,
-    ],
+    imports: [SpinnerComponent],
 })
 export class PlaceDatabaseDetailsComponent
     extends AsyncHandler
     implements OnInit
 {
-    private readonly _dialog = inject(MatDialog);
+    private readonly _dialog = inject(Dialog);
 
     /** Where the last MQTT re-sync got to, if this user may see it */
     public readonly mqtt_status = signal<PlaceSourceResyncStatus | null>(null);
@@ -363,7 +351,7 @@ export class PlaceDatabaseDetailsComponent
             panelClass: 'fullscreen-modal',
             width: '100vw',
         });
-        dialog_ref.afterClosed().subscribe((zones?: PlaceZone[]) => {
+        dialog_ref.closed.subscribe((zones?: PlaceZone[]) => {
             if (!zones?.length) return;
             this.exportSelectedZoneTrees(zones);
         });

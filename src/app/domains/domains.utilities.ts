@@ -1,5 +1,5 @@
-import { PlaceDomain } from '@placeos/ts-client';
 import { pattern, required, SchemaFn } from '@angular/forms/signals';
+import { PlaceDomain } from '@placeos/ts-client';
 
 export interface DomainFormModel {
     name: string;

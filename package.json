@@ -38,7 +38,6 @@
         "@angular/cli": "22.2.3",
         "@angular/compiler-cli": "22.2.3",
         "@angular/language-service": "22.2.3",
-        "@angular/material": "22.2.4",
         "@eslint/js": "^9.8.0",
         "@fontsource-variable/fira-code": "^5.3.0",
         "@fontsource-variable/roboto": "^5.3.0",

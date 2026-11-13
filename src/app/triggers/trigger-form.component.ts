@@ -1,3 +1,4 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
     Component,
     EventEmitter,
@@ -7,14 +8,13 @@ import {
     signal,
 } from '@angular/core';
 import { FormField, form } from '@angular/forms/signals';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { PlaceTrigger, addTrigger, updateTrigger } from '@placeos/ts-client';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { DialogEvent } from '../common/types';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
 import { CounterComponent } from '../ui/counter.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -49,17 +49,16 @@ import {
                                 {{ 'COMMON.FIELD_NAME' | translate
                                 }}<span>*</span>
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'COMMON.FIELD_NAME' | translate
                                     "
                                     id="trigger-name"
                                     [formField]="form.name"
                                 />
-                                <mat-error>Trigger name is required</mat-error>
-                            </mat-form-field>
+                                <div error>Trigger name is required</div>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.description) {
@@ -67,16 +66,15 @@ import {
                             <label for="description">{{
                                 'COMMON.FIELD_DESCRIPTION' | translate
                             }}</label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <textarea
-                                    matInput
                                     [placeholder]="
                                         'COMMON.FIELD_DESCRIPTION' | translate
                                     "
                                     id="description"
                                     [formField]="form.description"
                                 ></textarea>
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.enable_webhook) {
@@ -123,29 +121,26 @@ import {
                                         'TRIGGERS.SUPPORTED_METHODS' | translate
                                     }}
                                 </label>
-                                <mat-form-field
-                                    appearance="outline"
-                                    class="no-subscript"
-                                >
-                                    <mat-select
+                                <app-form-field class="no-subscript">
+                                    <app-select
                                         multiple
                                         id="methods"
                                         aria-labelledby="methods-label"
                                         [formField]="form.supported_methods"
                                     >
-                                        <mat-option value="GET">GET</mat-option>
-                                        <mat-option value="POST"
-                                            >POST</mat-option
+                                        <app-option value="GET">GET</app-option>
+                                        <app-option value="POST"
+                                            >POST</app-option
                                         >
-                                        <mat-option value="PUT">PUT</mat-option>
-                                        <mat-option value="PATCH"
-                                            >PATCH</mat-option
+                                        <app-option value="PUT">PUT</app-option>
+                                        <app-option value="PATCH"
+                                            >PATCH</app-option
                                         >
-                                        <mat-option value="DELETE"
-                                            >DELETE</mat-option
+                                        <app-option value="DELETE"
+                                            >DELETE</app-option
                                         >
-                                    </mat-select>
-                                </mat-form-field>
+                                    </app-select>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -155,21 +150,21 @@ import {
     `,
     styles: [``],
     imports: [
-        MatFormFieldModule,
-        MatSelectModule,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FormField,
         CounterComponent,
         SettingsToggleComponent,
-        MatInputModule,
         TranslatePipe,
         FullscreenModalShellComponent,
     ],
 })
 export class TriggerFormComponent implements OnInit {
     private _dialog_ref =
-        inject<MatDialogRef<TriggerFormComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, TriggerFormComponent>>(DialogRef);
     private _data = inject<{ item: PlaceTrigger; readonly?: string }>(
-        MAT_DIALOG_DATA,
+        DIALOG_DATA,
     );
     private readonly _name = 'TRIGGERS';
 

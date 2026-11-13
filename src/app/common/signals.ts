@@ -96,12 +96,12 @@ export function waitForClientSignalValue<T>(
 export function waitForDialog<T = unknown>(
     ref: {
         componentInstance: { event: Subscribable<DialogEvent> };
-        afterClosed: () => Subscribable<unknown>;
+        closed: Subscribable<unknown>;
     },
     reason: DialogEvent['reason'],
 ): Promise<DialogEvent<T> | undefined> {
     return Promise.race([
         waitForEvent(ref.componentInstance.event, (e) => e.reason === reason),
-        waitForEvent(ref.afterClosed()),
+        waitForEvent(ref.closed),
     ]) as Promise<DialogEvent<T> | undefined>;
 }

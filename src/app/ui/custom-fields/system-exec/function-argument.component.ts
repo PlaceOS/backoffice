@@ -13,10 +13,9 @@ import {
     FormsModule,
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { PlaceModuleFunction } from '@placeos/ts-client';
 import { HashMap } from '../../../common/types';
+import { FormFieldComponent } from '../../controls/form-field.component';
 import { TranslatePipe } from '../../translate.pipe';
 
 const validateType = (type: string, raw_value: unknown) => {
@@ -55,12 +54,8 @@ const validateType = (type: string, raw_value: unknown) => {
                             [class.h-14]="i !== 0"
                         ></div>
                         <!-- <label [for]="key">{{ key }}</label> -->
-                        <mat-form-field
-                            class="h-14 w-1/2 flex-1"
-                            appearance="outline"
-                        >
+                        <app-form-field class="h-14 w-1/2 flex-1">
                             <input
-                                matInput
                                 [disabled]="disabled()"
                                 [ngModel]="form()[key] || ''"
                                 (ngModelChange)="updateField(key, $event)"
@@ -70,7 +65,7 @@ const validateType = (type: string, raw_value: unknown) => {
                                     (defaults[key] ? ' = ' + defaults[key] : '')
                                 "
                             />
-                        </mat-form-field>
+                        </app-form-field>
                         <div
                             class="w-16 rounded-sm px-2 py-1 text-center text-xs"
                             [class.bg-success]="required()[key]"
@@ -110,7 +105,7 @@ const validateType = (type: string, raw_value: unknown) => {
             multi: true,
         },
     ],
-    imports: [TranslatePipe, MatFormFieldModule, MatInputModule, FormsModule],
+    imports: [FormFieldComponent, TranslatePipe, FormsModule],
 })
 export class FunctionArgumentComponent
     implements OnChanges, ControlValueAccessor

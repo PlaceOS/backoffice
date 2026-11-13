@@ -1,5 +1,4 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { apiEndpoint, get } from '@placeos/ts-client';
 
 import { VERSION } from '../../env/version';
@@ -9,6 +8,7 @@ import {
     ChangelogModalData,
 } from '../overlays/changelog-modal.component';
 
+import { Dialog } from '@angular/cdk/dialog';
 import { DatePipe, SlicePipe } from '@angular/common';
 import { format } from 'date-fns';
 import { describeError } from '../common/errors';
@@ -60,13 +60,13 @@ export interface PlaceServiceDetails {
                 {{ 'COMMON.VERSION' | translate }}
             </div>
             <div class="flex items-center space-x-2">
-                <button matRipple (click)="copy('version', backoffice_version)">
+                <button ripple (click)="copy('version', backoffice_version)">
                     <code name="version">
                         {{ backoffice_version }}
                     </code>
                 </button>
                 <button
-                    matRipple
+                    ripple
                     class="ml-2"
                     (click)="copy('tag', backoffice_tag)"
                 >
@@ -196,7 +196,7 @@ export interface PlaceServiceDetails {
     imports: [TranslatePipe, DatePipe, SlicePipe],
 })
 export class PlaceDetailsComponent implements OnInit {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     /** Current details about the API */
     public readonly api_details = signal([] as PlaceServiceDetails[]);
@@ -229,7 +229,7 @@ export class PlaceDetailsComponent implements OnInit {
     }
 
     public changelog(log: string) {
-        this._dialog.open<ChangelogModalComponent, ChangelogModalData>(
+        this._dialog.open<unknown, ChangelogModalData, ChangelogModalComponent>(
             ChangelogModalComponent,
             {
                 data: { changelog: log },

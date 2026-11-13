@@ -1,5 +1,4 @@
 import { computed, inject, resource, Service, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import {
     addSystemModule,
     addSystemTrigger,
@@ -43,6 +42,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForDialog } from '../common/signals';
 import { HashMap, Identity } from '../common/types';
 // Modals load on demand to keep them out of the first page load
+import { Dialog } from '@angular/cdk/dialog';
 import type { ConfirmModalData } from '../overlays/confirm-modal.component';
 import type {
     SelectItemModalComponent,
@@ -59,7 +59,7 @@ async function selectItemModal() {
 export class SystemStateService extends AsyncHandler {
     private _state = inject(ActiveItemService);
     private _debug = inject(PlaceDebugService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     /** Signal of the active item */
     public readonly item = computed(
@@ -393,8 +393,9 @@ export class SystemStateService extends AsyncHandler {
             );
         const item = this.item();
         const ref = this._dialog.open<
-            SelectItemModalComponent,
-            SelectItemModalData
+            unknown,
+            SelectItemModalData,
+            SelectItemModalComponent
         >(await selectItemModal(), {
             data: {
                 service_name: 'module to system',
@@ -430,8 +431,9 @@ export class SystemStateService extends AsyncHandler {
 
     public async selectTrigger() {
         const ref = this._dialog.open<
-            SelectItemModalComponent,
-            SelectItemModalData
+            unknown,
+            SelectItemModalData,
+            SelectItemModalComponent
         >(await selectItemModal(), {
             data: {
                 service_name: 'Triggers',

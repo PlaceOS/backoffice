@@ -1,8 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { RepositoriesStateService } from './repositories-state.service';
@@ -17,7 +16,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     role="status"
                     aria-label="Loading changelog"
                 >
-                    <mat-spinner diameter="40" />
+                    <app-spinner diameter="40" />
                 </div>
             } @else if (changelog()) {
                 <div
@@ -44,11 +43,10 @@ import { RepositoriesStateService } from './repositories-state.service';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        SpinnerComponent,
         AsyncPipe,
         IconComponent,
         MarkdownPipe,
-        MatProgressSpinnerModule,
         TranslatePipe,
     ],
 })

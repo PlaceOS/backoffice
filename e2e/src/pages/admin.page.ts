@@ -54,10 +54,10 @@ export class AdminPage extends BasePage {
      */
     async selectApiKeyDomain(domain = 'PlaceOS Global'): Promise<void> {
         await this.page
-            .locator('admin-api-keys admin-domain-select mat-select')
+            .locator('admin-api-keys admin-domain-select app-select')
             .click();
         await this.page
-            .locator('mat-option')
+            .locator('app-option')
             .filter({ hasText: domain })
             .first()
             .click();
@@ -78,7 +78,7 @@ export class AdminPage extends BasePage {
     /** User option in the API key user autocomplete panel */
     apiKeyUserOption(name: string): Locator {
         return this.page
-            .locator('mat-option')
+            .locator('app-option')
             .filter({ hasText: name })
             .first();
     }
@@ -100,7 +100,7 @@ export class AdminPage extends BasePage {
         const label = permission.charAt(0).toUpperCase() + permission.slice(1);
         await this.apiKeyPermissionsSelect.click();
         await this.page
-            .locator('mat-option')
+            .locator('app-option')
             .filter({ hasText: label })
             .first()
             .click();

@@ -1,11 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { authority, token } from '@placeos/ts-client';
 
-import { MatProgressBar } from '@angular/material/progress-bar';
 import { AsyncHandler } from '../common/async-handler.class';
 import { getLoadingMessage } from '../common/placeos';
 import { SettingsService } from '../common/settings.service';
 import { waitForSignalValue } from '../common/signals';
+import { ProgressBarComponent } from './controls/progress-bar.component';
 
 @Component({
     selector: 'global-loading',
@@ -25,10 +25,10 @@ import { waitForSignalValue } from '../common/signals';
                 <div
                     class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-full border shadow"
                 >
-                    <mat-progress-bar
+                    <app-progress-bar
                         mode="indeterminate"
                         class="scale-150 rounded"
-                        [attr.aria-label]="message()"
+                        [label]="message()"
                     />
                 </div>
             </div>
@@ -49,7 +49,7 @@ import { waitForSignalValue } from '../common/signals';
             }
         `,
     ],
-    imports: [MatProgressBar],
+    imports: [ProgressBarComponent],
 })
 export class GlobalLoadingComponent extends AsyncHandler implements OnInit {
     private _settings = inject(SettingsService);

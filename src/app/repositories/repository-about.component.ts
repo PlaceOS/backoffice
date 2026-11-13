@@ -1,12 +1,10 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceRepositoryType } from '@placeos/ts-client';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
 import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { RepositoriesStateService } from './repositories-state.service';
@@ -94,7 +92,7 @@ import { maskUriCredentials } from './repositories.utilities';
                         <div class="flex items-center overflow-hidden">
                             <code
                                 class="inline-block max-w-full truncate text-xs select-text"
-                                [matTooltip]="item().branch"
+                                [appTooltip]="item().branch"
                             >
                                 {{ item().branch }}
                             </code>
@@ -105,7 +103,7 @@ import { maskUriCredentials } from './repositories.utilities';
                         <div class="flex items-center overflow-hidden">
                             <code
                                 class="inline-block max-w-full truncate text-xs select-text"
-                                [matTooltip]="
+                                [appTooltip]="
                                     commit() && commit() !== item().commit_hash
                                         ? commit()
                                         : item().commit_hash
@@ -146,7 +144,7 @@ import { maskUriCredentials } from './repositories.utilities';
                         @if (is_interface()) {
                             <button
                                 btn
-                                matRipple
+                                ripple
                                 class="col-span-2 w-full"
                                 [disabled]="pulling()"
                                 (click)="pullLatestCommit()"
@@ -154,7 +152,7 @@ import { maskUriCredentials } from './repositories.utilities';
                                 @if (!pulling()) {
                                     {{ 'COMMON.GIT_PULL_LATEST' | translate }}
                                 } @else {
-                                    <mat-spinner diameter="32" />
+                                    <app-spinner diameter="32" />
                                 }
                             </button>
                         }
@@ -195,13 +193,11 @@ import { maskUriCredentials } from './repositories.utilities';
         `,
     ],
     imports: [
+        SpinnerComponent,
+        TooltipDirective,
         ItemTimestampsComponent,
-        LoadingLabelDirective,
         MarkdownPipe,
         TranslatePipe,
-        MatProgressSpinnerModule,
-        MatRippleModule,
-        MatTooltipModule,
         AsyncPipe,
         IconComponent,
     ],

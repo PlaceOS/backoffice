@@ -1,115 +1,40 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
+import { Component, provideZonelessChangeDetection } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { describe, expect, it } from 'vitest';
 import { ContextMenuComponent } from '../../../app/ui/context-menu.component';
 
+@Component({
+    template: `
+        <div id="area" [context-menu]="menu">Right-click me</div>
+        <ng-template #menu>
+            <div cdkMenu><button cdkMenuItem>Restart</button></div>
+        </ng-template>
+    `,
+    imports: [ContextMenuComponent, CdkMenu, CdkMenuItem],
+})
+class HostComponent {}
+
 describe('ContextMenuComponent', () => {
-    let component: ContextMenuComponent;
-    let fixture: ComponentFixture<ContextMenuComponent>;
-
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [ContextMenuComponent],
-        }).compileComponents();
-
-        fixture = TestBed.createComponent(ContextMenuComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
-
-    describe('default state', () => {
-        it('should have undefined menu by default', () => {
-            expect(component.menu()).toBeUndefined();
+    it('opens the menu at the pointer on right-click', async () => {
+        TestBed.configureTestingModule({
+            providers: [provideZonelessChangeDetection()],
         });
+        const fixture = TestBed.createComponent(HostComponent);
+        await fixture.whenStable();
+        const area = fixture.nativeElement.querySelector('#area');
 
-        it('should have offset_x of 0 by default', () => {
-            expect(component.offset_x()).toBe(0);
+        const event = new MouseEvent('contextmenu', {
+            bubbles: true,
+            cancelable: true,
+            clientX: 40,
+            clientY: 60,
         });
+        area.dispatchEvent(event);
+        await fixture.whenStable();
 
-        it('should have offset_y of 0 by default', () => {
-            expect(component.offset_y()).toBe(0);
-        });
-
-        it('should have position undefined before ngOnInit', () => {
-            const new_component =
-                TestBed.createComponent(ContextMenuComponent).componentInstance;
-            expect(new_component.position()).toBeNull();
-        });
-    });
-
-    describe('ngOnInit', () => {
-        it('should initialize position to { top: 0, left: 0 }', () => {
-            component.ngOnInit();
-            expect(component.position()).toEqual({ top: 0, left: 0 });
-        });
-    });
-
-    describe('onEvent (contextmenu handler)', () => {
-        it('should prevent default on context menu event', () => {
-            component.ngOnInit();
-            const event = {
-                preventDefault: vi.fn(),
-                clientX: 100,
-                clientY: 150,
-            };
-
-            component.onEvent(event);
-
-            expect(event.preventDefault).toHaveBeenCalled();
-        });
-
-        it('should set position based on clientX and clientY', () => {
-            component.ngOnInit();
-            const event = {
-                preventDefault: vi.fn(),
-                clientX: 100,
-                clientY: 150,
-            };
-
-            component.onEvent(event);
-
-            expect(component.position()?.left).toBe(100);
-            expect(component.position()?.top).toBe(150);
-        });
-
-        it('should apply offset_x to position', () => {
-            component.ngOnInit();
-            fixture.componentRef.setInput('offset_x', 10);
-            fixture.detectChanges();
-
-            const event = {
-                preventDefault: vi.fn(),
-                clientX: 100,
-                clientY: 150,
-            };
-
-            component.onEvent(event);
-
-            expect(component.position()?.left).toBe(110);
-        });
-
-        it('should apply offset_y to position', () => {
-            component.ngOnInit();
-            fixture.componentRef.setInput('offset_y', 20);
-            fixture.detectChanges();
-
-            const event = {
-                preventDefault: vi.fn(),
-                clientX: 100,
-                clientY: 150,
-            };
-
-            component.onEvent(event);
-
-            expect(component.position()?.top).toBe(170);
-        });
-    });
-
-    describe('template rendering', () => {
-        it('should have container div with correct classes', () => {
-            const container = fixture.nativeElement.querySelector('div');
-            expect(container).toBeTruthy();
-            expect(container.className).toContain('fixed');
-            expect(container.className).toContain('pointer-events-none');
-        });
+        expect(event.defaultPrevented).toBe(true);
+        const item = document.querySelector('.cdk-menu [cdkmenuitem]');
+        expect(item?.textContent).toContain('Restart');
     });
 });

@@ -8,17 +8,9 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import {
-    MAT_DIALOG_DATA,
-    MatDialog,
-    MatDialogModule,
-    MatDialogRef,
-} from '@angular/material/dialog';
 
 import { Clipboard } from '@angular/cdk/clipboard';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
 import { lastValueFrom } from 'rxjs';
 import { describeError, readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
@@ -29,9 +21,10 @@ import {
 } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
+import { DialogCloseDirective } from '../ui/controls/dialog';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 /** Breakdown of what enabling a `ConfirmModalOption` would do */
@@ -157,23 +150,25 @@ export interface ConfirmResponse {
  */
 export async function openConfirmModal(
     data: ConfirmModalData,
-    dialog: MatDialog,
+    dialog: Dialog,
 ): Promise<ConfirmResponse> {
-    const ref = dialog.open<ConfirmModalComponent, ConfirmModalData>(
+    const ref = dialog.open<undefined, ConfirmModalData, ConfirmModalComponent>(
         ConfirmModalComponent,
         {
             ...CONFIRM_METADATA,
             data,
         },
     );
+    // Only a 'done' event passes the filter, and a dismissal closes empty
+    const result = (await Promise.race([
+        waitForEvent(
+            ref.componentInstance.event,
+            (_: DialogEvent) => _.reason === 'done',
+        ),
+        lastValueFrom(ref.closed),
+    ])) as Pick<ConfirmResponse, 'reason' | 'metadata'> | undefined;
     return {
-        ...(await Promise.race([
-            waitForEvent(
-                ref.componentInstance.event,
-                (_: DialogEvent) => _.reason === 'done',
-            ),
-            lastValueFrom(ref.afterClosed()),
-        ])),
+        ...result,
         loading: (s) => ref.componentInstance?.loading.set(s),
         close: () => ref.close(),
     };
@@ -186,7 +181,7 @@ export async function openConfirmModal(
  * @returns Whether the action ran and succeeded
  */
 export async function confirmAndRun(
-    dialog: MatDialog,
+    dialog: Dialog,
     data: ConfirmModalData,
     options: {
         loading: string;
@@ -290,20 +285,14 @@ export async function confirmAndRun(
                 @if (receipt.note) {
                     <p class="text-xs opacity-70">{{ receipt.note }}</p>
                 }
-                <button btn matRipple class="w-full" (click)="copyAll()">
+                <button btn ripple class="w-full" (click)="copyAll()">
                     {{ 'CASCADE.RECEIPT_COPY' | translate }}
                 </button>
             </main>
             <footer
                 class="bg-base-200 sticky bottom-0 m-2 flex items-center justify-center rounded-sm border-none p-2"
             >
-                <button
-                    btn
-                    matRipple
-                    name="close"
-                    class="flex-1"
-                    mat-dialog-close
-                >
+                <button btn ripple name="close" class="flex-1" appDialogClose>
                     {{ 'COMMON.CLOSE' | translate }}
                 </button>
             </footer>
@@ -324,15 +313,20 @@ export async function confirmAndRun(
                         class="border-base-200 bg-base-200/40 w-full space-y-2 rounded-sm border p-3"
                         [attr.data-option]="option.id"
                     >
-                        <mat-checkbox
-                            [name]="option.id"
-                            [checked]="isSelected(option.id)"
-                            (change)="toggleOption(option, $event.checked)"
-                        >
+                        <label class="flex items-center gap-2">
+                            <input
+                                #option_box
+                                type="checkbox"
+                                [name]="option.id"
+                                [checked]="isSelected(option.id)"
+                                (change)="
+                                    toggleOption(option, option_box.checked)
+                                "
+                            />
                             {{ option.label }}
-                        </mat-checkbox>
+                        </label>
                         @if (option.description) {
-                            <p class="pl-8 text-xs opacity-70">
+                            <p class="pl-[1.625rem] text-xs opacity-70">
                                 {{ option.description }}
                             </p>
                         }
@@ -343,7 +337,7 @@ export async function confirmAndRun(
                                         details-loading
                                         class="flex items-center space-x-2 opacity-60"
                                     >
-                                        <mat-spinner diameter="16" />
+                                        <app-spinner diameter="16" />
                                         <span>
                                             {{
                                                 'CASCADE.RESOLVING' | translate
@@ -403,7 +397,7 @@ export async function confirmAndRun(
                 <div
                     class="flex h-48 w-full flex-col items-center justify-center space-y-4 p-12"
                 >
-                    <mat-spinner diameter="32" />
+                    <app-spinner diameter="32" />
                     <p>{{ loading() }}</p>
                 </div>
             </main>
@@ -414,15 +408,15 @@ export async function confirmAndRun(
             >
                 <button
                     btn
-                    matRipple
+                    ripple
                     class="inverse bg-base-100 flex-1"
-                    mat-dialog-close
+                    appDialogClose
                 >
                     {{ cancel_text | translate }}
                 </button>
                 <button
                     btn
-                    matRipple
+                    ripple
                     name="accept"
                     class="flex-1"
                     [class.error]="destructive"
@@ -436,20 +430,17 @@ export async function confirmAndRun(
     `,
     styles: [``],
     imports: [
-        LoadingLabelDirective,
+        DialogCloseDirective,
+        SpinnerComponent,
         DialogTitleDirective,
-        MatProgressSpinnerModule,
-        MatCheckboxModule,
         TranslatePipe,
         IconComponent,
-        MatRippleModule,
-        MatDialogModule,
     ],
 })
 export class ConfirmModalComponent implements OnInit {
     private _dialog_ref =
-        inject<MatDialogRef<ConfirmModalComponent>>(MatDialogRef);
-    private _data = inject<ConfirmModalData>(MAT_DIALOG_DATA);
+        inject<DialogRef<unknown, ConfirmModalComponent>>(DialogRef);
+    private _data = inject<ConfirmModalData>(DIALOG_DATA);
     private _clipboard = inject(Clipboard);
 
     /** Loading state */
@@ -582,10 +573,10 @@ export class ConfirmModalComponent implements OnInit {
     public readonly enableClose = () => (this._dialog_ref.disableClose = false);
 
     constructor() {
-        // Block Escape and backdrop dismissal while the action runs. Material
-        // nulls `componentInstance` on close, so a dismissal mid-action makes
-        // the caller's later `loading.set()` throw. The receipt stays
-        // dismissable.
+        // Block Escape and backdrop dismissal while the action runs. The CDK
+        // dialog nulls `componentInstance` on close, so a dismissal
+        // mid-action makes the caller's later `loading.set()` throw. The
+        // receipt stays dismissable.
         effect(() => {
             this._dialog_ref.disableClose = !!this.loading() && !this.result();
         });

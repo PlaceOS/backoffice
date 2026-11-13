@@ -1,5 +1,5 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { SignagePlugin } from '@placeos/ts-client';
 import { EMPTY } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -36,7 +36,7 @@ describe('SignagePluginModalComponent', () => {
             imports: [SignagePluginModalComponent],
             providers: [
                 {
-                    provide: MAT_DIALOG_DATA,
+                    provide: DIALOG_DATA,
                     useValue: {
                         item: new SignagePlugin({
                             id: 'plugin-1',
@@ -47,12 +47,12 @@ describe('SignagePluginModalComponent', () => {
                     },
                 },
                 {
-                    provide: MatDialogRef,
+                    provide: DialogRef,
                     useValue: {
                         close: vi.fn(),
                         disableClose: false,
-                        backdropClick: () => EMPTY,
-                        keydownEvents: () => EMPTY,
+                        backdropClick: EMPTY,
+                        keydownEvents: EMPTY,
                     },
                 },
                 {
@@ -109,7 +109,7 @@ describe('SignagePluginModalComponent', () => {
             },
         },
     ])('$name', async ({ schema, expected }) => {
-        const data = TestBed.inject<SignagePluginModalData>(MAT_DIALOG_DATA);
+        const data = TestBed.inject<SignagePluginModalData>(DIALOG_DATA);
         const defaults = {
             title: 'News',
             enabled: false,
@@ -140,7 +140,7 @@ describe('SignagePluginModalComponent', () => {
             }),
         );
         expect(defaults.obsolete).toBe('old value');
-        expect(TestBed.inject(MatDialogRef).close).toHaveBeenCalled();
+        expect(TestBed.inject(DialogRef).close).toHaveBeenCalled();
         fixture.destroy();
     });
 

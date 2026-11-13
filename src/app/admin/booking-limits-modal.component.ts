@@ -1,6 +1,6 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, inject, signal } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { post } from '@placeos/ts-client';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { ObjectListFieldComponent } from '../ui/custom-fields/object-list-field.component';
@@ -34,10 +34,9 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
     ],
 })
 export class BookingLimitsModalComponent {
-    private _data: StaffTenantModalData = inject(MAT_DIALOG_DATA);
-    private _dialog_ref: MatDialogRef<BookingLimitsModalComponent> = inject(
-        MatDialogRef<BookingLimitsModalComponent>,
-    );
+    private _data: StaffTenantModalData = inject(DIALOG_DATA);
+    private _dialog_ref: DialogRef<unknown, BookingLimitsModalComponent> =
+        inject(DialogRef<unknown, BookingLimitsModalComponent>);
 
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;

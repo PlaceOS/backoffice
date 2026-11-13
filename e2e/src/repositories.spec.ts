@@ -132,7 +132,9 @@ test.describe('Repositories', () => {
             await repositories.saveButton.click();
 
             await expect(repositories.dialog).toBeVisible();
-            await expect(repositories.dialog.locator('mat-error')).toHaveText([
+            await expect(
+                repositories.dialog.locator('app-form-field [error]:visible'),
+            ).toHaveText([
                 'A repository name is required',
                 'A folder name is required',
                 'A URI is required',

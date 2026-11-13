@@ -36,7 +36,7 @@ export type ExtensionConditions =
 /** Item field, operation and value to compare with */
 export type ExtensionCondition = [string, ExtensionConditions, unknown];
 
-/** Shared interface for form modal components opened via MatDialog */
+/** Shared interface for form modal components opened via the CDK Dialog */
 export interface FormModalComponent {
     event: EventEmitter<DialogEvent>;
     loading?: string;

@@ -17,17 +17,16 @@ import {
     FormsModule,
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import {
     functionList,
     PlaceModuleFunction,
     PlaceSystem,
 } from '@placeos/ts-client';
 import { AsyncHandler } from '../../../common/async-handler.class';
-import { LoadingLabelDirective } from '../../loading-label.directive';
+import { FormFieldComponent } from '../../controls/form-field.component';
+import { OptionComponent } from '../../controls/option.component';
+import { SelectComponent } from '../../controls/select.component';
+import { SpinnerComponent } from '../../controls/spinner.component';
 import { TranslatePipe } from '../../translate.pipe';
 import { ModuleLike } from './select-module.component';
 
@@ -40,8 +39,8 @@ interface MethodOption extends PlaceModuleFunction {
     template: `
         @if (!loading()) {
             @if (method_list().length) {
-                <mat-form-field class="h-14 w-full" appearance="outline">
-                    <mat-select
+                <app-form-field class="h-14 w-full">
+                    <app-select
                         [placeholder]="
                             'COMMON.EXECUTE_METHOD_SELECT' | translate
                         "
@@ -50,7 +49,7 @@ interface MethodOption extends PlaceModuleFunction {
                         (ngModelChange)="setValue($event)"
                         (openedChange)="setOpen($event)"
                     >
-                        <mat-option class="hover:bg-base-100! sticky -top-2">
+                        <app-option class="hover:bg-base-100! sticky -top-2">
                             <input
                                 #method_search
                                 name="method-search"
@@ -65,14 +64,14 @@ interface MethodOption extends PlaceModuleFunction {
                                         | translate: { name: 'methods' }
                                 "
                             />
-                        </mat-option>
+                        </app-option>
                         @for (method of filtered_method_list(); track method) {
-                            <mat-option [value]="method">
+                            <app-option [value]="method">
                                 {{ method.name }}
-                            </mat-option>
+                            </app-option>
                         }
-                    </mat-select>
-                </mat-form-field>
+                    </app-select>
+                </app-form-field>
             } @else {
                 <div class="flex items-center justify-center space-x-2 p-4">
                     <p class="opacity-30">
@@ -82,7 +81,7 @@ interface MethodOption extends PlaceModuleFunction {
             }
         } @else {
             <div class="flex items-center justify-center space-x-2 p-4">
-                <mat-spinner diameter="32" />
+                <app-spinner diameter="32" />
                 <p>{{ 'COMMON.EXECUTE_METHOD_LOADING' | translate }}</p>
             </div>
         }
@@ -108,12 +107,11 @@ interface MethodOption extends PlaceModuleFunction {
         },
     ],
     imports: [
-        LoadingLabelDirective,
-        MatProgressSpinnerModule,
+        SpinnerComponent,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         TranslatePipe,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
         FormsModule,
     ],
 })

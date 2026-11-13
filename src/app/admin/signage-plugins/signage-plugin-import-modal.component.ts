@@ -8,11 +8,6 @@ import {
     viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import {
     listRepositoryFiles,
     PlaceRepository,
@@ -21,14 +16,19 @@ import {
     SignagePlugin,
 } from '@placeos/ts-client';
 
+import { DialogRef } from '@angular/cdk/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { mapLimit } from '../../common/cascade-delete';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
+import { DialogCloseDirective } from '../../ui/controls/dialog';
+import { FormFieldComponent } from '../../ui/controls/form-field.component';
+import { OptionComponent } from '../../ui/controls/option.component';
+import { ProgressBarComponent } from '../../ui/controls/progress-bar.component';
+import { SelectComponent } from '../../ui/controls/select.component';
 import { DialogTitleDirective } from '../../ui/dialog-title.directive';
 import { IconComponent } from '../../ui/icon.component';
-import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { PluginLoadedPayload } from './signage-plugin-embed.component';
 import { probeSignagePlugin } from './signage-plugins.utilities';
@@ -58,8 +58,8 @@ interface PluginProbe {
             </h3>
             <button
                 icon
-                matRipple
-                mat-dialog-close
+                ripple
+                appDialogClose
                 [attr.aria-label]="'COMMON.CLOSE' | translate"
             >
                 <icon>close</icon>
@@ -68,8 +68,8 @@ interface PluginProbe {
         <main
             class="flex h-[65vh] w-lg max-w-[calc(100vw-2rem)] flex-col px-4 pt-4"
         >
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-select
+            <app-form-field class="w-full">
+                <app-select
                     [placeholder]="
                         'ADMIN.SIGNAGE_PLUGINS_IMPORT_REPOSITORY' | translate
                     "
@@ -77,7 +77,7 @@ interface PluginProbe {
                     (valueChange)="selectRepository($event)"
                     (openedChange)="setRepositoryOpen($event)"
                 >
-                    <mat-option class="bg-base-100 sticky -top-2 z-20">
+                    <app-option class="bg-base-100 sticky -top-2 z-20">
                         <input
                             #repository_search
                             type="search"
@@ -98,15 +98,15 @@ interface PluginProbe {
                                     | translate: { name: 'repositories' }
                             "
                         />
-                    </mat-option>
+                    </app-option>
                     @for (repo of filtered_repositories(); track repo.id) {
-                        <mat-option [value]="repo.id">
+                        <app-option [value]="repo.id">
                             {{ repo.name }}
-                        </mat-option>
+                        </app-option>
                     }
-                </mat-select>
-            </mat-form-field>
-            <mat-progress-bar
+                </app-select>
+            </app-form-field>
+            <app-progress-bar
                 [mode]="loading_files() ? 'indeterminate' : 'determinate'"
                 [value]="progress()"
                 [class.invisible]="!loading_files() && progress() >= 100"
@@ -114,7 +114,7 @@ interface PluginProbe {
             <div class="flex-1 space-y-2 overflow-auto py-2">
                 @for (probe of plugins(); track probe.uri) {
                     <button
-                        matRipple
+                        ripple
                         class="border-base-300 hover:bg-base-200 flex w-full items-center gap-4 rounded-sm border px-4 py-2 text-left"
                         (click)="selectPlugin(probe)"
                     >
@@ -155,15 +155,14 @@ interface PluginProbe {
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        DialogCloseDirective,
+        ProgressBarComponent,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         DialogTitleDirective,
         FormsModule,
         IconComponent,
-        MatDialogModule,
-        MatFormFieldModule,
-        MatProgressBarModule,
-        MatRippleModule,
-        MatSelectModule,
         TranslatePipe,
     ],
 })
@@ -174,8 +173,8 @@ export class SignagePluginImportModalComponent
     private readonly _repository_search_el =
         viewChild<ElementRef<HTMLInputElement>>('repository_search');
     private _dialog_ref =
-        inject<MatDialogRef<SignagePluginImportModalComponent, SignagePlugin>>(
-            MatDialogRef,
+        inject<DialogRef<SignagePlugin, SignagePluginImportModalComponent>>(
+            DialogRef,
         );
 
     public readonly repositories = signal<PlaceRepository[]>([]);

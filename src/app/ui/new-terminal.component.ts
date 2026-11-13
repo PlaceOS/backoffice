@@ -20,10 +20,13 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
     selector: 'new-terminal',
     template: `
         <ng-template #line_template let-item="item">
-            <div [innerHTML]="item" class="mono p-1 hover:bg-base-content/10"></div>
+            <div
+                [innerHTML]="item"
+                class="mono hover:bg-base-content/10 p-1"
+            ></div>
         </ng-template>
         <div
-            class="bg-base-200 border-base-300 relative flex h-full w-full items-end border-t text-xs text-base-content"
+            class="bg-base-200 border-base-300 text-base-content relative flex h-full w-full items-end border-t text-xs"
             #container
         >
             <virtual-scroll
@@ -50,7 +53,7 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
                     >search</icon
                 >
                 <input
-                    class="mono bg-base-200 placeholder:text-base-400 rounded border-none px-8 py-1 pr-1 text-sm text-base-content"
+                    class="mono bg-base-200 placeholder:text-base-400 text-base-content rounded border-none px-8 py-1 pr-1 text-sm"
                     [(ngModel)]="search"
                     placeholder="Filter output"
                 />

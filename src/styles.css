@@ -245,10 +245,6 @@ span.highlight {
     }
 }
 
-#placeos .mat-radio-labelc {
-    font-weight: normal;
-}
-
 #placeos .markdown {
     ol {
         list-style-type: decimal;
@@ -336,10 +332,6 @@ span.highlight {
     div {
         user-select: text;
     }
-}
-
-#placeos .mdc-list-item__primary-text {
-    width: 100%;
 }
 
 .text-mono {
@@ -569,10 +561,6 @@ span.highlight {
     }
 }
 
-#placeos .mat-radio-labelc {
-    font-weight: normal;
-}
-
 #placeos .markdown {
     ol {
         list-style-type: decimal;
@@ -708,15 +696,13 @@ section > label {
     }
 }
 
-:not(.mat-form-field-label-wrapper) > label {
+:not(.field-box) > label {
     width: 100%;
     font-size: 0.875rem;
     margin-bottom: 0.25rem;
     font-weight: bold;
 
-    /* Material puts the checkbox box first in its label. `:where` keeps the
-       specificity below the `form label[for]` marker rule. */
-    > span:first-child:where(:not(.mdc-checkbox)) {
+    > span:first-child {
         color: var(--warn);
     }
 
@@ -732,8 +718,7 @@ section > label {
 
     /* Dimmed text colour, so it stays readable in light and dark themes */
     ::placeholder,
-    .mat-form-field-label,
-    .mat-mdc-select-placeholder {
+    .select-placeholder {
         color: color-mix(in srgb, var(--base-content) 60%, transparent);
     }
 
@@ -814,11 +799,6 @@ table:not([role='grid']) {
     font-weight: 500;
 }
 
-/* Layout */
-.mdc-tab-body-wrapper {
-    flex-grow: 1;
-}
-
 /* Forms */
 form {
     label[for] {
@@ -829,7 +809,7 @@ form {
             color: var(--error);
         }
 
-        > span:not(.mdc-checkbox) {
+        > span {
             color: var(--pending);
         }
     }
@@ -869,11 +849,7 @@ form {
         margin-bottom: 1.5em;
     }
 
-    mat-checkbox {
-        margin: 0.25em;
-    }
-
-    mat-form-field,
+    app-form-field,
     a-date-field,
     editor {
         flex: 1;
@@ -882,65 +858,560 @@ form {
 }
 
 /* Form Fields */
-mat-form-field,
-.mdc-form-field {
-    &.mdc-form-field-appearance-outline.mdc-focused {
-        .mdc-form-field-outline-thick {
-            color: var(--primary);
-        }
-    }
+app-form-field {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
 
-    &.no-subscript .mat-mdc-form-field-subscript-wrapper {
+    &.no-subscript .field-subscript {
         display: none;
     }
+}
 
-    &.visible .mdc-select-value {
-        overflow: visible;
+.field-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 3rem;
+    padding: 0 0.75rem;
+    border: 1px solid var(--neutral);
+    border-radius: 4px;
+    color: var(--base-content);
+    cursor: text;
+
+    &:hover {
+        border-color: var(--base-content);
     }
 
-    &[overlay],
-    &[overlay]:hover {
-        .mdc-form-field-outline {
-            background-color: var(--neutral);
-            border-radius: 4px;
-        }
+    &:focus-within {
+        border-color: var(--secondary);
+        box-shadow: inset 0 0 0 1px var(--secondary);
     }
 
-    &.rounded,
-    &.rounded:hover {
-        .mdc-form-field-outline {
-            border-radius: 2em;
-        }
-        .mdc-form-field-outline-start {
-            border-radius: 2em 0 0 2em;
-            min-width: 2em;
-        }
-        .mdc-form-field-outline-end {
-            border-radius: 0 2em 2em 0;
-        }
+    > :is(input, textarea, app-select, app-chip-list) {
+        flex: 1;
+        min-width: 0;
+        align-self: stretch;
+        background: none;
+        outline: none;
+        padding-left: 0.25rem;
     }
 
-    .mdc-form-field-subscript-wrapper {
-        overflow: visible;
+    > textarea {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
     }
 
-    .mdc-form-field-wrapper .mdc-form-field-label {
-        top: 2em;
-        margin-top: -0.1em;
+    > [prefix],
+    > [suffix] {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+}
+
+/* Invalid controls show their error once touched */
+app-form-field:is(.field-invalid, :has(.ng-invalid.ng-touched)) .field-box {
+    border-color: var(--error);
+}
+
+app-form-field:has(:disabled, app-select.disabled, [readonly]) .field-box {
+    opacity: 0.6;
+}
+
+.field-subscript {
+    min-height: 1.25rem;
+    padding: 0.125rem 1rem 0;
+    font-size: 0.75rem;
+    line-height: 1.25;
+
+    [error] {
+        display: none;
+        color: var(--error);
     }
 
-    .mdc-form-field-should-float .mdc-form-field-wrapper .mdc-form-field-label {
-        transform: translateY(-1.5em) scale(0.75) !important;
+    [hint] {
+        opacity: 0.7;
+    }
+}
+
+app-form-field:is(.field-invalid, :has(.ng-invalid.ng-touched))
+    .field-subscript {
+    [error] {
+        display: block;
+    }
+
+    [hint] {
+        display: none;
     }
 }
 
 /* Select */
-.mdc-select-panel .mdc-option.mdc-selected:not(.mdc-option-disabled) {
-    color: var(--primary);
+app-select {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    cursor: pointer;
+    outline: none;
+
+    &.disabled {
+        cursor: default;
+    }
 }
 
-mat-select .mdc-select-trigger .mdc-select-arrow-wrapper {
-    transform: none;
+.select-value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.select-arrow {
+    flex-shrink: 0;
+    border: 5px solid transparent;
+    border-top-color: currentColor;
+    border-bottom-width: 0;
+}
+
+.select-panel {
+    width: 100%;
+    max-height: 16rem;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+    border-radius: 4px;
+    background-color: var(--base-100);
+    color: var(--base-content);
+    border: 1px solid var(--base-300);
+    @apply shadow-lg;
+
+    &:empty {
+        display: none;
+    }
+}
+
+app-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3rem;
+    padding: 0 1rem;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover,
+    &.active {
+        background-color: var(--base-200);
+    }
+
+    &[aria-selected='true'] {
+        color: var(--secondary);
+    }
+
+    &[aria-disabled='true'] {
+        opacity: 0.4;
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .option-text {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+.option-check {
+    flex-shrink: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid currentColor;
+    border-radius: 2px;
+
+    [aria-selected='true'] > & {
+        background-color: var(--secondary);
+        border-color: var(--secondary);
+        box-shadow: inset 0 0 0 2px var(--base-100);
+    }
+}
+
+/* Chips */
+app-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 2rem;
+    max-width: 100%;
+    padding: 0 0.375rem 0 0.75rem;
+    border-radius: 1rem;
+    background-color: var(--base-200);
+    color: var(--base-content);
+    font-size: 0.875rem;
+
+    &[color='internal'] {
+        color: var(--primary-content);
+        background-color: var(--primary);
+    }
+
+    &[color='external'] {
+        color: var(--warn-content);
+        background-color: var(--warn);
+    }
+}
+
+.chip-text {
+    max-width: 28rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chip-action {
+    display: flex;
+    font-size: 1.125rem;
+    opacity: 0.6;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.chip-edit {
+    min-width: 12rem;
+    background: none;
+    outline: none;
+}
+
+.chip-input {
+    flex: 1;
+    min-width: 8rem;
+    min-height: 2rem;
+    background: none;
+    outline: none;
+}
+
+/* Checkboxes & Switches. Use native inputs: <input type="checkbox"> */
+input[type='checkbox'] {
+    width: 1.125rem;
+    height: 1.125rem;
+    accent-color: var(--info);
+    cursor: pointer;
+
+    &:disabled {
+        cursor: default;
+    }
+}
+
+/* Add `role="switch"` to a checkbox to show it as an on/off switch */
+input[type='checkbox'][role='switch'] {
+    appearance: none;
+    position: relative;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 1.25rem;
+    border-radius: 1rem;
+    background-color: var(--base-300);
+    transition: background-color 150ms;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0.125rem;
+        left: 0.125rem;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background-color: var(--base-100);
+        @apply shadow;
+        transition: transform 150ms;
+    }
+
+    &:checked {
+        background-color: var(--secondary);
+
+        &::before {
+            transform: translateX(1rem);
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--secondary);
+        outline-offset: 2px;
+    }
+}
+
+/* Progress Indicators */
+.spinner {
+    display: inline-block;
+    flex-shrink: 0;
+
+    svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+    }
+
+    circle {
+        fill: none;
+        stroke: var(--primary);
+        stroke-width: 10;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 200ms;
+    }
+
+    svg.spin {
+        animation: spinner-rotate 1.4s linear infinite;
+
+        circle {
+            animation: spinner-dash 1.4s ease-in-out infinite;
+        }
+    }
+}
+
+@keyframes spinner-rotate {
+    to {
+        transform: rotate(270deg);
+    }
+}
+
+@keyframes spinner-dash {
+    0% {
+        stroke-dasharray: 1 283;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 200 283;
+        stroke-dashoffset: -40;
+    }
+    100% {
+        stroke-dasharray: 200 283;
+        stroke-dashoffset: -280;
+    }
+}
+
+.progress-bar {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 4px;
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--primary);
+    transition: width 200ms;
+}
+
+.progress-loop {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 40%;
+    background-color: var(--primary);
+    animation: progress-loop 1.5s ease-in-out infinite;
+}
+
+@keyframes progress-loop {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(250%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .progress-loop,
+    .spinner svg.spin,
+    .spinner svg.spin circle {
+        animation-duration: 4s;
+    }
+}
+
+/* Ripple. Add a `ripple` attribute to an element to show it on press */
+:where([ripple]) {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple-wave {
+    position: absolute;
+    border-radius: 50%;
+    background-color: currentColor;
+    opacity: 0.12;
+    pointer-events: none;
+    transform: scale(0);
+    animation: ripple 500ms ease-out forwards;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+/* Dialogs */
+.cdk-dialog-container {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    max-height: inherit;
+    overflow: auto;
+    border-radius: 4px;
+    background-color: var(--base-100);
+    color: var(--base-content);
+    outline: none;
+    @apply shadow-2xl;
+}
+
+/* Menus. Built with the CDK menu: cdkMenu and cdkMenuItem */
+.cdk-menu {
+    min-width: 7rem;
+    max-width: 20rem;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+    padding: 0.5rem 0;
+    border-radius: 4px;
+    border: 1px solid var(--base-300);
+    background-color: var(--base-100);
+    color: var(--base-content);
+    @apply shadow-lg;
+}
+
+.cdk-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 3rem;
+    padding: 0 1rem;
+    text-align: left;
+    outline: none;
+
+    &:not([disabled]):hover,
+    &:focus-visible {
+        background-color: var(--base-200);
+    }
+
+    &[disabled] {
+        opacity: 0.4;
+        cursor: default;
+    }
+}
+
+/* Toasts */
+.toast-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 20rem;
+    max-width: min(42rem, calc(100vw - 1rem));
+    min-height: 3rem;
+    padding: 0.375rem 0.5rem 0.375rem 1rem;
+    border-radius: 4px;
+    background-color: var(--neutral-focus);
+    color: var(--neutral-content);
+    font-size: 0.875rem;
+    animation: fade-in-scale 150ms ease-out;
+    @apply shadow-lg;
+
+    &.success {
+        background-color: var(--success);
+        color: var(--success-content);
+    }
+
+    &.info {
+        background-color: var(--info);
+        color: var(--info-content);
+    }
+
+    &.error {
+        background-color: var(--error);
+        color: var(--error-content);
+    }
+
+    &.warning,
+    &.warn,
+    &.pending {
+        background-color: var(--warn);
+        color: var(--warn-content);
+    }
+
+    button {
+        margin-left: auto;
+        padding: 0.5rem;
+        border-radius: 4px;
+        font-weight: 500;
+        text-transform: uppercase;
+
+        &:hover {
+            background-color: color-mix(in srgb, currentColor 12%, transparent);
+        }
+    }
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    overflow-x: auto;
+}
+
+.tabs .tab {
+    flex: 1;
+    min-height: 3rem;
+    padding: 0 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    color: var(--base-content);
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+        background-color: var(--base-200);
+    }
+
+    &[aria-selected='true'] {
+        color: var(--secondary);
+        border-bottom-color: var(--secondary);
+    }
+}
+
+/* Tooltips */
+.tooltip-panel {
+    display: block;
+    max-width: 18rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background-color: var(--base-content);
+    color: var(--base-100);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+    animation: fade-in 100ms ease-out;
 }
 
 /* Buttons */
@@ -1043,178 +1514,6 @@ a[icon] {
         opacity: 0.35;
         pointer-events: none;
     }
-}
-
-.mdc-button-toggle-button[aria-pressed='true'] {
-    background-color: var(--primary);
-    color: var(--primary-content);
-}
-
-.mdc-button-toggle {
-    background: inherit;
-    color: currentColor;
-}
-
-.mdc-button__label {
-    color: inherit;
-}
-
-/* Chips */
-.mdc-chip.mdc-standard-chip {
-    &.mdc-primary {
-        color: var(--primary);
-    }
-    &.mdc-accent {
-        background-color: var(--warn);
-    }
-}
-
-#placeos mat-chip,
-#placeos mat-chip-row {
-    &.mat-mdc-chip {
-        background-color: var(--base-200);
-    }
-    .mdc-evolution-chip__text-label,
-    .mat-mdc-chip-remove {
-        color: var(--base-content);
-    }
-    &[color='internal'] {
-        color: var(--primary-content);
-        background-color: var(--primary);
-    }
-    &[color='external'] {
-        color: var(--warn-content);
-        background-color: var(--warn);
-    }
-}
-
-/* Checkboxes & Radio */
-mat-checkbox {
-    /* Material resolves these from the prebuilt (light) palette, so both the
-       label and the empty box outline come out near-black — invisible on the
-       dark theme. The rules below on `.mdc-checkbox__background` never won
-       against Material's own selectors, so the colours are set at the token
-       layer instead. `currentColor` follows whichever theme is active. */
-    --mat-checkbox-label-text-color: currentColor;
-    --mat-checkbox-unselected-icon-color: currentColor;
-    --mat-checkbox-unselected-hover-icon-color: currentColor;
-    --mat-checkbox-unselected-focus-icon-color: currentColor;
-
-    .mdc-checkbox__background {
-        svg {
-            color: var(--info-content);
-        }
-    }
-
-    .mdc-label {
-        font-weight: normal;
-        margin: 0;
-    }
-
-    &.mat-mdc-checkbox-checked,
-    &[ng-reflect-indeterminate='true'] {
-        .mdc-checkbox__background {
-            border-color: var(--info);
-            background-color: var(--info);
-        }
-    }
-}
-
-.mdc-radio-outer-circle,
-.mdc-radio__outer-circle {
-    border-color: var(--base-300);
-}
-
-.mdc-radio-checked,
-.mat-mdc-radio-checked {
-    .mdc-radio-outer-circle,
-    .mdc-radio__outer-circle {
-        border-color: var(--secondary);
-    }
-    .mdc-radio-inner-circle,
-    .mdc-radio__inner-circle {
-        border-color: var(--secondary);
-    }
-}
-
-/* Progress Indicators */
-.mdc-spinner circle {
-    stroke: var(--primary);
-}
-
-.mdc-progress-bar-fill::after {
-    background-color: var(--primary);
-}
-
-/* Snackbar */
-mat-snack-bar-container {
-    button.mdc-button {
-        color: inherit;
-        background: none;
-        border: none;
-    }
-
-    .mdc-snackbar__label {
-        color: inherit;
-    }
-
-    &.success .mdc-snackbar__surface {
-        background-color: var(--success);
-        color: var(--success-content);
-    }
-
-    &.info .mdc-snackbar__surface {
-        background-color: var(--info);
-        color: var(--info-content);
-    }
-
-    &.error .mdc-snackbar__surface {
-        background-color: var(--error);
-        color: var(--error-content);
-    }
-
-    &.warning,
-    &.warn,
-    &.pending {
-        .mdc-snackbar__surface {
-            background-color: var(--warn);
-            color: var(--warn-content);
-        }
-    }
-}
-
-/* Tabs */
-
-.mdc-tab-indicator__content {
-    border-color: var(--secondary);
-}
-
-.mdc-ink-bar {
-    background-color: var(--primary);
-}
-
-mat-tab-group {
-    .mdc-tab-label-container {
-        background-color: var(--neutral);
-    }
-    .mdc-tab-label-content {
-        color: var(--base-content);
-    }
-}
-
-nav {
-    .mdc-tab-links {
-        background-color: var(--base-200);
-    }
-    .mdc-tab-link {
-        color: var(--base-content);
-    }
-}
-/* Tooltips */
-.mdc-tooltip {
-    font-size: 0.75em;
-    background-color: var(--base-300);
-    opacity: 0.85;
 }
 
 /* PlaceOS Specific Styles */
@@ -1341,15 +1640,6 @@ nav {
 }
 
 #placeos {
-    .mdc-text-field--outlined {
-        padding: 0 1rem;
-    }
-
-    .mat-mdc-form-field-infix {
-        padding: 0.75rem 0;
-        min-height: 2rem;
-    }
-
     .cdk-overlay-pane {
         max-width: none !important;
     }
@@ -1362,119 +1652,8 @@ nav {
             max-height: 100vh !important;
         }
 
-        .bulk-add-dialog .mat-mdc-dialog-surface,
-        .bulk-add-dialog .mdc-dialog__surface {
+        .bulk-add-dialog .cdk-dialog-container {
             border-radius: 0 !important;
         }
-    }
-
-    .mat-mdc-select-value,
-    .mat-mdc-select-arrow {
-        color: var(--base-content);
-    }
-
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__trailing {
-        border-color: var(--neutral);
-    }
-
-    .mdc-text-field__input {
-        color: var(--base-content);
-    }
-
-    .mdc-text-field--focused {
-        .mdc-notched-outline__leading,
-        .mdc-notched-outline__trailing {
-            border-color: var(--secondary);
-        }
-    }
-
-    .mdc-autocomplete-panel {
-        background-color: var(--neutral);
-    }
-
-    .mdc-select-value-text,
-    .mdc-select-arrow {
-        color: var(--base-100);
-    }
-
-    .mdc-form-field-outline > div {
-        color: var(--base-200);
-    }
-
-    .mdc-form-field {
-        ::placeholder,
-        .mdc-select-placeholder {
-            color: var(--base-200);
-        }
-    }
-
-    .mat-mdc-form-field-icon-suffix {
-        margin-right: -0.25rem;
-
-        & > * {
-            position: relative;
-            top: 0;
-        }
-    }
-
-    .mdc-tab__text-label {
-        color: var(--base-content);
-    }
-
-    [aria-selected='true'] .mdc-tab__text-label {
-        color: var(--secondary);
-    }
-
-    .mdc-dialog__surface {
-        background-color: var(--base-100);
-    }
-
-    .mdc-menu-surface,
-    .mat-mdc-menu-content {
-        @apply border-base-300 bg-base-100 border;
-
-        .mdc-list-item__primary-text,
-        .mat-mdc-menu-item-text {
-            color: var(--base-content);
-        }
-
-        .mdc-list-item--selected .mdc-list-item__primary-text {
-            color: var(--secondary);
-        }
-
-        mat-pseudo-checkbox {
-            color: var(--base-content);
-            border-color: var(--base-content);
-            &::after {
-                color: inherit;
-            }
-
-            &[appearance='minimal'] {
-                color: var(--secondary);
-            }
-
-            &.mat-pseudo-checkbox-checked:not([appearance='minimal']) {
-                border-color: var(--secondary);
-                background-color: var(--secondary);
-            }
-        }
-    }
-
-    [mat-menu-item]:not([disabled='true']):hover,
-    mat-option:not([disabled='true']):hover {
-        background-color: var(--base-200);
-    }
-
-    [mat-menu-item] > span {
-        @apply flex items-center space-x-2;
-    }
-
-    .mat-mdc-tab-header-pagination > div {
-        border-color: var(--base-content);
-    }
-
-    .mdc-tab-indicator__content--underline {
-        border-color: var(--secondary);
     }
 }

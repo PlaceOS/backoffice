@@ -1,6 +1,6 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { DateFromPipe } from './pipes/date-from.pipe';
 import { TranslatePipe } from './translate.pipe';
 
@@ -29,12 +29,12 @@ import { TranslatePipe } from './translate.pipe';
             <div class="flex items-center">
                 <span
                     class="select-text"
-                    [matTooltip]="
+                    [appTooltip]="
                         (seconds * 1000 | date: 'mediumDate') +
                         ', ' +
                         (seconds * 1000 | date: 'shortTime')
                     "
-                    matTooltipPosition="right"
+                    appTooltipPosition="right"
                 >
                     {{ seconds * 1000 | dateFrom }}
                 </span>
@@ -43,9 +43,9 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [':host { display: contents; }'],
     imports: [
+        TooltipDirective,
         DatePipe,
         DateFromPipe,
-        MatTooltipModule,
         TranslatePipe,
         NgTemplateOutlet,
     ],

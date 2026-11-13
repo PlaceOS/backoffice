@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
     Component,
     computed,
@@ -18,7 +19,6 @@ import {
 } from '@angular/router';
 import { setupCache, updateAvailable } from './common/application';
 import { log } from './common/general';
-import { setNotifyOutlet } from './common/notifications';
 import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
 import { initSentry } from './common/sentry';
 import { SettingsService } from './common/settings.service';
@@ -26,14 +26,16 @@ import { signalFromClient, waitForSignalValue } from './common/signals';
 import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
 
-import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatTooltip } from '@angular/material/tooltip';
 import type { PlaceTenant } from './admin/staff-api.component';
 import {
     localeFromUrl,
     LocaleService,
     setTranslationService,
 } from './common/locale.service';
+import { ProgressBarComponent } from './ui/controls/progress-bar.component';
+import { installRipple } from './ui/controls/ripple';
+import { ToastOutletComponent } from './ui/controls/toast-outlet.component';
+import { TooltipDirective } from './ui/controls/tooltip.directive';
 import { GlobalBannerComponent } from './ui/global-banner.component';
 import { GlobalLoadingComponent } from './ui/global-loading.component';
 import { IconComponent } from './ui/icon.component';
@@ -83,16 +85,21 @@ function browserOnline() {
                         class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
                     >
                         <!-- Translations are not loaded yet, so the label is English -->
-                        <mat-progress-bar
+                        <app-progress-bar
                             mode="indeterminate"
                             class="scale-150 rounded"
-                            aria-label="Loading"
+                            label="Loading"
                         />
                     </div>
                 </div>
             }
         </div>
         <global-loading />
+        <!-- Deferred to keep the overlay code out of the initial bundle.
+             Toasts made before it loads show once it does. -->
+        @defer (on idle) {
+            <app-toast-outlet />
+        } @error {}
         @if (!online() && !loading()) {
             <div
                 role="alert"
@@ -123,8 +130,8 @@ function browserOnline() {
                             default
                             type="button"
                             (click)="refreshApplication()"
-                            matTooltip="Refresh"
-                            matTooltipPosition="left"
+                            appTooltip="Refresh"
+                            appTooltipPosition="left"
                         >
                             <icon>refresh</icon>
                         </button>
@@ -134,13 +141,14 @@ function browserOnline() {
         }
     `,
     imports: [
+        ToastOutletComponent,
+        ProgressBarComponent,
+        TooltipDirective,
         GlobalBannerComponent,
         RouterOutlet,
         UploadListComponent,
-        MatProgressBar,
         GlobalLoadingComponent,
         IconComponent,
-        MatTooltip,
     ],
 })
 export class AppComponent implements OnInit {
@@ -169,6 +177,10 @@ export class AppComponent implements OnInit {
         location.reload();
     }
 
+    constructor() {
+        installRipple(inject(DOCUMENT));
+    }
+
     public async ngOnInit() {
         setLoadingMessage('Initialising application...');
         this._route.queryParamMap.subscribe((params) => {
@@ -178,12 +190,6 @@ export class AppComponent implements OnInit {
                 localStorage.setItem('BACKOFFICE.locale', locale);
             }
         });
-        // Load the snackbar lazily to keep the overlay code out of the initial bundle
-        setNotifyOutlet(
-            import('@angular/material/snack-bar').then(({ MatSnackBar }) =>
-                this._injector.get(MatSnackBar),
-            ),
-        );
         setTranslationService(this._locale);
         this.loading.set(true);
         setLoadingMessage('Loading application settings...');

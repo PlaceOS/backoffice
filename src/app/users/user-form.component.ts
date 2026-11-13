@@ -1,4 +1,3 @@
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
     Component,
     EventEmitter,
@@ -19,20 +18,14 @@ import {
 } from '@placeos/ts-client';
 import { isSubsystemUser } from '../common/support-access';
 
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import {
-    addSignalChipItem,
-    mergeFormItem,
-    onSaveHotkey,
-    removeSignalChipItem,
-    submitFormDialog,
-} from '../common/forms';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { DialogEvent } from '../common/types';
+import { ChipListComponent } from '../ui/controls/chip-list.component';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -66,8 +59,8 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                         <label for="user-domain" id="user-domain-label">{{
                             'DOMAINS.SINGULAR' | translate
                         }}</label>
-                        <mat-form-field appearance="outline" class="h-12">
-                            <mat-select
+                        <app-form-field class="h-12">
+                            <app-select
                                 id="user-domain"
                                 aria-labelledby="user-domain-label"
                                 [formField]="form.authority_id"
@@ -76,12 +69,12 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 "
                             >
                                 @for (domain of domain_list(); track domain) {
-                                    <mat-option [value]="domain.id">
+                                    <app-option [value]="domain.id">
                                         {{ domain.name }}
-                                    </mat-option>
+                                    </app-option>
                                 }
-                            </mat-select>
-                        </mat-form-field>
+                            </app-select>
+                        </app-form-field>
                     </div>
                     <div class="fieldset">
                         @if (form.first_name) {
@@ -96,19 +89,21 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                     {{ 'USERS.FIRST_NAME' | translate
                                     }}<span>*</span>
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="first-name"
                                         [placeholder]="
                                             'USERS.FIRST_NAME' | translate
                                         "
                                         [formField]="form.first_name"
                                     />
-                                    <mat-error>{{
-                                        'USERS.FIRST_NAME_REQUIRED' | translate
-                                    }}</mat-error>
-                                </mat-form-field>
+                                    <div error>
+                                        {{
+                                            'USERS.FIRST_NAME_REQUIRED'
+                                                | translate
+                                        }}
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.last_name) {
@@ -117,19 +112,21 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                     >{{ 'USERS.LAST_NAME' | translate
                                     }}<span>*</span>
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="last-name"
                                         [placeholder]="
                                             'USERS.LAST_NAME' | translate
                                         "
                                         [formField]="form.last_name"
                                     />
-                                    <mat-error>{{
-                                        'USERS.LAST_NAME_REQUIRED' | translate
-                                    }}</mat-error>
-                                </mat-form-field>
+                                    <div error>
+                                        {{
+                                            'USERS.LAST_NAME_REQUIRED'
+                                                | translate
+                                        }}
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -145,9 +142,8 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 {{ 'COMMON.FIELD_EMAIL' | translate
                                 }}<span>*</span>
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="useremail"
                                     [placeholder]="
                                         'COMMON.FIELD_EMAIL' | translate
@@ -155,10 +151,10 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                     [formField]="form.email"
                                     autocomplete="nope"
                                 />
-                                <mat-error>{{
-                                    'USERS.EMAIL_REQUIRED' | translate
-                                }}</mat-error>
-                            </mat-form-field>
+                                <div error>
+                                    {{ 'USERS.EMAIL_REQUIRED' | translate }}
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     <div class="fieldset">
@@ -167,16 +163,15 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 <label for="staff-id"
                                     >{{ 'USERS.STAFF_ID' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="staff-id"
                                         [placeholder]="
                                             'USERS.STAFF_ID' | translate
                                         "
                                         [formField]="form.staff_id"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.card_number) {
@@ -184,16 +179,15 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 <label for="card-number"
                                     >{{ 'USERS.STAFF_CARD' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="card-number"
                                         [placeholder]="
                                             'USERS.STAFF_CARD' | translate
                                         "
                                         [formField]="form.card_number"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -225,9 +219,8 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 >
                                     {{ 'COMMON.PASSWORD' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="new-password"
                                         autocomplete="new-password"
                                         [type]="
@@ -242,7 +235,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                     />
                                     <button
                                         icon
-                                        matSuffix
+                                        suffix
                                         type="button"
                                         [attr.aria-label]="
                                             'COMMON.PASSWORD_TOGGLE' | translate
@@ -255,10 +248,13 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                     >
                                         <icon>visibility</icon>
                                     </button>
-                                    <mat-error>{{
-                                        'USERS.PASSWORD_REQUIRED' | translate
-                                    }}</mat-error>
-                                </mat-form-field>
+                                    <div error>
+                                        {{
+                                            'USERS.PASSWORD_REQUIRED'
+                                                | translate
+                                        }}
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.confirm_password) {
@@ -272,9 +268,8 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                 >
                                     {{ 'USERS.PASSWORD_CONFIRM' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="confirm-password"
                                         [type]="
                                             show_confirm() ? 'text' : 'password'
@@ -286,7 +281,7 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                     />
                                     <button
                                         icon
-                                        matSuffix
+                                        suffix
                                         type="button"
                                         [attr.aria-label]="
                                             'COMMON.PASSWORD_TOGGLE' | translate
@@ -299,10 +294,12 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                                     >
                                         <icon>visibility</icon>
                                     </button>
-                                    <mat-error>{{
-                                        'USERS.PASSWORDS_MATCH' | translate
-                                    }}</mat-error>
-                                </mat-form-field>
+                                    <div error>
+                                        {{
+                                            'USERS.PASSWORDS_MATCH' | translate
+                                        }}
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -317,45 +314,18 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                             >
                                 {{ 'USERS.FIELD_GROUPS' | translate }}
                             </label>
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-chip-grid
-                                    #chipList
+                            <app-form-field class="w-full">
+                                <app-chip-list
+                                    inputId="groups"
                                     [attr.aria-label]="
                                         'USERS.FIELD_GROUPS' | translate
                                     "
-                                >
-                                    @for (item of group_list(); track item) {
-                                        <mat-chip-row
-                                            (removed)="removeGroup(item)"
-                                        >
-                                            <div class="max-w-md truncate">
-                                                {{ item }}
-                                            </div>
-                                            <button
-                                                type="button"
-                                                matChipRemove
-                                                [attr.aria-label]="
-                                                    'COMMON.ITEM_REMOVE'
-                                                        | translate
-                                                            : { item: item }
-                                                "
-                                            >
-                                                <icon>cancel</icon>
-                                            </button>
-                                        </mat-chip-row>
-                                    }
-                                </mat-chip-grid>
-                                <input
-                                    id="groups"
                                     [placeholder]="
                                         'USERS.FIELD_GROUPS' | translate
                                     "
-                                    [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separators"
-                                    [matChipInputAddOnBlur]="true"
-                                    (matChipInputTokenEnd)="addGroup($event)"
+                                    [formField]="form.groups"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.image) {
@@ -369,17 +339,16 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
                             >
                                 {{ 'USERS.IMAGE' | translate }}
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="image"
                                     [placeholder]="'USERS.IMAGE' | translate"
                                     [formField]="form.image"
                                 />
-                                <mat-error>{{
-                                    'USERS.IMAGE_INVALID' | translate
-                                }}</mat-error>
-                            </mat-form-field>
+                                <div error>
+                                    {{ 'USERS.IMAGE_INVALID' | translate }}
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.locatable) {
@@ -395,23 +364,22 @@ import { generateUserFormModel, userFormSchema } from './users.utilities';
     `,
     styles: [``],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         SettingsToggleComponent,
         FormField,
         TranslatePipe,
-        MatFormFieldModule,
-        MatInputModule,
-        MatChipsModule,
+        ChipListComponent,
         IconComponent,
-        MatSelectModule,
         FullscreenModalShellComponent,
     ],
 })
 export class UserFormComponent {
     public readonly isSubsystemUser = isSubsystemUser;
-    private _dialog_ref = inject<MatDialogRef<UserFormComponent>>(MatDialogRef);
-    private _data = inject<{ item: PlaceUser; readonly?: string }>(
-        MAT_DIALOG_DATA,
-    );
+    private _dialog_ref =
+        inject<DialogRef<unknown, UserFormComponent>>(DialogRef);
+    private _data = inject<{ item: PlaceUser; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'USERS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -439,21 +407,6 @@ export class UserFormComponent {
     public readonly domain_list = computed(
         () => this._domain_list.value() || [],
     );
-    /** List of separator characters for groups */
-    public readonly separators: number[] = [ENTER, COMMA];
-    public group_list = computed(() => this.formModel().groups || []);
-
-    public readonly addGroup = (e: MatChipInputEvent) =>
-        this.formModel.update((value) => ({
-            ...value,
-            groups: addSignalChipItem(value.groups, e),
-        }));
-    public readonly removeGroup = (i: string) =>
-        this.formModel.update((value) => ({
-            ...value,
-            groups: removeSignalChipItem(value.groups, i),
-        }));
-
     constructor() {
         onSaveHotkey(() => this.submit());
         effect(() => {

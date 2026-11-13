@@ -85,7 +85,7 @@ The `Demo Site` workflow moves `backoffice-demo` to `develop` once per day (17:0
 
 ## Stack
 
-- Angular 22 and Angular Material
+- Angular 22 with the Angular CDK and the app's own controls (`src/app/ui/controls`)
 - Nx 22 with the Angular application builder
 - Vitest and Playwright
 - Tailwind CSS 4

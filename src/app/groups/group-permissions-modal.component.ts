@@ -1,11 +1,7 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogModule,
-    MatDialogRef,
-} from '@angular/material/dialog';
+import { DialogCloseDirective } from '../ui/controls/dialog';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -26,6 +22,12 @@ export interface GroupPermissionsModalData {
 export interface GroupPermissionsModalResult {
     permissions: number;
     deny?: boolean;
+}
+
+/** Result of the permissions modal when the user saves */
+export interface GroupPermissionsResult {
+    permissions: number;
+    deny: boolean;
 }
 
 @Component({
@@ -65,13 +67,13 @@ export interface GroupPermissionsModalResult {
         >
             <button
                 btn
-                matRipple
+                ripple
                 class="inverse bg-base-100 flex-1"
-                mat-dialog-close
+                appDialogClose
             >
                 {{ 'COMMON.CANCEL' | translate }}
             </button>
-            <button btn matRipple class="flex-1" (click)="save()">
+            <button btn ripple class="flex-1" (click)="save()">
                 <icon class="mr-2">save</icon>
                 {{ 'COMMON.SAVE' | translate }}
             </button>
@@ -79,11 +81,10 @@ export interface GroupPermissionsModalResult {
     `,
     styles: [``],
     imports: [
+        DialogCloseDirective,
         DialogTitleDirective,
         FormsModule,
         IconComponent,
-        MatDialogModule,
-        MatRippleModule,
         SettingsToggleComponent,
         TranslatePipe,
     ],
@@ -91,12 +92,12 @@ export interface GroupPermissionsModalResult {
 export class GroupPermissionsModalComponent {
     private _dialog_ref =
         inject<
-            MatDialogRef<
-                GroupPermissionsModalComponent,
-                GroupPermissionsModalResult
+            DialogRef<
+                GroupPermissionsModalResult,
+                GroupPermissionsModalComponent
             >
-        >(MatDialogRef);
-    private _data = inject<GroupPermissionsModalData>(MAT_DIALOG_DATA);
+        >(DialogRef);
+    private _data = inject<GroupPermissionsModalData>(DIALOG_DATA);
 
     public readonly title = this._data.title;
     public readonly show_deny = this._data.show_deny;
@@ -112,9 +113,10 @@ export class GroupPermissionsModalComponent {
     }
 
     public save() {
-        this._dialog_ref.close({
+        const result: GroupPermissionsResult = {
             permissions: this.permissions(),
             deny: this.deny,
-        });
+        };
+        this._dialog_ref.close(result);
     }
 }

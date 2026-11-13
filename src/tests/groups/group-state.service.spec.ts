@@ -1,10 +1,10 @@
+import { Dialog } from '@angular/cdk/dialog';
 import {
     ApplicationRef,
     provideZonelessChangeDetection,
     signal,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import {
     PlaceGroup,
@@ -95,7 +95,7 @@ describe('group membership actions', () => {
         mocks.updateGroupUser.mockResolvedValue(user);
         mocks.updateGroupZone.mockResolvedValue(zone);
         mocks.confirm.mockResolvedValue({ reason: 'done', close, loading });
-        mocks.open.mockReturnValue({ afterClosed: () => of(undefined) });
+        mocks.open.mockReturnValue({ closed: of(undefined) });
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
@@ -104,7 +104,7 @@ describe('group membership actions', () => {
                     provide: ActiveItemService,
                     useValue: { item: active, active_item: group },
                 },
-                { provide: MatDialog, useValue: { open: mocks.open } },
+                { provide: Dialog, useValue: { open: mocks.open } },
                 { provide: Router, useValue: router },
             ],
         });
@@ -233,7 +233,7 @@ describe('group membership actions', () => {
 
     it('saves zero permissions from the user permissions dialog', async () => {
         mocks.open.mockReturnValue({
-            afterClosed: () => of({ permissions: 0 }),
+            closed: of({ permissions: 0 }),
         });
         await service.user_members.editPermissions(user);
         expect(mocks.updateGroupUser).toHaveBeenCalledExactlyOnceWith(
@@ -245,7 +245,7 @@ describe('group membership actions', () => {
 
     it('saves the deny flag and permissions from the zone permissions dialog', async () => {
         mocks.open.mockReturnValue({
-            afterClosed: () => of({ permissions: 16, deny: false }),
+            closed: of({ permissions: 16, deny: false }),
         });
         await service.zone_members.editPermissions(zone);
         expect(mocks.updateGroupZone).toHaveBeenCalledExactlyOnceWith(
@@ -264,14 +264,13 @@ describe('group membership actions', () => {
 
     it('reports both successful and failed bulk additions and clears loading', async () => {
         mocks.open.mockReturnValue({
-            afterClosed: () =>
-                of({
-                    items: [
-                        new PlaceUser({ id: 'user-1' }),
-                        new PlaceUser({ id: 'user-2' }),
-                    ],
-                    permissions: 17,
-                }),
+            closed: of({
+                items: [
+                    new PlaceUser({ id: 'user-1' }),
+                    new PlaceUser({ id: 'user-2' }),
+                ],
+                permissions: 17,
+            }),
         });
         mocks.addGroupUser
             .mockResolvedValueOnce(user)

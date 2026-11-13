@@ -1,11 +1,11 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogState } from '@angular/material/dialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HotkeysService } from '../../app/common/hotkeys.service';
 
 describe('HotkeysService', () => {
     let service: HotkeysService;
-    let open_dialogs: { getState: () => MatDialogState }[];
+    let open_dialogs: object[];
 
     const keyEvent = (
         type: 'keydown' | 'keyup',
@@ -22,7 +22,7 @@ describe('HotkeysService', () => {
     };
 
     const openDialog = () => {
-        const ref = { getState: () => MatDialogState.OPEN };
+        const ref = {};
         open_dialogs.push(ref);
         return ref;
     };
@@ -33,7 +33,7 @@ describe('HotkeysService', () => {
             providers: [
                 HotkeysService,
                 {
-                    provide: MatDialog,
+                    provide: Dialog,
                     useValue: {
                         get openDialogs() {
                             return open_dialogs;
@@ -270,22 +270,6 @@ describe('HotkeysService', () => {
             press('KeyS');
             expect(first).toHaveBeenCalledTimes(2);
             first_sub?.unsubscribe();
-        });
-
-        it('treats a listener registered during a dialog close as page level', () => {
-            const dialog = {
-                state: MatDialogState.CLOSING,
-                getState() {
-                    return this.state;
-                },
-            };
-            open_dialogs.push(dialog);
-            const callback = vi.fn();
-            const subscription = service.listen(['KeyK'], callback);
-            open_dialogs.splice(0, 1);
-            press('KeyK');
-            expect(callback).toHaveBeenCalledTimes(1);
-            subscription?.unsubscribe();
         });
     });
 

@@ -8,12 +8,11 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
-import { MatFormFieldModule } from '@angular/material/form-field';
 
-import { MatInputModule } from '@angular/material/input';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { HashMap } from '../../common/types';
 import { SAMLSourceFormModel } from '../../domains/auth-sources.utilities';
+import { FormFieldComponent } from '../controls/form-field.component';
 import { ObjectListFieldComponent } from '../custom-fields/object-list-field.component';
 import { TranslatePipe } from '../translate.pipe';
 
@@ -35,23 +34,22 @@ import { TranslatePipe } from '../translate.pipe';
                                 {{ 'COMMON.FIELD_NAME' | translate
                                 }}<span>*</span>:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'COMMON.FIELD_NAME' | translate
                                     "
                                     [formField]="form().name"
                                 />
                                 @if (form().name().invalid()) {
-                                    <mat-error>
+                                    <div error>
                                         {{
                                             'DOMAINS.AUTHENTICATION_NAME_REQUIRED'
                                                 | translate
                                         }}
-                                    </mat-error>
+                                    </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().issuer) {
@@ -66,23 +64,22 @@ import { TranslatePipe } from '../translate.pipe';
                                 {{ 'DOMAINS.SAML_ISSUER' | translate
                                 }}<span>*</span>:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.SAML_ISSUER' | translate
                                     "
                                     [formField]="form().issuer"
                                 />
                                 @if (form().issuer().invalid()) {
-                                    <mat-error>
+                                    <div error>
                                         {{
                                             'DOMAINS.SAML_ISSUER_REQUIRED'
                                                 | translate
                                         }}
-                                    </mat-error>
+                                    </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -99,9 +96,8 @@ import { TranslatePipe } from '../translate.pipe';
                                 {{ 'DOMAINS.SAML_IDP_TARGET_URL' | translate
                                 }}<span>*</span>:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.SAML_IDP_TARGET_URL'
                                             | translate
@@ -109,14 +105,14 @@ import { TranslatePipe } from '../translate.pipe';
                                     [formField]="form().idp_sso_target_url"
                                 />
                                 @if (form().idp_sso_target_url().invalid()) {
-                                    <mat-error>
+                                    <div error>
                                         {{
                                             'DOMAINS.SAML_IDP_TARGET_URL_REQUIRED'
                                                 | translate
                                         }}
-                                    </mat-error>
+                                    </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().name_identifier_format) {
@@ -130,9 +126,8 @@ import { TranslatePipe } from '../translate.pipe';
                             >
                                 {{ 'DOMAINS.SAML_NAME_ID_FORMAT' | translate }}:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.SAML_NAME_ID_FORMAT'
                                             | translate
@@ -142,14 +137,14 @@ import { TranslatePipe } from '../translate.pipe';
                                 @if (
                                     form().name_identifier_format().invalid()
                                 ) {
-                                    <mat-error>
+                                    <div error>
                                         {{
                                             'DOMAINS.SAML_NAME_ID_FORMAT_REQUIRED'
                                                 | translate
                                         }}
-                                    </mat-error>
+                                    </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -198,9 +193,8 @@ import { TranslatePipe } from '../translate.pipe';
                                 {{ 'DOMAINS.SAML_ASSERTION_URL' | translate
                                 }}<span>*</span>:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.SAML_ASSERTION_URL' | translate
                                     "
@@ -213,14 +207,14 @@ import { TranslatePipe } from '../translate.pipe';
                                         .assertion_consumer_service_url()
                                         .invalid()
                                 ) {
-                                    <mat-error>
+                                    <div error>
                                         {{
                                             'DOMAINS.SAML_ASSERTION_URL_REQUIRED'
                                                 | translate
                                         }}
-                                    </mat-error>
+                                    </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().idp_cert_fingerprint) {
@@ -230,16 +224,15 @@ import { TranslatePipe } from '../translate.pipe';
                                     'DOMAINS.SAML_CERT_FINGERPRINT' | translate
                                 }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.SAML_CERT_FINGERPRINT'
                                             | translate
                                     "
                                     [formField]="form().idp_cert_fingerprint"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -248,15 +241,14 @@ import { TranslatePipe } from '../translate.pipe';
                         <label for="cert"
                             >{{ 'DOMAINS.SAML_CERT_FULL' | translate }}:</label
                         >
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <textarea
-                                matInput
                                 [placeholder]="
                                     'DOMAINS.SAML_CERT_FULL' | translate
                                 "
                                 [formField]="form().idp_cert"
                             ></textarea>
-                        </mat-form-field>
+                        </app-form-field>
                     </div>
                 }
                 <div class="fieldset">
@@ -267,15 +259,14 @@ import { TranslatePipe } from '../translate.pipe';
                                     'DOMAINS.SAML_UID_ATTRIBUTE' | translate
                                 }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.SAML_UID_ATTRIBUTE' | translate
                                     "
                                     [formField]="form().uid_attribute"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().attribute_service_name) {
@@ -286,16 +277,15 @@ import { TranslatePipe } from '../translate.pipe';
                                         | translate
                                 }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.SAML_ATTRIBUTE_SERVICE_NAME'
                                             | translate
                                     "
                                     [formField]="form().attribute_service_name"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -339,16 +329,15 @@ import { TranslatePipe } from '../translate.pipe';
                                         | translate
                                 }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.SAML_IDP_SLO_TARGET_URL'
                                             | translate
                                     "
                                     [formField]="form().idp_slo_target_url"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().slo_default_relay_state) {
@@ -359,16 +348,15 @@ import { TranslatePipe } from '../translate.pipe';
                                         | translate
                                 }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.SAML_SLO_DEFAULT_RELAY_STATE'
                                             | translate
                                     "
                                     [formField]="form().slo_default_relay_state"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -390,12 +378,11 @@ import { TranslatePipe } from '../translate.pipe';
         `,
     ],
     imports: [
-        MatFormFieldModule,
+        FormFieldComponent,
         FormField,
         TranslatePipe,
         FormsModule,
         ObjectListFieldComponent,
-        MatInputModule,
     ],
 })
 export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {

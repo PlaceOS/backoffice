@@ -1,14 +1,9 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { escapeHtml } from '../../common/general';
 import { reportLoadError } from '../../common/load-error';
 import { i18n } from '../../common/locale.service';
 import { confirmAndRun } from '../../overlays/confirm-modal.component';
 import { IconComponent } from '../../ui/icon.component';
-import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -16,6 +11,9 @@ import { AdminDataService } from '../admin-data.service';
 import { StorageProviderModalComponent } from './storage-provider-modal.component';
 import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
 
+import { Dialog } from '@angular/cdk/dialog';
+import { ProgressBarComponent } from '../../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../../ui/controls/tooltip.directive';
 import { AdminDomainSelectComponent } from '../admin-domain-select.component';
 @Component({
     selector: 'app-storage',
@@ -35,10 +33,10 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         (click)="edit()"
-                        [matTooltip]="'ADMIN.STORAGE_ADD' | translate"
+                        [appTooltip]="'ADMIN.STORAGE_ADD' | translate"
                         [attr.aria-label]="'ADMIN.STORAGE_ADD' | translate"
                     >
                         <icon>add</icon>
@@ -46,7 +44,7 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
                 </div>
             </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -142,8 +140,8 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="'ADMIN.STORAGE_EDIT' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.STORAGE_EDIT' | translate"
                     (click)="edit(row)"
                 >
                     <icon>edit</icon>
@@ -152,8 +150,8 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
                     icon
                     default
                     error
-                    matRipple
-                    [matTooltip]="'ADMIN.STORAGE_REMOVE' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.STORAGE_REMOVE' | translate"
                     (click)="remove(row)"
                 >
                     <icon>delete</icon>
@@ -163,19 +161,17 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
     `,
     styles: [``],
     imports: [
+        ProgressBarComponent,
+        TooltipDirective,
         AdminDomainSelectComponent,
-        LoadingLabelDirective,
         IconComponent,
-        MatRippleModule,
         TranslatePipe,
-        MatTooltipModule,
         SimpleTableComponent,
-        MatProgressBarModule,
         DateFromPipe,
     ],
 })
 export class StorageComponent implements OnInit {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _admin_data = inject(AdminDataService);
 
     public readonly loading = signal('');
@@ -202,7 +198,7 @@ export class StorageComponent implements OnInit {
         const ref = this._dialog.open(StorageProviderModalComponent, {
             data: { item, domain: this.domain()?.id },
         });
-        ref.afterClosed().subscribe(() => this.loadStorage());
+        ref.closed.subscribe(() => this.loadStorage());
     }
 
     public async remove(item: PlaceStorage) {

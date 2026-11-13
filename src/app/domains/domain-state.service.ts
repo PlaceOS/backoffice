@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import {
     computed,
     inject,
@@ -7,7 +8,6 @@ import {
     signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import {
     addApplication,
@@ -51,7 +51,7 @@ export type PlaceAuthSource =
 @Service()
 export class DomainStateService {
     private _state = inject(ActiveItemService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     private readonly _router = inject(Router);
     private readonly _url = toSignal(

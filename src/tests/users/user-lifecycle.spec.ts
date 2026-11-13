@@ -1,6 +1,6 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { DefaultUrlSerializer, Router } from '@angular/router';
 import { PlaceUser, removeUser, reviveUser } from '@placeos/ts-client';
 import { Subject } from 'rxjs';
@@ -92,7 +92,7 @@ beforeEach(async () => {
                     navigate: vi.fn(),
                 },
             },
-            { provide: MatDialog, useValue: dialog },
+            { provide: Dialog, useValue: dialog },
             { provide: SettingsService, useValue: {} },
             {
                 provide: HotkeysService,

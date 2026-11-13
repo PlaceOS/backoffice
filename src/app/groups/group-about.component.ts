@@ -1,6 +1,5 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import {
     PlaceDomain,
@@ -8,6 +7,7 @@ import {
     showDomain,
     showGroup,
 } from '@placeos/ts-client';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -139,7 +139,7 @@ import { GroupStateService } from './group-state.service';
                     <div class="flex items-center">
                         <span
                             class="select-text"
-                            [matTooltip]="item()?.created_at"
+                            [appTooltip]="item()?.created_at"
                         >
                             {{ created_at() * 1000 | dateFrom }}
                         </span>
@@ -150,7 +150,7 @@ import { GroupStateService } from './group-state.service';
                     <div class="flex items-center">
                         <span
                             class="select-text"
-                            [matTooltip]="item()?.updated_at"
+                            [appTooltip]="item()?.updated_at"
                         >
                             {{ updated_at() * 1000 | dateFrom }}
                         </span>
@@ -181,7 +181,7 @@ import { GroupStateService } from './group-state.service';
         `,
     ],
     imports: [
-        MatTooltipModule,
+        TooltipDirective,
         TranslatePipe,
         DateFromPipe,
         MarkdownPipe,

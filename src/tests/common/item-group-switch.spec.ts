@@ -1,6 +1,6 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { DefaultUrlSerializer, NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { afterEach, expect, it, vi } from 'vitest';
@@ -93,7 +93,7 @@ it('clears the active resource and ignores old list and detail responses after s
         providers: [
             ActiveItemService,
             { provide: Router, useValue: router },
-            { provide: MatDialog, useValue: {} },
+            { provide: Dialog, useValue: {} },
             { provide: SettingsService, useValue: {} },
             {
                 provide: HotkeysService,
@@ -149,7 +149,7 @@ it('reloads users with the deleted filter and ignores an older response', async 
                         new DefaultUrlSerializer().parse(url),
                 },
             },
-            { provide: MatDialog, useValue: {} },
+            { provide: Dialog, useValue: {} },
             { provide: SettingsService, useValue: {} },
             {
                 provide: HotkeysService,
@@ -213,7 +213,7 @@ it('shows a saved item with its current settings', async () => {
         providers: [
             ActiveItemService,
             { provide: Router, useValue: router },
-            { provide: MatDialog, useValue: {} },
+            { provide: Dialog, useValue: {} },
             { provide: SettingsService, useValue: {} },
             {
                 provide: HotkeysService,

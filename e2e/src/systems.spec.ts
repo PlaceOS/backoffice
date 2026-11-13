@@ -65,7 +65,9 @@ test.describe('Systems', () => {
 
             await expect(systems.dialog).toBeVisible();
             await expect(
-                systems.dialog.locator('mat-error').first(),
+                systems.dialog
+                    .locator('app-form-field [error]:visible')
+                    .first(),
             ).toBeVisible();
         });
 
@@ -130,7 +132,7 @@ test.describe('Systems', () => {
                     name: 'Edit https://cam.example.com/old.jpg',
                 })
                 .click();
-            const edit_input = systems.dialog.locator('.mat-chip-edit-input');
+            const edit_input = systems.dialog.locator('.chip-edit');
             await expect(edit_input).toBeFocused();
             await page.keyboard.press('ControlOrMeta+A');
             await page.keyboard.type('https://cam.example.com/new.jpg');
@@ -140,7 +142,7 @@ test.describe('Systems', () => {
 
             await systems.openEditModal();
             const chips = systems.dialog.locator(
-                '[aria-label="Camera Snapshot URL List"] mat-chip-row',
+                '[aria-label="Camera Snapshot URL List"] .chip',
             );
             await expect(chips).toHaveCount(1);
             await expect(chips).toContainText(
@@ -211,7 +213,7 @@ test.describe('Systems', () => {
             await systems.searchExecuteModules('Lighting');
 
             const options = page
-                .locator('.cdk-overlay-pane mat-option')
+                .locator('.cdk-overlay-pane app-option')
                 .filter({ hasText: /\S/ });
             await expect(
                 options.filter({ hasText: /Lighting/i }).first(),

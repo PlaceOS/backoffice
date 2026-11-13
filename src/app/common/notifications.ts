@@ -1,35 +1,30 @@
-import type { MatSnackBar } from '@angular/material/snack-bar';
+import { signal } from '@angular/core';
 
-import { log } from './general';
-import { ApplicationIcon } from './types';
+/** Notification shown by the `app-toast-outlet` */
+export interface Toast {
+    id: number;
+    /** CSS class of the toast, e.g. `success` or `error` */
+    type: string;
+    message: string;
+    /** Text of the action button. No button shows when it is empty */
+    action: string;
+    on_action: () => void;
+}
 
-/** Snackbar service, or a promise of it while the snackbar module loads */
-let _service: MatSnackBar | Promise<MatSnackBar> | null = null;
+/** Most toasts on screen at once. Older toasts are removed first */
+export const MAX_TOASTS = 3;
+/** Time a toast stays on screen. Errors stay until dismissed */
+export const TOAST_DURATION_MS = 5000;
 
-/**
- * Set the snackbar used for notifications.
- * Pass a promise to load the snackbar module lazily.
- * Notifications made before it resolves open once it does.
- * If the promise rejects (e.g. its chunk fails to load on a flaky network),
- * those notifications are dropped with a warning.
- */
-export function setNotifyOutlet(snackbar: MatSnackBar | Promise<MatSnackBar>) {
-    _service = snackbar;
-    if (snackbar instanceof Promise) {
-        snackbar.then(
-            (service) => {
-                if (_service === snackbar) _service = service;
-            },
-            (error) =>
-                log(
-                    'Notify',
-                    'Failed to load the snackbar',
-                    [error],
-                    'warn',
-                    true,
-                ),
-        );
-    }
+let next_id = 0;
+const _toasts = signal<Toast[]>([]);
+
+/** Toasts on screen, oldest first */
+export const toasts = _toasts.asReadonly();
+
+/** Remove a toast from the screen */
+export function dismissToast(id: number) {
+    _toasts.update((list) => list.filter((toast) => toast.id !== id));
 }
 
 /**
@@ -37,51 +32,26 @@ export function setNotifyOutlet(snackbar: MatSnackBar | Promise<MatSnackBar>) {
  * @param type CSS Class to add to the notification
  * @param message Message to display on the notificaiton
  * @param action Display text for the callback action
- * @param on_action Callback of action on the notification
- * @param icon Icon to render to the left of the notification message
+ * @param on_action Callback of action on the notification. It defaults to closing it
  */
 export function notify(
     type: string,
     message: string,
     action = 'OK',
     on_action?: () => void,
-    _icon: ApplicationIcon = {
-        type: 'icon',
-        content: 'info',
-    },
 ): void {
-    if (!_service) {
-        throw new Error("Snackbar service hasn't been initialised");
-    }
-    if (_service instanceof Promise) {
-        // setNotifyOutlet logs a failed load, so ignore the rejection here
-        _service.then(
-            (service) =>
-                openNotification(service, type, message, action, on_action),
-            () => undefined,
-        );
-        return;
-    }
-    openNotification(_service, type, message, action, on_action);
-}
-
-function openNotification(
-    service: MatSnackBar,
-    type: string,
-    message: string,
-    action: string,
-    on_action?: () => void,
-) {
-    const snackbar_ref = service.open(message, action, {
-        panelClass: [type],
-        // Errors stay until dismissed so they can be read and acted on
-        duration: type === 'error' ? undefined : 5000,
-        // Screen readers announce errors at once, not after the current speech
-        politeness: type === 'error' ? 'assertive' : 'polite',
-    });
-    if (action) {
-        on_action = on_action || (() => snackbar_ref.dismiss());
-        snackbar_ref.onAction().subscribe(() => on_action());
+    const id = next_id++;
+    const toast: Toast = {
+        id,
+        type,
+        message,
+        action: action || '',
+        on_action: on_action || (() => dismissToast(id)),
+    };
+    _toasts.update((list) => [...list, toast].slice(-MAX_TOASTS));
+    // Errors stay until dismissed so they can be read and acted on
+    if (type !== 'error') {
+        setTimeout(() => dismissToast(id), TOAST_DURATION_MS);
     }
 }
 
@@ -96,12 +66,8 @@ export function notifySuccess(
     action?: string,
     on_action?: () => void,
 ): void {
-    const icon: ApplicationIcon = {
-        type: 'icon',
-        content: 'done',
-    };
     console.debug(msg);
-    notify('success', msg, action, on_action, icon);
+    notify('success', msg, action, on_action);
 }
 
 /**
@@ -115,12 +81,8 @@ export function notifyError(
     action?: string,
     on_action?: () => void,
 ): void {
-    const icon: ApplicationIcon = {
-        type: 'icon',
-        content: 'error',
-    };
     console.error(msg);
-    notify('error', msg, action, on_action, icon);
+    notify('error', msg, action, on_action);
 }
 
 /**
@@ -134,12 +96,8 @@ export function notifyWarn(
     action?: string,
     on_action?: () => void,
 ): void {
-    const icon: ApplicationIcon = {
-        type: 'icon',
-        content: 'warning',
-    };
     console.warn(msg);
-    notify('warn', msg, action, on_action, icon);
+    notify('warn', msg, action, on_action);
 }
 
 /**

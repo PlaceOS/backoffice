@@ -1,10 +1,10 @@
+import { Dialog } from '@angular/cdk/dialog';
 import {
     ApplicationRef,
     provideZonelessChangeDetection,
     signal,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlaceDomain, PlaceUser } from '@placeos/ts-client';
 import { Subject } from 'rxjs';
@@ -61,7 +61,7 @@ describe('domain tab loading', () => {
                 provideZonelessChangeDetection(),
                 DomainStateService,
                 { provide: ActiveItemService, useValue: { item: active } },
-                { provide: MatDialog, useValue: {} },
+                { provide: Dialog, useValue: {} },
                 {
                     provide: Router,
                     useValue: {

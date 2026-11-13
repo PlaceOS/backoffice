@@ -11,9 +11,9 @@ import {
     FormsModule,
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { FormFieldComponent } from '../../ui/controls/form-field.component';
+import { OptionComponent } from '../../ui/controls/option.component';
+import { SelectComponent } from '../../ui/controls/select.component';
 import { SettingsToggleComponent } from '../../ui/settings-toggle.component';
 
 /** A loosely-typed record for JSON Schema objects. */
@@ -117,11 +117,8 @@ export function buildFormFromFields(
                                         {{ field.description }}
                                     </p>
                                 }
-                                <mat-form-field
-                                    appearance="outline"
-                                    class="no-subscript w-full"
-                                >
-                                    <mat-select
+                                <app-form-field class="no-subscript w-full">
+                                    <app-select
                                         [ngModel]="fieldValue(field.key)"
                                         [disabled]="disabled()"
                                         (ngModelChange)="
@@ -135,12 +132,12 @@ export function buildFormFromFields(
                                             opt of field.options;
                                             track opt.value
                                         ) {
-                                            <mat-option [value]="opt.value">
+                                            <app-option [value]="opt.value">
                                                 {{ opt.label }}
-                                            </mat-option>
+                                            </app-option>
                                         }
-                                    </mat-select>
-                                </mat-form-field>
+                                    </app-select>
+                                </app-form-field>
                             </div>
                         }
                         @case ('number') {
@@ -156,12 +153,8 @@ export function buildFormFromFields(
                                         {{ field.description }}
                                     </p>
                                 }
-                                <mat-form-field
-                                    appearance="outline"
-                                    class="no-subscript w-full"
-                                >
+                                <app-form-field class="no-subscript w-full">
                                     <input
-                                        matInput
                                         type="number"
                                         [ngModel]="fieldValue(field.key)"
                                         [disabled]="disabled()"
@@ -173,7 +166,7 @@ export function buildFormFromFields(
                                         }"
                                         [placeholder]="field.label"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         @default {
@@ -189,12 +182,8 @@ export function buildFormFromFields(
                                         {{ field.description }}
                                     </p>
                                 }
-                                <mat-form-field
-                                    appearance="outline"
-                                    class="no-subscript w-full"
-                                >
+                                <app-form-field class="no-subscript w-full">
                                     <input
-                                        matInput
                                         [ngModel]="fieldValue(field.key)"
                                         [disabled]="disabled()"
                                         (ngModelChange)="
@@ -205,7 +194,7 @@ export function buildFormFromFields(
                                         }"
                                         [placeholder]="field.label"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                     }
@@ -222,10 +211,10 @@ export function buildFormFromFields(
         },
     ],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
         SettingsToggleComponent,
     ],
 })

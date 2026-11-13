@@ -1,18 +1,16 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 
 import { Component, OnInit, inject } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { i18n } from '../../common/locale.service';
 import { notifyInfo } from '../../common/notifications';
 import { IconComponent } from '../../ui/icon.component';
-import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { APIKeyService } from './api-keys.service';
 
+import { ProgressBarComponent } from '../../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../../ui/controls/tooltip.directive';
 import { AdminDomainSelectComponent } from '../admin-domain-select.component';
 @Component({
     selector: 'admin-api-keys',
@@ -27,22 +25,22 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         [disabled]="domain() === null"
                         (click)="newKey()"
-                        [matTooltip]="'ADMIN.APP_KEYS_ADD' | translate"
+                        [appTooltip]="'ADMIN.APP_KEYS_ADD' | translate"
                     >
                         <icon>add</icon>
                     </button>
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         [disabled]="domain() === null || loading() === true"
                         (click)="quickCreateKey()"
-                        [matTooltip]="'ADMIN.APP_KEYS_QUICK_CREATE' | translate"
+                        [appTooltip]="'ADMIN.APP_KEYS_QUICK_CREATE' | translate"
                     >
                         <icon>more_time</icon>
                     </button>
@@ -68,7 +66,7 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
                             </div>
                         </div>
                         <button
-                            matRipple
+                            ripple
                             class="mono rounded px-4 py-3 wrap-break-word opacity-60 select-all"
                             (click)="copyKey()"
                         >
@@ -78,7 +76,7 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
                 </div>
             }
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="loading() !== true"
@@ -188,8 +186,8 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="'COMMON.EDIT' | translate"
+                    ripple
+                    [appTooltip]="'COMMON.EDIT' | translate"
                     (click)="editKey(row)"
                 >
                     <icon>edit</icon>
@@ -198,8 +196,8 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
                     icon
                     default
                     error
-                    matRipple
-                    [matTooltip]="'ADMIN.APP_KEYS_REMOVE' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.APP_KEYS_REMOVE' | translate"
                     (click)="deleteKey(row)"
                 >
                     <icon>delete</icon>
@@ -209,15 +207,13 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
     `,
     styles: [``],
     imports: [
+        ProgressBarComponent,
+        TooltipDirective,
         AdminDomainSelectComponent,
-        LoadingLabelDirective,
         TranslatePipe,
         IconComponent,
-        MatRippleModule,
-        MatTooltipModule,
         DateFromPipe,
         SimpleTableComponent,
-        MatProgressBarModule,
     ],
 })
 export class AdminAPIKeysComponent implements OnInit {

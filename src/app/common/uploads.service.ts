@@ -1,11 +1,11 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { Service, inject, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
 import { UploadDetails, UploadPermissions, uploadFile } from './uploads';
 
 @Service()
 export class UploadsService {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     private _upload_list = signal<UploadDetails[]>([]);
 
@@ -37,7 +37,7 @@ export class UploadsService {
         const ref = this._dialog.open(UploadPermissionsModalComponent, {
             data: { file },
         });
-        const details = await lastValueFrom(ref.afterClosed(), {
+        const details = await lastValueFrom(ref.closed, {
             defaultValue: null,
         });
         if (!details) throw new Error('Upload cancelled');

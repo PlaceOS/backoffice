@@ -1,5 +1,4 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
 import {
     authority,
     PlaceApplication,
@@ -52,7 +51,7 @@ export function isSupportedRedirectUri(uri: string) {
                     <div class="grid grid-cols-3 gap-2">
                         @for (app of visible_applications(); track app.id) {
                             <a
-                                matRipple
+                                ripple
                                 class="hover:bg-base-200 flex min-h-28 flex-col items-center justify-start rounded-2xl px-2 py-3 text-center"
                                 [href]="uri(app.redirect_uri)"
                                 (click)="close()"
@@ -86,7 +85,7 @@ export function isSupportedRedirectUri(uri: string) {
                             class="bg-base-200/50 border-base-200 mt-3 flex items-center justify-between rounded-full border text-sm"
                         >
                             <button
-                                matRipple
+                                ripple
                                 class="hover:bg-base-200 w-24 rounded-full px-4 py-2"
                                 [disabled]="page() === 0"
                                 [class.opacity-40]="page() === 0"
@@ -98,7 +97,7 @@ export function isSupportedRedirectUri(uri: string) {
                                 {{ page() + 1 }} / {{ total_pages() }}
                             </div>
                             <button
-                                matRipple
+                                ripple
                                 class="hover:bg-base-200 w-24 rounded-full px-4 py-2"
                                 [disabled]="page() >= total_pages() - 1"
                                 [class.opacity-40]="page() >= total_pages() - 1"
@@ -125,7 +124,7 @@ export function isSupportedRedirectUri(uri: string) {
             }
         `,
     ],
-    imports: [MatRippleModule],
+    imports: [],
 })
 export class ApplicationPickerTooltipComponent implements OnInit {
     private _tooltip = inject(CustomTooltipData, { optional: true });

@@ -1,5 +1,5 @@
-import { PlaceApplication } from '@placeos/ts-client';
 import { required, SchemaFn, validate } from '@angular/forms/signals';
+import { PlaceApplication } from '@placeos/ts-client';
 import { isValidUrl } from '../common/validation';
 
 export interface ApplicationFormModel {
@@ -32,6 +32,8 @@ export const applyApplicationFormSchema: SchemaFn<ApplicationFormModel> = (
 ) => {
     required(path.name);
     validate(path.redirect_uri, ({ value }) =>
-        isValidUrl(value()) ? undefined : { kind: 'url', message: 'Invalid URL' },
+        isValidUrl(value())
+            ? undefined
+            : { kind: 'url', message: 'Invalid URL' },
     );
 };

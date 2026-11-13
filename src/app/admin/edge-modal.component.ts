@@ -1,11 +1,10 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { addEdge, PlaceEdge, updateEdge } from '@placeos/ts-client';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -28,34 +27,32 @@ export interface EdgeModalData {
                     <label for="edge-name">
                         {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                     </label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
                             id="edge-name"
-                            matInput
                             [formField]="form.name"
                             [placeholder]="
                                 'ADMIN.EDGE_NAME_PLACEHOLDER' | translate
                             "
                         />
-                        <mat-error>{{
-                            'ADMIN.EDGE_NAME_REQUIRED' | translate
-                        }}</mat-error>
-                    </mat-form-field>
+                        <div error>
+                            {{ 'ADMIN.EDGE_NAME_REQUIRED' | translate }}
+                        </div>
+                    </app-form-field>
                 </div>
                 <div class="flex flex-1 flex-col">
                     <label for="edge-description">{{
                         'COMMON.FIELD_DESCRIPTION' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <textarea
                             id="edge-description"
-                            matInput
                             [formField]="form.description"
                             [placeholder]="
                                 'ADMIN.EDGE_DESCRIPTION_PLACEHOLDER' | translate
                             "
                         ></textarea>
-                    </mat-form-field>
+                    </app-form-field>
                 </div>
             </form>
         </fullscreen-modal-shell>
@@ -70,17 +67,16 @@ export interface EdgeModalData {
         `,
     ],
     imports: [
+        FormFieldComponent,
         FullscreenModalShellComponent,
-        MatFormFieldModule,
-        MatInputModule,
         TranslatePipe,
         FormField,
     ],
 })
 export class EdgeModalComponent implements OnInit {
-    private _data = inject<EdgeModalData>(MAT_DIALOG_DATA);
+    private _data = inject<EdgeModalData>(DIALOG_DATA);
     private _dialog_ref =
-        inject<MatDialogRef<EdgeModalComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, EdgeModalComponent>>(DialogRef);
 
     public readonly edge = this._data.edge;
 

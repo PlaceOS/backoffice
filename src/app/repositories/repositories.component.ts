@@ -9,11 +9,7 @@ import { RepositoriesStateService } from './repositories-state.service';
 @Component({
     selector: 'new-repositories-view',
     template: `
-        <item-shell
-            name="repositories"
-            i18n_key="REPOS"
-            [tabs]="tab_list()"
-        />
+        <item-shell name="repositories" i18n_key="REPOS" [tabs]="tab_list()" />
     `,
     imports: [ItemShellComponent],
 })

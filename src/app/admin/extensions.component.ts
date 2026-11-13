@@ -1,8 +1,5 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceDomain, updateDomain } from '@placeos/ts-client';
 import { readError } from '../common/errors';
 import { escapeHtml } from '../common/general';
@@ -15,8 +12,9 @@ import {
     ExtensionSection,
 } from '../common/types';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
@@ -48,10 +46,10 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         (click)="editExtension()"
-                        [matTooltip]="'ADMIN.EXTENSIONS_ADD' | translate"
+                        [appTooltip]="'ADMIN.EXTENSIONS_ADD' | translate"
                         [attr.aria-label]="'ADMIN.EXTENSIONS_ADD' | translate"
                     >
                         <icon>add</icon>
@@ -64,7 +62,7 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
                 <p>{{ 'ADMIN.EXTENSIONS_NOTICE' | translate }}</p>
             </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -127,8 +125,8 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
                         <button
                             icon
                             default
-                            matRipple
-                            [matTooltip]="'ADMIN.EXTENSIONS_EDIT' | translate"
+                            ripple
+                            [appTooltip]="'ADMIN.EXTENSIONS_EDIT' | translate"
                             (click)="editExtension(row)"
                         >
                             <icon>edit</icon>
@@ -137,8 +135,8 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
                             icon
                             default
                             error
-                            matRipple
-                            [matTooltip]="'ADMIN.EXTENSIONS_REMOVE' | translate"
+                            ripple
+                            [appTooltip]="'ADMIN.EXTENSIONS_REMOVE' | translate"
                             (click)="removeExtension(row)"
                         >
                             <icon>delete</icon>
@@ -157,18 +155,16 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
         `,
     ],
     imports: [
+        ProgressBarComponent,
+        TooltipDirective,
         AdminDomainSelectComponent,
-        LoadingLabelDirective,
         IconComponent,
-        MatRippleModule,
-        MatTooltipModule,
         TranslatePipe,
         SimpleTableComponent,
-        MatProgressBarModule,
     ],
 })
 export class PlaceExtensionsComponent implements OnInit {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _admin_data = inject(AdminDataService);
 
     public readonly changed = signal(0);

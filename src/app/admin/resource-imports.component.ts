@@ -1,8 +1,5 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { addSystem, query, querySystemsWithEmails } from '@placeos/ts-client';
 import { mapLimit } from '../common/cascade-delete';
@@ -16,8 +13,9 @@ import {
 } from '../common/notifications';
 import { collectPages } from '../common/support-access';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
@@ -58,11 +56,11 @@ export interface ExternalResource {
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         [disabled]="!domain() || !resource_list()?.length"
                         (click)="importMissingResources()"
-                        [matTooltip]="'ADMIN.RESOURCE_IMPORTS_ALL' | translate"
+                        [appTooltip]="'ADMIN.RESOURCE_IMPORTS_ALL' | translate"
                         [attr.aria-label]="
                             'ADMIN.RESOURCE_IMPORTS_ALL' | translate
                         "
@@ -72,7 +70,7 @@ export interface ExternalResource {
                 </div>
             </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
                     [class.invisible]="!loading()"
@@ -142,10 +140,10 @@ export interface ExternalResource {
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             (click)="importResource(row)"
                             [disabled]="row.imported"
-                            [matTooltip]="
+                            [appTooltip]="
                                 'ADMIN.RESOURCE_IMPORTS_IMPORT' | translate
                             "
                         >
@@ -155,8 +153,8 @@ export interface ExternalResource {
                             <a
                                 icon
                                 default
-                                matRipple
-                                [matTooltip]="
+                                ripple
+                                [appTooltip]="
                                     'ADMIN.RESOURCE_IMPORTS_VIEW' | translate
                                 "
                                 [routerLink]="[
@@ -179,19 +177,17 @@ export interface ExternalResource {
     `,
     styles: [``],
     imports: [
+        ProgressBarComponent,
+        TooltipDirective,
         AdminDomainSelectComponent,
-        LoadingLabelDirective,
         IconComponent,
         RouterModule,
-        MatRippleModule,
         TranslatePipe,
-        MatTooltipModule,
         SimpleTableComponent,
-        MatProgressBarModule,
     ],
 })
 export class ResourceImportsComponent implements OnInit {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _admin_data = inject(AdminDataService);
 
     public readonly loading = signal(false);

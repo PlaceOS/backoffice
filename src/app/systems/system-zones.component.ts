@@ -12,13 +12,11 @@ import { querySupportZones as queryZones } from '../common/support-access';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { SystemStateService } from './system-state.service';
@@ -41,7 +39,7 @@ import { SystemStateService } from './system-state.service';
             <section class="mb-2 flex items-center space-x-2 px-4">
                 <button
                     btn
-                    matRipple
+                    ripple
                     [disabled]="!has_changes()"
                     class="inverse flex-1"
                     (click)="clearChanges()"
@@ -50,7 +48,7 @@ import { SystemStateService } from './system-state.service';
                 </button>
                 <button
                     btn
-                    matRipple
+                    ripple
                     class="inverse flex-1"
                     [disabled]="!has_changes()"
                     (mousedown)="show_original = true"
@@ -62,7 +60,7 @@ import { SystemStateService } from './system-state.service';
                 </button>
                 <button
                     btn
-                    matRipple
+                    ripple
                     class="flex-1"
                     [disabled]="!has_changes()"
                     (click)="saveChanges()"
@@ -78,7 +76,7 @@ import { SystemStateService } from './system-state.service';
                 </div>
             }
             <section class="h-1/2 w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading().zones"
@@ -148,8 +146,8 @@ import { SystemStateService } from './system-state.service';
                             icon
                             default
                             error
-                            matRipple
-                            [matTooltip]="'SYSTEMS.ZONE_REMOVE' | translate"
+                            ripple
+                            [appTooltip]="'SYSTEMS.ZONE_REMOVE' | translate"
                             (click)="removeZone(row)"
                         >
                             <icon>delete</icon>
@@ -172,13 +170,11 @@ import { SystemStateService } from './system-state.service';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
         IconComponent,
         TranslatePipe,
-        MatRippleModule,
-        MatTooltipModule,
         SimpleTableComponent,
-        MatProgressBarModule,
         ItemSearchFieldComponent,
         FormsModule,
         RouterModule,

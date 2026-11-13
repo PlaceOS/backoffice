@@ -1,3 +1,5 @@
+import { Dialog } from '@angular/cdk/dialog';
+import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import {
     Component,
     computed,
@@ -7,13 +9,6 @@ import {
     untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import {
     loadModule,
@@ -33,10 +28,12 @@ import {
 } from '../overlays/view-module-state.component';
 import { BindingDirective } from '../ui/binding.directive';
 import { ContextMenuComponent } from '../ui/context-menu.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors-modal.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -76,7 +73,7 @@ import { SystemStateService } from './system-state.service';
                 />
                 <button
                     btn
-                    matRipple
+                    ripple
                     class="h-11 w-40 flex-1 sm:w-32 sm:flex-none"
                     [disabled]="!new_module()"
                     (click)="addModule()"
@@ -85,7 +82,7 @@ import { SystemStateService } from './system-state.service';
                 </button>
                 <button
                     btn
-                    matRipple
+                    ripple
                     class="h-11 w-40 flex-1 sm:w-32 sm:flex-none"
                     (click)="newModule()"
                 >
@@ -96,42 +93,47 @@ import { SystemStateService } from './system-state.service';
                 device-list
                 class="min-h-[calc(100%-20rem)] overflow-y-auto p-4"
             >
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
                     [class.invisible]="!loading().modules"
                 />
-                <mat-menu #context_menu="matMenu">
-                    @if (active_item()) {
-                        @for (
-                            m_item of active_item().running
-                                ? menu_options
-                                : offline_options;
-                            track m_item
-                        ) {
-                            <button
-                                mat-menu-item
-                                [disabled]="
-                                    m_item.enable_on &&
-                                    !active_item()[m_item.enable_on]
-                                "
-                                (click)="
-                                    handleContextEvent(m_item, active_item())
-                                "
-                            >
-                                <div class="flex items-center space-x-2">
-                                    <icon
-                                        class="text-xl"
-                                        [icon]="m_item.icon"
-                                    />
-                                    <div class="text">
-                                        {{ m_item.name | translate }}
+                <ng-template #context_menu>
+                    <div cdkMenu>
+                        @if (active_item()) {
+                            @for (
+                                m_item of active_item().running
+                                    ? menu_options
+                                    : offline_options;
+                                track m_item
+                            ) {
+                                <button
+                                    cdkMenuItem
+                                    [disabled]="
+                                        m_item.enable_on &&
+                                        !active_item()[m_item.enable_on]
+                                    "
+                                    (click)="
+                                        handleContextEvent(
+                                            m_item,
+                                            active_item()
+                                        )
+                                    "
+                                >
+                                    <div class="flex items-center space-x-2">
+                                        <icon
+                                            class="text-xl"
+                                            [icon]="m_item.icon"
+                                        />
+                                        <div class="text">
+                                            {{ m_item.name | translate }}
+                                        </div>
                                     </div>
-                                </div>
-                            </button>
+                                </button>
+                            }
                         }
-                    }
-                </mat-menu>
+                    </div>
+                </ng-template>
                 <div
                     [context-menu]="context_menu"
                     class="flex"
@@ -220,13 +222,13 @@ import { SystemStateService } from './system-state.service';
                             row.running && row.connected === undefined
                         "
                         (click)="setActive(index)"
-                        [matMenuTriggerFor]="context_menu"
+                        [cdkMenuTriggerFor]="context_menu"
                         [attr.aria-label]="status_label"
-                        [matTooltip]="status_label"
-                        matTooltipPosition="right"
+                        [appTooltip]="status_label"
+                        appTooltipPosition="right"
                     ></button>
                     @if (row.running && row.connected === undefined) {
-                        <mat-spinner
+                        <app-spinner
                             class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                             diameter="32"
                         />
@@ -252,9 +254,9 @@ import { SystemStateService } from './system-state.service';
                         @if (row.edge_id) {
                             <a
                                 icon
-                                matRipple
+                                ripple
                                 class="border-base-200 bg-info text-info-content h-6 w-6 max-w-6 min-w-6 rounded-full border text-xs"
-                                [matTooltip]="row.edge_id"
+                                [appTooltip]="row.edge_id"
                                 [attr.aria-label]="
                                     ('COMMON.EDGE' | translate) +
                                     ' ' +
@@ -298,19 +300,21 @@ import { SystemStateService } from './system-state.service';
                 </ng-template>
                 <ng-template #debug_template let-row="row">
                     <div class="mx-auto">
-                        <mat-checkbox
+                        <input
+                            type="checkbox"
+                            class="block"
                             [disabled]="!row.running"
                             [checked]="debugging()[row.id]"
-                            [aria-label]="
+                            [attr.aria-label]="
                                 'SYSTEMS.MODULE_FIELD_DEBUG' | translate
                             "
-                            [matTooltip]="
+                            [appTooltip]="
                                 (debugging()[row.id]
                                     ? 'SYSTEMS.DEBUG_DISABLE'
                                     : 'SYSTEMS.DEBUG_ENABLE'
                                 ) | translate
                             "
-                            matTooltipPosition="left"
+                            appTooltipPosition="left"
                             (change)="toggleDebug(row)"
                             [class.opacity-30]="!row.running"
                         />
@@ -321,7 +325,7 @@ import { SystemStateService } from './system-state.service';
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             (click)="editModule(row)"
                             [attr.aria-label]="'COMMON.EDIT' | translate"
                         >
@@ -330,9 +334,9 @@ import { SystemStateService } from './system-state.service';
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             (click)="setActive(i)"
-                            [matMenuTriggerFor]="context_menu"
+                            [cdkMenuTriggerFor]="context_menu"
                             [attr.aria-label]="
                                 'COMMON.MORE_ACTIONS' | translate
                             "
@@ -343,12 +347,12 @@ import { SystemStateService } from './system-state.service';
                 </ng-template>
                 <button
                     fab
-                    matRipple
+                    ripple
                     class="bg-secondary text-secondary-content fixed right-4 bottom-4 z-50 flex h-12 w-12 items-center justify-center rounded-lg shadow-lg"
-                    [matTooltip]="
+                    [appTooltip]="
                         'SYSTEMS.SORT_MODULES_BY_CLASS_TOOLTIP' | translate
                     "
-                    matTooltipPosition="left"
+                    appTooltipPosition="left"
                     (click)="sortByType()"
                 >
                     <icon class="text-2xl">sort</icon>
@@ -360,11 +364,6 @@ import { SystemStateService } from './system-state.service';
         `
             button[btn] {
                 min-width: 8rem;
-            }
-
-            button.mat-menu-item {
-                display: flex;
-                align-items: center;
             }
 
             button .text {
@@ -381,34 +380,29 @@ import { SystemStateService } from './system-state.service';
                     height 200ms,
                     width 200ms;
             }
-
-            mat-checkbox.mat-checkbox-disabled {
-                pointer-events: none;
-            }
         `,
     ],
     imports: [
-        LoadingLabelDirective,
-        MatMenuModule,
+        ProgressBarComponent,
+        SpinnerComponent,
+        TooltipDirective,
+        CdkMenu,
+        CdkMenuItem,
+        CdkMenuTrigger,
         IconComponent,
-        MatRippleModule,
         TranslatePipe,
-        MatCheckboxModule,
-        MatTooltipModule,
         SimpleTableComponent,
         ExecuteMethodFieldComponent,
         BindingDirective,
-        MatProgressSpinnerModule,
         ContextMenuComponent,
         RouterModule,
         ItemSearchFieldComponent,
         FormsModule,
-        MatProgressBarModule,
     ],
 })
 export class SystemModulesComponent {
     private _service = inject(SystemStateService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     /** Store for ID of new module to add to system */
     public readonly new_module = signal('');
@@ -616,10 +610,13 @@ export class SystemModulesComponent {
 
     public async viewState(device: PlaceModule) {
         const modules = this._service.getModules();
-        this._dialog.open<ViewModuleStateModalComponent, ModuleStateModalData>(
-            ViewModuleStateModalComponent,
-            { data: { system: this.item, module: device, devices: modules } },
-        );
+        this._dialog.open<
+            unknown,
+            ModuleStateModalData,
+            ViewModuleStateModalComponent
+        >(ViewModuleStateModalComponent, {
+            data: { system: this.item, module: device, devices: modules },
+        });
     }
 
     public async setActive(idx: number) {
@@ -666,7 +663,7 @@ export class SystemModulesComponent {
     }
 
     public viewRuntimeError(device: PlaceModule) {
-        this._dialog.open<ModuleRuntimeErrorsModalComponent>(
+        this._dialog.open<unknown, unknown, ModuleRuntimeErrorsModalComponent>(
             ModuleRuntimeErrorsModalComponent,
             { data: device.id },
         );

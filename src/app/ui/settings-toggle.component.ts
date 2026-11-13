@@ -1,24 +1,18 @@
 import { Component, forwardRef, input, model, signal } from '@angular/core';
-import {
-    ControlValueAccessor,
-    FormsModule,
-    NG_VALUE_ACCESSOR,
-} from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRippleModule } from '@angular/material/core';
-import { MatTooltip } from '@angular/material/tooltip';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { IconComponent } from './icon.component';
 
 @Component({
     selector: 'settings-toggle',
     template: `
-        <!-- The button is the checkbox for assistive tech; the inner checkbox is only visual -->
+        <!-- The button is the checkbox for assistive tech; the inner box is only visual -->
         <button
             type="button"
             role="checkbox"
             [attr.aria-checked]="!!value()"
             [attr.aria-description]="info() || null"
-            matRipple
+            ripple
             class="relative flex min-h-12 flex-1 items-center space-x-2 overflow-hidden rounded-sm border px-2"
             [class.border-base-300]="!value()"
             [class.border-info]="value()"
@@ -32,15 +26,22 @@ import { IconComponent } from './icon.component';
             <div class="ml-2 flex flex-1 items-center space-x-2 text-left">
                 <div>{{ label() }}<ng-content /></div>
                 @if (info()) {
-                    <icon [matTooltip]="info()">info</icon>
+                    <icon [appTooltip]="info()">info</icon>
                 }
             </div>
-            <mat-checkbox
-                [(ngModel)]="value"
-                class="pointer-events-none"
-                [disabled]="disabled()"
-                inert
-            />
+            <span
+                aria-hidden="true"
+                class="mr-3 flex h-[1.125rem] w-[1.125rem] shrink-0 items-center justify-center rounded-xs border-2"
+                [class]="
+                    value()
+                        ? 'border-info bg-info text-info-content'
+                        : 'border-base-content opacity-60'
+                "
+            >
+                @if (value()) {
+                    <icon class="text-sm font-bold">check</icon>
+                }
+            </span>
         </button>
     `,
     styles: [
@@ -57,13 +58,7 @@ import { IconComponent } from './icon.component';
             multi: true,
         },
     ],
-    imports: [
-        MatCheckboxModule,
-        IconComponent,
-        FormsModule,
-        MatRippleModule,
-        MatTooltip,
-    ],
+    imports: [TooltipDirective, IconComponent],
 })
 export class SettingsToggleComponent implements ControlValueAccessor {
     public readonly label = input<string>(undefined);

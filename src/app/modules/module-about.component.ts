@@ -2,16 +2,14 @@ import { Component, inject, signal } from '@angular/core';
 import { PlaceModule } from '@placeos/ts-client';
 import { hasSupportRole } from '../common/support-access';
 
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { Dialog } from '@angular/cdk/dialog';
 import { RouterModule } from '@angular/router';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { CustomTooltipComponent } from '../ui/custom-tooltip.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { IconComponent } from '../ui/icon.component';
 import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors-modal.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { ModuleStateService } from './module-state.service';
@@ -145,7 +143,7 @@ import { ModuleStateService } from './module-state.service';
                     @if (item.has_runtime_error && hasSupportRole()) {
                         <button
                             btn
-                            matRipple
+                            ripple
                             class="col-span-2 flex w-full items-center"
                             (click)="viewErrors()"
                         >
@@ -161,15 +159,15 @@ import { ModuleStateService } from './module-state.service';
                         icon
                         default
                         start
-                        matRipple
+                        ripple
                         [disabled]="item.running || stopping()"
                         (click)="toggleModuleState()"
-                        [matTooltip]="'SYSTEMS.START' | translate"
+                        [appTooltip]="'SYSTEMS.START' | translate"
                     >
                         @if (!stopping()) {
                             <icon>play_arrow</icon>
                         } @else {
-                            <mat-spinner diameter="32" />
+                            <app-spinner diameter="32" />
                         }
                     </button>
                     <button
@@ -177,15 +175,15 @@ import { ModuleStateService } from './module-state.service';
                         default
                         error
                         stop
-                        matRipple
+                        ripple
                         [disabled]="!item.running || stopping()"
                         (click)="toggleModuleState()"
-                        [matTooltip]="'SYSTEMS.STOP' | translate"
+                        [appTooltip]="'SYSTEMS.STOP' | translate"
                     >
                         @if (!stopping()) {
                             <icon>stop</icon>
                         } @else {
-                            <mat-spinner diameter="32" />
+                            <app-spinner diameter="32" />
                         }
                     </button>
                 </div>
@@ -205,7 +203,7 @@ import { ModuleStateService } from './module-state.service';
                 <div
                     class="m-auto flex flex-col items-center justify-center p-8"
                 >
-                    <mat-spinner class="mb-4" diameter="48" />
+                    <app-spinner class="mb-4" diameter="48" />
                     <p>{{ 'MODULES.LOADING_SETTINGS' | translate }}</p>
                 </div>
             }
@@ -224,13 +222,11 @@ import { ModuleStateService } from './module-state.service';
         `,
     ],
     imports: [
+        SpinnerComponent,
+        TooltipDirective,
         ItemTimestampsComponent,
-        LoadingLabelDirective,
         TranslatePipe,
-        MatProgressSpinnerModule,
         SettingsFormComponent,
-        MatRippleModule,
-        MatTooltipModule,
         CustomTooltipComponent,
         IconComponent,
         RouterModule,
@@ -239,7 +235,7 @@ import { ModuleStateService } from './module-state.service';
 export class ModuleAboutComponent {
     public readonly hasSupportRole = hasSupportRole;
     private _service = inject(ModuleStateService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     /** Driver for the active item */
     public readonly driver = this._service.driver;
@@ -263,7 +259,7 @@ export class ModuleAboutComponent {
     }
 
     public viewErrors() {
-        this._dialog.open<ModuleRuntimeErrorsModalComponent>(
+        this._dialog.open<unknown, unknown, ModuleRuntimeErrorsModalComponent>(
             ModuleRuntimeErrorsModalComponent,
             { data: this.item.id },
         );

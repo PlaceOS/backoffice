@@ -1,19 +1,17 @@
+import { DialogRef } from '@angular/cdk/dialog';
 import { SlicePipe } from '@angular/common';
 import { Component, computed, inject, resource, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { queryDrivers, updateDriver } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
 import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { DialogCloseDirective } from '../ui/controls/dialog';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -44,8 +42,8 @@ import { TranslatePipe } from '../ui/translate.pipe';
             @if (!loading()) {
                 <button
                     icon
-                    matRipple
-                    mat-dialog-close
+                    ripple
+                    appDialogClose
                     [attr.aria-label]="'COMMON.CLOSE' | translate"
                 >
                     <icon>close</icon>
@@ -58,10 +56,12 @@ import { TranslatePipe } from '../ui/translate.pipe';
                     <thead class="sticky top-0 z-10 text-left">
                         <tr class="bg-base-300!">
                             <th>
-                                <mat-checkbox
+                                <input
+                                    #all_box
+                                    type="checkbox"
                                     [checked]="all_selected()"
                                     [indeterminate]="some_selected()"
-                                    (change)="toggleAll($event.checked)"
+                                    (change)="toggleAll(all_box.checked)"
                                 />
                             </th>
                             <th>{{ 'COMMON.FIELD_NAME' | translate }}</th>
@@ -75,7 +75,8 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 @for (driver of drivers.data; track driver.id) {
                                     <tr>
                                         <td>
-                                            <mat-checkbox
+                                            <input
+                                                type="checkbox"
                                                 [ngModel]="
                                                     selected_drivers().includes(
                                                         driver.id
@@ -92,7 +93,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                         <td>{{ driver.name }}</td>
                                         <td>
                                             <code
-                                                [matTooltip]="driver.commit"
+                                                [appTooltip]="driver.commit"
                                                 >{{
                                                     driver.commit | slice: 0 : 9
                                                 }}</code
@@ -100,7 +101,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                         </td>
                                         <td>
                                             <code
-                                                [matTooltip]="
+                                                [appTooltip]="
                                                     driver.update_info.commit
                                                 "
                                                 >{{
@@ -132,7 +133,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <div
                 class="flex h-48 w-[20rem] flex-col items-center justify-center space-y-2"
             >
-                <mat-spinner [diameter]="32" />
+                <app-spinner [diameter]="32" />
                 <p>{{ loading() }}</p>
             </div>
         }
@@ -142,7 +143,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             >
                 <button
                     btn
-                    matRipple
+                    ripple
                     [disabled]="selected_drivers().length <= 0"
                     (click)="updateDrivers()"
                 >
@@ -161,15 +162,12 @@ import { TranslatePipe } from '../ui/translate.pipe';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        DialogCloseDirective,
+        SpinnerComponent,
+        TooltipDirective,
         DialogTitleDirective,
-        MatDialogModule,
         TranslatePipe,
         IconComponent,
-        MatRippleModule,
-        MatProgressSpinnerModule,
-        MatCheckboxModule,
-        MatTooltipModule,
         FormsModule,
         DateFromPipe,
         SlicePipe,
@@ -177,7 +175,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 })
 export class DriverUpdateListModalComponent {
     private _dialog_ref =
-        inject<MatDialogRef<DriverUpdateListModalComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, DriverUpdateListModalComponent>>(DialogRef);
 
     public readonly loading = signal(i18n('DRIVERS.LOADING'));
     private readonly _change = signal(0);

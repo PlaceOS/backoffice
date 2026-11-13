@@ -10,7 +10,6 @@ import {
     FormsModule,
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
 import { IconComponent } from './icon.component';
 import { TranslatePipe } from './translate.pipe';
 
@@ -21,7 +20,7 @@ import { TranslatePipe } from './translate.pipe';
             <button
                 decrease
                 icon
-                matRipple
+                ripple
                 type="button"
                 class="border-secondary text-secondary z-10 h-12 w-12 rounded-l rounded-r-none border"
                 [disabled]="disabled() || !value() || value() === min()"
@@ -55,7 +54,7 @@ import { TranslatePipe } from './translate.pipe';
             <button
                 increase
                 icon
-                matRipple
+                ripple
                 type="button"
                 class="border-secondary text-secondary z-10 h-12 w-12 rounded-l-none rounded-r border"
                 [disabled]="disabled() || value() === max()"
@@ -75,7 +74,7 @@ import { TranslatePipe } from './translate.pipe';
             multi: true,
         },
     ],
-    imports: [TranslatePipe, IconComponent, MatRippleModule, FormsModule],
+    imports: [TranslatePipe, IconComponent, FormsModule],
 })
 export class CounterComponent implements ControlValueAccessor {
     /** Size of a single step */

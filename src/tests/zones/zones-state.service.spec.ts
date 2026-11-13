@@ -1,6 +1,6 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlaceGroup, PlaceZone } from '@placeos/ts-client';
 import { of, Subject } from 'rxjs';
@@ -50,7 +50,7 @@ describe('zone group bulk add', () => {
                     provide: ActiveItemService,
                     useValue: { item: signal(null), active_item: zone },
                 },
-                { provide: MatDialog, useValue: { open: mocks.open } },
+                { provide: Dialog, useValue: { open: mocks.open } },
                 {
                     provide: Router,
                     useValue: {
@@ -65,14 +65,13 @@ describe('zone group bulk add', () => {
 
     it('adds each group picked in the bulk modal', async () => {
         mocks.open.mockReturnValue({
-            afterClosed: () =>
-                of({
-                    items: [
-                        new PlaceGroup({ id: 'group-1' }),
-                        new PlaceGroup({ id: 'group-2' }),
-                    ],
-                    permissions: 0,
-                }),
+            closed: of({
+                items: [
+                    new PlaceGroup({ id: 'group-1' }),
+                    new PlaceGroup({ id: 'group-2' }),
+                ],
+                permissions: 0,
+            }),
         });
         await service.group_members.bulkAdd();
         expect(mocks.addGroupZone).toHaveBeenCalledTimes(2);

@@ -1,8 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { extensionsForItem } from '../common/api';
 import { i18n } from '../common/locale.service';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
 import { ItemShellComponent } from '../ui/item-shell.component';
 import { ItemTab } from '../ui/item-tablist.component';
@@ -16,9 +15,9 @@ import { DriverStateService } from './driver-state.service';
             @if (updates_available()) {
                 <button
                     class="border-base-200 bg-secondary text-secondary-content absolute bottom-16 left-1 z-30 flex h-10 w-10 items-center justify-center rounded-lg border shadow-sm lg:-left-8"
-                    [matTooltip]="'DRIVERS.UPDATE' | translate"
-                    matTooltipPosition="right"
-                    matRipple
+                    [appTooltip]="'DRIVERS.UPDATE' | translate"
+                    appTooltipPosition="right"
+                    ripple
                     (click)="showUpdateList()"
                 >
                     <icon class="text-3xl">update</icon>
@@ -27,10 +26,9 @@ import { DriverStateService } from './driver-state.service';
         </item-shell>
     `,
     imports: [
+        TooltipDirective,
         ItemShellComponent,
         IconComponent,
-        MatRippleModule,
-        MatTooltipModule,
         TranslatePipe,
     ],
 })

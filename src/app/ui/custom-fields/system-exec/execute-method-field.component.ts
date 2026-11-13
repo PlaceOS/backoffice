@@ -1,12 +1,10 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, forwardRef, inject, input, signal } from '@angular/core';
 import {
     ControlValueAccessor,
     FormsModule,
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
     executeOnSystem,
     executeOnZone,
@@ -16,7 +14,7 @@ import {
 } from '@placeos/ts-client';
 import { notifyError, notifySuccess } from '../../../common/notifications';
 import { ViewResponseModalComponent } from '../../../overlays/view-response-modal.component';
-import { LoadingLabelDirective } from '../../loading-label.directive';
+import { SpinnerComponent } from '../../controls/spinner.component';
 import { TranslatePipe } from '../../translate.pipe';
 import { FunctionArgumentComponent } from './function-argument.component';
 import { SelectMethodComponent } from './select-method.component';
@@ -68,7 +66,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
                             class="flex-1"
                             [disabled]="disabled() || !fn() || !valid()"
                             btn
-                            matRipple
+                            ripple
                             (click)="execute()"
                         >
                             {{ 'COMMON.EXECUTE_PERFORM' | translate }}
@@ -81,7 +79,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
                     class="absolute -inset-2 flex flex-col items-center justify-center rounded-sm"
                 >
                     <div class="bg-base-100 absolute inset-0 opacity-60"></div>
-                    <mat-spinner diameter="32" />
+                    <app-spinner diameter="32" />
                     <p>{{ 'COMMON.EXECUTE_LOADING' | translate }}</p>
                 </div>
             }
@@ -96,10 +94,8 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
         },
     ],
     imports: [
-        LoadingLabelDirective,
+        SpinnerComponent,
         TranslatePipe,
-        MatProgressSpinnerModule,
-        MatRippleModule,
         FormsModule,
         SelectModuleComponent,
         SelectMethodComponent,
@@ -107,7 +103,7 @@ import { ModuleLike, SelectModuleComponent } from './select-module.component';
     ],
 })
 export class ExecuteMethodFieldComponent implements ControlValueAccessor {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     public readonly zone = input<string>(undefined);
     /** ID of the system to select the module from */
@@ -267,7 +263,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
 
     /** View Results of the execute */
     private async viewDetails(details: unknown) {
-        this._dialog.open<ViewResponseModalComponent>(
+        this._dialog.open<unknown, unknown, ViewResponseModalComponent>(
             ViewResponseModalComponent,
             {
                 data: {

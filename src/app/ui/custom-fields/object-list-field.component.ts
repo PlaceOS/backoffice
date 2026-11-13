@@ -5,10 +5,8 @@ import {
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { HashMap } from '../../common/types';
+import { FormFieldComponent } from '../controls/form-field.component';
 import { IconComponent } from '../icon.component';
 import { TranslatePipe } from '../translate.pipe';
 
@@ -31,9 +29,8 @@ import { TranslatePipe } from '../translate.pipe';
                     <div class="row">
                         @for (field of fields(); track field) {
                             <div class="field" [attr.name]="field">
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         [name]="field"
                                         [placeholder]="field"
                                         [disabled]="disabled()"
@@ -42,13 +39,13 @@ import { TranslatePipe } from '../translate.pipe';
                                             updateField($index, field, $event)
                                         "
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         <button
                             type="button"
                             icon
-                            matRipple
+                            ripple
                             type="button"
                             class="border-error text-error h-12 w-12 rounded-sm border"
                             [disabled]="disabled()"
@@ -81,7 +78,7 @@ import { TranslatePipe } from '../translate.pipe';
     styles: [
         `
             :host,
-            mat-form-field {
+            app-form-field {
                 width: 100%;
             }
 
@@ -125,14 +122,7 @@ import { TranslatePipe } from '../translate.pipe';
             multi: true,
         },
     ],
-    imports: [
-        IconComponent,
-        TranslatePipe,
-        MatRippleModule,
-        FormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-    ],
+    imports: [FormFieldComponent, IconComponent, TranslatePipe, FormsModule],
 })
 export class ObjectListFieldComponent implements ControlValueAccessor {
     /** List of fields that can be populated for each object */

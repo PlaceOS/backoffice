@@ -19,15 +19,15 @@ import {
 } from '@placeos/ts-client';
 
 import { NgTemplateOutlet } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { calculateModuleIndex } from '../../../common/api';
 import { describeError } from '../../../common/errors';
 import { i18n } from '../../../common/locale.service';
 import { notifyError } from '../../../common/notifications';
 import { Identity } from '../../../common/types';
 import { TriggerConditionFormModel } from '../../../triggers/triggers.utilities';
+import { FormFieldComponent } from '../../controls/form-field.component';
+import { OptionComponent } from '../../controls/option.component';
+import { SelectComponent } from '../../controls/select.component';
 import { TranslatePipe } from '../../translate.pipe';
 
 @Component({
@@ -50,8 +50,8 @@ import { TranslatePipe } from '../../translate.pipe';
                         <label for="operator" hidden>{{
                             'TRIGGERS.COMPARE_OP' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
-                            <mat-select
+                        <app-form-field>
+                            <app-select
                                 [formField]="form().operator"
                                 [placeholder]="
                                     'TRIGGERS.COMPARE_OP_SELECT' | translate
@@ -61,12 +61,12 @@ import { TranslatePipe } from '../../translate.pipe';
                                     operation of compare_types();
                                     track operation
                                 ) {
-                                    <mat-option [value]="operation.id">
+                                    <app-option [value]="operation.id">
                                         {{ operation.name }}
-                                    </mat-option>
+                                    </app-option>
                                 }
-                            </mat-select>
-                        </mat-form-field>
+                            </app-select>
+                        </app-form-field>
                     </div>
                 }
                 @if (form().operator) {
@@ -74,8 +74,8 @@ import { TranslatePipe } from '../../translate.pipe';
                         <label for="compared-to" hidden>{{
                             'TRIGGERS.COMPARE_TO' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
-                            <mat-select
+                        <app-form-field>
+                            <app-select
                                 name="compared-to"
                                 [(ngModel)]="rhs_type"
                                 (ngModelChange)="
@@ -87,12 +87,12 @@ import { TranslatePipe } from '../../translate.pipe';
                                 [ngModelOptions]="{ standalone: true }"
                             >
                                 @for (type of right_var_type(); track type) {
-                                    <mat-option [value]="type.id">
+                                    <app-option [value]="type.id">
                                         {{ type.name }}
-                                    </mat-option>
+                                    </app-option>
                                 }
-                            </mat-select>
-                        </mat-form-field>
+                            </app-select>
+                        </app-form-field>
                     </div>
                 }
                 @if (rhs_type() === 'constant') {
@@ -100,9 +100,8 @@ import { TranslatePipe } from '../../translate.pipe';
                         <label for="constant" hidden>{{
                             'TRIGGERS.COMPARE_TO' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [ngModel]="formModel()().right"
                                 (ngModelChange)="
                                     formModel().update((model) => ({
@@ -113,10 +112,12 @@ import { TranslatePipe } from '../../translate.pipe';
                                 [ngModelOptions]="{ standalone: true }"
                                 placeholder="true/false, 'string', 123.456"
                             />
-                            <mat-error>{{
-                                'TRIGGERS.COMPARE_JSON_REQUIRED' | translate
-                            }}</mat-error>
-                        </mat-form-field>
+                            <div error>
+                                {{
+                                    'TRIGGERS.COMPARE_JSON_REQUIRED' | translate
+                                }}
+                            </div>
+                        </app-form-field>
                     </div>
                 } @else {
                     <ng-container
@@ -135,8 +136,8 @@ import { TranslatePipe } from '../../translate.pipe';
                         <label for="type">{{
                             'MODULES.SINGULAR' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
-                            <mat-select
+                        <app-form-field>
+                            <app-select
                                 name="type"
                                 [(ngModel)]="this[side + '_side'].mod"
                                 (ngModelChange)="
@@ -148,12 +149,12 @@ import { TranslatePipe } from '../../translate.pipe';
                                 "
                             >
                                 @for (mod of module_list(); track mod) {
-                                    <mat-option [value]="mod.name">
+                                    <app-option [value]="mod.name">
                                         {{ mod.name }}
-                                    </mat-option>
+                                    </app-option>
                                 }
-                            </mat-select>
-                        </mat-form-field>
+                            </app-select>
+                        </app-form-field>
                     </div>
                 }
                 @if (statusVariables(side)().length) {
@@ -161,8 +162,8 @@ import { TranslatePipe } from '../../translate.pipe';
                         <label [for]="side + '-status-var'">{{
                             'TRIGGERS.COMPARE_VARIABLE' | translate
                         }}</label>
-                        <mat-form-field appearance="outline">
-                            <mat-select
+                        <app-form-field>
+                            <app-select
                                 [name]="side + '-status-var'"
                                 [(ngModel)]="this[side + '_side'].status"
                                 (ngModelChange)="updateFormForSide(side)"
@@ -176,12 +177,12 @@ import { TranslatePipe } from '../../translate.pipe';
                                     mod of statusVariables(side)();
                                     track mod
                                 ) {
-                                    <mat-option [value]="mod.name">
+                                    <app-option [value]="mod.name">
                                         {{ mod.name }}
-                                    </mat-option>
+                                    </app-option>
                                 }
-                            </mat-select>
-                        </mat-form-field>
+                            </app-select>
+                        </app-form-field>
                     </div>
                 }
             </div>
@@ -190,9 +191,8 @@ import { TranslatePipe } from '../../translate.pipe';
                     <label [for]="side + '-subkeys'">{{
                         'TRIGGERS.COMPARE_SUBKEYS' | translate
                     }}</label>
-                    <mat-form-field appearance="outline">
+                    <app-form-field>
                         <input
-                            matInput
                             [ngModel]="this[side + '_keys']"
                             (ngModelChange)="
                                 this[side + '_side'].keys = $event.split(',');
@@ -204,18 +204,17 @@ import { TranslatePipe } from '../../translate.pipe';
                                     | translate
                             "
                         />
-                    </mat-form-field>
+                    </app-form-field>
                 </div>
             }
         </ng-template>`,
     styles: [``],
     imports: [
-        MatFormFieldModule,
-        MatInputModule,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         TranslatePipe,
         FormsModule,
-        MatSelectModule,
-        MatInputModule,
         FormField,
         NgTemplateOutlet,
     ],

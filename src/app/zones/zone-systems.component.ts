@@ -1,12 +1,10 @@
 import { Component, computed, inject, model } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterModule } from '@angular/router';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -17,21 +15,20 @@ import { ZonesStateService } from './zones-state.service';
     template: `
         <div class="flex h-full min-h-0 w-full flex-col p-4">
             <div class="flex">
-                <mat-form-field class="flex-1" appearance="outline">
-                    <div class="prefix" matPrefix>
+                <app-form-field class="flex-1">
+                    <div class="prefix" prefix>
                         <icon class="relative -left-0.5 text-2xl">
                             search
                         </icon>
                     </div>
                     <input
-                        matInput
                         [(ngModel)]="filter"
                         name="search-filter"
                         [placeholder]="'SYSTEMS.SEARCH' | translate"
                     />
-                </mat-form-field>
+                </app-form-field>
             </div>
-            <mat-progress-bar
+            <app-progress-bar
                 mode="indeterminate"
                 class="w-full"
                 [class.invisible]="!loading()"
@@ -90,14 +87,12 @@ import { ZonesStateService } from './zones-state.service';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        FormFieldComponent,
         DateFromPipe,
         RouterModule,
         SimpleTableComponent,
         TranslatePipe,
-        MatProgressBarModule,
-        MatFormFieldModule,
-        MatInputModule,
         FormsModule,
         IconComponent,
     ],

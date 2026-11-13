@@ -27,16 +27,14 @@ import { validateYAML } from '../../systems/systems.utilities';
 import { BackofficeUsersService } from '../../users/users.service';
 
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import * as yaml from 'js-yaml';
 import { readError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
+import { SpinnerComponent } from '../controls/spinner.component';
+import { TabsComponent } from '../controls/tabs.component';
+import { TooltipDirective } from '../controls/tooltip.directive';
 import { SettingsFieldComponent } from '../custom-fields/settings-field.component';
 import { IconComponent } from '../icon.component';
-import { LoadingLabelDirective } from '../loading-label.directive';
 import { DateFromPipe } from '../pipes/date-from.pipe';
 import { UserPipe } from '../pipes/user.pipe';
 import { TranslatePipe } from '../translate.pipe';
@@ -61,32 +59,32 @@ type SettingsArray = [
                         icon
                         default
                         error
-                        matRipple
+                        ripple
                         [disabled]="edited_count() <= 0"
-                        [matTooltip]="'COMMON.CLEAR' | translate"
+                        [appTooltip]="'COMMON.CLEAR' | translate"
                         (click)="clearChanges()"
                     >
                         @if (!saving()[shown_option().id]) {
                             <icon>delete_sweep</icon>
                         } @else {
-                            <mat-spinner diameter="32" />
+                            <app-spinner diameter="32" />
                         }
                     </button>
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         [disabled]="
                             !active_edited() ||
                             (has_errors() && !saving()[shown_option().id])
                         "
-                        [matTooltip]="'COMMON.SAVE' | translate"
+                        [appTooltip]="'COMMON.SAVE' | translate"
                         (click)="save(+shown_option().id)"
                     >
                         @if (!saving()[shown_option().id]) {
                             <icon>save</icon>
                         } @else {
-                            <mat-spinner diameter="32" />
+                            <app-spinner diameter="32" />
                         }
                     </button>
                 </div>
@@ -94,24 +92,14 @@ type SettingsArray = [
         </header>
         @if (used_settings() && used_settings().length) {
             <form>
-                <mat-tab-group
+                <app-tabs
+                    class="border-base-300 border-x border-t"
+                    [labels]="level_labels()"
                     [selectedIndex]="level_index()"
                     (selectedIndexChange)="
                         encryption_level.set(+levels()[$event].id)
                     "
-                    class="border-base-300 border-x border-t"
-                >
-                    @for (option of levels(); track $index) {
-                        <mat-tab
-                            [label]="
-                                option.name +
-                                (option.id !== 4 && settingDirty(+option.id)
-                                    ? ' *'
-                                    : '')
-                            "
-                        />
-                    }
-                </mat-tab-group>
+                />
                 @for (option of levels(); track $index; let i = $index) {
                     @if (
                         encryption_level() === option.id &&
@@ -155,7 +143,7 @@ type SettingsArray = [
                                 </div>
                                 <code
                                     class="text-xs"
-                                    [matTooltip]="
+                                    [appTooltip]="
                                         settings()[i - 1]?.updated_at * 1000 ||
                                             0 | date: 'medium'
                                     "
@@ -173,7 +161,7 @@ type SettingsArray = [
             </form>
         }
         <ng-template #spinner>
-            <mat-spinner diameter="32" />
+            <app-spinner diameter="32" />
         </ng-template>
     `,
     styles: [
@@ -212,14 +200,12 @@ type SettingsArray = [
         `,
     ],
     imports: [
-        LoadingLabelDirective,
-        MatProgressSpinnerModule,
+        SpinnerComponent,
+        TooltipDirective,
         TranslatePipe,
         DateFromPipe,
         SettingsFieldComponent,
-        MatTabsModule,
-        MatTooltipModule,
-        MatRippleModule,
+        TabsComponent,
         FormsModule,
         IconComponent,
         UserPipe,
@@ -369,6 +355,14 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         }
         return levels;
     });
+    /** Tab label of each level. A `*` marks a level with unsaved changes */
+    public readonly level_labels = computed(() =>
+        this.levels().map(({ id, name }) =>
+            id !== EncryptionLevel.NeverDisplay + 1 && this.settingDirty(+id)
+                ? `${name} *`
+                : name,
+        ),
+    );
 
     constructor() {
         super();

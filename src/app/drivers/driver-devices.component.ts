@@ -1,19 +1,15 @@
 import { Component, computed, inject, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
 
 import { BindingDirective } from '../ui/binding.directive';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { CustomTooltipComponent } from '../ui/custom-tooltip.component';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { DriverStateService } from './driver-state.service';
@@ -23,22 +19,21 @@ import { DriverStateService } from './driver-state.service';
     template: `
         <div class="p-4">
             <section class="mb-4 flex items-center">
-                <mat-form-field appearance="outline" class="h-12 flex-1">
-                    <div class="prefix" matPrefix>
+                <app-form-field class="h-12 flex-1">
+                    <div class="prefix" prefix>
                         <icon class="relative -left-0.5 text-2xl">
                             search
                         </icon>
                     </div>
                     <input
                         [(ngModel)]="filter"
-                        matInput
                         [placeholder]="'MODULES.SEARCH' | translate"
                         class="rounded-none"
                     />
-                </mat-form-field>
+                </app-form-field>
             </section>
             <section>
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -108,8 +103,8 @@ import { DriverStateService } from './driver-state.service';
                         <button
                             icon
                             default
-                            matRipple
-                            [matTooltip]="'DRIVERS.VIEW_SYSTEMS' | translate"
+                            ripple
+                            [appTooltip]="'DRIVERS.VIEW_SYSTEMS' | translate"
                             customTooltip
                             [content]="content"
                             (click)="loadSystems(row)"
@@ -120,8 +115,8 @@ import { DriverStateService } from './driver-state.service';
                             icon
                             default
                             error
-                            matRipple
-                            [matTooltip]="'MODULES.DELETE' | translate"
+                            ripple
+                            [appTooltip]="'MODULES.DELETE' | translate"
                             (click)="removeModule(row)"
                         >
                             <icon>delete</icon>
@@ -149,7 +144,7 @@ import { DriverStateService } from './driver-state.service';
                                     <div
                                         class="text-base-content/70 flex min-w-72 items-center space-x-3 px-4 py-3 text-sm"
                                     >
-                                        <mat-spinner [diameter]="24" />
+                                        <app-spinner [diameter]="24" />
                                         <span>{{
                                             'DRIVERS.LOADING_SYSTEMS'
                                                 | translate
@@ -164,8 +159,7 @@ import { DriverStateService } from './driver-state.service';
                                             track system.id
                                         ) {
                                             <a
-                                                mat-menu-item
-                                                class="min-h-14 leading-tight"
+                                                class="hover:bg-base-200 focus-visible:bg-base-200 flex min-h-14 items-center px-4 leading-tight outline-none"
                                                 [routerLink]="[
                                                     '/systems',
                                                     system.id,
@@ -238,17 +232,13 @@ import { DriverStateService } from './driver-state.service';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
-        MatMenuModule,
+        ProgressBarComponent,
+        SpinnerComponent,
+        TooltipDirective,
+        FormFieldComponent,
         RouterModule,
-        MatRippleModule,
         TranslatePipe,
-        MatProgressSpinnerModule,
-        MatTooltipModule,
         SimpleTableComponent,
-        MatProgressBarModule,
-        MatFormFieldModule,
-        MatInputModule,
         FormsModule,
         IconComponent,
         RouterModule,

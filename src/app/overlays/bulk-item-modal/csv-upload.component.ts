@@ -1,12 +1,10 @@
 import { Component, input, output, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
 
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { downloadFile, jsonToCsv, parseCSV } from '../../common/general';
 import { notifyError, notifyWarn } from '../../common/notifications';
 import { HashMap } from '../../common/types';
+import { SpinnerComponent } from '../../ui/controls/spinner.component';
 import { IconComponent } from '../../ui/icon.component';
-import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { TranslatePipe } from '../../ui/translate.pipe';
 
 @Component({
@@ -15,7 +13,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
         @if (!loading) {
             <section class="flex w-132 max-w-full flex-col gap-4">
                 <label
-                    matRipple
+                    ripple
                     class="border-base-300 bg-base-100 hover:bg-base-200 relative flex min-h-80 cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-4 border-dashed p-8 text-center transition"
                     [class.border-info]="dragging()"
                     [class.bg-info]="dragging()"
@@ -48,7 +46,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
                 @if (template()) {
                     <button
                         btn
-                        matRipple
+                        ripple
                         class="inverse w-full"
                         (click)="downloadTemplateCSV()"
                     >
@@ -60,7 +58,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
             <div
                 class="flex h-96 w-132 max-w-full flex-col items-center justify-center space-y-4"
             >
-                <mat-spinner diameter="32" />
+                <app-spinner diameter="32" />
                 <div class="text-center">
                     {{ 'COMMON.BULK_DROP_LOADING' | translate }}
                     @if (file_name()) {
@@ -73,13 +71,7 @@ import { TranslatePipe } from '../../ui/translate.pipe';
         }
     `,
     styles: [``],
-    imports: [
-        LoadingLabelDirective,
-        MatRippleModule,
-        TranslatePipe,
-        MatProgressSpinnerModule,
-        IconComponent,
-    ],
+    imports: [SpinnerComponent, TranslatePipe, IconComponent],
 })
 export class CsvUploadComponent {
     /** Data for the template CSV */

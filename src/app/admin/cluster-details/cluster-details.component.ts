@@ -4,7 +4,6 @@ import { PlaceCluster, queryClusters } from '@placeos/ts-client';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { HashMap } from '../../common/types';
 
-import { MatRippleModule } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -46,7 +45,7 @@ import { AdminClusterNodeComponent } from './cluster-node.component';
                             }
                             <a
                                 btn
-                                matRipple
+                                ripple
                                 class="mt-2 w-full"
                                 [routerLink]="[
                                     '/admin',
@@ -77,7 +76,6 @@ import { AdminClusterNodeComponent } from './cluster-node.component';
     imports: [
         IconComponent,
         TranslatePipe,
-        MatRippleModule,
         AdminClusterNodeComponent,
         RouterModule,
     ],

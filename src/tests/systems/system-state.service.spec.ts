@@ -1,10 +1,10 @@
+import { Dialog } from '@angular/cdk/dialog';
 import {
     ApplicationRef,
     provideZonelessChangeDetection,
     signal,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { PlaceModule, PlaceSystem } from '@placeos/ts-client';
 import { Subject } from 'rxjs';
@@ -91,7 +91,7 @@ describe('SystemStateService', () => {
                     useValue: { item: active, active_item: system },
                 },
                 { provide: PlaceDebugService, useValue: {} },
-                { provide: MatDialog, useValue: { open: vi.fn() } },
+                { provide: Dialog, useValue: { open: vi.fn() } },
                 { provide: Router, useValue: router },
             ],
         });

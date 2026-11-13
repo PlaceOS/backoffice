@@ -1,8 +1,5 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { escapeHtml } from '../../common/general';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
@@ -10,8 +7,9 @@ import {
     confirmAndRun,
     openConfirmModal,
 } from '../../overlays/confirm-modal.component';
+import { ProgressBarComponent } from '../../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../../ui/controls/tooltip.directive';
 import { IconComponent } from '../../ui/icon.component';
-import { LoadingLabelDirective } from '../../ui/loading-label.directive';
 import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
@@ -43,10 +41,10 @@ import {
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         (click)="edit()"
-                        [matTooltip]="'ADMIN.AI_PROVIDER_ADD' | translate"
+                        [appTooltip]="'ADMIN.AI_PROVIDER_ADD' | translate"
                         [attr.aria-label]="'ADMIN.AI_PROVIDER_ADD' | translate"
                     >
                         <icon>add</icon>
@@ -54,7 +52,7 @@ import {
                 </div>
             </div>
             <div class="w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -208,9 +206,9 @@ import {
                 <button
                     icon
                     default
-                    matRipple
+                    ripple
                     [disabled]="!!testing()"
-                    [matTooltip]="'ADMIN.AI_PROVIDER_TEST' | translate"
+                    [appTooltip]="'ADMIN.AI_PROVIDER_TEST' | translate"
                     (click)="test(row)"
                 >
                     <icon>bolt</icon>
@@ -218,8 +216,8 @@ import {
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="'ADMIN.AI_PROVIDER_EDIT' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.AI_PROVIDER_EDIT' | translate"
                     (click)="edit(row)"
                 >
                     <icon>edit</icon>
@@ -228,8 +226,8 @@ import {
                     icon
                     default
                     error
-                    matRipple
-                    [matTooltip]="'ADMIN.AI_PROVIDER_REMOVE' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.AI_PROVIDER_REMOVE' | translate"
                     (click)="remove(row)"
                 >
                     <icon>delete</icon>
@@ -239,18 +237,16 @@ import {
     `,
     styles: [``],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
         IconComponent,
-        MatRippleModule,
         TranslatePipe,
-        MatTooltipModule,
         SimpleTableComponent,
-        MatProgressBarModule,
         DateFromPipe,
     ],
 })
 export class SignageAIComponent implements OnInit {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _admin_data = inject(AdminDataService);
 
     public readonly loading = signal('');
@@ -280,7 +276,7 @@ export class SignageAIComponent implements OnInit {
         const ref = this._dialog.open(SignageAIProviderModalComponent, {
             data: { item },
         });
-        ref.afterClosed().subscribe(() => this.load());
+        ref.closed.subscribe(() => this.load());
     }
 
     public readonly testing = signal('');

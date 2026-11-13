@@ -7,9 +7,13 @@ import {
 
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { ActiveItemService } from '../common/item.service';
+import { FormFieldComponent } from './controls/form-field.component';
+import { OptionComponent } from './controls/option.component';
+import {
+    SelectComponent,
+    SelectTriggerDirective,
+} from './controls/select.component';
 import { DiffViewerComponent } from './diff-viewer.component';
 import { TranslatePipe } from './translate.pipe';
 
@@ -18,17 +22,14 @@ import { TranslatePipe } from './translate.pipe';
     template: `
         <div class="p-4">
             <div class="flex items-center justify-between space-x-4">
-                <mat-form-field
-                    appearance="outline"
-                    class="h-13 w-1/2 max-w-lg flex-1"
-                >
-                    <mat-select
+                <app-form-field class="h-13 w-1/2 max-w-lg flex-1">
+                    <app-select
                         [ngModel]="old_setting()"
                         (ngModelChange)="old_setting.set($event)"
                         [disabled]="!active_setting() || !history()?.length"
                         [placeholder]="'COMMON.SELECT_OLD_SETTING' | translate"
                     >
-                        <mat-select-trigger>
+                        <app-select-trigger>
                             @let value = old_setting();
                             <div
                                 class="flex items-center justify-between gap-4"
@@ -46,9 +47,9 @@ import { TranslatePipe } from './translate.pipe';
                                     }}
                                 </div>
                             </div>
-                        </mat-select-trigger>
+                        </app-select-trigger>
                         @for (option of history(); track option) {
-                            <mat-option [value]="option">
+                            <app-option [value]="option">
                                 <div
                                     class="flex w-full items-center justify-between gap-4"
                                 >
@@ -65,20 +66,17 @@ import { TranslatePipe } from './translate.pipe';
                                         }}
                                     </div>
                                 </div>
-                            </mat-option>
+                            </app-option>
                         }
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field
-                    appearance="outline"
-                    class="h-13 w-1/2 max-w-lg flex-1"
-                >
-                    <mat-select
+                    </app-select>
+                </app-form-field>
+                <app-form-field class="h-13 w-1/2 max-w-lg flex-1">
+                    <app-select
                         [ngModel]="active_setting()"
                         (ngModelChange)="active_setting.set($event)"
                         [placeholder]="'COMMON.SELECT_NEW_SETTING' | translate"
                     >
-                        <mat-select-trigger>
+                        <app-select-trigger>
                             @let a_value = active_setting();
                             <div
                                 class="flex items-center justify-between space-x-4"
@@ -98,9 +96,9 @@ import { TranslatePipe } from './translate.pipe';
                                     }}
                                 </div>
                             </div>
-                        </mat-select-trigger>
+                        </app-select-trigger>
                         @for (option of settings(); track option) {
-                            <mat-option [value]="option">
+                            <app-option [value]="option">
                                 <div
                                     class="flex w-full items-center justify-between gap-4"
                                 >
@@ -117,10 +115,10 @@ import { TranslatePipe } from './translate.pipe';
                                         }}
                                     </div>
                                 </div>
-                            </mat-option>
+                            </app-option>
                         }
-                    </mat-select>
-                </mat-form-field>
+                    </app-select>
+                </app-form-field>
             </div>
             @if (active_setting() && old_setting()) {
                 <div class="w-full p-4">
@@ -144,11 +142,13 @@ import { TranslatePipe } from './translate.pipe';
     `,
     styles: [``],
     imports: [
+        SelectTriggerDirective,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         DatePipe,
         TranslatePipe,
         DiffViewerComponent,
-        MatFormFieldModule,
-        MatSelectModule,
         FormsModule,
     ],
 })

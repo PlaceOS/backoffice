@@ -1,43 +1,42 @@
 import { Component, input } from '@angular/core';
 import { FieldTree, FormField } from '@angular/forms/signals';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { Identity } from '../../common/types';
 import { LDAPSourceFormModel } from '../../domains/auth-sources.utilities';
+import { FormFieldComponent } from '../controls/form-field.component';
+import { OptionComponent } from '../controls/option.component';
+import { SelectComponent } from '../controls/select.component';
 import { TranslatePipe } from '../translate.pipe';
 
 @Component({
     selector: 'ldap-source-form',
     template: `
         @if (form()) {
-            <form ldap-source class="flex flex-col" >
+            <form ldap-source class="flex flex-col">
                 @if (form().name) {
                     <div class="field">
                         <label
                             for="auth-source-name"
                             [class.error]="
-                                    form().name().invalid() &&
-                                    form().name().touched()
+                                form().name().invalid() &&
+                                form().name().touched()
                             "
                         >
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                         </label>
-                        <mat-form-field appearance="outline">
+                        <app-form-field>
                             <input
-                                matInput
                                 [placeholder]="'COMMON.FIELD_NAME' | translate"
                                 [formField]="form().name"
                             />
                             @if (form().name().invalid()) {
-                                <mat-error>
+                                <div error>
                                     {{
                                         'DOMAINS.AUTHENTICATION_NAME_REQUIRED'
                                             | translate
                                     }}
-                                </mat-error>
+                                </div>
                             }
-                        </mat-form-field>
+                        </app-form-field>
                     </div>
                 }
                 <div class="fieldset">
@@ -53,23 +52,22 @@ import { TranslatePipe } from '../translate.pipe';
                                 {{ 'DOMAINS.LDAP_HOST' | translate
                                 }}<span>*</span>:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.LDAP_HOST' | translate
                                     "
                                     [formField]="form().host"
                                 />
                                 @if (form().host().invalid()) {
-                                    <mat-error>
+                                    <div error>
                                         {{
                                             'DOMAINS.LDAP_HOST_REQUIRED'
                                                 | translate
                                         }}
-                                    </mat-error>
+                                    </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().port) {
@@ -77,16 +75,15 @@ import { TranslatePipe } from '../translate.pipe';
                             <label for="port"
                                 >{{ 'DOMAINS.LDAP_PORT' | translate }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     type="number"
                                     [placeholder]="
                                         'DOMAINS.LDAP_PORT' | translate
                                     "
                                     [formField]="form().port"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -98,15 +95,14 @@ import { TranslatePipe } from '../translate.pipe';
                                     'DOMAINS.LDAP_USER_ID' | translate
                                 }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.LDAP_USER_ID' | translate
                                     "
                                     [formField]="form().uid"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().auth_method) {
@@ -114,17 +110,15 @@ import { TranslatePipe } from '../translate.pipe';
                             <label for="auth-method">
                                 {{ 'DOMAINS.LDAP_AUTH_METHOD' | translate }}:
                             </label>
-                            <mat-form-field appearance="outline">
-                                <mat-select
-                                    [formField]="form().auth_method"
-                                >
+                            <app-form-field>
+                                <app-select [formField]="form().auth_method">
                                     @for (type of auth_methods; track type) {
-                                        <mat-option [value]="type.id">
+                                        <app-option [value]="type.id">
                                             {{ type.name }}
-                                        </mat-option>
+                                        </app-option>
                                     }
-                                </mat-select>
-                            </mat-form-field>
+                                </app-select>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -141,23 +135,22 @@ import { TranslatePipe } from '../translate.pipe';
                                 {{ 'DOMAINS.LDAP_BASE' | translate
                                 }}<span>*</span>:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.LDAP_BASE' | translate
                                     "
                                     [formField]="form().base"
                                 />
                                 @if (form().base().invalid()) {
-                                    <mat-error>
+                                    <div error>
                                         {{
                                             'DOMAINS.LDAP_BASE_REQUIRED'
                                                 | translate
                                         }}
-                                    </mat-error>
+                                    </div>
                                 }
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().bind_dn) {
@@ -167,15 +160,14 @@ import { TranslatePipe } from '../translate.pipe';
                                     'DOMAINS.LDAP_BIND_DN' | translate
                                 }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.LDAP_BIND_DN' | translate
                                     "
                                     [formField]="form().bind_dn"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -185,15 +177,14 @@ import { TranslatePipe } from '../translate.pipe';
                             <label for="password"
                                 >{{ 'COMMON.PASSWORD' | translate }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'COMMON.PASSWORD' | translate
                                     "
                                     [formField]="form().password"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form().filter) {
@@ -201,15 +192,14 @@ import { TranslatePipe } from '../translate.pipe';
                             <label for="filter"
                                 >{{ 'DOMAINS.LDAP_FILTER' | translate }}:</label
                             >
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     [placeholder]="
                                         'DOMAINS.LDAP_FILTER' | translate
                                     "
                                     [formField]="form().filter"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </div>
@@ -224,9 +214,9 @@ import { TranslatePipe } from '../translate.pipe';
         `,
     ],
     imports: [
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         FormField,
         TranslatePipe,
     ],

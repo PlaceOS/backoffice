@@ -105,7 +105,7 @@ export abstract class BasePage {
 
     /** Spinner of the metadata tab */
     get metadataLoadingSpinner(): Locator {
-        return this.page.locator('metadata-display mat-spinner').first();
+        return this.page.locator('metadata-display app-spinner').first();
     }
 
     /**
@@ -127,20 +127,20 @@ export abstract class BasePage {
             .locator('item-details button:has(icon:has-text("more_vert"))')
             .first()
             .click();
-        await expect(this.page.locator('.mat-mdc-menu-panel')).toBeVisible();
+        await expect(this.page.locator('.cdk-menu')).toBeVisible();
     }
 
     /** Edit entry of the action menu */
     get editButton(): Locator {
         return this.page
-            .locator('button[mat-menu-item]:has(icon:has-text("edit"))')
+            .locator('button[role="menuitem"]:has(icon:has-text("edit"))')
             .first();
     }
 
     /** Delete entry of the action menu */
     get deleteButton(): Locator {
         return this.page
-            .locator('button[mat-menu-item]:has(icon:has-text("delete"))')
+            .locator('button[role="menuitem"]:has(icon:has-text("delete"))')
             .first();
     }
 
@@ -149,7 +149,7 @@ export abstract class BasePage {
     /** The open modal */
     get dialog(): Locator {
         return this.page
-            .locator('fullscreen-modal-shell, mat-dialog-container')
+            .locator('fullscreen-modal-shell, cdk-dialog-container')
             .first();
     }
 
@@ -176,7 +176,7 @@ export abstract class BasePage {
             this.page.getByRole('heading', { name: 'Discard changes?' }),
         ).toBeVisible();
         await this.page.getByRole('button', { name: 'Discard' }).click();
-        await expect(this.page.locator('mat-dialog-container')).toHaveCount(0);
+        await expect(this.page.locator('cdk-dialog-container')).toHaveCount(0);
     }
 
     /**
@@ -262,11 +262,9 @@ export abstract class BasePage {
 
     // Shared widgets
 
-    /** Snack bar notification with `text`. An old one can still be closing. */
+    /** Toast notification with `text`. An old one can still be closing. */
     notification(text: string): Locator {
-        return this.page
-            .locator('mat-snack-bar-container')
-            .filter({ hasText: text });
+        return this.page.locator('.toast').filter({ hasText: text });
     }
 
     /**

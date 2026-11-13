@@ -1,21 +1,20 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
     PlaceModule,
     PlaceSystem,
     systemModuleState,
 } from '@placeos/ts-client';
 
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { HashMap } from '../common/types';
+import { DialogCloseDirective } from '../ui/controls/dialog';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ModuleStateModalData {
@@ -38,8 +37,8 @@ export interface ModuleStateModalData {
             </h3>
             <button
                 icon
-                matRipple
-                mat-dialog-close
+                ripple
+                appDialogClose
                 [attr.aria-label]="'COMMON.CLOSE' | translate"
             >
                 <icon>close</icon>
@@ -80,12 +79,7 @@ export interface ModuleStateModalData {
                     </div>
                     <div class="w-px flex-1"></div>
                     <div>
-                        <button
-                            btn
-                            matRipple
-                            class="w-40"
-                            (click)="updateState()"
-                        >
+                        <button btn ripple class="w-40" (click)="updateState()">
                             {{ 'MODULES.STATE_UPDATE' | translate }}
                         </button>
                     </div>
@@ -103,7 +97,7 @@ export interface ModuleStateModalData {
             <main
                 class="flex h-[calc(100vh-6rem)] w-[80vw] flex-col items-center justify-center"
             >
-                <mat-spinner diameter="32" />
+                <app-spinner diameter="32" />
                 <div>
                     {{ 'MODULES.STATE_LOADING' | translate }}
                 </div>
@@ -112,19 +106,17 @@ export interface ModuleStateModalData {
     `,
     styles: [``],
     imports: [
-        LoadingLabelDirective,
+        DialogCloseDirective,
+        SpinnerComponent,
         DialogTitleDirective,
-        MatDialogModule,
-        MatProgressSpinnerModule,
         TranslatePipe,
         SettingsFieldComponent,
         FormsModule,
-        MatRippleModule,
         IconComponent,
     ],
 })
 export class ViewModuleStateModalComponent implements OnInit {
-    private _data = inject<ModuleStateModalData>(MAT_DIALOG_DATA);
+    private _data = inject<ModuleStateModalData>(DIALOG_DATA);
 
     /** Current state of the selected module */
     public readonly state = signal<string | null>(null);

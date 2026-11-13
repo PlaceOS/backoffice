@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatTooltip } from '@angular/material/tooltip';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ApplicationIcon } from '../../../app/common/types';
+import { TooltipDirective } from '../../../app/ui/controls/tooltip.directive';
 import { IconComponent } from '../../../app/ui/icon.component';
 
 describe('IconComponent', () => {
@@ -128,9 +128,9 @@ describe('IconComponent', () => {
 
     describe('inside buttons', () => {
         @Component({
-            imports: [IconComponent, MatTooltip],
+            imports: [IconComponent, TooltipDirective],
             template: `
-                <button matTooltip="More actions">
+                <button appTooltip="More actions">
                     <icon>more_vert</icon>
                 </button>
                 <button><icon>save</icon> Save</button>

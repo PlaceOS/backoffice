@@ -1,7 +1,5 @@
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     Component,
-    computed,
     effect,
     EventEmitter,
     inject,
@@ -12,7 +10,6 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import {
     addApplication,
     PlaceApplication,
@@ -20,21 +17,14 @@ import {
     updateApplication,
 } from '@placeos/ts-client';
 
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Md5 } from 'ts-md5';
-import {
-    addSignalChipItem,
-    mergeFormItem,
-    onSaveHotkey,
-    removeSignalChipItem,
-    submitFormDialog,
-} from '../common/forms';
+import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { DialogEvent } from '../common/types';
+import { ChipListComponent } from '../ui/controls/chip-list.component';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
-import { IconComponent } from '../ui/icon.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import {
@@ -65,17 +55,19 @@ import {
                                     {{ 'COMMON.FIELD_NAME' | translate
                                     }}<span>*</span>:
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="application-name"
                                         placeholder="Application Name"
                                         [formField]="form.name"
                                     />
-                                    <mat-error>{{
-                                        'DOMAINS.APP_NAME_REQUIRED' | translate
-                                    }}</mat-error>
-                                </mat-form-field>
+                                    <div error>
+                                        {{
+                                            'DOMAINS.APP_NAME_REQUIRED'
+                                                | translate
+                                        }}
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.scopes) {
@@ -85,16 +77,15 @@ import {
                                         'DOMAINS.APP_SCOPES' | translate
                                     }}:</label
                                 >
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         id="scopes"
                                         [placeholder]="
                                             'DOMAINS.APP_SCOPES' | translate
                                         "
                                         [formField]="form.scopes"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                     </div>
@@ -105,48 +96,17 @@ import {
                                     'DOMAINS.APP_SUBSYSTEMS' | translate
                                 }}:</label
                             >
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-chip-grid
-                                    #chipList
+                            <app-form-field class="w-full">
+                                <app-chip-list
+                                    inputId="subsystems-input"
                                     aria-label="Subsystem List"
-                                >
-                                    @for (
-                                        item of subsystem_list();
-                                        track item
-                                    ) {
-                                        <mat-chip-row
-                                            (removed)="removeSubsystem(item)"
-                                        >
-                                            <div class="max-w-md truncate">
-                                                {{ item }}
-                                            </div>
-                                            <button
-                                                type="button"
-                                                matChipRemove
-                                                [attr.aria-label]="
-                                                    'COMMON.ITEM_REMOVE'
-                                                        | translate
-                                                            : { item: item }
-                                                "
-                                            >
-                                                <icon>cancel</icon>
-                                            </button>
-                                        </mat-chip-row>
-                                    }
-                                </mat-chip-grid>
-                                <input
-                                    id="subsystems-input"
                                     [placeholder]="
                                         'DOMAINS.APP_SUBSYSTEMS' | translate
                                     "
-                                    [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separators"
-                                    [matChipInputAddOnBlur]="true"
-                                    (matChipInputTokenEnd)="
-                                        addSubsystem($event)
-                                    "
+                                    [separators]="['Enter', ',', ' ']"
+                                    [formField]="form.subsystems"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                     @if (form.redirect_uri) {
@@ -154,18 +114,19 @@ import {
                             <label for="redirect-uri"
                                 >{{ 'DOMAINS.APP_REDIRECT_URL' | translate }}:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="redirect-uri"
                                     placeholder="Redirect URI e.g. http://localhost:4200/oauth-resp.html"
                                     [formField]="form.redirect_uri"
                                 />
-                                <mat-error>{{
-                                    'DOMAINS.APP_REDIRECT_URL_REQUIRED'
-                                        | translate
-                                }}</mat-error>
-                            </mat-form-field>
+                                <div error>
+                                    {{
+                                        'DOMAINS.APP_REDIRECT_URL_REQUIRED'
+                                            | translate
+                                    }}
+                                </div>
+                            </app-form-field>
                         </div>
                     }
                     <div class="fieldset mb-4">
@@ -185,9 +146,8 @@ import {
                             <label for="client-id"
                                 >{{ 'DOMAINS.APP_CLIENT_ID' | translate }}:
                             </label>
-                            <mat-form-field appearance="outline">
+                            <app-form-field>
                                 <input
-                                    matInput
                                     id="client-id"
                                     name="client-id"
                                     [placeholder]="
@@ -198,7 +158,7 @@ import {
                                     [ngModel]="client_id()"
                                     [ngModelOptions]="{ standalone: true }"
                                 />
-                            </mat-form-field>
+                            </app-form-field>
                         </div>
                     }
                 </form>
@@ -213,22 +173,20 @@ import {
         `,
     ],
     imports: [
-        MatFormFieldModule,
-        MatChipsModule,
+        FormFieldComponent,
+        ChipListComponent,
         FormsModule,
         TranslatePipe,
         SettingsToggleComponent,
         FormField,
-        MatInputModule,
-        IconComponent,
         FullscreenModalShellComponent,
     ],
 })
 export class ApplicationFormComponent implements OnInit {
     private _dialog_ref =
-        inject<MatDialogRef<ApplicationFormComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, ApplicationFormComponent>>(DialogRef);
     private _data = inject<{ item: PlaceApplication; readonly?: string }>(
-        MAT_DIALOG_DATA,
+        DIALOG_DATA,
     );
     private readonly _name = 'DOMAINS.APPLICATION';
     private _injector = inject(Injector);
@@ -242,20 +200,6 @@ export class ApplicationFormComponent implements OnInit {
     public readonly loading = signal<string | null>(null);
     public readonly heading = signal('');
     public readonly client_id = signal('');
-    public readonly separators: number[] = [ENTER, COMMA, SPACE];
-    public subsystem_list = computed(() => this.formModel().subsystems || []);
-
-    public readonly addSubsystem = (e: MatChipInputEvent) =>
-        this.formModel.update((value) => ({
-            ...value,
-            subsystems: addSignalChipItem(value.subsystems, e),
-        }));
-    public readonly removeSubsystem = (i: string) =>
-        this.formModel.update((value) => ({
-            ...value,
-            subsystems: removeSignalChipItem(value.subsystems, i),
-        }));
-
     constructor() {
         onSaveHotkey(() => this.submit());
     }

@@ -1,31 +1,14 @@
-import {
-    Component,
-    HostListener,
-    OnInit,
-    input,
-    signal,
-    viewChild,
-} from '@angular/core';
-import {
-    MatMenuModule,
-    MatMenuPanel,
-    MatMenuTrigger,
-} from '@angular/material/menu';
+import { CdkContextMenuTrigger } from '@angular/cdk/menu';
+import { Component } from '@angular/core';
 
+/**
+ * Opens a CDK menu at the pointer when the user right-clicks the host.
+ * Usage: `<div [context-menu]="menu_template">…</div>`, where
+ * `menu_template` is an `<ng-template>` that holds a `cdkMenu`.
+ */
 @Component({
     selector: '[context-menu]',
-    template: `
-        <ng-content />
-        <!-- Only places the menu at the pointer, so hide it from assistive tech -->
-        <div
-            aria-hidden="true"
-            class="pointer-events-none fixed h-px w-px"
-            style="opacity: 0; height: 0"
-            [style.top]="position().top + 'px'"
-            [style.left]="position().left + 'px'"
-            [matMenuTriggerFor]="menu()"
-        ></div>
-    `,
+    template: `<ng-content />`,
     styles: [
         `
             :host {
@@ -33,35 +16,11 @@ import {
             }
         `,
     ],
-    imports: [MatMenuModule],
+    hostDirectives: [
+        {
+            directive: CdkContextMenuTrigger,
+            inputs: ['cdkContextMenuTriggerFor: context-menu'],
+        },
+    ],
 })
-export class ContextMenuComponent implements OnInit {
-    /** List of context menu items */
-    public readonly menu = input<MatMenuPanel>(undefined, {
-        alias: 'context-menu',
-    });
-    /** Offset of the context menu on the x axis */
-    public readonly offset_x = input(0);
-    /** Offset of the context menu on the y axis */
-    public readonly offset_y = input(0);
-    /** Location of the menu */
-    public readonly position = signal<{ top: number; left: number } | null>(
-        null,
-    );
-
-    private readonly trigger = viewChild(MatMenuTrigger);
-
-    @HostListener('contextmenu', ['$event']) public onEvent(event) {
-        event.preventDefault();
-        this.position.set({
-            top: event.clientY + this.offset_y(),
-            left: event.clientX + this.offset_x(),
-        });
-        const trigger = this.trigger();
-        if (trigger) trigger.openMenu();
-    }
-
-    public ngOnInit(): void {
-        this.position.set({ top: 0, left: 0 });
-    }
-}
+export class ContextMenuComponent {}

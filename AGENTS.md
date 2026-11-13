@@ -99,6 +99,9 @@ export class MyComponent extends AsyncHandler {
 - Supports multiple locales (see `app.locales` in settings)
 - Service worker support for PWA functionality (production builds)
 - Custom localization support via `public/assets/locale`, **TranslatePipe** and **LocaleService**. `en-AU.json` is the fallback locale
+- Do not add Angular Material. Use the controls in `src/app/ui/controls` (form field, select, autocomplete, chip list, tabs, tooltip, spinner, progress bar, dialog close, toasts) and the Angular CDK (dialog, menu, overlay). Their styles are in `src/styles.css`
+- Form errors: put `<div error>` in an `app-form-field`. It shows when its `[formField]` or `ngModel` control is touched and invalid
+- Add a `ripple` attribute to an element for a press ripple. Use native `<input type="checkbox">` for checkboxes, with `role="switch"` for a switch
 - Use **IconComponent** for icons. The default icon font is a subset of the icons in the source. After you add icons, run `bun config/icon-subset.ts` (needs `pip install fonttools brotli`). An icon that is not in the subset still shows, but it loads the full 420 KB font
 - `src/index.html` has a splash that shows until the app loads. Lighthouse measures its title as the largest contentful paint, so keep the title larger than the content of the first page
 - Use `feat/*`, `fix/*`, `perf/*`, or `refactor/*` for branch names

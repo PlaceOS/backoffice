@@ -1,10 +1,9 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { listInterfaceRepositories } from '@placeos/ts-client';
 
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -15,7 +14,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">PlaceOS Interfaces</div>
             </div>
-            <mat-progress-bar
+            <app-progress-bar
                 mode="indeterminate"
                 class="w-full"
                 [class.invisible]="!loading()"
@@ -58,12 +57,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
             }
         `,
     ],
-    imports: [
-        LoadingLabelDirective,
-        SimpleTableComponent,
-        TranslatePipe,
-        MatProgressBarModule,
-    ],
+    imports: [ProgressBarComponent, SimpleTableComponent, TranslatePipe],
 })
 export class AdminInterfacesComponent implements OnInit {
     /** List of interfaces */

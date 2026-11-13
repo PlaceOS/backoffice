@@ -12,15 +12,15 @@ import { ZonesStateService } from './zones-state.service';
 
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { describeError } from '../common/errors';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
+import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
 import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -155,11 +155,10 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 {{ 'COMMON.EXECUTE_COMMAND' | translate }}
                             </header>
                             <div class="w-full p-2">
-                                <mat-form-field
-                                    appearance="outline"
+                                <app-form-field
                                     class="no-subscript mb-2 w-full"
                                 >
-                                    <mat-select
+                                    <app-select
                                         [(ngModel)]="active_system"
                                         [placeholder]="
                                             'ZONES.SELECT_SYSTEM' | translate
@@ -169,12 +168,12 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                             system of systems();
                                             track system.id
                                         ) {
-                                            <mat-option [value]="system">
+                                            <app-option [value]="system">
                                                 {{ system.name }}
-                                            </mat-option>
+                                            </app-option>
                                         }
-                                    </mat-select>
-                                </mat-form-field>
+                                    </app-select>
+                                </app-form-field>
                                 @if (active_system()?.id) {
                                     <execute-method-field
                                         [zone]="item()?.id"
@@ -211,7 +210,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                 </section>
             } @else {
                 <div class="flex flex-col items-center p-8">
-                    <mat-spinner class="mb-4" diameter="48" />
+                    <app-spinner class="mb-4" diameter="48" />
                     <p>{{ 'ZONES.LOADING_SETTINGS' | translate }}</p>
                 </div>
             }
@@ -226,15 +225,15 @@ import { TranslatePipe } from '../ui/translate.pipe';
         `,
     ],
     imports: [
+        SpinnerComponent,
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         ItemTimestampsComponent,
-        LoadingLabelDirective,
-        MatProgressSpinnerModule,
         SettingsFormComponent,
         TranslatePipe,
         MarkdownPipe,
         ExecuteMethodFieldComponent,
-        MatFormFieldModule,
-        MatSelectModule,
         FormsModule,
         RouterModule,
         AsyncPipe,

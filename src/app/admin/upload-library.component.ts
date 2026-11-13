@@ -1,5 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 
+import { Dialog } from '@angular/cdk/dialog';
 import {
     Component,
     computed,
@@ -9,12 +10,6 @@ import {
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { apiKey, cleanObject, query, remove, token } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
 import { readError } from '../common/errors';
@@ -27,8 +22,10 @@ import {
 } from '../common/notifications';
 import { UploadsService } from '../common/uploads.service';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -106,9 +103,9 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="relative text-xl"
-                        [matTooltip]="'COMMON.UPLOAD_FILE' | translate"
+                        [appTooltip]="'COMMON.UPLOAD_FILE' | translate"
                         [attr.aria-label]="'COMMON.UPLOAD_FILE' | translate"
                         (click)="upload_file.click()"
                     >
@@ -124,22 +121,16 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                 </div>
             </div>
             <div class="mb-4 flex items-center justify-end space-x-2 px-4">
-                <mat-form-field
-                    appearance="outline"
-                    class="no-subscript w-[20rem] max-w-full"
-                >
-                    <icon matPrefix class="relative -left-1 text-2xl"
-                        >search</icon
-                    >
+                <app-form-field class="no-subscript w-[20rem] max-w-full">
+                    <icon prefix class="relative -left-1 text-2xl">search</icon>
                     <input
-                        matInput
                         placeholder="Search for file..."
                         [(ngModel)]="search_term"
                     />
-                </mat-form-field>
+                </app-form-field>
             </div>
             <div class="flex h-1/2 min-h-0 w-full flex-1 flex-col px-4 pb-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -203,7 +194,7 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
             <div class="flex h-full w-full items-center p-4 text-xs">
                 <div
                     class="mono w-px flex-1 truncate"
-                    [matTooltip]="upload.file_name"
+                    [appTooltip]="upload.file_name"
                 >
                     {{ upload.file_name }}
                 </div>
@@ -225,31 +216,31 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                 <button
                     icon
                     default
-                    matRipple
+                    ripple
                     (click)="downloadUpload(upload)"
-                    [matTooltip]="'ADMIN.UPLOADS_LIB_DOWNLOAD' | translate"
+                    [appTooltip]="'ADMIN.UPLOADS_LIB_DOWNLOAD' | translate"
                 >
                     <icon>download</icon>
                 </button>
                 <button
                     icon
                     default
-                    matRipple
+                    ripple
                     (click)="copyLink(upload)"
-                    [matTooltip]="'ADMIN.UPLOADS_LIB_COPY' | translate"
+                    [appTooltip]="'ADMIN.UPLOADS_LIB_COPY' | translate"
                 >
                     <icon>content_copy</icon>
                 </button>
                 <button
                     icon
                     default
-                    matRipple
+                    ripple
                     (click)="viewUpload(upload)"
                     [disabled]="
                         !upload.mime_type.includes('image') &&
                         !upload.mime_type.includes('video')
                     "
-                    [matTooltip]="'ADMIN.UPLOADS_LIB_VIEW' | translate"
+                    [appTooltip]="'ADMIN.UPLOADS_LIB_VIEW' | translate"
                 >
                     <icon>visibility</icon>
                 </button>
@@ -257,9 +248,9 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                     icon
                     default
                     error
-                    matRipple
+                    ripple
                     (click)="removeUpload(upload)"
-                    [matTooltip]="'ADMIN.UPLOADS_LIB_REMOVE' | translate"
+                    [appTooltip]="'ADMIN.UPLOADS_LIB_REMOVE' | translate"
                 >
                     <icon>delete</icon>
                 </button>
@@ -267,22 +258,19 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
         </ng-template>
     `,
     imports: [
+        ProgressBarComponent,
+        TooltipDirective,
+        FormFieldComponent,
         AdminDomainSelectComponent,
-        LoadingLabelDirective,
         IconComponent,
         SimpleTableComponent,
         TranslatePipe,
-        MatRippleModule,
-        MatTooltipModule,
-        MatProgressBarModule,
-        MatFormFieldModule,
-        MatInputModule,
         FormsModule,
         DateFromPipe,
     ],
 })
 export class UploadLibraryComponent extends AsyncHandler implements OnInit {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _clipboard = inject(Clipboard);
     private _uploads = inject(UploadsService);
     private _admin_data = inject(AdminDataService);

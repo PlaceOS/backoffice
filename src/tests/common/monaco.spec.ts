@@ -64,8 +64,9 @@ describe('Monaco loading', () => {
     });
 
     it('only stops errors from workers that Monaco stopped', async () => {
-        const { ignoreStoppedWorkerErrors } =
-            await import('../../app/common/monaco');
+        const { ignoreStoppedWorkerErrors } = await import(
+            '../../app/common/monaco'
+        );
         const terminate = vi.fn();
         const worker = Object.assign(new EventTarget(), {
             terminate,

@@ -1,14 +1,17 @@
 import {
+    afterNextRender,
     Component,
-    OnInit,
     effect,
+    ElementRef,
     inject,
+    Injector,
     input,
     model,
+    OnInit,
     signal,
+    viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatTabNavPanel, MatTabsModule } from '@angular/material/tabs';
 import {
     NavigationCancel,
     NavigationEnd,
@@ -35,56 +38,124 @@ export interface ItemTab {
 @Component({
     selector: 'item-tablist',
     template: `
-        <div class="border-base-300 h-12 w-full border-b">
-            <div class="h-14 w-full overflow-hidden">
-                <nav
-                    mat-tab-nav-bar
-                    [class.shadow]="scrolled()"
-                    [tabPanel]="panel()"
+        <div
+            class="border-base-300 flex h-12 w-full border-b"
+            [class.shadow]="scrolled()"
+        >
+            <!-- Arrows only scroll the tabs; keyboard focus scrolls them too -->
+            @if (overflowing()) {
+                <button
+                    type="button"
+                    class="scroll-button"
+                    tabindex="-1"
+                    aria-hidden="true"
+                    [disabled]="at_start()"
+                    (click)="scrollTabs(-1)"
                 >
-                    @for (link of tabs(); track link.id) {
-                        <a
-                            class="tab"
-                            mat-tab-link
-                            [routerLink]="
-                                '/' + base() + '/' + item_id() + '/' + link.id
-                            "
-                            [queryParams]="link.query || {}"
-                            routerLinkActive
-                            #rla="routerLinkActive"
-                            [active]="rla.isActive"
-                        >
-                            <icon class="text-xl" [icon]="link.icon" />&nbsp;
-                            <div class="name">{{ link.name }}&nbsp;</div>
-                            @if (link.count || link.count === 0) {
-                                <div
-                                    class="mono bg-base-200 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[0.625rem]"
-                                >
-                                    @if (
-                                        link.loading || isRouteLoading(link.id)
-                                    ) {
-                                        <span
-                                            role="status"
-                                            aria-label="Loading tab"
-                                            class="h-3 w-3 animate-spin rounded-full border-2 border-current/30 border-t-current"
-                                        ></span>
-                                    } @else {
-                                        {{ link.count || '0' }}
-                                    }
-                                </div>
-                            }
-                        </a>
-                    }
-                </nav>
-            </div>
+                    <icon>chevron_left</icon>
+                </button>
+            }
+            <nav #nav (scroll)="updateScroll()" (focusin)="showFocused($event)">
+                @for (link of tabs(); track link.id) {
+                    <a
+                        [routerLink]="
+                            '/' + base() + '/' + item_id() + '/' + link.id
+                        "
+                        [queryParams]="link.query || {}"
+                        routerLinkActive="active"
+                        #rla="routerLinkActive"
+                        [attr.aria-current]="rla.isActive ? 'page' : null"
+                    >
+                        <icon class="text-xl" [icon]="link.icon" />&nbsp;
+                        <div class="name">{{ link.name }}&nbsp;</div>
+                        @if (link.count || link.count === 0) {
+                            <div
+                                class="mono bg-base-200 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[0.625rem]"
+                            >
+                                @if (link.loading || isRouteLoading(link.id)) {
+                                    <span
+                                        role="status"
+                                        aria-label="Loading tab"
+                                        class="h-3 w-3 animate-spin rounded-full border-2 border-current/30 border-t-current"
+                                    ></span>
+                                } @else {
+                                    {{ link.count || '0' }}
+                                }
+                            </div>
+                        }
+                    </a>
+                }
+            </nav>
+            @if (overflowing()) {
+                <button
+                    type="button"
+                    class="scroll-button"
+                    tabindex="-1"
+                    aria-hidden="true"
+                    [disabled]="at_end()"
+                    (click)="scrollTabs(1)"
+                >
+                    <icon>chevron_right</icon>
+                </button>
+            }
         </div>
     `,
-    styles: [``],
-    imports: [MatTabsModule, IconComponent, RouterModule],
+    styles: [
+        `
+            nav {
+                display: flex;
+                flex: 1;
+                min-width: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scrollbar-width: none;
+            }
+
+            .scroll-button {
+                display: flex;
+                align-items: center;
+                padding: 0 0.25rem;
+                font-size: 1.5rem;
+            }
+
+            .scroll-button:disabled {
+                opacity: 0.3;
+            }
+
+            a {
+                display: flex;
+                flex: 1 0 auto;
+                align-items: center;
+                justify-content: center;
+                padding: 0 1.5rem;
+                font-size: 0.875rem;
+                font-weight: 500;
+                letter-spacing: 0.09em;
+                white-space: nowrap;
+                color: var(--base-content);
+                border-bottom: 2px solid transparent;
+            }
+
+            a:hover {
+                background-color: color-mix(
+                    in srgb,
+                    currentColor 6%,
+                    transparent
+                );
+            }
+
+            a.active {
+                color: var(--secondary);
+                border-bottom-color: var(--secondary);
+            }
+        `,
+    ],
+    imports: [IconComponent, RouterModule],
 })
 export class ItemTablistComponent extends AsyncHandler implements OnInit {
     private _router = inject(Router);
     private _hotkey = inject(HotkeysService);
+    private _injector = inject(Injector);
     private readonly _route_change = toSignal(this._router.events, {
         initialValue: null,
     });
@@ -92,10 +163,14 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
     public readonly base = input<string>('systems');
     public readonly item_id = model<string>('-');
     public readonly tabs = input<ItemTab[]>([]);
-    /** Panel that holds the content of the active tab */
-    public readonly panel = input.required<MatTabNavPanel>();
     public readonly scrolled = input(false);
     public readonly loading_route = signal('');
+    /** Whether the tabs are wider than the bar, so the arrows show */
+    public readonly overflowing = signal(false);
+    public readonly at_start = signal(true);
+    public readonly at_end = signal(false);
+    private readonly _nav = viewChild.required<ElementRef<HTMLElement>>('nav');
+    private _observer: ResizeObserver;
 
     constructor() {
         super();
@@ -103,6 +178,58 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
             this._route_change();
             this._updateID();
         });
+        afterNextRender(() => {
+            const observer = new ResizeObserver(() => this.updateScroll());
+            observer.observe(this._nav().nativeElement);
+            this._observer = observer;
+        });
+    }
+
+    /** Scroll the tabs by most of the visible width */
+    public scrollTabs(direction: 1 | -1) {
+        const nav = this._nav().nativeElement;
+        nav.scrollBy({
+            left: direction * nav.clientWidth * 0.8,
+            behavior: 'smooth',
+        });
+    }
+
+    /** Scroll a focused tab fully into view, as focus may leave it cut off */
+    public showFocused(event: FocusEvent) {
+        (event.target as HTMLElement).scrollIntoView?.({
+            block: 'nearest',
+            inline: 'nearest',
+        });
+    }
+
+    public updateScroll() {
+        const nav = this._nav().nativeElement;
+        const max = nav.scrollWidth - nav.clientWidth;
+        const overflowing = max > 1;
+        if (overflowing && !this.overflowing()) {
+            // The arrows narrow the bar once they render, which can cut off
+            // the focused or active tab, so bring it back into view
+            afterNextRender(
+                () => {
+                    const tab =
+                        nav.querySelector<HTMLElement>('a:focus') ||
+                        nav.querySelector<HTMLElement>('a.active');
+                    tab?.scrollIntoView({
+                        block: 'nearest',
+                        inline: 'nearest',
+                    });
+                },
+                { injector: this._injector },
+            );
+        }
+        this.overflowing.set(overflowing);
+        this.at_start.set(nav.scrollLeft <= 1);
+        this.at_end.set(nav.scrollLeft >= max - 1);
+    }
+
+    public override ngOnDestroy() {
+        this._observer?.disconnect();
+        super.ngOnDestroy();
     }
 
     public ngOnInit() {

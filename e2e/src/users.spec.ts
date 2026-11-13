@@ -62,7 +62,9 @@ test.describe('Users', () => {
             await users.saveButton.click();
 
             await expect(users.dialog).toBeVisible();
-            await expect(users.dialog.locator('mat-error')).toHaveCount(4);
+            await expect(
+                users.dialog.locator('app-form-field [error]:visible'),
+            ).toHaveCount(4);
         });
 
         test('AC-USR-003-6: saves the user and opens them', async () => {

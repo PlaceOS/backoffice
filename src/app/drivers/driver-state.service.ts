@@ -1,5 +1,5 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import {
     driverReadme,
     PlaceDriver,
@@ -24,7 +24,7 @@ import { DriverUpdateListModalComponent } from './driver-update-list-modal.compo
 @Service()
 export class DriverStateService {
     private _state = inject(ActiveItemService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     private _poll = signal(0);
     private _modules_change = signal(0);
@@ -134,10 +134,11 @@ export class DriverStateService {
                 console.log('Error:', e);
                 const content = e instanceof Response ? await e.text() : e;
                 notifyError('Failed to recompile driver.', 'View Error', () =>
-                    this._dialog.open<ViewResponseModalComponent>(
-                        ViewResponseModalComponent,
-                        { data: { content } },
-                    ),
+                    this._dialog.open<
+                        unknown,
+                        unknown,
+                        ViewResponseModalComponent
+                    >(ViewResponseModalComponent, { data: { content } }),
                 );
                 return false;
             });

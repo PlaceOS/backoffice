@@ -25,13 +25,13 @@ import {
     querySupportSystems as querySystems,
 } from '../common/support-access';
 
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { DialogEvent } from '../common/types';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { SettingsToggleComponent } from '../ui/settings-toggle.component';
@@ -142,19 +142,18 @@ import {
                                     {{ 'MODULES.URI' | translate
                                     }}<span>*</span>
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         [placeholder]="
                                             'MODULES.URI' | translate
                                         "
                                         id="uri"
                                         [formField]="form.uri"
                                     />
-                                    <mat-error>{{
-                                        'MODULES.URI_REQUIRED' | translate
-                                    }}</mat-error>
-                                </mat-form-field>
+                                    <div error>
+                                        {{ 'MODULES.URI_REQUIRED' | translate }}
+                                    </div>
+                                </app-form-field>
                             </div>
                         }
                         <div class="fieldset">
@@ -173,22 +172,21 @@ import {
                                         {{ 'MODULES.FIELD_IP' | translate }}
                                         <span> * </span>
                                     </label>
-                                    <mat-form-field appearance="outline">
+                                    <app-form-field>
                                         <input
-                                            matInput
                                             placeholder="IP Address"
                                             id="ip"
                                             [formField]="form.ip"
                                         />
                                         @if (form.ip().invalid()) {
-                                            <mat-error>
+                                            <div error>
                                                 {{
                                                     'MODULES.IP_REQUIRED'
                                                         | translate
                                                 }}
-                                            </mat-error>
+                                            </div>
                                         }
-                                    </mat-form-field>
+                                    </app-form-field>
                                 </div>
                             }
                             @if (
@@ -206,9 +204,8 @@ import {
                                         {{ 'MODULES.PORT_NUMBER' | translate }}
                                         <span> * </span>
                                     </label>
-                                    <mat-form-field appearance="outline">
+                                    <app-form-field>
                                         <input
-                                            matInput
                                             type="number"
                                             [placeholder]="
                                                 'MODULES.PORT_NUMBER'
@@ -218,14 +215,14 @@ import {
                                             [formField]="form.port"
                                         />
                                         @if (form.port().invalid()) {
-                                            <mat-error>
+                                            <div error>
                                                 {{
                                                     'MODULES.PORT_REQUIRED'
                                                         | translate
                                                 }}
-                                            </mat-error>
+                                            </div>
                                         }
-                                    </mat-form-field>
+                                    </app-form-field>
                                 </div>
                             }
                         </div>
@@ -272,8 +269,8 @@ import {
                                 <label for="alert-level" id="alert-level-label">
                                     {{ 'COMMON.ALERT_LEVEL' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
-                                    <mat-select
+                                <app-form-field>
+                                    <app-select
                                         id="alert-level"
                                         aria-labelledby="alert-level-label"
                                         [formField]="form.alert_level"
@@ -282,12 +279,12 @@ import {
                                             level of alert_levels;
                                             track level.id
                                         ) {
-                                            <mat-option [value]="level.id">
+                                            <app-option [value]="level.id">
                                                 {{ level.name | translate }}
-                                            </mat-option>
+                                            </app-option>
                                         }
-                                    </mat-select>
-                                </mat-form-field>
+                                    </app-select>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.notes) {
@@ -295,16 +292,15 @@ import {
                                 <label for="notes">{{
                                     'COMMON.NOTES' | translate
                                 }}</label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <textarea
-                                        matInput
                                         [placeholder]="
                                             'COMMON.NOTES' | translate
                                         "
                                         id="notes"
                                         [formField]="form.notes"
                                     ></textarea>
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.custom_name) {
@@ -312,16 +308,15 @@ import {
                                 <label for="custom-name">
                                     {{ 'MODULES.CUSTOM_NAME' | translate }}
                                 </label>
-                                <mat-form-field appearance="outline">
+                                <app-form-field>
                                     <input
-                                        matInput
                                         [placeholder]="
                                             'MODULES.CUSTOM_NAME' | translate
                                         "
                                         id="custom-name"
                                         [formField]="form.custom_name"
                                     />
-                                </mat-form-field>
+                                </app-form-field>
                             </div>
                         }
                         @if (form.edge && !formModel().id) {
@@ -348,21 +343,21 @@ import {
     `,
     styles: [``],
     imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
         ItemSearchFieldComponent,
         TranslatePipe,
         FormField,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
         SettingsToggleComponent,
         FullscreenModalShellComponent,
     ],
 })
 export class ModuleFormComponent implements OnInit {
     private _dialog_ref =
-        inject<MatDialogRef<ModuleFormComponent>>(MatDialogRef);
+        inject<DialogRef<unknown, ModuleFormComponent>>(DialogRef);
     private _data = inject<{ item: PlaceModule; readonly?: string }>(
-        MAT_DIALOG_DATA,
+        DIALOG_DATA,
     );
     private readonly _name = 'MODULES';
 

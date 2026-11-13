@@ -1,5 +1,5 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import {
     moduleSettings,
     PlaceModule,
@@ -19,7 +19,7 @@ import { ViewResponseModalComponent } from '../overlays/view-response-modal.comp
 @Service()
 export class ModuleStateService {
     private _state = inject(ActiveItemService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     private _loading = signal(false);
 
@@ -132,7 +132,7 @@ export class ModuleStateService {
 
     /** View Results of the execute */
     private viewDetails(content: unknown) {
-        this._dialog.open<ViewResponseModalComponent>(
+        this._dialog.open<unknown, unknown, ViewResponseModalComponent>(
             ViewResponseModalComponent,
             {
                 data: { content },

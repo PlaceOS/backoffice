@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import {
     ApplicationRef,
     Pipe,
@@ -5,8 +6,6 @@ import {
     provideZonelessChangeDetection,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { MATERIAL_ANIMATIONS } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SupportGroupPickerComponent } from '../../../app/ui/support-group-picker.component';
 import { TranslatePipe } from '../../../app/ui/translate.pipe';
@@ -51,39 +50,33 @@ describe('support group picker', () => {
         state.role = false;
         TestBed.configureTestingModule({
             imports: [SupportGroupPickerComponent],
-            providers: [
-                provideZonelessChangeDetection(),
-                {
-                    provide: MATERIAL_ANIMATIONS,
-                    useValue: { animationsDisabled: true },
-                },
-            ],
+            providers: [provideZonelessChangeDetection()],
         }).overrideComponent(SupportGroupPickerComponent, {
             remove: { imports: [TranslatePipe] },
             add: { imports: [TestTranslatePipe] },
         });
     });
-    afterEach(() => TestBed.inject(MatDialog).closeAll());
+    afterEach(() => TestBed.inject(Dialog).closeAll());
 
     it('marks the active group, filters names, and returns a selected group', async () => {
-        const ref = TestBed.inject(MatDialog).open(SupportGroupPickerComponent);
+        const ref = TestBed.inject(Dialog).open(SupportGroupPickerComponent);
         await TestBed.inject(ApplicationRef).whenStable();
         expect(
             document.querySelector('[aria-current="true"]')?.textContent,
         ).toContain('Meeting rooms');
         const input = document.querySelector<HTMLInputElement>(
-            'mat-dialog-content input',
+            '#support-group-search',
         );
         input.value = 'meeting';
         input.dispatchEvent(new Event('input'));
         await TestBed.inject(ApplicationRef).whenStable();
         const buttons = document.querySelectorAll<HTMLButtonElement>(
-            'mat-dialog-content button',
+            '[data-testid="support-groups"] button',
         );
         expect(buttons).toHaveLength(1);
         expect(buttons[0].textContent).toContain('Office');
         const closed = vi.fn();
-        ref.afterClosed().subscribe(closed);
+        ref.closed.subscribe(closed);
         buttons[0].click();
         await TestBed.inject(ApplicationRef).whenStable();
         expect(closed).toHaveBeenCalledWith('group-2');
@@ -91,24 +84,28 @@ describe('support group picker', () => {
 
     it('allows role users to choose all groups', async () => {
         state.role = true;
-        const ref = TestBed.inject(MatDialog).open(SupportGroupPickerComponent);
+        const ref = TestBed.inject(Dialog).open(SupportGroupPickerComponent);
         await TestBed.inject(ApplicationRef).whenStable();
         const closed = vi.fn();
-        ref.afterClosed().subscribe(closed);
+        ref.closed.subscribe(closed);
         document
-            .querySelector<HTMLButtonElement>('mat-dialog-content button')
+            .querySelector<HTMLButtonElement>(
+                '[data-testid="support-groups"] button',
+            )
             .click();
         await TestBed.inject(ApplicationRef).whenStable();
         expect(closed).toHaveBeenCalledWith('');
     });
 
     it('returns no selection when cancelled', async () => {
-        const ref = TestBed.inject(MatDialog).open(SupportGroupPickerComponent);
+        const ref = TestBed.inject(Dialog).open(SupportGroupPickerComponent);
         await TestBed.inject(ApplicationRef).whenStable();
         const closed = vi.fn();
-        ref.afterClosed().subscribe(closed);
+        ref.closed.subscribe(closed);
         document
-            .querySelector<HTMLButtonElement>('mat-dialog-actions button')
+            .querySelector<HTMLButtonElement>(
+                '[data-testid="support-actions"] button',
+            )
             .click();
         await TestBed.inject(ApplicationRef).whenStable();
         expect(closed).toHaveBeenCalledWith(undefined);

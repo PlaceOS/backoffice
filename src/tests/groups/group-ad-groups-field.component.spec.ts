@@ -1,6 +1,6 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GroupAdGroupsFieldComponent } from '../../app/groups/group-ad-groups-field.component';
@@ -22,7 +22,7 @@ describe('GroupAdGroupsFieldComponent', () => {
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
-                { provide: MatDialog, useValue: { open } },
+                { provide: Dialog, useValue: { open } },
             ],
         }).overrideComponent(GroupAdGroupsFieldComponent, {
             set: { template: '', imports: [] },
@@ -49,7 +49,7 @@ describe('GroupAdGroupsFieldComponent', () => {
     });
 
     it('updates permissions of one AD group from the permissions modal', async () => {
-        open.mockReturnValue({ afterClosed: () => of({ permissions: 3 }) });
+        open.mockReturnValue({ closed: of({ permissions: 3 }) });
         await component.editPermissions(component.rows()[0]);
         expect(component.mappings()).toEqual({ 'ad-1': ['Staff', 3] });
     });

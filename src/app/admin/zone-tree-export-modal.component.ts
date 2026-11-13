@@ -1,13 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatRippleModule } from '@angular/material/core';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogModule,
-    MatDialogRef,
-} from '@angular/material/dialog';
 import { PlaceZone, queryZones } from '@placeos/ts-client';
 
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { DialogCloseDirective } from '../ui/controls/dialog';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
@@ -17,7 +13,7 @@ import { IconComponent } from '../ui/icon.component';
     template: `
         <div class="bg-base-200 flex items-center justify-between px-4 py-2">
             <h3 appDialogTitle class="text-xl font-medium">Export Zone Tree</h3>
-            <button icon matRipple mat-dialog-close aria-label="Close">
+            <button icon ripple appDialogClose aria-label="Close">
                 <icon>close</icon>
             </button>
         </div>
@@ -58,7 +54,7 @@ import { IconComponent } from '../ui/icon.component';
                                 </div>
                                 <button
                                     icon
-                                    matRipple
+                                    ripple
                                     (click)="removeSelected(zone)"
                                     aria-label="Close"
                                 >
@@ -79,7 +75,7 @@ import { IconComponent } from '../ui/icon.component';
         <footer class="border-base-200 flex justify-end border-t px-4 py-2">
             <button
                 btn
-                matRipple
+                ripple
                 (click)="export()"
                 [disabled]="!selected().length"
             >
@@ -88,12 +84,11 @@ import { IconComponent } from '../ui/icon.component';
         </footer>
     `,
     imports: [
+        DialogCloseDirective,
         DialogTitleDirective,
         FormsModule,
         IconComponent,
         ItemSearchFieldComponent,
-        MatDialogModule,
-        MatRippleModule,
     ],
     styles: [
         `
@@ -111,10 +106,8 @@ import { IconComponent } from '../ui/icon.component';
 })
 export class ZoneTreeExportModalComponent {
     private readonly _dialog_ref =
-        inject<MatDialogRef<ZoneTreeExportModalComponent, PlaceZone[]>>(
-            MatDialogRef,
-        );
-    private readonly _data = inject<{ selected: PlaceZone[] }>(MAT_DIALOG_DATA);
+        inject<DialogRef<PlaceZone[], ZoneTreeExportModalComponent>>(DialogRef);
+    private readonly _data = inject<{ selected: PlaceZone[] }>(DIALOG_DATA);
 
     public readonly selected = signal<PlaceZone[]>(this._data.selected || []);
 

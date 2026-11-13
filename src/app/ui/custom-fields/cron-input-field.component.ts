@@ -1,8 +1,5 @@
 import { Component, effect, forwardRef, signal } from '@angular/core';
-import {
-    ControlValueAccessor,
-    NG_VALUE_ACCESSOR,
-} from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
     disabled as disabledField,
     form,
@@ -136,9 +133,7 @@ export class CronInputFieldComponent implements ControlValueAccessor {
         );
         this.validatePattern(
             path.day_of_week,
-            listPattern(
-                '(?:\\*(?:/\\d{1,2})?|[0-6](?:-[0-6])?(?:/\\d{1,2})?)',
-            ),
+            listPattern('(?:\\*(?:/\\d{1,2})?|[0-6](?:-[0-6])?(?:/\\d{1,2})?)'),
         );
     });
 

@@ -97,7 +97,7 @@ export function generateTriggerConditionFormModel(
         left:
             typeof left === 'object'
                 ? { ...(left as TriggerStatusVariable) }
-                : left ?? ({} as TriggerStatusVariable),
+                : (left ?? ({} as TriggerStatusVariable)),
         operator:
             (condition as TriggerComparison).operator ||
             TriggerConditionOperator.EQ,

@@ -1,13 +1,14 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogRef,
-    MatDialogState,
-} from '@angular/material/dialog';
+import { Subject } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DialogEvent } from '../../app/common/types';
 import { DuplicateModalComponent } from '../../app/overlays/duplicate-modal.component';
+
+vi.mock('@placeos/ts-client', () =>
+    vi.importActual('@placeos/ts-client/dist/index.es.js'),
+);
 
 class Item {
     id: string;
@@ -29,16 +30,16 @@ describe('DuplicateModalComponent', () => {
             providers: [
                 provideZonelessChangeDetection(),
                 {
-                    provide: MAT_DIALOG_DATA,
+                    provide: DIALOG_DATA,
                     useValue: {
                         item: new Item({ id: 'sys-1', name: 'Room' }),
                         save,
                     },
                 },
                 {
-                    provide: MatDialogRef,
+                    provide: DialogRef,
                     useValue: {
-                        getState: () => MatDialogState.OPEN,
+                        closed: new Subject(),
                         close: vi.fn(),
                     },
                 },

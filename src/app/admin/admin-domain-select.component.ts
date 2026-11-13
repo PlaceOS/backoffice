@@ -7,9 +7,10 @@ import {
     output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { PlaceDomain } from '@placeos/ts-client';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
+import { OptionComponent } from '../ui/controls/option.component';
+import { SelectComponent } from '../ui/controls/select.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
 
@@ -17,8 +18,8 @@ import { AdminDataService } from './admin-data.service';
 @Component({
     selector: 'admin-domain-select',
     template: `
-        <mat-form-field appearance="outline" [class]="field_class()">
-            <mat-select
+        <app-form-field [class]="field_class()">
+            <app-select
                 name="domain"
                 [ngModel]="domain()"
                 (ngModelChange)="select($event)"
@@ -28,17 +29,23 @@ import { AdminDataService } from './admin-data.service';
                 "
             >
                 @if (all()) {
-                    <mat-option [value]="{}">
+                    <app-option [value]="{}">
                         {{ 'ADMIN.ALL_DOMAINS' | translate }}
-                    </mat-option>
+                    </app-option>
                 }
                 @for (domain of domain_list(); track domain.id) {
-                    <mat-option [value]="domain">{{ domain.name }}</mat-option>
+                    <app-option [value]="domain">{{ domain.name }}</app-option>
                 }
-            </mat-select>
-        </mat-form-field>
+            </app-select>
+        </app-form-field>
     `,
-    imports: [FormsModule, MatFormFieldModule, MatSelectModule, TranslatePipe],
+    imports: [
+        OptionComponent,
+        SelectComponent,
+        FormFieldComponent,
+        FormsModule,
+        TranslatePipe,
+    ],
 })
 export class AdminDomainSelectComponent {
     private _data = inject(AdminDataService);

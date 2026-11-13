@@ -1,17 +1,15 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from '../common/async-handler.class';
 import { copyToClipboard } from '../common/general';
 import { notifyInfo } from '../common/notifications';
 import { SettingsService } from '../common/settings.service';
 import { UploadDetails } from '../common/uploads';
 import { UploadsService } from '../common/uploads.service';
+import { ProgressBarComponent } from './controls/progress-bar.component';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { IconComponent } from './icon.component';
-import { LoadingLabelDirective } from './loading-label.directive';
 import { TranslatePipe } from './translate.pipe';
 
 @Component({
@@ -37,15 +35,15 @@ import { TranslatePipe } from './translate.pipe';
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         (click)="clearList()"
-                        [matTooltip]="'COMMON.CLEAR_UPLOADS' | translate"
+                        [appTooltip]="'COMMON.CLEAR_UPLOADS' | translate"
                     >
                         <icon>clear_all</icon>
                     </button>
                     <button
                         icon
-                        matRipple
+                        ripple
                         (click)="show.set(false)"
                         [attr.aria-label]="'COMMON.CLOSE' | translate"
                     >
@@ -87,7 +85,7 @@ import { TranslatePipe } from './translate.pipe';
                                     @if (item.error) {
                                         <icon
                                             class="bg-error text-base-100 rounded-full text-xl"
-                                            [matTooltip]="item.error"
+                                            [appTooltip]="item.error"
                                         >
                                             close
                                         </icon>
@@ -96,11 +94,11 @@ import { TranslatePipe } from './translate.pipe';
                                         <button
                                             icon
                                             default
-                                            matRipple
-                                            [matTooltip]="
+                                            ripple
+                                            [appTooltip]="
                                                 'COMMON.COPY_LINK' | translate
                                             "
-                                            matTooltipPosition="right"
+                                            appTooltipPosition="right"
                                             (click)="copyLink(item)"
                                         >
                                             <icon class="text-2xl"
@@ -112,9 +110,9 @@ import { TranslatePipe } from './translate.pipe';
                                         <button
                                             icon
                                             default
-                                            matRipple
-                                            matTooltipPosition="right"
-                                            [matTooltip]="
+                                            ripple
+                                            appTooltipPosition="right"
+                                            [appTooltip]="
                                                 'COMMON.RETRY' | translate
                                             "
                                             (click)="retry(item)"
@@ -125,7 +123,7 @@ import { TranslatePipe } from './translate.pipe';
                                         </button>
                                     }
                                     @if (item.progress < 100 && !item.error) {
-                                        <mat-progress-bar
+                                        <app-progress-bar
                                             class="absolute inset-x-0 bottom-0 mx-0!"
                                             mode="determinate"
                                             [value]="item.progress"
@@ -201,19 +199,17 @@ import { TranslatePipe } from './translate.pipe';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
         TranslatePipe,
         IconComponent,
-        MatRippleModule,
-        MatProgressBarModule,
-        MatTooltipModule,
         DecimalPipe,
     ],
 })
 export class UploadListComponent extends AsyncHandler implements OnInit {
     private _settings = inject(SettingsService);
     private _uploads = inject(UploadsService);
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
 
     /** Whether upload list should be displayed */
     public readonly show = signal(false);

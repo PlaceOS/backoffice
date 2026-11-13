@@ -1,4 +1,4 @@
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -8,16 +8,9 @@ import {
     submit,
     validate,
 } from '@angular/forms/signals';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { MatRippleModule } from '@angular/material/core';
-import {
-    MAT_DIALOG_DATA,
-    MatDialogModule,
-    MatDialogRef,
-} from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { addSignalChipItem, removeSignalChipItem } from '../common/forms';
+import { ChipListComponent } from '../ui/controls/chip-list.component';
+import { DialogCloseDirective } from '../ui/controls/dialog';
+import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 import type { MetadataFormModel } from '../ui/metadata-display.component';
@@ -42,7 +35,7 @@ export interface MetadataDetailsModalData {
             <button
                 btn
                 icon
-                mat-dialog-close
+                appDialogClose
                 [attr.aria-label]="'COMMON.CLOSE' | translate"
             >
                 <icon>close</icon>
@@ -57,61 +50,46 @@ export interface MetadataDetailsModalData {
                     "
                     >Name<span required>*</span>:</label
                 >
-                <mat-form-field appearance="outline">
+                <app-form-field>
                     <input
-                        matInput
                         id="property-name"
                         placeholder="Property Name"
                         [formField]="form.name"
                     />
-                    <mat-error>{{
+                    <div error>
+                        {{
                         form.name().errors().find((error) => error.kind === 'name')
                             ? 'Property name must be unique'
                             : 'Property name is required'
-                    }}</mat-error>
-                </mat-form-field>
+                        }}
+                    </div>
+                </app-form-field>
                 <label for="description">Description:</label>
-                <mat-form-field appearance="outline">
+                <app-form-field>
                     <textarea
-                        matInput
                         id="description"
                         placeholder="Description"
                         [formField]="form.description"
                     ></textarea>
-                </mat-form-field>
+                </app-form-field>
                 <label for="editors">Editors:</label>
-                <mat-form-field appearance="outline" class="w-full">
-                    <mat-chip-grid #chipList aria-label="Editors">
-                        @for (item of editors; track item) {
-                            <mat-chip-row (removed)="removeEditor(item)">
-                                <div class="max-w-md truncate">{{ item }}</div>
-                                <button
-                                    matChipRemove
-                                    [attr.aria-label]="'Remove ' + item"
-                                >
-                                    <icon>cancel</icon>
-                                </button>
-                            </mat-chip-row>
-                        }
-                    </mat-chip-grid>
-                    <input
-                        id="editors"
+                <app-form-field class="w-full">
+                    <app-chip-list
+                        inputId="editors"
+                        aria-label="Editors"
                         placeholder="Editors..."
-                        [matChipInputFor]="chipList"
-                        [matChipInputSeparatorKeyCodes]="separators"
-                        [matChipInputAddOnBlur]="true"
-                        (matChipInputTokenEnd)="addEditor($event)"
+                        [separators]="['Enter', ',', ' ']"
+                        [formField]="form.editors"
                     />
-                </mat-form-field>
+                </app-form-field>
                 <label for="schema">Schema:</label>
-                <mat-form-field appearance="outline">
+                <app-form-field>
                     <input
-                        matInput
                         id="schema"
                         placeholder="Schema"
                         [formField]="form.schema"
                     />
-                </mat-form-field>
+                </app-form-field>
             </main>
         }
         <footer
@@ -119,7 +97,7 @@ export interface MetadataDetailsModalData {
         >
             <button
                 btn
-                matRipple
+                ripple
                 class="w-40"
                 [disabled]="form.name().invalid()"
                 (click)="updateDetails()"
@@ -130,23 +108,20 @@ export interface MetadataDetailsModalData {
     `,
     styles: [``],
     imports: [
+        DialogCloseDirective,
+        FormFieldComponent,
         DialogTitleDirective,
         TranslatePipe,
-        MatDialogModule,
-        MatRippleModule,
-        MatFormFieldModule,
         FormField,
-        MatChipsModule,
-        MatInputModule,
+        ChipListComponent,
         IconComponent,
-        MatInputModule,
         FormsModule,
     ],
 })
 export class MetadataDetailsModalComponent implements OnInit {
     private _dialog_ref =
-        inject<MatDialogRef<MetadataDetailsModalComponent>>(MatDialogRef);
-    private _data = inject<MetadataDetailsModalData>(MAT_DIALOG_DATA);
+        inject<DialogRef<unknown, MetadataDetailsModalComponent>>(DialogRef);
+    private _data = inject<MetadataDetailsModalData>(DIALOG_DATA);
 
     public readonly formModel = signal({
         name: '',
@@ -162,24 +137,6 @@ export class MetadataDetailsModalComponent implements OnInit {
                 : undefined,
         );
     });
-    /** List of separator characters for tags */
-    public readonly separators: number[] = [ENTER, COMMA, SPACE];
-
-    public readonly addEditor = (e: MatChipInputEvent) =>
-        this.formModel.update((model) => ({
-            ...model,
-            editors: addSignalChipItem(model.editors, e),
-        }));
-    public readonly removeEditor = (i: string) =>
-        this.formModel.update((model) => ({
-            ...model,
-            editors: removeSignalChipItem(model.editors, i),
-        }));
-
-    public get editors() {
-        return this.formModel().editors;
-    }
-
     public ngOnInit(): void {
         this.formModel.set({
             name: this._data.value.name || '',

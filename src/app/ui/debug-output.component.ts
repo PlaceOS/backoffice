@@ -6,12 +6,11 @@ import {
     signal,
     viewChild,
 } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { eventToPoint } from '../common/general';
 import { Point } from '../common/types';
+import { TooltipDirective } from './controls/tooltip.directive';
 import { IconComponent } from './icon.component';
 import { NewTerminalComponent } from './new-terminal.component';
 import { TranslatePipe } from './translate.pipe';
@@ -75,9 +74,9 @@ import { TranslatePipe } from './translate.pipe';
                         actions
                         class="absolute right-2 bottom-2 flex items-center gap-1"
                     >
-                        <button icon default matRipple (click)="downloadLogs()">
+                        <button icon default ripple (click)="downloadLogs()">
                             <icon
-                                [matTooltip]="
+                                [appTooltip]="
                                     'COMMON.DEBUG_DOWNLOAD_MESSAGES' | translate
                                 "
                             >
@@ -87,11 +86,11 @@ import { TranslatePipe } from './translate.pipe';
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             (click)="toggleDebugPosition()"
                         >
                             <icon
-                                [matTooltip]="
+                                [appTooltip]="
                                     'COMMON.DEBUG_TOGGLE_POSITION' | translate
                                 "
                                 >{{
@@ -104,11 +103,11 @@ import { TranslatePipe } from './translate.pipe';
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             (click)="clearDebugMessages()"
                         >
                             <icon
-                                [matTooltip]="
+                                [appTooltip]="
                                     'COMMON.DEBUG_CLEAR_MESSAGES' | translate
                                 "
                             >
@@ -118,9 +117,9 @@ import { TranslatePipe } from './translate.pipe';
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             (click)="clearBindings()"
-                            [matTooltip]="
+                            [appTooltip]="
                                 'COMMON.DEBUG_UNBIND_MODULES' | translate
                             "
                         >
@@ -129,9 +128,9 @@ import { TranslatePipe } from './translate.pipe';
                         <button
                             icon
                             default
-                            matRipple
+                            ripple
                             (click)="close()"
-                            [matTooltip]="
+                            [appTooltip]="
                                 'COMMON.DEBUG_CLOSE_CONSOLE' | translate
                             "
                         >
@@ -184,10 +183,9 @@ import { TranslatePipe } from './translate.pipe';
         `,
     ],
     imports: [
+        TooltipDirective,
         IconComponent,
         TranslatePipe,
-        MatTooltipModule,
-        MatRippleModule,
         NewTerminalComponent,
     ],
 })

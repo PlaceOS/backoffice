@@ -1,5 +1,5 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import {
     create,
     get,
@@ -35,7 +35,7 @@ export function apiKeyExpiry(
 
 @Service()
 export class APIKeyService {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _admin_data = inject(AdminDataService);
 
     private _domain = this._admin_data.selectedDomain('api-keys');

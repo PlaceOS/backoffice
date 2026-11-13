@@ -1,11 +1,5 @@
 import { EventEmitter, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-    MAT_DIALOG_DATA,
-    MatDialog,
-    MatDialogModule,
-    MatDialogRef,
-} from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -31,6 +25,7 @@ vi.mock('../../app/common/notifications', () => ({
     notifySuccess: vi.fn(),
 }));
 
+import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
 import { MockComponent } from 'ng-mocks';
 import { DialogEvent } from '../../app/common/types';
 import {
@@ -63,10 +58,10 @@ describe('ConfirmModalComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            imports: [ConfirmModalComponent, MatDialogModule],
+            imports: [ConfirmModalComponent],
             providers: [
-                { provide: MatDialogRef, useValue: dialog_ref_mock },
-                { provide: MAT_DIALOG_DATA, useValue: default_data },
+                { provide: DialogRef, useValue: dialog_ref_mock },
+                { provide: DIALOG_DATA, useValue: default_data },
             ],
         })
             .overrideComponent(ConfirmModalComponent, {
@@ -108,11 +103,11 @@ describe('ConfirmModalComponent', () => {
         it('label the confirm button Delete and style it as an error', async () => {
             await TestBed.resetTestingModule();
             await TestBed.configureTestingModule({
-                imports: [ConfirmModalComponent, MatDialogModule],
+                imports: [ConfirmModalComponent],
                 providers: [
-                    { provide: MatDialogRef, useValue: dialog_ref_mock },
+                    { provide: DialogRef, useValue: dialog_ref_mock },
                     {
-                        provide: MAT_DIALOG_DATA,
+                        provide: DIALOG_DATA,
                         useValue: { ...default_data, destructive: true },
                     },
                 ],
@@ -144,10 +139,10 @@ describe('ConfirmModalComponent', () => {
             await TestBed.resetTestingModule();
 
             await TestBed.configureTestingModule({
-                imports: [ConfirmModalComponent, MatDialogModule],
+                imports: [ConfirmModalComponent],
                 providers: [
-                    { provide: MatDialogRef, useValue: dialog_ref_mock },
-                    { provide: MAT_DIALOG_DATA, useValue: {} },
+                    { provide: DialogRef, useValue: dialog_ref_mock },
+                    { provide: DIALOG_DATA, useValue: {} },
                 ],
             })
                 .overrideComponent(ConfirmModalComponent, {
@@ -193,11 +188,11 @@ describe('ConfirmModalComponent', () => {
             await TestBed.resetTestingModule();
 
             await TestBed.configureTestingModule({
-                imports: [ConfirmModalComponent, MatDialogModule],
+                imports: [ConfirmModalComponent],
                 providers: [
-                    { provide: MatDialogRef, useValue: dialog_ref_mock },
+                    { provide: DialogRef, useValue: dialog_ref_mock },
                     {
-                        provide: MAT_DIALOG_DATA,
+                        provide: DIALOG_DATA,
                         useValue: {
                             ...default_data,
                             confirm_text: 'Yes, Delete',
@@ -249,11 +244,11 @@ describe('ConfirmModalComponent', () => {
         const build = async (option_overrides = {}) => {
             await TestBed.resetTestingModule();
             await TestBed.configureTestingModule({
-                imports: [ConfirmModalComponent, MatDialogModule],
+                imports: [ConfirmModalComponent],
                 providers: [
-                    { provide: MatDialogRef, useValue: dialog_ref_mock },
+                    { provide: DialogRef, useValue: dialog_ref_mock },
                     {
-                        provide: MAT_DIALOG_DATA,
+                        provide: DIALOG_DATA,
                         useValue: {
                             ...default_data,
                             options: [
@@ -673,17 +668,17 @@ describe('openConfirmModal', () => {
                 event: new EventEmitter<DialogEvent>(),
                 loading: signal(''),
             } as Pick<ConfirmModalComponent, 'event' | 'loading'> | null,
-            afterClosed: () => closed.asObservable(),
+            closed: closed.asObservable(),
             close: vi.fn(),
         };
-        const dialog = { open: vi.fn(() => ref) } as unknown as MatDialog;
+        const dialog = { open: vi.fn(() => ref) } as unknown as Dialog;
 
         const pending = openConfirmModal(
             { title: '', content: '', icon: { content: 'delete' } },
             dialog,
         );
         // Cancel, Escape and backdrop all close without a result, and
-        // Material drops the component instance on close.
+        // the CDK dialog drops the component instance on close.
         ref.componentInstance = null;
         closed.next(undefined);
         closed.complete();

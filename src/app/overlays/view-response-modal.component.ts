@@ -1,6 +1,6 @@
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -36,7 +36,7 @@ export interface ViewResponseModalData {
     ],
 })
 export class ViewResponseModalComponent {
-    private _data = inject<ViewResponseModalData>(MAT_DIALOG_DATA);
+    private _data = inject<ViewResponseModalData>(DIALOG_DATA);
 
     public readonly title = this._data.title || '';
     public readonly content_string = signal<string | null>(null);

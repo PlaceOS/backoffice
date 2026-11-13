@@ -1,17 +1,15 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 
+import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlaceEdge, queryEdges, removeEdge } from '@placeos/ts-client';
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
+import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
+import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
-import { LoadingLabelDirective } from '../ui/loading-label.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -23,8 +21,8 @@ import { EdgeModalComponent } from './edge-modal.component';
         @if (last_change()?.x_api_key) {
             @let item = last_change();
             <button
-                matRipple
-                [matTooltip]="'Copy API Key for ' + item.name"
+                ripple
+                [appTooltip]="'Copy API Key for ' + item.name"
                 (click)="copyKey(item.x_api_key)"
                 class="border-base-200 bg-base-100 absolute top-4 right-4 flex max-w-[calc(100%-11rem)] cursor-pointer items-center overflow-hidden rounded-sm border shadow-sm"
             >
@@ -47,10 +45,10 @@ import { EdgeModalComponent } from './edge-modal.component';
                     <button
                         icon
                         default
-                        matRipple
+                        ripple
                         class="text-xl"
                         (click)="edit()"
-                        [matTooltip]="'ADMIN.EDGE_ADD' | translate"
+                        [appTooltip]="'ADMIN.EDGE_ADD' | translate"
                         [attr.aria-label]="'ADMIN.EDGE_ADD' | translate"
                     >
                         <icon>add</icon>
@@ -58,7 +56,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                 </div>
             </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
-                <mat-progress-bar
+                <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
@@ -117,10 +115,10 @@ import { EdgeModalComponent } from './edge-modal.component';
         <ng-template #bool_template let-data="data">
             <div
                 class="flex h-full w-full items-center justify-center"
-                [matTooltip]="
+                [appTooltip]="
                     (data ? 'COMMON.ONLINE' : 'COMMON.OFFLINE') | translate
                 "
-                matTooltipPosition="right"
+                appTooltipPosition="right"
             >
                 <div
                     class="h-3 w-3 rounded-full"
@@ -150,8 +148,8 @@ import { EdgeModalComponent } from './edge-modal.component';
                 <button
                     icon
                     default
-                    matRipple
-                    [matTooltip]="'ADMIN.EDGE_EDIT' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.EDGE_EDIT' | translate"
                     (click)="edit(row)"
                 >
                     <icon>edit</icon>
@@ -160,8 +158,8 @@ import { EdgeModalComponent } from './edge-modal.component';
                     icon
                     default
                     error
-                    matRipple
-                    [matTooltip]="'ADMIN.EDGE_REMOVE' | translate"
+                    ripple
+                    [appTooltip]="'ADMIN.EDGE_REMOVE' | translate"
                     (click)="remove(row)"
                 >
                     <icon>delete</icon>
@@ -179,18 +177,16 @@ import { EdgeModalComponent } from './edge-modal.component';
         `,
     ],
     imports: [
-        LoadingLabelDirective,
+        ProgressBarComponent,
+        TooltipDirective,
         IconComponent,
         TranslatePipe,
-        MatRippleModule,
-        MatTooltipModule,
         DateFromPipe,
         SimpleTableComponent,
-        MatProgressBarModule,
     ],
 })
 export class PlaceEdgeComponent implements OnInit {
-    private _dialog = inject(MatDialog);
+    private _dialog = inject(Dialog);
     private _clipboard = inject(Clipboard);
 
     public readonly loading = signal('');
@@ -208,8 +204,10 @@ export class PlaceEdgeComponent implements OnInit {
     }
 
     public async edit(edge?: PlaceEdge) {
-        const ref = this._dialog.open(EdgeModalComponent, { data: { edge } });
-        ref.afterClosed().subscribe((_) => {
+        const ref = this._dialog.open<PlaceEdge>(EdgeModalComponent, {
+            data: { edge },
+        });
+        ref.closed.subscribe((_) => {
             // Cancel keeps the last saved edge and its one-time API key
             if (!_) return;
             // Only creates return a key; edits must not hide the last one
