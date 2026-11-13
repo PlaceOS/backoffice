@@ -29,6 +29,7 @@ All notable changes to this project will be documented in this file.
 #### Ci
 
 - Demo site deploys once a day, and build branches stop failing on Vercel
+- E2e tests run on Ubuntu 24.04, where Playwright can install Chromium
 
 #### Extensions
 

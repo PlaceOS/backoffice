@@ -1,0 +1,4211 @@
+import {
+  ExecuteMethodFieldComponent
+} from "./chunk-YIISC54R.js";
+import {
+  CustomTooltipComponent
+} from "./chunk-OF3WDS66.js";
+import {
+  getRoundingMethod
+} from "./chunk-S2SB26WJ.js";
+import {
+  calculateModuleIndex
+} from "./chunk-SDERNRDS.js";
+import {
+  applyTriggerActionFormSchema,
+  applyTriggerConditionFormSchema,
+  buildCronString,
+  generateTriggerActionFormModel,
+  generateTriggerConditionFormModel,
+  parseCronString
+} from "./chunk-JBSN2JT6.js";
+import {
+  TIMEZONES_IANA
+} from "./chunk-NTUP2G5H.js";
+import {
+  reportLoadError
+} from "./chunk-JNEMVL3M.js";
+import {
+  ActiveItemService
+} from "./chunk-3RQH6HLG.js";
+import {
+  addDays
+} from "./chunk-XI4ZLZAC.js";
+import {
+  format,
+  getDefaultOptions,
+  normalizeDates,
+  startOfDay,
+  startOfWeek
+} from "./chunk-NRO2XDNU.js";
+import {
+  constructFrom,
+  millisecondsInMinute,
+  toDate
+} from "./chunk-TPDHL3PI.js";
+import {
+  ChipListComponent
+} from "./chunk-URQNJTMD.js";
+import {
+  AutocompleteComponent,
+  AutocompleteTriggerDirective
+} from "./chunk-3CXGWY3Q.js";
+import {
+  FullscreenModalShellComponent
+} from "./chunk-BT6T4Y5W.js";
+import {
+  openConfirmModal
+} from "./chunk-TOPLF626.js";
+import {
+  describeError
+} from "./chunk-T3O7QHHC.js";
+import {
+  notifyError,
+  notifySuccess
+} from "./chunk-ZYXD5WKE.js";
+import {
+  SettingsService
+} from "./chunk-IEEA6WQX.js";
+import {
+  AsyncHandler
+} from "./chunk-ZPWJKOG5.js";
+import {
+  waitForDialog
+} from "./chunk-ZXDSRNPN.js";
+import {
+  SettingsToggleComponent
+} from "./chunk-7CN2TEC2.js";
+import {
+  SelectComponent,
+  SelectTriggerDirective
+} from "./chunk-I2BE2RKH.js";
+import {
+  OptionComponent
+} from "./chunk-BE6PEWTW.js";
+import {
+  FormFieldComponent
+} from "./chunk-JGF7XJRI.js";
+import {
+  FormField,
+  disabled,
+  form,
+  submit,
+  validate
+} from "./chunk-ENT6KTBQ.js";
+import {
+  DefaultValueAccessor,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  NgControlStatus,
+  NgModel
+} from "./chunk-PUVLCN6F.js";
+import {
+  DIALOG_DATA,
+  Dialog,
+  DialogRef
+} from "./chunk-CZLJS5TO.js";
+import {
+  TranslatePipe
+} from "./chunk-HBFI5TAK.js";
+import {
+  i18n
+} from "./chunk-RQOHFMTH.js";
+import {
+  Ca,
+  Fa,
+  Ya,
+  Za,
+  _h,
+  de,
+  dr,
+  mc,
+  mh,
+  pr
+} from "./chunk-LCM7Z6QA.js";
+import {
+  escapeHtml,
+  moveItemInArray,
+  numberToPosition
+} from "./chunk-DGKMQHVX.js";
+import {
+  IconComponent
+} from "./chunk-3IK2VA5B.js";
+import {
+  DatePipe,
+  NgTemplateOutlet,
+  SlicePipe
+} from "./chunk-XWSZBFF5.js";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  Service,
+  ViewChild,
+  computed,
+  effect,
+  forwardRef,
+  inject,
+  input,
+  model,
+  resource,
+  setClassMetadata,
+  signal,
+  viewChild,
+  ɵsetClassDebugInfo,
+  ɵɵInheritDefinitionFeature,
+  ɵɵNgOnChangesFeature,
+  ɵɵProvidersFeature,
+  ɵɵadvance,
+  ɵɵattribute,
+  ɵɵclassProp,
+  ɵɵconditional,
+  ɵɵconditionalCreate,
+  ɵɵcontrol,
+  ɵɵcontrolCreate,
+  ɵɵdefineComponent,
+  ɵɵdefineService,
+  ɵɵelement,
+  ɵɵelementContainer,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵgetCurrentView,
+  ɵɵgetInheritedFactory,
+  ɵɵlistener,
+  ɵɵnextContext,
+  ɵɵpipe,
+  ɵɵpipeBind1,
+  ɵɵpipeBind2,
+  ɵɵpipeBind3,
+  ɵɵprojection,
+  ɵɵprojectionDef,
+  ɵɵproperty,
+  ɵɵpureFunction0,
+  ɵɵqueryAdvance,
+  ɵɵreference,
+  ɵɵrepeater,
+  ɵɵrepeaterCreate,
+  ɵɵrepeaterTrackByIdentity,
+  ɵɵresetView,
+  ɵɵrestoreView,
+  ɵɵstyleProp,
+  ɵɵtemplate,
+  ɵɵtemplateRefExtractor,
+  ɵɵtext,
+  ɵɵtextInterpolate,
+  ɵɵtextInterpolate1,
+  ɵɵtwoWayBindingSet,
+  ɵɵtwoWayListener,
+  ɵɵtwoWayProperty,
+  ɵɵviewQuerySignal
+} from "./chunk-OGAUD6Z3.js";
+import {
+  __spreadProps,
+  __spreadValues
+} from "./chunk-RQBZITXC.js";
+
+// src/app/ui/forms/trigger-action-modal.component.ts
+var _c0 = () => ["Enter", ",", " "];
+function TriggerActionModalComponent_Conditional_2_Conditional_1_For_7_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 5);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const type_r1 = ctx.$implicit;
+    \u0275\u0275property("value", type_r1.id);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", type_r1.name, " ");
+  }
+}
+function TriggerActionModalComponent_Conditional_2_Conditional_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 2)(1, "label", 3);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 4);
+    \u0275\u0275controlCreate();
+    \u0275\u0275repeaterCreate(6, TriggerActionModalComponent_Conditional_2_Conditional_1_For_7_Template, 2, 2, "app-option", 5, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(3, 2, "TRIGGERS.ACTION_FIELD_TYPE"), ": ");
+    \u0275\u0275advance(3);
+    \u0275\u0275property("formField", ctx_r1.form.action_type);
+    \u0275\u0275control();
+    \u0275\u0275advance();
+    \u0275\u0275repeater(ctx_r1.action_types());
+  }
+}
+function TriggerActionModalComponent_Conditional_2_Case_2_Conditional_0_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 2)(1, "label", 6);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementStart(4, "span");
+    \u0275\u0275text(5, "*");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(6, "app-form-field", 7)(7, "app-chip-list", 8);
+    \u0275\u0275pipe(8, "translate");
+    \u0275\u0275pipe(9, "translate");
+    \u0275\u0275controlCreate();
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance();
+    \u0275\u0275classProp("error", ctx_r1.form.emails().touched() && ctx_r1.form.emails().invalid());
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(3, 7, "TRIGGERS.ACTION_EMAIL_ADDRESS"), " ");
+    \u0275\u0275advance(5);
+    \u0275\u0275property("placeholder", \u0275\u0275pipeBind1(8, 9, "TRIGGERS.ACTION_EMAIL_ADDRESS_LIST"))("separators", \u0275\u0275pureFunction0(13, _c0))("formField", ctx_r1.form.emails);
+    \u0275\u0275attribute("aria-label", \u0275\u0275pipeBind1(9, 11, "TRIGGERS.ACTION_EMAIL_ADDRESS"));
+    \u0275\u0275control();
+  }
+}
+function TriggerActionModalComponent_Conditional_2_Case_2_Conditional_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 2)(1, "label", 9);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "textarea", 10);
+    \u0275\u0275controlCreate();
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(3, 2, "TRIGGERS.ACTION_EMAIL_BODY"));
+    \u0275\u0275advance(3);
+    \u0275\u0275property("formField", ctx_r1.form.content);
+    \u0275\u0275control();
+  }
+}
+function TriggerActionModalComponent_Conditional_2_Case_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275conditionalCreate(0, TriggerActionModalComponent_Conditional_2_Case_2_Conditional_0_Template, 10, 14, "div", 2);
+    \u0275\u0275conditionalCreate(1, TriggerActionModalComponent_Conditional_2_Case_2_Conditional_1_Template, 6, 4, "div", 2);
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275conditional(ctx_r1.form.emails ? 0 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.form.content ? 1 : -1);
+  }
+}
+function TriggerActionModalComponent_Conditional_2_Case_3_Conditional_0_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 2)(1, "label", 9);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "execute-method-field", 11);
+    \u0275\u0275controlCreate();
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(3, 4, "TRIGGERS.ACTION_EXECUTE_SELECT"), " ");
+    \u0275\u0275advance(2);
+    \u0275\u0275property("formField", ctx_r1.form.method_call)("system", ctx_r1.system)("can_execute", false);
+    \u0275\u0275control();
+  }
+}
+function TriggerActionModalComponent_Conditional_2_Case_3_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275conditionalCreate(0, TriggerActionModalComponent_Conditional_2_Case_3_Conditional_0_Template, 5, 6, "div", 2);
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275conditional(ctx_r1.form.method_call ? 0 : -1);
+  }
+}
+function TriggerActionModalComponent_Conditional_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "form", 1);
+    \u0275\u0275conditionalCreate(1, TriggerActionModalComponent_Conditional_2_Conditional_1_Template, 8, 4, "div", 2);
+    \u0275\u0275conditionalCreate(2, TriggerActionModalComponent_Conditional_2_Case_2_Template, 2, 2)(3, TriggerActionModalComponent_Conditional_2_Case_3_Template, 1, 1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    let tmp_2_0;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.form.action_type ? 1 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional((tmp_2_0 = ctx_r1.formModel().action_type) === "emails" ? 2 : 3);
+  }
+}
+var TriggerActionModalComponent = class _TriggerActionModalComponent {
+  _dialog = inject(DialogRef);
+  _data = inject(DIALOG_DATA);
+  /** Emitter for events on the modal */
+  event = new EventEmitter();
+  /** Whether actions are loading */
+  loading = signal(
+    "",
+    ...ngDevMode ? [{ debugName: "loading" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Form fields for trigger action */
+  formModel = signal(
+    generateTriggerActionFormModel(this._data.action),
+    ...ngDevMode ? [{ debugName: "formModel" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  form = form(this.formModel, applyTriggerActionFormSchema);
+  /** List of available trigger action types */
+  action_types = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "action_types" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Whether the triggers is new or not */
+  get is_new() {
+    return !this._data.action;
+  }
+  /** Template system to use for status variable bindings */
+  get system() {
+    return this._data.system;
+  }
+  /** Template system to use for status variable bindings */
+  get trigger() {
+    return this._data.trigger;
+  }
+  ngOnInit() {
+    this.action_types.set([
+      { id: "function", name: i18n("TRIGGERS.ACTION_EXECUTE") },
+      { id: "emails", name: i18n("TRIGGERS.ACTION_EMAIL") }
+    ]);
+  }
+  async save() {
+    await submit(this.form, async () => void 0);
+    if (this.form().invalid()) {
+      return;
+    }
+    const actions = this.formModel().action_type === "emails" ? this.updateMailers() : this.updateFunctions();
+    if (!actions) {
+      return notifyError("Error updating trigger action. The action was changed or removed elsewhere.");
+    }
+    this.loading.set("Save trigger action...");
+    await Za(this.trigger.id, __spreadProps(__spreadValues({}, this.trigger), {
+      actions
+    })).then((item) => {
+      this.event.emit({
+        reason: "done",
+        metadata: { trigger: item }
+      });
+      notifySuccess(`Successfully ${this.is_new ? "added" : "updated"} action to trigger`);
+      this._dialog.close();
+    }, (err) => {
+      this.loading.set("");
+      notifyError(`Error ${this.is_new ? "adding" : "updating"} action to trigger. Error: ${describeError(err)}`);
+    });
+  }
+  /**
+   * Copy of the trigger actions with the mailer added or replaced.
+   * `null` if the edited mailer is no longer on the trigger.
+   */
+  updateMailers() {
+    const mailers = [...this.trigger.actions.mailers || []];
+    const new_mailer = {
+      emails: this.formModel().emails,
+      content: this.formModel().content
+    };
+    if (this._data.action) {
+      const old_mailer = JSON.stringify(this._data.action);
+      const index = mailers.findIndex((a_mailer) => JSON.stringify(a_mailer) === old_mailer);
+      if (index < 0)
+        return null;
+      mailers.splice(index, 1, new_mailer);
+    } else {
+      mailers.push(new_mailer);
+    }
+    return __spreadProps(__spreadValues({}, this.trigger.actions), { mailers });
+  }
+  /**
+   * Copy of the trigger actions with the function added or replaced.
+   * `null` if the edited function is no longer on the trigger.
+   */
+  updateFunctions() {
+    const functions = [...this.trigger.actions.functions || []];
+    if (this._data.action) {
+      const old_function = JSON.stringify(this._data.action);
+      const index = functions.findIndex((fn) => JSON.stringify(fn) === old_function);
+      if (index < 0)
+        return null;
+      functions.splice(index, 1, this.formModel().method_call);
+    } else {
+      functions.push(this.formModel().method_call);
+    }
+    return __spreadProps(__spreadValues({}, this.trigger.actions), { functions });
+  }
+  static \u0275fac = function TriggerActionModalComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _TriggerActionModalComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TriggerActionModalComponent, selectors: [["trigger-action-modal"]], outputs: { event: "event" }, decls: 3, vars: 5, consts: [[3, "save", "heading", "loading"], ["trigger-action", "", 1, "flex", "w-full", "max-w-[calc(100vw-2rem)]", "flex-col"], [1, "field"], ["for", "type"], [3, "formField"], [3, "value"], ["for", "emails"], [1, "w-full"], ["inputId", "emails", 3, "placeholder", "separators", "formField"], ["for", "content"], ["placeholder", "Email body contents...", 3, "formField"], [3, "formField", "system", "can_execute"]], template: function TriggerActionModalComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "fullscreen-modal-shell", 0);
+      \u0275\u0275pipe(1, "translate");
+      \u0275\u0275listener("save", function TriggerActionModalComponent_Template_fullscreen_modal_shell_save_0_listener() {
+        return ctx.save();
+      });
+      \u0275\u0275conditionalCreate(2, TriggerActionModalComponent_Conditional_2_Template, 4, 2, "form", 1);
+      \u0275\u0275elementEnd();
+    }
+    if (rf & 2) {
+      \u0275\u0275property("heading", \u0275\u0275pipeBind1(1, 3, ctx.is_new ? "TRIGGERS.ACTION_NEW" : "TRIGGERS.ACTION_EDIT"))("loading", ctx.loading());
+      \u0275\u0275advance(2);
+      \u0275\u0275conditional(ctx.form ? 2 : -1);
+    }
+  }, dependencies: [
+    OptionComponent,
+    SelectComponent,
+    FormFieldComponent,
+    FormField,
+    ChipListComponent,
+    FullscreenModalShellComponent,
+    ExecuteMethodFieldComponent,
+    TranslatePipe
+  ], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TriggerActionModalComponent, [{
+    type: Component,
+    args: [{ selector: "trigger-action-modal", template: `
+        <fullscreen-modal-shell
+            [heading]="
+                (is_new ? 'TRIGGERS.ACTION_NEW' : 'TRIGGERS.ACTION_EDIT')
+                    | translate
+            "
+            [loading]="loading()"
+            (save)="save()"
+        >
+            @if (form) {
+                <form
+                    trigger-action
+                    class="flex w-full max-w-[calc(100vw-2rem)] flex-col"
+                >
+                    @if (form.action_type) {
+                        <div class="field">
+                            <label for="type">
+                                {{ 'TRIGGERS.ACTION_FIELD_TYPE' | translate }}:
+                            </label>
+                            <app-form-field>
+                                <app-select [formField]="form.action_type">
+                                    @for (type of action_types(); track type) {
+                                        <app-option [value]="type.id">
+                                            {{ type.name }}
+                                        </app-option>
+                                    }
+                                </app-select>
+                            </app-form-field>
+                        </div>
+                    }
+                    @switch (formModel().action_type) {
+                        @case ('emails') {
+                            @if (form.emails) {
+                                <div class="field">
+                                    <label
+                                        for="emails"
+                                        [class.error]="
+                                            form.emails().touched() &&
+                                            form.emails().invalid()
+                                        "
+                                    >
+                                        {{
+                                            'TRIGGERS.ACTION_EMAIL_ADDRESS'
+                                                | translate
+                                        }}
+                                        <span>*</span>
+                                    </label>
+                                    <app-form-field class="w-full">
+                                        <app-chip-list
+                                            inputId="emails"
+                                            [attr.aria-label]="
+                                                'TRIGGERS.ACTION_EMAIL_ADDRESS'
+                                                    | translate
+                                            "
+                                            [placeholder]="
+                                                'TRIGGERS.ACTION_EMAIL_ADDRESS_LIST'
+                                                    | translate
+                                            "
+                                            [separators]="['Enter', ',', ' ']"
+                                            [formField]="form.emails"
+                                        />
+                                    </app-form-field>
+                                </div>
+                            }
+                            @if (form.content) {
+                                <div class="field">
+                                    <label for="content">{{
+                                        'TRIGGERS.ACTION_EMAIL_BODY' | translate
+                                    }}</label>
+                                    <app-form-field>
+                                        <textarea
+                                            placeholder="Email body contents..."
+                                            [formField]="form.content"
+                                        ></textarea>
+                                    </app-form-field>
+                                </div>
+                            }
+                        }
+                        @default {
+                            @if (form.method_call) {
+                                <div class="field">
+                                    <label for="content">
+                                        {{
+                                            'TRIGGERS.ACTION_EXECUTE_SELECT'
+                                                | translate
+                                        }}
+                                    </label>
+                                    <execute-method-field
+                                        [formField]="form.method_call"
+                                        [system]="system"
+                                        [can_execute]="false"
+                                    />
+                                </div>
+                            }
+                        }
+                    }
+                </form>
+            }
+        </fullscreen-modal-shell>
+    `, imports: [
+      OptionComponent,
+      SelectComponent,
+      FormFieldComponent,
+      FormField,
+      ChipListComponent,
+      FullscreenModalShellComponent,
+      ExecuteMethodFieldComponent,
+      TranslatePipe
+    ] }]
+  }], null, { event: [{
+    type: Output
+  }] });
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TriggerActionModalComponent, { className: "TriggerActionModalComponent", filePath: "src/app/ui/forms/trigger-action-modal.component.ts", lineNumber: 160 });
+})();
+
+// src/app/ui/forms/trigger-condition-form/comparison-form.component.ts
+var _c02 = () => ({ side: "left" });
+var _c1 = () => ({ standalone: true });
+var _c2 = () => ({ side: "right" });
+function TriggerConditionComparisonFormComponent_Conditional_0_ng_container_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementContainer(0);
+  }
+}
+function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 3);
+    \u0275\u0275text(1);
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(2, 1, "TRIGGERS.COMPARE_VARIABLE_ERROR"), " ");
+  }
+}
+function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_3_For_8_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 7);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const operation_r1 = ctx.$implicit;
+    \u0275\u0275property("value", operation_r1.id);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", operation_r1.name, " ");
+  }
+}
+function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_3_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 4)(1, "label", 5);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 6);
+    \u0275\u0275pipe(6, "translate");
+    \u0275\u0275controlCreate();
+    \u0275\u0275repeaterCreate(7, TriggerConditionComparisonFormComponent_Conditional_0_Conditional_3_For_8_Template, 2, 2, "app-option", 7, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(3, 3, "TRIGGERS.COMPARE_OP"));
+    \u0275\u0275advance(3);
+    \u0275\u0275property("formField", ctx_r1.form().operator)("placeholder", \u0275\u0275pipeBind1(6, 5, "TRIGGERS.COMPARE_OP_SELECT"));
+    \u0275\u0275control();
+    \u0275\u0275advance(2);
+    \u0275\u0275repeater(ctx_r1.compare_types());
+  }
+}
+function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_4_For_7_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 7);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const type_r4 = ctx.$implicit;
+    \u0275\u0275property("value", type_r4.id);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", type_r4.name, " ");
+  }
+}
+function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_4_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 4)(1, "label", 8);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 9);
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_4_Template_app_select_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r3);
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      \u0275\u0275twoWayBindingSet(ctx_r1.rhs_type, $event) || (ctx_r1.rhs_type = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_4_Template_app_select_ngModelChange_5_listener() {
+      \u0275\u0275restoreView(_r3);
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      return \u0275\u0275resetView(ctx_r1.formModel().update((model2) => __spreadProps(__spreadValues({}, model2), { right: "" })));
+    });
+    \u0275\u0275repeaterCreate(6, TriggerConditionComparisonFormComponent_Conditional_0_Conditional_4_For_7_Template, 2, 2, "app-option", 7, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(3, 3, "TRIGGERS.COMPARE_TO"));
+    \u0275\u0275advance(3);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.rhs_type);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(5, _c1));
+    \u0275\u0275control();
+    \u0275\u0275advance();
+    \u0275\u0275repeater(ctx_r1.right_var_type());
+  }
+}
+function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_5_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r5 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 4)(1, "label", 10);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "input", 11);
+    \u0275\u0275controlCreate();
+    \u0275\u0275listener("ngModelChange", function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_5_Template_input_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r5);
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      return \u0275\u0275resetView(ctx_r1.formModel().update((model2) => __spreadProps(__spreadValues({}, model2), { right: $event })));
+    });
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(6, "div", 12);
+    \u0275\u0275text(7);
+    \u0275\u0275pipe(8, "translate");
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(3, 4, "TRIGGERS.COMPARE_TO"));
+    \u0275\u0275advance(3);
+    \u0275\u0275property("ngModel", ctx_r1.formModel()().right)("ngModelOptions", \u0275\u0275pureFunction0(8, _c1));
+    \u0275\u0275control();
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(8, 6, "TRIGGERS.COMPARE_JSON_REQUIRED"), " ");
+  }
+}
+function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_6_ng_container_0_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementContainer(0);
+  }
+}
+function TriggerConditionComparisonFormComponent_Conditional_0_Conditional_6_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275template(0, TriggerConditionComparisonFormComponent_Conditional_0_Conditional_6_ng_container_0_Template, 1, 0, "ng-container", 2);
+  }
+  if (rf & 2) {
+    \u0275\u0275nextContext(2);
+    const status_variable_form_r6 = \u0275\u0275reference(2);
+    \u0275\u0275property("ngTemplateOutlet", status_variable_form_r6)("ngTemplateOutletContext", \u0275\u0275pureFunction0(2, _c2));
+  }
+}
+function TriggerConditionComparisonFormComponent_Conditional_0_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 1);
+    \u0275\u0275template(1, TriggerConditionComparisonFormComponent_Conditional_0_ng_container_1_Template, 1, 0, "ng-container", 2);
+    \u0275\u0275conditionalCreate(2, TriggerConditionComparisonFormComponent_Conditional_0_Conditional_2_Template, 3, 3, "div", 3);
+    \u0275\u0275conditionalCreate(3, TriggerConditionComparisonFormComponent_Conditional_0_Conditional_3_Template, 9, 7, "div", 4);
+    \u0275\u0275conditionalCreate(4, TriggerConditionComparisonFormComponent_Conditional_0_Conditional_4_Template, 8, 6, "div", 4);
+    \u0275\u0275conditionalCreate(5, TriggerConditionComparisonFormComponent_Conditional_0_Conditional_5_Template, 9, 9, "div", 4)(6, TriggerConditionComparisonFormComponent_Conditional_0_Conditional_6_Template, 1, 3, "ng-container");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    const status_variable_form_r6 = \u0275\u0275reference(2);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngTemplateOutlet", status_variable_form_r6)("ngTemplateOutletContext", \u0275\u0275pureFunction0(6, _c02));
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.form().left().touched() && ctx_r1.form().left().invalid() ? 2 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.form().operator ? 3 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.form().operator ? 4 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.rhs_type() === "constant" ? 5 : 6);
+  }
+}
+function TriggerConditionComparisonFormComponent_ng_template_1_Conditional_1_For_8_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 7);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const mod_r9 = ctx.$implicit;
+    \u0275\u0275property("value", mod_r9.name);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", mod_r9.name, " ");
+  }
+}
+function TriggerConditionComparisonFormComponent_ng_template_1_Conditional_1_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r7 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 4)(1, "label", 14);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 15);
+    \u0275\u0275pipe(6, "translate");
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionComparisonFormComponent_ng_template_1_Conditional_1_Template_app_select_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r7);
+      const side_r8 = \u0275\u0275nextContext().side;
+      const ctx_r1 = \u0275\u0275nextContext();
+      \u0275\u0275twoWayBindingSet(ctx_r1[side_r8 + "_side"].mod, $event) || (ctx_r1[side_r8 + "_side"].mod = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionComparisonFormComponent_ng_template_1_Conditional_1_Template_app_select_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r7);
+      const side_r8 = \u0275\u0275nextContext().side;
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.loadSystemStatusVariables($event, side_r8));
+    });
+    \u0275\u0275repeaterCreate(7, TriggerConditionComparisonFormComponent_ng_template_1_Conditional_1_For_8_Template, 2, 2, "app-option", 7, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const side_r8 = \u0275\u0275nextContext().side;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(3, 4, "MODULES.SINGULAR"));
+    \u0275\u0275advance(3);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1[side_r8 + "_side"].mod);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(8, _c1))("placeholder", \u0275\u0275pipeBind1(6, 6, "TRIGGERS.COMPARE_MODULE_SELECT"));
+    \u0275\u0275control();
+    \u0275\u0275advance(2);
+    \u0275\u0275repeater(ctx_r1.module_list());
+  }
+}
+function TriggerConditionComparisonFormComponent_ng_template_1_Conditional_2_For_8_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 7);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const mod_r11 = ctx.$implicit;
+    \u0275\u0275property("value", mod_r11.name);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", mod_r11.name, " ");
+  }
+}
+function TriggerConditionComparisonFormComponent_ng_template_1_Conditional_2_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r10 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 4)(1, "label", 16);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 17);
+    \u0275\u0275pipe(6, "translate");
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionComparisonFormComponent_ng_template_1_Conditional_2_Template_app_select_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r10);
+      const side_r8 = \u0275\u0275nextContext().side;
+      const ctx_r1 = \u0275\u0275nextContext();
+      \u0275\u0275twoWayBindingSet(ctx_r1[side_r8 + "_side"].status, $event) || (ctx_r1[side_r8 + "_side"].status = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionComparisonFormComponent_ng_template_1_Conditional_2_Template_app_select_ngModelChange_5_listener() {
+      \u0275\u0275restoreView(_r10);
+      const side_r8 = \u0275\u0275nextContext().side;
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.updateFormForSide(side_r8));
+    });
+    \u0275\u0275repeaterCreate(7, TriggerConditionComparisonFormComponent_ng_template_1_Conditional_2_For_8_Template, 2, 2, "app-option", 7, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const side_r8 = \u0275\u0275nextContext().side;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275property("for", side_r8 + "-status-var");
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(3, 6, "TRIGGERS.COMPARE_VARIABLE"));
+    \u0275\u0275advance(3);
+    \u0275\u0275property("name", side_r8 + "-status-var");
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1[side_r8 + "_side"].status);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(10, _c1))("placeholder", \u0275\u0275pipeBind1(6, 8, "TRIGGERS.COMPARE_VARIABLE_SELECT"));
+    \u0275\u0275control();
+    \u0275\u0275advance(2);
+    \u0275\u0275repeater(ctx_r1.statusVariables(side_r8)());
+  }
+}
+function TriggerConditionComparisonFormComponent_ng_template_1_Conditional_3_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r12 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 4)(1, "label", 16);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "input", 18);
+    \u0275\u0275pipe(6, "translate");
+    \u0275\u0275controlCreate();
+    \u0275\u0275listener("ngModelChange", function TriggerConditionComparisonFormComponent_ng_template_1_Conditional_3_Template_input_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r12);
+      const side_r8 = \u0275\u0275nextContext().side;
+      const ctx_r1 = \u0275\u0275nextContext();
+      ctx_r1[side_r8 + "_side"].keys = $event.split(",");
+      return \u0275\u0275resetView(ctx_r1.updateFormForSide(side_r8));
+    });
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const side_r8 = \u0275\u0275nextContext().side;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275property("for", side_r8 + "-subkeys");
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(3, 5, "TRIGGERS.COMPARE_SUBKEYS"));
+    \u0275\u0275advance(3);
+    \u0275\u0275property("ngModel", ctx_r1[side_r8 + "_keys"])("name", side_r8 + "-subkeys")("placeholder", \u0275\u0275pipeBind1(6, 7, "TRIGGERS.COMPARE_SUBKEYS_PLACEHOLDER"));
+    \u0275\u0275control();
+  }
+}
+function TriggerConditionComparisonFormComponent_ng_template_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 13);
+    \u0275\u0275conditionalCreate(1, TriggerConditionComparisonFormComponent_ng_template_1_Conditional_1_Template, 9, 9, "div", 4);
+    \u0275\u0275conditionalCreate(2, TriggerConditionComparisonFormComponent_ng_template_1_Conditional_2_Template, 9, 11, "div", 4);
+    \u0275\u0275elementEnd();
+    \u0275\u0275conditionalCreate(3, TriggerConditionComparisonFormComponent_ng_template_1_Conditional_3_Template, 7, 9, "div", 4);
+  }
+  if (rf & 2) {
+    const side_r8 = ctx.side;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1[side_r8 + "_side"] ? 1 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.statusVariables(side_r8)().length ? 2 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.statusVariables(side_r8)().length ? 3 : -1);
+  }
+}
+var TriggerConditionComparisonFormComponent = class _TriggerConditionComparisonFormComponent {
+  /** Signal form fields used for editing the trigger condition */
+  form = input(
+    void 0,
+    ...ngDevMode ? [{ debugName: "form" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  formModel = input(
+    void 0,
+    ...ngDevMode ? [{ debugName: "formModel" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Systems used for templating the status variables */
+  system = input(
+    void 0,
+    ...ngDevMode ? [{ debugName: "system" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** List of modules associated with the template system */
+  modules = [];
+  /** List of status variables associated with the selected module */
+  module_list = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "module_list" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** List of status variables associated with the selected module */
+  left_status_variables = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "left_status_variables" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** List of status variables associated with the selected module */
+  right_status_variables = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "right_status_variables" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Type of value to compare the left hand side to */
+  rhs_type = signal(
+    "constant",
+    ...ngDevMode ? [{ debugName: "rhs_type" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Status variable details for the left side of the comparison */
+  left_side = { mod: "", status: "", keys: [] };
+  /** Status variable details for the right side of the comparison */
+  right_side = {
+    mod: "",
+    status: "",
+    keys: []
+  };
+  /** Types of trigger conditions */
+  right_var_type = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "right_var_type" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Allowed comparison operators */
+  compare_types = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "compare_types" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  ngOnInit() {
+    this.right_var_type.set([
+      { id: "constant", name: i18n("TRIGGERS.COMPARE_CONSTANT") },
+      { id: "status_var", name: i18n("TRIGGERS.COMPARE_VARIABLE") }
+    ]);
+    this.compare_types.set([
+      {
+        id: pr.EQ,
+        name: i18n("TRIGGERS.COMPARE_OP_EQUAL")
+      },
+      {
+        id: pr.NEQ,
+        name: i18n("TRIGGERS.COMPARE_OP_NOT_EQUAL")
+      },
+      {
+        id: pr.GT,
+        name: i18n("TRIGGERS.COMPARE_OP_GREATER")
+      },
+      {
+        id: pr.GTE,
+        name: i18n("TRIGGERS.COMPARE_OP_GREATER_EQUAL")
+      },
+      {
+        id: pr.LT,
+        name: i18n("TRIGGERS.COMPARE_OP_LESS")
+      },
+      {
+        id: pr.LTE,
+        name: i18n("TRIGGERS.COMPARE_OP_LESS_EQUAL")
+      },
+      {
+        id: pr.AND,
+        name: i18n("TRIGGERS.COMPARE_OP_AND")
+      },
+      {
+        id: pr.OR,
+        name: i18n("TRIGGERS.COMPARE_OP_OR")
+      },
+      {
+        id: pr.XOR,
+        name: i18n("TRIGGERS.COMPARE_OP_XOR")
+      }
+    ]);
+  }
+  /** Status variable list for the given side of the comparison */
+  statusVariables(side) {
+    return side === "left" ? this.left_status_variables : this.right_status_variables;
+  }
+  ngOnChanges(changes) {
+    if (changes.system && this.system()) {
+      this.loadSystemModules();
+    }
+  }
+  updateFormForSide(side) {
+    const form2 = this.form();
+    if (form2?.[side]) {
+      if (!this[side + "_side"].keys) {
+        this[side + "_side"].keys = [];
+      }
+      this.formModel().update((model2) => __spreadProps(__spreadValues({}, model2), {
+        [side]: this[side + "_side"]
+      }));
+    }
+  }
+  /**
+   * Load the list of status variables for the given modules
+   * @param module Module to list status variables
+   */
+  async loadSystemStatusVariables(mod_name, side) {
+    const name = (mod_name || "").split("_");
+    if (!name[0]?.length)
+      return;
+    await Ca(this.system().id, name.length > 1 ? name.slice(0, name.length - 1).join("_") : name[0], +name[name.length - 1] || 1).then((var_map) => {
+      if (Object.keys(var_map || {}).length <= 0) {
+        var_map = { connected: true };
+      }
+      this.statusVariables(side).set(Object.keys(var_map).map((key) => ({
+        id: key,
+        name: key
+      })));
+      this.addExistingStatusVariables();
+    }).catch(() => notifyError(i18n("TRIGGERS.COMPARE_VARIABLE_LOAD_ERROR", {
+      system: this.system().id,
+      module: mod_name
+    })));
+  }
+  /**
+   * Load the list of modules for the active system
+   */
+  async loadSystemModules() {
+    const system = this.system();
+    if (!system) {
+      return;
+    }
+    const module_list = await mc({
+      control_system_id: system.id
+    }).then((resp) => resp.data).catch((err) => {
+      notifyError(`Failed to load modules for ${system.id}. Error: ${describeError(err)}`);
+      return null;
+    });
+    if (!module_list)
+      return;
+    this.modules = module_list;
+    const mod_list = this.system().modules;
+    this.modules.sort((a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id));
+    this.module_list.set(this.modules.map((mod) => {
+      const name = mod.custom_name || mod.name || "Blank";
+      const index = calculateModuleIndex(this.modules, mod);
+      return {
+        id: mod.id,
+        name: `${name}_${index}`,
+        keys: []
+      };
+    }));
+    this.addExistingModules();
+  }
+  /**
+   * Add pre-exisiting module detail to the available list
+   */
+  addExistingModules() {
+    const form2 = this.form();
+    const model2 = this.formModel()();
+    if (form2.left && model2.left) {
+      const module = model2.left.mod;
+      if (!this.module_list().find((mod) => mod.name === module)) {
+        this.module_list.update((list) => [
+          {
+            id: "old_left_value",
+            name: module,
+            keys: []
+          },
+          ...list
+        ]);
+      }
+      this.loadSystemStatusVariables(module, "left");
+      this.left_side = model2.left;
+    }
+    if (form2.right && model2.right && model2.right.mod) {
+      this.rhs_type.set("status_var");
+      const module = model2.right.mod;
+      if (!this.module_list().find((mod) => mod.name === module)) {
+        this.module_list.update((list) => [
+          {
+            id: "old_right_value",
+            name: module,
+            keys: []
+          },
+          ...list
+        ]);
+      }
+      this.loadSystemStatusVariables(module, "right");
+      this.right_side = model2.right;
+    }
+  }
+  /**
+   * Add pre-exisiting status variables to the available list
+   */
+  addExistingStatusVariables() {
+    for (const side of ["left", "right"]) {
+      const status = this[`${side}_side`].status;
+      if (!status)
+        continue;
+      this.statusVariables(side).update((list) => list.find((item) => item.name === status) ? list : [{ id: status, name: status, keys: [] }, ...list]);
+    }
+  }
+  static \u0275fac = function TriggerConditionComparisonFormComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _TriggerConditionComparisonFormComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TriggerConditionComparisonFormComponent, selectors: [["trigger-condition-comparison-form"]], inputs: { form: [1, "form"], formModel: [1, "formModel"], system: [1, "system"] }, features: [\u0275\u0275NgOnChangesFeature], decls: 3, vars: 1, consts: [["status_variable_form", ""], [1, "trigger-condition", "form", "comparison"], [4, "ngTemplateOutlet", "ngTemplateOutletContext"], [1, "error"], [1, "field"], ["for", "operator", "hidden", ""], [3, "formField", "placeholder"], [3, "value"], ["for", "compared-to", "hidden", ""], ["name", "compared-to", 3, "ngModelChange", "ngModel", "ngModelOptions"], ["for", "constant", "hidden", ""], ["placeholder", "true/false, 'string', 123.456", 3, "ngModelChange", "ngModel", "ngModelOptions"], ["error", ""], [1, "fieldset"], ["for", "type"], ["name", "type", 3, "ngModelChange", "ngModel", "ngModelOptions", "placeholder"], [3, "for"], [3, "ngModelChange", "name", "ngModel", "ngModelOptions", "placeholder"], [3, "ngModelChange", "ngModel", "name", "placeholder"]], template: function TriggerConditionComparisonFormComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275conditionalCreate(0, TriggerConditionComparisonFormComponent_Conditional_0_Template, 7, 7, "div", 1);
+      \u0275\u0275template(1, TriggerConditionComparisonFormComponent_ng_template_1_Template, 4, 3, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+    }
+    if (rf & 2) {
+      \u0275\u0275conditional(ctx.form() ? 0 : -1);
+    }
+  }, dependencies: [
+    OptionComponent,
+    SelectComponent,
+    FormFieldComponent,
+    FormsModule,
+    DefaultValueAccessor,
+    NgControlStatus,
+    NgModel,
+    FormField,
+    NgTemplateOutlet,
+    TranslatePipe
+  ], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TriggerConditionComparisonFormComponent, [{
+    type: Component,
+    args: [{ selector: "trigger-condition-comparison-form", template: `@if (form()) {
+            <div class="trigger-condition form comparison">
+                <ng-container
+                    *ngTemplateOutlet="
+                        status_variable_form;
+                        context: { side: 'left' }
+                    "
+                />
+                @if (form().left().touched() && form().left().invalid()) {
+                    <div class="error">
+                        {{ 'TRIGGERS.COMPARE_VARIABLE_ERROR' | translate }}
+                    </div>
+                }
+                @if (form().operator) {
+                    <div class="field">
+                        <label for="operator" hidden>{{
+                            'TRIGGERS.COMPARE_OP' | translate
+                        }}</label>
+                        <app-form-field>
+                            <app-select
+                                [formField]="form().operator"
+                                [placeholder]="
+                                    'TRIGGERS.COMPARE_OP_SELECT' | translate
+                                "
+                            >
+                                @for (
+                                    operation of compare_types();
+                                    track operation
+                                ) {
+                                    <app-option [value]="operation.id">
+                                        {{ operation.name }}
+                                    </app-option>
+                                }
+                            </app-select>
+                        </app-form-field>
+                    </div>
+                }
+                @if (form().operator) {
+                    <div class="field">
+                        <label for="compared-to" hidden>{{
+                            'TRIGGERS.COMPARE_TO' | translate
+                        }}</label>
+                        <app-form-field>
+                            <app-select
+                                name="compared-to"
+                                [(ngModel)]="rhs_type"
+                                (ngModelChange)="
+                                formModel().update((model) => ({
+                                        ...model,
+                                        right: '',
+                                    }))
+                                "
+                                [ngModelOptions]="{ standalone: true }"
+                            >
+                                @for (type of right_var_type(); track type) {
+                                    <app-option [value]="type.id">
+                                        {{ type.name }}
+                                    </app-option>
+                                }
+                            </app-select>
+                        </app-form-field>
+                    </div>
+                }
+                @if (rhs_type() === 'constant') {
+                    <div class="field">
+                        <label for="constant" hidden>{{
+                            'TRIGGERS.COMPARE_TO' | translate
+                        }}</label>
+                        <app-form-field>
+                            <input
+                                [ngModel]="formModel()().right"
+                                (ngModelChange)="
+                                    formModel().update((model) => ({
+                                        ...model,
+                                        right: $event,
+                                    }))
+                                "
+                                [ngModelOptions]="{ standalone: true }"
+                                placeholder="true/false, 'string', 123.456"
+                            />
+                            <div error>
+                                {{
+                                    'TRIGGERS.COMPARE_JSON_REQUIRED' | translate
+                                }}
+                            </div>
+                        </app-form-field>
+                    </div>
+                } @else {
+                    <ng-container
+                        *ngTemplateOutlet="
+                            status_variable_form;
+                            context: { side: 'right' }
+                        "
+                    />
+                }
+            </div>
+        }
+        <ng-template #status_variable_form let-side="side">
+            <div class="fieldset">
+                @if (this[side + '_side']) {
+                    <div class="field">
+                        <label for="type">{{
+                            'MODULES.SINGULAR' | translate
+                        }}</label>
+                        <app-form-field>
+                            <app-select
+                                name="type"
+                                [(ngModel)]="this[side + '_side'].mod"
+                                (ngModelChange)="
+                                    loadSystemStatusVariables($event, side)
+                                "
+                                [ngModelOptions]="{ standalone: true }"
+                                [placeholder]="
+                                    'TRIGGERS.COMPARE_MODULE_SELECT' | translate
+                                "
+                            >
+                                @for (mod of module_list(); track mod) {
+                                    <app-option [value]="mod.name">
+                                        {{ mod.name }}
+                                    </app-option>
+                                }
+                            </app-select>
+                        </app-form-field>
+                    </div>
+                }
+                @if (statusVariables(side)().length) {
+                    <div class="field">
+                        <label [for]="side + '-status-var'">{{
+                            'TRIGGERS.COMPARE_VARIABLE' | translate
+                        }}</label>
+                        <app-form-field>
+                            <app-select
+                                [name]="side + '-status-var'"
+                                [(ngModel)]="this[side + '_side'].status"
+                                (ngModelChange)="updateFormForSide(side)"
+                                [ngModelOptions]="{ standalone: true }"
+                                [placeholder]="
+                                    'TRIGGERS.COMPARE_VARIABLE_SELECT'
+                                        | translate
+                                "
+                            >
+                                @for (
+                                    mod of statusVariables(side)();
+                                    track mod
+                                ) {
+                                    <app-option [value]="mod.name">
+                                        {{ mod.name }}
+                                    </app-option>
+                                }
+                            </app-select>
+                        </app-form-field>
+                    </div>
+                }
+            </div>
+            @if (statusVariables(side)().length) {
+                <div class="field">
+                    <label [for]="side + '-subkeys'">{{
+                        'TRIGGERS.COMPARE_SUBKEYS' | translate
+                    }}</label>
+                    <app-form-field>
+                        <input
+                            [ngModel]="this[side + '_keys']"
+                            (ngModelChange)="
+                                this[side + '_side'].keys = $event.split(',');
+                                updateFormForSide(side)
+                            "
+                            [name]="side + '-subkeys'"
+                            [placeholder]="
+                                'TRIGGERS.COMPARE_SUBKEYS_PLACEHOLDER'
+                                    | translate
+                            "
+                        />
+                    </app-form-field>
+                </div>
+            }
+        </ng-template>`, imports: [
+      OptionComponent,
+      SelectComponent,
+      FormFieldComponent,
+      TranslatePipe,
+      FormsModule,
+      FormField,
+      NgTemplateOutlet
+    ] }]
+  }], null, { form: [{ type: Input, args: [{ isSignal: true, alias: "form", required: false }] }], formModel: [{ type: Input, args: [{ isSignal: true, alias: "formModel", required: false }] }], system: [{ type: Input, args: [{ isSignal: true, alias: "system", required: false }] }] });
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TriggerConditionComparisonFormComponent, { className: "TriggerConditionComparisonFormComponent", filePath: "src/app/ui/forms/trigger-condition-form/comparison-form.component.ts", lineNumber: 222 });
+})();
+
+// node_modules/date-fns/addMonths.js
+function addMonths(date, amount, options) {
+  const _date = toDate(date, options?.in);
+  if (isNaN(amount)) return constructFrom(options?.in || date, NaN);
+  if (!amount) {
+    return _date;
+  }
+  const dayOfMonth = _date.getDate();
+  const endOfDesiredMonth = constructFrom(options?.in || date, _date.getTime());
+  endOfDesiredMonth.setMonth(_date.getMonth() + amount + 1, 0);
+  const daysInMonth = endOfDesiredMonth.getDate();
+  if (dayOfMonth >= daysInMonth) {
+    return endOfDesiredMonth;
+  } else {
+    _date.setFullYear(
+      endOfDesiredMonth.getFullYear(),
+      endOfDesiredMonth.getMonth(),
+      dayOfMonth
+    );
+    return _date;
+  }
+}
+
+// node_modules/date-fns/addMinutes.js
+function addMinutes(date, amount, options) {
+  const _date = toDate(date, options?.in);
+  _date.setTime(_date.getTime() + amount * millisecondsInMinute);
+  return _date;
+}
+
+// node_modules/date-fns/addYears.js
+function addYears(date, amount, options) {
+  return addMonths(date, amount * 12, options);
+}
+
+// node_modules/date-fns/isSameDay.js
+function isSameDay(laterDate, earlierDate, options) {
+  const [dateLeft_, dateRight_] = normalizeDates(
+    options?.in,
+    laterDate,
+    earlierDate
+  );
+  return +startOfDay(dateLeft_) === +startOfDay(dateRight_);
+}
+
+// node_modules/date-fns/endOfDay.js
+function endOfDay(date, options) {
+  const _date = toDate(date, options?.in);
+  _date.setHours(23, 59, 59, 999);
+  return _date;
+}
+
+// node_modules/date-fns/startOfMonth.js
+function startOfMonth(date, options) {
+  const _date = toDate(date, options?.in);
+  _date.setDate(1);
+  _date.setHours(0, 0, 0, 0);
+  return _date;
+}
+
+// node_modules/date-fns/getDaysInMonth.js
+function getDaysInMonth(date, options) {
+  const _date = toDate(date, options?.in);
+  const year = _date.getFullYear();
+  const monthIndex = _date.getMonth();
+  const lastDayOfMonth = constructFrom(_date, 0);
+  lastDayOfMonth.setFullYear(year, monthIndex + 1, 0);
+  lastDayOfMonth.setHours(0, 0, 0, 0);
+  return lastDayOfMonth.getDate();
+}
+
+// node_modules/date-fns/isAfter.js
+function isAfter(date, dateToCompare) {
+  return +toDate(date) > +toDate(dateToCompare);
+}
+
+// node_modules/date-fns/isBefore.js
+function isBefore(date, dateToCompare) {
+  return +toDate(date) < +toDate(dateToCompare);
+}
+
+// node_modules/date-fns/setDay.js
+function setDay(date, day, options) {
+  const defaultOptions = getDefaultOptions();
+  const weekStartsOn = options?.weekStartsOn ?? options?.locale?.options?.weekStartsOn ?? defaultOptions.weekStartsOn ?? defaultOptions.locale?.options?.weekStartsOn ?? 0;
+  const date_ = toDate(date, options?.in);
+  const currentDay = date_.getDay();
+  const remainder = day % 7;
+  const dayIndex = (remainder + 7) % 7;
+  const delta = 7 - weekStartsOn;
+  const diff = day < 0 || day > 6 ? day - (currentDay + delta) % 7 : (dayIndex + delta) % 7 - (currentDay + delta) % 7;
+  return addDays(date_, diff, options);
+}
+
+// node_modules/date-fns/startOfMinute.js
+function startOfMinute(date, options) {
+  const date_ = toDate(date, options?.in);
+  date_.setSeconds(0, 0);
+  return date_;
+}
+
+// node_modules/date-fns/isSameMonth.js
+function isSameMonth(laterDate, earlierDate, options) {
+  const [laterDate_, earlierDate_] = normalizeDates(
+    options?.in,
+    laterDate,
+    earlierDate
+  );
+  return laterDate_.getFullYear() === earlierDate_.getFullYear() && laterDate_.getMonth() === earlierDate_.getMonth();
+}
+
+// node_modules/date-fns/roundToNearestMinutes.js
+function roundToNearestMinutes(date, options) {
+  const nearestTo = options?.nearestTo ?? 1;
+  if (nearestTo < 1 || nearestTo > 30) return constructFrom(date, NaN);
+  const date_ = toDate(date, options?.in);
+  const fractionalSeconds = date_.getSeconds() / 60;
+  const fractionalMilliseconds = date_.getMilliseconds() / 1e3 / 60;
+  const minutes = date_.getMinutes() + fractionalSeconds + fractionalMilliseconds;
+  const method = options?.roundingMethod ?? "round";
+  const roundingMethod = getRoundingMethod(method);
+  const roundedMinutes = roundingMethod(minutes / nearestTo) * nearestTo;
+  date_.setMinutes(roundedMinutes, 0, 0);
+  return date_;
+}
+
+// node_modules/date-fns/setMonth.js
+function setMonth(date, month, options) {
+  const _date = toDate(date, options?.in);
+  const year = _date.getFullYear();
+  const day = _date.getDate();
+  const midMonth = constructFrom(options?.in || date, 0);
+  midMonth.setFullYear(year, month, 15);
+  midMonth.setHours(0, 0, 0, 0);
+  const daysInMonth = getDaysInMonth(midMonth);
+  _date.setMonth(month, Math.min(day, daysInMonth));
+  return _date;
+}
+
+// node_modules/date-fns/set.js
+function set(date, values, options) {
+  let _date = toDate(date, options?.in);
+  if (isNaN(+_date)) return constructFrom(options?.in || date, NaN);
+  if (values.year != null) _date.setFullYear(values.year);
+  if (values.month != null) _date = setMonth(_date, values.month);
+  if (values.date != null) _date.setDate(values.date);
+  if (values.hours != null) _date.setHours(values.hours);
+  if (values.minutes != null) _date.setMinutes(values.minutes);
+  if (values.seconds != null) _date.setSeconds(values.seconds);
+  if (values.milliseconds != null) _date.setMilliseconds(values.milliseconds);
+  return _date;
+}
+
+// src/app/ui/custom-fields/cron-input-field.component.ts
+var VALID_INPUT = [
+  "0",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "*",
+  "/",
+  "-",
+  ",",
+  "Backspace",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "ArrowDown",
+  "Delete",
+  "Tab",
+  "Home",
+  "End",
+  "Enter",
+  "Escape"
+];
+function listPattern(fieldPattern) {
+  return `(?:${fieldPattern})(?:,(?:${fieldPattern}))*`;
+}
+var CronInputFieldComponent = class _CronInputFieldComponent {
+  cron_string;
+  disabled = signal(
+    false,
+    ...ngDevMode ? [{ debugName: "disabled" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  formModel = signal(
+    {
+      minute: "*",
+      hour: "*",
+      day: "*",
+      month: "*",
+      day_of_week: "*"
+    },
+    ...ngDevMode ? [{ debugName: "formModel" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  form = form(this.formModel, (path) => {
+    for (const field of [
+      path.minute,
+      path.hour,
+      path.day,
+      path.month,
+      path.day_of_week
+    ]) {
+      disabled(field, { when: () => this.disabled() });
+    }
+    this.validatePattern(path.minute, listPattern("(?:\\*(?:/\\d{1,2})?|[0-5]?\\d(?:-[0-5]?\\d)?(?:/\\d{1,2})?)"));
+    this.validatePattern(path.hour, listPattern("(?:\\*(?:/\\d{1,2})?|(?:[01]?\\d|2[0-3])(?:-(?:[01]?\\d|2[0-3]))?(?:/\\d{1,2})?)"));
+    this.validatePattern(path.day, listPattern("(?:\\*(?:/\\d{1,2})?|(?:[1-9]|[12]\\d|3[01])(?:-(?:[1-9]|[12]\\d|3[01]))?(?:/\\d{1,2})?)"));
+    this.validatePattern(path.month, listPattern("(?:\\*(?:/\\d{1,2})?|(?:[1-9]|1[0-2])(?:-(?:[1-9]|1[0-2]))?(?:/\\d{1,2})?)"));
+    this.validatePattern(path.day_of_week, listPattern("(?:\\*(?:/\\d{1,2})?|[0-6](?:-[0-6])?(?:/\\d{1,2})?)"));
+  });
+  registerOnChange = (fn) => this._onChange = fn;
+  registerOnTouched = (fn) => this._onTouch = fn;
+  _onChange;
+  _onTouch;
+  constructor() {
+    effect(() => {
+      const value = this.formModel();
+      if (this.form().invalid())
+        return;
+      this.setValue(`${value.minute || "*"} ${value.hour || "*"} ${value.day || "*"} ${value.month || "*"} ${value.day_of_week || "*"}`);
+    });
+  }
+  setValue(value) {
+    if (this.disabled())
+      return;
+    this.cron_string = value;
+    if (this._onChange)
+      this._onChange(value);
+    this._onTouch?.(value);
+  }
+  writeValue(value) {
+    if (!value)
+      return;
+    this.cron_string = value;
+    const parts = value.split(" ");
+    this.formModel.set({
+      minute: parts[0] || "*",
+      hour: parts[1] || "*",
+      day: parts[2] || "*",
+      month: parts[3] || "*",
+      day_of_week: parts[4] || "*"
+    });
+  }
+  preventInvalidCharacters(event) {
+    if (this.disabled())
+      return event.preventDefault();
+    if (event.ctrlKey || event.metaKey || event.altKey)
+      return;
+    if (!VALID_INPUT.includes(event.key))
+      event.preventDefault();
+  }
+  setDisabledState(disabled2) {
+    this.disabled.set(disabled2);
+  }
+  markTouched() {
+    this._onTouch?.(this.cron_string);
+  }
+  validatePattern(path, pattern) {
+    const regex = new RegExp(`^${pattern}$`);
+    validate(path, ({ value }) => regex.test(String(value() || "")) ? void 0 : { kind: "pattern", message: "Invalid CRON segment" });
+  }
+  static \u0275fac = function CronInputFieldComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _CronInputFieldComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _CronInputFieldComponent, selectors: [["cron-input-field"]], features: [\u0275\u0275ProvidersFeature([
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => _CronInputFieldComponent),
+      multi: true
+    }
+  ])], decls: 8, vars: 7, consts: [[1, "border-base-300", "focus-within:border-base-content", "focus-within:outline-base-content", "mb-1", "flex", "w-full", "items-center", "space-x-2", "rounded-sm", "border", "focus-within:outline-4", 3, "focusout"], ["placeholder", "*", 1, "w-px", "flex-1", "border-none", "bg-none", "p-2", "text-base", "outline-hidden", 3, "keydown", "formField"], ["placeholder", "*", 1, "w-px", "flex-1", "border-none", "bg-none", "p-2", "text-base", "outline-hidden", 3, "formField"], [1, "text-error", "text-xs"]], template: function CronInputFieldComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "div", 0);
+      \u0275\u0275listener("focusout", function CronInputFieldComponent_Template_div_focusout_0_listener() {
+        return ctx.markTouched();
+      });
+      \u0275\u0275elementStart(1, "input", 1);
+      \u0275\u0275controlCreate();
+      \u0275\u0275listener("keydown", function CronInputFieldComponent_Template_input_keydown_1_listener($event) {
+        return ctx.preventInvalidCharacters($event);
+      });
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(2, "input", 2);
+      \u0275\u0275controlCreate();
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(3, "input", 2);
+      \u0275\u0275controlCreate();
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(4, "input", 2);
+      \u0275\u0275controlCreate();
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(5, "input", 2);
+      \u0275\u0275controlCreate();
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(6, "div", 3);
+      \u0275\u0275text(7, " CRON expression is invalid ");
+      \u0275\u0275elementEnd();
+    }
+    if (rf & 2) {
+      \u0275\u0275advance();
+      \u0275\u0275property("formField", ctx.form.minute);
+      \u0275\u0275control();
+      \u0275\u0275advance();
+      \u0275\u0275property("formField", ctx.form.hour);
+      \u0275\u0275control();
+      \u0275\u0275advance();
+      \u0275\u0275property("formField", ctx.form.day);
+      \u0275\u0275control();
+      \u0275\u0275advance();
+      \u0275\u0275property("formField", ctx.form.month);
+      \u0275\u0275control();
+      \u0275\u0275advance();
+      \u0275\u0275property("formField", ctx.form.day_of_week);
+      \u0275\u0275control();
+      \u0275\u0275advance();
+      \u0275\u0275classProp("opacity-0", !ctx.form().invalid());
+    }
+  }, dependencies: [FormField], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(CronInputFieldComponent, [{
+    type: Component,
+    args: [{ selector: "cron-input-field", template: `
+        <div
+            class="border-base-300 focus-within:border-base-content focus-within:outline-base-content mb-1 flex w-full items-center space-x-2 rounded-sm border focus-within:outline-4"
+            (focusout)="markTouched()"
+        >
+            <input
+                class="w-px flex-1 border-none bg-none p-2 text-base outline-hidden"
+                placeholder="*"
+                [formField]="form.minute"
+                (keydown)="preventInvalidCharacters($event)"
+            />
+            <input
+                class="w-px flex-1 border-none bg-none p-2 text-base outline-hidden"
+                placeholder="*"
+                [formField]="form.hour"
+            />
+            <input
+                class="w-px flex-1 border-none bg-none p-2 text-base outline-hidden"
+                placeholder="*"
+                [formField]="form.day"
+            />
+            <input
+                class="w-px flex-1 border-none bg-none p-2 text-base outline-hidden"
+                placeholder="*"
+                [formField]="form.month"
+            />
+            <input
+                class="w-px flex-1 border-none bg-none p-2 text-base outline-hidden"
+                placeholder="*"
+                [formField]="form.day_of_week"
+            />
+        </div>
+        <div class="text-error text-xs" [class.opacity-0]="!form().invalid()">
+            CRON expression is invalid
+        </div>
+    `, providers: [
+      {
+        provide: NG_VALUE_ACCESSOR,
+        useExisting: forwardRef(() => CronInputFieldComponent),
+        multi: true
+      }
+    ], imports: [FormField] }]
+  }], () => [], null);
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(CronInputFieldComponent, { className: "CronInputFieldComponent", filePath: "src/app/ui/custom-fields/cron-input-field.component.ts", lineNumber: 90 });
+})();
+
+// src/app/ui/custom-fields/date-calendar.component.ts
+function DateCalendarComponent_For_14_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 7);
+    \u0275\u0275text(1);
+    \u0275\u0275pipe(2, "date");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const day_r1 = ctx.$implicit;
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind2(2, 1, day_r1?.id, "EE"), " ");
+  }
+}
+function DateCalendarComponent_For_18_Conditional_3_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "div", 11);
+  }
+}
+function DateCalendarComponent_For_18_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r2 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "button", 10);
+    \u0275\u0275listener("click", function DateCalendarComponent_For_18_Template_button_click_0_listener() {
+      const day_r3 = \u0275\u0275restoreView(_r2).$implicit;
+      const ctx_r3 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r3.setValue(day_r3.id));
+    });
+    \u0275\u0275text(1);
+    \u0275\u0275pipe(2, "date");
+    \u0275\u0275conditionalCreate(3, DateCalendarComponent_For_18_Conditional_3_Template, 1, 0, "div", 11);
+    \u0275\u0275element(4, "div", 12);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const day_r3 = ctx.$implicit;
+    const ctx_r3 = \u0275\u0275nextContext();
+    \u0275\u0275classProp("hover:bg-base-100", day_r3.id !== ctx_r3.active_date())("text-base-300!", !day_r3.is_month)("text-secondary-content", day_r3.id === ctx_r3.active_date())("text-base-content", day_r3.id !== ctx_r3.active_date())("bg-secondary", day_r3.id === ctx_r3.active_date())("font-normal", day_r3.id !== ctx_r3.active_date());
+    \u0275\u0275property("disabled", ctx_r3.disabled() || day_r3.id < ctx_r3.from() || day_r3.id > ctx_r3.to());
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind2(2, 15, day_r3.id, "d"), " ");
+    \u0275\u0275advance(2);
+    \u0275\u0275conditional(ctx_r3.today === day_r3.id ? 3 : -1);
+  }
+}
+var DateCalendarComponent = class _DateCalendarComponent {
+  _settings = inject(SettingsService);
+  from = input(
+    0,
+    ...ngDevMode ? [{ debugName: "from" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  to = input(
+    Date.now() * 10,
+    ...ngDevMode ? [{ debugName: "to" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  offset_weekday = input(
+    0,
+    ...ngDevMode ? [{ debugName: "offset_weekday" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  disabled = signal(
+    false,
+    ...ngDevMode ? [{ debugName: "disabled" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  today = startOfDay(Date.now()).valueOf();
+  date = signal(
+    Date.now(),
+    ...ngDevMode ? [{ debugName: "date" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  active_date = signal(
+    startOfDay(Date.now()).valueOf(),
+    ...ngDevMode ? [{ debugName: "active_date" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  offset = 0;
+  date_list = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "date_list" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Form control on change handler */
+  _onChange;
+  /** Form control on touch handler */
+  _onTouch;
+  ngOnInit() {
+    this.generateDates();
+  }
+  ngOnChanges(changes) {
+    if (changes.offset_weekday) {
+      this.generateDates();
+    }
+  }
+  setValue(new_value) {
+    if (this.disabled())
+      return;
+    if (new_value < this.from() || new_value >= this.to())
+      return;
+    const date = new Date(new_value);
+    this.date.set(set(this.date(), {
+      date: date.getDate(),
+      month: date.getMonth(),
+      year: date.getFullYear()
+    }).valueOf());
+    this.active_date.set(startOfDay(this.date()).valueOf());
+    if (this._onChange)
+      this._onChange(new_value);
+    this._onTouch?.(new_value);
+  }
+  writeValue(value) {
+    this.date.set(value);
+    this.active_date.set(startOfDay(value).valueOf());
+    this.offset = 0;
+    this.generateDates();
+  }
+  changeMonth(change) {
+    if (this.disabled())
+      return;
+    this.offset += change;
+    this.generateDates();
+  }
+  registerOnChange = (fn) => this._onChange = fn;
+  registerOnTouched = (fn) => this._onTouch = fn;
+  setDisabledState(disabled2) {
+    this.disabled.set(disabled2);
+  }
+  generateDates() {
+    const offset = this._settings.get("app.week_start") || this.offset_weekday();
+    const date = addMonths(this.date(), this.offset);
+    let start = startOfWeek(startOfMonth(date), {
+      weekStartsOn: offset
+    });
+    const now = startOfDay(Date.now());
+    const list = [];
+    while (list.length < 42) {
+      list.push({
+        id: start.valueOf(),
+        is_past: isBefore(start, now),
+        is_month: isSameMonth(start, date)
+      });
+      start = addDays(start, 1);
+    }
+    this.date_list.set(list);
+  }
+  static \u0275fac = function DateCalendarComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _DateCalendarComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DateCalendarComponent, selectors: [["date-calendar"]], inputs: { from: [1, "from"], to: [1, "to"], offset_weekday: [1, "offset_weekday"] }, features: [\u0275\u0275ProvidersFeature([
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => _DateCalendarComponent),
+      multi: true
+    }
+  ]), \u0275\u0275NgOnChangesFeature], decls: 19, vars: 10, consts: [[1, "p-2"], [1, "flex", "items-center", "justify-between"], [1, "pr-2", "pl-1.5", "font-medium"], [1, "flex", "items-center"], ["type", "button", "icon", "", "ripple", "", "name", "schedule-next-month", 3, "click", "disabled"], ["type", "button", "icon", "", "ripple", "", "name", "schedule-previous-month", 3, "click", "disabled"], [1, "border-base-200", "mb-2", "flex", "items-center", "border-b", "pb-2", "text-sm"], [1, "flex-1", "text-center", "opacity-60"], [1, "flex", "flex-wrap", "items-center", "justify-between"], ["type", "button", "icon", "", "name", "schedule-set-date", 1, "relative", "my-0.5", "h-9", "w-9", "min-w-[14%]", "overflow-visible", 3, "hover:bg-base-100", "text-base-300!", "text-secondary-content", "text-base-content", "bg-secondary", "font-normal", "disabled"], ["type", "button", "icon", "", "name", "schedule-set-date", 1, "relative", "my-0.5", "h-9", "w-9", "min-w-[14%]", "overflow-visible", 3, "click", "disabled"], ["ripple", "", 1, "border-secondary", "absolute", "-inset-[2px]", "overflow-hidden", "rounded-full", "border"], ["ripple", "", 1, "absolute", "inset-0", "overflow-hidden", "rounded-full"]], template: function DateCalendarComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "div", 0)(1, "div", 1)(2, "div", 2);
+      \u0275\u0275text(3);
+      \u0275\u0275pipe(4, "date");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(5, "div", 3)(6, "button", 4);
+      \u0275\u0275listener("click", function DateCalendarComponent_Template_button_click_6_listener() {
+        return ctx.changeMonth(-1);
+      });
+      \u0275\u0275elementStart(7, "icon");
+      \u0275\u0275text(8, "chevron_left");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(9, "button", 5);
+      \u0275\u0275listener("click", function DateCalendarComponent_Template_button_click_9_listener() {
+        return ctx.changeMonth(1);
+      });
+      \u0275\u0275elementStart(10, "icon");
+      \u0275\u0275text(11, "chevron_right");
+      \u0275\u0275elementEnd()()()();
+      \u0275\u0275elementStart(12, "div", 6);
+      \u0275\u0275repeaterCreate(13, DateCalendarComponent_For_14_Template, 3, 4, "div", 7, \u0275\u0275repeaterTrackByIdentity);
+      \u0275\u0275pipe(15, "slice");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(16, "div", 8);
+      \u0275\u0275repeaterCreate(17, DateCalendarComponent_For_18_Template, 5, 18, "button", 9, \u0275\u0275repeaterTrackByIdentity);
+      \u0275\u0275elementEnd()();
+    }
+    if (rf & 2) {
+      \u0275\u0275advance(3);
+      \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind2(4, 3, ctx.date_list()[6]?.id || ctx.date(), "LLLL yyyy"), " ");
+      \u0275\u0275advance(3);
+      \u0275\u0275property("disabled", ctx.disabled() || ctx.date_list()[0]?.id < ctx.from());
+      \u0275\u0275advance(3);
+      \u0275\u0275property("disabled", ctx.disabled() || ctx.date_list()[34]?.id > ctx.to());
+      \u0275\u0275advance(4);
+      \u0275\u0275repeater(\u0275\u0275pipeBind3(15, 6, ctx.date_list(), 0, 7));
+      \u0275\u0275advance(4);
+      \u0275\u0275repeater(ctx.date_list());
+    }
+  }, dependencies: [IconComponent, DatePipe, SlicePipe], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(DateCalendarComponent, [{
+    type: Component,
+    args: [{ selector: "date-calendar", template: `
+        <div class="p-2">
+            <div class="flex items-center justify-between">
+                <div class="pr-2 pl-1.5 font-medium">
+                    {{ date_list()[6]?.id || date() | date: 'LLLL yyyy' }}
+                </div>
+                <div class="flex items-center">
+                    <button
+                        type="button"
+                        icon
+                        ripple
+                        name="schedule-next-month"
+                        [disabled]="disabled() || date_list()[0]?.id < from()"
+                        (click)="changeMonth(-1)"
+                    >
+                        <icon>chevron_left</icon>
+                    </button>
+                    <button
+                        type="button"
+                        icon
+                        ripple
+                        name="schedule-previous-month"
+                        [disabled]="disabled() || date_list()[34]?.id > to()"
+                        (click)="changeMonth(1)"
+                    >
+                        <icon>chevron_right</icon>
+                    </button>
+                </div>
+            </div>
+            <div
+                class="border-base-200 mb-2 flex items-center border-b pb-2 text-sm"
+            >
+                @for (day of date_list() | slice: 0 : 7; track day) {
+                    <div class="flex-1 text-center opacity-60">
+                        {{ day?.id | date: 'EE' }}
+                    </div>
+                }
+            </div>
+            <div class="flex flex-wrap items-center justify-between">
+                @for (day of date_list(); track day) {
+                    <button
+                        type="button"
+                        icon
+                        name="schedule-set-date"
+                        class="relative my-0.5 h-9 w-9 min-w-[14%] overflow-visible"
+                        [class.hover:bg-base-100]="day.id !== active_date()"
+                        [class.text-base-300!]="!day.is_month"
+                        [class.text-secondary-content]="
+                            day.id === active_date()
+                        "
+                        [class.text-base-content]="day.id !== active_date()"
+                        [class.bg-secondary]="day.id === active_date()"
+                        [class.font-normal]="day.id !== active_date()"
+                        (click)="setValue(day.id)"
+                        [disabled]="
+                            disabled() || day.id < from() || day.id > to()
+                        "
+                    >
+                        {{ day.id | date: 'd' }}
+                        @if (today === day.id) {
+                            <div
+                                class="border-secondary absolute -inset-[2px] overflow-hidden rounded-full border"
+                                ripple
+                            ></div>
+                        }
+                        <div
+                            class="absolute inset-0 overflow-hidden rounded-full"
+                            ripple
+                        ></div>
+                    </button>
+                }
+            </div>
+        </div>
+    `, providers: [
+      {
+        provide: NG_VALUE_ACCESSOR,
+        useExisting: forwardRef(() => DateCalendarComponent),
+        multi: true
+      }
+    ], imports: [IconComponent, DatePipe, SlicePipe] }]
+  }], null, { from: [{ type: Input, args: [{ isSignal: true, alias: "from", required: false }] }], to: [{ type: Input, args: [{ isSignal: true, alias: "to", required: false }] }], offset_weekday: [{ type: Input, args: [{ isSignal: true, alias: "offset_weekday", required: false }] }] });
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DateCalendarComponent, { className: "DateCalendarComponent", filePath: "src/app/ui/custom-fields/date-calendar.component.ts", lineNumber: 119 });
+})();
+
+// src/app/ui/custom-fields/date-field.component.ts
+function DateFieldComponent_Conditional_3_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275text(0);
+    \u0275\u0275pipe(1, "date");
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext();
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind2(1, 1, ctx_r0.date(), "MMMM d, yyyy"), " ");
+  }
+}
+function DateFieldComponent_Conditional_4_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "span", 4);
+    \u0275\u0275text(1);
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(2, 1, "COMMON.DATE_EMPTY"));
+  }
+}
+function DateFieldComponent_ng_template_9_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r2 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 7)(1, "date-calendar", 8);
+    \u0275\u0275controlCreate();
+    \u0275\u0275listener("ngModelChange", function DateFieldComponent_ng_template_9_Template_date_calendar_ngModelChange_1_listener($event) {
+      \u0275\u0275restoreView(_r2);
+      const ctx_r0 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r0.setValue($event));
+    });
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275property("ngModel", ctx_r0.date() || ctx_r0.now)("from", ctx_r0.from)("to", ctx_r0.until);
+    \u0275\u0275control();
+  }
+}
+var DateFieldComponent = class _DateFieldComponent {
+  /** Whether form control is disabled */
+  disabled = model(
+    false,
+    ...ngDevMode ? [{ debugName: "disabled" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Currently selected date */
+  date = signal(
+    null,
+    ...ngDevMode ? [{ debugName: "date" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  now = Date.now();
+  /** Earliest date the user is allowed to pick */
+  from = startOfDay(this.now).valueOf();
+  /** Latest date the user is allowed to pick */
+  until = addYears(endOfDay(this.now), 1).valueOf();
+  /** Form control on change handler */
+  _onChange;
+  /** Form control on touch handler */
+  _onTouch;
+  _tooltip = viewChild(
+    CustomTooltipComponent,
+    ...ngDevMode ? [{ debugName: "_tooltip" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  ngOnInit() {
+    this.date.set(Date.now());
+  }
+  /**
+   * Update the form field value
+   * @param new_value New value to set on the form field
+   */
+  setValue(new_value) {
+    if (this.disabled())
+      return;
+    const old_date = new Date(this.date());
+    let new_date = set(new_value, {
+      hours: old_date.getHours(),
+      minutes: old_date.getMinutes()
+    }).valueOf();
+    if (new_date < this.from)
+      new_date = this.from;
+    this.date.set(new_date);
+    if (this._onChange) {
+      this._onChange(new_date);
+    }
+    this._onTouch?.(new_date);
+    this._tooltip()?.close();
+  }
+  /* istanbul ignore next */
+  /**
+   * Update local value when form control value is changed
+   * @param value The new value for the component
+   */
+  writeValue(value) {
+    this.date.set(value);
+    this._tooltip()?.close();
+  }
+  /* istanbul ignore next */
+  /**
+   * Registers a callback function that is called when the control's value changes in the UI.
+   * @param fn The callback function to register
+   */
+  registerOnChange(fn) {
+    this._onChange = fn;
+  }
+  /* istanbul ignore next */
+  /**
+   * Registers a callback function is called by the forms API on initialization to update the form model on blur.
+   * @param fn The callback function to register
+   */
+  registerOnTouched(fn) {
+    this._onTouch = fn;
+  }
+  setDisabledState(disabled2) {
+    this.disabled.set(disabled2);
+  }
+  static \u0275fac = function DateFieldComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _DateFieldComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DateFieldComponent, selectors: [["a-date-field"]], viewQuery: function DateFieldComponent_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuerySignal(ctx._tooltip, CustomTooltipComponent, 5);
+    }
+    if (rf & 2) {
+      \u0275\u0275queryAdvance();
+    }
+  }, inputs: { disabled: [1, "disabled"] }, outputs: { disabled: "disabledChange" }, features: [\u0275\u0275ProvidersFeature([
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => _DateFieldComponent),
+      multi: true
+    }
+  ])], decls: 11, vars: 5, consts: [["calendar_picker", ""], ["type", "button", "customTooltip", "", "yPosition", "top", "ripple", "", 1, "border-neutral", "flex", "h-12", "w-full", "items-center", "justify-between", "rounded-sm", "border", 3, "content", "disabled"], [1, "flex", "w-1/2", "flex-1", "flex-col", "truncate", "px-4", "py-2", "text-left", "leading-tight"], [1, "text-base", "font-normal"], [1, "opacity-30"], [1, "flex", "h-10", "w-10", "items-center", "justify-center", "text-2xl"], [1, "h-5"], [1, "bg-base-100", "relative", "w-[18rem]", "rounded-sm", "px-2", "py-4"], [3, "ngModelChange", "ngModel", "from", "to"]], template: function DateFieldComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "button", 1)(1, "div", 2)(2, "div", 3);
+      \u0275\u0275conditionalCreate(3, DateFieldComponent_Conditional_3_Template, 2, 4)(4, DateFieldComponent_Conditional_4_Template, 3, 3, "span", 4);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(5, "div", 5)(6, "icon");
+      \u0275\u0275text(7, "today");
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275element(8, "div", 6);
+      \u0275\u0275template(9, DateFieldComponent_ng_template_9_Template, 2, 3, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+    }
+    if (rf & 2) {
+      const calendar_picker_r3 = \u0275\u0275reference(10);
+      \u0275\u0275classProp("opacity-30", ctx.disabled());
+      \u0275\u0275property("content", calendar_picker_r3)("disabled", ctx.disabled());
+      \u0275\u0275advance(3);
+      \u0275\u0275conditional(ctx.date() ? 3 : 4);
+    }
+  }, dependencies: [
+    FormsModule,
+    NgControlStatus,
+    NgModel,
+    DateCalendarComponent,
+    IconComponent,
+    CustomTooltipComponent,
+    TranslatePipe,
+    DatePipe
+  ], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(DateFieldComponent, [{
+    type: Component,
+    args: [{ selector: "a-date-field", template: `
+        <button
+            type="button"
+            class="border-neutral flex h-12 w-full items-center justify-between rounded-sm border"
+            customTooltip
+            [content]="calendar_picker"
+            yPosition="top"
+            [disabled]="disabled()"
+            [class.opacity-30]="disabled()"
+            ripple
+        >
+            <div
+                class="flex w-1/2 flex-1 flex-col truncate px-4 py-2 text-left leading-tight"
+            >
+                <div class="text-base font-normal">
+                    @if (date()) {
+                        {{ date() | date: 'MMMM d, yyyy' }}
+                    } @else {
+                        <span class="opacity-30">{{
+                            'COMMON.DATE_EMPTY' | translate
+                        }}</span>
+                    }
+                </div>
+            </div>
+            <div class="flex h-10 w-10 items-center justify-center text-2xl">
+                <icon>today</icon>
+            </div>
+        </button>
+        <div class="h-5"></div>
+        <ng-template #calendar_picker>
+            <div class="bg-base-100 relative w-[18rem] rounded-sm px-2 py-4">
+                <date-calendar
+                    [ngModel]="date() || now"
+                    [from]="from"
+                    [to]="until"
+                    (ngModelChange)="setValue($event)"
+                />
+            </div>
+        </ng-template>
+    `, providers: [
+      {
+        provide: NG_VALUE_ACCESSOR,
+        useExisting: forwardRef(() => DateFieldComponent),
+        multi: true
+      }
+    ], imports: [
+      FormsModule,
+      DateCalendarComponent,
+      IconComponent,
+      CustomTooltipComponent,
+      TranslatePipe,
+      DatePipe
+    ] }]
+  }], null, { disabled: [{ type: Input, args: [{ isSignal: true, alias: "disabled", required: false }] }, { type: Output, args: ["disabledChange"] }], _tooltip: [{ type: ViewChild, args: [forwardRef(() => CustomTooltipComponent), { isSignal: true }] }] });
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DateFieldComponent, { className: "DateFieldComponent", filePath: "src/app/ui/custom-fields/date-field.component.ts", lineNumber: 80 });
+})();
+
+// src/app/ui/custom-fields/time-field.component.ts
+var _c03 = ["select"];
+var _c12 = ["*"];
+function TimeFieldComponent_Conditional_7_For_4_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 7);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const option_r3 = ctx.$implicit;
+    \u0275\u0275property("value", option_r3.id);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", option_r3.name, " ");
+  }
+}
+function TimeFieldComponent_Conditional_7_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r1 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "app-form-field")(1, "app-select", 6, 0);
+    \u0275\u0275listener("valueChange", function TimeFieldComponent_Conditional_7_Template_app_select_valueChange_1_listener($event) {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.setValue($event));
+    })("openedChange", function TimeFieldComponent_Conditional_7_Template_app_select_openedChange_1_listener($event) {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(!$event && ctx_r1.show_select.set(false));
+    });
+    \u0275\u0275repeaterCreate(3, TimeFieldComponent_Conditional_7_For_4_Template, 2, 2, "app-option", 7, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275property("value", ctx_r1.time())("disabled", ctx_r1.disabled());
+    \u0275\u0275advance(2);
+    \u0275\u0275repeater(ctx_r1.time_options);
+  }
+}
+var TimeFieldComponent = class _TimeFieldComponent extends AsyncHandler {
+  /** Time step between each allowed time option */
+  step = input(
+    15,
+    ...ngDevMode ? [{ debugName: "step" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Whether form field is disabled */
+  disabled = model(
+    false,
+    ...ngDevMode ? [{ debugName: "disabled" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Whether past times are allowed */
+  no_past_times = input(
+    true,
+    ...ngDevMode ? [{ debugName: "no_past_times" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** String representing the currently set time */
+  date = (/* @__PURE__ */ new Date()).valueOf();
+  /** String representing the currently set time */
+  time = signal(
+    format(/* @__PURE__ */ new Date(), "HH:mm"),
+    ...ngDevMode ? [{ debugName: "time" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Available time blocks for the selected date */
+  _time_options;
+  /** Whether select field should be shown */
+  show_select = signal(
+    null,
+    ...ngDevMode ? [{ debugName: "show_select" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Form control on change handler */
+  _onChange;
+  /** Form control on touch handler */
+  _onTouch;
+  /** Select field for selecting the time */
+  select_field = viewChild(
+    "select",
+    ...ngDevMode ? [{ debugName: "select_field" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  ngOnInit() {
+    this.show_select.set(true);
+    this._time_options = this.generateAvailableTimes(this.date, !this.no_past_times(), this.step());
+    this.timeout("hide", () => this.show_select.set(false));
+  }
+  ngOnChanges(changes) {
+    if (changes.no_past_times || changes.step) {
+      this._time_options = this.generateAvailableTimes(this.date, !this.no_past_times(), this.step());
+    }
+  }
+  /** Available time blocks for the selected date */
+  get time_options() {
+    const time = (this.time() || "00:00").split(":");
+    const date = set(this.date, { hours: +time[0], minutes: +time[1] });
+    if (date.getMinutes() % 15 !== 0 && !this._time_options.find((time2) => time2.id === format(date, "HH:mm"))) {
+      this._time_options.push({
+        name: `${format(date, "h:mm a")}`,
+        id: format(date, "HH:mm")
+      });
+      this._time_options.sort((a, b) => `${a.id}`.localeCompare(`${b.id}`));
+    }
+    return this._time_options;
+  }
+  /**
+   * Update the form field value
+   * @param new_value New value to set on the form field
+   */
+  setValue(new_value) {
+    if (this.disabled())
+      return;
+    this.time.set(new_value);
+    if (this._onChange) {
+      const time = (this.time() || "00:00").split(":");
+      const date = startOfMinute(set(this.date, { hours: +time[0], minutes: +time[1] }));
+      this._onChange(date.valueOf());
+      this._onTouch?.(date.valueOf());
+    }
+  }
+  /**
+   * Update local value when form control value is changed
+   * @param value The new value for the component
+   */
+  writeValue(value) {
+    this.date = value || this.date;
+    let date = startOfMinute(this.date);
+    date = roundToNearestMinutes(date, { nearestTo: 5 });
+    this.time.set(format(date, "HH:mm"));
+    this._time_options = this.generateAvailableTimes(this.date, !this.no_past_times(), this.step());
+  }
+  setDisabledState(disabled2) {
+    this.disabled.set(disabled2);
+  }
+  /**
+   * Registers a callback function that is called when the control's value changes in the UI.
+   * @param fn The callback function to register
+   */
+  registerOnChange(fn) {
+    this._onChange = fn;
+  }
+  /**
+   * Registers a callback function is called by the forms API on initialization to update the form model on blur.
+   * @param fn The callback function to register
+   */
+  registerOnTouched(fn) {
+    this._onTouch = fn;
+  }
+  /**
+   * Show select field for time options
+   */
+  showSelect() {
+    if (this.disabled())
+      return;
+    this.show_select.set(true);
+    this.timeout("on_shown", () => {
+      const select_field = this.select_field();
+      if (select_field) {
+        select_field.focus();
+        select_field.open();
+      }
+    });
+  }
+  /**
+   * Generate a list of time options for the given date
+   * @param datestamp Date to generate options for
+   * @param show_past Whether past times should be options
+   */
+  generateAvailableTimes(datestamp, show_past, step = 15) {
+    const now = /* @__PURE__ */ new Date();
+    let date = new Date(datestamp);
+    const blocks = [];
+    if (show_past || !isSameDay(date, now) && isAfter(date, now)) {
+      date = startOfDay(date);
+    } else if (isAfter(date, now)) {
+      date = now;
+    }
+    date = roundToNearestMinutes(date, {
+      nearestTo: step
+    });
+    const end = endOfDay(date);
+    while (isAfter(end, date)) {
+      blocks.push({
+        name: `${format(date, "h:mm a")}`,
+        id: format(date, "HH:mm")
+      });
+      date = addMinutes(date, step);
+    }
+    return blocks;
+  }
+  static \u0275fac = /* @__PURE__ */ (() => {
+    let \u0275TimeFieldComponent_BaseFactory;
+    return function TimeFieldComponent_Factory(__ngFactoryType__) {
+      return (\u0275TimeFieldComponent_BaseFactory || (\u0275TimeFieldComponent_BaseFactory = \u0275\u0275getInheritedFactory(_TimeFieldComponent)))(__ngFactoryType__ || _TimeFieldComponent);
+    };
+  })();
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TimeFieldComponent, selectors: [["a-time-field"]], viewQuery: function TimeFieldComponent_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuerySignal(ctx.select_field, _c03, 5);
+    }
+    if (rf & 2) {
+      \u0275\u0275queryAdvance();
+    }
+  }, inputs: { step: [1, "step"], disabled: [1, "disabled"], no_past_times: [1, "no_past_times"] }, outputs: { disabled: "disabledChange" }, features: [\u0275\u0275ProvidersFeature([
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => _TimeFieldComponent),
+      multi: true
+    }
+  ]), \u0275\u0275InheritDefinitionFeature, \u0275\u0275NgOnChangesFeature], ngContentSelectors: _c12, decls: 8, vars: 5, consts: [["select", ""], [3, "keydown.enter"], ["type", "time", 3, "ngModelChange", "disabled", "ngModel"], ["type", "button", "btn", "", "icon", "", "suffix", "", 1, "relative", "top-1", "-right-1", 3, "click"], [1, "text-base-content", "text-opacity-50", "text-2xl"], ["error", ""], [3, "valueChange", "openedChange", "value", "disabled"], [3, "value"]], template: function TimeFieldComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef();
+      \u0275\u0275elementStart(0, "app-form-field", 1);
+      \u0275\u0275listener("keydown.enter", function TimeFieldComponent_Template_app_form_field_keydown_enter_0_listener() {
+        return ctx.showSelect();
+      });
+      \u0275\u0275elementStart(1, "input", 2);
+      \u0275\u0275controlCreate();
+      \u0275\u0275listener("ngModelChange", function TimeFieldComponent_Template_input_ngModelChange_1_listener($event) {
+        return ctx.setValue($event);
+      });
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(2, "button", 3);
+      \u0275\u0275listener("click", function TimeFieldComponent_Template_button_click_2_listener() {
+        return ctx.showSelect();
+      });
+      \u0275\u0275elementStart(3, "icon", 4);
+      \u0275\u0275text(4, " arrow_drop_down ");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(5, "div", 5);
+      \u0275\u0275projection(6);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275conditionalCreate(7, TimeFieldComponent_Conditional_7_Template, 5, 2, "app-form-field");
+    }
+    if (rf & 2) {
+      \u0275\u0275styleProp("display", ctx.show_select() ? "none" : "");
+      \u0275\u0275advance();
+      \u0275\u0275property("disabled", ctx.disabled())("ngModel", ctx.time());
+      \u0275\u0275control();
+      \u0275\u0275advance(6);
+      \u0275\u0275conditional(ctx.show_select() ? 7 : -1);
+    }
+  }, dependencies: [
+    OptionComponent,
+    SelectComponent,
+    FormFieldComponent,
+    IconComponent,
+    FormsModule,
+    DefaultValueAccessor,
+    NgControlStatus,
+    NgModel
+  ], styles: ["\napp-form-field[_ngcontent-%COMP%] {\n  width: 100%;\n}\n/*# sourceMappingURL=time-field.component.css.map */"] });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TimeFieldComponent, [{
+    type: Component,
+    args: [{ selector: "a-time-field", template: `
+        <app-form-field
+            [style.display]="show_select() ? 'none' : ''"
+            (keydown.enter)="showSelect()"
+        >
+            <input
+                type="time"
+                [disabled]="disabled()"
+                [ngModel]="time()"
+                (ngModelChange)="setValue($event)"
+            />
+            <button
+                type="button"
+                btn
+                icon
+                suffix
+                class="relative top-1 -right-1"
+                (click)="showSelect()"
+            >
+                <icon class="text-base-content text-opacity-50 text-2xl">
+                    arrow_drop_down
+                </icon>
+            </button>
+            <div error><ng-content /></div>
+        </app-form-field>
+        @if (show_select()) {
+            <app-form-field>
+                <app-select
+                    #select
+                    [value]="time()"
+                    [disabled]="disabled()"
+                    (valueChange)="setValue($event)"
+                    (openedChange)="!$event && show_select.set(false)"
+                >
+                    @for (option of time_options; track option) {
+                        <app-option [value]="option.id">
+                            {{ option.name }}
+                        </app-option>
+                    }
+                </app-select>
+            </app-form-field>
+        }
+    `, providers: [
+      {
+        provide: NG_VALUE_ACCESSOR,
+        useExisting: forwardRef(() => TimeFieldComponent),
+        multi: true
+      }
+    ], imports: [
+      OptionComponent,
+      SelectComponent,
+      FormFieldComponent,
+      IconComponent,
+      FormsModule
+    ], styles: ["/* angular:styles/component:css;321800991fc461eb;/home/runner/work/backoffice/backoffice/src/app/ui/custom-fields/time-field.component.ts */\napp-form-field {\n  width: 100%;\n}\n/*# sourceMappingURL=time-field.component.css.map */\n"] }]
+  }], null, { step: [{ type: Input, args: [{ isSignal: true, alias: "step", required: false }] }], disabled: [{ type: Input, args: [{ isSignal: true, alias: "disabled", required: false }] }, { type: Output, args: ["disabledChange"] }], no_past_times: [{ type: Input, args: [{ isSignal: true, alias: "no_past_times", required: false }] }], select_field: [{ type: ViewChild, args: ["select", { isSignal: true }] }] });
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TimeFieldComponent, { className: "TimeFieldComponent", filePath: "src/app/ui/custom-fields/time-field.component.ts", lineNumber: 103 });
+})();
+
+// src/app/ui/forms/trigger-condition-form/time-form.component.ts
+var _c04 = () => ({ standalone: true });
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_4_For_13_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 10);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const tz_r5 = ctx.$implicit;
+    \u0275\u0275property("value", tz_r5);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(tz_r5);
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_4_Conditional_14_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 11);
+    \u0275\u0275text(1);
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    \u0275\u0275property("disabled", true);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(2, 2, "COMMON.TIMEZONE_EMPTY"));
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_4_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 5)(1, "label", 7);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "icon", 8);
+    \u0275\u0275text(6, "search");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(7, "input", 9, 0);
+    \u0275\u0275pipe(9, "translate");
+    \u0275\u0275controlCreate();
+    \u0275\u0275listener("input", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_4_Template_input_input_7_listener() {
+      \u0275\u0275restoreView(_r3);
+      const timezone_input_r4 = \u0275\u0275reference(8);
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      return \u0275\u0275resetView(ctx_r1.updateTimezoneList(timezone_input_r4.value));
+    });
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(10, "app-autocomplete", null, 1);
+    \u0275\u0275repeaterCreate(12, TriggerConditionTimeFormComponent_Conditional_0_Conditional_4_For_13_Template, 2, 2, "app-option", 10, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275conditionalCreate(14, TriggerConditionTimeFormComponent_Conditional_0_Conditional_4_Conditional_14_Template, 3, 4, "app-option", 11);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const auto_r6 = \u0275\u0275reference(11);
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(3, 5, "COMMON.TIMEZONE"));
+    \u0275\u0275advance(5);
+    \u0275\u0275property("formField", ctx_r1.form().timezone)("placeholder", \u0275\u0275pipeBind1(9, 7, "COMMON.TIMEZONE"))("appAutocomplete", auto_r6);
+    \u0275\u0275control();
+    \u0275\u0275advance(5);
+    \u0275\u0275repeater(ctx_r1.timezones());
+    \u0275\u0275advance(2);
+    \u0275\u0275conditional(!ctx_r1.timezones().length ? 14 : -1);
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_5_Conditional_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 5)(1, "label", 12);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "a-date-field", 13);
+    \u0275\u0275controlCreate();
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1("", \u0275\u0275pipeBind1(3, 2, "TRIGGERS.TIME_FIELD_DATE"), " ");
+    \u0275\u0275advance(2);
+    \u0275\u0275property("formField", ctx_r1.form().time);
+    \u0275\u0275control();
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_5_Conditional_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 5)(1, "label", 12);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "a-time-field", 13);
+    \u0275\u0275controlCreate();
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1("", \u0275\u0275pipeBind1(3, 2, "TRIGGERS.TIME_FIELD_TIME"), " ");
+    \u0275\u0275advance(2);
+    \u0275\u0275property("formField", ctx_r1.form().time);
+    \u0275\u0275control();
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_5_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 6);
+    \u0275\u0275conditionalCreate(1, TriggerConditionTimeFormComponent_Conditional_0_Conditional_5_Conditional_1_Template, 5, 4, "div", 5);
+    \u0275\u0275conditionalCreate(2, TriggerConditionTimeFormComponent_Conditional_0_Conditional_5_Conditional_2_Template, 5, 4, "div", 5);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.form().time ? 1 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.form().time ? 2 : -1);
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_For_7_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 10);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const period_r8 = ctx.$implicit;
+    \u0275\u0275property("value", period_r8.id);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", period_r8.name, " ");
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_1_For_7_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 10);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const month_r10 = ctx.$implicit;
+    const \u0275$index_85_r11 = ctx.$index;
+    \u0275\u0275property("value", \u0275$index_85_r11 + 1);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", month_r10, " ");
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_1_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r9 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 16)(1, "label", 18);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 19);
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_1_Template_app_select_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r9);
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      \u0275\u0275twoWayBindingSet(ctx_r1.cron_month, $event) || (ctx_r1.cron_month = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_1_Template_app_select_ngModelChange_5_listener() {
+      \u0275\u0275restoreView(_r9);
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      return \u0275\u0275resetView(ctx_r1.updateCronString());
+    });
+    \u0275\u0275repeaterCreate(6, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_1_For_7_Template, 2, 2, "app-option", 10, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(4);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1("", \u0275\u0275pipeBind1(3, 3, "TRIGGERS.TIME_MONTH_OF_YEAR"), " ");
+    \u0275\u0275advance(3);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.cron_month);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(5, _c04));
+    \u0275\u0275control();
+    \u0275\u0275advance();
+    \u0275\u0275repeater(ctx_r1.months_of_year());
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_2_For_7_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 10);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const period_r13 = ctx.$implicit;
+    \u0275\u0275property("value", period_r13.id);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", period_r13.name, " ");
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_2_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r12 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 16)(1, "label", 20);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 21);
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_2_Template_app_select_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r12);
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      \u0275\u0275twoWayBindingSet(ctx_r1.cron_date, $event) || (ctx_r1.cron_date = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_2_Template_app_select_ngModelChange_5_listener() {
+      \u0275\u0275restoreView(_r12);
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      return \u0275\u0275resetView(ctx_r1.updateCronString());
+    });
+    \u0275\u0275repeaterCreate(6, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_2_For_7_Template, 2, 2, "app-option", 10, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(4);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1("", \u0275\u0275pipeBind1(3, 3, "TRIGGERS.TIME_DAY_OF_MONTH"), " ");
+    \u0275\u0275advance(3);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.cron_date);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(5, _c04));
+    \u0275\u0275control();
+    \u0275\u0275advance();
+    \u0275\u0275repeater(ctx_r1.days_of_month);
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_3_For_7_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 10);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const weekday_r15 = ctx.$implicit;
+    const \u0275$index_115_r16 = ctx.$index;
+    \u0275\u0275property("value", \u0275$index_115_r16);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", weekday_r15, " ");
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_3_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r14 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 5)(1, "label", 22);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 23);
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_3_Template_app_select_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r14);
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      \u0275\u0275twoWayBindingSet(ctx_r1.cron_day, $event) || (ctx_r1.cron_day = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_3_Template_app_select_ngModelChange_5_listener() {
+      \u0275\u0275restoreView(_r14);
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      return \u0275\u0275resetView(ctx_r1.updateCronString());
+    });
+    \u0275\u0275repeaterCreate(6, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_3_For_7_Template, 2, 2, "app-option", 10, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(4);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(3, 3, "TRIGGERS.TIME_DAY_OF_WEEK"), " ");
+    \u0275\u0275advance(3);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.cron_day);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(5, _c04));
+    \u0275\u0275control();
+    \u0275\u0275advance();
+    \u0275\u0275repeater(ctx_r1.days_of_week());
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_5_For_11_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 10);
+    \u0275\u0275text(1);
+    \u0275\u0275elementStart(2, "span", 26);
+    \u0275\u0275text(3, "00");
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const hour_r18 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(5);
+    \u0275\u0275property("value", +hour_r18);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", ctx_r1.pad(hour_r18), ":");
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_5_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r17 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 16)(1, "label", 24);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 25);
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_5_Template_app_select_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r17);
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      \u0275\u0275twoWayBindingSet(ctx_r1.cron_hour, $event) || (ctx_r1.cron_hour = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_5_Template_app_select_ngModelChange_5_listener() {
+      \u0275\u0275restoreView(_r17);
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      return \u0275\u0275resetView(ctx_r1.updateCronString());
+    });
+    \u0275\u0275elementStart(6, "app-select-trigger");
+    \u0275\u0275text(7);
+    \u0275\u0275elementStart(8, "span", 26);
+    \u0275\u0275text(9, "00");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275repeaterCreate(10, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_5_For_11_Template, 4, 2, "app-option", 10, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(4);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(3, 4, "TRIGGERS.TIME_HOUR_OF_DAY"));
+    \u0275\u0275advance(3);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.cron_hour);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(6, _c04));
+    \u0275\u0275control();
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", ctx_r1.pad(ctx_r1.cron_hour()), ":");
+    \u0275\u0275advance(3);
+    \u0275\u0275repeater(ctx_r1.hours_in_day);
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_6_For_11_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 10)(1, "span", 26);
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const minute_r20 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(5);
+    \u0275\u0275property("value", +minute_r20);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx_r1.pad(ctx_r1.cron_hour()));
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(":", ctx_r1.pad(minute_r20), " ");
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_6_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r19 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 16)(1, "label", 27);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 28);
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_6_Template_app_select_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r19);
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      \u0275\u0275twoWayBindingSet(ctx_r1.cron_minute, $event) || (ctx_r1.cron_minute = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_6_Template_app_select_ngModelChange_5_listener() {
+      \u0275\u0275restoreView(_r19);
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      return \u0275\u0275resetView(ctx_r1.updateCronString());
+    });
+    \u0275\u0275elementStart(6, "app-select-trigger")(7, "span", 26);
+    \u0275\u0275text(8);
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(9);
+    \u0275\u0275elementEnd();
+    \u0275\u0275repeaterCreate(10, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_6_For_11_Template, 4, 3, "app-option", 10, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(4);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(3, 5, "TRIGGERS.TIME_MINUTE_OF_HOUR"));
+    \u0275\u0275advance(3);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.cron_minute);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(7, _c04));
+    \u0275\u0275control();
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate(ctx_r1.pad(ctx_r1.cron_hour()));
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(":", ctx_r1.pad(ctx_r1.cron_minute()), " ");
+    \u0275\u0275advance();
+    \u0275\u0275repeater(ctx_r1.minutes_in_hour);
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 6);
+    \u0275\u0275conditionalCreate(1, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_1_Template, 8, 6, "div", 16);
+    \u0275\u0275conditionalCreate(2, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_2_Template, 8, 6, "div", 16);
+    \u0275\u0275elementEnd();
+    \u0275\u0275conditionalCreate(3, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_3_Template, 8, 6, "div", 5);
+    \u0275\u0275elementStart(4, "div", 17);
+    \u0275\u0275conditionalCreate(5, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_5_Template, 12, 7, "div", 16);
+    \u0275\u0275conditionalCreate(6, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Conditional_6_Template, 12, 8, "div", 16);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.cron_period() === "year" ? 1 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.cron_period() === "month" || ctx_r1.cron_period() === "year" ? 2 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.cron_period() === "week" ? 3 : -1);
+    \u0275\u0275advance(2);
+    \u0275\u0275conditional(ctx_r1.cron_period() !== "minute" && ctx_r1.cron_period() !== "hour" ? 5 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.cron_period() !== "minute" ? 6 : -1);
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_9_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r21 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "cron-input-field", 29);
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_9_Template_cron_input_field_ngModelChange_0_listener($event) {
+      \u0275\u0275restoreView(_r21);
+      const ctx_r1 = \u0275\u0275nextContext(3);
+      \u0275\u0275twoWayBindingSet(ctx_r1.cron_string, $event) || (ctx_r1.cron_string = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_9_Template_cron_input_field_ngModelChange_0_listener($event) {
+      \u0275\u0275restoreView(_r21);
+      const ctx_r1 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r1.saveCRON($event));
+    });
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.cron_string);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(2, _c04));
+    \u0275\u0275control();
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r7 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 5)(1, "label", 12);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 14);
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Template_app_select_ngModelChange_5_listener($event) {
+      \u0275\u0275restoreView(_r7);
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      \u0275\u0275twoWayBindingSet(ctx_r1.cron_period, $event) || (ctx_r1.cron_period = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Template_app_select_ngModelChange_5_listener() {
+      \u0275\u0275restoreView(_r7);
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      return \u0275\u0275resetView(ctx_r1.updateCronString());
+    });
+    \u0275\u0275repeaterCreate(6, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_For_7_Template, 2, 2, "app-option", 10, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+    \u0275\u0275conditionalCreate(8, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_8_Template, 7, 5)(9, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Conditional_9_Template, 1, 3, "cron-input-field", 15);
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1("", \u0275\u0275pipeBind1(3, 4, "TRIGGERS.TIME_REPEAT"), ": ");
+    \u0275\u0275advance(3);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.cron_period);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(6, _c04));
+    \u0275\u0275control();
+    \u0275\u0275advance();
+    \u0275\u0275repeater(ctx_r1.repeat_period());
+    \u0275\u0275advance(2);
+    \u0275\u0275conditional(ctx_r1.cron_period() !== "custom" ? 8 : 9);
+  }
+}
+function TriggerConditionTimeFormComponent_Conditional_0_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r1 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 2)(1, "div", 3)(2, "settings-toggle", 4);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275controlCreate();
+    \u0275\u0275twoWayListener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Template_settings_toggle_ngModelChange_2_listener($event) {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r1 = \u0275\u0275nextContext();
+      \u0275\u0275twoWayBindingSet(ctx_r1.is_cron, $event) || (ctx_r1.is_cron = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275listener("ngModelChange", function TriggerConditionTimeFormComponent_Conditional_0_Template_settings_toggle_ngModelChange_2_listener($event) {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.toggleCRON($event));
+    });
+    \u0275\u0275elementEnd()();
+    \u0275\u0275conditionalCreate(4, TriggerConditionTimeFormComponent_Conditional_0_Conditional_4_Template, 15, 9, "div", 5);
+    \u0275\u0275conditionalCreate(5, TriggerConditionTimeFormComponent_Conditional_0_Conditional_5_Template, 3, 2, "div", 6)(6, TriggerConditionTimeFormComponent_Conditional_0_Conditional_6_Template, 10, 7);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance(2);
+    \u0275\u0275property("label", \u0275\u0275pipeBind1(3, 5, "TRIGGERS.TIME_SCHEDULE"));
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.is_cron);
+    \u0275\u0275property("ngModelOptions", \u0275\u0275pureFunction0(7, _c04));
+    \u0275\u0275control();
+    \u0275\u0275advance(2);
+    \u0275\u0275conditional(ctx_r1.is_cron() ? 4 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(!ctx_r1.is_cron() ? 5 : 6);
+  }
+}
+var TIMEZONE_OPTION_LIMIT = 50;
+var TriggerConditionTimeFormComponent = class _TriggerConditionTimeFormComponent {
+  /** Signal form fields used for editing the trigger condition */
+  form = input(
+    void 0,
+    ...ngDevMode ? [{ debugName: "form" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  formModel = input(
+    void 0,
+    ...ngDevMode ? [{ debugName: "formModel" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** List of available periods for scheduled repetition */
+  repeat_period = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "repeat_period" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Whether condition is a cron(recurring) job */
+  is_cron = signal(
+    null,
+    ...ngDevMode ? [{ debugName: "is_cron" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** The period which the user selects the recurrence */
+  cron_period = signal(
+    "minute",
+    ...ngDevMode ? [{ debugName: "cron_period" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  minutes_in_hour = new Array(12).fill(0).map((_, idx) => idx * 5);
+  hours_in_day = new Array(24).fill(0).map((_, idx) => idx);
+  days_of_week = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "days_of_week" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  days_of_month = Array(31).fill(0).map((_, index) => ({
+    id: index + 1,
+    name: `${numberToPosition(index + 1)}`
+  }));
+  months_of_year = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "months_of_year" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  cron_string = signal(
+    "",
+    ...ngDevMode ? [{ debugName: "cron_string" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Minute of the hour to recurr on */
+  cron_minute = signal(
+    0,
+    ...ngDevMode ? [{ debugName: "cron_minute" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Hour of the day to recurr on */
+  cron_hour = signal(
+    0,
+    ...ngDevMode ? [{ debugName: "cron_hour" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Hour of the day to recurr on */
+  cron_hour_period = "AM";
+  /** Hour of the day to recurr on */
+  cron_day = signal(
+    0,
+    ...ngDevMode ? [{ debugName: "cron_day" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Hour of the day to recurr on */
+  cron_date = signal(
+    1,
+    ...ngDevMode ? [{ debugName: "cron_date" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Hour of the day to recurr on */
+  cron_month = signal(
+    1,
+    ...ngDevMode ? [{ debugName: "cron_month" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  timezones = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "timezones" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  pad(str, digits = 2) {
+    return `${str}`.padStart(digits, "0");
+  }
+  ngOnInit() {
+    this.repeat_period.set([
+      { id: "minute", name: i18n("COMMON.MINUTE") },
+      { id: "hour", name: i18n("COMMON.HOUR") },
+      { id: "day", name: i18n("COMMON.DAY") },
+      { id: "week", name: i18n("COMMON.WEEK") },
+      { id: "month", name: i18n("COMMON.MONTH") },
+      { id: "year", name: i18n("COMMON.YEAR") },
+      { id: "custom", name: i18n("COMMON.CRON_CUSTOM") }
+    ]);
+    this.days_of_week.set(new Array(7).fill(0).map((_, index) => i18n(`COMMON.${format(setDay(Date.now(), index), "EEEE").toUpperCase()}`)));
+    this.months_of_year.set(Array(12).fill(0).map((_, index) => i18n(`COMMON.${format(setMonth(Date.now(), index), "MMMM").toUpperCase()}`)));
+  }
+  ngOnChanges(changes) {
+    const form2 = this.form();
+    if (changes.form && form2) {
+      this.is_cron.set(this.formModel()().time_type === "cron");
+      if (this.is_cron()) {
+        this.loadCronTab(this.formModel()().cron);
+      }
+      this.updateTimezoneList(this.formModel()().timezone);
+    }
+  }
+  updateTimezoneList(tz) {
+    const tz_lower = (tz || "").toLowerCase();
+    this.timezones.set(TIMEZONES_IANA.filter((_) => _.toLowerCase().includes(tz_lower)).slice(0, TIMEZONE_OPTION_LIMIT));
+  }
+  toggleCRON(is_cron) {
+    this.formModel().update((model2) => __spreadProps(__spreadValues({}, model2), {
+      cron: "",
+      time_type: is_cron ? dr.CRON : dr.AT
+    }));
+    this.updateCronString();
+  }
+  /** Write a custom cron string to the form. Sync so Save never sees a stale value. */
+  saveCRON(cron_str) {
+    this.formModel().update((model2) => __spreadProps(__spreadValues({}, model2), { cron: cron_str }));
+  }
+  /**
+   * Update the output CRON string for the selected periods
+   */
+  updateCronString() {
+    const form2 = this.form();
+    if (form2 && form2.cron) {
+      const cron_str = buildCronString(this.cron_period(), {
+        minute: this.cron_minute(),
+        hour: this.cron_hour(),
+        day_of_week: this.cron_day(),
+        day_of_month: this.cron_date(),
+        month: this.cron_month()
+      });
+      if (cron_str === null) {
+        this.cron_string.set(this.formModel()().cron);
+        return;
+      }
+      this.formModel().update((model2) => __spreadProps(__spreadValues({}, model2), { cron: cron_str }));
+    }
+  }
+  loadCronTab(cron_tab) {
+    this.cron_string.set(cron_tab);
+    const { period, parts } = parseCronString(cron_tab);
+    this.cron_period.set(period);
+    if (period === "custom")
+      return;
+    this.cron_minute.set(parts.minute);
+    this.cron_hour.set(parts.hour);
+    this.cron_day.set(parts.day_of_week);
+    this.cron_date.set(parts.day_of_month);
+    this.cron_month.set(parts.month);
+    this.cron_hour_period = this.cron_hour() > 12 ? "PM" : "AM";
+  }
+  static \u0275fac = function TriggerConditionTimeFormComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _TriggerConditionTimeFormComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TriggerConditionTimeFormComponent, selectors: [["trigger-condition-time-form"]], inputs: { form: [1, "form"], formModel: [1, "formModel"] }, features: [\u0275\u0275NgOnChangesFeature], decls: 1, vars: 1, consts: [["timezone_input", ""], ["auto", "appAutocomplete"], [1, "trigger-condition", "form", "time"], [1, "field", "mb-4"], [3, "ngModelChange", "label", "ngModel", "ngModelOptions"], [1, "field"], [1, "flex", "space-x-4"], ["for", "timezone"], ["prefix", "", 1, "text-2xl"], ["id", "timezone", 3, "input", "formField", "placeholder", "appAutocomplete"], [3, "value"], [3, "disabled"], ["for", "type"], [3, "formField"], ["name", "type", 3, "ngModelChange", "ngModel", "ngModelOptions"], [3, "ngModel", "ngModelOptions"], [1, "field", "w-2/5", "flex-1"], [1, "flex", "items-center", "space-x-4"], ["for", "month"], ["name", "month", 3, "ngModelChange", "ngModel", "ngModelOptions"], ["for", "day"], ["name", "day", 3, "ngModelChange", "ngModel", "ngModelOptions"], ["for", "weekday"], ["name", "weekday", 3, "ngModelChange", "ngModel", "ngModelOptions"], ["for", "hour"], ["name", "hour", 3, "ngModelChange", "ngModel", "ngModelOptions"], [1, "opacity-30"], ["for", "minute"], ["name", "minute", 3, "ngModelChange", "ngModel", "ngModelOptions"], [3, "ngModelChange", "ngModel", "ngModelOptions"]], template: function TriggerConditionTimeFormComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275conditionalCreate(0, TriggerConditionTimeFormComponent_Conditional_0_Template, 7, 8, "div", 2);
+    }
+    if (rf & 2) {
+      \u0275\u0275conditional(ctx.form() ? 0 : -1);
+    }
+  }, dependencies: [
+    SelectTriggerDirective,
+    OptionComponent,
+    SelectComponent,
+    FormFieldComponent,
+    FormsModule,
+    NgControlStatus,
+    NgModel,
+    CronInputFieldComponent,
+    DateFieldComponent,
+    TimeFieldComponent,
+    AutocompleteComponent,
+    AutocompleteTriggerDirective,
+    SettingsToggleComponent,
+    FormField,
+    IconComponent,
+    TranslatePipe
+  ], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TriggerConditionTimeFormComponent, [{
+    type: Component,
+    args: [{ selector: "trigger-condition-time-form", template: `
+        @if (form()) {
+            <div class="trigger-condition form time">
+                <div class="field mb-4">
+                    <settings-toggle
+                        [label]="'TRIGGERS.TIME_SCHEDULE' | translate"
+                        [(ngModel)]="is_cron"
+                        (ngModelChange)="toggleCRON($event)"
+                        [ngModelOptions]="{ standalone: true }"
+                    />
+                </div>
+                @if (is_cron()) {
+                    <div class="field">
+                        <label for="timezone">{{
+                            'COMMON.TIMEZONE' | translate
+                        }}</label>
+                        <app-form-field>
+                            <icon prefix class="text-2xl">search</icon>
+                            <input
+                                #timezone_input
+                                id="timezone"
+                                [formField]="form().timezone"
+                                (input)="
+                                    updateTimezoneList(timezone_input.value)
+                                "
+                                [placeholder]="'COMMON.TIMEZONE' | translate"
+                                [appAutocomplete]="auto"
+                            />
+                        </app-form-field>
+                        <app-autocomplete #auto="appAutocomplete">
+                            @for (tz of timezones(); track tz) {
+                                <app-option [value]="tz">{{ tz }}</app-option>
+                            }
+                            @if (!timezones().length) {
+                                <app-option [disabled]="true">{{
+                                    'COMMON.TIMEZONE_EMPTY' | translate
+                                }}</app-option>
+                            }
+                        </app-autocomplete>
+                    </div>
+                }
+                @if (!is_cron()) {
+                    <div class="flex space-x-4">
+                        @if (form().time) {
+                            <div class="field">
+                                <label for="type"
+                                    >{{
+                                        'TRIGGERS.TIME_FIELD_DATE' | translate
+                                    }}
+                                </label>
+                                <a-date-field [formField]="form().time" />
+                            </div>
+                        }
+                        @if (form().time) {
+                            <div class="field">
+                                <label for="type"
+                                    >{{
+                                        'TRIGGERS.TIME_FIELD_TIME' | translate
+                                    }}
+                                </label>
+                                <a-time-field [formField]="form().time" />
+                            </div>
+                        }
+                    </div>
+                } @else {
+                    <div class="field">
+                        <label for="type"
+                            >{{ 'TRIGGERS.TIME_REPEAT' | translate }}:
+                        </label>
+                        <app-form-field>
+                            <app-select
+                                name="type"
+                                [(ngModel)]="cron_period"
+                                (ngModelChange)="updateCronString()"
+                                [ngModelOptions]="{ standalone: true }"
+                            >
+                                @for (period of repeat_period(); track period) {
+                                    <app-option [value]="period.id">
+                                        {{ period.name }}
+                                    </app-option>
+                                }
+                            </app-select>
+                        </app-form-field>
+                    </div>
+                    @if (cron_period() !== 'custom') {
+                        <div class="flex space-x-4">
+                            @if (cron_period() === 'year') {
+                                <div class="field w-2/5 flex-1">
+                                    <label for="month"
+                                        >{{
+                                            'TRIGGERS.TIME_MONTH_OF_YEAR'
+                                                | translate
+                                        }}
+                                    </label>
+                                    <app-form-field>
+                                        <app-select
+                                            name="month"
+                                            [(ngModel)]="cron_month"
+                                            (ngModelChange)="updateCronString()"
+                                            [ngModelOptions]="{
+                                                standalone: true,
+                                            }"
+                                        >
+                                            @for (
+                                                month of months_of_year();
+                                                track month;
+                                                let i = $index
+                                            ) {
+                                                <app-option [value]="i + 1">
+                                                    {{ month }}
+                                                </app-option>
+                                            }
+                                        </app-select>
+                                    </app-form-field>
+                                </div>
+                            }
+                            @if (
+                                cron_period() === 'month' ||
+                                cron_period() === 'year'
+                            ) {
+                                <div class="field w-2/5 flex-1">
+                                    <label for="day"
+                                        >{{
+                                            'TRIGGERS.TIME_DAY_OF_MONTH'
+                                                | translate
+                                        }}
+                                    </label>
+                                    <app-form-field>
+                                        <app-select
+                                            name="day"
+                                            [(ngModel)]="cron_date"
+                                            (ngModelChange)="updateCronString()"
+                                            [ngModelOptions]="{
+                                                standalone: true,
+                                            }"
+                                        >
+                                            @for (
+                                                period of days_of_month;
+                                                track period
+                                            ) {
+                                                <app-option [value]="period.id">
+                                                    {{ period.name }}
+                                                </app-option>
+                                            }
+                                        </app-select>
+                                    </app-form-field>
+                                </div>
+                            }
+                        </div>
+                        @if (cron_period() === 'week') {
+                            <div class="field">
+                                <label for="weekday">
+                                    {{
+                                        'TRIGGERS.TIME_DAY_OF_WEEK' | translate
+                                    }}
+                                </label>
+                                <app-form-field>
+                                    <app-select
+                                        name="weekday"
+                                        [(ngModel)]="cron_day"
+                                        (ngModelChange)="updateCronString()"
+                                        [ngModelOptions]="{ standalone: true }"
+                                    >
+                                        @for (
+                                            weekday of days_of_week();
+                                            track weekday;
+                                            let i = $index
+                                        ) {
+                                            <app-option [value]="i">
+                                                {{ weekday }}
+                                            </app-option>
+                                        }
+                                    </app-select>
+                                </app-form-field>
+                            </div>
+                        }
+                        <div class="flex items-center space-x-4">
+                            @if (
+                                cron_period() !== 'minute' &&
+                                cron_period() !== 'hour'
+                            ) {
+                                <div class="field w-2/5 flex-1">
+                                    <label for="hour">{{
+                                        'TRIGGERS.TIME_HOUR_OF_DAY' | translate
+                                    }}</label>
+                                    <app-form-field>
+                                        <app-select
+                                            name="hour"
+                                            [(ngModel)]="cron_hour"
+                                            (ngModelChange)="updateCronString()"
+                                            [ngModelOptions]="{
+                                                standalone: true,
+                                            }"
+                                        >
+                                            <app-select-trigger>
+                                                {{ pad(cron_hour()) }}:<span
+                                                    class="opacity-30"
+                                                    >00</span
+                                                >
+                                            </app-select-trigger>
+                                            @for (
+                                                hour of hours_in_day;
+                                                track hour
+                                            ) {
+                                                <app-option [value]="+hour">
+                                                    {{ pad(hour) }}:<span
+                                                        class="opacity-30"
+                                                        >00</span
+                                                    >
+                                                </app-option>
+                                            }
+                                        </app-select>
+                                    </app-form-field>
+                                </div>
+                            }
+                            @if (cron_period() !== 'minute') {
+                                <div class="field w-2/5 flex-1">
+                                    <label for="minute">{{
+                                        'TRIGGERS.TIME_MINUTE_OF_HOUR'
+                                            | translate
+                                    }}</label>
+                                    <app-form-field>
+                                        <app-select
+                                            name="minute"
+                                            [(ngModel)]="cron_minute"
+                                            (ngModelChange)="updateCronString()"
+                                            [ngModelOptions]="{
+                                                standalone: true,
+                                            }"
+                                        >
+                                            <app-select-trigger>
+                                                <span class="opacity-30">{{
+                                                    pad(cron_hour())
+                                                }}</span
+                                                >:{{ pad(cron_minute()) }}
+                                            </app-select-trigger>
+                                            @for (
+                                                minute of minutes_in_hour;
+                                                track minute
+                                            ) {
+                                                <app-option [value]="+minute">
+                                                    <span class="opacity-30">{{
+                                                        pad(cron_hour())
+                                                    }}</span
+                                                    >:{{ pad(minute) }}
+                                                </app-option>
+                                            }
+                                        </app-select>
+                                    </app-form-field>
+                                </div>
+                            }
+                        </div>
+                    } @else {
+                        <cron-input-field
+                            [(ngModel)]="cron_string"
+                            (ngModelChange)="saveCRON($event)"
+                            [ngModelOptions]="{
+                                standalone: true,
+                            }"
+                        />
+                    }
+                }
+            </div>
+        }
+    `, imports: [
+      SelectTriggerDirective,
+      OptionComponent,
+      SelectComponent,
+      FormFieldComponent,
+      FormsModule,
+      CronInputFieldComponent,
+      DateFieldComponent,
+      TimeFieldComponent,
+      AutocompleteComponent,
+      AutocompleteTriggerDirective,
+      SettingsToggleComponent,
+      FormField,
+      TranslatePipe,
+      IconComponent
+    ] }]
+  }], null, { form: [{ type: Input, args: [{ isSignal: true, alias: "form", required: false }] }], formModel: [{ type: Input, args: [{ isSignal: true, alias: "formModel", required: false }] }] });
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TriggerConditionTimeFormComponent, { className: "TriggerConditionTimeFormComponent", filePath: "src/app/ui/forms/trigger-condition-form/time-form.component.ts", lineNumber: 329 });
+})();
+
+// src/app/ui/forms/trigger-condition-modal.component.ts
+function TriggerConditionModalComponent_Conditional_2_Conditional_1_For_7_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "app-option", 8);
+    \u0275\u0275text(1);
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const type_r1 = ctx.$implicit;
+    \u0275\u0275property("value", type_r1.id);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(2, 2, type_r1.id === "compare" ? "TRIGGERS.CONDITION_COMPARE" : "TRIGGERS.CONDITION_TIME"), " ");
+  }
+}
+function TriggerConditionModalComponent_Conditional_2_Conditional_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 3)(1, "label", 6);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "app-form-field")(5, "app-select", 7);
+    \u0275\u0275controlCreate();
+    \u0275\u0275repeaterCreate(6, TriggerConditionModalComponent_Conditional_2_Conditional_1_For_7_Template, 3, 4, "app-option", 8, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(3, 2, "TRIGGERS.CONDITION_FIELD_TYPE"), " ");
+    \u0275\u0275advance(3);
+    \u0275\u0275property("formField", ctx_r1.form.condition_type);
+    \u0275\u0275control();
+    \u0275\u0275advance();
+    \u0275\u0275repeater(ctx_r1.condition_types);
+  }
+}
+function TriggerConditionModalComponent_Conditional_2_Conditional_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "trigger-condition-comparison-form", 4);
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275property("form", ctx_r1.form)("formModel", ctx_r1.formModel)("system", ctx_r1.system);
+  }
+}
+function TriggerConditionModalComponent_Conditional_2_Conditional_3_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "trigger-condition-time-form", 5);
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275property("form", ctx_r1.form)("formModel", ctx_r1.formModel);
+  }
+}
+function TriggerConditionModalComponent_Conditional_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "form", 2);
+    \u0275\u0275listener("submit", function TriggerConditionModalComponent_Conditional_2_Template_form_submit_0_listener($event) {
+      return $event.preventDefault();
+    });
+    \u0275\u0275conditionalCreate(1, TriggerConditionModalComponent_Conditional_2_Conditional_1_Template, 8, 4, "div", 3);
+    \u0275\u0275conditionalCreate(2, TriggerConditionModalComponent_Conditional_2_Conditional_2_Template, 1, 3, "trigger-condition-comparison-form", 4)(3, TriggerConditionModalComponent_Conditional_2_Conditional_3_Template, 1, 2, "trigger-condition-time-form", 5);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.form.condition_type ? 1 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.formModel().condition_type === "compare" ? 2 : 3);
+  }
+}
+var TriggerConditionModalComponent = class _TriggerConditionModalComponent {
+  _dialog = inject(DialogRef);
+  _data = inject(DIALOG_DATA);
+  /** Emitter for events on the modal */
+  event = new EventEmitter();
+  /** Whether actions are loading */
+  loading = signal(
+    "",
+    ...ngDevMode ? [{ debugName: "loading" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /** Form fields for trigger condition */
+  formModel = signal(
+    generateTriggerConditionFormModel(this._data.condition),
+    ...ngDevMode ? [{ debugName: "formModel" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  form = form(this.formModel, applyTriggerConditionFormSchema);
+  /** Store for updated conditions */
+  conditions;
+  /** Types of trigger conditions */
+  condition_types = [
+    { id: "compare", name: "Compare values" },
+    { id: "time", name: "Particular time" }
+  ];
+  /** Whether the triggers is new or not */
+  get is_new() {
+    return !this._data.condition;
+  }
+  /** Template system to use for status variable bindings */
+  get system() {
+    return this._data.system;
+  }
+  /** Template system to use for status variable bindings */
+  get trigger() {
+    return this._data.trigger;
+  }
+  async save() {
+    await submit(this.form, async () => void 0);
+    if (this.form().invalid())
+      return;
+    this.loading.set("Saving trigger condition...");
+    void (this.formModel().condition_type === "compare" ? this.updateComparisons() : this.updateTimeDependents());
+    const item = await Za(this.trigger.id, __spreadProps(__spreadValues({}, this.trigger), {
+      conditions: this.conditions
+    })).catch((err) => notifyError(i18n("TRIGGERS.CONDITION_SAVE_ERROR", {
+      error: describeError(err)
+    })));
+    if (item) {
+      this.event.emit({
+        reason: "done",
+        metadata: { trigger: item }
+      });
+      notifySuccess(i18n("TRIGGERS.CONDITION_SAVE_SUCCESS"));
+      this._dialog.close();
+    }
+    this.loading.set("");
+  }
+  /**
+   * Update the comparison list by replace an exisiting item or add a new item
+   */
+  updateComparisons() {
+    const old_values = [...this.trigger.conditions.comparisons];
+    const new_value = {
+      left: typeof this.formModel().left === "string" ? JSON.parse(this.formModel().left) : this.formModel().left,
+      operator: this.formModel().operator,
+      right: typeof this.formModel().right === "string" ? JSON.parse(this.formModel().right) : this.formModel().right
+    };
+    if (this._data.condition) {
+      const old_value = JSON.stringify(this._data.condition);
+      const index = old_values.findIndex((cmp) => JSON.stringify(cmp) === old_value);
+      if (index >= 0) {
+        old_values.splice(index, 1, new_value);
+      }
+    } else {
+      old_values.push(new_value);
+    }
+    const updated_conditions = __spreadProps(__spreadValues({}, this.trigger.conditions), {
+      comparisons: old_values
+    });
+    this.conditions = updated_conditions;
+  }
+  /**
+   * Update the time dependent list by replace an exisiting item or add a new item
+   */
+  updateTimeDependents() {
+    const old_values = [...this.trigger.conditions.time_dependents || []];
+    const new_value = {
+      type: this.formModel().time_type,
+      time: +(this.formModel().time / 1e3).toFixed(0),
+      cron: this.formModel().cron,
+      timezone: this.formModel().timezone
+    };
+    if (new_value.type === dr.CRON) {
+      delete new_value.time;
+    } else {
+      delete new_value.cron;
+      delete new_value.timezone;
+    }
+    void (new_value.cron ? delete new_value.time : delete new_value.cron);
+    if (this._data.condition) {
+      const old_value = JSON.stringify(this._data.condition);
+      const index = old_values.findIndex((time) => JSON.stringify(time) === old_value);
+      if (index >= 0) {
+        old_values.splice(index, 1, new_value);
+      }
+    } else {
+      old_values.push(new_value);
+    }
+    const updated_conditions = __spreadProps(__spreadValues({}, this.trigger.conditions), {
+      time_dependents: old_values
+    });
+    this.conditions = updated_conditions;
+  }
+  static \u0275fac = function TriggerConditionModalComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _TriggerConditionModalComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TriggerConditionModalComponent, selectors: [["trigger-condition-modal"]], outputs: { event: "event" }, decls: 3, vars: 5, consts: [[3, "save", "heading", "loading"], ["trigger-condition", "", 1, "flex", "flex-col"], ["trigger-condition", "", 1, "flex", "flex-col", 3, "submit"], [1, "field"], [3, "form", "formModel", "system"], [3, "form", "formModel"], ["for", "type"], [3, "formField"], [3, "value"]], template: function TriggerConditionModalComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "fullscreen-modal-shell", 0);
+      \u0275\u0275pipe(1, "translate");
+      \u0275\u0275listener("save", function TriggerConditionModalComponent_Template_fullscreen_modal_shell_save_0_listener() {
+        return ctx.save();
+      });
+      \u0275\u0275conditionalCreate(2, TriggerConditionModalComponent_Conditional_2_Template, 4, 2, "form", 1);
+      \u0275\u0275elementEnd();
+    }
+    if (rf & 2) {
+      \u0275\u0275property("heading", \u0275\u0275pipeBind1(1, 3, ctx.is_new ? "TRIGGERS.CONDITION_NEW" : "TRIGGERS.CONDITION_EDIT"))("loading", ctx.loading());
+      \u0275\u0275advance(2);
+      \u0275\u0275conditional(ctx.form ? 2 : -1);
+    }
+  }, dependencies: [
+    OptionComponent,
+    SelectComponent,
+    FormFieldComponent,
+    FullscreenModalShellComponent,
+    TriggerConditionComparisonFormComponent,
+    TriggerConditionTimeFormComponent,
+    FormField,
+    TranslatePipe
+  ], encapsulation: 2 });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TriggerConditionModalComponent, [{
+    type: Component,
+    args: [{ selector: "trigger-condition-modal", template: `
+        <fullscreen-modal-shell
+            [heading]="
+                (is_new ? 'TRIGGERS.CONDITION_NEW' : 'TRIGGERS.CONDITION_EDIT')
+                    | translate
+            "
+            [loading]="loading()"
+            (save)="save()"
+        >
+            @if (form) {
+                <form
+                    trigger-condition
+                    class="flex flex-col"
+                    (submit)="$event.preventDefault()"
+                >
+                    @if (form.condition_type) {
+                        <div class="field">
+                            <label for="type">
+                                {{
+                                    'TRIGGERS.CONDITION_FIELD_TYPE' | translate
+                                }}
+                            </label>
+                            <app-form-field>
+                                <app-select [formField]="form.condition_type">
+                                    @for (type of condition_types; track type) {
+                                        <app-option [value]="type.id">
+                                            {{
+                                                (type.id === 'compare'
+                                                    ? 'TRIGGERS.CONDITION_COMPARE'
+                                                    : 'TRIGGERS.CONDITION_TIME'
+                                                ) | translate
+                                            }}
+                                        </app-option>
+                                    }
+                                </app-select>
+                            </app-form-field>
+                        </div>
+                    }
+                    @if (formModel().condition_type === 'compare') {
+                        <trigger-condition-comparison-form
+                            [form]="form"
+                            [formModel]="formModel"
+                            [system]="system"
+                        />
+                    } @else {
+                        <trigger-condition-time-form
+                            [form]="form"
+                            [formModel]="formModel"
+                        />
+                    }
+                </form>
+            }
+        </fullscreen-modal-shell>
+    `, imports: [
+      OptionComponent,
+      SelectComponent,
+      FormFieldComponent,
+      FullscreenModalShellComponent,
+      TriggerConditionComparisonFormComponent,
+      TriggerConditionTimeFormComponent,
+      FormField,
+      TranslatePipe
+    ] }]
+  }], null, { event: [{
+    type: Output
+  }] });
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TriggerConditionModalComponent, { className: "TriggerConditionModalComponent", filePath: "src/app/ui/forms/trigger-condition-modal.component.ts", lineNumber: 106 });
+})();
+
+// src/app/triggers/trigger-state.service.ts
+var TriggerStateService = class _TriggerStateService {
+  _service = inject(ActiveItemService);
+  _dialog = inject(Dialog);
+  _change = signal(
+    0,
+    ...ngDevMode ? [{ debugName: "_change" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  item = computed(
+    () => this._service.item(),
+    ...ngDevMode ? [{ debugName: "item" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  loading = computed(
+    () => this._instances.isLoading(),
+    ...ngDevMode ? [{ debugName: "loading" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  _instances = resource(__spreadProps(__spreadValues({}, ngDevMode ? { debugName: "_instances" } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    params: () => ({ item: this.item(), changed: this._change() }),
+    loader: async ({ params }) => {
+      const { item } = params;
+      if (!(item instanceof de))
+        return [];
+      return Ya(item.id).catch(reportLoadError([]));
+    }
+  }));
+  instances = computed(
+    () => this._instances.value() || [],
+    ...ngDevMode ? [{ debugName: "instances" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  get active_item() {
+    return this._service.active_item;
+  }
+  /**
+   * Add new condition to trigger
+   */
+  async editCondition(condition = null, template) {
+    if (!template)
+      return;
+    const ref = this._dialog.open(TriggerConditionModalComponent, {
+      width: "auto",
+      height: "auto",
+      data: {
+        trigger: this.active_item,
+        condition: condition ? JSON.parse(JSON.stringify(condition)) : void 0,
+        system: template
+      }
+    });
+    const result = await waitForDialog(ref, "done");
+    if (!result?.reason || !result.metadata?.trigger)
+      return;
+    this._service.replaceItem(result.metadata.trigger);
+  }
+  /**
+   * Edit existing action on active trigger
+   * @param action Action to edit
+   */
+  async editAction(action = null, template) {
+    if (!template)
+      return;
+    const ref = this._dialog.open(TriggerActionModalComponent, {
+      data: {
+        trigger: this.active_item,
+        action,
+        system: template
+      }
+    });
+    const result = await waitForDialog(ref, "done");
+    if (!result?.reason || !result.metadata?.trigger)
+      return;
+    this._service.replaceItem(result.metadata.trigger);
+  }
+  /**
+   * Re-order action for active trigger
+   * @param type Type of action to reorder
+   * @param event Drop event details
+   */
+  async reorderAction(type, fst, snd) {
+    const details = await openConfirmModal({
+      title: i18n("TRIGGERS.REORDER_CONFIRM_TITLE", { type }),
+      content: i18n("TRIGGERS.REORDER_CONFIRM_MSG"),
+      icon: { type: "icon", content: "reorder" }
+    }, this._dialog);
+    if (details.reason !== "done")
+      return;
+    const list = [
+      ...type === "function" ? this.active_item.actions.functions : this.active_item.actions.mailers
+    ];
+    moveItemInArray(list, fst, snd);
+    const actions = {
+      functions: type === "function" ? list : this.active_item.actions.functions,
+      mailers: type === "function" ? this.active_item.actions.mailers : list
+    };
+    details.loading(i18n("TRIGGERS.REORDER_CONFIRM_LOADING"));
+    const resp = await Za(this.active_item.id, __spreadProps(__spreadValues({}, this.active_item.toJSON()), {
+      actions
+    })).catch((_) => _);
+    details.close();
+    if (!(resp instanceof de)) {
+      return notifyError(i18n("TRIGGERS.REORDER_CONFIRM_ERROR", {
+        error: describeError(resp)
+      }));
+    }
+    this._service.replaceItem(resp);
+    notifySuccess(i18n("TRIGGERS.REORDER_CONFIRM_SUCCESS"));
+  }
+  async removeCondition(condition) {
+    const details = await openConfirmModal({
+      title: i18n("TRIGGERS.REMOVE_CONDITION_TITLE"),
+      content: i18n("TRIGGERS.REMOVE_CONDITION_MSG"),
+      icon: { type: "icon", content: "delete" }
+    }, this._dialog);
+    if (details.reason !== "done")
+      return;
+    details.loading(i18n("TRIGGERS.REMOVE_CONDITION_LOADING"));
+    const item = this.active_item;
+    const conditions = {
+      comparisons: [...item.conditions.comparisons],
+      time_dependents: [...item.conditions.time_dependents]
+    };
+    const list = condition.type ? conditions.time_dependents : conditions.comparisons;
+    const index = list.findIndex((i) => JSON.stringify(i) === JSON.stringify(condition));
+    if (index < 0) {
+      details.close();
+      return notifyError(i18n("TRIGGERS.REMOVE_CONDITION_ERROR", {
+        error: "Condition not found on trigger"
+      }));
+    }
+    list.splice(index, 1);
+    const resp = await Za(item.id, __spreadProps(__spreadValues({}, item.toJSON()), {
+      conditions
+    })).catch((err) => err);
+    details.close();
+    if (!(resp instanceof de)) {
+      return notifyError(i18n("TRIGGERS.REMOVE_CONDITION_ERROR", {
+        error: describeError(resp)
+      }));
+    }
+    this._service.replaceItem(resp);
+    notifySuccess(i18n("TRIGGERS.REMOVE_CONDITION_SUCCESS"));
+  }
+  async removeAction(action) {
+    const details = await openConfirmModal({
+      title: i18n("TRIGGERS.REMOVE_ACTION_TITLE"),
+      content: i18n("TRIGGERS.REMOVE_ACTION_MSG"),
+      icon: { type: "icon", content: "delete" }
+    }, this._dialog);
+    if (details.reason !== "done")
+      return;
+    details.loading(i18n("TRIGGERS.REMOVE_ACTION_LOADING"));
+    const item = this.active_item;
+    const actions = {
+      functions: [...item.actions.functions],
+      mailers: [...item.actions.mailers]
+    };
+    const index = (action.emails ? item.actions.mailers : item.actions.functions).findIndex((i) => JSON.stringify(i) === JSON.stringify(action));
+    if (index < 0) {
+      details.close();
+      return notifyError(i18n("TRIGGERS.REMOVE_ACTION_ERROR", {
+        error: "Action not found on trigger"
+      }));
+    }
+    (action.emails ? actions.mailers : actions.functions).splice(index, 1);
+    const resp = await Za(item.id, __spreadProps(__spreadValues({}, item.toJSON()), {
+      actions
+    })).catch((err) => err);
+    details.close();
+    if (!(resp instanceof de)) {
+      return notifyError(i18n("TRIGGERS.REMOVE_ACTION_ERROR", {
+        error: describeError(resp)
+      }));
+    }
+    this._service.replaceItem(resp);
+    notifySuccess(i18n("TRIGGERS.REMOVE_ACTION_SUCCESS"));
+  }
+  async removeTriggerFromParent(instance) {
+    const type = (instance.zone_id ? i18n("ZONES.SINGULAR") : i18n("SYSTEMS.SINGULAR")).toLowerCase();
+    const details = await openConfirmModal({
+      title: i18n("TRIGGERS.REMOVE_INSTANCE_TITLE", { type }),
+      content: i18n("TRIGGERS.REMOVE_INSTANCE_MSG", {
+        type,
+        // Instances have no name, so match the id the list shows
+        name: escapeHtml(instance.name || instance.zone_id || instance.control_system_id)
+      }),
+      icon: { type: "icon", content: "delete" }
+    }, this._dialog);
+    if (details.reason !== "done")
+      return;
+    details.loading(i18n("TRIGGERS.REMOVE_INSTANCE_LOADING", { type }));
+    const remove = instance.zone_id ? async () => {
+      const zone = await _h(instance.zone_id);
+      await mh(zone.id, __spreadProps(__spreadValues({}, zone), {
+        triggers: (zone.triggers || []).filter((id) => id !== this.active_item.id)
+      }));
+    } : () => Fa(instance.control_system_id, instance?.id || this.active_item.id);
+    let err = await remove().catch((_) => ({ error: _ }));
+    details.close();
+    if (err?.error) {
+      err = err.error;
+      return notifyError(i18n("TRIGGERS.REMOVE_INSTANCE_ERROR", {
+        type,
+        error: describeError(err)
+      }));
+    }
+    this._change.set(Date.now());
+    notifySuccess(i18n("TRIGGERS.REMOVE_INSTANCE_SUCCESS", { type }));
+  }
+  static \u0275fac = function TriggerStateService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _TriggerStateService)();
+  };
+  static \u0275prov = /* @__PURE__ */ \u0275\u0275defineService({ token: _TriggerStateService, factory: _TriggerStateService.\u0275fac });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TriggerStateService, [{
+    type: Service
+  }], null, null);
+})();
+
+export {
+  TriggerStateService
+};
+//# debugId=f082f993-f1b8-54b0-a13d-8248ad0580a7
+//# sourceMappingURL=chunk-D3STBID4.js.map
