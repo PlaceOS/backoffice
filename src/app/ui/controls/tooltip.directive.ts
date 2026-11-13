@@ -1,5 +1,10 @@
 import { AriaDescriber, FocusMonitor } from '@angular/cdk/a11y';
-import { ConnectedPosition, Overlay, OverlayRef } from '@angular/cdk/overlay';
+import {
+    ConnectedPosition,
+    FlexibleConnectedPositionStrategy,
+    Overlay,
+    OverlayRef,
+} from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import {
     Component,
@@ -11,7 +16,12 @@ import {
     input,
     OnDestroy,
 } from '@angular/core';
-import { VIEWPORT_MARGIN } from './overlay';
+import {
+    PANEL_GAP,
+    PANEL_SHADOW,
+    TOOLTIP_ARROW,
+    VIEWPORT_MARGIN,
+} from './overlay';
 
 export type TooltipPosition =
     | 'above'
@@ -21,54 +31,74 @@ export type TooltipPosition =
     | 'before'
     | 'after';
 
-const GAP = 8;
 /** Least space between the arrow and the ends of the tooltip */
 const ARROW_INSET = 12;
 
-const POSITIONS: Record<TooltipPosition, ConnectedPosition> = {
+/** Where each position puts the tooltip, without its offset */
+const PLACES: Record<TooltipPosition, ConnectedPosition> = {
     above: {
         originX: 'center',
         originY: 'top',
         overlayX: 'center',
         overlayY: 'bottom',
-        offsetY: -GAP,
     },
     below: {
         originX: 'center',
         originY: 'bottom',
         overlayX: 'center',
         overlayY: 'top',
-        offsetY: GAP,
     },
     left: {
         originX: 'start',
         originY: 'center',
         overlayX: 'end',
         overlayY: 'center',
-        offsetX: -GAP,
     },
     right: {
         originX: 'end',
         originY: 'center',
         overlayX: 'start',
         overlayY: 'center',
-        offsetX: GAP,
     },
     before: {
         originX: 'start',
         originY: 'center',
         overlayX: 'end',
         overlayY: 'center',
-        offsetX: -GAP,
     },
     after: {
         originX: 'end',
         originY: 'center',
         overlayX: 'start',
         overlayY: 'center',
-        offsetX: GAP,
     },
 };
+
+/**
+ * The position with its offset from the trigger: the arrow, then a gap to its
+ * tip. Above the trigger, the shadow under the tip needs room, and so does
+ * `raise`, how far the trigger's top edge rises on hover.
+ */
+function positionOf(
+    position: TooltipPosition,
+    raise: number,
+): ConnectedPosition {
+    const place = PLACES[position];
+    const offset = TOOLTIP_ARROW + PANEL_GAP;
+    switch (sideOf(place)) {
+        case 'above':
+            return {
+                ...place,
+                offsetY: -(offset + PANEL_SHADOW + raise),
+            };
+        case 'below':
+            return { ...place, offsetY: offset };
+        case 'left':
+            return { ...place, offsetX: -offset };
+        default:
+            return { ...place, offsetX: offset };
+    }
+}
 
 /** Opposite side, used when the preferred side has no space */
 const FALLBACK: Record<TooltipPosition, TooltipPosition> = {
@@ -79,6 +109,12 @@ const FALLBACK: Record<TooltipPosition, TooltipPosition> = {
     before: 'after',
     after: 'before',
 };
+
+/** Vertical move of a computed CSS transform, e.g. `matrix(1, 0, 0, 1, 0, -1)` */
+function translateY(transform: string): number {
+    const values = /matrix\(([^)]+)\)/.exec(transform)?.[1].split(',');
+    return values ? parseFloat(values[5]) || 0 : 0;
+}
 
 /** Side of the trigger that a tooltip in this position is on */
 function sideOf(
@@ -130,6 +166,9 @@ export class TooltipDirective implements OnDestroy {
     private readonly _focus = inject(FocusMonitor);
     private _overlay_ref: OverlayRef;
     private _panel: ComponentRef<TooltipPanelComponent>;
+    private _strategy: FlexibleConnectedPositionStrategy;
+    /** Box of the trigger at rest, when the tooltip was shown */
+    private _origin: { x: number; y: number; width: number; height: number };
     private _side = 'below';
     private _described = '';
 
@@ -165,18 +204,13 @@ export class TooltipDirective implements OnDestroy {
         if (!text || this._panel) return;
         const position = this.position();
         if (!this._overlay_ref) {
-            const strategy = this._overlay
+            const strategy = (this._strategy = this._overlay
                 .position()
                 .flexibleConnectedTo(this._element)
-                .withPositions([
-                    POSITIONS[position],
-                    POSITIONS[FALLBACK[position]],
-                ])
                 .withViewportMargin(VIEWPORT_MARGIN)
                 // Keep its size and push it inside the viewport margin
                 .withFlexibleDimensions(false)
-                .withPush(true);
-            this._side = sideOf(POSITIONS[position]);
+                .withPush(true));
             // Point the arrow at the trigger from the side used
             strategy.positionChanges.subscribe(({ connectionPair }) => {
                 this._side = sideOf(connectionPair);
@@ -194,6 +228,27 @@ export class TooltipDirective implements OnDestroy {
                 .detachments()
                 .subscribe(() => (this._panel = undefined));
         }
+        // A hovered raised button moves while its transition runs, so place
+        // the tooltip from its box at rest. Only a hovered one has risen.
+        const element = this._element.nativeElement;
+        const style = getComputedStyle(element);
+        const box = element.getBoundingClientRect();
+        this._origin = {
+            x: box.left,
+            y: box.top - translateY(style.transform),
+            width: box.width,
+            height: box.height,
+        };
+        const raise = element.matches(':hover')
+            ? parseFloat(style.getPropertyValue('--hover-raise')) || 0
+            : 0;
+        this._strategy
+            .setOrigin(this._origin)
+            .withPositions([
+                positionOf(position, raise),
+                positionOf(FALLBACK[position], raise),
+            ]);
+        this._side = sideOf(PLACES[position]);
         this._panel = this._overlay_ref.attach(
             new ComponentPortal(TooltipPanelComponent),
         );
@@ -225,13 +280,13 @@ export class TooltipDirective implements OnDestroy {
      */
     private _placeArrow() {
         const panel: HTMLElement = this._panel?.location.nativeElement;
-        if (!panel) return;
-        const trigger = this._element.nativeElement.getBoundingClientRect();
+        const trigger = this._origin;
+        if (!panel || !trigger) return;
         const box = panel.getBoundingClientRect();
         const vertical = this._side === 'above' || this._side === 'below';
         const centre = vertical
-            ? trigger.left + trigger.width / 2 - box.left
-            : trigger.top + trigger.height / 2 - box.top;
+            ? trigger.x + trigger.width / 2 - box.left
+            : trigger.y + trigger.height / 2 - box.top;
         const size = vertical ? box.width : box.height;
         const at = Math.min(Math.max(centre, ARROW_INSET), size - ARROW_INSET);
         panel.style.setProperty('--arrow-at', `${at}px`);

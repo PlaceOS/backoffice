@@ -8,7 +8,7 @@ import { VERSION } from '../../env/version';
 import { issueDescription } from '../common/general';
 import { i18n, LocaleService } from '../common/locale.service';
 import { SettingsService } from '../common/settings.service';
-import { PANEL_POSITIONS } from './controls/overlay';
+import { MENU_POSITIONS_ABOVE } from './controls/overlay';
 import { IconComponent } from './icon.component';
 import { SafePipe } from './pipes/safe.pipe';
 import { TranslatePipe } from './translate.pipe';
@@ -148,7 +148,7 @@ export class UserMenuTooltipComponent implements OnInit {
 
     public readonly github_icon = signal('');
     /** Opens the language menu above its button, and below when no space */
-    public readonly lang_menu_position = [...PANEL_POSITIONS].reverse();
+    public readonly lang_menu_position = MENU_POSITIONS_ABOVE;
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {

@@ -1453,6 +1453,7 @@ input[type='checkbox'][role='switch'] {
    `--arrow-at` is where the trigger's centre is along that side. */
 .tooltip-panel {
     --arrow: 6px;
+    --shadow: 2px;
     position: relative;
     display: block;
     max-width: 14rem;
@@ -1461,8 +1462,7 @@ input[type='checkbox'][role='switch'] {
     border-radius: var(--radius-md);
     background-color: var(--base-100);
     color: var(--base-content);
-    /* A drop shadow follows the outline, so the arrow gets the same edge */
-    filter: drop-shadow(0 2px 0 var(--base-300));
+    box-shadow: 0 var(--shadow) 0 var(--base-300);
     font-size: 0.875rem;
     line-height: 1.4;
     text-align: center;
@@ -1470,45 +1470,113 @@ input[type='checkbox'][role='switch'] {
     pointer-events: none;
     animation: fade-in 100ms ease-out;
 
-    /* A square turned 45 degrees, with the border on the two outer edges */
-    &::before {
+    /* The arrow is two triangles at 45 degrees: the border colour, then the
+       background inset by the 1px border. Their base sits on the inside of
+       the bubble's border, so the outlines join without a seam. The tip
+       reaches exactly --arrow past the bubble; TOOLTIP_ARROW in overlay.ts
+       must match. Offsets start inside the border, so they take 1px off. */
+    --arrow-out: calc(var(--arrow) + 1px);
+    --arrow-in: calc(var(--arrow) + 1px - 1.4142px);
+    --arrow-at-inside: calc(var(--arrow-at, calc(50% + 1px)) - 1px);
+
+    &::before,
+    &::after {
         content: '';
         position: absolute;
-        width: calc(var(--arrow) * 1.5);
-        height: calc(var(--arrow) * 1.5);
-        background-color: inherit;
-        border: inherit;
-        border-radius: 1px;
-        transform: rotate(45deg);
+        --size: var(--arrow-out);
     }
 
+    &::before {
+        background-color: var(--base-300);
+    }
+
+    &::after {
+        --size: var(--arrow-in);
+        background-color: var(--base-100);
+    }
+
+    /* Tooltip above the trigger: the arrow points down */
+    &[data-side='above']::before,
+    &[data-side='above']::after {
+        top: 100%;
+        left: calc(var(--arrow-at-inside) - var(--size));
+        width: calc(var(--size) * 2);
+        height: var(--size);
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+
+    /* The bubble's shadow falls below it, so it continues under this arrow:
+       the border triangle also covers a copy of itself moved down by the
+       shadow */
     &[data-side='above']::before {
-        bottom: calc(var(--arrow) * -0.8);
-        left: calc(var(--arrow-at, 50%) - var(--arrow) * 0.75);
-        border-top-color: transparent;
-        border-left-color: transparent;
+        height: calc(var(--size) + var(--shadow));
+        clip-path: polygon(
+            0 0,
+            100% 0,
+            100% var(--shadow),
+            50% 100%,
+            0 var(--shadow)
+        );
     }
 
-    &[data-side='below']::before {
-        top: calc(var(--arrow) * -0.8);
-        left: calc(var(--arrow-at, 50%) - var(--arrow) * 0.75);
-        border-bottom-color: transparent;
-        border-right-color: transparent;
+    &[data-side='below']::before,
+    &[data-side='below']::after {
+        bottom: 100%;
+        left: calc(var(--arrow-at-inside) - var(--size));
+        width: calc(var(--size) * 2);
+        height: var(--size);
+        clip-path: polygon(50% 0, 100% 100%, 0 100%);
     }
 
+    /* Tooltip left of the trigger: the arrow points right */
+    &[data-side='left']::before,
+    &[data-side='left']::after {
+        left: 100%;
+        top: calc(var(--arrow-at-inside) - var(--size));
+        width: var(--size);
+        height: calc(var(--size) * 2);
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    &[data-side='right']::before,
+    &[data-side='right']::after {
+        right: 100%;
+        top: calc(var(--arrow-at-inside) - var(--size));
+        width: var(--size);
+        height: calc(var(--size) * 2);
+        clip-path: polygon(100% 0, 0 50%, 100% 100%);
+    }
+
+    /* Side arrows cast the shadow below their lower edge, like the bubble's
+       bottom edge: the border triangle also covers a copy of itself moved
+       down by the shadow */
     &[data-side='left']::before {
-        right: calc(var(--arrow) * -0.8);
-        top: calc(var(--arrow-at, 50%) - var(--arrow) * 0.75);
-        border-bottom-color: transparent;
-        border-left-color: transparent;
+        height: calc(var(--size) * 2 + var(--shadow));
+        clip-path: polygon(
+            0 0,
+            100% var(--size),
+            100% calc(var(--size) + var(--shadow)),
+            0 100%
+        );
     }
 
     &[data-side='right']::before {
-        left: calc(var(--arrow) * -0.8);
-        top: calc(var(--arrow-at, 50%) - var(--arrow) * 0.75);
-        border-top-color: transparent;
-        border-right-color: transparent;
+        height: calc(var(--size) * 2 + var(--shadow));
+        clip-path: polygon(
+            100% 0,
+            0 var(--size),
+            0 calc(var(--size) + var(--shadow)),
+            100% 100%
+        );
     }
+}
+
+/* How far a raised button's top edge rises on hover. The tooltip reads it to
+   keep its gap. It does not inherit, so only the button itself has it */
+@property --hover-raise {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
 }
 
 /* Buttons. After Sentry's: the face sits on a darker base, lifts on hover
@@ -1522,6 +1590,7 @@ input[type='checkbox'][role='switch'] {
     a[icon]:is([default], [primary])
 ) {
     --lift: 2px;
+    --hover-raise: 1px;
     transform: translateY(calc(2px - var(--lift)));
     /* The seam is a thin line between the face and the base. It shows the
        edge of the face on dark fills, where a darker base can not */
@@ -1536,13 +1605,18 @@ input[type='checkbox'][role='switch'] {
         background-color var(--motion-snap);
 
     &:hover {
-        --lift: 3px;
+        --lift: calc(2px + var(--hover-raise));
     }
 
-    /* Only while pressed. A trigger with an open panel stays at rest, so it
-       keeps its gap to the panel */
     &:active {
         --lift: 0px;
+    }
+
+    /* A trigger with an open menu stays still at rest. The menu is placed
+       from the trigger's box after this applies, so it keeps its gap */
+    &[aria-expanded='true'] {
+        --lift: 2px;
+        transition: none;
     }
 
     &:focus-visible {
@@ -1585,6 +1659,7 @@ a[btn] {
 
     /* Flat, like Sentry's transparent buttons */
     &.clear {
+        --hover-raise: 0px;
         --color: var(--base-content);
         background: none;
         border: none;
