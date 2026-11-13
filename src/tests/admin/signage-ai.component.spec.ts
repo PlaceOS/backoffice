@@ -57,7 +57,7 @@ describe('SignageAIComponent', () => {
         get_mock.mockImplementation((url) =>
             url.endsWith('/usage')
                 ? Promise.reject(new Error('usage failed'))
-                : Promise.resolve([]),
+                : Promise.resolve([{ id: 'provider-1', name: 'OpenAI' }]),
         );
         const fixture = TestBed.createComponent(SignageAIComponent);
 
@@ -65,5 +65,8 @@ describe('SignageAIComponent', () => {
 
         expect(fixture.componentInstance.provider_error()).toBe('');
         expect(fixture.componentInstance.usage_error()).not.toBe('');
+        expect(
+            fixture.componentInstance.providers().map(({ name }) => name),
+        ).toEqual(['OpenAI']);
     });
 });

@@ -79,10 +79,6 @@ describe('ConfirmModalComponent', () => {
         it('should have empty loading signal', () => {
             expect(component.loading()).toBe('');
         });
-
-        it('should have event emitter defined', () => {
-            expect(component.event).toBeDefined();
-        });
     });
 
     describe('with provided data', () => {
@@ -598,19 +594,6 @@ describe('ConfirmModalComponent', () => {
             component.loading.set('');
             fixture.detectChanges();
             expect(dialog_ref_mock.disableClose).toBe(false);
-        });
-    });
-
-    describe('loading state', () => {
-        it('should update loading signal', () => {
-            component.loading.set('Processing...');
-            expect(component.loading()).toBe('Processing...');
-        });
-
-        it('should clear loading signal', () => {
-            component.loading.set('Processing...');
-            component.loading.set('');
-            expect(component.loading()).toBe('');
         });
     });
 

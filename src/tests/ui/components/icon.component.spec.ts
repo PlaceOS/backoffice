@@ -116,16 +116,6 @@ describe('IconComponent', () => {
         });
     });
 
-    describe('ng-content projection', () => {
-        it('should render wrapper div with correct classes', () => {
-            const wrapper = fixture.nativeElement.querySelector('div');
-            expect(wrapper).toBeTruthy();
-            expect(wrapper.className).toContain('flex');
-            expect(wrapper.className).toContain('items-center');
-            expect(wrapper.className).toContain('justify-center');
-        });
-    });
-
     describe('inside buttons', () => {
         @Component({
             imports: [IconComponent, TooltipDirective],

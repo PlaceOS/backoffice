@@ -169,6 +169,39 @@ describe('group membership actions', () => {
         );
     });
 
+    it.each([
+        {
+            label: 'an existing member',
+            id: 'user-1',
+            authority_id: 'domain-1',
+            excluded: true,
+        },
+        {
+            label: 'a user in another domain',
+            id: 'user-2',
+            authority_id: 'domain-2',
+            excluded: true,
+        },
+        {
+            label: 'a new user in the group domain',
+            id: 'user-3',
+            authority_id: 'domain-1',
+            excluded: false,
+        },
+    ])(
+        'bulk add hides $label: $excluded',
+        async ({ id, authority_id, excluded }) => {
+            mocks.queryGroupUsers.mockResolvedValue({ data: [user], total: 1 });
+            active.set(group);
+            await TestBed.inject(ApplicationRef).whenStable();
+            expect(
+                service.user_members.exclude(
+                    new PlaceUser({ id, authority_id }),
+                ),
+            ).toBe(excluded);
+        },
+    );
+
     it('does not send an add request for an unsaved user', async () => {
         await service.user_members.add(new PlaceUser());
         expect(mocks.addGroupUser).not.toHaveBeenCalled();

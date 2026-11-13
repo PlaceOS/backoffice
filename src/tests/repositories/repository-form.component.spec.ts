@@ -114,4 +114,44 @@ describe('RepositoryFormComponent', () => {
             component.filtered_commit_list().map(({ hash }) => hash),
         ).toEqual(['HEAD', 'abc123']);
     });
+
+    it('pins the newest commit when following HEAD is turned off', () => {
+        const component = fixture.componentInstance;
+        component.commit_list.set([
+            { hash: 'HEAD', subject: 'Latest commit' },
+            { hash: 'abc123', subject: 'Newest commit' },
+            { hash: 'def456', subject: 'Older commit' },
+        ]);
+
+        component.setFollow(false);
+        expect(component.follow_latest()).toBe(false);
+        expect(component.formModel().commit_hash).toBe('abc123');
+
+        component.setFollow(true);
+        expect(component.follow_latest()).toBe(true);
+        expect(component.formModel().commit_hash).toBe('HEAD');
+    });
+
+    it.each([
+        { selected: '', expected: 'main' },
+        { selected: 'missing', expected: 'main' },
+        { selected: 'dev', expected: 'dev' },
+    ])(
+        'selects $expected after branches load when the branch is $selected',
+        async ({ selected, expected }) => {
+            const component = fixture.componentInstance;
+            component.formModel.update((model) => ({
+                ...model,
+                branch: selected,
+            }));
+
+            component.markCredentialsBlur();
+            await vi.waitFor(() => {
+                expect(listRepositoryBranches).toHaveBeenCalledTimes(2);
+                expect(component.loading_branches()).toBe(false);
+            });
+
+            expect(component.formModel().branch).toBe(expected);
+        },
+    );
 });

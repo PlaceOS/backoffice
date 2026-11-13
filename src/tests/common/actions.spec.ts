@@ -338,46 +338,50 @@ describe('actions.ts', () => {
             expect(client.addSystem).toHaveBeenCalled();
         });
 
-        it('should create modules for logic driver ids when adding systems', async () => {
-            vi.mocked(client.addSystem).mockReturnValueOnce(
-                Promise.resolve({ id: 'sys-new' } as any),
-            );
-            vi.mocked(client.showDriver).mockImplementation((id: string) =>
-                Promise.resolve({
-                    id,
-                    name: `${id} name`,
-                    module_name: `${id} module`,
-                    role:
-                        id === 'driver-logic'
-                            ? client.PlaceDriverRole.Logic
-                            : client.PlaceDriverRole.Device,
-                    default_uri: '',
-                    default_port: 1,
-                    alert_level: 'medium',
-                    ignore_connected: false,
-                } as any),
-            );
+        it.each([
+            ['an array', ['mod-123', 'driver-logic', 'driver-device']],
+            ['a JSON string', '["mod-123","driver-logic","driver-device"]'],
+            ['a CSV cell', "['mod-123', driver-logic driver-device]"],
+        ])(
+            'should create modules for logic driver ids in %s when adding systems',
+            async (_, modules) => {
+                vi.mocked(client.addSystem).mockResolvedValueOnce({
+                    id: 'sys-new',
+                } as client.PlaceSystem);
+                vi.mocked(client.showDriver).mockImplementation(
+                    async (id: string) =>
+                        ({
+                            id,
+                            name: `${id} name`,
+                            role:
+                                id === 'driver-logic'
+                                    ? client.PlaceDriverRole.Logic
+                                    : client.PlaceDriverRole.Device,
+                            default_port: 1,
+                        }) as client.PlaceDriver,
+                );
 
-            await ACTIONS.systems.save({
-                name: 'New System',
-                support_url: '',
-                modules: ['mod-123', 'driver-logic', 'driver-device'],
-            } as any);
+                await ACTIONS.systems.save({
+                    name: 'New System',
+                    support_url: '',
+                    modules,
+                } as unknown as client.PlaceSystem);
 
-            expect(client.addSystem).toHaveBeenCalledWith(
-                expect.objectContaining({ modules: ['mod-123'] }),
-            );
-            expect(client.showDriver).toHaveBeenCalledWith('driver-logic');
-            expect(client.showDriver).toHaveBeenCalledWith('driver-device');
-            expect(client.addModule).toHaveBeenCalledTimes(1);
-            expect(client.addModule).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    driver_id: 'driver-logic',
-                    control_system_id: 'sys-new',
-                    role: client.PlaceDriverRole.Logic,
-                }),
-            );
-        });
+                expect(client.addSystem).toHaveBeenCalledWith(
+                    expect.objectContaining({ modules: ['mod-123'] }),
+                );
+                expect(client.showDriver).toHaveBeenCalledWith('driver-logic');
+                expect(client.showDriver).toHaveBeenCalledWith('driver-device');
+                expect(client.addModule).toHaveBeenCalledTimes(1);
+                expect(client.addModule).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        driver_id: 'driver-logic',
+                        control_system_id: 'sys-new',
+                        role: client.PlaceDriverRole.Logic,
+                    }),
+                );
+            },
+        );
 
         it('should start systems after bulk add when requested', async () => {
             vi.mocked(client.addSystem).mockReturnValueOnce(
@@ -623,39 +627,18 @@ describe('actions.ts', () => {
             );
         });
 
-        it('should process origin placeholder', () => {
-            const item = {
+        it('should process the page origin, host and pathname', () => {
+            ACTIONS.systems.save({
                 id: 'sys-123',
-                support_url: '{{origin}}/support',
-            } as any;
-            ACTIONS.systems.save(item);
+                support_url: '{{origin}}/help?host={{host}}&path={{pathname}}',
+            } as client.PlaceSystem);
 
             expect(client.updateSystem).toHaveBeenCalledWith(
                 'sys-123',
                 expect.objectContaining({
-                    support_url: expect.stringContaining('/support'),
+                    support_url: `${location.origin}/help?host=${location.host}&path=${location.pathname}`,
                 }),
             );
-        });
-
-        it('should process host placeholder', () => {
-            const item = {
-                id: 'sys-123',
-                support_url: 'https://{{host}}/api',
-            } as any;
-            ACTIONS.systems.save(item);
-
-            expect(client.updateSystem).toHaveBeenCalled();
-        });
-
-        it('should process pathname placeholder', () => {
-            const item = {
-                id: 'sys-123',
-                support_url: 'path={{pathname}}',
-            } as any;
-            ACTIONS.systems.save(item);
-
-            expect(client.updateSystem).toHaveBeenCalled();
         });
     });
 });

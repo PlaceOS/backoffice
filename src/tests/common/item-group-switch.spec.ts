@@ -243,3 +243,51 @@ it('shows a saved item with its current settings', async () => {
     expect(settingsValue()).toBe('a: 2');
     service.ngOnDestroy();
 });
+
+it('keeps the latest item when an older detail response arrives last', async () => {
+    vi.useFakeTimers();
+    mocks.query.mockResolvedValue({ data: [], total: 0, next: null });
+    const responses = new Map<
+        string,
+        (item: { id: string; name: string }) => void
+    >();
+    mocks.show.mockImplementation(
+        (id: string) => new Promise((resolve) => responses.set(id, resolve)),
+    );
+    const user = signal({ sys_admin: false, support: false });
+    TestBed.configureTestingModule({
+        providers: [
+            ActiveItemService,
+            {
+                provide: Router,
+                useValue: {
+                    url: '/systems/-',
+                    events: new Subject<NavigationEnd>(),
+                    parseUrl: (url: string) =>
+                        new DefaultUrlSerializer().parse(url),
+                },
+            },
+            { provide: Dialog, useValue: {} },
+            { provide: SettingsService, useValue: {} },
+            {
+                provide: HotkeysService,
+                useValue: { listen: () => () => undefined },
+            },
+            {
+                provide: BackofficeUsersService,
+                useValue: { user, current: user },
+            },
+        ],
+    });
+    const service = TestBed.inject(ActiveItemService);
+    await vi.advanceTimersByTimeAsync(350);
+    const first = service.setItem('sys-1');
+    const second = service.setItem('sys-2');
+    await vi.advanceTimersByTimeAsync(1);
+    responses.get('sys-2')({ id: 'sys-2', name: 'Second' });
+    await second;
+    responses.get('sys-1')({ id: 'sys-1', name: 'First' });
+    await first;
+    expect(service.active_item?.id).toBe('sys-2');
+    service.ngOnDestroy();
+});

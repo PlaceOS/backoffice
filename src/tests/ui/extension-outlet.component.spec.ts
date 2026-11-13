@@ -63,10 +63,11 @@ describe('ExtensionOutletComponent', () => {
     const send = async (
         message: Partial<FrameMessage>,
         source = frame_window,
+        origin = new URL(EXTENSION_URL).origin,
     ) => {
         fixture.componentInstance.onMessage({
             source,
-            origin: new URL(EXTENSION_URL).origin,
+            origin,
             data: JSON.stringify({ id: '1', type: 'backoffice', ...message }),
         } as MessageEvent);
         // Let the mocked API promises settle
@@ -157,8 +158,13 @@ describe('ExtensionOutletComponent', () => {
         expect(no_name).toMatchObject({ id: '2', status: 'error' });
     });
 
-    it('ignores messages from other windows and unknown actions', async () => {
+    it('ignores messages from other windows, other origins and unknown actions', async () => {
         await send({ action: 'update', content: {} }, window);
+        await send(
+            { action: 'update', content: {} },
+            frame_window,
+            'https://evil.example',
+        );
         await send({ action: 'result' });
         expect(replies).toEqual([]);
         expect(save).not.toHaveBeenCalled();

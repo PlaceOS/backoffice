@@ -109,6 +109,22 @@ describe('FullscreenModalShellComponent', () => {
         expect(ref.close).not.toHaveBeenCalled();
     });
 
+    it('closes both dialogs once discarding is confirmed', async () => {
+        const confirm = {
+            reason: 'done' as const,
+            loading: vi.fn(),
+            close: vi.fn(),
+        };
+        vi.mocked(openConfirmModal).mockResolvedValue(confirm);
+        const { element, shell } = createForm();
+        element
+            .querySelector('main')
+            .dispatchEvent(new Event('input', { bubbles: true }));
+        await shell.close();
+        expect(confirm.close).toHaveBeenCalled();
+        expect(ref.close).toHaveBeenCalled();
+    });
+
     it('asks before closing after a chip was removed', async () => {
         const { element, shell } = createForm();
         element.querySelector<HTMLElement>('.chip-action').click();

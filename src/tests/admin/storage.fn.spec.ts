@@ -73,12 +73,6 @@ describe('storage.fn', () => {
             expect(storage.mime_filter).toEqual(['application/x-msdownload']);
             expect(storage.is_default).toBe(true);
         });
-
-        it('should have readonly properties', () => {
-            const storage = new PlaceStorage({ id: 'storage-123' });
-            // TypeScript would prevent assignment, but at runtime it won't throw
-            expect(storage.id).toBe('storage-123');
-        });
     });
 
     describe('queryStorage', () => {

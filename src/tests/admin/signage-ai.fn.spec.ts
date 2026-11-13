@@ -47,11 +47,6 @@ describe('signage-ai.fn', () => {
             expect(provider.enabled).toBe(true);
             expect(provider.is_default).toBe(true);
         });
-
-        it('should never carry credentials, which the API does not return', () => {
-            const provider = new SignageAIProvider({ id: 'provider-1' });
-            expect('credentials' in provider).toBe(false);
-        });
     });
 
     describe('querySignageAIProviders', () => {

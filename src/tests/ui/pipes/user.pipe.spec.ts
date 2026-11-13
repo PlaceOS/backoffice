@@ -70,6 +70,17 @@ describe('UserPipe', () => {
             expect(showUser).toHaveBeenCalledTimes(1);
         });
 
+        it('should retry a lookup that failed', async () => {
+            const { showUser } = await import('@placeos/ts-client');
+            vi.mocked(showUser).mockRejectedValueOnce(new Error('offline'));
+
+            expect(await pipe.transform('user-retry')).toEqual({});
+            const result = await pipe.transform('user-retry');
+
+            expect(result.id).toBe('user-retry');
+            expect(showUser).toHaveBeenCalledTimes(2);
+        });
+
         it('should return user with expected properties', async () => {
             const result = await pipe.transform('test-user');
             expect(result).toHaveProperty('id');

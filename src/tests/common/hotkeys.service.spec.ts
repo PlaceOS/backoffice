@@ -94,25 +94,15 @@ describe('HotkeysService', () => {
     });
 
     describe('key mapping', () => {
-        it('should map AltLeft to alt', () => {
+        it('fires a combination registered in upper case with a left modifier when the right one is held', () => {
             const callback = vi.fn();
-            // Both should work as they map to the same key
-            const sub1 = service.listen(['altleft', 'keyk'], callback);
-            const sub2 = service.listen(['alt', 'keyk'], callback);
-            expect(sub1).toBeTruthy();
-            expect(sub2).toBeTruthy();
-            sub1?.unsubscribe();
-            sub2?.unsubscribe();
-        });
-
-        it('should handle case insensitivity', () => {
-            const callback = vi.fn();
-            const sub1 = service.listen('ALT+KEYK', callback);
-            const sub2 = service.listen('alt+keyk', callback);
-            expect(sub1).toBeTruthy();
-            expect(sub2).toBeTruthy();
-            sub1?.unsubscribe();
-            sub2?.unsubscribe();
+            const subscription = service.listen('ALTLEFT+KEYK', callback);
+            keyEvent('keydown', 'AltRight', { altKey: true });
+            keyEvent('keydown', 'KeyK', { altKey: true });
+            keyEvent('keyup', 'KeyK', { altKey: true });
+            keyEvent('keyup', 'AltRight');
+            expect(callback).toHaveBeenCalledTimes(1);
+            subscription?.unsubscribe();
         });
     });
 
