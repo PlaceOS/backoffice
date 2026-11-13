@@ -239,26 +239,6 @@ span.highlight {
     font-family: 'Fira Code Variable', monospace;
 }
 
-@keyframes crossfade {
-    0% {
-        background-color: #d32f2f;
-    }
-    20% {
-        background-color: #7b1fa2;
-    }
-    40% {
-        background-color: #1976d2;
-    }
-    60% {
-        background-color: #00796b;
-    }
-    80% {
-        background-color: #ff8f00;
-    }
-    100% {
-        background-color: #d32f2f;
-    }
-}
 
 #placeos .markdown {
     ol {
@@ -555,26 +535,6 @@ span.highlight {
     font-family: 'Fira Code Variable', monospace;
 }
 
-@keyframes crossfade {
-    0% {
-        background-color: #d32f2f;
-    }
-    20% {
-        background-color: #7b1fa2;
-    }
-    40% {
-        background-color: #1976d2;
-    }
-    60% {
-        background-color: #00796b;
-    }
-    80% {
-        background-color: #ff8f00;
-    }
-    100% {
-        background-color: #d32f2f;
-    }
-}
 
 #placeos .markdown {
     ol {
@@ -1842,37 +1802,6 @@ a[icon] {
     min-height: 0;
 }
 
-/* Expandable with width animation */
-#placeos .expandable-all {
-    display: grid;
-    grid-template-rows: 0fr;
-    width: 0;
-    overflow: hidden;
-    transition:
-        grid-template-rows 200ms ease-in-out,
-        width 200ms ease-in-out;
-}
-
-#placeos .expandable-all.expanded {
-    grid-template-rows: 1fr;
-    width: auto;
-}
-
-#placeos .expandable-all > * {
-    overflow: hidden;
-    min-height: 0;
-}
-
-/* Fade animation */
-#placeos .fade-in-out {
-    opacity: 0;
-    transition: opacity 200ms ease-in-out;
-}
-
-#placeos .fade-in-out.visible {
-    opacity: 1;
-}
-
 /* Page transitions. The router starts a view transition on each navigation
    (withViewTransitions in app.config.ts). The rest of the window changes at
    once. Only these parts animate:
@@ -1974,10 +1903,6 @@ a[icon] {
     animation: fade-in 200ms ease-out;
 }
 
-#placeos .animate-fade-in-scale {
-    animation: fade-in-scale 200ms ease-out;
-}
-
 /* The same enter motion as dialogs, for panels that are not CDK dialogs */
 #placeos .animate-dialog-enter {
     animation: dialog-enter var(--motion-enter);
@@ -1993,33 +1918,6 @@ a[icon] {
     #placeos .animate-slide-in-up {
         animation: none;
     }
-}
-
-/* Slide animations */
-#placeos .slide-up {
-    transform: translateY(100%);
-    opacity: 0;
-    transition:
-        transform 200ms ease-in-out,
-        opacity 200ms ease-in-out;
-}
-
-#placeos .slide-up.visible {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-#placeos .slide-down {
-    transform: translateY(-100%);
-    opacity: 0;
-    transition:
-        transform 200ms ease-in-out,
-        opacity 200ms ease-in-out;
-}
-
-#placeos .slide-down.visible {
-    transform: translateY(0);
-    opacity: 1;
 }
 
 #placeos {
