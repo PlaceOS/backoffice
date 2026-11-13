@@ -37,8 +37,8 @@ The config starts the dev server, or uses the server that runs on port 4200.
 | `chromium`, `firefox`, `webkit`    | `*.spec.ts`              |
 | `mobile-chrome`, `mobile-safari`   | `*.mobile.spec.ts`       |
 
-CI runs `chromium` and `mobile-chrome` for pull requests to `develop`, and
-all projects on other branches.
+CI runs `chromium` and `mobile-chrome` only. Run the other projects locally
+before you change code that is specific to a browser.
 
 `USE_MOCK=false` stops the tests from switching on the mock backend. Most
 tests expect the mock data, so use this only to debug. To test against a real
@@ -169,7 +169,7 @@ start needs access to GitHub.
 `.github/workflows/e2e-local.yml` runs this suite on a self-hosted runner
 with the label `placeos-e2e`. It runs:
 
-- on a push to `develop`, `release/**`, `rc/**` and `e2e/**`
+- on a push to `develop` and `e2e/**`
 - every day at 01:40 UTC
 - from **Run workflow**
 

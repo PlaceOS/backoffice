@@ -6,13 +6,22 @@ on:
         paths-ignore:
             - 'docs/**'
             - '**/*.md'
+    # BUILD calls this workflow for develop, and RELEASE for a release commit
     workflow_call:
+        inputs:
+            ref:
+                description: 'Commit to test. Empty: the commit that started the run'
+                type: string
+                default: ''
 
-# Cancel superseded runs of a pull request. BUILD calls this workflow for
-# pushes; those runs get a unique group, so they never queue or cancel.
+# Cancel superseded runs of a pull request. BUILD and RELEASE call this
+# workflow; those runs get a unique group, so they never queue or cancel.
 concurrency:
     group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
     cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+    contents: read
 
 jobs:
     lint:
@@ -20,6 +29,8 @@ jobs:
         timeout-minutes: 3
         steps:
             - uses: actions/checkout@v6
+              with:
+                  ref: ${{ inputs.ref }}
 
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
@@ -37,6 +48,8 @@ jobs:
         timeout-minutes: 5
         steps:
             - uses: actions/checkout@v6
+              with:
+                  ref: ${{ inputs.ref }}
 
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
@@ -45,15 +58,6 @@ jobs:
 
             - name: Install dependencies
               run: bun install --frozen-lockfile
-
-            # Nx skips the tests when their inputs match a cached run.
-            - name: Cache nx build cache
-              uses: actions/cache@v5
-              with:
-                  path: .nx/cache
-                  key: ${{ runner.os }}-nx-test-${{ github.sha }}
-                  restore-keys: |
-                      ${{ runner.os }}-nx-test-
 
             - name: Setup version
               run: bun run postinstall
@@ -65,13 +69,12 @@ jobs:
         # Playwright cannot install its browsers on ubuntu-latest (26.04) yet.
         # Move back to ubuntu-latest when Playwright supports it.
         runs-on: ubuntu-24.04
-        timeout-minutes: 25
-        env:
-            # Pull requests to develop and pushes to develop run Chromium only.
-            # Other branches run every browser.
-            CHROMIUM_ONLY: ${{ github.base_ref == 'develop' || github.ref == 'refs/heads/develop' }}
+        # A run takes about 5 minutes
+        timeout-minutes: 10
         steps:
             - uses: actions/checkout@v6
+              with:
+                  ref: ${{ inputs.ref }}
 
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
@@ -87,10 +90,12 @@ jobs:
             # A browser cache saves no time here: a hit still installs the
             # system packages, and a restore takes about as long as a download.
             - name: Install Playwright browsers
-              run: bunx playwright install --with-deps ${{ env.CHROMIUM_ONLY == 'true' && 'chromium' || '' }}
+              run: bunx playwright install --with-deps chromium
 
+            # Chromium only. Firefox and WebKit took more than 25 minutes, and
+            # stopped releases. Run them locally with `bun run e2e`.
             - name: Run E2E tests
-              run: bunx nx e2e e2e ${{ env.CHROMIUM_ONLY == 'true' && '-- --project=chromium --project=mobile-chrome' || '' }}
+              run: bunx nx e2e e2e -- --project=chromium --project=mobile-chrome
 
             - name: Upload Playwright report
               uses: actions/upload-artifact@v4
