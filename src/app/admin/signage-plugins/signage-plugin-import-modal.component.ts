@@ -77,7 +77,7 @@ interface PluginProbe {
                     (valueChange)="selectRepository($event)"
                     (openedChange)="setRepositoryOpen($event)"
                 >
-                    <app-option class="bg-base-100 sticky -top-2 z-20">
+                    <div select-search>
                         <input
                             #repository_search
                             type="search"
@@ -88,7 +88,6 @@ interface PluginProbe {
                             (mousedown)="$event.stopPropagation()"
                             (click)="$event.stopPropagation()"
                             (keydown)="$event.stopPropagation()"
-                            class="option-search-input focus:bg-info/10 pointer-events-auto absolute inset-1 h-auto cursor-text rounded-sm p-4"
                             [placeholder]="
                                 'COMMON.SEARCH_FOR'
                                     | translate: { name: 'repositories' }
@@ -98,7 +97,13 @@ interface PluginProbe {
                                     | translate: { name: 'repositories' }
                             "
                         />
-                    </app-option>
+                    </div>
+                    <p select-empty>
+                        {{
+                            'COMMON.SEARCH_EMPTY'
+                                | translate: { name: 'repositories' }
+                        }}
+                    </p>
                     @for (repo of filtered_repositories(); track repo.id) {
                         <app-option [value]="repo.id">
                             {{ repo.name }}
@@ -141,19 +146,6 @@ interface PluginProbe {
             </div>
         </main>
     `,
-    styles: [
-        `
-            .option-search-input {
-                width: calc(100% - 0.5rem);
-                outline: none;
-            }
-
-            .option-search-input::placeholder {
-                color: var(--base-400, currentColor);
-                opacity: 0.65;
-            }
-        `,
-    ],
     imports: [
         DialogCloseDirective,
         ProgressBarComponent,

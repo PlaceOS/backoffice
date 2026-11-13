@@ -45,7 +45,7 @@ export interface ModuleLike {
                     (ngModelChange)="setValue($event)"
                     (openedChange)="setOpen($event)"
                 >
-                    <app-option class="bg-base-100 sticky -top-2 z-20">
+                    <div select-search>
                         <input
                             #module_search
                             name="module-search"
@@ -54,13 +54,18 @@ export interface ModuleLike {
                             (mousedown)="$event.stopPropagation()"
                             (click)="$event.stopPropagation()"
                             (keydown)="$event.stopPropagation()"
-                            class="module-search-input pointer-event-auto focus:bg-info/10 absolute inset-1 h-auto w-[calc(100%-0.5rem)] cursor-text rounded-sm p-4"
                             [placeholder]="
                                 'COMMON.SEARCH_FOR'
                                     | translate: { name: 'modules' }
                             "
                         />
-                    </app-option>
+                    </div>
+                    <p select-empty>
+                        {{
+                            'COMMON.SEARCH_EMPTY'
+                                | translate: { name: 'modules' }
+                        }}
+                    </p>
                     @for (mod of filtered_modules(); track mod) {
                         <app-option [disabled]="!mod.running" [value]="mod">
                             {{ mod.module }} {{ mod.index }}
@@ -75,19 +80,6 @@ export interface ModuleLike {
             </div>
         }
     `,
-    styles: [
-        `
-            .module-search-input {
-                width: 100%;
-                outline: none;
-            }
-
-            .module-search-input::placeholder {
-                color: var(--base-400, currentColor);
-                opacity: 0.65;
-            }
-        `,
-    ],
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,

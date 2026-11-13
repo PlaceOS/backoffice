@@ -247,9 +247,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                     [placeholder]="'Select Branch'"
                                     (openedChange)="setBranchOpen($event)"
                                 >
-                                    <app-option
-                                        class="bg-base-100 sticky -top-2 z-20"
-                                    >
+                                    <div select-search>
                                         <input
                                             #branch_search
                                             type="search"
@@ -266,7 +264,6 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                             "
                                             (click)="$event.stopPropagation()"
                                             (keydown)="$event.stopPropagation()"
-                                            class="option-search-input focus:bg-info/10 pointer-events-auto absolute inset-1 h-auto cursor-text rounded-sm p-4"
                                             [placeholder]="
                                                 'COMMON.SEARCH_FOR'
                                                     | translate
@@ -278,7 +275,14 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                                         : { name: 'branches' }
                                             "
                                         />
-                                    </app-option>
+                                    </div>
+                                    <p select-empty>
+                                        {{
+                                            'COMMON.SEARCH_EMPTY'
+                                                | translate
+                                                    : { name: 'branches' }
+                                        }}
+                                    </p>
                                     @for (
                                         branch of filtered_branch_list();
                                         track branch
@@ -332,9 +336,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                             </div>
                                         </div>
                                     </app-select-trigger>
-                                    <app-option
-                                        class="bg-base-100 sticky -top-2 z-20"
-                                    >
+                                    <div select-search>
                                         <input
                                             #commit_search
                                             type="search"
@@ -351,7 +353,6 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                             "
                                             (click)="$event.stopPropagation()"
                                             (keydown)="$event.stopPropagation()"
-                                            class="option-search-input focus:bg-info/10 pointer-events-auto absolute inset-1 h-auto cursor-text rounded-sm p-4"
                                             [placeholder]="
                                                 'COMMON.SEARCH_FOR'
                                                     | translate
@@ -363,7 +364,13 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
                                                         : { name: 'commits' }
                                             "
                                         />
-                                    </app-option>
+                                    </div>
+                                    <p select-empty>
+                                        {{
+                                            'COMMON.SEARCH_EMPTY'
+                                                | translate: { name: 'commits' }
+                                        }}
+                                    </p>
                                     @for (
                                         commit of filtered_commit_list();
                                         track commit
@@ -472,19 +479,6 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
             }
         </fullscreen-modal-shell>
     `,
-    styles: [
-        `
-            .option-search-input {
-                width: calc(100% - 0.5rem);
-                outline: none;
-            }
-
-            .option-search-input::placeholder {
-                color: var(--base-400, currentColor);
-                opacity: 0.65;
-            }
-        `,
-    ],
     imports: [
         SpinnerComponent,
         TooltipDirective,

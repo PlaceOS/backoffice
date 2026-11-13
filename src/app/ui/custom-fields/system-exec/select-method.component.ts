@@ -49,7 +49,7 @@ interface MethodOption extends PlaceModuleFunction {
                         (ngModelChange)="setValue($event)"
                         (openedChange)="setOpen($event)"
                     >
-                        <app-option class="hover:bg-base-100! sticky -top-2">
+                        <div select-search>
                             <input
                                 #method_search
                                 name="method-search"
@@ -58,13 +58,18 @@ interface MethodOption extends PlaceModuleFunction {
                                 (mousedown)="$event.stopPropagation()"
                                 (click)="$event.stopPropagation()"
                                 (keydown)="$event.stopPropagation()"
-                                class="method-search-input pointer-event-auto focus:bg-info/10 absolute inset-1 h-auto w-[calc(100%-0.5rem)] cursor-text rounded-sm p-4"
                                 [placeholder]="
                                     'COMMON.SEARCH_FOR'
                                         | translate: { name: 'methods' }
                                 "
                             />
-                        </app-option>
+                        </div>
+                        <p select-empty>
+                            {{
+                                'COMMON.SEARCH_EMPTY'
+                                    | translate: { name: 'methods' }
+                            }}
+                        </p>
                         @for (method of filtered_method_list(); track method) {
                             <app-option [value]="method">
                                 {{ method.name }}
@@ -86,19 +91,6 @@ interface MethodOption extends PlaceModuleFunction {
             </div>
         }
     `,
-    styles: [
-        `
-            .method-search-input {
-                width: 100%;
-                outline: none;
-            }
-
-            .method-search-input::placeholder {
-                color: var(--base-400, currentColor);
-                opacity: 0.65;
-            }
-        `,
-    ],
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,

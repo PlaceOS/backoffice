@@ -40,6 +40,9 @@ let next_id = 0;
  * Drop-down list of `app-option`s.
  * Works with `ngModel`, `[formField]` and `[(value)]`.
  * Add `multiple` to select more than one value. The value is then an array.
+ * Put a search input in an element with the `select-search` attribute. It
+ * shows above the options and stays in view as they scroll. Put the text to
+ * show when there are no options in an element with `select-empty`.
  */
 @Component({
     selector: 'app-select',
@@ -67,13 +70,21 @@ let next_id = 0;
             (overlayOutsideClick)="onOutsideClick($event)"
             (detach)="close()"
         >
-            <div
-                class="select-panel"
-                role="listbox"
-                [id]="panel_id"
-                [attr.aria-multiselectable]="multiple()"
-            >
-                <ng-content />
+            <div class="select-panel">
+                <ng-content select="[select-search]" />
+                <div
+                    role="listbox"
+                    [id]="panel_id"
+                    [attr.aria-multiselectable]="multiple()"
+                >
+                    <ng-content />
+                </div>
+                <!-- Always there while open, so screen readers announce it -->
+                <div class="select-empty" role="status">
+                    @if (!options().length) {
+                        <ng-content select="[select-empty]" />
+                    }
+                </div>
             </div>
         </ng-template>
     `,
