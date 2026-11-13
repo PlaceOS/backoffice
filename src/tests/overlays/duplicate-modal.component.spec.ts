@@ -70,4 +70,33 @@ describe('DuplicateModalComponent', () => {
             },
         ]);
     });
+
+    it('stops saving copies once the dialog is closed', async () => {
+        TestBed.configureTestingModule({
+            imports: [DuplicateModalComponent],
+            providers: [
+                provideZonelessChangeDetection(),
+                {
+                    provide: DIALOG_DATA,
+                    useValue: {
+                        item: new Item({ id: 'sys-1', name: 'Room' }),
+                        save: vi.fn(async (item: Item) => {
+                            // The user closes the dialog during the first save
+                            fixture.destroy();
+                            return { ...item, id: 'new' };
+                        }),
+                    },
+                },
+                { provide: DialogRef, useValue: { close: vi.fn() } },
+            ],
+        });
+        const fixture = TestBed.createComponent(DuplicateModalComponent);
+        const component = fixture.componentInstance;
+        const save = TestBed.inject(DIALOG_DATA).save;
+        component.times = 3;
+
+        await component.duplicate();
+
+        expect(save).toHaveBeenCalledTimes(1);
+    });
 });

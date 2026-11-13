@@ -6,6 +6,7 @@ import {
     OverlayRef,
 } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
+import { ViewportRuler } from '@angular/cdk/scrolling';
 import {
     Component,
     ComponentRef,
@@ -16,6 +17,7 @@ import {
     input,
     OnDestroy,
 } from '@angular/core';
+import { Subscription } from 'rxjs';
 import {
     PANEL_GAP,
     PANEL_SHADOW,
@@ -164,6 +166,8 @@ export class TooltipDirective implements OnDestroy {
     private readonly _overlay = inject(Overlay);
     private readonly _describer = inject(AriaDescriber);
     private readonly _focus = inject(FocusMonitor);
+    private readonly _viewport = inject(ViewportRuler);
+    private _resize: Subscription;
     private _overlay_ref: OverlayRef;
     private _panel: ComponentRef<TooltipPanelComponent>;
     private _strategy: FlexibleConnectedPositionStrategy;
@@ -224,9 +228,10 @@ export class TooltipDirective implements OnDestroy {
                 panelClass: 'tooltip-pane',
             });
             // The scroll strategy detaches the tooltip without a call to hide
-            this._overlay_ref
-                .detachments()
-                .subscribe(() => (this._panel = undefined));
+            this._overlay_ref.detachments().subscribe(() => {
+                this._panel = undefined;
+                this._resize?.unsubscribe();
+            });
         }
         // A hovered raised button moves while its transition runs, so place
         // the tooltip from its box at rest. Only a hovered one has risen.
@@ -255,6 +260,9 @@ export class TooltipDirective implements OnDestroy {
         this._setText(text);
         this._overlay_ref.updatePosition();
         this._placeArrow();
+        // The tooltip is placed from the trigger's box when it showed, which
+        // a resize can move, so close it like a scroll does
+        this._resize = this._viewport.change().subscribe(() => this.hide());
     }
 
     public hide() {
@@ -263,6 +271,7 @@ export class TooltipDirective implements OnDestroy {
     }
 
     public ngOnDestroy() {
+        this._resize?.unsubscribe();
         this._focus.stopMonitoring(this._element);
         if (this._described) {
             this._describer.removeDescription(

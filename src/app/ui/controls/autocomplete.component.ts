@@ -149,6 +149,8 @@ export class AutocompleteTriggerDirective<T = unknown> implements OnDestroy {
     public close() {
         if (!this.opened()) return;
         this._overlay_ref?.detach();
+        // Clear the active option's highlight before the manager goes
+        this._key_manager?.setActiveItem(-1);
         this._key_manager?.destroy();
         this._key_manager = undefined;
         this.active_id.set(null);

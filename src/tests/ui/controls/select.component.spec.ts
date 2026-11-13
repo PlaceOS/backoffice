@@ -97,4 +97,27 @@ describe('SelectComponent', () => {
         await fixture.whenStable();
         expect(select.getAttribute('aria-expanded')).toBe('false');
     });
+
+    it('marks the control touched when the panel closes', async () => {
+        const { fixture, select, open } = await setup();
+        await open();
+        select.click();
+        await fixture.whenStable();
+        expect(select.classList).toContain('ng-touched');
+    });
+
+    it('highlights one option after it opens with a new value', async () => {
+        const { fixture, select, open } = await setup();
+        const frame = () => new Promise((done) => requestAnimationFrame(done));
+        await open();
+        await frame();
+        select.click();
+        fixture.componentInstance.value = 'b';
+        await fixture.whenStable();
+        await open();
+        await frame();
+        await fixture.whenStable();
+        const active = document.querySelectorAll('app-option.active');
+        expect([...active].map((e) => e.textContent.trim())).toEqual(['Beta']);
+    });
 });

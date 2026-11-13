@@ -1,4 +1,5 @@
 import {
+    afterEveryRender,
     Component,
     computed,
     contentChild,
@@ -6,6 +7,8 @@ import {
     inject,
 } from '@angular/core';
 import { FormField } from '@angular/forms/signals';
+
+let next_id = 0;
 
 /**
  * Outlined box for an input, textarea, `app-select` or `app-chip-list`.
@@ -17,6 +20,7 @@ import { FormField } from '@angular/forms/signals';
  *
  * The error state comes from a `[formField]` control, or from the
  * `ng-touched` and `ng-invalid` classes that `ngModel` adds.
+ * The control is described by the error or hint that shows.
  * Add the `no-subscript` class to remove the space for errors and hints.
  * The styles are in `styles.css` so that utility classes can change them.
  */
@@ -28,7 +32,7 @@ import { FormField } from '@angular/forms/signals';
             <ng-content />
             <ng-content select="[suffix]" />
         </div>
-        <div class="field-subscript">
+        <div class="field-subscript" [id]="subscript_id">
             <ng-content select="[error], [hint]" />
         </div>
     `,
@@ -39,6 +43,14 @@ import { FormField } from '@angular/forms/signals';
 })
 export class FormFieldComponent {
     private readonly _element = inject<ElementRef<HTMLElement>>(ElementRef);
+
+    public readonly subscript_id = `app-form-field-subscript-${next_id++}`;
+
+    constructor() {
+        // Bindings on the control can replace the attribute, so check after
+        // each render
+        afterEveryRender(() => this._describeControl());
+    }
     private readonly _field = contentChild(FormField, { descendants: true });
 
     /** Whether the signal form control is touched and invalid */
@@ -46,6 +58,26 @@ export class FormFieldComponent {
         const state = this._field()?.state();
         return !!state && state.touched() && state.invalid();
     });
+
+    /**
+     * Add the error and hint area to the control's `aria-describedby`. Screen
+     * readers skip the error or hint that is hidden, so only the one that
+     * shows is read. Other ids on the control are kept.
+     */
+    private _describeControl() {
+        const control = this._element.nativeElement.querySelector(
+            '.field-box :is(input, textarea, app-select)',
+        );
+        if (!control) return;
+        const ids = (control.getAttribute('aria-describedby') || '')
+            .split(/\s+/)
+            .filter(Boolean);
+        if (ids.includes(this.subscript_id)) return;
+        control.setAttribute(
+            'aria-describedby',
+            [...ids, this.subscript_id].join(' '),
+        );
+    }
 
     /** Focus the control on a click on the box outside of it */
     public focusControl(event: MouseEvent) {

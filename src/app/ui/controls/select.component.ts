@@ -234,11 +234,21 @@ export class SelectComponent<T = unknown>
 
     public close() {
         if (!this.opened()) return;
+        // Focus in the panel, e.g. on its search input, goes back to the
+        // select. A click elsewhere has already moved focus out of it.
+        const doc = this._element.nativeElement.ownerDocument;
+        const panel = doc.getElementById(this.panel_id)?.parentElement;
+        const refocus = !!panel?.contains(doc.activeElement);
         this.opened.set(false);
         this.active_id.set(null);
+        // Clear the active option's highlight before the manager goes
+        this._key_manager?.setActiveItem(-1);
         this._key_manager?.destroy();
         this._key_manager = undefined;
+        // The user has been to the select, so its errors may show
+        this._onTouched();
         this.openedChange.emit(false);
+        if (refocus) this.focus();
     }
 
     public toggle() {
@@ -277,7 +287,6 @@ export class SelectComponent<T = unknown>
                 event.stopPropagation();
             }
             this.close();
-            this._onTouched();
         } else if (key === 'Enter' || (key === ' ' && !this._typing())) {
             event.preventDefault();
             this._key_manager?.activeItem?.pickOption();

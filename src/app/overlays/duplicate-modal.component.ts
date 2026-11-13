@@ -1,5 +1,6 @@
 import {
     Component,
+    DestroyRef,
     inject,
     output,
     signal,
@@ -7,7 +8,6 @@ import {
 } from '@angular/core';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
@@ -108,9 +108,8 @@ export class DuplicateModalComponent {
     private _closed = false;
 
     constructor() {
-        this._dialog_ref.closed
-            .pipe(takeUntilDestroyed())
-            .subscribe(() => (this._closed = true));
+        // Closing the dialog destroys this component before `closed` emits
+        inject(DestroyRef).onDestroy(() => (this._closed = true));
     }
 
     /** Emitter for user action on the modal */
@@ -173,6 +172,8 @@ export class DuplicateModalComponent {
                 this.setStatus(i, 'done');
             }
         }
+        // A closed dialog has no one to tell, and closing it again throws
+        if (this._closed) return;
         const clean_list = list.filter((item) => !!item);
         this.event.emit({
             reason: 'done',

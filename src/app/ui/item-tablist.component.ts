@@ -177,6 +177,15 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
         effect(() => {
             this._route_change();
             this._updateID();
+            // Show the tab of the new route, e.g. after the arrow key hotkeys
+            // or browser history change it
+            afterNextRender(
+                () =>
+                    this._reveal(
+                        this._nav().nativeElement.querySelector('a.active'),
+                    ),
+                { injector: this._injector },
+            );
         });
         afterNextRender(() => {
             const observer = new ResizeObserver(() => this.updateScroll());
@@ -196,10 +205,7 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
 
     /** Scroll a focused tab fully into view, as focus may leave it cut off */
     public showFocused(event: FocusEvent) {
-        (event.target as HTMLElement).scrollIntoView?.({
-            block: 'nearest',
-            inline: 'nearest',
-        });
+        this._reveal(event.target as HTMLElement);
     }
 
     public updateScroll() {
@@ -210,21 +216,27 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
             // The arrows narrow the bar once they render, which can cut off
             // the focused or active tab, so bring it back into view
             afterNextRender(
-                () => {
-                    const tab =
+                () =>
+                    this._reveal(
                         nav.querySelector<HTMLElement>('a:focus') ||
-                        nav.querySelector<HTMLElement>('a.active');
-                    tab?.scrollIntoView({
-                        block: 'nearest',
-                        inline: 'nearest',
-                    });
-                },
+                            nav.querySelector<HTMLElement>('a.active'),
+                    ),
                 { injector: this._injector },
             );
         }
         this.overflowing.set(overflowing);
         this.at_start.set(nav.scrollLeft <= 1);
         this.at_end.set(nav.scrollLeft >= max - 1);
+    }
+
+    /** Scroll the bar so the tab shows in full. Only the bar scrolls, not the page */
+    private _reveal(tab: HTMLElement | null) {
+        if (!tab) return;
+        const nav = this._nav().nativeElement;
+        const bar = nav.getBoundingClientRect();
+        const box = tab.getBoundingClientRect();
+        if (box.left < bar.left) nav.scrollLeft -= bar.left - box.left;
+        else if (box.right > bar.right) nav.scrollLeft += box.right - bar.right;
     }
 
     public override ngOnDestroy() {
