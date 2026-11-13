@@ -18,7 +18,7 @@ vi.mock('../../app/common/notifications', () => ({
     notifySuccess: vi.fn(),
 }));
 
-describe('Staff tenant advance booking limits', () => {
+describe('StaffTenantModalComponent', () => {
     const tenant = {
         id: 'tenant-test',
         name: 'Test Tenant',
@@ -56,6 +56,51 @@ describe('Staff tenant advance booking limits', () => {
         return TestBed.createComponent(StaffTenantModalComponent)
             .componentInstance;
     }
+
+    it('blocks a new Office 365 tenant until the client secret is set', async () => {
+        const component = await createComponent();
+        component.formModel.update((model) => ({
+            ...model,
+            name: 'New Tenant',
+            platform: 'office365',
+            delegated: false,
+        }));
+        component.updateCredential('tenant', 'tenant-id');
+        component.updateCredential('client_id', 'client-id');
+
+        await component.save();
+        expect(post).not.toHaveBeenCalled();
+
+        component.updateCredential('client_secret', 'secret');
+        await component.save();
+        expect(post).toHaveBeenCalledWith(
+            '/api/staff/v1/tenants',
+            expect.objectContaining({
+                credentials: {
+                    tenant: 'tenant-id',
+                    client_id: 'client-id',
+                    client_secret: 'secret',
+                },
+            }),
+        );
+    });
+
+    it('sends an empty Outlook config to clear a saved one', async () => {
+        const outlook_tenant = {
+            ...tenant,
+            outlook_config: { app_id: 'outlook-app' },
+        };
+        const component = await createComponent({ tenant: outlook_tenant });
+        expect(component.show_outlook()).toBe(true);
+
+        component.show_outlook.set(false);
+        await component.save();
+
+        expect(put).toHaveBeenCalledWith(
+            '/api/staff/v1/tenants/tenant-test',
+            expect.objectContaining({ outlook_config: {} }),
+        );
+    });
 
     it('loads and updates ranges without changing booking count limits', async () => {
         const component = await createComponent({ tenant });

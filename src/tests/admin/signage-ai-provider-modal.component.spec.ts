@@ -1,5 +1,6 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
+import { patch } from '@placeos/ts-client';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SignageAIProviderModalComponent } from '../../app/admin/signage-ai/signage-ai-provider-modal.component';
@@ -12,9 +13,14 @@ vi.mock('@placeos/ts-client', () => ({
     post: vi.fn(() => Promise.resolve({})),
     showMetadata: vi.fn(() => Promise.resolve({})),
 }));
+vi.mock('../../app/common/notifications', () => ({
+    notifyError: vi.fn(),
+    notifySuccess: vi.fn(),
+}));
 
 describe('SignageAIProviderModalComponent', () => {
     beforeEach(async () => {
+        vi.clearAllMocks();
         await TestBed.configureTestingModule({
             imports: [SignageAIProviderModalComponent],
             providers: [
@@ -61,5 +67,23 @@ describe('SignageAIProviderModalComponent', () => {
             location: '',
         }));
         expect(component.form.location().valid()).toBe(true);
+    });
+
+    it('keeps the stored credentials when an edit leaves them empty', async () => {
+        TestBed.overrideProvider(DIALOG_DATA, {
+            useValue: {
+                item: { id: 'provider-1', name: 'OpenAI', provider: 'OPENAI' },
+            },
+        });
+        const component = TestBed.createComponent(
+            SignageAIProviderModalComponent,
+        ).componentInstance;
+
+        await component.save();
+
+        expect(patch).toHaveBeenCalledWith(
+            '/api/engine/v2/signage/ai/providers/provider-1',
+            expect.not.objectContaining({ credentials: expect.anything() }),
+        );
     });
 });
