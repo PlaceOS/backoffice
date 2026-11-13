@@ -62,7 +62,9 @@ jobs:
               run: bun run test:ci
 
     e2e-test:
-        runs-on: ubuntu-latest
+        # Playwright cannot install its browsers on ubuntu-latest (26.04) yet.
+        # Move back to ubuntu-latest when Playwright supports it.
+        runs-on: ubuntu-24.04
         timeout-minutes: 25
         env:
             # Pull requests to develop and pushes to develop run Chromium only.
