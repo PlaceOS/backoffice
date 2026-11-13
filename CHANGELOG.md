@@ -87,6 +87,13 @@ All notable changes to this project will be documented in this file.
 
 - Allow editing camera snapshot URLs
 
+#### Ui
+
+- Pages crossfade on navigation, and the active tab and links slide to the new one
+- Menus, select panels and the search overlay animate in
+- Item details fade in over the skeleton, and the mobile menu slides in
+- Toasts fade out, and the upload list, banner and tab counts animate in
+
 ### Performance
 
 #### Build
@@ -121,6 +128,7 @@ All notable changes to this project will be documented in this file.
 
 - Share one item page shell across features
 - Replace Angular Material with our own controls
+- Remove unused animation styles and document the motion conventions
 
 ### Styling
 

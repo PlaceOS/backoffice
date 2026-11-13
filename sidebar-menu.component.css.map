@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["sidebar-menu.component.ts"],
-  "sourcesContent": ["\n            [sidebar-menu] {\n                transition: width 200ms;\n            }\n\n            .active {\n                background-color: var(--secondary);\n                color: var(--secondary-content);\n            }\n\n            @media screen and (min-width: 512px) {\n                .compact {\n                    width: 4.5rem;\n                }\n            }\n        "],
-  "mappings": ";AACY,CAAA;AACI,cAAA,MAAA;AACJ;AAEA,CAAA;AACI,oBAAA,IAAA;AACA,SAAA,IAAA;AACJ;AAEA,OAAA,YAAA,WAAA;AACI,GAAA;AACI,WAAA;AACJ;AACJ;",
+  "sourcesContent": ["\n            [sidebar-menu] {\n                transition: width 200ms;\n            }\n\n            .active {\n                background-color: var(--secondary);\n                color: var(--secondary-content);\n            }\n\n            @media screen and (min-width: 512px) {\n                .compact {\n                    width: 4.5rem;\n                }\n            }\n\n            /* On small screens the menu covers the page. It slides in when it opens. */\n            @media (max-width: 39.99rem) and (prefers-reduced-motion: no-preference) {\n                .open {\n                    animation: menu-enter 200ms var(--ease-enter);\n                }\n            }\n\n            @keyframes menu-enter {\n                from {\n                    transform: translateX(-100%);\n                }\n            }\n        "],
+  "mappings": ";AACY,CAAA;AACI,cAAA,MAAA;AACJ;AAEA,CAAA;AACI,oBAAA,IAAA;AACA,SAAA,IAAA;AACJ;AAEA,OAAA,YAAA,WAAA;AACI,GAAA;AACI,WAAA;AACJ;AACJ;AAGA,QAAA,WAAA,eAAA,wBAAA;AACI,GAAA;AACI,eAAA,WAAA,MAAA,IAAA;AACJ;AACJ;AAEA,WAJQ;AAKJ;AACI,eAAA,WAAA;AACJ;AACJ;",
   "names": []
 }

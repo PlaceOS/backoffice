@@ -4450,7 +4450,8 @@ input:where([type=button], [type=reset], [type=submit]),
   --radius-md: 6px;
   --radius-lg: 8px;
   --motion-snap: 120ms cubic-bezier(0.8, -0.4, 0.5, 1);
-  --motion-enter: 160ms cubic-bezier(0.24, 1, 0.32, 1);
+  --ease-enter: cubic-bezier(0.24, 1, 0.32, 1);
+  --motion-enter: 160ms var(--ease-enter);
   --shadow-high: 0 4px 0 2px rgba(16, 16, 48, 0.03), 0 1px 0 1px rgba(16, 16, 48, 0.03);
   --backdrop: rgba(16, 8, 40, 0.27);
 }
@@ -4552,26 +4553,6 @@ span.highlight {
 }
 .mono {
   font-family: "Fira Code Variable", monospace;
-}
-@keyframes crossfade {
-  0% {
-    background-color: #d32f2f;
-  }
-  20% {
-    background-color: #7b1fa2;
-  }
-  40% {
-    background-color: #1976d2;
-  }
-  60% {
-    background-color: #00796b;
-  }
-  80% {
-    background-color: #ff8f00;
-  }
-  100% {
-    background-color: #d32f2f;
-  }
 }
 #placeos .markdown ol {
   list-style-type: decimal;
@@ -4871,26 +4852,6 @@ span.highlight {
 }
 .mono {
   font-family: "Fira Code Variable", monospace;
-}
-@keyframes crossfade {
-  0% {
-    background-color: #d32f2f;
-  }
-  20% {
-    background-color: #7b1fa2;
-  }
-  40% {
-    background-color: #1976d2;
-  }
-  60% {
-    background-color: #00796b;
-  }
-  80% {
-    background-color: #ff8f00;
-  }
-  100% {
-    background-color: #d32f2f;
-  }
 }
 #placeos .markdown ol {
   list-style-type: decimal;
@@ -5365,6 +5326,8 @@ app-select.disabled {
   box-shadow: 0 2px 0 hsl(0, 0%, 80%);
   box-shadow: 0 2px 0 var(--base-300);
   font-size: 0.875rem;
+  animation: dialog-enter 160ms cubic-bezier(0.24, 1, 0.32, 1);
+  animation: dialog-enter var(--motion-enter);
 }
 .select-panel {
   width: 100%;
@@ -5700,7 +5663,9 @@ input[type=checkbox][role=switch]:focus-visible {
   .spinner svg.spin circle {
     animation-duration: 4s;
   }
-  .cdk-dialog-container {
+  .cdk-dialog-container,
+  .select-panel,
+  .cdk-menu {
     animation: none;
   }
 }
@@ -5822,6 +5787,9 @@ input[type=checkbox][role=switch]:focus-visible {
     var(--tw-ring-offset-shadow),
     var(--tw-ring-shadow),
     var(--tw-shadow);
+}
+.toast.toast-leave {
+  animation: fade-out 120ms ease-in forwards;
 }
 .toast.success {
   background-color: hsla(118, 50%, 43%, 1);
@@ -6245,27 +6213,56 @@ a[icon][disabled] {
   overflow: hidden;
   min-height: 0;
 }
-#placeos .expandable-all {
-  display: grid;
-  grid-template-rows: 0fr;
-  width: 0;
-  overflow: hidden;
-  transition: grid-template-rows 200ms ease-in-out, width 200ms ease-in-out;
+[page-transition] {
+  view-transition-name: page;
 }
-#placeos .expandable-all.expanded {
-  grid-template-rows: 1fr;
-  width: auto;
+[admin-nav] a[aria-current=page] {
+  view-transition-name: admin-nav-active;
 }
-#placeos .expandable-all > * {
-  overflow: hidden;
-  min-height: 0;
+[sidebar-menu] a[aria-current=page] {
+  view-transition-name: menu-active;
 }
-#placeos .fade-in-out {
-  opacity: 0;
-  transition: opacity 200ms ease-in-out;
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
 }
-#placeos .fade-in-out.visible {
-  opacity: 1;
+::view-transition-group(page) {
+  animation: none;
+}
+::view-transition-old(page),
+::view-transition-new(page) {
+  height: 100%;
+  -o-object-fit: none;
+  object-fit: none;
+  -o-object-position: top left;
+  object-position: top left;
+}
+::view-transition-old(page) {
+  animation: fade-out 80ms ease-in both;
+}
+::view-transition-new(page) {
+  animation: fade-in 160ms cubic-bezier(0.24, 1, 0.32, 1) both;
+  animation: fade-in var(--motion-enter) both;
+}
+::view-transition-group(tab-indicator),
+::view-transition-group(admin-nav-active),
+::view-transition-group(menu-active) {
+  animation-duration: 200ms;
+  animation-timing-function: cubic-bezier(0.24, 1, 0.32, 1);
+  animation-timing-function: var(--ease-enter);
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
 }
 @keyframes fade-in {
   from {
@@ -6298,29 +6295,18 @@ a[icon][disabled] {
 #placeos .animate-fade-in {
   animation: fade-in 200ms ease-out;
 }
-#placeos .animate-fade-in-scale {
-  animation: fade-in-scale 200ms ease-out;
+#placeos .animate-dialog-enter {
+  animation: dialog-enter 160ms cubic-bezier(0.24, 1, 0.32, 1);
+  animation: dialog-enter var(--motion-enter);
 }
 #placeos .animate-slide-in-up {
   animation: slide-in-up 200ms ease-out;
 }
-#placeos .slide-up {
-  transform: translateY(100%);
-  opacity: 0;
-  transition: transform 200ms ease-in-out, opacity 200ms ease-in-out;
-}
-#placeos .slide-up.visible {
-  transform: translateY(0);
-  opacity: 1;
-}
-#placeos .slide-down {
-  transform: translateY(-100%);
-  opacity: 0;
-  transition: transform 200ms ease-in-out, opacity 200ms ease-in-out;
-}
-#placeos .slide-down.visible {
-  transform: translateY(0);
-  opacity: 1;
+@media (prefers-reduced-motion: reduce) {
+  #placeos .animate-dialog-enter,
+  #placeos .animate-slide-in-up {
+    animation: none;
+  }
 }
 #placeos .cdk-overlay-pane {
   max-width: none !important;

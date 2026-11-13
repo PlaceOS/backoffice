@@ -1,0 +1,730 @@
+import {
+  TabsComponent
+} from "./chunk-GEOS7XT5.js";
+import {
+  GROUP_PERMISSION_FLAGS,
+  GroupPermissionsModalComponent,
+  hasGroupPermission,
+  setGroupPermission
+} from "./chunk-3SEQSBXV.js";
+import {
+  openConfirmModal
+} from "./chunk-BGDKOWYJ.js";
+import {
+  SpinnerComponent
+} from "./chunk-WWSSYZEA.js";
+import {
+  describeError
+} from "./chunk-T3O7QHHC.js";
+import {
+  notifyError,
+  notifySuccess
+} from "./chunk-2DKDRFBI.js";
+import {
+  waitForEvent
+} from "./chunk-UBUJ7KM4.js";
+import {
+  SettingsToggleComponent
+} from "./chunk-A7VS2VYD.js";
+import {
+  FormFieldComponent
+} from "./chunk-O2B7KTSR.js";
+import {
+  DefaultValueAccessor,
+  FormsModule,
+  NgControlStatus,
+  NgModel
+} from "./chunk-5APMNGCP.js";
+import {
+  DialogTitleDirective
+} from "./chunk-QSK7KYKQ.js";
+import {
+  DialogCloseDirective
+} from "./chunk-SQMBYJ2Q.js";
+import {
+  DIALOG_DATA,
+  DialogRef
+} from "./chunk-762ECDWF.js";
+import {
+  TranslatePipe
+} from "./chunk-G7DGN64C.js";
+import {
+  i18n
+} from "./chunk-JJ65W2TY.js";
+import {
+  escapeHtml
+} from "./chunk-DGKMQHVX.js";
+import {
+  IconComponent
+} from "./chunk-JEKJ3JY5.js";
+import {
+  Component,
+  computed,
+  inject,
+  resource,
+  setClassMetadata,
+  signal,
+  ɵsetClassDebugInfo,
+  ɵɵadvance,
+  ɵɵattribute,
+  ɵɵclassProp,
+  ɵɵconditional,
+  ɵɵconditionalCreate,
+  ɵɵcontrol,
+  ɵɵcontrolCreate,
+  ɵɵdefineComponent,
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵgetCurrentView,
+  ɵɵlistener,
+  ɵɵnextContext,
+  ɵɵpipe,
+  ɵɵpipeBind1,
+  ɵɵpipeBind2,
+  ɵɵproperty,
+  ɵɵpureFunction1,
+  ɵɵpureFunction2,
+  ɵɵrepeater,
+  ɵɵrepeaterCreate,
+  ɵɵresetView,
+  ɵɵrestoreView,
+  ɵɵtext,
+  ɵɵtextInterpolate1,
+  ɵɵtwoWayBindingSet,
+  ɵɵtwoWayListener,
+  ɵɵtwoWayProperty
+} from "./chunk-6G3VFYSX.js";
+import {
+  __spreadProps,
+  __spreadValues
+} from "./chunk-RQBZITXC.js";
+
+// src/app/groups/group-bulk-add-modal.component.ts
+var _c0 = (a0) => ({ count: a0 });
+var _c1 = (a0, a1) => [a0, a1];
+var _forTrack0 = ($index, $item) => $item.id;
+var _forTrack1 = ($index, $item) => $item.key;
+function GroupBulkAddModalComponent_Conditional_8_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r1 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "app-tabs", 10);
+    \u0275\u0275pipe(1, "translate");
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275twoWayListener("selectedIndexChange", function GroupBulkAddModalComponent_Conditional_8_Template_app_tabs_selectedIndexChange_0_listener($event) {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r1 = \u0275\u0275nextContext();
+      \u0275\u0275twoWayBindingSet(ctx_r1.tab, $event) || (ctx_r1.tab = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275property("labels", \u0275\u0275pureFunction2(6, _c1, \u0275\u0275pipeBind1(1, 2, "GROUPS.TAB_USERS"), \u0275\u0275pipeBind1(2, 4, "GROUPS.FIELD_PERMISSIONS")));
+    \u0275\u0275twoWayProperty("selectedIndex", ctx_r1.tab);
+  }
+}
+function GroupBulkAddModalComponent_Conditional_10_Conditional_6_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 15);
+    \u0275\u0275element(1, "app-spinner", 18);
+    \u0275\u0275elementEnd();
+  }
+}
+function GroupBulkAddModalComponent_Conditional_10_Conditional_8_For_1_Conditional_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "icon", 22);
+    \u0275\u0275text(1, "done");
+    \u0275\u0275elementEnd();
+  }
+}
+function GroupBulkAddModalComponent_Conditional_10_Conditional_8_For_1_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r4 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "button", 20);
+    \u0275\u0275listener("click", function GroupBulkAddModalComponent_Conditional_10_Conditional_8_For_1_Template_button_click_0_listener() {
+      const item_r5 = \u0275\u0275restoreView(_r4).$implicit;
+      const ctx_r1 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r1.toggleItem(item_r5));
+    });
+    \u0275\u0275elementStart(1, "div", 21);
+    \u0275\u0275conditionalCreate(2, GroupBulkAddModalComponent_Conditional_10_Conditional_8_For_1_Conditional_2_Template, 2, 0, "icon", 22);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 23)(4, "div", 24);
+    \u0275\u0275text(5);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(6, "div", 25);
+    \u0275\u0275text(7);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const item_r5 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275classProp("bg-base-200", ctx_r1.isSelected(item_r5.id));
+    \u0275\u0275advance();
+    \u0275\u0275classProp("bg-info", ctx_r1.isSelected(item_r5.id))("border-info", ctx_r1.isSelected(item_r5.id))("text-info-content", ctx_r1.isSelected(item_r5.id));
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx_r1.isSelected(item_r5.id) ? 2 : -1);
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate1(" ", item_r5.name || item_r5.id, " ");
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", item_r5.email || item_r5.description || item_r5.id, " ");
+  }
+}
+function GroupBulkAddModalComponent_Conditional_10_Conditional_8_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275repeaterCreate(0, GroupBulkAddModalComponent_Conditional_10_Conditional_8_For_1_Template, 8, 11, "button", 19, _forTrack0);
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275repeater(ctx_r1.list_items());
+  }
+}
+function GroupBulkAddModalComponent_Conditional_10_Conditional_9_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 17);
+    \u0275\u0275text(1);
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(2, 1, ctx_r1.empty_message), " ");
+  }
+}
+function GroupBulkAddModalComponent_Conditional_10_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "app-form-field", 11)(1, "input", 12);
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275controlCreate();
+    \u0275\u0275listener("ngModelChange", function GroupBulkAddModalComponent_Conditional_10_Template_input_ngModelChange_1_listener($event) {
+      \u0275\u0275restoreView(_r3);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.search.set($event));
+    });
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 13)(4, "icon", 14);
+    \u0275\u0275text(5, "search");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275conditionalCreate(6, GroupBulkAddModalComponent_Conditional_10_Conditional_6_Template, 2, 0, "div", 15);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(7, "section", 16);
+    \u0275\u0275conditionalCreate(8, GroupBulkAddModalComponent_Conditional_10_Conditional_8_Template, 2, 0)(9, GroupBulkAddModalComponent_Conditional_10_Conditional_9_Template, 3, 3, "div", 17);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275property("placeholder", \u0275\u0275pipeBind1(2, 4, ctx_r1.placeholder))("ngModel", ctx_r1.search());
+    \u0275\u0275control();
+    \u0275\u0275advance(5);
+    \u0275\u0275conditional(ctx_r1.loading() ? 6 : -1);
+    \u0275\u0275advance(2);
+    \u0275\u0275conditional(ctx_r1.list_items().length ? 8 : 9);
+  }
+}
+function GroupBulkAddModalComponent_Conditional_11_For_6_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r6 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "settings-toggle", 29);
+    \u0275\u0275controlCreate();
+    \u0275\u0275listener("ngModelChange", function GroupBulkAddModalComponent_Conditional_11_For_6_Template_settings_toggle_ngModelChange_0_listener($event) {
+      const permission_r7 = \u0275\u0275restoreView(_r6).$implicit;
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      return \u0275\u0275resetView(ctx_r1.setPermission(permission_r7.value, $event));
+    });
+    \u0275\u0275text(1);
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const permission_r7 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275property("ngModel", ctx_r1.hasPermission(ctx_r1.permissions(), permission_r7.value));
+    \u0275\u0275control();
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(2, 2, permission_r7.label), " ");
+  }
+}
+function GroupBulkAddModalComponent_Conditional_11_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 5)(1, "div", 26);
+    \u0275\u0275text(2);
+    \u0275\u0275pipe(3, "translate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "section", 27);
+    \u0275\u0275repeaterCreate(5, GroupBulkAddModalComponent_Conditional_11_For_6_Template, 3, 4, "settings-toggle", 28, _forTrack1);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(3, 1, "GROUPS.USERS_BULK_PERMISSIONS"), " ");
+    \u0275\u0275advance(3);
+    \u0275\u0275repeater(ctx_r1.permission_flags);
+  }
+}
+var GroupBulkAddModalComponent = class _GroupBulkAddModalComponent {
+  _dialog_ref = inject(DialogRef);
+  _data = inject(DIALOG_DATA);
+  selected = signal(
+    [],
+    ...ngDevMode ? [{ debugName: "selected" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  search = signal(
+    "",
+    ...ngDevMode ? [{ debugName: "search" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  loading = signal(
+    false,
+    ...ngDevMode ? [{ debugName: "loading" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  permissions = signal(
+    this._data.permissions ?? 0,
+    ...ngDevMode ? [{ debugName: "permissions" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  tab = signal(
+    0,
+    ...ngDevMode ? [{ debugName: "tab" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  title = this._data.title;
+  placeholder = this._data.placeholder;
+  empty_message = this._data.empty_message;
+  query_fn = this._data.query_fn;
+  show_permissions = !!this._data.show_permissions;
+  permission_flags = GROUP_PERMISSION_FLAGS;
+  hasPermission = hasGroupPermission;
+  _items = resource(__spreadProps(__spreadValues({}, ngDevMode ? { debugName: "_items" } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    params: () => this.search().trim(),
+    loader: async ({ params }) => {
+      this.loading.set(true);
+      try {
+        const items = await this.query_fn(params).catch(() => []);
+        const search = params.toLowerCase();
+        return items.filter((item) => !this.exclude_fn(item, search));
+      } finally {
+        this.loading.set(false);
+      }
+    }
+  }));
+  items = computed(
+    () => this._items.value() || [],
+    ...ngDevMode ? [{ debugName: "items" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  list_items = computed(
+    () => {
+      const selected = this.selected();
+      const selected_ids = new Set(selected.map((_) => _.id));
+      return [
+        ...selected,
+        ...this.items().filter((_) => !selected_ids.has(_.id))
+      ];
+    },
+    ...ngDevMode ? [{ debugName: "list_items" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  exclude_fn = (item, search) => !!this._data.exclude?.(item, search);
+  isSelected(id) {
+    return !!this.selected().find((_) => _.id === id);
+  }
+  toggleItem(item) {
+    if (!item?.id)
+      return;
+    if (this.isSelected(item.id)) {
+      this.selected.set(this.selected().filter((_) => _.id !== item.id));
+    } else {
+      this.selected.set([...this.selected(), item]);
+    }
+  }
+  setPermission(permission, enabled) {
+    this.permissions.set(setGroupPermission(this.permissions(), permission, enabled));
+  }
+  save() {
+    this._dialog_ref.close({
+      items: this.selected(),
+      permissions: this.permissions()
+    });
+  }
+  static \u0275fac = function GroupBulkAddModalComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _GroupBulkAddModalComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _GroupBulkAddModalComponent, selectors: [["group-bulk-add-modal"]], decls: 21, vars: 19, consts: [[1, "bg-base-200", "m-2", "flex", "h-14", "shrink-0", "items-center", "justify-between", "gap-2", "rounded-sm", "border-none", "p-2"], ["appDialogTitle", "", 1, "truncate", "px-2", "text-lg", "font-medium", "sm:text-xl"], ["icon", "", "ripple", "", "appDialogClose", ""], [1, "border-base-200", "shrink-0", "border-b", 3, "labels", "selectedIndex"], [1, "flex", "min-h-0", "flex-1", "flex-col", "gap-4", "overflow-y-auto", "px-4", "py-2"], [1, "flex", "flex-col", "gap-2"], [1, "bg-base-200", "m-2", "flex", "shrink-0", "items-center", "justify-center", "gap-2", "rounded-sm", "border-none", "p-2"], ["btn", "", "ripple", "", "appDialogClose", "", 1, "inverse", "bg-base-100", "flex-1"], ["btn", "", "ripple", "", 1, "flex-1", 3, "click", "disabled"], [1, "mr-2"], [1, "border-base-200", "shrink-0", "border-b", 3, "selectedIndexChange", "labels", "selectedIndex"], [1, "no-subscript"], ["name", "group-bulk-add-search", 3, "ngModelChange", "placeholder", "ngModel"], ["prefix", "", 1, "prefix"], [1, "relative", "-left-0.5", "text-2xl"], ["suffix", "", 1, "suffix"], [1, "border-base-200", "min-h-0", "flex-1", "overflow-auto", "rounded", "border", "sm:h-[45vh]", "sm:flex-none"], [1, "flex", "h-full", "min-h-40", "items-center", "justify-center", "p-6", "text-sm", "opacity-40"], ["diameter", "16"], ["ripple", "", 1, "border-base-200", "hover:bg-base-200", "flex", "w-full", "items-center", "gap-3", "border-b", "px-3", "py-2", "text-left", "last:border-b-0", 3, "bg-base-200"], ["ripple", "", 1, "border-base-200", "hover:bg-base-200", "flex", "w-full", "items-center", "gap-3", "border-b", "px-3", "py-2", "text-left", "last:border-b-0", 3, "click"], [1, "flex", "h-6", "w-6", "items-center", "justify-center", "rounded", "border"], [1, "text-lg"], [1, "min-w-0", "flex-1"], [1, "truncate", "text-sm"], [1, "truncate", "text-xs", "opacity-50"], [1, "text-xs", "font-medium", "uppercase", "opacity-50"], [1, "grid", "grid-cols-1", "gap-x-4", "gap-y-2", "sm:grid-cols-2"], [3, "ngModel"], [3, "ngModelChange", "ngModel"]], template: function GroupBulkAddModalComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "header", 0)(1, "h2", 1);
+      \u0275\u0275text(2);
+      \u0275\u0275pipe(3, "translate");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(4, "button", 2);
+      \u0275\u0275pipe(5, "translate");
+      \u0275\u0275elementStart(6, "icon");
+      \u0275\u0275text(7, "close");
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275conditionalCreate(8, GroupBulkAddModalComponent_Conditional_8_Template, 3, 9, "app-tabs", 3);
+      \u0275\u0275elementStart(9, "main", 4);
+      \u0275\u0275conditionalCreate(10, GroupBulkAddModalComponent_Conditional_10_Template, 10, 6);
+      \u0275\u0275conditionalCreate(11, GroupBulkAddModalComponent_Conditional_11_Template, 7, 3, "div", 5);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(12, "footer", 6)(13, "button", 7);
+      \u0275\u0275text(14);
+      \u0275\u0275pipe(15, "translate");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(16, "button", 8);
+      \u0275\u0275listener("click", function GroupBulkAddModalComponent_Template_button_click_16_listener() {
+        return ctx.save();
+      });
+      \u0275\u0275elementStart(17, "icon", 9);
+      \u0275\u0275text(18, "playlist_add");
+      \u0275\u0275elementEnd();
+      \u0275\u0275text(19);
+      \u0275\u0275pipe(20, "translate");
+      \u0275\u0275elementEnd()();
+    }
+    if (rf & 2) {
+      \u0275\u0275advance(2);
+      \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(3, 8, ctx.title), " ");
+      \u0275\u0275advance(2);
+      \u0275\u0275attribute("aria-label", \u0275\u0275pipeBind1(5, 10, "COMMON.CLOSE"));
+      \u0275\u0275advance(4);
+      \u0275\u0275conditional(ctx.show_permissions ? 8 : -1);
+      \u0275\u0275advance(2);
+      \u0275\u0275conditional(!ctx.show_permissions || ctx.tab() === 0 ? 10 : -1);
+      \u0275\u0275advance();
+      \u0275\u0275conditional(ctx.show_permissions && ctx.tab() === 1 ? 11 : -1);
+      \u0275\u0275advance(3);
+      \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(15, 12, "COMMON.CANCEL"), " ");
+      \u0275\u0275advance(2);
+      \u0275\u0275property("disabled", !ctx.selected().length);
+      \u0275\u0275advance(3);
+      \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind2(20, 14, "GROUPS.BULK_ADD_SELECTED", \u0275\u0275pureFunction1(17, _c0, ctx.selected().length)), " ");
+    }
+  }, dependencies: [
+    DialogCloseDirective,
+    SpinnerComponent,
+    FormFieldComponent,
+    DialogTitleDirective,
+    FormsModule,
+    DefaultValueAccessor,
+    NgControlStatus,
+    NgModel,
+    IconComponent,
+    TabsComponent,
+    SettingsToggleComponent,
+    TranslatePipe
+  ], styles: ["\n[_nghost-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  width: 32rem;\n  max-width: calc(100vw - 1rem);\n  max-height: calc(100vh - 2em);\n  overflow: hidden;\n}\n@media (max-width: 640px) {\n  [_nghost-%COMP%] {\n    width: 100%;\n    height: 100%;\n    max-width: 100%;\n    max-height: 100%;\n  }\n}\n/*# sourceMappingURL=group-bulk-add-modal.component.css.map */"] });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(GroupBulkAddModalComponent, [{
+    type: Component,
+    args: [{ selector: "group-bulk-add-modal", template: `
+        <header
+            class="bg-base-200 m-2 flex h-14 shrink-0 items-center justify-between gap-2 rounded-sm border-none p-2"
+        >
+            <h2
+                appDialogTitle
+                class="truncate px-2 text-lg font-medium sm:text-xl"
+            >
+                {{ title | translate }}
+            </h2>
+            <button
+                icon
+                ripple
+                appDialogClose
+                [attr.aria-label]="'COMMON.CLOSE' | translate"
+            >
+                <icon>close</icon>
+            </button>
+        </header>
+        @if (show_permissions) {
+            <app-tabs
+                class="border-base-200 shrink-0 border-b"
+                [labels]="[
+                    'GROUPS.TAB_USERS' | translate,
+                    'GROUPS.FIELD_PERMISSIONS' | translate,
+                ]"
+                [(selectedIndex)]="tab"
+            />
+        }
+        <main
+            class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-2"
+        >
+            @if (!show_permissions || tab() === 0) {
+                <app-form-field class="no-subscript">
+                    <input
+                        name="group-bulk-add-search"
+                        [placeholder]="placeholder | translate"
+                        [ngModel]="search()"
+                        (ngModelChange)="search.set($event)"
+                    />
+                    <div class="prefix" prefix>
+                        <icon class="relative -left-0.5 text-2xl">search</icon>
+                    </div>
+                    @if (loading()) {
+                        <div class="suffix" suffix>
+                            <app-spinner diameter="16" />
+                        </div>
+                    }
+                </app-form-field>
+                <section
+                    class="border-base-200 min-h-0 flex-1 overflow-auto rounded border sm:h-[45vh] sm:flex-none"
+                >
+                    @if (list_items().length) {
+                        @for (item of list_items(); track item.id) {
+                            <button
+                                ripple
+                                class="border-base-200 hover:bg-base-200 flex w-full items-center gap-3 border-b px-3 py-2 text-left last:border-b-0"
+                                [class.bg-base-200]="isSelected(item.id)"
+                                (click)="toggleItem(item)"
+                            >
+                                <div
+                                    class="flex h-6 w-6 items-center justify-center rounded border"
+                                    [class.bg-info]="isSelected(item.id)"
+                                    [class.border-info]="isSelected(item.id)"
+                                    [class.text-info-content]="
+                                        isSelected(item.id)
+                                    "
+                                >
+                                    @if (isSelected(item.id)) {
+                                        <icon class="text-lg">done</icon>
+                                    }
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="truncate text-sm">
+                                        {{ item.name || item.id }}
+                                    </div>
+                                    <div class="truncate text-xs opacity-50">
+                                        {{
+                                            item.email ||
+                                                item.description ||
+                                                item.id
+                                        }}
+                                    </div>
+                                </div>
+                            </button>
+                        }
+                    } @else {
+                        <div
+                            class="flex h-full min-h-40 items-center justify-center p-6 text-sm opacity-40"
+                        >
+                            {{ empty_message | translate }}
+                        </div>
+                    }
+                </section>
+            }
+            @if (show_permissions && tab() === 1) {
+                <div class="flex flex-col gap-2">
+                    <div class="text-xs font-medium uppercase opacity-50">
+                        {{ 'GROUPS.USERS_BULK_PERMISSIONS' | translate }}
+                    </div>
+                    <section
+                        class="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2"
+                    >
+                        @for (
+                            permission of permission_flags;
+                            track permission.key
+                        ) {
+                            <settings-toggle
+                                [ngModel]="
+                                    hasPermission(
+                                        permissions(),
+                                        permission.value
+                                    )
+                                "
+                                (ngModelChange)="
+                                    setPermission(permission.value, $event)
+                                "
+                            >
+                                {{ permission.label | translate }}
+                            </settings-toggle>
+                        }
+                    </section>
+                </div>
+            }
+        </main>
+        <footer
+            class="bg-base-200 m-2 flex shrink-0 items-center justify-center gap-2 rounded-sm border-none p-2"
+        >
+            <button
+                btn
+                ripple
+                class="inverse bg-base-100 flex-1"
+                appDialogClose
+            >
+                {{ 'COMMON.CANCEL' | translate }}
+            </button>
+            <button
+                btn
+                ripple
+                class="flex-1"
+                [disabled]="!selected().length"
+                (click)="save()"
+            >
+                <icon class="mr-2">playlist_add</icon>
+                {{
+                    'GROUPS.BULK_ADD_SELECTED'
+                        | translate: { count: selected().length }
+                }}
+            </button>
+        </footer>
+    `, imports: [
+      DialogCloseDirective,
+      SpinnerComponent,
+      FormFieldComponent,
+      DialogTitleDirective,
+      FormsModule,
+      IconComponent,
+      TabsComponent,
+      SettingsToggleComponent,
+      TranslatePipe
+    ], styles: ["/* angular:styles/component:css;31fc22e471e6870a;/home/runner/work/backoffice/backoffice/src/app/groups/group-bulk-add-modal.component.ts */\n:host {\n  display: flex;\n  flex-direction: column;\n  width: 32rem;\n  max-width: calc(100vw - 1rem);\n  max-height: calc(100vh - 2em);\n  overflow: hidden;\n}\n@media (max-width: 640px) {\n  :host {\n    width: 100%;\n    height: 100%;\n    max-width: 100%;\n    max-height: 100%;\n  }\n}\n/*# sourceMappingURL=group-bulk-add-modal.component.css.map */\n"] }]
+  }], null, null);
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GroupBulkAddModalComponent, { className: "GroupBulkAddModalComponent", filePath: "src/app/groups/group-bulk-add-modal.component.ts", lineNumber: 228 });
+})();
+
+// src/app/groups/group-membership.ts
+function groupMembership(dialog, options) {
+  const { one, many } = options;
+  const saving = signal(
+    false,
+    ...ngDevMode ? [{ debugName: "saving" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  const exclude = (item) => {
+    const authority_id = options.authority_id();
+    const item_authority = options.item_authority(item);
+    return options.rows().some((row) => options.member_id(row) === item.id) || !!authority_id && !!item_authority && item_authority !== authority_id;
+  };
+  const add = async (item) => {
+    if (!item?.id)
+      return;
+    try {
+      await options.add(item.id);
+    } catch (error) {
+      return notifyError(i18n(`${one}_ADD_ERROR`, { error: describeError(error) }));
+    }
+    notifySuccess(i18n(`${one}_ADD_SUCCESS`));
+    options.changed();
+  };
+  const bulkAdd = async () => {
+    const show_permissions = !!options.bulk_permissions;
+    const result = await waitForEvent(dialog.open(GroupBulkAddModalComponent, {
+      data: {
+        title: `${many}_BULK`,
+        placeholder: options.search,
+        empty_message: `${many}_BULK_EMPTY`,
+        show_permissions,
+        permissions: options.bulk_permissions?.(),
+        query_fn: (q) => options.query(q, options.authority_id()),
+        exclude
+      },
+      panelClass: "bulk-add-dialog",
+      height: "auto",
+      width: "auto",
+      maxHeight: "calc(100vh - 2em)",
+      maxWidth: "calc(100vw - 2em)"
+    }).closed);
+    const items = result?.items;
+    if (!items?.length)
+      return;
+    const permissions = show_permissions ? +result.permissions || 0 : void 0;
+    saving.set(true);
+    const results = await Promise.allSettled(items.map((item) => options.add(item.id, permissions)));
+    saving.set(false);
+    const failed = results.filter((_) => _.status === "rejected").length;
+    if (failed) {
+      notifyError(i18n(`${many}_BULK_ERROR`, { count: failed }));
+    }
+    const added = results.length - failed;
+    if (added) {
+      notifySuccess(i18n(`${many}_BULK_SUCCESS`, { count: added }));
+    }
+    options.changed();
+  };
+  const remove = async (row) => {
+    const details = await openConfirmModal({
+      title: i18n(`${one}_REMOVE`),
+      content: i18n(`${one}_REMOVE_MSG`, {
+        name: escapeHtml(options.member_name(row))
+      }),
+      icon: { type: "icon", content: "delete" }
+    }, dialog);
+    if (details.reason !== "done")
+      return;
+    details.loading(i18n(`${one}_REMOVE_LOADING`));
+    try {
+      await options.remove(row);
+    } catch (error) {
+      details.close();
+      return notifyError(i18n(`${one}_REMOVE_ERROR`, { error: describeError(error) }));
+    }
+    details.close();
+    notifySuccess(i18n(`${one}_REMOVE_SUCCESS`));
+    options.changed();
+  };
+  const editPermissions = async (row) => {
+    const result = await waitForEvent(dialog.open(GroupPermissionsModalComponent, {
+      data: {
+        title: `${one}_PERMISSIONS`,
+        permissions: row.permissions,
+        deny: row.deny,
+        show_deny: !!options.show_deny
+      }
+    }).closed);
+    if (!result)
+      return;
+    try {
+      await options.update(row, {
+        permissions: +result.permissions || 0,
+        deny: !!result.deny
+      });
+    } catch (error) {
+      return notifyError(i18n(`${one}_SAVE_ERROR`, { error: describeError(error) }));
+    }
+    notifySuccess(i18n(`${one}_SAVE_SUCCESS`));
+    options.changed();
+  };
+  return {
+    options,
+    saving: saving.asReadonly(),
+    exclude,
+    add,
+    bulkAdd,
+    remove,
+    editPermissions
+  };
+}
+
+export {
+  groupMembership
+};
+//# debugId=bdc6393a-c59e-5909-b3c3-1783473ff6f3
+//# sourceMappingURL=chunk-F6G2Y5FY.js.map
