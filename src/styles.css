@@ -1013,6 +1013,7 @@ app-select {
     color: var(--base-content);
     box-shadow: 0 2px 0 var(--base-300);
     font-size: 0.875rem;
+    animation: dialog-enter var(--motion-enter);
 }
 
 .select-panel {
@@ -1322,7 +1323,9 @@ input[type='checkbox'][role='switch'] {
         animation-duration: 4s;
     }
 
-    .cdk-dialog-container {
+    .cdk-dialog-container,
+    .select-panel,
+    .cdk-menu {
         animation: none;
     }
 }
@@ -1970,8 +1973,20 @@ a[icon] {
     animation: fade-in-scale 200ms ease-out;
 }
 
+/* The same enter motion as dialogs, for panels that are not CDK dialogs */
+#placeos .animate-dialog-enter {
+    animation: dialog-enter var(--motion-enter);
+}
+
 #placeos .animate-slide-in-up {
     animation: slide-in-up 200ms ease-out;
+}
+
+/* Fades stay. Motion that moves or scales stops. */
+@media (prefers-reduced-motion: reduce) {
+    #placeos .animate-dialog-enter {
+        animation: none;
+    }
 }
 
 /* Slide animations */

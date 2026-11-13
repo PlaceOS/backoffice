@@ -49,11 +49,11 @@ import { VirtualScrollComponent } from './virtual-scroll.component';
         </div>
         @if (show_view()) {
             <button
-                class="bg-base-100/80 absolute inset-0"
+                class="animate-fade-in bg-base-100/80 absolute inset-0"
                 (click)="close()"
             >
                 <button
-                    class="bg-base-100 border-base-300 absolute top-2 left-1/2 flex w-lg max-w-[calc(100%-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded-sm border shadow-sm"
+                    class="animate-dialog-enter bg-base-100 border-base-300 absolute top-2 left-1/2 flex w-lg max-w-[calc(100%-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded-sm border shadow-sm"
                     (click)="$event.stopPropagation()"
                 >
                     <div
