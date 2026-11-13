@@ -30,6 +30,8 @@ All notable changes to this project will be documented in this file.
 
 - Demo site deploys once a day, and build branches stop failing on Vercel
 - E2e tests run on Ubuntu 24.04, where Playwright can install Chromium
+- Release backoffice with each PlaceOS release
+- Limit workflow token permissions and release only develop commits
 
 #### Extensions
 
