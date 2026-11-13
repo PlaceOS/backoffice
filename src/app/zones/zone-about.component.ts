@@ -20,6 +20,7 @@ import { SelectComponent } from '../ui/controls/select.component';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { ExecuteMethodFieldComponent } from '../ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
+import { IconComponent } from '../ui/icon.component';
 import { ItemTimestampsComponent } from '../ui/item-timestamps.component';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
 import { TranslatePipe } from '../ui/translate.pipe';
@@ -30,9 +31,16 @@ import { TranslatePipe } from '../ui/translate.pipe';
         <div class="p-4">
             @if (requires_parent()) {
                 <div
-                    class="mono bg-warning text-warning-content mb-2 w-full rounded-sm p-2 text-center text-xs"
+                    class="item-center border-warning bg-warning/10 mb-2 flex gap-2 overflow-hidden rounded-sm border"
                 >
-                    {{ 'ZONES.TAG_WARNING' | translate }}
+                    <div
+                        class="bg-warning text-warning-content flex h-full min-h-10 items-center p-1 text-2xl"
+                    >
+                        <icon>warning</icon>
+                    </div>
+                    <div class="mono px-2 py-3 text-xs">
+                        {{ 'ZONES.TAG_WARNING' | translate }}
+                    </div>
                 </div>
             }
             <section class="mb-4 flex space-x-2">
@@ -237,6 +245,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
         FormsModule,
         RouterModule,
         AsyncPipe,
+        IconComponent,
     ],
 })
 export class ZoneAboutComponent {

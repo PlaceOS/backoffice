@@ -70,9 +70,14 @@ import { SystemStateService } from './system-state.service';
             </section>
             @if (zone_issues()) {
                 <div
-                    class="mono bg-warning text-warning-content mb-2 rounded-sm p-2 text-center text-xs"
+                    class="flex item-center border-warning bg-warning/10 mx-4 mb-2 gap-2 overflow-hidden rounded-sm border"
                 >
-                    {{ zone_issues() }}
+                    <div
+                        class="bg-warning text-warning-content flex h-full items-center p-1 text-2xl"
+                    >
+                        <icon>brightness_alert</icon>
+                    </div>
+                    <div class="px-2 py-3 mono text-xs">{{ zone_issues() }}</div>
                 </div>
             }
             <section class="h-1/2 w-full flex-1 overflow-auto px-4">

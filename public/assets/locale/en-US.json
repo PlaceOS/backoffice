@@ -903,7 +903,7 @@
         "EXTENSIONS_EDIT": "Edit Extension",
         "EXTENSIONS_REMOVE": "Remove Extension",
         "EXTENSIONS_SAVING": "Saving extension...",
-        "EXTENSIONS_NOTICE": "Note: Backoffice requires a full page refresh for extension changes and additions to apply",
+        "EXTENSIONS_NOTICE": "Backoffice requires a full page refresh for extension changes and additions to apply",
         "EXTENSIONS_LIST_EMPTY": "No extensions available for the selected domain",
         "EXTENSIONS_FIELD_CHECKS": "Checks",
         "EXTENSIONS_FIELD_CONDITIONS": "Conditions",

@@ -57,9 +57,16 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
                 </div>
             </div>
             <div
-                class="bg-info text-info-content mx-4 mb-4 flex items-center space-x-4 rounded-sm p-4 text-sm shadow-sm"
+                class="item-center border-info bg-info/10 mb-2 mx-4 flex gap-2 overflow-hidden rounded-sm border"
             >
-                <p>{{ 'ADMIN.EXTENSIONS_NOTICE' | translate }}</p>
+                <div
+                    class="bg-info text-info-content flex h-full min-h-10 items-center p-1 text-2xl"
+                >
+                    <icon>info</icon>
+                </div>
+                <div class="mono px-2 py-3 text-xs">
+                    {{ 'ADMIN.EXTENSIONS_NOTICE' | translate }}
+                </div>
             </div>
             <div class="h-1/2 w-full flex-1 overflow-auto px-4">
                 <app-progress-bar
