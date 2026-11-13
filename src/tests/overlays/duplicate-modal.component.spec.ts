@@ -71,6 +71,30 @@ describe('DuplicateModalComponent', () => {
         ]);
     });
 
+    it.each([0, 1.5, 51])('saves nothing for %s copies', async (times) => {
+        const save = vi.fn();
+        TestBed.configureTestingModule({
+            imports: [DuplicateModalComponent],
+            providers: [
+                provideZonelessChangeDetection(),
+                {
+                    provide: DIALOG_DATA,
+                    useValue: { item: new Item({ name: 'Room' }), save },
+                },
+                { provide: DialogRef, useValue: { close: vi.fn() } },
+            ],
+        });
+        const component = TestBed.createComponent(
+            DuplicateModalComponent,
+        ).componentInstance;
+        component.times = times;
+
+        await component.duplicate();
+
+        expect(save).not.toHaveBeenCalled();
+        expect(component.loading()).toBe(false);
+    });
+
     it('stops saving copies once the dialog is closed', async () => {
         TestBed.configureTestingModule({
             imports: [DuplicateModalComponent],

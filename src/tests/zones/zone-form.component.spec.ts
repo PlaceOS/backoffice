@@ -176,6 +176,28 @@ describe('saving zones with a stored parent', () => {
         );
     });
 
+    it('keeps a parent the user picks while the stored parent loads', async () => {
+        let resolveParent: (zone: PlaceZone) => void;
+        mocks.showZone.mockReturnValue(
+            new Promise((resolve) => (resolveParent = resolve)),
+        );
+        const fixture = await createForm();
+        fixture.componentInstance.form
+            .parent_zone()
+            .controlValue.set(new PlaceZone({ id: 'building-2' }));
+        await fixture.whenStable();
+        resolveParent(new PlaceZone({ id: 'building-1' }));
+        await fixture.whenStable();
+        expect(fixture.componentInstance.formModel().parent_zone?.id).toBe(
+            'building-2',
+        );
+        await fixture.componentInstance.submit();
+        expect(mocks.updateZone).toHaveBeenCalledWith(
+            'zone-1',
+            expect.objectContaining({ parent_id: 'building-2' }),
+        );
+    });
+
     it('keeps the parent when the parent fails to load', async () => {
         mocks.showZone.mockRejectedValue(new Error('Forbidden'));
         const fixture = await createForm();

@@ -6,7 +6,12 @@ import {
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
-import { PlaceDomain, PlaceUser } from '@placeos/ts-client';
+import {
+    PlaceDomain,
+    PlaceLDAPSource,
+    PlaceOAuthSource,
+    PlaceUser,
+} from '@placeos/ts-client';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
@@ -131,6 +136,19 @@ describe('domain tab loading', () => {
         );
         await settle();
         expect(mocks.queryUsers).toHaveBeenCalledTimes(2);
+    });
+    it('keeps the other authentication sources when one source type fails', async () => {
+        const oauth = new PlaceOAuthSource({ id: 'oauth-1' });
+        const ldap = new PlaceLDAPSource({ id: 'ldap-1' });
+        mocks.querySAMLSources.mockRejectedValue(new Error('Forbidden'));
+        mocks.queryOAuthSources.mockResolvedValue({ data: [oauth], total: 1 });
+        mocks.queryLDAPSources.mockResolvedValue({ data: [ldap], total: 1 });
+        active.set(new PlaceDomain({ id: 'domain-1' }));
+        const url = '/domains/domain-1/authentication';
+        navigation.next(new NavigationEnd(1, url, url));
+        await settle();
+        expect(service.auth_sources()).toEqual([oauth, ldap]);
+        expect(service.counts().auth_sources).toBe(2);
     });
     it('clears loaded tabs when selecting another domain', async () => {
         active.set(new PlaceDomain({ id: 'domain-1' }));
