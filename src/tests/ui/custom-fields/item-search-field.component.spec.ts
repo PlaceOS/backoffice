@@ -86,4 +86,28 @@ describe('ItemSearchFieldComponent', () => {
         );
         expect(names['sys-1']).toBe('&lt;Unnamed&gt;');
     });
+
+    it('should query only once the trimmed search reaches the minimum length', async () => {
+        const query_fn = vi.fn(() =>
+            Promise.resolve([
+                { id: 'sys-1', name: 'Lobby' },
+                { id: 'sys-2', name: 'Board room' },
+            ]),
+        );
+        const field = TestBed.createComponent(ItemSearchFieldComponent);
+        field.componentRef.setInput('minLength', 3);
+        field.componentRef.setInput('query_fn', query_fn);
+        field.detectChanges();
+
+        field.componentInstance.search_str.set(' lo ');
+        await sleep(450);
+        expect(query_fn).not.toHaveBeenCalled();
+
+        field.componentInstance.search_str.set(' lob ');
+        await sleep(450);
+        expect(query_fn).toHaveBeenCalledExactlyOnceWith('lob');
+        expect(field.componentInstance.item_list()).toEqual([
+            { id: 'sys-1', name: 'Lobby' },
+        ]);
+    });
 });

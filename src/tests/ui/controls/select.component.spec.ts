@@ -98,6 +98,24 @@ describe('SelectComponent', () => {
         expect(select.getAttribute('aria-expanded')).toBe('false');
     });
 
+    it('picks an option with the arrow keys and Enter, skipping a disabled one', async () => {
+        const { fixture, select } = await setup(false, 'b');
+        // The CDK key manager reads the key code
+        const press = async (key: string, keyCode: number) => {
+            select.dispatchEvent(
+                new KeyboardEvent('keydown', { key, keyCode }),
+            );
+            await fixture.whenStable();
+        };
+        await press('ArrowDown', 40);
+        await new Promise((done) => requestAnimationFrame(done));
+        // Gamma after Beta is disabled, so the active option wraps to Alpha
+        await press('ArrowDown', 40);
+        await press('Enter', 13);
+        expect(fixture.componentInstance.value).toBe('a');
+        expect(select.getAttribute('aria-expanded')).toBe('false');
+    });
+
     it('marks the control touched when the panel closes', async () => {
         const { fixture, select, open } = await setup();
         await open();

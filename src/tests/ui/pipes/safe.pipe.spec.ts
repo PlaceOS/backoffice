@@ -1,3 +1,4 @@
+import { SecurityContext } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { DomSanitizer } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -29,18 +30,18 @@ describe('SafePipe', () => {
                 'https://example.com/video.mp4',
                 'resource',
             );
-            expect(result).toBeTruthy();
-            expect((result as any).changingThisBreaksApplicationSecurity).toBe(
-                'https://example.com/video.mp4',
-            );
+            // Throws unless the value is trusted as a resource URL
+            expect(
+                sanitizer.sanitize(SecurityContext.RESOURCE_URL, result),
+            ).toBe('https://example.com/video.mp4');
         });
 
         it('should handle blob URLs for resources', () => {
             const url = 'blob:https://example.com/12345';
             const result = pipe.transform(url, 'resource');
-            expect((result as any).changingThisBreaksApplicationSecurity).toBe(
-                url,
-            );
+            expect(
+                sanitizer.sanitize(SecurityContext.RESOURCE_URL, result),
+            ).toBe(url);
         });
 
         it('should handle data URLs', () => {

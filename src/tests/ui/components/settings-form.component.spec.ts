@@ -110,6 +110,31 @@ describe('SettingsFormComponent', () => {
         expect(component.settingDirty(1)).toBe(true);
     });
 
+    it('keeps a failed save dirty and reports the error', async () => {
+        mocks.updateSettings.mockRejectedValueOnce(new Error('500'));
+        const component = createForm();
+        component.updateSetting(0, 'level0: changed');
+        component.save(0);
+        expect(component.saving()[0]).toBe(true);
+        await new Promise((resolve) => setTimeout(resolve));
+
+        expect(component.saving()[0]).toBe(false);
+        expect(component.settingDirty(0)).toBe(true);
+        expect(component.settingValue(0)).toBe('level0: changed');
+        expect(mocks.notifyError).toHaveBeenCalledWith(
+            'COMMON.SETTINGS_SAVE_ERROR',
+        );
+    });
+
+    it('never saves admin settings for support users', () => {
+        mocks.user = { sys_admin: false, support: true };
+        const component = createForm();
+        component.updateSetting(2, 'level2: replaced');
+        component.save(2);
+        component.saveAll();
+        expect(mocks.updateSettings).not.toHaveBeenCalled();
+    });
+
     it('masks admin settings for support users', () => {
         mocks.user = { sys_admin: false, support: true };
         const component = createForm();
