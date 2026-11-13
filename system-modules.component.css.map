@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["system-modules.component.ts"],
-  "sourcesContent": ["\n            button[btn] {\n                min-width: 8rem;\n            }\n\n            button.mat-menu-item {\n                display: flex;\n                align-items: center;\n            }\n\n            button .text {\n                margin-left: 1rem;\n            }\n\n            .bg-success {\n                height: 0.5rem !important;\n                width: 0.5rem !important;\n            }\n\n            [dot] {\n                transition:\n                    height 200ms,\n                    width 200ms;\n            }\n\n            mat-checkbox.mat-checkbox-disabled {\n                pointer-events: none;\n            }\n        "],
-  "mappings": ";AACY,MAAA,CAAA;AACI,aAAA;AACJ;AAEA,MAAA,CAAA;AACI,WAAA;AACA,eAAA;AACJ;AAEA,OAAA,CAAA;AACI,eAAA;AACJ;AAEA,CAAA;AACI,UAAA;AACA,SAAA;AACJ;AAEA,CAAA;AACI;AAGJ;AAEA,YAAA,CAAA;AACI,kBAAA;AACJ;",
+  "sourcesContent": ["\n            button[btn] {\n                min-width: 8rem;\n            }\n\n            button .text {\n                margin-left: 1rem;\n            }\n\n            .bg-success {\n                height: 0.5rem !important;\n                width: 0.5rem !important;\n            }\n\n            [dot] {\n                transition:\n                    height 200ms,\n                    width 200ms;\n            }\n        "],
+  "mappings": ";AACY,MAAA,CAAA;AACI,aAAA;AACJ;AAEA,OAAA,CAAA;AACI,eAAA;AACJ;AAEA,CAAA;AACI,UAAA;AACA,SAAA;AACJ;AAEA,CAAA;AACI;AAGJ;",
   "names": []
 }

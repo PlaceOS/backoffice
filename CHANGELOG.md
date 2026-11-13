@@ -52,6 +52,10 @@ All notable changes to this project will be documented in this file.
 
 - Stop a failed user settings load from raising an unhandled error
 
+#### Systems
+
+- Module menu keeps its module while other rows are hovered
+
 #### Ui
 
 - Stop the required-marker colour applying to checkboxes
@@ -60,6 +64,10 @@ All notable changes to this project will be documented in this file.
 - Fit tablet layouts, readable dark placeholders, closable menus
 - Name icon buttons, guard hotkeys and fix copy
 - Debug console text is readable in light mode
+- Tooltips and floating panels keep clear of edges
+- Tooltip and panel gaps clear their shadows, and arrows join cleanly
+- Sidebar search no longer pushes the filter button out of view
+- Review fixes for selects, form fields, tabs, tooltips and duplicates
 
 ### Documentation
 
@@ -111,6 +119,15 @@ All notable changes to this project will be documented in this file.
 #### Ui
 
 - Share one item page shell across features
+- Replace Angular Material with our own controls
+
+### Styling
+
+#### Ui
+
+- Buttons, inputs, modals and tooltips look like Sentry's
+- Buttons line up with fields and have readable edges
+- Select search inputs match the other fields, with an empty state
 
 ## [2610.1] - 2026-10-08
 

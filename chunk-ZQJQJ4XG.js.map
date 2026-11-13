@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/triggers/triggers.component.ts"
+  ],
+  "sourcesContent": [
+    "import { Component, computed, inject } from '@angular/core';\nimport { extensionsForItem } from '../common/api';\nimport { ActiveItemService } from '../common/item.service';\nimport { i18n } from '../common/locale.service';\nimport { ItemShellComponent } from '../ui/item-shell.component';\nimport { TriggerStateService } from './trigger-state.service';\n\n@Component({\n    selector: 'new-triggers-view',\n    template: `\n        <item-shell\n            name=\"triggers\"\n            i18n_key=\"TRIGGERS\"\n            [tabs]=\"tab_list()\"\n            debug\n        />\n    `,\n    imports: [ItemShellComponent],\n})\nexport class TriggersComponent {\n    protected _service = inject(ActiveItemService);\n    private _state = inject(TriggerStateService);\n\n    public readonly name = 'triggers';\n\n    public readonly instance_count = computed(\n        () => this._state.instances().length,\n    );\n    public readonly item = this._service.item;\n    public readonly tab_list = computed(() => [\n        {\n            id: 'about',\n            name: i18n('TRIGGERS.TAB_ABOUT'),\n            icon: { content: 'info' },\n        },\n        {\n            id: 'instances',\n            name: i18n('TRIGGERS.TAB_INSTANCES'),\n            count: this.instance_count(),\n            icon: { content: 'meeting_room' },\n        },\n        ...extensionsForItem(this.item(), this.name),\n    ]);\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAmBM,IAAO,oBAAP,MAAO,mBAAiB;EAChB,WAAW,OAAO,iBAAiB;EACrC,SAAS,OAAO,mBAAmB;EAE3B,OAAO;EAEP,iBAAiB;IAC7B,MAAM,KAAK,OAAO,UAAS,EAAG;;;;;;EAElB,OAAO,KAAK,SAAS;EACrB,WAAW;IAAS,MAAM;MACtC;QACI,IAAI;QACJ,MAAM,KAAK,oBAAoB;QAC/B,MAAM,EAAE,SAAS,OAAM;;MAE3B;QACI,IAAI;QACJ,MAAM,KAAK,wBAAwB;QACnC,OAAO,KAAK,eAAc;QAC1B,MAAM,EAAE,SAAS,eAAc;;MAEnC,GAAG,kBAAkB,KAAK,KAAI,GAAI,KAAK,IAAI;;;;;;;;qCAtBtC,oBAAiB;EAAA;yEAAjB,oBAAiB,WAAA,CAAA,CAAA,mBAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,QAAA,CAAA,CAAA,QAAA,YAAA,YAAA,YAAA,SAAA,IAAA,GAAA,MAAA,CAAA,GAAA,UAAA,SAAA,2BAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AATtB,MAAA,oBAAA,GAAA,cAAA,CAAA;;;AAGI,MAAA,qBAAA,QAAA,IAAA,SAAA,CAAA;;oBAIE,kBAAkB,GAAA,eAAA,EAAA,CAAA;;;sEAEnB,mBAAiB,CAAA;UAZ7B;WAAU;MACP,UAAU;MACV,UAAU;;;;;;;;MAQV,SAAS,CAAC,kBAAkB;KAC/B;;;;6EACY,mBAAiB,EAAA,WAAA,qBAAA,UAAA,0CAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
+  "names": [],
+  "debugId": "c2eb16b7-d944-59d9-a175-04a9d000e761"
+}

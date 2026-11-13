@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/dialog-title.directive.ts"
+  ],
+  "sourcesContent": [
+    "import { CdkDialogContainer, DialogRef } from '@angular/cdk/dialog';\nimport { Directive, inject, OnDestroy, OnInit } from '@angular/core';\n\nlet next_id = 0;\n\n/**\n * Use the element as the accessible name of the dialog it is in.\n * Put it on the dialog heading. Outside a dialog it does nothing.\n */\n@Directive({\n    selector: '[appDialogTitle]',\n    host: { '[id]': 'id' },\n})\nexport class DialogTitleDirective implements OnInit, OnDestroy {\n    public readonly id = `app-dialog-title-${next_id++}`;\n    private readonly _container = inject(DialogRef, { optional: true })\n        ?.containerInstance as CdkDialogContainer | undefined;\n\n    // Deferred so the dialog's host binding does not change while it is\n    // being checked\n    public ngOnInit() {\n        Promise.resolve().then(() =>\n            this._container?._addAriaLabelledBy(this.id),\n        );\n    }\n\n    public ngOnDestroy() {\n        Promise.resolve().then(() =>\n            this._container?._removeAriaLabelledBy(this.id),\n        );\n    }\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;;AAGA,IAAI,UAAU;AAUR,IAAO,uBAAP,MAAO,sBAAiD;EAC1C,KAAK,oBAAoB,SAAS;EACjC,aAAa,OAAO,WAAW,EAAE,UAAU,KAAI,CAAE,GAC5D;;;EAIC,WAAQ;AACX,YAAQ,QAAO,EAAG,KAAK,MACnB,KAAK,YAAY,mBAAmB,KAAK,EAAE,CAAC;EAEpD;EAEO,cAAW;AACd,YAAQ,QAAO,EAAG,KAAK,MACnB,KAAK,YAAY,sBAAsB,KAAK,EAAE,CAAC;EAEvD;;qCAjBS,uBAAoB;EAAA;yEAApB,uBAAoB,WAAA,CAAA,CAAA,IAAA,kBAAA,EAAA,CAAA,GAAA,UAAA,GAAA,cAAA,SAAA,kCAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAApB,MAAA,wBAAA,MAAA,IAAA,EAAA;;;;;sEAAA,sBAAoB,CAAA;UAJhC;WAAU;MACP,UAAU;MACV,MAAM,EAAE,QAAQ,KAAI;KACvB;;;",
+  "names": [],
+  "debugId": "6ddbd903-2ef6-5ff1-a0f8-64c576cd756a"
+}

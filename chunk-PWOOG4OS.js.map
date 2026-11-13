@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/skip-to-content.component.ts"
+  ],
+  "sourcesContent": [
+    "import { ChangeDetectionStrategy, Component } from '@angular/core';\nimport { TranslatePipe } from './translate.pipe';\n\n/**\n * Button that moves keyboard focus past the menus to the page content.\n * It is only visible while it has focus. The page shell must have an element\n * with the id `main-content` and `tabindex=\"-1\"`.\n */\n@Component({\n    selector: 'skip-to-content',\n    template: `\n        <button\n            type=\"button\"\n            class=\"bg-base-100 border-base-300 fixed top-2 left-2 z-10000 -translate-y-[200%] rounded-sm border px-4 py-2 shadow focus:translate-y-0\"\n            (click)=\"skip()\"\n        >\n            {{ 'COMMON.SKIP_TO_CONTENT' | translate }}\n        </button>\n    `,\n    imports: [TranslatePipe],\n    changeDetection: ChangeDetectionStrategy.OnPush,\n})\nexport class SkipToContentComponent {\n    public skip() {\n        document.getElementById('main-content')?.focus();\n    }\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAsBM,IAAO,yBAAP,MAAO,wBAAsB;EACxB,OAAI;AACP,aAAS,eAAe,cAAc,GAAG,MAAK;EAClD;;qCAHS,yBAAsB;EAAA;yEAAtB,yBAAsB,WAAA,CAAA,CAAA,iBAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,QAAA,CAAA,CAAA,QAAA,UAAA,GAAA,eAAA,mBAAA,SAAA,SAAA,UAAA,WAAA,uBAAA,cAAA,UAAA,QAAA,QAAA,UAAA,uBAAA,GAAA,OAAA,CAAA,GAAA,UAAA,SAAA,gCAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAX3B,MAAA,4BAAA,GAAA,UAAA,CAAA;AAGI,MAAA,wBAAA,SAAA,SAAA,0DAAA;AAAA,eAAS,IAAA,KAAA;MAAM,CAAA;AAEf,MAAA,iBAAA,CAAA;;AACJ,MAAA,0BAAA;;;AADI,MAAA,oBAAA;AAAA,MAAA,6BAAA,KAAA,sBAAA,GAAA,GAAA,wBAAA,GAAA,GAAA;;oBAGE,aAAa,GAAA,eAAA,EAAA,CAAA;;;sEAGd,wBAAsB,CAAA;UAdlC;WAAU;MACP,UAAU;MACV,UAAU;;;;;;;;;MASV,SAAS,CAAC,aAAa;MACvB,iBAAiB,wBAAwB;KAC5C;;;;6EACY,wBAAsB,EAAA,WAAA,0BAAA,UAAA,2CAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
+  "names": [],
+  "debugId": "8d29c4b0-35a7-5db6-8c27-86bdffe61df3"
+}

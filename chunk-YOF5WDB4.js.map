@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/controls/dialog.ts"
+  ],
+  "sourcesContent": [
+    "import { DialogRef } from '@angular/cdk/dialog';\nimport { Directive, inject, input } from '@angular/core';\n\n/**\n * Close the dialog that the element is in on click.\n * The value of `appDialogClose` is the result of the dialog.\n * A bare attribute closes it with an empty string.\n */\n@Directive({\n    selector: '[appDialogClose]',\n    host: {\n        '[attr.type]': 'type()',\n        '(click)': 'close()',\n    },\n})\nexport class DialogCloseDirective<R = unknown> {\n    private readonly _ref = inject<DialogRef<R>>(DialogRef, {\n        optional: true,\n    });\n\n    /** Result of the dialog */\n    public readonly result = input<R>(undefined, {\n        alias: 'appDialogClose',\n    });\n    public readonly type = input<'button' | 'submit' | 'reset'>('button');\n\n    public close() {\n        this._ref?.close(this.result());\n    }\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAeM,IAAO,uBAAP,MAAO,sBAAgC;EACxB,OAAO,OAAqB,WAAW;IACpD,UAAU;GACb;;EAGe,SAAS,MAAS,QAAS,iCAAA,YAAA,EAAA,WAAA,SAAA;;IAAA,CAAA;MAAA,EACvC,OAAO,iBAAgB,EAAA;EAEX,OAAO;IAAqC;;;;;;EAErD,QAAK;AACR,SAAK,MAAM,MAAM,KAAK,OAAM,CAAE;EAClC;;qCAbS,uBAAoB;EAAA;yEAApB,uBAAoB,WAAA,CAAA,CAAA,IAAA,kBAAA,EAAA,CAAA,GAAA,UAAA,GAAA,cAAA,SAAA,kCAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAApB,MAAA,qBAAA,SAAA,SAAA,gDAAA;AAAA,eAAA,IAAA,MAAA;MAAO,CAAA;;;oCAAP,IAAA,KAAA,CAAM;;;;;sEAAN,sBAAoB,CAAA;UAPhC;WAAU;MACP,UAAU;MACV,MAAM;QACF,eAAe;QACf,WAAW;;KAElB;;;",
+  "names": [],
+  "debugId": "7ba0a01d-9e11-520f-894c-49e608bb40fb"
+}
