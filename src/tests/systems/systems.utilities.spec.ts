@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import type { PlaceSystem } from '@placeos/ts-client';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
     generateSystemFormModel,
     validateYAML,
@@ -69,6 +70,40 @@ describe('systems.utilities', () => {
                 camera_snapshot_urls: ['https://example.com/snapshot.jpg'],
                 zones: ['zone-1'],
             });
+        });
+
+        describe('with legacy and current snapshot URLs', () => {
+            const legacy_url = 'https://example.com/legacy.jpg';
+            const current_url = 'https://example.com/current.jpg';
+            // Local midnight at the start of the frozen day, in seconds
+            const midnight = new Date(2026, 0, 2).getTime() / 1000;
+
+            afterEach(() => vi.useRealTimers());
+
+            it.each([
+                { saved: 'never', updated_at: undefined, merged: true },
+                {
+                    saved: 'before today',
+                    updated_at: midnight - 1,
+                    merged: true,
+                },
+                { saved: 'today', updated_at: midnight, merged: false },
+            ])(
+                'merges the legacy URL ($merged) for a system saved $saved',
+                ({ updated_at, merged }) => {
+                    vi.useFakeTimers({ toFake: ['Date'] });
+                    vi.setSystemTime(new Date(2026, 0, 2, 12));
+                    const model = generateSystemFormModel({
+                        camera_snapshot_url: legacy_url,
+                        camera_snapshot_urls: [current_url],
+                        updated_at,
+                    } as PlaceSystem);
+
+                    expect(model.camera_snapshot_urls).toEqual(
+                        merged ? [current_url, legacy_url] : [current_url],
+                    );
+                },
+            );
         });
     });
 });

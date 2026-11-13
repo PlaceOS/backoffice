@@ -1,5 +1,9 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { provideZonelessChangeDetection, signal } from '@angular/core';
+import {
+    ApplicationRef,
+    provideZonelessChangeDetection,
+    signal,
+} from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -133,7 +137,7 @@ describe('RepositoriesStateService', () => {
 
         const service = TestBed.inject(RepositoriesStateService);
 
-        await Promise.resolve();
+        await TestBed.inject(ApplicationRef).whenStable();
         expect(service.has_changelog()).toBe(false);
         expect(fetch_mock).not.toHaveBeenCalled();
     });
