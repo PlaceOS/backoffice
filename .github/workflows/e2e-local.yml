@@ -16,10 +16,8 @@ on:
     workflow_dispatch:
     push:
         branches:
-            # The branches BUILD deploys from
+            # The branch BUILD deploys from
             - develop
-            - 'release/**'
-            - 'rc/**'
             # To work on this suite and this workflow
             - 'e2e/**'
     schedule:

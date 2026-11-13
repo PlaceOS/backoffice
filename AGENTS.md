@@ -91,6 +91,7 @@ export class MyComponent extends AsyncHandler {
 - Dev proxy configured in `config/proxy.conf.js` (targets placeos-dev.aca.im)
 - Version info auto-generated to `src/env/version.ts` on postinstall
 - Production builds output to `dist/backoffice/browser`
+- Releases follow PlaceOS/PlaceOS releases. Do not make `release/*` branches. See `docs/releases.md`
 
 ## Notes
 
