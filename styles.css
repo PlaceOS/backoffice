@@ -5520,6 +5520,19 @@ input[type=checkbox]:disabled {
   cursor: default;
 }
 input[type=checkbox][role=switch] {
+  --switch-motion: 230ms linear( 0, 0.131, 0.378, 0.614, 0.793, 0.909, 0.974, 1.005, 1.016, 1.017, 1.013, 1.009, 1 );
+  --switch-chonk: var(--base-300);
+  --switch-thumb-x: 0;
+  --switch-thumb-y: -1px;
+  --switch-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 4l8 8M12 4l-8 8' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  --switch-icon-color: var(--base-content);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  input[type=checkbox][role=switch] {
+    --switch-icon-color: color-mix( in srgb, var(--base-content) 50%, transparent );
+  }
+}
+input[type=checkbox][role=switch] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -5527,43 +5540,67 @@ input[type=checkbox][role=switch] {
   flex-shrink: 0;
   width: 2.25rem;
   height: 1.25rem;
-  border-radius: 1rem;
-  background-color: hsl(0, 0%, 80%);
-  background-color: var(--base-300);
-  transition: background-color 150ms;
+  border: 1px solid var(--switch-chonk);
+  border-top-width: 2px;
+  border-radius: 5px;
+  border-radius: var(--radius-sm);
+  background-color: hsl(0, 0%, 0%);
+  background-color: var(--base-content);
 }
-input[type=checkbox][role=switch]::before {
+@supports (color: color-mix(in lab, red, red)) {
+  input[type=checkbox][role=switch] {
+    background-color: color-mix(in srgb, hsl(0, 0%, 0%) 6%, transparent);
+  }
+  @supports (color: color-mix(in lch, red, blue)) {
+    input[type=checkbox][role=switch] {
+      background-color: color-mix(in srgb, var(--base-content) 6%, transparent);
+    }
+  }
+}
+input[type=checkbox][role=switch] {
+  transition: background-color var(--switch-motion), border-color var(--switch-motion);
+}
+input[type=checkbox][role=switch]::before,
+input[type=checkbox][role=switch]::after {
   content: "";
   position: absolute;
-  top: 0.125rem;
-  left: 0.125rem;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
+  top: 0;
+  left: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  transform: translate(var(--switch-thumb-x), var(--switch-thumb-y));
+  transition: transform var(--switch-motion);
+}
+@media (prefers-reduced-motion: reduce) {
+  input[type=checkbox][role=switch]::before,
+  input[type=checkbox][role=switch]::after {
+    transition: none;
+  }
+}
+input[type=checkbox][role=switch]::before {
+  border: 1px solid var(--switch-chonk);
+  border-radius: 5px;
+  border-radius: var(--radius-sm);
   background-color: hsl(0, 0%, 98%);
   background-color: var(--base-100);
-  --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgba(0, 0, 0, 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgba(0, 0, 0, 0.1));
-  box-shadow:
-    var(--tw-inset-shadow),
-    var(--tw-inset-ring-shadow),
-    var(--tw-ring-offset-shadow),
-    var(--tw-ring-shadow),
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  box-shadow:
-    var(--tw-inset-shadow),
-    var(--tw-inset-ring-shadow),
-    var(--tw-ring-offset-shadow),
-    var(--tw-ring-shadow),
-    var(--tw-shadow);
-  transition: transform 150ms;
+}
+input[type=checkbox][role=switch]::after {
+  background-color: var(--switch-icon-color);
+  -webkit-mask: var(--switch-icon) center / 0.75rem no-repeat;
+  mask: var(--switch-icon) center / 0.75rem no-repeat;
 }
 input[type=checkbox][role=switch]:checked {
+  --switch-chonk: var(--secondary-focus);
+  --switch-thumb-x: 1rem;
+  --switch-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.5 3.5L13 4.5' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --switch-icon-color: var(--secondary);
   background-color: hsl(237, 37%, 20%);
   background-color: var(--secondary);
 }
-input[type=checkbox][role=switch]:checked::before {
-  transform: translateX(1rem);
+input[type=checkbox][role=switch]:disabled {
+  --switch-thumb-y: 0;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 input[type=checkbox][role=switch]:focus-visible {
   outline: 2px solid hsl(237, 37%, 20%);

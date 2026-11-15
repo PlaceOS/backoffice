@@ -1,10 +1,10 @@
 import {
   authorisedAdminGuard,
   authorisedUserGuard
-} from "./chunk-JQ2IUEH4.js";
+} from "./chunk-PH3ZHR2A.js";
 import {
   BackofficeUsersService
-} from "./chunk-2LLCGR7C.js";
+} from "./chunk-KYIGEGV5.js";
 import {
   ProgressBarComponent
 } from "./chunk-DHD7TIH6.js";
@@ -21,13 +21,13 @@ import {
 } from "./chunk-LL56AHAM.js";
 import {
   SettingsService
-} from "./chunk-LJNKRCR4.js";
+} from "./chunk-7RNZ3ZDD.js";
 import {
   currentUser
 } from "./chunk-4VR6R4OK.js";
 import {
   VERSION
-} from "./chunk-CKZDCKLD.js";
+} from "./chunk-ORSWOM2O.js";
 import {
   AsyncHandler
 } from "./chunk-UONBBRS5.js";
@@ -847,11 +847,11 @@ var AppComponent_Defer_6_DepsFn = () => [
 ];
 var AppComponent_Conditional_1_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-2I3R4QTH.js").then((m) => m.GlobalBannerComponent)
+  import("./chunk-JPP4JOGM.js").then((m) => m.GlobalBannerComponent)
 ];
 var AppComponent_Conditional_1_Conditional_6_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-VDVP4VDC.js").then((m) => m.UploadListComponent)
+  import("./chunk-MPXQ5DT3.js").then((m) => m.UploadListComponent)
 ];
 var AppComponent_Conditional_9_Defer_2_DepsFn = () => [
   /* @ts-ignore */
@@ -1128,9 +1128,9 @@ var AppComponent = class _AppComponent {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadataAsync(AppComponent, () => [
     /* @ts-ignore */
-    import("./chunk-2I3R4QTH.js").then((m) => m.GlobalBannerComponent),
+    import("./chunk-JPP4JOGM.js").then((m) => m.GlobalBannerComponent),
     /* @ts-ignore */
-    import("./chunk-VDVP4VDC.js").then((m) => m.UploadListComponent),
+    import("./chunk-MPXQ5DT3.js").then((m) => m.UploadListComponent),
     /* @ts-ignore */
     import("./chunk-CRR5YT5J.js").then((m) => m.ToastOutletComponent),
     /* @ts-ignore */
@@ -1305,55 +1305,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-3NCLPS4T.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QRG5E4LZ.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-HX5E62YH.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-R3OHKK6G.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-5EMSMJ5D.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-RFHK2XUT.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-3NKIU5LB.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-SMYVLOP3.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-WEWGF4IM.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-ZDSPG37S.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-X6D3VEBM.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-YQ5UWST7.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-6D3IBR3K.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-B6YITOWQ.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-TUXQS27I.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-S6YUVOD7.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-TUWCZR2G.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-GTLKVSA4.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-EER2GIYZ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-SQ6FY22D.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];

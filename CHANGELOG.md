@@ -139,6 +139,7 @@ All notable changes to this project will be documented in this file.
 - Buttons, inputs, modals and tooltips look like Sentry's
 - Buttons line up with fields and have readable edges
 - Select search inputs match the other fields, with an empty state
+- Restyle switches after the Sentry switch
 
 ## [2610.1] - 2026-10-08
 
