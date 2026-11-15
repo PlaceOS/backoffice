@@ -1156,36 +1156,92 @@ input[type='checkbox'] {
     }
 }
 
-/* Add `role="switch"` to a checkbox to show it as an on/off switch */
+/*
+ * Add `role="switch"` to a checkbox to show it as an on/off switch.
+ * Styled after the Sentry switch: a sunken track with a raised square thumb.
+ * `::before` is the thumb. `::after` is the cross or tick icon on the thumb.
+ */
 input[type='checkbox'][role='switch'] {
+    /* Spring with stiffness 1000 and damping 50, sampled to 12 steps */
+    --switch-motion: 230ms
+        linear(
+            0,
+            0.131,
+            0.378,
+            0.614,
+            0.793,
+            0.909,
+            0.974,
+            1.005,
+            1.016,
+            1.017,
+            1.013,
+            1.009,
+            1
+        );
+    --switch-chonk: var(--base-300);
+    --switch-thumb-x: 0;
+    --switch-thumb-y: -1px;
+    --switch-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 4l8 8M12 4l-8 8' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    --switch-icon-color: color-mix(
+        in srgb,
+        var(--base-content) 50%,
+        transparent
+    );
+
     appearance: none;
     position: relative;
     flex-shrink: 0;
     width: 2.25rem;
     height: 1.25rem;
-    border-radius: 1rem;
-    background-color: var(--base-300);
-    transition: background-color 150ms;
+    border: 1px solid var(--switch-chonk);
+    border-top-width: 2px;
+    border-radius: var(--radius-sm);
+    background-color: color-mix(in srgb, var(--base-content) 6%, transparent);
+    transition:
+        background-color var(--switch-motion),
+        border-color var(--switch-motion);
 
-    &::before {
+    &::before,
+    &::after {
         content: '';
         position: absolute;
-        top: 0.125rem;
-        left: 0.125rem;
-        width: 1rem;
-        height: 1rem;
-        border-radius: 50%;
+        top: 0;
+        left: 0;
+        width: 1.25rem;
+        height: 1.25rem;
+        transform: translate(var(--switch-thumb-x), var(--switch-thumb-y));
+        transition: transform var(--switch-motion);
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
+    }
+
+    &::before {
+        border: 1px solid var(--switch-chonk);
+        border-radius: var(--radius-sm);
         background-color: var(--base-100);
-        @apply shadow;
-        transition: transform 150ms;
+    }
+
+    &::after {
+        background-color: var(--switch-icon-color);
+        mask: var(--switch-icon) center / 0.75rem no-repeat;
     }
 
     &:checked {
+        --switch-chonk: var(--secondary-focus);
+        --switch-thumb-x: 1rem;
+        --switch-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.5 3.5L13 4.5' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        --switch-icon-color: var(--secondary);
         background-color: var(--secondary);
+    }
 
-        &::before {
-            transform: translateX(1rem);
-        }
+    /* The thumb sinks flat into the track */
+    &:disabled {
+        --switch-thumb-y: 0;
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 
     &:focus-visible {
