@@ -20,7 +20,6 @@ vi.mock('../../app/common/uploads.service', () => ({
 }));
 vi.mock('../../app/common/notifications', () => ({
     notifyError: vi.fn(),
-    notifyInfo: vi.fn(),
     notifySuccess: vi.fn(),
 }));
 

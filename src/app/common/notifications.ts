@@ -11,6 +11,14 @@ export interface Toast {
     on_action: () => void;
 }
 
+/*
+ * Which toast to use:
+ * - `notifySuccess`: the action the user asked for is done, e.g. saved or copied
+ * - `notifyInfo`: nothing changed or there is nothing to do, e.g. no update available
+ * - `notifyWarn`: the action is done, but with a problem the user must know about
+ * - `notifyError`: the action failed or was stopped
+ */
+
 /** Most toasts on screen at once. Older toasts are removed first */
 export const MAX_TOASTS = 3;
 /** Time a toast stays on screen. Errors stay until dismissed */

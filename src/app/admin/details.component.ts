@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { apiEndpoint, get } from '@placeos/ts-client';
 
 import { VERSION } from '../../env/version';
-import { notifyError, notifyInfo } from '../common/notifications';
+import { notifyError, notifySuccess } from '../common/notifications';
 import {
     ChangelogModalComponent,
     ChangelogModalData,
@@ -239,7 +239,7 @@ export class PlaceDetailsComponent implements OnInit {
 
     public copy(name: string, content: string) {
         copyToClipboard(content);
-        notifyInfo(i18n('ADMIN.COPIED', { name }));
+        notifySuccess(i18n('ADMIN.COPIED', { name }));
     }
 
     public async loadApiDetails() {

@@ -14,7 +14,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { AsyncHandler } from '../../common/async-handler.class';
 import { unique } from '../../common/general';
-import { notifyInfo } from '../../common/notifications';
+import { notifySuccess } from '../../common/notifications';
 import { UploadDetails } from '../../common/uploads';
 import { UploadsService } from '../../common/uploads.service';
 import { AuthenticatedImageDirective } from '../authenticated-image.directive';
@@ -280,7 +280,7 @@ export class ImageListFieldComponent
 
     public copyLink(url: string) {
         this._clipboard.copy(url);
-        notifyInfo('Copied image URL to clipboard');
+        notifySuccess('Copied image URL to clipboard');
     }
 
     public viewImage(_url: string) {

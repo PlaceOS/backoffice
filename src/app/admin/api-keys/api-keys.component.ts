@@ -2,7 +2,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 
 import { Component, OnInit, inject } from '@angular/core';
 import { i18n } from '../../common/locale.service';
-import { notifyInfo } from '../../common/notifications';
+import { notifySuccess } from '../../common/notifications';
 import { IconComponent } from '../../ui/icon.component';
 import { DateFromPipe } from '../../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
@@ -244,6 +244,6 @@ export class AdminAPIKeysComponent implements OnInit {
         const key = this.last_key();
         if (!key?.x_api_key) return;
         this._clipboard.copy(key.x_api_key);
-        notifyInfo(i18n('ADMIN.APP_KEYS_COPIED'));
+        notifySuccess(i18n('ADMIN.APP_KEYS_COPIED'));
     }
 }

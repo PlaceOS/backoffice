@@ -3,7 +3,7 @@ import { PlaceApplication, PlaceDomain } from '@placeos/ts-client';
 
 import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/locale.service';
-import { notifyInfo } from '../common/notifications';
+import { notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';
@@ -220,7 +220,7 @@ export class DomainApplicationsComponent {
     public copySecret(item: PlaceApplication) {
         this.setShowSecret(item.id, false);
         copyToClipboard(item.secret);
-        notifyInfo(i18n('DOMAINS.COPIED_SECRET'));
+        notifySuccess(i18n('DOMAINS.COPIED_SECRET'));
     }
 
     public setShowSecret(id: string, value: boolean): void {

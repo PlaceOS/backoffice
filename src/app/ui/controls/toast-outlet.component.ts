@@ -12,6 +12,18 @@ import {
     ViewContainerRef,
 } from '@angular/core';
 import { dismissToast, Toast, toasts } from '../../common/notifications';
+import { ApplicationIcon } from '../../common/types';
+import { IconComponent } from '../icon.component';
+
+/** Icon for each toast type. Other types use the info icon */
+const TOAST_ICONS: Readonly<Record<string, ApplicationIcon>> = {
+    success: { content: 'done' },
+    info: { content: 'info' },
+    error: { content: 'error' },
+    warn: { content: 'warning' },
+    warning: { content: 'warning' },
+    pending: { content: 'pending' },
+};
 
 /**
  * Shows the toasts made with `notify()` and its variants.
@@ -32,6 +44,9 @@ import { dismissToast, Toast, toasts } from '../../common/notifications';
                         [class]="toast.type"
                         animate.leave="toast-leave"
                     >
+                        <div class="toast-icon">
+                            <icon [icon]="iconFor(toast.type)" />
+                        </div>
                         <span class="toast-message">{{ toast.message }}</span>
                         @if (toast.action) {
                             <button type="button" (click)="act(toast)">
@@ -43,6 +58,7 @@ import { dismissToast, Toast, toasts } from '../../common/notifications';
             </div>
         </ng-template>
     `,
+    imports: [IconComponent],
 })
 export class ToastOutletComponent {
     private readonly _overlay = inject(Overlay);
@@ -87,6 +103,11 @@ export class ToastOutletComponent {
             );
         });
         inject(DestroyRef).onDestroy(() => this._overlay_ref.dispose());
+    }
+
+    /** Icon to show at the start of a toast of the given type */
+    public iconFor(type: string) {
+        return TOAST_ICONS[type] ?? TOAST_ICONS['info'];
     }
 
     public act(toast: Toast) {

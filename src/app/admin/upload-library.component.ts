@@ -15,11 +15,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { readError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
-import {
-    notifyError,
-    notifyInfo,
-    notifySuccess,
-} from '../common/notifications';
+import { notifyError, notifySuccess } from '../common/notifications';
 import { UploadsService } from '../common/uploads.service';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -337,7 +333,7 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         this._clipboard.copy(
             `${location.protocol}//${location.host}/api/engine/v2/uploads/${upload.id}/url`,
         );
-        notifyInfo(`Copied upload URL to clipboard.`);
+        notifySuccess(`Copied upload URL to clipboard.`);
     }
 
     /** Upload the image to the cloud */

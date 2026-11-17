@@ -3,7 +3,7 @@ import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { i18n } from '../common/locale.service';
-import { notifyInfo } from '../common/notifications';
+import { notifySuccess } from '../common/notifications';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
@@ -202,6 +202,6 @@ export class DriverAboutComponent {
     public readonly item = this._service.item;
     public copyCommit(): void {
         this._clipboard.copy(this.item()?.commit || '');
-        notifyInfo(i18n('COMMON.COMMIT_HASH_COPIED'));
+        notifySuccess(i18n('COMMON.COMMIT_HASH_COPIED'));
     }
 }

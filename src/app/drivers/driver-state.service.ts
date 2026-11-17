@@ -14,7 +14,11 @@ import {
 import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
-import { notifyError, notifySuccess } from '../common/notifications';
+import {
+    notifyError,
+    notifyInfo,
+    notifySuccess,
+} from '../common/notifications';
 import { collectPages } from '../common/support-access';
 import { Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -92,7 +96,7 @@ export class DriverStateService {
 
     public async updateDriver() {
         const item = this._state.active_item as PlaceDriver;
-        if (!item.update_available) return notifyError('No update available.');
+        if (!item.update_available) return notifyInfo('No update available.');
         const details = await openConfirmModal(
             {
                 title: `Update Driver`,
