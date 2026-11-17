@@ -226,7 +226,7 @@ export class BulkItemModalComponent<
      */
     public handleList(data: HashMap<unknown>[], is_mapped = false): void {
         if (!data.length) {
-            notifyWarn('No rows were found in the uploaded file.');
+            notifyError('No rows were found in the uploaded file.');
             return;
         }
         if (is_mapped) {

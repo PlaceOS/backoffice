@@ -4,7 +4,7 @@ import { form, FormField } from '@angular/forms/signals';
 import { addDomain, PlaceDomain, updateDomain } from '@placeos/ts-client';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
-import { notifyWarn } from '../common/notifications';
+import { notifyError } from '../common/notifications';
 import { DialogEvent } from '../common/types';
 import { isValidDomain } from '../common/validation';
 import { ChipListComponent } from '../ui/controls/chip-list.component';
@@ -224,14 +224,14 @@ export class DomainFormComponent {
 
     /**
      * Update the email domains from the chip list.
-     * New items that are not valid domains are dropped with a warning.
+     * New items that are not valid domains are dropped with an error.
      */
     public setEmailDomains(list: string[]) {
         const current = this.formModel().email_domains;
         const email_domains = list.filter(
             (item) => current.includes(item) || isValidDomain(item),
         );
-        if (email_domains.length < list.length) notifyWarn('Invalid email');
+        if (email_domains.length < list.length) notifyError('Invalid email');
         this.formModel.update((value) => ({ ...value, email_domains }));
     }
 

@@ -1,7 +1,7 @@
 import { Component, input, output, signal } from '@angular/core';
 
 import { downloadFile, jsonToCsv, parseCSV } from '../../common/general';
-import { notifyError, notifyWarn } from '../../common/notifications';
+import { notifyError } from '../../common/notifications';
 import { HashMap } from '../../common/types';
 import { SpinnerComponent } from '../../ui/controls/spinner.component';
 import { IconComponent } from '../../ui/icon.component';
@@ -152,7 +152,7 @@ export class CsvUploadComponent {
             const list = parseCSV(data, seperator) || [];
             this.loading = false;
             if (!list.length) {
-                notifyWarn('No rows were found in the uploaded file.');
+                notifyError('No rows were found in the uploaded file.');
                 return;
             }
             this.list.emit(list);
