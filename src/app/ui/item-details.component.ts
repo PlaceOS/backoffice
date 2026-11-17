@@ -5,7 +5,7 @@ import { PlaceDriverRole } from '@placeos/ts-client';
 import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
-import { notifyInfo } from '../common/notifications';
+import { notifySuccess } from '../common/notifications';
 import { MENU_POSITIONS } from './controls/overlay';
 import { TooltipDirective } from './controls/tooltip.directive';
 import { IconComponent } from './icon.component';
@@ -245,7 +245,7 @@ export class ItemDetailsComponent {
 
     public readonly copyID = () => {
         this._clipboard.copy(this.item()?.id || '');
-        notifyInfo(i18n('COMMON.COPIED_ID'));
+        notifySuccess(i18n('COMMON.COPIED_ID'));
     };
 
     /** Open modal to edit the active item */

@@ -14,8 +14,8 @@ import { PlaceDatabaseDetailsComponent } from '../../app/admin/database-details.
 import { downloadFile, parseCSV } from '../../app/common/general';
 import {
     notifyError,
+    notifyInfo,
     notifySuccess,
-    notifyWarn,
 } from '../../app/common/notifications';
 import { openConfirmModal } from '../../app/overlays/confirm-modal.component';
 
@@ -32,6 +32,7 @@ vi.mock('../../app/common/general', async (importOriginal) => ({
 }));
 vi.mock('../../app/common/notifications', () => ({
     notifyError: vi.fn(),
+    notifyInfo: vi.fn(),
     notifySuccess: vi.fn(),
     notifyWarn: vi.fn(),
 }));
@@ -154,7 +155,7 @@ describe('Database details: MQTT re-sync', () => {
         buttons(fixture).resync.click();
         await vi.advanceTimersByTimeAsync(0);
 
-        expect(notifyWarn).toHaveBeenCalledWith(
+        expect(notifyInfo).toHaveBeenCalledWith(
             'An MQTT re-sync is already running.',
         );
     });

@@ -254,7 +254,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         });
         if (failed) return;
         notifySuccess(
-            'Command successful executed.\nView Response?',
+            'Command successfully executed.\nView Response?',
             'View',
             () => this.viewDetails(result),
         );

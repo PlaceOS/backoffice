@@ -20,7 +20,6 @@ vi.mock('@placeos/ts-client', () => {
 // The receipt's copy helpers raise notifications; the snackbar is not wired up
 // in unit tests.
 vi.mock('../../app/common/notifications', () => ({
-    notifyInfo: vi.fn(),
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),
 }));

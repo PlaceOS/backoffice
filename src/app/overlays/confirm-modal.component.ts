@@ -14,11 +14,7 @@ import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
 import { lastValueFrom } from 'rxjs';
 import { describeError, readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
-import {
-    notifyError,
-    notifyInfo,
-    notifySuccess,
-} from '../common/notifications';
+import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForEvent } from '../common/signals';
 import { ApplicationIcon, DialogEvent } from '../common/types';
 import { DialogCloseDirective } from '../ui/controls/dialog';
@@ -594,7 +590,7 @@ export class ConfirmModalComponent implements OnInit {
     /** Copy a single resource id to the clipboard */
     public copyId(id: string) {
         this._clipboard.copy(id);
-        notifyInfo(i18n('COMMON.COPIED_ID'));
+        notifySuccess(i18n('COMMON.COPIED_ID'));
     }
 
     /** Copy the whole receipt as TSV, for pasting into a ticket */
@@ -606,7 +602,7 @@ export class ConfirmModalComponent implements OnInit {
             (receipt.failed || []).length +
             (receipt.skipped || []).length;
         this._clipboard.copy(receiptToTsv(receipt));
-        notifyInfo(i18n('CASCADE.RECEIPT_COPIED', { count }, count));
+        notifySuccess(i18n('CASCADE.RECEIPT_COPIED', { count }, count));
     }
 
     /** User confirmation of the content of the modal */

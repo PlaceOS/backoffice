@@ -1,7 +1,7 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { PlaceTrigger } from '@placeos/ts-client';
 import { copyToClipboard, unique } from '../common/general';
-import { notifyInfo } from '../common/notifications';
+import { notifySuccess } from '../common/notifications';
 
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -248,7 +248,7 @@ export class SystemTriggersComponent {
         copyToClipboard(
             `${location.origin}/api/engine/v2/webhook/${t.id}/notify?secret=${t.webhook_secret}`,
         );
-        notifyInfo(i18n('SYSTEMS.COPIED_WEBHOOK'));
+        notifySuccess(i18n('SYSTEMS.COPIED_WEBHOOK'));
     };
     // The service reloads the trigger list after each change
     public readonly editTrigger = (t) => this._service.editTrigger(t);

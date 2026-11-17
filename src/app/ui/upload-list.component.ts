@@ -3,7 +3,7 @@ import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { AsyncHandler } from '../common/async-handler.class';
 import { copyToClipboard } from '../common/general';
-import { notifyInfo } from '../common/notifications';
+import { notifySuccess } from '../common/notifications';
 import { SettingsService } from '../common/settings.service';
 import { UploadDetails } from '../common/uploads';
 import { UploadsService } from '../common/uploads.service';
@@ -306,7 +306,7 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
      */
     public copyLink(details: UploadDetails) {
         copyToClipboard(details.link);
-        notifyInfo(`Copied link for file ${details.name} to clipboard.`);
+        notifySuccess(`Copied link for file ${details.name} to clipboard.`);
     }
 
     /**

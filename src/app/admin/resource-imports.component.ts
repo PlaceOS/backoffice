@@ -8,8 +8,8 @@ import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import {
     notifyError,
+    notifyInfo,
     notifySuccess,
-    notifyWarn,
 } from '../common/notifications';
 import { collectPages } from '../common/support-access';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -208,7 +208,7 @@ export class ResourceImportsComponent implements OnInit {
         const list = this.resource_list();
         const missing = list.filter((_) => !_.imported);
         if (!missing.length) {
-            return notifyWarn(i18n('ADMIN.RESOURCE_IMPORTS_ALL_WARNING'));
+            return notifyInfo(i18n('ADMIN.RESOURCE_IMPORTS_ALL_WARNING'));
         }
         const resp = await openConfirmModal(
             {

@@ -15,6 +15,7 @@ import { readError } from '../common/errors';
 import { downloadFile, jsonToCsv, parseCSV } from '../common/general';
 import {
     notifyError,
+    notifyInfo,
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
@@ -289,7 +290,7 @@ export class PlaceDatabaseDetailsComponent
             this._watchMqttStatus();
         } catch (err) {
             if ((err as Response)?.status === 409) {
-                notifyWarn('An MQTT re-sync is already running.');
+                notifyInfo('An MQTT re-sync is already running.');
                 this._loadMqttStatus();
             } else {
                 notifyError(
@@ -426,7 +427,7 @@ export class PlaceDatabaseDetailsComponent
 
     private async importZoneTree(zones: ZoneTreeExportItem[]) {
         if (!(zones instanceof Array) || !zones.length) {
-            notifyWarn('Invalid zone tree CSV file.');
+            notifyError('Invalid zone tree CSV file.');
             return;
         }
         const pending = zones.filter((zone) => !!zone.id);
@@ -485,12 +486,12 @@ export class PlaceDatabaseDetailsComponent
             return;
         }
         const skipped = pending.length - created;
-        notifySuccess(
-            `Imported ${created} zones.${
-                skipped
-                    ? ` Skipped ${skipped} zones with circular parent ids.`
-                    : ''
-            }`,
-        );
+        if (skipped) {
+            notifyWarn(
+                `Imported ${created} zones. Skipped ${skipped} zones with circular parent ids.`,
+            );
+        } else {
+            notifySuccess(`Imported ${created} zones.`);
+        }
     }
 }
