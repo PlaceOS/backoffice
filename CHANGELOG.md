@@ -72,6 +72,8 @@ All notable changes to this project will be documented in this file.
 - Sidebar search no longer pushes the filter button out of view
 - Review fixes for selects, form fields, tabs, tooltips and duplicates
 - Sidebar highlight slides behind fixed link text
+- Toasts use the type that matches what happened
+- Empty uploads and invalid email domains show an error toast
 
 ### Documentation
 
@@ -141,6 +143,7 @@ All notable changes to this project will be documented in this file.
 - Buttons line up with fields and have readable edges
 - Select search inputs match the other fields, with an empty state
 - Restyle switches after the Sentry switch
+- Toasts match the info block, with a solid shadow like buttons
 
 ## [2610.1] - 2026-10-08
 
