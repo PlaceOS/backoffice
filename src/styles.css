@@ -1862,17 +1862,12 @@ a[icon] {
    (withViewTransitions in app.config.ts). The rest of the window changes at
    once. Only these parts animate:
    - `[page-transition]`: the routed content. It crossfades.
-   - the active tab, admin page and main menu link. They move to the new link. */
+   - the active tab indicator. It moves to the new tab.
+   The main menu highlight slides with a CSS transition instead (see
+   sidebar-menu.component.ts). A view transition draws the moving part above
+   the page, so it would cover the link text. */
 [page-transition] {
     view-transition-name: page;
-}
-
-[admin-nav] a[aria-current='page'] {
-    view-transition-name: admin-nav-active;
-}
-
-[sidebar-menu] a[aria-current='page'] {
-    view-transition-name: menu-active;
 }
 
 ::view-transition-group(root),
@@ -1902,9 +1897,7 @@ a[icon] {
     animation: fade-in var(--motion-enter) both;
 }
 
-::view-transition-group(tab-indicator),
-::view-transition-group(admin-nav-active),
-::view-transition-group(menu-active) {
+::view-transition-group(tab-indicator) {
     animation-duration: 200ms;
     animation-timing-function: var(--ease-enter);
 }

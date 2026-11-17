@@ -1,4 +1,13 @@
-import { Component, inject, model, OnInit, signal } from '@angular/core';
+import {
+    afterEveryRender,
+    Component,
+    ElementRef,
+    inject,
+    model,
+    OnInit,
+    signal,
+    viewChild,
+} from '@angular/core';
 import {
     NavigationCancel,
     NavigationEnd,
@@ -35,6 +44,26 @@ import { TranslatePipe } from './translate.pipe';
 import { UserAvatarComponent } from './user-avatar.component';
 import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 
+/** Offset and height of the active link in the menu */
+interface IndicatorPlace {
+    top: number;
+    height: number;
+    visible: boolean;
+    /** False until the first place, so the highlight does not slide in from the top */
+    animate: boolean;
+}
+
+/**
+ * Each feature page has its own menu. A new menu starts the highlight at the
+ * last place, so it slides from the old link to the new one.
+ */
+let last_indicator: IndicatorPlace = {
+    top: 0,
+    height: 0,
+    visible: false,
+    animate: false,
+};
+
 @Component({
     selector: 'sidebar-menu',
     template: `
@@ -68,7 +97,23 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         alt="PlaceOS logo"
                     />
                 </a>
-                <div class="w-full flex-1 space-y-2 overflow-auto pb-2">
+                <div
+                    #link_list
+                    class="relative isolate w-full flex-1 space-y-2 overflow-auto pb-2"
+                >
+                    <!-- Slides behind the links to the active link. The text
+                         stays in place. It stays in the DOM when no link is
+                         active, so it can slide from where it was. -->
+                    <span
+                        menu-indicator
+                        aria-hidden="true"
+                        [style.transform]="
+                            'translateY(' + indicator().top + 'px)'
+                        "
+                        [style.height.px]="indicator().height"
+                        [style.opacity]="indicator().visible ? 1 : 0"
+                        [style.transition]="indicator().animate ? null : 'none'"
+                    ></span>
                     @for (link of links; track $index) {
                         @if (!link.show_on || link.show_on()) {
                             @if (link.external) {
@@ -106,9 +151,9 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                                     btn
                                     link
                                     ripple
-                                    class="clear hover:bg-base-100 relative mx-auto w-[calc(100%-1rem)] text-left"
+                                    class="clear hover:bg-base-100 relative mx-auto w-[calc(100%-1rem)] text-left transition-colors"
                                     [routerLink]="[link.route]"
-                                    routerLinkActive="bg-secondary! text-secondary-content"
+                                    routerLinkActive="text-secondary-content hover:bg-transparent!"
                                     ariaCurrentWhenActive="page"
                                     [appTooltip]="
                                         compact() ? (link.name | translate) : ''
@@ -263,6 +308,25 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 color: var(--secondary-content);
             }
 
+            [menu-indicator] {
+                position: absolute;
+                top: 0;
+                inset-inline: 0.5rem;
+                z-index: -1;
+                border-radius: var(--radius-lg);
+                background-color: var(--secondary);
+                transition:
+                    transform 200ms var(--ease-enter),
+                    height 200ms var(--ease-enter),
+                    opacity 150ms;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                [menu-indicator] {
+                    transition: none;
+                }
+            }
+
             @media screen and (min-width: 512px) {
                 .compact {
                     width: 4.5rem;
@@ -307,6 +371,37 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     public readonly compact = signal(false);
     public readonly loading_route = signal('');
     public readonly show_application_picker = signal(false);
+    /** Place of the sliding highlight. With no active link it hides */
+    public readonly indicator = signal(last_indicator, {
+        equal: (a, b) =>
+            a.top === b.top &&
+            a.height === b.height &&
+            a.visible === b.visible &&
+            a.animate === b.animate,
+    });
+    private readonly _links_el =
+        viewChild.required<ElementRef<HTMLElement>>('link_list');
+    // Links can move after any render, e.g. when the menu goes compact or a
+    // link shows for an admin. The equality check stops a render loop.
+    private readonly _measure = afterEveryRender({
+        read: () => {
+            const link =
+                this._links_el().nativeElement.querySelector<HTMLElement>(
+                    'a[aria-current="page"]',
+                );
+            const last = this.indicator();
+            last_indicator = link
+                ? {
+                      top: link.offsetTop,
+                      height: link.offsetHeight,
+                      visible: true,
+                      // The first place shows at once, not from the top
+                      animate: last.height > 0,
+                  }
+                : { ...last, visible: false };
+            this.indicator.set(last_indicator);
+        },
+    });
     public readonly application_picker = ApplicationPickerTooltipComponent;
     public readonly user_controls = UserMenuTooltipComponent;
     public readonly links = [
