@@ -71,6 +71,7 @@ All notable changes to this project will be documented in this file.
 - Tooltip and panel gaps clear their shadows, and arrows join cleanly
 - Sidebar search no longer pushes the filter button out of view
 - Review fixes for selects, form fields, tabs, tooltips and duplicates
+- Sidebar highlight slides behind fixed link text
 
 ### Documentation
 

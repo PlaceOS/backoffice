@@ -1,0 +1,58 @@
+import {
+  authorisedAdminGuard
+} from "./chunk-BJQZ6KSD.js";
+import "./chunk-WTXFLIEB.js";
+import "./chunk-XSBVNB3I.js";
+import "./chunk-LL56AHAM.js";
+import "./chunk-UH5ELMAD.js";
+import "./chunk-4VR6R4OK.js";
+import "./chunk-KJM34GDY.js";
+import "./chunk-UONBBRS5.js";
+import "./chunk-UBUJ7KM4.js";
+import "./chunk-LCM7Z6QA.js";
+import "./chunk-DGKMQHVX.js";
+import "./chunk-BRT76G6A.js";
+import "./chunk-6G3VFYSX.js";
+import "./chunk-RQBZITXC.js";
+
+// src/app/modules/modules.routes.ts
+var ROUTES = [
+  {
+    path: ":id",
+    loadComponent: () => import("./chunk-X6V7YXVI.js").then((m) => m.ModulesComponent),
+    children: [
+      {
+        path: "about",
+        loadComponent: () => import("./chunk-5MX2O72N.js").then(
+          (m) => m.ModuleAboutComponent
+        )
+      },
+      {
+        path: "systems",
+        loadComponent: () => import("./chunk-233RWNYV.js").then(
+          (m) => m.ModuleSystemsComponent
+        )
+      },
+      {
+        path: "extend/:id",
+        loadComponent: () => import("./chunk-LM5TMZCY.js").then(
+          (m) => m.ExtensionOutletComponent
+        )
+      },
+      {
+        path: "history",
+        canActivate: [authorisedAdminGuard],
+        loadComponent: () => import("./chunk-P6HG3BDV.js").then(
+          (m) => m.SettingsHistoryViewComponent
+        )
+      },
+      { path: "**", redirectTo: "about" }
+    ]
+  },
+  { path: "**", redirectTo: "-" }
+];
+export {
+  ROUTES
+};
+//# debugId=b290ab44-8274-5d04-bdc3-aebd2d4d0d36
+//# sourceMappingURL=chunk-P4WPIZWR.js.map
