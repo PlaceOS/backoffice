@@ -49,7 +49,11 @@ interface IndicatorPlace {
     top: number;
     height: number;
     visible: boolean;
-    /** False until the first place, so the highlight does not slide in from the top */
+    /**
+     * False for the first render of a menu. The browser styles a new
+     * highlight before its place binding applies, so with a transition it
+     * would slide in from the top
+     */
     animate: boolean;
 }
 
@@ -372,13 +376,16 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     public readonly loading_route = signal('');
     public readonly show_application_picker = signal(false);
     /** Place of the sliding highlight. With no active link it hides */
-    public readonly indicator = signal(last_indicator, {
-        equal: (a, b) =>
-            a.top === b.top &&
-            a.height === b.height &&
-            a.visible === b.visible &&
-            a.animate === b.animate,
-    });
+    public readonly indicator = signal<IndicatorPlace>(
+        { ...last_indicator, animate: false },
+        {
+            equal: (a, b) =>
+                a.top === b.top &&
+                a.height === b.height &&
+                a.visible === b.visible &&
+                a.animate === b.animate,
+        },
+    );
     private readonly _links_el =
         viewChild.required<ElementRef<HTMLElement>>('link_list');
     // Links can move after any render, e.g. when the menu goes compact or a
@@ -392,10 +399,13 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
             const last = this.indicator();
             last_indicator = link
                 ? {
+                      // Reading offsetTop applies the styles, so a new
+                      // highlight is at the last place before its
+                      // transition turns on
                       top: link.offsetTop,
                       height: link.offsetHeight,
                       visible: true,
-                      // The first place shows at once, not from the top
+                      // With no last place, the first place shows at once
                       animate: last.height > 0,
                   }
                 : { ...last, visible: false };
