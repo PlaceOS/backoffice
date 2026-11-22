@@ -55,7 +55,7 @@ export interface SAMLSourceFormModel {
     idp_sso_target_url: string;
     name_identifier_format: string;
     assertion_consumer_service_url: string;
-    request_attributes: unknown[];
+    request_attributes: readonly unknown[];
     idp_sso_target_url_runtime_params: HashMap;
     uid_attribute: string;
     idp_cert: string;
@@ -125,7 +125,7 @@ export function generateSAMLSourceForm(
         name_identifier_format: auth_source.name_identifier_format || '',
         assertion_consumer_service_url:
             auth_source.assertion_consumer_service_url || '',
-        request_attributes: [...(auth_source.request_attributes || [])],
+        request_attributes: auth_source.request_attributes || [],
         idp_sso_target_url_runtime_params:
             auth_source.idp_sso_target_url_runtime_params || {},
         uid_attribute: auth_source.uid_attribute || '',

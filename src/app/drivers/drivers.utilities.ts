@@ -14,7 +14,7 @@ export interface DriverFormModel {
     module_name: string;
     default_uri: string;
     default_port: number;
-    alert_level: string;
+    alert_level: NonNullable<Driver['alert_level']>;
     class_name: string;
     description: string;
     ignore_connected: boolean;

@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
-import { Group, System, Zone } from '@placeos/ts-client';
+import { Group, System, Trigger, Zone } from '@placeos/ts-client';
 import { mockPage, mockReply } from '@placeos/ts-client/compat';
 import { of, Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
     queryGroupZones: vi.fn(),
     listZoneTriggers: vi.fn(),
     listMetadata: vi.fn(),
+    updateZone: vi.fn(),
     open: vi.fn(),
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),
@@ -34,6 +35,7 @@ vi.mock('@placeos/ts-client', async (importOriginal) => {
             ...actual.zones,
             query: mocks.queryZones,
             triggerInstances: mocks.listZoneTriggers,
+            update: mocks.updateZone,
         },
         groups_zones: {
             ...actual.groups_zones,
@@ -82,8 +84,6 @@ describe('zone tabs', () => {
                 {
                     provide: ActiveItemService,
                     useValue: {
-                        item: active,
-                        active_item: zone,
                         activeOf: (type: string) =>
                             type === 'zones' ? active() : null,
                     },
@@ -129,6 +129,18 @@ describe('zone tabs', () => {
         expect(service.counts().systems).toBe(2);
     });
 
+    it('sends only the trigger list when it adds a trigger', async () => {
+        mocks.updateZone.mockResolvedValue(mockReply(zone));
+        active.set(
+            newItem(Zone, { id: 'zone-1', name: 'Old', triggers: ['t-1'] }),
+        );
+        await service.addTrigger(newItem(Trigger, { id: 't-2' }));
+        expect(mocks.updateZone).toHaveBeenCalledExactlyOnceWith({
+            id: 'zone-1',
+            body: { triggers: ['t-1', 't-2'] },
+        });
+    });
+
     it('adds each group picked in the bulk modal', async () => {
         mocks.open.mockReturnValue({
             closed: of({
@@ -139,6 +151,7 @@ describe('zone tabs', () => {
                 permissions: 0,
             }),
         });
+        active.set(zone);
         await service.group_members.bulkAdd();
         expect(mocks.addGroupZone).toHaveBeenCalledTimes(2);
         expect(mocks.addGroupZone).toHaveBeenCalledWith({

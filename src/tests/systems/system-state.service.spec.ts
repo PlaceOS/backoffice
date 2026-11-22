@@ -101,11 +101,7 @@ describe('SystemStateService', () => {
                 SystemStateService,
                 {
                     provide: ActiveItemService,
-                    useValue: {
-                        item: active,
-                        activeOf: () => active(),
-                        active_item: system,
-                    },
+                    useValue: { activeOf: () => active() },
                 },
                 { provide: PlaceDebugService, useValue: {} },
                 { provide: Dialog, useValue: { open: vi.fn() } },
@@ -121,6 +117,7 @@ describe('SystemStateService', () => {
         Object.assign(debug, { isListening: () => false, bind });
         // A shared module has no `control_system_id`
         const shared = newItem(Module, { id: 'mod-shared', name: 'Display' });
+        active.set(system);
 
         service.toggleModuleDebug(shared);
 

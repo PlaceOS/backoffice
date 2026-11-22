@@ -6,10 +6,10 @@ export interface DomainFormModel {
     domain: string;
     login_url: string;
     logout_url: string;
-    config: string | Record<string, unknown>;
-    internals: string | Record<string, unknown>;
+    config: Domain['config'];
+    internals: Domain['internals'];
     description: string;
-    email_domains: string[];
+    email_domains: readonly string[];
 }
 
 export function generateDomainFormModel(domain?: Domain): DomainFormModel {
@@ -22,7 +22,7 @@ export function generateDomainFormModel(domain?: Domain): DomainFormModel {
         config: domain?.config || {},
         internals: domain?.internals || {},
         description: domain?.description || '',
-        email_domains: [...(domain?.email_domains || [])],
+        email_domains: domain?.email_domains || [],
     };
 }
 

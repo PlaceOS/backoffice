@@ -13,11 +13,11 @@ import { FormsModule } from '@angular/forms';
 import { disabled, form, FormField } from '@angular/forms/signals';
 import { domains, Group, groups } from '@placeos/ts-client';
 import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
+import { ACTIONS } from '../common/actions';
 import { onSaveHotkey, submitFormDialog } from '../common/forms';
 import { cleanObject } from '../common/general';
 import { subtreeFilter } from '../common/hierarchy';
 import { i18n } from '../common/locale.service';
-import { toBody } from '../common/placeos';
 import { DialogEvent } from '../common/types';
 import { ChipListComponent } from '../ui/controls/chip-list.component';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -325,11 +325,7 @@ export class GroupFormComponent implements OnInit {
                     },
                     ['', undefined],
                 );
-                const id = this._data.item.id;
-                const body = toBody(Group, form_item);
-                return id
-                    ? groups.update({ id, body }).then(orThrow)
-                    : groups.create({ body }).then(orThrow);
+                return ACTIONS.groups.save(form_item);
             },
         );
     }

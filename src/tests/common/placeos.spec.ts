@@ -1,11 +1,17 @@
-import { Zone, type AuthStatus, type Credential } from '@placeos/ts-client';
-import { mockFetch } from '@placeos/ts-client/compat';
+import {
+    Settings,
+    Zone,
+    type AuthStatus,
+    type Credential,
+} from '@placeos/ts-client';
+import { mockFetch, mockReply } from '@placeos/ts-client/compat';
 import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
     configure: vi.fn(),
     createAuthSession: vi.fn(),
     createRealtime: vi.fn((): unknown => ({ stop: vi.fn() })),
+    metadata: { show: vi.fn() },
 }));
 vi.mock('@placeos/ts-client', async (importOriginal) => ({
     ...(await importOriginal<typeof import('@placeos/ts-client')>()),
@@ -19,17 +25,21 @@ vi.mock('@placeos/ts-client/compat', async (importOriginal) => ({
 
 import {
     authority,
+    forgetMetadataBlocks,
     getLoadingMessage,
     isMock,
+    loadMetadataBlocks,
     newItem,
     online,
     PlaceSettings,
     realtime,
     setAuthCookie,
     setLoadingMessage,
+    settingsLevels,
     setupPlace,
     toBody,
     validCredential,
+    withEmptyLists,
 } from '../../app/common/placeos';
 
 const SETTINGS: PlaceSettings = {
@@ -255,5 +265,60 @@ describe('toBody', () => {
     it('keeps only the fields of the schema', () => {
         const zone = { id: 'zone-1', name: 'Level 1', settings: [] };
         expect(toBody(Zone, zone)).toEqual({ id: 'zone-1', name: 'Level 1' });
+    });
+});
+
+describe('withEmptyLists', () => {
+    it('gives [] for null lists of values, and keeps lists of objects null', () => {
+        const zone = newItem(Zone, { id: 'zone-1', images: ['a.png'] });
+        const filled = withEmptyLists(Zone, zone);
+        expect(filled).toMatchObject({
+            id: 'zone-1',
+            tags: [],
+            triggers: [],
+            images: ['a.png'],
+        });
+        expect(filled.trigger_data).toBeNull();
+    });
+
+    it('gives the same item when no list is null', () => {
+        const filled = withEmptyLists(Zone, newItem(Zone, {}));
+        expect(withEmptyLists(Zone, filled)).toBe(filled);
+    });
+
+    it('gives each settings level a list of keys', () => {
+        const levels = settingsLevels([
+            newItem(Settings, { id: 'set-1', encryption_level: 0 }),
+        ]);
+        expect(levels.map((level) => level.keys)).toEqual([[], [], [], []]);
+    });
+});
+
+describe('loadMetadataBlocks', () => {
+    beforeEach(() => {
+        forgetMetadataBlocks();
+        mocks.metadata.show.mockResolvedValue(
+            mockReply({
+                b: { name: 'b', details: {} },
+                a: { name: 'a', details: {} },
+            }),
+        );
+    });
+
+    it('loads the blocks of a parent one time, sorted by name', async () => {
+        const first = await loadMetadataBlocks('sys-1');
+        const second = await loadMetadataBlocks('sys-1');
+        expect(first.map((block) => block.name)).toEqual(['a', 'b']);
+        expect(second).toEqual(first);
+        expect(second[0]).not.toBe(first[0]);
+        expect(mocks.metadata.show).toHaveBeenCalledTimes(1);
+    });
+
+    it('loads the blocks again after forgetMetadataBlocks or for another parent', async () => {
+        await loadMetadataBlocks('sys-1');
+        forgetMetadataBlocks();
+        await loadMetadataBlocks('sys-1');
+        await loadMetadataBlocks('sys-2');
+        expect(mocks.metadata.show).toHaveBeenCalledTimes(3);
     });
 });

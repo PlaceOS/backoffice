@@ -208,14 +208,6 @@ export class PlaceClusterTaskListComponent
             item.id.toLowerCase().includes(this.filter().toLowerCase()),
         ),
     );
-    public column_list: string[] = [
-        'id',
-        'cpu_usage',
-        'memory_usage',
-        'module_instances',
-        'running',
-    ];
-
     public taskDetails(id: string) {
         if (task_details[id]) return task_details[id];
         const [type, ...path] = id.split('_');
@@ -300,8 +292,9 @@ export class PlaceClusterTaskListComponent
     }
 
     public async loadCluster(id: string) {
+        // Only the load is needed, for the hostname, so skip the status
         const clusters = await cluster_v7
-            .nodes({})
+            .nodes({ include_status: false })
             .then(orThrow)
             .then((nodes) => nodes.map(clusterFromStatus))
             .catch((err): PlaceCluster[] => {

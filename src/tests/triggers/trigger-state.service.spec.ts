@@ -1,5 +1,5 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { provideZonelessChangeDetection, signal } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
     system_triggers,
@@ -77,9 +77,8 @@ describe('trigger actions and instances', () => {
                 {
                     provide: ActiveItemService,
                     useValue: {
-                        item: signal(null),
-                        activeOf: () => null,
-                        active_item: trigger,
+                        activeOf: (type: string) =>
+                            type === 'triggers' ? trigger : null,
                         replaceItem: mocks.replaceItem,
                     },
                 },
@@ -131,7 +130,7 @@ describe('trigger actions and instances', () => {
         );
         expect(zones.update).toHaveBeenCalledExactlyOnceWith({
             id: 'zone-1',
-            body: expect.objectContaining({ triggers: ['other-trigger'] }),
+            body: { triggers: ['other-trigger'] },
         });
         expect(system_triggers.destroy).not.toHaveBeenCalled();
     });

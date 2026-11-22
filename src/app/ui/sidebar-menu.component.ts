@@ -558,9 +558,7 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         const active_authority = authority();
         if (!active_authority?.id) return;
         const response = await oauth_applications
-            .query({
-                authority_id: active_authority.id,
-            } as Record<string, unknown>)
+            .query({ authority_id: active_authority.id })
             .then(orThrowPage)
             .catch(() => null);
         this.show_application_picker.set(

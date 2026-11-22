@@ -11,13 +11,13 @@ import {
 import { FormField, form } from '@angular/forms/signals';
 import { Zone, zones } from '@placeos/ts-client';
 import { orThrow } from '@placeos/ts-client/compat';
+import { ACTIONS } from '../common/actions';
 import { subtreeFilter } from '../common/hierarchy';
 import { querySupportZones as queryZones } from '../common/support-access';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
-import { toBody } from '../common/placeos';
 import { TIMEZONES_IANA } from '../common/timezones';
 import { DialogEvent } from '../common/types';
 import {
@@ -372,12 +372,9 @@ export class ZoneFormComponent implements OnInit {
                 // effect keeps in sync. Strip it so we never POST `parent_zone: null`.
                 const { parent_zone: _parent_zone, ...form_value } =
                     this.formModel();
-                const form_item = mergeFormItem(this._data.item, form_value);
-                const id = this._data.item.id;
-                const body = toBody(Zone, form_item);
-                return id
-                    ? zones.update({ id, body }).then(orThrow)
-                    : zones.create({ body }).then(orThrow);
+                return ACTIONS.zones.save(
+                    mergeFormItem(this._data.item, form_value),
+                );
             },
         );
     }

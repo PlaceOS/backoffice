@@ -1,7 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { type Module } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
-import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { isSubsystemUser } from '../common/support-access';
 import { ItemShellComponent } from '../ui/item-shell.component';
@@ -20,13 +18,10 @@ import { ModuleStateService } from './module-state.service';
     imports: [ItemShellComponent],
 })
 export class ModulesComponent {
-    private _service = inject(ActiveItemService);
     private _module_state = inject(ModuleStateService);
 
     public readonly name = 'modules';
-    public readonly item = computed(
-        () => this._service.item() as Module | null,
-    );
+    public readonly item = this._module_state.item;
     /** Number of systems for the active device */
     public readonly system_count = this._module_state.system_total;
     public readonly extensions = computed(() =>

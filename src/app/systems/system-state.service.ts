@@ -1,9 +1,7 @@
 import { computed, inject, resource, Service, signal } from '@angular/core';
 import {
-    metadata,
     Module,
     modules as modules_v7,
-    type Settings,
     System,
     system_triggers,
     systems,
@@ -20,7 +18,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { escapeHtml, moveItemInArray, unique } from '../common/general';
 import { openedTabs } from '../common/opened-tabs';
-import { newItem, toBody } from '../common/placeos';
+import { loadMetadataBlocks, newItem, toBody } from '../common/placeos';
 import {
     isSubsystemUser,
     querySupportSystems as querySystems,
@@ -28,7 +26,7 @@ import {
 import { shortModuleError } from '../modules/modules.utilities';
 
 import { describeError, readError } from '../common/errors';
-import { ActiveItemService } from '../common/item.service';
+import { ActiveItem, ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { waitForDialog } from '../common/signals';
@@ -57,10 +55,7 @@ export class SystemStateService extends AsyncHandler {
     public readonly item = computed(() => this._state.activeOf('systems'));
 
     /** Settings of each encryption level of the active system */
-    public readonly settings = computed(
-        // `ActiveItemService` adds the settings to the item
-        () => (this.item() as System & { settings?: Settings[] })?.settings,
-    );
+    public readonly settings = computed(() => this.item()?.settings);
 
     private _loading = signal<HashMap<boolean>>({});
     private _modules = signal<Module[]>([]);
@@ -115,14 +110,13 @@ export class SystemStateService extends AsyncHandler {
             if (!item) return {};
             this.setLoading('settings', true);
             try {
-                const metadata_count = await metadata
-                    .show({ id: item.id })
-                    .then(orThrow)
-                    .then((response) => Object.keys(response).length)
+                // The metadata tab uses this load again
+                const metadata_count = await loadMetadataBlocks(item.id)
+                    .then((blocks) => blocks.length)
                     .catch(() => 0);
                 return {
-                    devices: (item.modules || []).length,
-                    zones: (item.zones || []).length,
+                    devices: item.modules.length,
+                    zones: item.zones.length,
                     metadata: metadata_count,
                 };
             } finally {
@@ -295,9 +289,9 @@ export class SystemStateService extends AsyncHandler {
     public readonly loading = this._loading.asReadonly();
 
     public readonly getModules = () => this._modules();
-    /** Active system */
-    public get active_item(): System {
-        return (this._state.active_item || {}) as System;
+    /** Active system. An empty object when no system is active */
+    public get active_item() {
+        return this._state.activeOf('systems') || ({} as ActiveItem<'systems'>);
     }
 
     /** Save changes to the module or zone lists of the active system. Rejects on an error */

@@ -604,6 +604,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         return processed_settings;
     }
 
+    /** Mask a level that the user cannot see. `setting` comes from `settingsLevels`, so it has `keys` */
     private _processSetting(setting: Settings): Settings {
         if (
             (setting.encryption_level === EncryptionLevel.Admin &&
@@ -613,12 +614,10 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             setting.encryption_level === EncryptionLevel.NeverDisplay
         ) {
             const obj = {};
-            for (const key of setting.keys ?? []) {
+            for (const key of setting.keys) {
                 obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
             }
-            const settings_string = (setting.keys || []).length
-                ? yaml.dump(obj)
-                : '';
+            const settings_string = setting.keys.length ? yaml.dump(obj) : '';
             return newItem(Settings, {
                 ...setting,
                 parent_id: this.id(),
@@ -639,7 +638,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             try {
                 obj = yaml.load(item.settings_string) || {};
             } catch {
-                for (const key of item.keys ?? []) {
+                for (const key of item.keys) {
                     obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
                 }
             }
@@ -650,6 +649,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             try {
                 obj = yaml.load(item.settings_string) || {};
             } catch {
+                // Merge settings come from a list load, so `keys` can be `null`
                 for (const key of item.keys ?? []) {
                     obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
                 }

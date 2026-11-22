@@ -118,8 +118,6 @@ describe('group membership actions', () => {
                 {
                     provide: ActiveItemService,
                     useValue: {
-                        item: active,
-                        active_item: group,
                         activeOf: (type: string) =>
                             type === 'groups' ? active() : null,
                     },
@@ -236,6 +234,7 @@ describe('group membership actions', () => {
     it('reports a failed add without claiming success', async () => {
         const error = new Error('Forbidden');
         mocks.addGroupUser.mockRejectedValue(error);
+        active.set(group);
         await service.user_members.add(newItem(User, { id: 'user-1' }));
         expect(mocks.addGroupUser).toHaveBeenCalledExactlyOnceWith({
             body: { group_id: 'group-1', user_id: 'user-1' },
@@ -333,6 +332,7 @@ describe('group membership actions', () => {
         mocks.addGroupUser
             .mockResolvedValueOnce(mockReply(user))
             .mockRejectedValueOnce(new Error('Forbidden'));
+        active.set(group);
         await service.user_members.bulkAdd();
         expect(mocks.addGroupUser).toHaveBeenCalledTimes(2);
         expect(mocks.addGroupUser).toHaveBeenCalledWith({
@@ -350,6 +350,7 @@ describe('group membership actions', () => {
     });
 
     it('starts bulk user permissions at the group default permissions', async () => {
+        active.set(group);
         await service.user_members.bulkAdd();
         expect(mocks.open.mock.calls[0][1].data.permissions).toBe(5);
     });

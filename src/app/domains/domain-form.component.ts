@@ -1,12 +1,11 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
-import { Domain, domains } from '@placeos/ts-client';
-import { orThrow } from '@placeos/ts-client/compat';
+import { Domain } from '@placeos/ts-client';
+import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
-import { toBody } from '../common/placeos';
 import { DialogEvent } from '../common/types';
 import { isValidDomain } from '../common/validation';
 import { ChipListComponent } from '../ui/controls/chip-list.component';
@@ -226,7 +225,7 @@ export class DomainFormComponent {
      * Update the email domains from the chip list.
      * New items that are not valid domains are dropped with an error.
      */
-    public setEmailDomains(list: string[]) {
+    public setEmailDomains(list: readonly string[]) {
         const current = this.formModel().email_domains;
         const email_domains = list.filter(
             (item) => current.includes(item) || isValidDomain(item),
@@ -248,17 +247,10 @@ export class DomainFormComponent {
                 close: () => this._dialog_ref.close(),
             },
             `${this._name}.`,
-            () => {
-                const form_item = mergeFormItem(
-                    this._data.item,
-                    this.formModel(),
-                );
-                const id = this._data.item.id;
-                const body = toBody(Domain, form_item);
-                return id
-                    ? domains.update({ id, body }).then(orThrow)
-                    : domains.create({ body }).then(orThrow);
-            },
+            () =>
+                ACTIONS.domains.save(
+                    mergeFormItem(this._data.item, this.formModel()),
+                ),
         );
     }
 }

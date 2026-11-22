@@ -70,7 +70,7 @@ export interface TriggerFormModel {
     name: string;
     description: string;
     enable_webhook: boolean;
-    supported_methods: string[];
+    supported_methods: readonly string[];
     debounce_period: number;
 }
 
@@ -79,7 +79,10 @@ export function generateTriggerFormModel(trigger?: Trigger): TriggerFormModel {
         name: trigger?.name || '',
         description: trigger?.description || '',
         enable_webhook: trigger?.enable_webhook || false,
-        supported_methods: [...(trigger?.supported_methods ?? ['POST'])],
+        // An empty list means the server left the field out
+        supported_methods: trigger?.supported_methods?.length
+            ? trigger.supported_methods
+            : ['POST'],
         debounce_period: Math.max(0, trigger?.debounce_period || 0),
     };
 }
@@ -91,7 +94,7 @@ export function applyTriggerFormSchema(
 }
 export interface TriggerSettingsFormModel {
     name: string;
-    playlists: string[];
+    playlists: readonly string[];
     triggered: boolean;
     exec_enabled: boolean;
     enabled: boolean;
@@ -103,7 +106,7 @@ export function generateTriggerSettingsFormModel(
 ): TriggerSettingsFormModel {
     return {
         name: trigger?.name || '',
-        playlists: [...(trigger?.playlists || [])],
+        playlists: trigger?.playlists || [],
         triggered: +trigger?.trigger_count > 0,
         exec_enabled: !!trigger?.exec_enabled,
         enabled: !!trigger?.enabled,
@@ -216,7 +219,7 @@ export function validateEmailList(control: AbstractControl) {
 
 export interface TriggerActionFormModel {
     action_type: 'emails' | 'function';
-    emails: string[];
+    emails: readonly string[];
     content: string;
     method_call: TriggerActionsFunction;
 }
@@ -232,7 +235,7 @@ export function generateTriggerActionFormModel(
             : 'function';
     return {
         action_type: type,
-        emails: [...((action as TriggerActionsEmail)?.emails || [])],
+        emails: (action as TriggerActionsEmail)?.emails || [],
         content: (action as TriggerActionsEmail)?.content || '',
         method_call: (action as TriggerActionsFunction) || null,
     };

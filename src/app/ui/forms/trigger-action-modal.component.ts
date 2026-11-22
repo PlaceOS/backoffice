@@ -13,16 +13,14 @@ import {
     TriggerActions,
     TriggerActionsEmail,
     TriggerActionsFunction,
-    triggers,
 } from '@placeos/ts-client';
-import { orThrow } from '@placeos/ts-client/compat';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { form, FormField, submit } from '@angular/forms/signals';
+import { ACTIONS } from '../../common/actions';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
-import { toBody } from '../../common/placeos';
 import { DialogEvent, Identity } from '../../common/types';
 import {
     applyTriggerActionFormSchema,
@@ -214,34 +212,28 @@ export class TriggerActionModalComponent implements OnInit {
             );
         }
         this.loading.set('Save trigger action...');
-        await triggers
-            .update({
-                id: this.trigger.id,
-                body: { ...toBody(Trigger, this.trigger), actions },
-            })
-            .then(orThrow)
-            .then(
-                (item) => {
-                    this.event.emit({
-                        reason: 'done',
-                        metadata: { trigger: item },
-                    });
-                    notifySuccess(
-                        `Successfully ${
-                            this.is_new ? 'added' : 'updated'
-                        } action to trigger`,
-                    );
-                    this._dialog.close();
-                },
-                (err) => {
-                    this.loading.set('');
-                    notifyError(
-                        `Error ${
-                            this.is_new ? 'adding' : 'updating'
-                        } action to trigger. Error: ${describeError(err)}`,
-                    );
-                },
-            );
+        await ACTIONS.triggers.save({ ...this.trigger, actions }).then(
+            (item) => {
+                this.event.emit({
+                    reason: 'done',
+                    metadata: { trigger: item },
+                });
+                notifySuccess(
+                    `Successfully ${
+                        this.is_new ? 'added' : 'updated'
+                    } action to trigger`,
+                );
+                this._dialog.close();
+            },
+            (err) => {
+                this.loading.set('');
+                notifyError(
+                    `Error ${
+                        this.is_new ? 'adding' : 'updating'
+                    } action to trigger. Error: ${describeError(err)}`,
+                );
+            },
+        );
     }
 
     /**

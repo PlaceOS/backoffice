@@ -9,19 +9,15 @@ import {
     signal,
 } from '@angular/core';
 import { FormField, form } from '@angular/forms/signals';
-import {
-    User,
-    domains as domains_v7,
-    users,
-    type JsonValue,
-} from '@placeos/ts-client';
-import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
+import { User, domains as domains_v7 } from '@placeos/ts-client';
+import { orThrowPage } from '@placeos/ts-client/compat';
 import { isSubsystemUser } from '../common/support-access';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
-import { authority, newItem } from '../common/placeos';
+import { authority } from '../common/placeos';
 import { DialogEvent } from '../common/types';
 import { ChipListComponent } from '../ui/controls/chip-list.component';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -446,15 +442,8 @@ export class UserFormComponent {
                         delete form_item[key];
                     form_item.authority_id = authority()?.id;
                 }
-                // The body is any JSON, so it keeps the password fields. The round
-                // trip sends what 6.x sent, without `undefined` values
-                const body: JsonValue = JSON.parse(JSON.stringify(form_item));
-                const id = this._data.item.id;
-                return (
-                    id
-                        ? users.update({ id, body }).then(orThrow)
-                        : users.create({ body }).then(orThrow)
-                ).then((user) => newItem(User, user));
+                // The user body is any JSON, so the save keeps the password fields
+                return ACTIONS.users.save(form_item);
             },
         );
     }

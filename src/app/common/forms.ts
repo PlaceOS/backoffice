@@ -10,7 +10,7 @@ import { cleanObject } from './general';
 import { HotkeysService } from './hotkeys.service';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
-import { DialogEvent, Identity } from './types';
+import { DialogEvent } from './types';
 
 /** Readable name for a form field key, e.g. `service_account` to "Service account" */
 export function fieldLabel(key: string): string {
@@ -39,9 +39,9 @@ export function mergeFormItem<T extends object>(
     item: { id?: string },
     form_value: T,
     empty: unknown[] = [undefined],
-): Identity & T {
+): { id?: string } & T {
     const merged = { ...item, ...form_value };
-    return (item.id ? cleanObject(merged, empty) : merged) as Identity & T;
+    return item.id ? cleanObject(merged, empty) : merged;
 }
 
 /** Parts of a form dialog that `submitFormDialog` drives */

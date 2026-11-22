@@ -10,25 +10,19 @@ import {
     untracked,
 } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
-import {
-    drivers,
-    edges,
-    type Module,
-    modules,
-    systems,
-} from '@placeos/ts-client';
+import { drivers, edges, type Module, systems } from '@placeos/ts-client';
 import {
     orThrow,
     orThrowPage,
     PlaceDriverRole,
 } from '@placeos/ts-client/compat';
 import {
-    clearSupportModuleCache,
     isSubsystemUser,
     querySupportSystems as querySystems,
 } from '../common/support-access';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { DialogEvent } from '../common/types';
@@ -42,7 +36,6 @@ import { TranslatePipe } from '../ui/translate.pipe';
 import {
     applyModuleFormSchema,
     generateModuleFormModel,
-    moduleBody,
     type ModuleFormModel,
 } from './modules.utilities';
 
@@ -519,14 +512,8 @@ export class ModuleFormComponent implements OnInit {
                 if (form_item.role !== PlaceDriverRole.Logic) {
                     delete form_item.control_system_id;
                 }
-                const body = moduleBody(form_item);
-                const saved = await (form_item.id
-                    ? modules
-                          .update({ id: `${form_item.id}`, body })
-                          .then(orThrow)
-                    : modules.create({ body }).then(orThrow));
-                clearSupportModuleCache();
-                return saved;
+                // The save gives a new module port 1 when it has none, and clears the module cache
+                return ACTIONS.modules.save(form_item);
             },
         );
     }

@@ -6,7 +6,7 @@ import {
     signal,
     untracked,
 } from '@angular/core';
-import { type System, type Zone } from '@placeos/ts-client';
+import { type Zone } from '@placeos/ts-client';
 import { querySupportZones as queryZones } from '../common/support-access';
 
 import { moveItemInArray } from '@angular/cdk/drag-drop';
@@ -236,9 +236,10 @@ export class SystemZonesComponent {
         const item = this.item_signal();
         const zones = this.original_zones();
         if (!item?.email && !item?.map_id) return '';
-        const has_org = zones.find((_) => _.tags.includes('org'));
-        const has_building = zones.find((_) => _.tags.includes('building'));
-        const has_level = zones.find((_) => _.tags.includes('level'));
+        // The zones come from a list load, so `tags` can be `null`
+        const has_org = zones.find((_) => _.tags?.includes('org'));
+        const has_building = zones.find((_) => _.tags?.includes('building'));
+        const has_level = zones.find((_) => _.tags?.includes('level'));
         if (has_org && has_building && has_level) return '';
         const missing = [];
         if (!has_org) missing.push('org');
@@ -307,8 +308,8 @@ export class SystemZonesComponent {
         });
     }
 
-    public get item(): System {
-        return this._service.active_item as System;
+    public get item() {
+        return this._service.active_item;
     }
 
     public async reorder([previous, current]: [number, number]) {

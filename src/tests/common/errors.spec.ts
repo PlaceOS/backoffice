@@ -2,13 +2,21 @@ import { CallFailed } from '@placeos/ts-client/compat';
 import { describe, expect, it } from 'vitest';
 import { describeError, readError } from '../../app/common/errors';
 
+/** A failed v7 call with the given body */
+function httpFailure(
+    status: number,
+    { message = null, body = null, text = null } = {} as {
+        message?: string | null;
+        body?: { message?: string; error?: string } | null;
+        text?: string | null;
+    },
+) {
+    return new CallFailed({ kind: 'http', status, message, body, text });
+}
+
 describe('describeError', () => {
-    it('turns a ts-client Response rejection into its status', () => {
-        const error = new Response('', {
-            status: 403,
-            statusText: 'Forbidden',
-        });
-        expect(describeError(error)).toBe('403 Forbidden');
+    it('gives the status of a failed call', () => {
+        expect(describeError(httpFailure(403))).toBe('403 request failed');
     });
 
     it('uses an Error message when there is one', () => {
@@ -27,75 +35,39 @@ describe('describeError', () => {
     });
 });
 
-describe('a v7 call that failed', () => {
-    it('shows the status and the message of the JSON body', async () => {
-        const error = new CallFailed({
-            kind: 'http',
-            status: 422,
-            message: null,
-            body: { message: 'name taken' },
-            text: null,
+describe('readError', () => {
+    it('adds the error field of a JSON body', async () => {
+        const error = httpFailure(401, {
+            message: 'invalid token',
+            body: { error: 'invalid token' },
         });
+        expect(await readError(error)).toBe(
+            '401 request failed: invalid token',
+        );
+    });
+
+    it('adds the message field of a JSON body without an error field', async () => {
+        const error = httpFailure(422, { body: { message: 'name taken' } });
         expect(await readError(error)).toBe('422 request failed: name taken');
     });
 
-    it('shows a plain-text body', async () => {
-        const error = new CallFailed({
-            kind: 'http',
-            status: 503,
-            message: null,
-            body: null,
-            text: 'core is starting',
-        });
+    it('adds a plain-text body', async () => {
+        const error = httpFailure(503, { text: 'core is starting' });
         expect(await readError(error)).toBe(
             '503 request failed: core is starting',
         );
     });
-});
 
-describe('readError', () => {
-    it('adds the message from a JSON body', async () => {
-        const error = new Response('{"message":"name taken"}', {
-            status: 422,
-            statusText: 'Unprocessable Entity',
-        });
-        expect(await readError(error)).toBe(
-            '422 Unprocessable Entity: name taken',
-        );
-    });
-
-    it('uses the error field of a JSON body without a message', async () => {
-        const error = new Response('{"error":"invalid token"}', {
-            status: 401,
-            statusText: 'Unauthorized',
-        });
-        expect(await readError(error)).toBe('401 Unauthorized: invalid token');
-    });
-
-    it('shows only the status for an empty body', async () => {
-        const error = new Response('', {
-            status: 500,
-            statusText: 'Internal Server Error',
-        });
-        expect(await readError(error)).toBe('500 Internal Server Error');
-    });
-
-    it('adds a plain text body and leaves the original readable', async () => {
-        const error = new Response('driver failed to compile', {
-            status: 500,
-            statusText: 'Internal Server Error',
-        });
-        expect(await readError(error)).toBe(
-            '500 Internal Server Error: driver failed to compile',
-        );
-        expect(await error.text()).toBe('driver failed to compile');
-    });
-
-    it('skips an HTML body and a body that is already read', async () => {
-        const html = new Response('<html>oops</html>', { status: 502 });
+    it('shows only the status for an empty or HTML body', async () => {
+        expect(await readError(httpFailure(500))).toBe('500 request failed');
+        const html = httpFailure(502, { text: '<html>oops</html>' });
         expect(await readError(html)).toBe('502 request failed');
-        const used = new Response('gone', { status: 404, statusText: 'Nope' });
-        await used.text();
-        expect(await readError(used)).toBe('404 Nope');
+    });
+
+    it('limits the length of a long body', async () => {
+        const error = httpFailure(500, { text: 'x'.repeat(1000) });
+        expect(await readError(error)).toHaveLength(
+            '500 request failed: '.length + 300,
+        );
     });
 });

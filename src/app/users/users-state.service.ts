@@ -5,8 +5,6 @@ import {
     groups,
     groups_users,
     type GroupUser,
-    metadata,
-    type User,
     users,
 } from '@placeos/ts-client';
 import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
@@ -16,6 +14,7 @@ import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openedTabs } from '../common/opened-tabs';
+import { loadMetadataBlocks } from '../common/placeos';
 import { groupMembership } from '../groups/group-membership';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 
@@ -33,22 +32,20 @@ export class UsersStateService {
             this._groups.isLoading(),
     );
 
-    public readonly item = this._service.item;
+    public readonly item = computed(() => this._service.activeOf('users'));
 
-    // The metadata tab loads its own list, so only the count is needed here
+    // The metadata tab uses this load again, so the blocks load one time
     private readonly _metadata_count = resource({
         params: () => ({
-            item: this._service.activeOf('users'),
+            item: this.item(),
             change: this._change(),
         }),
         loader: async ({ params }) => {
             const { item } = params;
             if (!item) return 0;
-            return metadata
-                .show({ id: item.id })
-                .then(orThrow)
-                .then((by_name) => Object.keys(by_name).length)
-                .catch((_err) => 0);
+            return loadMetadataBlocks(item.id)
+                .then((blocks) => blocks.length)
+                .catch(() => 0);
         },
     });
 
@@ -59,9 +56,7 @@ export class UsersStateService {
         }),
     );
 
-    private readonly _user_id = computed(
-        () => this._service.activeOf('users')?.id || undefined,
-    );
+    private readonly _user_id = computed(() => this.item()?.id || undefined);
     // The group list only loads once its tab is opened. Until then a single
     // row query gives the tab count.
     private readonly _opened_tabs = openedTabs(this._user_id);
@@ -71,7 +66,7 @@ export class UsersStateService {
 
     private readonly _groups = resource({
         params: () => ({
-            item: this._service.activeOf('users'),
+            item: this.item(),
             change: this._change(),
             full: this._load_groups(),
         }),
@@ -104,8 +99,8 @@ export class UsersStateService {
 
     public readonly groups = computed(() => this._groups.value()?.data || []);
 
-    public get active_item(): User {
-        return this._service.active_item as unknown as User;
+    public get active_item() {
+        return this._service.activeOf('users');
     }
 
     /** Group memberships of the active user */
@@ -172,7 +167,7 @@ export class UsersStateService {
         details.loading(i18n('USERS.REVIVE_LOADING'));
         try {
             await users.revive({ id: item.id }).then(orThrow);
-            if (this._service.active_item === item) {
+            if (this.active_item === item) {
                 this._service.replaceItem({ ...item, deleted: false });
             }
             this.changed();

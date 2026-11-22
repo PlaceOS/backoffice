@@ -129,10 +129,10 @@ export class SelectModuleComponent
                     .then(orThrowPage)
                     .then(({ data }) => [...data])
                     .catch((): Module[] => []);
+                // The system can come from a list load, without `modules`
+                const order = this.system()?.modules ?? [];
                 mod_list.sort(
-                    (a, b) =>
-                        this.system().modules.indexOf(a.id) -
-                        this.system().modules.indexOf(b.id),
+                    (a, b) => order.indexOf(a.id) - order.indexOf(b.id),
                 );
                 return mod_list.map((mod) => ({
                     id: mod.id,

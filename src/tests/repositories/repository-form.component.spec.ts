@@ -16,11 +16,8 @@ vi.mock('../../app/common/notifications', async (importOriginal) => ({
     notifyError: vi.fn(),
 }));
 
-vi.mock('@placeos/ts-client', () => ({
-    EncryptionLevel: { Support: 2 },
-    PlaceRepositoryType: { Driver: 'driver', Interface: 'interface' },
-    PlaceSettings: class PlaceSettings {},
-    cleanObject: (value: unknown) => value,
+vi.mock('@placeos/ts-client', async (importOriginal) => ({
+    ...(await importOriginal<object>()),
     repositories: {
         create: vi.fn(fromV1Mock(undefined, ['body'])),
         remoteBranches: vi.fn(fromV1Mock(undefined, ['...'])),

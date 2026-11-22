@@ -20,7 +20,7 @@ export interface ModuleFormModel {
     udp: boolean;
     makebreak: boolean;
     ignore_connected: boolean;
-    alert_level: string;
+    alert_level: NonNullable<Module['alert_level']>;
     uri: string;
     notes: string;
     name: string;

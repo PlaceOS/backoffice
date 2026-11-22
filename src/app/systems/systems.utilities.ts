@@ -17,7 +17,7 @@ export function validateYAML(control: AbstractControl) {
     return message ? { yaml: message } : null;
 }
 
-function hasInvalidURLArray(value: string[]) {
+function hasInvalidURLArray(value: readonly string[]) {
     if (!value || !Array.isArray(value) || !value.length) {
         return false;
     }
@@ -36,21 +36,21 @@ export interface SystemFormModel {
     support_url: string;
     timetable_url: string;
     camera_url: string;
-    camera_snapshot_urls: string[];
+    camera_snapshot_urls: readonly string[];
     room_booking_url: string;
     installed_ui_devices: number;
-    features: string[];
-    security_groups: string[];
+    features: readonly string[];
+    security_groups: readonly string[];
     capacity: number;
     bookable: boolean;
     signage: boolean;
     public: boolean;
     description: string;
-    images: string[];
+    images: readonly string[];
     map_id: string;
     timezone: string;
     zone?: Zone | null;
-    zones: string[];
+    zones: readonly string[];
 }
 
 export function generateSystemFormModel(system?: System): SystemFormModel {
@@ -66,20 +66,20 @@ export function generateSystemFormModel(system?: System): SystemFormModel {
         camera_snapshot_urls: normaliseCameraSnapshotUrls(system),
         room_booking_url: system.room_booking_url || '',
         installed_ui_devices: system.installed_ui_devices || 0,
-        features: [...(system.features || [])],
-        security_groups: [...(system.security_groups || [])],
+        features: system.features || [],
+        security_groups: system.security_groups || [],
         capacity: system.capacity || 0,
         bookable: system.bookable || false,
         signage: system.signage || false,
         public: system.public || false,
         description: system.description || '',
-        images: [...(system.images || [])],
+        images: system.images || [],
         map_id: system.map_id || '',
         timezone: system.timezone || '',
         // `null` (not `undefined`) so signal forms materialise the field;
         // otherwise `form.zone` is undefined and its picker never renders.
         zone: null,
-        zones: [...(system.zones || [])],
+        zones: system.zones || [],
     };
 }
 

@@ -16,7 +16,7 @@ export interface GroupFormModel {
     description: string;
     parent_id: string;
     authority_id: string;
-    subsystems: string[];
+    subsystems: readonly string[];
     default_permissions: number;
     ad_group_mappings: GroupAdMappings;
 }
@@ -30,7 +30,7 @@ export function generateGroupFormModel(group?: Group): GroupFormModel {
         description: group?.description || '',
         parent_id: group?.parent_id || '',
         authority_id: group?.authority_id || authority()?.id || '',
-        subsystems: [...(group?.subsystems || [])],
+        subsystems: group?.subsystems || [],
         default_permissions: group?.default_permissions || 0,
         ad_group_mappings: { ...(group?.ad_group_mappings || {}) },
     };

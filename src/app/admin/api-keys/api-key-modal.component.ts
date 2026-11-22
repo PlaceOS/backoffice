@@ -329,7 +329,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         user?: User;
         user_id: string;
         description: string;
-        scopes: string[];
+        scopes: readonly string[];
         permissions: string | null;
         expires_at: number | null;
         ttl: number | null;
@@ -427,7 +427,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                 id: key.id,
                 name: key.name,
                 description: key.description,
-                scopes: [...(key.scopes || [])],
+                scopes: key.scopes || [],
                 user: key.user ? newItem(User, key.user) : undefined,
                 user_id: key.user_id,
                 permissions: key.permissions || null,

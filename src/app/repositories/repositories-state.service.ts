@@ -3,7 +3,6 @@ import {
     Driver,
     type GitRepositoryCommit,
     repositories,
-    type Repository,
 } from '@placeos/ts-client';
 import { orThrow, PlaceRepositoryType } from '@placeos/ts-client/compat';
 
@@ -29,12 +28,10 @@ export class RepositoriesStateService {
     public readonly driver_list_error = this._driver_list_error.asReadonly();
     public readonly commit_error = this._commit_error.asReadonly();
     /** Active repository */
-    public readonly item = computed(
-        () => this._state.item() as unknown as Repository,
-    );
+    public readonly item = computed(() => this._state.activeOf('repositories'));
 
     private readonly _driver_list = resource({
-        params: () => this._state.activeOf('repositories'),
+        params: () => this.item(),
         loader: async ({ params: item }) => {
             if (!item || item.repo_type === PlaceRepositoryType.Interface)
                 return [] as string[];
@@ -59,7 +56,7 @@ export class RepositoriesStateService {
 
     private readonly _changelog = resource({
         params: () => {
-            const item = this._state.activeOf('repositories');
+            const item = this.item();
             if (
                 !item ||
                 item.repo_type !== PlaceRepositoryType.Interface ||
@@ -91,7 +88,7 @@ export class RepositoriesStateService {
     public readonly changelog_loading = this._changelog.isLoading;
 
     private readonly _commit = resource({
-        params: () => this._state.activeOf('repositories'),
+        params: () => this.item(),
         loader: async ({ params: item }) => {
             if (!item) return 'HEAD';
             this._commit_error.set('');
@@ -109,8 +106,8 @@ export class RepositoriesStateService {
     /** Get latest commit for the active repository */
     public readonly commit = computed(() => this._commit.value() || 'HEAD');
 
-    public get active_item(): Repository {
-        return this._state.active_item as unknown as Repository;
+    public get active_item() {
+        return this._state.activeOf('repositories');
     }
 
     public async pullLatestCommit() {

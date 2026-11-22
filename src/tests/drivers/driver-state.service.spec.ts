@@ -1,5 +1,5 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { provideZonelessChangeDetection, signal } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Driver, drivers, Settings } from '@placeos/ts-client';
 import { mockReply } from '@placeos/ts-client/compat';
@@ -35,8 +35,8 @@ function service(driver: Driver) {
             {
                 provide: ActiveItemService,
                 useValue: {
-                    active_item: driver,
-                    item: signal(driver),
+                    activeOf: (type: string) =>
+                        type === 'drivers' ? driver : null,
                     replaceItem: vi.fn(),
                 },
             },

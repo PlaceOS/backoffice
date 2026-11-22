@@ -9,19 +9,18 @@ import {
     TriggerConditionsTimeDependent,
     type TriggerInstance,
     triggers,
-    Zone,
     zones,
 } from '@placeos/ts-client';
 import { orThrow } from '@placeos/ts-client/compat';
 
 import { Dialog } from '@angular/cdk/dialog';
+import { ACTIONS } from '../common/actions';
 import { describeError } from '../common/errors';
 import { escapeHtml, moveItemInArray } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { toBody } from '../common/placeos';
 import { waitForDialog } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -63,8 +62,8 @@ export class TriggerStateService {
 
     public readonly instances = computed(() => this._instances.value() || []);
 
-    public get active_item(): Trigger {
-        return this._service.active_item as Trigger;
+    public get active_item() {
+        return this._service.activeOf('triggers');
     }
 
     /**
@@ -158,12 +157,8 @@ export class TriggerStateService {
             moveItemInArray(actions.mailers, fst, snd);
         }
         details.loading(i18n('TRIGGERS.REORDER_CONFIRM_LOADING'));
-        const resp = await triggers
-            .update({
-                id: this.active_item.id,
-                body: { ...toBody(Trigger, this.active_item), actions },
-            })
-            .then(orThrow)
+        const resp = await ACTIONS.triggers
+            .save({ ...this.active_item, actions })
             .catch((_) => _);
         details.close();
         if (!resp?.id) {
@@ -208,12 +203,8 @@ export class TriggerStateService {
             );
         }
         list.splice(index, 1);
-        const resp = await triggers
-            .update({
-                id: item.id,
-                body: { ...toBody(Trigger, item), conditions },
-            })
-            .then(orThrow)
+        const resp = await ACTIONS.triggers
+            .save({ ...item, conditions })
             .catch((err) => err);
         details.close();
         if (!resp?.id) {
@@ -259,12 +250,8 @@ export class TriggerStateService {
             ? actions.mailers
             : actions.functions
         ).splice(index, 1);
-        const resp = await triggers
-            .update({
-                id: item.id,
-                body: { ...toBody(Trigger, item), actions },
-            })
-            .then(orThrow)
+        const resp = await ACTIONS.triggers
+            .save({ ...item, actions })
             .catch((err) => err);
         details.close();
         if (!resp?.id) {
@@ -306,11 +293,11 @@ export class TriggerStateService {
                   const zone = await zones
                       .show({ id: instance.zone_id })
                       .then(orThrow);
+                  // Send only the trigger list, so that other changes to the zone stay
                   await zones
                       .update({
                           id: zone.id,
                           body: {
-                              ...toBody(Zone, zone),
                               triggers: (zone.triggers || []).filter(
                                   (id) => id !== this.active_item.id,
                               ),

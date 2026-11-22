@@ -15,11 +15,7 @@ import { humanReadableByteCount } from '../../common/general';
 import { Point } from '../../common/types';
 import { BasicLineGraphComponent } from '../../ui/basic-line-graph.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
-
-interface PlaceClusterRunCounts {
-    modules: number;
-    drivers: number;
-}
+import { PlaceClusterRunCounts } from './cluster.utilities';
 
 export interface PlaceClusterNode {
     hostname: string;

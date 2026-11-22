@@ -146,9 +146,7 @@ export class ApplicationPickerTooltipComponent implements OnInit {
             return;
         }
         const response = await oauth_applications
-            .query({
-                authority_id: active_authority.id,
-            } as Record<string, unknown>)
+            .query({ authority_id: active_authority.id })
             .then(orThrowPage)
             .catch(() => null);
         const applications = (response?.data || [])

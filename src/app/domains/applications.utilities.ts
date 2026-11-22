@@ -5,7 +5,7 @@ import { isValidUrl } from '../common/validation';
 export interface ApplicationFormModel {
     name: string;
     scopes: string;
-    subsystems: string[];
+    subsystems: readonly string[];
     skip_authorization: boolean;
     redirect_uri: string;
     client_id: string;
@@ -18,7 +18,7 @@ export function generateApplicationFormModel(
     return {
         name: app?.name || '',
         scopes: app?.scopes || '',
-        subsystems: [...(app?.subsystems || [])],
+        subsystems: app?.subsystems || [],
         skip_authorization: !!app?.skip_authorization,
         redirect_uri: app?.redirect_uri || '',
         client_id: app?.uid || '',

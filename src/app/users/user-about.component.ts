@@ -136,7 +136,7 @@ export class UserAboutComponent {
     private _clipboard = inject(Clipboard);
 
     private readonly _domain = resource({
-        params: () => (this._service.item() as User)?.authority_id,
+        params: () => this._service.activeOf('users')?.authority_id,
         loader: async ({ params: id }) =>
             id
                 ? domains
@@ -148,7 +148,8 @@ export class UserAboutComponent {
     public readonly domain = computed(() => this._domain.value() || null);
 
     public get item(): User {
-        return (this._service.active_item as User) || ({} as User);
+        // An empty user when none is active, so the template can read its fields
+        return this._service.activeOf('users') || ({} as User);
     }
 
     public copyGroup(group: string) {

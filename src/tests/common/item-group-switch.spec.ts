@@ -30,15 +30,18 @@ vi.mock('@placeos/ts-client', async (importOriginal) => {
         settings: { ...actual.settings, query: mocks.settings },
     };
 });
-vi.mock('../../app/common/actions', () => ({
-    ACTIONS: {
-        systems: {
-            query: mocks.query,
-            show: mocks.show,
+vi.mock('../../app/common/actions', async () => {
+    const { System, User } =
+        await vi.importActual<typeof import('@placeos/ts-client')>(
+            '@placeos/ts-client',
+        );
+    return {
+        ACTIONS: {
+            systems: { query: mocks.query, show: mocks.show, schema: System },
+            users: { query: mocks.query, show: mocks.show, schema: User },
         },
-        users: { query: mocks.query, show: mocks.show },
-    },
-}));
+    };
+});
 vi.mock('../../app/common/support-access', () => ({
     hasSupportRole: () => false,
     hasSupportSubsystem: () => true,
@@ -239,9 +242,12 @@ it('shows a saved item with its current settings', async () => {
             }
         ).settings[0].settings_string;
     expect(settingsValue()).toBe('a: 1');
+    // Lists that the server left out are empty, as in 6.x
+    expect(service.activeOf('systems')?.zones).toEqual([]);
     // Settings saved since the item loaded must not be lost on a rename
     service.replaceItem({ id: 'sys-1', name: 'Renamed' });
     expect(service.active_item?.name).toBe('Renamed');
+    expect(service.activeOf('systems')?.modules).toEqual([]);
     await vi.advanceTimersByTimeAsync(1);
     expect(service.active_item?.name).toBe('Renamed');
     expect(settingsValue()).toBe('a: 2');

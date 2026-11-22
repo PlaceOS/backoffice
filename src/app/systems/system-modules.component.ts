@@ -10,11 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import {
-    type Module,
-    modules as modules_v7,
-    type System,
-} from '@placeos/ts-client';
+import { type Module, modules as modules_v7 } from '@placeos/ts-client';
 import {
     orThrow,
     orThrowPage,
@@ -425,9 +421,7 @@ export class SystemModulesComponent {
      */
     public readonly menu_item = signal<Module>(null);
 
-    public readonly item_signal = computed(
-        () => this._service.item() as System,
-    );
+    public readonly item_signal = this._service.item;
     private readonly _item_id = computed(() => this.item_signal()?.id);
     public readonly loading = this._service.loading;
     public readonly modules = this._service.modules;
@@ -570,8 +564,8 @@ export class SystemModulesComponent {
         });
     }
 
-    public get item(): System {
-        return this._service.active_item as System;
+    public get item() {
+        return this._service.active_item;
     }
 
     /**

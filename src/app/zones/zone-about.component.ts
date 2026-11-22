@@ -259,12 +259,10 @@ export class ZoneAboutComponent {
     public readonly item = this._service.item;
     private readonly _item_id = computed(() => this.item()?.id);
     public readonly parent = signal<Zone | undefined>(undefined);
-    public readonly tag_list = computed(() =>
-        this.item() ? this.item()?.tags : [],
-    );
+    public readonly tag_list = computed(() => this.item()?.tags ?? []);
     public readonly requires_parent = computed(() => {
         const item = this.item();
-        if (!item?.tags?.length) return false;
+        if (!item) return false;
         return (
             (item.tags.includes('level') ||
                 item.tags.includes('building') ||

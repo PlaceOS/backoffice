@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { type Application, type Domain } from '@placeos/ts-client';
+import { type Application } from '@placeos/ts-client';
 
 import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/locale.service';
@@ -213,8 +213,8 @@ export class DomainApplicationsComponent {
     public readonly scopeList = (item: Application): string[] =>
         `${item.scopes || ''}`.split(/\s+/).filter((_) => !!_);
 
-    public get item(): Domain {
-        return this._service.active_item as Domain;
+    public get item() {
+        return this._service.active_item;
     }
 
     public copySecret(item: Application) {

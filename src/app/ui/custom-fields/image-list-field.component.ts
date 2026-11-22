@@ -229,7 +229,7 @@ export class ImageListFieldComponent
     private _uploads = inject(UploadsService);
 
     /** List of images */
-    public list = signal<string[]>([]);
+    public list = signal<readonly string[]>([]);
     /** List of images */
     public readonly upload_ids = signal<number[]>([]);
     private readonly _upload_list = signal<UploadDetails[]>([]);
@@ -250,9 +250,9 @@ export class ImageListFieldComponent
         viewChild<ElementRef<HTMLDivElement>>('image_list');
 
     /** Form control on change handler */
-    private _onChange: (_: string[]) => void;
+    private _onChange: (_: readonly string[]) => void;
     /** Form control on touch handler */
-    private _onTouch: (_: string[]) => void;
+    private _onTouch: (_: readonly string[]) => void;
 
     constructor() {
         super();
@@ -300,7 +300,7 @@ export class ImageListFieldComponent
 
     public addImageUrl(url: string) {
         if (this.disabled()) return;
-        this.setValue(unique([...this.list(), url]) as string[]);
+        this.setValue(unique([...this.list(), url]));
     }
 
     public retryUpload(item: UploadDetails) {
@@ -339,7 +339,7 @@ export class ImageListFieldComponent
         }
     }
 
-    public setValue(value: string[]) {
+    public setValue(value: readonly string[]) {
         if (this.disabled()) return;
         this.list.set(value);
         if (this._onChange) this._onChange(value);
@@ -350,13 +350,13 @@ export class ImageListFieldComponent
      * Update local value when form control value is changed
      * @param value The new value for the component
      */
-    public writeValue(value: string[]) {
+    public writeValue(value: readonly string[]) {
         this.list.set(value || []);
     }
 
-    public readonly registerOnChange = (fn: (_: string[]) => void) =>
+    public readonly registerOnChange = (fn: (_: readonly string[]) => void) =>
         (this._onChange = fn);
-    public readonly registerOnTouched = (fn: (_: string[]) => void) =>
+    public readonly registerOnTouched = (fn: (_: readonly string[]) => void) =>
         (this._onTouch = fn);
 
     public setDisabledState(disabled: boolean) {

@@ -1,5 +1,6 @@
 import { Type } from '@angular/core';
 import {
+    type CallError,
     Domain,
     domains as domains_v7,
     Driver,
@@ -8,8 +9,10 @@ import {
     groups as groups_v7,
     Module,
     modules as modules_v7,
+    type Reply,
     repositories as repositories_v7,
     Repository,
+    type Result,
     type Schema,
     System,
     systems as systems_v7,
@@ -63,7 +66,8 @@ export interface ItemActions<T> {
         options?: { include_deleted?: boolean },
     ) => QueryResponse<T>;
     show: (_: string) => Promise<T>;
-    save: (_: T) => Promise<T>;
+    /** Creates the item, or updates it when it has an `id` */
+    save: (_: Partial<T>) => Promise<T>;
     remove: (_: T) => Promise<unknown>;
     /** Schema of the item. `newItem(schema, data)` makes a full item */
     schema: Schema<T, unknown>;
@@ -74,20 +78,43 @@ export interface ItemActions<T> {
     name: string;
 }
 
+/** A call of the API that gives a reply with data of type `O` */
+type ApiCall<I, O> = (input: I) => Promise<Result<Reply<O>, CallError>>;
+
+/** The operations of an item type with plain query, show, create, update and destroy calls */
+interface CrudApi<T, B> {
+    query: ApiCall<{ q?: string; fields?: readonly string[] }, readonly T[]>;
+    show: ApiCall<{ id: string }, T>;
+    create: ApiCall<{ body: B }, T>;
+    update: ApiCall<{ id: string; body: B }, T>;
+    destroy: ApiCall<{ id: string }, unknown>;
+}
+
+/**
+ * The query, show, save and remove actions of an item type with plain calls.
+ * @param fields The fields that a query gives, for the item lists
+ */
+function crudActions<T extends { readonly id?: string }, B>(
+    api: CrudApi<T, B>,
+    schema: Schema<T, B>,
+    fields: readonly string[],
+) {
+    return {
+        query: (q?: string) => api.query({ q, fields }).then(orThrowPage),
+        show: (id: string) => api.show({ id }).then(orThrow),
+        save: (item: Partial<T>) =>
+            item.id
+                ? api
+                      .update({ id: item.id, body: toBody(schema, item) })
+                      .then(orThrow)
+                : api.create({ body: toBody(schema, item) }).then(orThrow),
+        remove: (item: T) => api.destroy({ id: item.id }).then(orThrow),
+        schema,
+    } satisfies Partial<ItemActions<T>>;
+}
+
 const domains: ItemActions<Domain> = {
-    query: (_) =>
-        domains_v7
-            .query({ q: _, fields: ['id', 'name', 'domain'] })
-            .then(orThrowPage),
-    show: (_) => domains_v7.show({ id: _ }).then(orThrow),
-    save: (item) =>
-        item.id
-            ? domains_v7
-                  .update({ id: item.id, body: toBody(Domain, item) })
-                  .then(orThrow)
-            : domains_v7.create({ body: toBody(Domain, item) }).then(orThrow),
-    remove: (item) => domains_v7.destroy({ id: item.id }).then(orThrow),
-    schema: Domain,
+    ...crudActions(domains_v7, Domain, ['id', 'name', 'domain']),
     loadModal: () =>
         import('../domains/domain-form.component').then(
             (m) => m.DomainFormComponent,
@@ -103,19 +130,7 @@ const domains: ItemActions<Domain> = {
 };
 
 const drivers: ItemActions<Driver> = {
-    query: (_) =>
-        drivers_v7
-            .query({ q: _, fields: ['id', 'name', 'module_name'] })
-            .then(orThrowPage),
-    show: (_) => drivers_v7.show({ id: _ }).then(orThrow),
-    save: (item) =>
-        item.id
-            ? drivers_v7
-                  .update({ id: item.id, body: toBody(Driver, item) })
-                  .then(orThrow)
-            : drivers_v7.create({ body: toBody(Driver, item) }).then(orThrow),
-    remove: (item) => drivers_v7.destroy({ id: item.id }).then(orThrow),
-    schema: Driver,
+    ...crudActions(drivers_v7, Driver, ['id', 'name', 'module_name']),
     loadModal: () =>
         import('../drivers/driver-form.component').then(
             (m) => m.DriverFormComponent,
@@ -138,22 +153,12 @@ const drivers: ItemActions<Driver> = {
 };
 
 const groups: ItemActions<Group> = {
-    query: (_) =>
-        groups_v7
-            .query({
-                q: _,
-                fields: ['id', 'name', 'description', 'authority_id'],
-            })
-            .then(orThrowPage),
-    show: (_) => groups_v7.show({ id: _ }).then(orThrow),
-    save: (item) =>
-        item.id
-            ? groups_v7
-                  .update({ id: item.id, body: toBody(Group, item) })
-                  .then(orThrow)
-            : groups_v7.create({ body: toBody(Group, item) }).then(orThrow),
-    remove: (item) => groups_v7.destroy({ id: item.id }).then(orThrow),
-    schema: Group,
+    ...crudActions(groups_v7, Group, [
+        'id',
+        'name',
+        'description',
+        'authority_id',
+    ]),
     loadModal: () =>
         import('../groups/group-form.component').then(
             (m) => m.GroupFormComponent,
@@ -198,21 +203,7 @@ const modules: ItemActions<Module> = {
 };
 
 const repositories: ItemActions<Repository> = {
-    query: (_) =>
-        repositories_v7
-            .query({ q: _, fields: ['id', 'name', 'repo_type'] })
-            .then(orThrowPage),
-    show: (_) => repositories_v7.show({ id: _ }).then(orThrow),
-    save: (item) =>
-        item.id
-            ? repositories_v7
-                  .update({ id: item.id, body: toBody(Repository, item) })
-                  .then(orThrow)
-            : repositories_v7
-                  .create({ body: toBody(Repository, item) })
-                  .then(orThrow),
-    remove: (item) => repositories_v7.destroy({ id: item.id }).then(orThrow),
-    schema: Repository,
+    ...crudActions(repositories_v7, Repository, ['id', 'name', 'repo_type']),
     loadModal: () =>
         import('../repositories/repository-form.component').then(
             (m) => m.RepositoryFormComponent,
@@ -239,12 +230,17 @@ const systems: ItemActions<System> = {
     name: 'SYSTEMS',
 };
 
-type BulkSystemItem = Omit<System, 'modules'> & {
+type BulkSystemItem = Omit<Partial<System>, 'modules'> & {
     modules?: readonly string[] | string;
     start_modules?: boolean;
 };
 
-async function saveSystem(item: System): Promise<System> {
+/**
+ * Creates or updates a system. A new system from a bulk import can also list
+ * driver ids in `modules`: it gets a module for each logic driver, and it
+ * starts when `start_modules` is set.
+ */
+async function saveSystem(item: Partial<System>): Promise<System> {
     const { modules, start_modules, ...system_data } = item as BulkSystemItem;
     const { module_ids, driver_ids } = splitModuleIds(modules);
     const form_data = {
@@ -324,7 +320,8 @@ function parseIdList(value: readonly string[] | string | undefined): string[] {
         .filter((id) => !!id);
 }
 
-function processURL(system: System, url: string) {
+/** Fills the `{{key}}` fields of a support URL from the system and the page location */
+function processURL(system: Partial<System>, url: string) {
     for (const key in system) {
         url = url.replace(new RegExp(`{{${key}}}`, 'g'), `${system[key]}`);
     }
@@ -335,19 +332,7 @@ function processURL(system: System, url: string) {
 }
 
 const triggers: ItemActions<Trigger> = {
-    query: (_) =>
-        triggers_v7
-            .query({ q: _, fields: ['id', 'name', 'display_name'] })
-            .then(orThrowPage),
-    show: (_) => triggers_v7.show({ id: _ }).then(orThrow),
-    save: (item) =>
-        item.id
-            ? triggers_v7
-                  .update({ id: item.id, body: toBody(Trigger, item) })
-                  .then(orThrow)
-            : triggers_v7.create({ body: toBody(Trigger, item) }).then(orThrow),
-    remove: (item) => triggers_v7.destroy({ id: item.id }).then(orThrow),
-    schema: Trigger,
+    ...crudActions(triggers_v7, Trigger, ['id', 'name', 'display_name']),
     loadModal: () =>
         import('../triggers/trigger-form.component').then(
             (m) => m.TriggerFormComponent,
@@ -392,21 +377,12 @@ const users: ItemActions<User> = {
     name: 'USERS',
 };
 
+const ZONE_FIELDS = ['id', 'name', 'display_name', 'tags'];
+
 const zones: ItemActions<Zone> = {
-    query: (_) =>
-        queryZones({
-            q: _,
-            fields: ['id', 'name', 'display_name', 'tags'],
-        }),
-    show: (_) => zones_v7.show({ id: _ }).then(orThrow),
-    save: (item) =>
-        item.id
-            ? zones_v7
-                  .update({ id: item.id, body: toBody(Zone, item) })
-                  .then(orThrow)
-            : zones_v7.create({ body: toBody(Zone, item) }).then(orThrow),
-    remove: (item) => zones_v7.destroy({ id: item.id }).then(orThrow),
-    schema: Zone,
+    ...crudActions(zones_v7, Zone, ZONE_FIELDS),
+    // The zone list of a support user or a selected group starts at its group zones
+    query: (_) => queryZones({ q: _, fields: ZONE_FIELDS }),
     loadModal: () =>
         import('../zones/zone-form.component').then((m) => m.ZoneFormComponent),
     delete_message: ``,

@@ -23,11 +23,11 @@ import {
     repositories,
 } from '@placeos/ts-client';
 import { PlaceRepositoryType, orThrow } from '@placeos/ts-client/compat';
+import { ACTIONS } from '../common/actions';
 import { AsyncHandler } from '../common/async-handler.class';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
-import { toBody } from '../common/placeos';
 import { DialogEvent, Identity } from '../common/types';
 import { isValidUrl } from '../common/validation';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -637,11 +637,9 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
                 if (item.id) {
                     delete form_value.folder_name;
                 }
-                const form_item = mergeFormItem(item, form_value);
-                const body = toBody(Repository, form_item);
-                return item.id
-                    ? repositories.update({ id: item.id, body }).then(orThrow)
-                    : repositories.create({ body }).then(orThrow);
+                return ACTIONS.repositories.save(
+                    mergeFormItem(item, form_value),
+                );
             },
         );
     }

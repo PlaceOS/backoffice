@@ -8,11 +8,10 @@ import {
     signal,
 } from '@angular/core';
 import { FormField, form } from '@angular/forms/signals';
-import { Trigger, triggers } from '@placeos/ts-client';
-import { orThrow } from '@placeos/ts-client/compat';
+import { Trigger } from '@placeos/ts-client';
+import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
-import { toBody } from '../common/placeos';
 import { DialogEvent } from '../common/types';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { OptionComponent } from '../ui/controls/option.component';
@@ -198,16 +197,10 @@ export class TriggerFormComponent implements OnInit {
                 close: () => this._dialog_ref.close(),
             },
             `${this._name}.`,
-            () => {
-                const form_item = mergeFormItem(
-                    this._data.item,
-                    this.formModel(),
-                ) as unknown as Trigger;
-                const body = toBody(Trigger, form_item);
-                return form_item.id
-                    ? triggers.update({ id: form_item.id, body }).then(orThrow)
-                    : triggers.create({ body }).then(orThrow);
-            },
+            () =>
+                ACTIONS.triggers.save(
+                    mergeFormItem(this._data.item, this.formModel()),
+                ),
         );
     }
 }

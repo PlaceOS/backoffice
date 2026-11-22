@@ -1,7 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
 import {
-    type Group,
     groups_users,
     groups_zones,
     type GroupUser,
@@ -26,9 +25,7 @@ export class GroupStateService {
     private _dialog = inject(Dialog);
     private _changed = signal(0);
 
-    public readonly item = computed(
-        () => this._state.item() as unknown as Group,
-    );
+    public readonly item = computed(() => this._state.activeOf('groups'));
     public readonly loading = computed(
         () =>
             this.user_members.saving() ||
@@ -37,9 +34,7 @@ export class GroupStateService {
             this._zones.isLoading(),
     );
 
-    private readonly _group_id = computed(
-        () => this._state.activeOf('groups')?.id || undefined,
-    );
+    private readonly _group_id = computed(() => this.item()?.id || undefined);
     // Member lists only load once their tab is opened. Until then a single
     // row query gives the tab count.
     private readonly _opened_tabs = openedTabs(this._group_id);
@@ -52,7 +47,7 @@ export class GroupStateService {
 
     private readonly _users = resource({
         params: () => ({
-            item: this._state.activeOf('groups'),
+            item: this.item(),
             changed: this._changed(),
             full: this._load_users(),
         }),
@@ -87,7 +82,7 @@ export class GroupStateService {
 
     private readonly _zones = resource({
         params: () => ({
-            item: this._state.activeOf('groups'),
+            item: this.item(),
             changed: this._changed(),
             full: this._load_zones(),
         }),
@@ -128,7 +123,7 @@ export class GroupStateService {
     );
 
     public get active_item() {
-        return this._state.active_item as unknown as Group;
+        return this._state.activeOf('groups');
     }
 
     /** User memberships of the active group */

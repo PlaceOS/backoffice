@@ -1,12 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
-import {
-    type Driver,
-    drivers,
-    type Module,
-    modules,
-    type Settings,
-} from '@placeos/ts-client';
+import { drivers, type Module, modules } from '@placeos/ts-client';
 import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { describeError, httpError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
@@ -30,10 +24,7 @@ export class DriverStateService {
     private _modules_change = signal(0);
 
     /** Active driver. `ActiveItemService` adds its settings of each encryption level */
-    public readonly item = computed(
-        () =>
-            this._state.item() as unknown as Driver & { settings?: Settings[] },
-    );
+    public readonly item = computed(() => this._state.activeOf('drivers'));
 
     public readonly loading = computed(
         () => this._modules.isLoading() || this._docs.isLoading(),
@@ -56,7 +47,7 @@ export class DriverStateService {
 
     private readonly _modules = resource({
         params: () => ({
-            item: this._state.activeOf('drivers'),
+            item: this.item(),
             changed: this._modules_change(),
         }),
         loader: async ({ params: { item } }) => {
@@ -78,7 +69,7 @@ export class DriverStateService {
     );
 
     private readonly _docs = resource({
-        params: () => this._state.activeOf('drivers'),
+        params: () => this.item(),
         loader: async ({ params: item }) => {
             if (!item) return '';
             return drivers
@@ -92,7 +83,7 @@ export class DriverStateService {
     public readonly docs_loading = computed(() => this._docs.isLoading());
 
     public get active_item() {
-        return this._state.active_item;
+        return this._state.activeOf('drivers');
     }
 
     public showUpdateList() {
@@ -100,7 +91,7 @@ export class DriverStateService {
     }
 
     public async updateDriver() {
-        const item = this._state.active_item as Driver;
+        const item = this.active_item;
         if (!item.update_available) return notifyInfo('No update available.');
         const details = await openConfirmModal(
             {
@@ -130,7 +121,7 @@ export class DriverStateService {
     }
 
     public async recompileDriver() {
-        const item = this._state.active_item as Driver;
+        const item = this.active_item;
         const details = await openConfirmModal(
             {
                 title: `Recompile Driver`,
@@ -163,7 +154,7 @@ export class DriverStateService {
     }
 
     public async reloadDriver() {
-        const item = this._state.active_item as Driver;
+        const item = this.active_item;
         const details = await openConfirmModal(
             {
                 title: `Reload Driver`,

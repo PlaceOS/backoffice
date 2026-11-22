@@ -32,7 +32,7 @@ import { describeError } from './errors';
 import { escapeHtml, log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
-import { newItem, settingsLevels } from './placeos';
+import { newItem, settingsLevels, withEmptyLists } from './placeos';
 import { waitForEvent, waitForSignalValue } from './signals';
 import {
     canAccessSection,
@@ -74,6 +74,14 @@ const SETTINGS_TYPES = new Set<ResourceType>([
     'zones',
 ]);
 
+/** Settings of each encryption level. `setItem` adds them to items of `SETTINGS_TYPES` */
+export interface ItemSettings {
+    settings?: Settings[];
+}
+
+/** The active item of section `K`, with the settings that `setItem` adds */
+export type ActiveItem<K extends keyof ItemTypes> = ItemTypes[K] & ItemSettings;
+
 export type ResourceType =
     | 'domains'
     | 'drivers'
@@ -104,7 +112,7 @@ export class ActiveItemService extends AsyncHandler {
     private _list_version = 0;
     public readonly include_deleted = this._include_deleted.asReadonly();
     /** Currently active item */
-    private _active_item = signal<PlaceResource>(null);
+    private _active_item = signal<PlaceResource & ItemSettings>(null);
     /** Currently active item */
     private _next_query = signal<() => QueryResponse<unknown>>(null);
     /** List of items for the current type */
@@ -162,11 +170,11 @@ export class ActiveItemService extends AsyncHandler {
      * The active item, when the active section is `type`. `null` for other
      * sections. Use it in place of `instanceof` checks of the 6.x classes.
      */
-    public activeOf<K extends keyof ItemTypes>(type: K): ItemTypes[K] | null {
+    public activeOf<K extends keyof ItemTypes>(type: K): ActiveItem<K> | null {
         const item = this._active_item();
         // `updateType` clears the item when the section changes, so an item of the section has its type
         return this._type === type && item
-            ? (item as unknown as ItemTypes[K])
+            ? (item as unknown as ActiveItem<K>)
             : null;
     }
 
@@ -260,10 +268,12 @@ export class ActiveItemService extends AsyncHandler {
             this._active_item.set(null);
             const actions = this.actions;
             // Load settings alongside the item and set it once, as state
-            // services reload everything each time the item changes
+            // services reload everything each time the item changes. Lists
+            // that the server left out get `[]`, as in 6.x
             const [item, settings] = await Promise.all([
                 actions
                     .show(id)
+                    .then((loaded) => withEmptyLists(actions.schema, loaded))
                     .catch(() => notifyError(`Error loading ${id}`)),
                 SETTINGS_TYPES.has(this._type) ? this.loadSettings(id) : null,
             ]);
@@ -636,10 +646,11 @@ export class ActiveItemService extends AsyncHandler {
      */
     public replaceItem(item: Identity | PlaceResource) {
         this._items_changed.update((count) => count + 1);
-        const current = this.active_item as PlaceResource & {
-            settings?: Settings[];
-        };
+        const current = this.active_item;
         if (!item?.id || (current && current.id !== item.id)) return;
+        // As `setItem`, give `[]` for lists that the server left out
+        const schema = this.actions?.schema;
+        if (schema) item = withEmptyLists(schema, item);
         // Save responses have blank settings, so show the loaded ones until
         // the refresh below confirms them
         this._active_item.set(
@@ -809,9 +820,7 @@ export class ActiveItemService extends AsyncHandler {
     private async refreshSettings(id: string) {
         const request = ++this._settings_request;
         const settings = await this.loadSettings(id);
-        const active = this.active_item as PlaceResource & {
-            settings?: Settings[];
-        };
+        const active = this.active_item;
         if (
             !settings ||
             request !== this._settings_request ||
@@ -830,7 +839,7 @@ export class ActiveItemService extends AsyncHandler {
             );
         });
         if (unchanged) return;
-        this._active_item.set({ ...active, settings } as PlaceResource);
+        this._active_item.set({ ...active, settings });
     }
 
     /**

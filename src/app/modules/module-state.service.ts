@@ -5,7 +5,6 @@ import {
     edges,
     type Module,
     modules,
-    type Settings,
     type System,
     systems,
 } from '@placeos/ts-client';
@@ -28,10 +27,7 @@ export class ModuleStateService {
     /** Active module */
     public readonly item = computed(() => this._state.activeOf('modules'));
     /** Settings of each encryption level of the active module */
-    public readonly settings = computed(
-        // `ActiveItemService` adds the settings to the item
-        () => (this.item() as Module & { settings?: Settings[] })?.settings,
-    );
+    public readonly settings = computed(() => this.item()?.settings);
 
     private readonly _associated_settings = resource({
         params: () => this.item(),
@@ -118,8 +114,8 @@ export class ModuleStateService {
             : this._system_list.value()?.total,
     );
 
-    public get active_item(): Module {
-        return this._state.active_item as Module;
+    public get active_item() {
+        return this._state.activeOf('modules');
     }
 
     public async toggleModuleState() {

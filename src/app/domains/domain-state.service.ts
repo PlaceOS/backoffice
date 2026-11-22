@@ -58,13 +58,9 @@ export class DomainStateService {
 
     private _changed = signal(0);
 
-    public readonly item = computed(
-        () => this._state.item() as unknown as Domain,
-    );
+    public readonly item = computed(() => this._state.activeOf('domains'));
 
-    private readonly _domain_id = computed(
-        () => this._state.activeOf('domains')?.id || undefined,
-    );
+    private readonly _domain_id = computed(() => this.item()?.id || undefined);
     private readonly _tab = computed(
         () => this._url().split(/[?#]/)[0].split('/')[3],
     );
@@ -205,7 +201,7 @@ export class DomainStateService {
     }));
 
     public get active_item() {
-        return this._state.active_item;
+        return this._state.activeOf('domains');
     }
 
     public async update(domain: Domain) {

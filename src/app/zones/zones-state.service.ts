@@ -5,8 +5,6 @@ import {
     groups,
     groups_zones,
     type GroupZone,
-    metadata,
-    type Settings,
     type System,
     type Trigger,
     triggers,
@@ -20,7 +18,7 @@ import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openedTabs } from '../common/opened-tabs';
-import { authority, toBody } from '../common/placeos';
+import { authority, loadMetadataBlocks } from '../common/placeos';
 import { waitForDialog } from '../common/signals';
 import {
     isSubsystemUser,
@@ -53,14 +51,9 @@ export class ZonesStateService {
     );
 
     /** Active zone. `ActiveItemService` adds its settings of each encryption level */
-    public readonly item = computed(
-        () =>
-            this._service.item() as unknown as Zone & { settings?: Settings[] },
-    );
+    public readonly item = computed(() => this._service.activeOf('zones'));
 
-    private readonly _zone_id = computed(
-        () => this._service.activeOf('zones')?.id || undefined,
-    );
+    private readonly _zone_id = computed(() => this.item()?.id || undefined);
     // Lists that can be long only load once their tab is opened. Until then
     // a single row query gives the tab count.
     private readonly _opened_tabs = openedTabs(this._zone_id);
@@ -90,7 +83,7 @@ export class ZonesStateService {
 
     private readonly _systems = resource({
         params: () => ({
-            item: this._service.activeOf('zones'),
+            item: this.item(),
             changed: this._change(),
             full: this._load_systems(),
         }),
@@ -115,7 +108,7 @@ export class ZonesStateService {
 
     private readonly _triggers = resource({
         params: () => ({
-            item: this._service.activeOf('zones'),
+            item: this.item(),
             changed: this._change(),
         }),
         loader: async ({ params }) => {
@@ -134,26 +127,24 @@ export class ZonesStateService {
         () => this._triggers.value()?.data || [],
     );
 
-    /** The metadata tab loads its own list, so only the count is needed */
+    /** Count of metadata blocks. The metadata tab uses this load again */
     private readonly _metadata_count = resource({
         params: () => ({
-            item: this._service.activeOf('zones'),
+            item: this.item(),
             changed: this._change(),
         }),
         loader: async ({ params }) => {
             const { item } = params;
             if (!item) return 0;
-            return metadata
-                .show({ id: item.id })
-                .then(orThrow)
-                .then((by_name) => Object.keys(by_name).length)
+            return loadMetadataBlocks(item.id)
+                .then((blocks) => blocks.length)
                 .catch(() => 0);
         },
     });
 
     private readonly _children = resource({
         params: () => ({
-            item: this._service.activeOf('zones'),
+            item: this.item(),
             changed: this._change(),
             full: this._load_children(),
         }),
@@ -180,7 +171,7 @@ export class ZonesStateService {
 
     private readonly _groups = resource({
         params: () => ({
-            item: this._service.activeOf('zones'),
+            item: this.item(),
             changed: this._change(),
             full: this._load_groups(),
         }),
@@ -206,8 +197,8 @@ export class ZonesStateService {
 
     public readonly groups = computed(() => this._groups.value()?.data || []);
 
-    public get active_item(): Zone {
-        return this._service.active_item as unknown as Zone;
+    public get active_item() {
+        return this._service.activeOf('zones');
     }
 
     /** Zones have no domain, so groups of the current domain can be added */
@@ -251,13 +242,11 @@ export class ZonesStateService {
             ...this.active_item.triggers,
             trigger.id,
         ]) as string[];
+        // Send only the trigger list, so that other changes to the zone stay
         return zones
             .update({
                 id: this.active_item.id,
-                body: toBody(Zone, {
-                    ...this.active_item,
-                    triggers: triggers_list,
-                }),
+                body: { triggers: triggers_list },
             })
             .then(orThrow);
     }
@@ -277,12 +266,11 @@ export class ZonesStateService {
             zone = await zones
                 .update({
                     id: this.active_item.id,
-                    body: toBody(Zone, {
-                        ...this.active_item,
+                    body: {
                         triggers: this.active_item.triggers.filter(
                             (t) => t !== trigger.id,
                         ),
-                    }),
+                    },
                 })
                 .then(orThrow);
         } catch (err) {

@@ -17,7 +17,7 @@ export interface UserFormModel {
     support: boolean;
     sys_admin: boolean;
     locatable: boolean;
-    groups: string[];
+    groups: readonly string[];
     password: string;
     confirm_password: string;
     card_number: string;
@@ -35,7 +35,7 @@ export function generateUserFormModel(user: User): UserFormModel {
         sys_admin: user?.sys_admin || false,
         // A new user is locatable, as in 6.x
         locatable: user?.id ? !!user.locatable : true,
-        groups: [...(user?.groups || [])],
+        groups: user?.groups || [],
         password: '',
         confirm_password: '',
         card_number: user?.card_number || '',

@@ -4,7 +4,7 @@ import { type Zone } from '@placeos/ts-client';
 export interface ZoneFormModel {
     id: string;
     name: string;
-    tags: string[];
+    tags: readonly string[];
     description: string;
     parent_zone?: Zone | null;
     parent_id: string;
@@ -16,14 +16,14 @@ export interface ZoneFormModel {
     capacity: number;
     map_id: string;
     timezone: string;
-    images: string[];
+    images: readonly string[];
 }
 
 export function generateZoneFormModel(zone?: Zone): ZoneFormModel {
     return {
         id: zone?.id || '',
         name: zone?.name || '',
-        tags: [...(zone?.tags || [])],
+        tags: zone?.tags || [],
         description: zone?.description || '',
         // `null` (not `undefined`) so signal forms materialise the field;
         // otherwise `form.parent_zone` is undefined and the picker never renders.
@@ -37,7 +37,7 @@ export function generateZoneFormModel(zone?: Zone): ZoneFormModel {
         capacity: zone?.capacity || 0,
         map_id: zone?.map_id || '',
         timezone: zone?.timezone || '',
-        images: [...(zone?.images || [])],
+        images: zone?.images || [],
     };
 }
 

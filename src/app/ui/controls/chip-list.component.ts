@@ -99,11 +99,11 @@ import {
     host: { class: 'chip-list', role: 'list' },
 })
 export class ChipListComponent implements ControlValueAccessor {
-    private _onChange: (value: string[]) => void = () => undefined;
+    private _onChange: (value: readonly string[]) => void = () => undefined;
     private _onTouched: () => void = () => undefined;
 
     /** List of items */
-    public readonly value = model<string[]>([]);
+    public readonly value = model<readonly string[]>([]);
     public readonly placeholder = input('');
     /** `id` of the text input, for a `label[for]` */
     public readonly inputId = input<string | null>(null);
@@ -197,11 +197,11 @@ export class ChipListComponent implements ControlValueAccessor {
         }
     }
 
-    public writeValue(value: string[]) {
+    public writeValue(value: readonly string[]) {
         this.value.set(value || []);
     }
 
-    public registerOnChange(fn: (value: string[]) => void) {
+    public registerOnChange(fn: (value: readonly string[]) => void) {
         this._onChange = fn;
     }
 

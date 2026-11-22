@@ -4,6 +4,7 @@ import {
     configure,
     createAuthSession,
     createRealtime,
+    metadata,
     parseResponse,
     Settings,
     type AuthSession,
@@ -11,6 +12,7 @@ import {
     type DomainAuthority,
     type JsonValue,
     type LogFunction,
+    type Metadata,
     type Realtime,
     type Schema,
 } from '@placeos/ts-client';
@@ -18,6 +20,7 @@ import {
     consoleLog,
     mockFetch,
     mockRealtimeEnvironment,
+    orThrow,
 } from '@placeos/ts-client/compat';
 
 import type { AppComponentExtensions, HashMap } from './types';
@@ -206,20 +209,109 @@ export function newItem<O, I>(schema: Schema<O, I>, data: unknown = {}): O {
     return result.value;
 }
 
+type SchemaNode = Schema<unknown>['node'];
+
+/** Item kinds of a list of values, such as ids or tags */
+const VALUE_KINDS = new Set<SchemaNode['kind']>([
+    'string',
+    'literal',
+    'integer',
+    'number',
+    'boolean',
+]);
+
+/** True for an array of values, or a nullable array of values */
+function isValueList(node: SchemaNode): boolean {
+    const list = node.kind === 'nullable' ? node.inner : node;
+    if (list.kind !== 'array') return false;
+    const items =
+        list.items.kind === 'nullable' ? list.items.inner : list.items;
+    return VALUE_KINDS.has(items.kind);
+}
+
+/**
+ * `item` with `[]` in each top-level list of values (such as `zones` or
+ * `tags`) that is `null` or missing. 7.x gives `null` for a field that the
+ * server leaves out, where the 6.x classes gave `[]`. Use it where an item
+ * loads, so reads do not need a guard. Lists of objects, such as
+ * `zone_data`, stay `null`, so a request body that copies the item does not
+ * send them. Gives `item` itself when no field changes.
+ */
+export function withEmptyLists<T>(schema: Schema<unknown>, item: T): T {
+    const node = schema.node;
+    if (node.kind !== 'object' || !item || typeof item !== 'object') {
+        return item;
+    }
+    const lists: Record<string, never[]> = {};
+    for (const field of node.fields) {
+        if (item[field.key] == null && isValueList(field.node)) {
+            lists[field.key] = [];
+        }
+    }
+    return Object.keys(lists).length ? { ...item, ...lists } : item;
+}
+
 /**
  * The settings of encryption levels 0 to 3 (none, support, admin and never
- * display), one for each level. A missing level gets an empty entry.
+ * display), one for each level. A missing level gets an empty entry. Each
+ * entry has a list of `keys`.
  */
 export function settingsLevels(list: readonly Settings[]): Settings[] {
-    return [0, 1, 2, 3].map(
-        (level) =>
-            list.find((_) => _.encryption_level === level) ??
-            newItem(Settings, {
-                encryption_level: level,
-                settings_string: '',
-                keys: [],
-            }),
+    return [0, 1, 2, 3].map((level) => {
+        const found = list.find((_) => _.encryption_level === level);
+        return found
+            ? withEmptyLists(Settings, found)
+            : newItem(Settings, {
+                  encryption_level: level,
+                  settings_string: '',
+                  keys: [],
+              });
+    });
+}
+
+/** Time that a metadata load is used again, in milliseconds */
+const METADATA_REUSE_MS = 10_000;
+let metadata_load: {
+    parent_id: string;
+    time: number;
+    request: Promise<readonly Metadata[]>;
+} | null = null;
+
+/**
+ * The metadata blocks of `parent_id`, sorted by name. The tab count of an
+ * item and its metadata tab both call this, so a load for the same parent
+ * in the last 10 seconds is used again. Each call gets its own copy of the
+ * list. Call `forgetMetadataBlocks` after a change to the blocks.
+ */
+export function loadMetadataBlocks(parent_id: string): Promise<Metadata[]> {
+    const now = Date.now();
+    if (
+        metadata_load?.parent_id !== parent_id ||
+        now - metadata_load.time >= METADATA_REUSE_MS
+    ) {
+        const request = metadata
+            .show({ id: parent_id })
+            .then(orThrow)
+            .then((by_name) =>
+                Object.values(by_name)
+                    .filter((block) => !!block)
+                    .sort((a, b) => a.name.localeCompare(b.name)),
+            );
+        const load = { parent_id, time: now, request };
+        metadata_load = load;
+        // Do not use a failed load again
+        request.catch(() => {
+            if (metadata_load === load) metadata_load = null;
+        });
+    }
+    return metadata_load.request.then((list) =>
+        list.map((block) => ({ ...block })),
     );
+}
+
+/** Load the metadata blocks again on the next `loadMetadataBlocks` */
+export function forgetMetadataBlocks() {
+    metadata_load = null;
 }
 
 /**

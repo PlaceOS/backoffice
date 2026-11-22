@@ -1,8 +1,7 @@
 import { Component, computed, inject, resource } from '@angular/core';
-import { type Zone, zones } from '@placeos/ts-client';
+import { zones } from '@placeos/ts-client';
 import { orThrow } from '@placeos/ts-client/compat';
 import { extensionsForItem } from '../common/api';
-import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { isSubsystemUser } from '../common/support-access';
 import { ItemShellComponent } from '../ui/item-shell.component';
@@ -26,12 +25,9 @@ import { ZonesStateService } from './zones-state.service';
 })
 export class ZonesComponent {
     protected _service = inject(ZonesStateService);
-    protected _item = inject(ActiveItemService);
     private _users = inject(BackofficeUsersService);
 
-    public readonly item = computed(
-        () => this._item.active_item$() as Zone | null,
-    );
+    public readonly item = this._service.item;
     public readonly name = 'zones';
     public readonly counts = this._service.counts;
     public readonly tab_list = computed(() => {

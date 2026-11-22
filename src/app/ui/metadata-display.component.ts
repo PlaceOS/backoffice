@@ -17,7 +17,11 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { describeError, readError } from '../common/errors';
 import { escapeHtml, parseMetadataDetails } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { newItem } from '../common/placeos';
+import {
+    forgetMetadataBlocks,
+    loadMetadataBlocks,
+    newItem,
+} from '../common/placeos';
 import { HashMap, PlaceResource } from '../common/types';
 import { currentUser } from '../common/user-state';
 import { validateJSONString } from '../common/validation';
@@ -347,6 +351,7 @@ export class MetadataDisplayComponent
         } finally {
             result.close();
         }
+        forgetMetadataBlocks();
         notifySuccess(`Successfully removed "${field}" metadata.`);
         this.metadata.set(
             this.metadata().filter((prop) => prop && prop.name !== field),
@@ -413,6 +418,7 @@ export class MetadataDisplayComponent
             })
             .then(orThrow)
             .then((item: MetadataV7) => {
+                forgetMetadataBlocks();
                 this.loading.update((m) => ({ ...m, [field.name]: false }));
                 const index = this.metadata().findIndex(
                     (i) => i.name === field.name,
@@ -505,15 +511,10 @@ export class MetadataDisplayComponent
 
     private async loadMetadata() {
         this.loading_list.set(true);
-        await metadata
-            .show({ id: this.item().id })
-            .then(orThrow)
-            .then((map) => {
-                this.metadata.set(
-                    Object.values(map)
-                        .filter((m) => !!m)
-                        .sort((a, b) => a.name.localeCompare(b.name)),
-                );
+        // The tab count of the item can have loaded the blocks already
+        await loadMetadataBlocks(this.item().id)
+            .then((blocks) => {
+                this.metadata.set(blocks);
                 this.generateForms(true);
             })
             .catch((err) =>

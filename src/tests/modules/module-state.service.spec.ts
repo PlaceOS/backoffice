@@ -1,5 +1,5 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { provideZonelessChangeDetection, signal } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Module, modules } from '@placeos/ts-client';
 import { mockReply } from '@placeos/ts-client/compat';
@@ -27,11 +27,7 @@ describe('ModuleStateService', () => {
     it('changes the power state of the module the request started for', async () => {
         const module_a = newItem(Module, { id: 'mod-a', running: false });
         const module_b = newItem(Module, { id: 'mod-b', running: false });
-        const state = {
-            item: signal(null),
-            activeOf: () => null,
-            active_item: module_a,
-        };
+        const state = { active: module_a, activeOf: () => state.active };
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
@@ -48,7 +44,7 @@ describe('ModuleStateService', () => {
         );
 
         const request = TestBed.inject(ModuleStateService).toggleModuleState();
-        state.active_item = module_b;
+        state.active = module_b;
         resolve_power();
         await request;
 

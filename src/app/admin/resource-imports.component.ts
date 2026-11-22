@@ -37,7 +37,7 @@ export interface ExternalResource {
     is_accessible: boolean;
     nickname: string;
     phone: string;
-    tags: string[];
+    tags: readonly string[];
     imported?: boolean;
     system_id?: string;
 }
@@ -319,7 +319,7 @@ export class ResourceImportsComponent implements OnInit {
             is_accessible: _.isWheelChairAccessible ?? false,
             nickname: _.nickname || '',
             phone: _.phone || '',
-            tags: [...(_.tags || [])],
+            tags: _.tags || [],
             imported: false,
             system_id: '',
         }));

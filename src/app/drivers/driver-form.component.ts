@@ -14,7 +14,6 @@ import { FormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import {
     Driver,
-    drivers,
     type GitRepositoryCommit,
     repositories,
     type Repository,
@@ -29,10 +28,10 @@ import {
 } from '@placeos/ts-client/compat';
 
 import * as yaml from 'js-yaml';
+import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
-import { toBody } from '../common/placeos';
 import { DialogEvent, Identity } from '../common/types';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
@@ -485,11 +484,8 @@ export class DriverFormComponent implements OnInit {
                     delete form_value.class_name;
                 }
                 const form_item = mergeFormItem(item, form_value);
-                // `toBody` drops the form fields that a driver does not have, such as `settings`
-                const body = toBody(Driver, form_item);
-                return item.id
-                    ? drivers.update({ id: item.id, body }).then(orThrow)
-                    : drivers.create({ body }).then(orThrow);
+                // The save drops the form fields that a driver does not have, such as `settings`
+                return ACTIONS.drivers.save(form_item);
             },
             async (item) => {
                 if (!this.formModel().id && this.formModel().settings) {

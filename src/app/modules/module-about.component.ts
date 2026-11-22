@@ -1,5 +1,4 @@
 import { Component, inject, signal } from '@angular/core';
-import { type Module } from '@placeos/ts-client';
 import { hasSupportRole } from '../common/support-access';
 
 import { Dialog } from '@angular/cdk/dialog';
@@ -250,8 +249,8 @@ export class ModuleAboutComponent {
 
     public readonly settings = this._service.settings;
 
-    public get item(): Module {
-        return this._service.active_item as Module;
+    public get item() {
+        return this._service.active_item;
     }
 
     public async toggleModuleState() {

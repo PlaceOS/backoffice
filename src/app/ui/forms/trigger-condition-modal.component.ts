@@ -7,13 +7,12 @@ import {
     TriggerConditions,
     TriggerConditionsComparison,
     TriggerConditionsTimeDependent,
-    triggers,
 } from '@placeos/ts-client';
-import { orThrow, TriggerTimeConditionType } from '@placeos/ts-client/compat';
+import { TriggerTimeConditionType } from '@placeos/ts-client/compat';
+import { ACTIONS } from '../../common/actions';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
-import { toBody } from '../../common/placeos';
 import { DialogEvent, Identity } from '../../common/types';
 import {
     applyTriggerConditionFormSchema,
@@ -154,15 +153,8 @@ export class TriggerConditionModalComponent {
             ? this.updateComparisons()
             : this.updateTimeDependents());
 
-        const item = await triggers
-            .update({
-                id: this.trigger.id,
-                body: {
-                    ...toBody(Trigger, this.trigger),
-                    conditions: this.conditions,
-                },
-            })
-            .then(orThrow)
+        const item = await ACTIONS.triggers
+            .save({ ...this.trigger, conditions: this.conditions })
             .catch((err) =>
                 notifyError(
                     i18n('TRIGGERS.CONDITION_SAVE_ERROR', {

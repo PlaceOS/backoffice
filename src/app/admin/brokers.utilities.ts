@@ -12,7 +12,7 @@ export interface BrokerFormModel {
     username: string;
     password: string;
     certificate: string;
-    filters: string[];
+    filters: readonly string[];
 }
 
 export function generateBrokerFormModel(
@@ -30,7 +30,7 @@ export function generateBrokerFormModel(
         username: broker.username || '',
         password: broker.password || '',
         certificate: broker.certificate || '',
-        filters: [...(broker.filters || [])],
+        filters: broker.filters || [],
     };
 }
 
