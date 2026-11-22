@@ -27,7 +27,11 @@ describe('ModuleStateService', () => {
     it('changes the power state of the module the request started for', async () => {
         const module_a = newItem(Module, { id: 'mod-a', running: false });
         const module_b = newItem(Module, { id: 'mod-b', running: false });
-        const state = { active: module_a, activeOf: () => state.active };
+        const state = {
+            active: module_a,
+            activeOf: () => state.active,
+            replaceItem: vi.fn(),
+        };
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
@@ -49,7 +53,11 @@ describe('ModuleStateService', () => {
         await request;
 
         expect(modules.start).toHaveBeenCalledWith({ id: 'mod-a' });
-        expect(module_a.running).toBe(true);
-        expect(module_b.running).toBe(false);
+        // A new object, so the views render again. The service skips it
+        // when another module is active
+        expect(state.replaceItem).toHaveBeenCalledWith(
+            expect.objectContaining({ id: 'mod-a', running: true }),
+        );
+        expect(module_a.running).toBe(false);
     });
 });

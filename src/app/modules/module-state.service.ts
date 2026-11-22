@@ -143,7 +143,9 @@ export class ModuleStateService {
             return;
         }
         notifySuccess(`Module successfully ${running ? 'stopped' : 'started'}`);
-        item.running = !running;
+        // A new object, so the views of the active item render again.
+        // `replaceItem` does nothing when another module is active now
+        this._state.replaceItem({ ...item, running: !running });
     }
 
     /** View Results of the execute */

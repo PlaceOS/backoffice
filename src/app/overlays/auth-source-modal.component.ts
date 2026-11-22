@@ -33,6 +33,7 @@ import {
     generateLDAPSourceForm,
     generateOAuthSourceForm,
     generateSAMLSourceForm,
+    newSAMLSourceBody,
 } from '../domains/auth-sources.utilities';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { OptionComponent } from '../ui/controls/option.component';
@@ -211,7 +212,9 @@ export class AuthSourceModalComponent implements OnInit {
                 const body = toBody(SamlAuthentication, data);
                 return id
                     ? saml_authentications.update({ id, body }).then(orThrow)
-                    : saml_authentications.create({ body }).then(orThrow);
+                    : saml_authentications
+                          .create({ body: newSAMLSourceBody(body) })
+                          .then(orThrow);
             }
             case 'ldap': {
                 const body = toBody(LdapAuthentication, data);

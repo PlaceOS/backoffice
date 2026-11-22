@@ -69,5 +69,7 @@ export function userFormSchema(
                 : { kind: 'url', message: 'Invalid URL' },
         );
         disabled(path.authority_id, () => !!user?.id || lock_authority);
+        // The API does not change the email of a saved user
+        disabled(path.email, () => !!user?.id);
     };
 }

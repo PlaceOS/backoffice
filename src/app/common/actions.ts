@@ -208,7 +208,7 @@ const repositories: ItemActions<Repository> = {
         import('../repositories/repository-form.component').then(
             (m) => m.RepositoryFormComponent,
         ),
-    delete_message: `'`,
+    delete_message: ``,
     name: 'REPOS',
 };
 

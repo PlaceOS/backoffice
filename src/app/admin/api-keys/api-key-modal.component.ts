@@ -497,9 +497,14 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         }
     }
 
+    /** Show the assigned user in the input, and load it if the key has only its id */
     public async loadSelectedUser() {
         const { user: selected_user, user_id } = this.formModel();
-        if (!user_id || selected_user) return;
+        if (selected_user) {
+            this.search_term.set(this._userLabel(selected_user));
+            return;
+        }
+        if (!user_id) return;
         const user = await users_v7
             .show({ id: user_id })
             .then(orThrow)

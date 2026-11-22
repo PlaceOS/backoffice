@@ -140,7 +140,7 @@ function jsonObject(
                 </ng-template>
                 <ng-template #conditions_template let-row="row">
                     <div class="p-4">
-                        {{ row.conditions.length }}
+                        {{ row.conditions?.length || 0 }}
                     </div>
                 </ng-template>
                 <ng-template #actions_template let-row="row">

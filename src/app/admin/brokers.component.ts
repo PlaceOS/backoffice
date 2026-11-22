@@ -155,6 +155,7 @@ import { BrokerFormComponent } from './broker-form.component';
                     default
                     ripple
                     [appTooltip]="'ADMIN.BROKERS_EDIT' | translate"
+                    [attr.aria-label]="'ADMIN.BROKERS_EDIT' | translate"
                     (click)="editBroker(row)"
                 >
                     <icon>edit</icon>

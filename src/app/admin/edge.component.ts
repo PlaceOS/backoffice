@@ -110,7 +110,14 @@ import { EdgeModalComponent } from './edge-modal.component';
         </ng-template>
         <ng-template #time_template let-data="data">
             <div class="flex flex-col p-4">
-                <div>{{ data | dateFrom }}</div>
+                <!-- The time is in seconds. A new edge has no time -->
+                @if (data) {
+                    <div>{{ +data * 1000 | dateFrom }}</div>
+                } @else {
+                    <div class="opacity-30">
+                        {{ 'COMMON.NEVER' | translate }}
+                    </div>
+                }
             </div>
         </ng-template>
         <ng-template #bool_template let-data="data">

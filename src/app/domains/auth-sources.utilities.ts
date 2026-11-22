@@ -138,6 +138,29 @@ export function generateSAMLSourceForm(
     };
 }
 
+/** Whether a form value is an empty string, list or map */
+function isEmptyValue(value: unknown): boolean {
+    if (value === '') return true;
+    if (Array.isArray(value)) return !value.length;
+    return (
+        typeof value === 'object' &&
+        value !== null &&
+        !Object.keys(value).length
+    );
+}
+
+/**
+ * A copy of the body of a new SAML source without its empty values. The API
+ * gives a default for each of these fields, and refuses an empty name
+ * identifier format.
+ */
+export function newSAMLSourceBody<T extends object>(body: T): Partial<T> {
+    // `fromEntries` loses the key types. The entries come from `body`
+    return Object.fromEntries(
+        Object.entries(body).filter(([, value]) => !isEmptyValue(value)),
+    ) as Partial<T>;
+}
+
 export function applySAMLSourceFormSchema(
     path,
 ): ReturnType<SchemaFn<SAMLSourceFormModel>> {

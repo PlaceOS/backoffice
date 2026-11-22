@@ -9,7 +9,6 @@ import {
 import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
 
-import { AsyncHandler } from '../../common/async-handler.class';
 import { HashMap } from '../../common/types';
 import { SAMLSourceFormModel } from '../../domains/auth-sources.utilities';
 import { FormFieldComponent } from '../controls/form-field.component';
@@ -385,7 +384,7 @@ import { TranslatePipe } from '../translate.pipe';
         ObjectListFieldComponent,
     ],
 })
-export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
+export class SamlSourceFormComponent implements OnChanges {
     /** Signal form fields used for editing the SAML source */
     public readonly form = input<FieldTree<SAMLSourceFormModel>>(undefined);
     public readonly formModel =
@@ -424,28 +423,23 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
     }
 
     /**
-     * Update the form control value for attribute statements
+     * Update the form control value for attribute statements. No delay, so
+     * a save directly after a change still has it
      * @param mappings Mapping listing
      */
     public updateAttributeStatements(
         mappings: { name: string; mappings: string }[],
     ) {
-        this.timeout(
-            'attribute_statements',
-            () => {
-                const map: HashMap<string[]> = {};
-                for (const pair of mappings) {
-                    if (pair.name && pair.mappings) {
-                        map[pair.name] = (pair.mappings || '').split(',');
-                    }
-                }
-                this.formModel().update((model) => ({
-                    ...model,
-                    attribute_statements: map,
-                }));
-            },
-            200,
-        );
+        const map: HashMap<string[]> = {};
+        for (const pair of mappings) {
+            if (pair.name && pair.mappings) {
+                map[pair.name] = pair.mappings.split(',');
+            }
+        }
+        this.formModel().update((model) => ({
+            ...model,
+            attribute_statements: map,
+        }));
     }
 
     /**
@@ -453,21 +447,15 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
      * @param mappings Mapping listing
      */
     public updateRuntimeParams(mappings: { name: string; mapping: string }[]) {
-        this.timeout(
-            'runtime_params',
-            () => {
-                const map: HashMap = {};
-                for (const pair of mappings) {
-                    if (pair.name && pair.mapping) {
-                        map[pair.name] = pair.mapping;
-                    }
-                }
-                this.formModel().update((model) => ({
-                    ...model,
-                    idp_sso_target_url_runtime_params: map,
-                }));
-            },
-            200,
-        );
+        const map: HashMap = {};
+        for (const pair of mappings) {
+            if (pair.name && pair.mapping) {
+                map[pair.name] = pair.mapping;
+            }
+        }
+        this.formModel().update((model) => ({
+            ...model,
+            idp_sso_target_url_runtime_params: map,
+        }));
     }
 }
