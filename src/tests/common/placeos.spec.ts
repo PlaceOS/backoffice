@@ -182,6 +182,7 @@ describe('setupPlace', () => {
                         status: 422,
                         message: 'person@example.com taken',
                         body: { email: 'person@example.com' },
+                        text: 'no account for person@example.com',
                     },
                 },
             ],

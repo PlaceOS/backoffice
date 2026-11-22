@@ -121,6 +121,7 @@ describe('sentry', () => {
                 message:
                     'secret-detail\n    at Handler.call (person@example.com.cr:1:2)',
                 body: { email: 'person@example.com' },
+                text: null,
             }),
         );
         const [reported] = handle_error.mock.calls[0];

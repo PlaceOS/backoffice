@@ -63,6 +63,7 @@ describe('bulk item creation', () => {
                     status: 422,
                     message: null,
                     body: { message: 'Name taken' },
+                    text: null,
                 });
             }
             // The first save finishes last

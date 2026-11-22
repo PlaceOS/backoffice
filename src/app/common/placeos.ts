@@ -1,7 +1,6 @@
 import { signal } from '@angular/core';
 import {
     assert,
-    browserEnvironment,
     configure,
     createAuthSession,
     createRealtime,
@@ -172,9 +171,9 @@ globalThis.addEventListener?.('online', restartFailedRealtime);
 
 /**
  * The 6.x style debug log, when `window.debug` is set. It leaves out the
- * text that the server sent, such as the body of a failed response or the
- * description of a refused token, which can have personal data. Sentry keeps
- * console output. The kind and the status of an error stay.
+ * text that the server sent, such as the JSON or plain-text body of a failed
+ * response or the description of a refused token, which can have personal
+ * data. Sentry keeps console output. The kind and the status of an error stay.
  */
 const debugLog: LogFunction = (entry) =>
     consoleLog({ ...entry, args: entry.args.map(withoutServerText) });
@@ -185,24 +184,12 @@ function withoutServerText(arg: unknown): unknown {
         body: _body,
         message: _message,
         description: _description,
+        text: _text,
         ...rest
     } = arg as Record<string, unknown>;
     return 'error' in rest
         ? { ...rest, error: withoutServerText(rest['error']) }
         : rest;
-}
-
-/**
- * Go to a login or logout page. The authority gives these URLs. 6.x put a
- * URL that was not HTTP(S) on the origin of the authority, and v7 goes to it
- * as it is, so refuse other schemes, such as `javascript:`.
- */
-function navigateHttp(url: string) {
-    const target = new URL(url, location.href);
-    if (target.protocol !== 'http:' && target.protocol !== 'https:') {
-        throw new Error(`Refused to go to a ${target.protocol} URL`);
-    }
-    location.assign(target.href);
 }
 
 /**
@@ -308,7 +295,6 @@ export async function setupPlace(settings: PlaceSettings): Promise<void> {
         use_frame: true,
         handle_login: !settings.local_login,
         ignore_api_key: settings.ignore_api_key,
-        environment: { ...browserEnvironment(), navigate: navigateHttp },
         log: debugLog,
     });
     _session = session;

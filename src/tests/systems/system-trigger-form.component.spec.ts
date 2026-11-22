@@ -34,6 +34,7 @@ describe('system trigger playlists', () => {
                           status: 404,
                           message: null,
                           body: null,
+                          text: null,
                       },
                   }
                 : mockReply(playlist(id, 'Lobby loop')),

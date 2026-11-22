@@ -7,7 +7,7 @@ import {
     modules,
     type Settings,
 } from '@placeos/ts-client';
-import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
+import { CallFailed, orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
@@ -21,7 +21,6 @@ import { Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 import { DriverUpdateListModalComponent } from './driver-update-list-modal.component';
-import { recompileDriver, reloadDriver } from './drivers.utilities';
 
 @Service()
 export class DriverStateService {
@@ -143,10 +142,12 @@ export class DriverStateService {
         );
         if (details.reason !== 'done') return details.close();
         details.loading('Recompiling driver... This may take a while.');
-        const success = await recompileDriver(item.id)
+        const success = await drivers
+            .recompile({ id: item.id })
+            .then(orThrow)
             .then(() => true)
-            .catch(async (e) => {
-                const content = describeError(e);
+            .catch((e: unknown) => {
+                const content = compileOutput(e) || describeError(e);
                 notifyError('Failed to recompile driver.', 'View Error', () =>
                     this._dialog.open<
                         unknown,
@@ -173,7 +174,8 @@ export class DriverStateService {
         );
         if (details.reason !== 'done') return details.close();
         details.loading('Reload driver... This may take a while.');
-        const success = await reloadDriver(item.id)
+        const success = await drivers
+            .reload({ id: item.id })
             .then(orThrow)
             .catch(() => false);
         if (success === false) {
@@ -215,4 +217,11 @@ export class DriverStateService {
         this._modules_change.update((change) => change + 1);
         notifySuccess(`Successfully removed module.`);
     }
+}
+
+/** The compiler output of a failed `drivers.recompile`, or `''`. The API sends it as plain text */
+function compileOutput(error: unknown): string {
+    if (!(error instanceof CallFailed) || error.error.kind !== 'http')
+        return '';
+    return error.error.text ?? '';
 }

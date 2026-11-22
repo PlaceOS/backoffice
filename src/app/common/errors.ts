@@ -48,9 +48,10 @@ export async function readError(error: unknown): Promise<string> {
 /** The body of an HTTP error as text, or `''` */
 async function errorBody(error: unknown): Promise<string> {
     if (error instanceof CallFailed && error.error.kind === 'http') {
-        const { body } = error.error;
+        const { body, text } = error.error;
         if (typeof body === 'string') return body;
-        return body == null ? '' : JSON.stringify(body);
+        // `text` is a body that is not JSON
+        return body == null ? (text ?? '') : JSON.stringify(body);
     }
     if (
         typeof Response === 'undefined' ||

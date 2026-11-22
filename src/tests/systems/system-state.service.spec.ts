@@ -219,6 +219,7 @@ describe('SystemStateService', () => {
                           status: 403,
                           message: null,
                           body: null,
+                          text: null,
                       },
                   }
                 : mockReply(newItem(Zone, { id })),
@@ -282,6 +283,7 @@ describe('SystemStateService', () => {
                 status: 500,
                 message: 'Module offline',
                 body: { error: 'Module offline' },
+                text: null,
             },
         });
         const [device] = service.modules();

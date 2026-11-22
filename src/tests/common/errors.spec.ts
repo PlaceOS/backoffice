@@ -34,8 +34,22 @@ describe('a v7 call that failed', () => {
             status: 422,
             message: null,
             body: { message: 'name taken' },
+            text: null,
         });
         expect(await readError(error)).toBe('422 request failed: name taken');
+    });
+
+    it('shows a plain-text body', async () => {
+        const error = new CallFailed({
+            kind: 'http',
+            status: 503,
+            message: null,
+            body: null,
+            text: 'core is starting',
+        });
+        expect(await readError(error)).toBe(
+            '503 request failed: core is starting',
+        );
     });
 });
 
