@@ -25,7 +25,6 @@ vi.mock('@placeos/ts-client/compat', async (importOriginal) => ({
 
 import {
     authority,
-    forgetMetadataBlocks,
     getLoadingMessage,
     isMock,
     loadMetadataBlocks,
@@ -296,7 +295,6 @@ describe('withEmptyLists', () => {
 
 describe('loadMetadataBlocks', () => {
     beforeEach(() => {
-        forgetMetadataBlocks();
         mocks.metadata.show.mockResolvedValue(
             mockReply({
                 b: { name: 'b', details: {} },
@@ -305,20 +303,20 @@ describe('loadMetadataBlocks', () => {
         );
     });
 
-    it('loads the blocks of a parent one time, sorted by name', async () => {
-        const first = await loadMetadataBlocks('sys-1');
-        const second = await loadMetadataBlocks('sys-1');
+    it('shares a running load of a parent, sorted by name', async () => {
+        const [first, second] = await Promise.all([
+            loadMetadataBlocks('sys-1'),
+            loadMetadataBlocks('sys-1'),
+        ]);
         expect(first.map((block) => block.name)).toEqual(['a', 'b']);
         expect(second).toEqual(first);
         expect(second[0]).not.toBe(first[0]);
         expect(mocks.metadata.show).toHaveBeenCalledTimes(1);
     });
 
-    it('loads the blocks again after forgetMetadataBlocks or for another parent', async () => {
+    it('loads the blocks again after a load finishes, so a change is seen', async () => {
         await loadMetadataBlocks('sys-1');
-        forgetMetadataBlocks();
         await loadMetadataBlocks('sys-1');
-        await loadMetadataBlocks('sys-2');
-        expect(mocks.metadata.show).toHaveBeenCalledTimes(3);
+        expect(mocks.metadata.show).toHaveBeenCalledTimes(2);
     });
 });

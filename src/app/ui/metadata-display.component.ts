@@ -17,11 +17,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { describeError, readError } from '../common/errors';
 import { escapeHtml, parseMetadataDetails } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
-import {
-    forgetMetadataBlocks,
-    loadMetadataBlocks,
-    newItem,
-} from '../common/placeos';
+import { loadMetadataBlocks, newItem } from '../common/placeos';
 import { HashMap, PlaceResource } from '../common/types';
 import { currentUser } from '../common/user-state';
 import { validateJSONString } from '../common/validation';
@@ -351,7 +347,6 @@ export class MetadataDisplayComponent
         } finally {
             result.close();
         }
-        forgetMetadataBlocks();
         notifySuccess(`Successfully removed "${field}" metadata.`);
         this.metadata.set(
             this.metadata().filter((prop) => prop && prop.name !== field),
@@ -418,7 +413,6 @@ export class MetadataDisplayComponent
             })
             .then(orThrow)
             .then((item: MetadataV7) => {
-                forgetMetadataBlocks();
                 this.loading.update((m) => ({ ...m, [field.name]: false }));
                 const index = this.metadata().findIndex(
                     (i) => i.name === field.name,

@@ -269,27 +269,20 @@ export function settingsLevels(list: readonly Settings[]): Settings[] {
     });
 }
 
-/** Time that a metadata load is used again, in milliseconds */
-const METADATA_REUSE_MS = 10_000;
-let metadata_load: {
-    parent_id: string;
-    time: number;
-    request: Promise<readonly Metadata[]>;
-} | null = null;
+/** The metadata loads that are still running, by parent id */
+const metadata_loads = new Map<string, Promise<readonly Metadata[]>>();
 
 /**
  * The metadata blocks of `parent_id`, sorted by name. The tab count of an
- * item and its metadata tab both call this, so a load for the same parent
- * in the last 10 seconds is used again. Each call gets its own copy of the
- * list. Call `forgetMetadataBlocks` after a change to the blocks.
+ * item and its metadata tab can load at the same time, so a call during a
+ * load of the same parent shares that load. A finished load is not used
+ * again, so a load after a change always gets the saved blocks. Each call
+ * gets its own copy of the list.
  */
 export function loadMetadataBlocks(parent_id: string): Promise<Metadata[]> {
-    const now = Date.now();
-    if (
-        metadata_load?.parent_id !== parent_id ||
-        now - metadata_load.time >= METADATA_REUSE_MS
-    ) {
-        const request = metadata
+    let request = metadata_loads.get(parent_id);
+    if (!request) {
+        request = metadata
             .show({ id: parent_id })
             .then(orThrow)
             .then((by_name) =>
@@ -297,21 +290,11 @@ export function loadMetadataBlocks(parent_id: string): Promise<Metadata[]> {
                     .filter((block) => !!block)
                     .sort((a, b) => a.name.localeCompare(b.name)),
             );
-        const load = { parent_id, time: now, request };
-        metadata_load = load;
-        // Do not use a failed load again
-        request.catch(() => {
-            if (metadata_load === load) metadata_load = null;
-        });
+        metadata_loads.set(parent_id, request);
+        const forget = () => metadata_loads.delete(parent_id);
+        request.then(forget, forget);
     }
-    return metadata_load.request.then((list) =>
-        list.map((block) => ({ ...block })),
-    );
-}
-
-/** Load the metadata blocks again on the next `loadMetadataBlocks` */
-export function forgetMetadataBlocks() {
-    metadata_load = null;
+    return request.then((list) => list.map((block) => ({ ...block })));
 }
 
 /**
