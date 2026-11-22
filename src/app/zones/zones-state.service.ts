@@ -23,12 +23,11 @@ import { openedTabs } from '../common/opened-tabs';
 import { authority, toBody } from '../common/placeos';
 import { waitForDialog } from '../common/signals';
 import {
-    collectPages,
     isSubsystemUser,
     querySupportSystems as querySystems,
     querySupportZones as queryZones,
 } from '../common/support-access';
-import { Identity } from '../common/types';
+import { collectPages, Identity } from '../common/types';
 import { groupMembership } from '../groups/group-membership';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import {

@@ -23,7 +23,6 @@ import {
 import {
     orThrow,
     orThrowPage,
-    type Page,
     PlaceDriverRole,
 } from '@placeos/ts-client/compat';
 import { moduleBody } from '../modules/modules.utilities';
@@ -40,7 +39,7 @@ import {
     querySupportSystems as querySystems,
     querySupportZones as queryZones,
 } from './support-access';
-import { mapPage } from './types';
+import { mapPage, type QueryResponse } from './types';
 
 /**
  * Optional "also remove the things associated with this item" behaviour,
@@ -62,7 +61,7 @@ export interface ItemActions<T> {
     query: (
         _?: string,
         options?: { include_deleted?: boolean },
-    ) => Promise<Page<readonly T[]>>;
+    ) => QueryResponse<T>;
     show: (_: string) => Promise<T>;
     save: (_: T) => Promise<T>;
     remove: (_: T) => Promise<unknown>;
@@ -373,23 +372,18 @@ const users: ItemActions<User> = {
                 ],
             })
             .then(orThrowPage)
-            .then((page) => mapPage(page, (user) => newItem(User, user))),
-    // The server can send a user without the admin fields. `newItem` gives them their empty value
-    show: (_) =>
-        users_v7
-            .show({ id: _ })
-            .then(orThrow)
-            .then((user) => newItem(User, user)),
+            .then((page) => mapPage(page, toUser)),
+    show: (_) => users_v7.show({ id: _ }).then(orThrow).then(toUser),
     save: (item) =>
         item.id
             ? users_v7
                   .update({ id: item.id, body: toJsonBody(item) })
                   .then(orThrow)
-                  .then((user) => newItem(User, user))
+                  .then(toUser)
             : users_v7
                   .create({ body: toJsonBody(item) })
                   .then(orThrow)
-                  .then((user) => newItem(User, user)),
+                  .then(toUser),
     remove: (item) => users_v7.destroy({ id: item.id }).then(orThrow),
     schema: User,
     loadModal: () =>
@@ -437,6 +431,9 @@ export interface ItemTypes {
     users: User;
     zones: Zone;
 }
+
+/** The admin user. The server can send a user without the admin fields, and `newItem` gives them their empty value */
+const toUser = (user: unknown) => newItem(User, user);
 
 export const ACTIONS: { [K in keyof ItemTypes]: ItemActions<ItemTypes[K]> } = {
     domains,

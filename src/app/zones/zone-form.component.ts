@@ -16,7 +16,6 @@ import { querySupportZones as queryZones } from '../common/support-access';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
-import { cleanObject } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { toBody } from '../common/placeos';
 import { TIMEZONES_IANA } from '../common/timezones';
@@ -375,11 +374,7 @@ export class ZoneFormComponent implements OnInit {
                     this.formModel();
                 const form_item = mergeFormItem(this._data.item, form_value);
                 const id = this._data.item.id;
-                // A new item has `null` fields. 6.x removed them before it sent the item
-                const body = toBody(
-                    Zone,
-                    id ? form_item : cleanObject(form_item, [null]),
-                );
+                const body = toBody(Zone, form_item);
                 return id
                     ? zones.update({ id, body }).then(orThrow)
                     : zones.create({ body }).then(orThrow);

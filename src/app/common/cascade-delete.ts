@@ -13,7 +13,7 @@ import { tenants as tenants_v7 } from '@placeos/ts-client/staff';
 import type { PlaceTenant } from '../admin/staff-api.component';
 import { i18n } from './locale.service';
 import { newItem } from './placeos';
-import { mapPage, type QueryResponse } from './types';
+import { collectPages, mapPage } from './types';
 
 /**
  * Resolution and execution of "delete the things associated with this item".
@@ -33,7 +33,7 @@ import { mapPage, type QueryResponse } from './types';
 const PAGE_SIZE = 500;
 /** Ceiling on zones walked in one subtree, guards against a cyclic `parent_id`. */
 const MAX_ZONES = 5000;
-/** Ceiling on pages followed for a single query. */
+/** Ceiling on pages followed for a single query. A longer list is an error */
 const MAX_PAGES = 100;
 /** Concurrent requests issued while resolving a plan. */
 const READ_CONCURRENCY = 8;
@@ -132,31 +132,6 @@ export async function mapLimit<T, R>(
     return results;
 }
 
-/** Collects every page of a paginated query. */
-async function collectPages<T>(request: QueryResponse<T>): Promise<T[]> {
-    const items: T[] = [];
-    let page = await request;
-    items.push(...page.data);
-    let pages = 1;
-    while (page.next) {
-        // A truncated list would be indistinguishable from a complete one, and
-        // every caller uses this to decide what a delete will take with it. So
-        // running out of pages has to be an error rather than a short answer.
-        if (pages >= MAX_PAGES) {
-            throw new Error(
-                `Listing did not complete within ${MAX_PAGES} pages of ${PAGE_SIZE}`,
-            );
-        }
-        const next_page = page.next();
-        if (!next_page) break;
-        page = await next_page;
-        if (!page.data.length) break;
-        items.push(...page.data);
-        pages += 1;
-    }
-    return items;
-}
-
 /**
  * IDs of `zone_id` and every zone beneath it, walked breadth first. `parent_id`
  * accepts a comma separated list so this costs one request per level of the
@@ -181,6 +156,7 @@ export async function zoneSubtreeIds(zone_id: string): Promise<string[]> {
             zones_v7
                 .query({ parent_id: level, limit: PAGE_SIZE })
                 .then(orThrowPage),
+            MAX_PAGES,
         );
         level = [];
         for (const zone of children) {
@@ -211,7 +187,7 @@ export interface ZoneSystemSplit {
  * edit can race this walk, and older backends serve the listing from a
  * lagging search index. Since a stale `zones` array here would mean deleting
  * a system that still belongs somewhere, every removal candidate is re-read
- * through `showSystem` (which reads the database) and re-checked before it
+ * through `systems.show` (which reads the database) and re-checked before it
  * makes the list.
  */
 export async function splitZoneSystems(
@@ -236,6 +212,7 @@ export async function splitZoneSystems(
             systems
                 .query({ zone_id: [zone_id], limit: PAGE_SIZE })
                 .then(orThrowPage),
+            MAX_PAGES,
         ),
     );
     for (const list of pages) {
@@ -382,11 +359,13 @@ export async function planDomainCascade(domain: Domain): Promise<CascadePlan> {
                 .then((page) =>
                     mapPage(page, (item) => newItem(Application, item)),
                 ),
+            MAX_PAGES,
         ),
         domainTenants(domain.domain),
         org_zone_id
             ? collectPages(
                   domains.query({ limit: PAGE_SIZE }).then(orThrowPage),
+                  MAX_PAGES,
               )
             : Promise.resolve([] as Domain[]),
     ]);

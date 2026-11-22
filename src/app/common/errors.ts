@@ -3,6 +3,13 @@ import { CallFailed } from '@placeos/ts-client/compat';
 /** Longest body text to show in a notification */
 const MAX_BODY_LENGTH = 300;
 
+/** The HTTP error of a call that `orThrow` rejected, or `null` for another error */
+export function httpError(error: unknown) {
+    return error instanceof CallFailed && error.error.kind === 'http'
+        ? error.error
+        : null;
+}
+
 /**
  * Readable text for a caught error. Use it wherever an error is shown to the
  * user. For an HTTP error it gives the status only, as 6.x did. Use
@@ -15,9 +22,8 @@ export function describeError(error: unknown): string {
     if (!error) return 'Unknown error';
     if (typeof error === 'string') return error;
     if (typeof error !== 'object') return String(error);
-    if (error instanceof CallFailed && error.error.kind === 'http') {
-        return `${error.error.status} request failed`;
-    }
+    const http = httpError(error);
+    if (http) return `${http.status} request failed`;
     if (typeof Response !== 'undefined' && error instanceof Response) {
         return `${error.status} ${error.statusText || 'request failed'}`.trim();
     }
@@ -47,8 +53,9 @@ export async function readError(error: unknown): Promise<string> {
 
 /** The body of an HTTP error as text, or `''` */
 async function errorBody(error: unknown): Promise<string> {
-    if (error instanceof CallFailed && error.error.kind === 'http') {
-        const { body, text } = error.error;
+    const http = httpError(error);
+    if (http) {
+        const { body, text } = http;
         if (typeof body === 'string') return body;
         // `text` is a body that is not JSON
         return body == null ? (text ?? '') : JSON.stringify(body);

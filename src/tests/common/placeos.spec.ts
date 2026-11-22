@@ -1,6 +1,6 @@
 import { Zone, type AuthStatus, type Credential } from '@placeos/ts-client';
 import { mockFetch } from '@placeos/ts-client/compat';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
     configure: vi.fn(),
@@ -168,6 +168,10 @@ describe('setupPlace', () => {
     it('logs a failed call with its status, without the text of the server', async () => {
         mocks.createAuthSession.mockReturnValue(fakeSession());
         await setupPlace(SETTINGS);
+        Reflect.set(globalThis, 'debug', true);
+        onTestFinished(() => {
+            Reflect.deleteProperty(globalThis, 'debug');
+        });
         const { log } = mocks.configure.mock.calls[0][0];
         log({
             scope: 'http',

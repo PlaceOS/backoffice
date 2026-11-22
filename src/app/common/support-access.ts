@@ -11,7 +11,7 @@ import {
     zones,
 } from '@placeos/ts-client';
 import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
-import { type QueryResponse, staticPage } from './types';
+import { collectPages, type QueryResponse, staticPage } from './types';
 
 let storage_key = '';
 const selected_id = signal('');
@@ -75,23 +75,6 @@ export function canAccessSection(section: string) {
             )
         );
     return false;
-}
-
-/** Load every page of a query. Throws after 1000 extra pages. */
-export async function collectPages<T>(response: QueryResponse<T>) {
-    let page = await response;
-    const data = [...page.data];
-    for (let i = 0; page.next && i < 1000; i++) {
-        // `next()` gives `null` when the offset does not move forward. A
-        // partial list must not look complete, for example to a cascade delete
-        const next = page.next();
-        if (!next)
-            throw new Error('Resource list did not move to the next page');
-        page = await next;
-        data.push(...page.data);
-    }
-    if (page.next) throw new Error('Too many resource pages');
-    return data;
 }
 
 /** Id of the latest `loadSupportAccess` call, so stale group lists are dropped */
@@ -261,7 +244,7 @@ async function loadGroupModules(entry: {
 /**
  * The modules API has no group filter, so list modules through the group's
  * systems. The walk runs once per group and searches filter it in the browser.
- * `queryModules` ignores other filters with `control_system_id`, so only `q`
+ * `modules.query` ignores other filters with `control_system_id`, so only `q`
  * applies here.
  */
 export async function querySupportModules(

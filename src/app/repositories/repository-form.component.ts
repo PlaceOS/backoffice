@@ -25,7 +25,6 @@ import {
 import { PlaceRepositoryType, orThrow } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../common/async-handler.class';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
-import { cleanObject } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
 import { toBody } from '../common/placeos';
@@ -639,11 +638,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
                     delete form_value.folder_name;
                 }
                 const form_item = mergeFormItem(item, form_value);
-                // A new item has `null` fields. 6.x removed them before it sent the item
-                const body = toBody(
-                    Repository,
-                    item.id ? form_item : cleanObject(form_item, [null]),
-                );
+                const body = toBody(Repository, form_item);
                 return item.id
                     ? repositories.update({ id: item.id, body }).then(orThrow)
                     : repositories.create({ body }).then(orThrow);

@@ -12,7 +12,8 @@ import {
     TriggerActionsFunction,
     zones,
 } from '@placeos/ts-client';
-import { CallFailed, orThrow } from '@placeos/ts-client/compat';
+import { orThrow } from '@placeos/ts-client/compat';
+import { httpError } from '../../../common/errors';
 import { notifyError, notifySuccess } from '../../../common/notifications';
 import { ViewResponseModalComponent } from '../../../overlays/view-response-modal.component';
 import { SpinnerComponent } from '../../controls/spinner.component';
@@ -258,13 +259,10 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
                 notifyError(
                     `Executing '${this.fn().name}' failed.\nView Error?`,
                     'View',
-                    () =>
-                        this.viewDetails(
-                            err instanceof CallFailed &&
-                                err.error.kind === 'http'
-                                ? err.error.body
-                                : err,
-                        ),
+                    () => {
+                        const http = httpError(err);
+                        this.viewDetails(http ? http.body : err);
+                    },
                 );
             }
             this.loading.set(false);

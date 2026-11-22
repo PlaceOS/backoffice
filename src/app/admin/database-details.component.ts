@@ -24,6 +24,7 @@ import {
     notifyWarn,
 } from '../common/notifications';
 import { toBody } from '../common/placeos';
+import { collectPages } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component';
@@ -70,7 +71,6 @@ function zoneToExportItem(zone: Zone): ZoneTreeExportItem {
     data.parent_id = zone.parent_id || '';
     delete data.created_at;
     delete data.updated_at;
-    delete data.version;
     delete data.children_count;
     delete data.count;
     delete data.settings;
@@ -80,8 +80,9 @@ function zoneToExportItem(zone: Zone): ZoneTreeExportItem {
 
 function zoneToImportItem(zone: ZoneTreeExportItem, parent_id: string) {
     // An empty CSV cell is `''`. Leave it out, so the zone gets the default
-    // value and a number field does not get a string
-    const data: Record<string, unknown> = cleanObject({ ...zone }, ['', null]);
+    // value and a number field does not get a string. `toBody` drops `null`
+    // and the fields that a new zone does not have
+    const data: Record<string, unknown> = cleanObject({ ...zone }, ['']);
     data.parent_id = parent_id;
     delete data.id;
     delete data.created_at;
@@ -89,29 +90,17 @@ function zoneToImportItem(zone: ZoneTreeExportItem, parent_id: string) {
     delete data.version;
     delete data.children_count;
     delete data.count;
-    delete data.settings;
-    delete data.trigger_list;
     return toBody(Zone, data);
 }
 
 async function queryAllZones(
     query_params: Parameters<typeof zones_v7.query>[0] = {},
 ) {
-    let response = await zones_v7
-        .query({ ...query_params, limit: 500 })
-        .then(orThrowPage);
-    const zones = [...response.data];
-    for (let page = 1; response.next; page++) {
-        // A partial export would look complete, so fail instead
-        if (page >= MAX_ZONE_PAGES)
-            throw new Error(`Zone list exceeds ${MAX_ZONE_PAGES} pages`);
-        // `next()` gives `null` when the offset does not move forward
-        const next = response.next();
-        if (!next) throw new Error('Zone list did not move to the next page');
-        response = await next;
-        zones.push(...response.data);
-    }
-    return zones;
+    // A partial export would look complete, so `collectPages` fails instead
+    return collectPages(
+        zones_v7.query({ ...query_params, limit: 500 }).then(orThrowPage),
+        MAX_ZONE_PAGES,
+    );
 }
 
 @Component({

@@ -7,8 +7,8 @@ import {
     modules,
     type Settings,
 } from '@placeos/ts-client';
-import { CallFailed, orThrow, orThrowPage } from '@placeos/ts-client/compat';
-import { describeError } from '../common/errors';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
+import { describeError, httpError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import {
@@ -16,8 +16,7 @@ import {
     notifyInfo,
     notifySuccess,
 } from '../common/notifications';
-import { collectPages } from '../common/support-access';
-import { Identity } from '../common/types';
+import { collectPages, Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 import { DriverUpdateListModalComponent } from './driver-update-list-modal.component';
@@ -147,7 +146,8 @@ export class DriverStateService {
             .then(orThrow)
             .then(() => true)
             .catch((e: unknown) => {
-                const content = compileOutput(e) || describeError(e);
+                // The API sends the compiler output as plain text
+                const content = httpError(e)?.text || describeError(e);
                 notifyError('Failed to recompile driver.', 'View Error', () =>
                     this._dialog.open<
                         unknown,
@@ -217,11 +217,4 @@ export class DriverStateService {
         this._modules_change.update((change) => change + 1);
         notifySuccess(`Successfully removed module.`);
     }
-}
-
-/** The compiler output of a failed `drivers.recompile`, or `''`. The API sends it as plain text */
-function compileOutput(error: unknown): string {
-    if (!(error instanceof CallFailed) || error.error.kind !== 'http')
-        return '';
-    return error.error.text ?? '';
 }

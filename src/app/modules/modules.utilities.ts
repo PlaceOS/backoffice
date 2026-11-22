@@ -5,7 +5,8 @@ import {
     type ModuleInput,
     System,
 } from '@placeos/ts-client';
-import { CallFailed, PlaceDriverRole } from '@placeos/ts-client/compat';
+import { PlaceDriverRole } from '@placeos/ts-client/compat';
+import { httpError } from '../common/errors';
 import { newItem, toBody } from '../common/placeos';
 
 import { max, min, required, SchemaFn, validate } from '@angular/forms/signals';
@@ -152,19 +153,16 @@ export function moduleBody(item: object): ModuleInput {
     return body;
 }
 
+/** Longest module error to show in a notification */
+const SHORT_ERROR_LENGTH = 64;
+
 /**
  * The error message of a failed module call when it is short enough for a
  * notification, else `null`. The server puts the message in the `error`
  * field of the body.
  */
-export function shortModuleError(error: unknown, length_max = 64) {
+export function shortModuleError(error: unknown) {
     const message =
-        error instanceof CallFailed
-            ? error.error.kind === 'http'
-                ? error.error.message
-                : null
-            : typeof error === 'string'
-              ? error
-              : null;
-    return message && message.length < length_max ? message : null;
+        typeof error === 'string' ? error : httpError(error)?.message;
+    return message && message.length < SHORT_ERROR_LENGTH ? message : null;
 }

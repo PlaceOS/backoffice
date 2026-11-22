@@ -13,7 +13,7 @@ import {
     notifyInfo,
     notifySuccess,
 } from '../common/notifications';
-import { collectPages } from '../common/support-access';
+import { collectPages } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';

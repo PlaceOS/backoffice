@@ -5,8 +5,8 @@ import {
     createAuthSession,
     createRealtime,
     parseResponse,
+    Settings,
     type AuthSession,
-    type Client,
     type Credential,
     type DomainAuthority,
     type JsonValue,
@@ -80,8 +80,6 @@ let _session: AuthSession | null = null;
 /** Realtime client of `systems/control`. Set by `setupPlace` */
 let _realtime: Realtime | null = null;
 let _mock = false;
-/** Client of `configure`. Set by `setupPlace` */
-let _client: Client | null = null;
 const _authority = signal<DomainAuthority | null>(null);
 const _online = signal(false);
 
@@ -146,12 +144,6 @@ export function logout() {
     return _session?.logout();
 }
 
-/** The client that calls use, for a call that needs its own copy of it */
-export function apiClient(): Client {
-    assert(_client !== null, 'setupPlace() ran before apiClient()');
-    return _client;
-}
-
 /**
  * Realtime client for module bindings, calls and logs. A client that gave
  * up after its reconnect attempts starts again here. 6.x reloaded the page.
@@ -175,8 +167,12 @@ globalThis.addEventListener?.('online', restartFailedRealtime);
  * response or the description of a refused token, which can have personal
  * data. The kind and the status of an error stay.
  */
-const debugLog: LogFunction = (entry) =>
+const debugLog: LogFunction = (entry) => {
+    // `consoleLog` checks this too. Check it first, so that nothing is copied
+    // for each request and binding update while debug is off
+    if (!Reflect.get(globalThis, 'debug')) return;
     consoleLog({ ...entry, args: entry.args.map(withoutServerText) });
+};
 
 function withoutServerText(arg: unknown): unknown {
     if (!arg || typeof arg !== 'object' || Array.isArray(arg)) return arg;
@@ -208,6 +204,22 @@ export function newItem<O, I>(schema: Schema<O, I>, data: unknown = {}): O {
         );
     }
     return result.value;
+}
+
+/**
+ * The settings of encryption levels 0 to 3 (none, support, admin and never
+ * display), one for each level. A missing level gets an empty entry.
+ */
+export function settingsLevels(list: readonly Settings[]): Settings[] {
+    return [0, 1, 2, 3].map(
+        (level) =>
+            list.find((_) => _.encryption_level === level) ??
+            newItem(Settings, {
+                encryption_level: level,
+                settings_string: '',
+                keys: [],
+            }),
+    );
 }
 
 /**
@@ -243,7 +255,7 @@ export function toJsonBody(data: object): JsonValue {
 
 /** Make the client and realtime of mock mode, with the mock endpoints */
 function setupMock() {
-    _client = configure({
+    configure({
         base_url: '',
         auth: { kind: 'none' },
         fetch: mockFetch,
@@ -303,7 +315,7 @@ export async function setupPlace(settings: PlaceSettings): Promise<void> {
         _online.set(status.kind === 'signed_in');
     });
     const auth = session.client_auth;
-    _client = configure({
+    configure({
         base_url,
         auth,
         headers: { 'X-App-Id': session.client_id },

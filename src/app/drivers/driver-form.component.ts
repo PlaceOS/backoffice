@@ -30,7 +30,6 @@ import {
 
 import * as yaml from 'js-yaml';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
-import { cleanObject } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
 import { toBody } from '../common/placeos';
@@ -486,12 +485,8 @@ export class DriverFormComponent implements OnInit {
                     delete form_value.class_name;
                 }
                 const form_item = mergeFormItem(item, form_value);
-                // `toBody` drops the form fields that a driver does not have, such as `settings`.
-                // A new item has `null` fields. 6.x removed them before it sent the item
-                const body = toBody(
-                    Driver,
-                    item.id ? form_item : cleanObject(form_item, [null]),
-                );
+                // `toBody` drops the form fields that a driver does not have, such as `settings`
+                const body = toBody(Driver, form_item);
                 return item.id
                     ? drivers.update({ id: item.id, body }).then(orThrow)
                     : drivers.create({ body }).then(orThrow);

@@ -174,10 +174,7 @@ export class SystemStateService extends AsyncHandler {
                 // Keep known connection state across refreshes. Bindings only
                 // emit on change, so a reset value would never be filled again.
                 const known_state = new Map(
-                    this._modules().map((mod) => [
-                        mod.id,
-                        (mod as Module & { connected?: boolean }).connected,
-                    ]),
+                    this._modules().map((mod) => [mod.id, mod.connected]),
                 );
                 const modules = [...response.data];
                 modules.forEach(
@@ -443,8 +440,7 @@ export class SystemStateService extends AsyncHandler {
                 ref.close();
                 notifyError(
                     `Error adding module to system "${
-                        (system as System & { display_name?: string })
-                            .display_name || system.name
+                        system.display_name || system.name
                     }". Error: ${describeError(_e)}`,
                 );
                 throw _e;
@@ -453,8 +449,7 @@ export class SystemStateService extends AsyncHandler {
         ref.close();
         notifySuccess(
             `Successfully added module to system "${
-                (system as System & { display_name?: string }).display_name ||
-                system.name
+                system.display_name || system.name
             }".`,
         );
     }

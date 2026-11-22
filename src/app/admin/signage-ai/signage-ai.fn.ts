@@ -4,7 +4,6 @@ import {
     SignageAiProvidersProviderParams,
     type JsonValue,
     type SignageAiJobUsageRow,
-    type SignageAiProvidersTestResult,
 } from '@placeos/ts-client';
 import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 
@@ -18,25 +17,13 @@ type ProviderData = Extract<
     { ok: true }
 >['value']['data'];
 
-export interface SignageAIProvider {
-    readonly id: string;
-    readonly name: string;
+/** A provider with its type and its number quotas */
+export type SignageAIProvider = Omit<ProviderData, 'provider' | 'quotas'> & {
     readonly provider: SignageAIProviderType;
-    readonly authority_id: string | null;
-    readonly endpoint: string | null;
-    readonly location: string | null;
-    readonly default_model: string | null;
-    readonly allowed_models: readonly string[];
-    readonly enabled: boolean;
-    readonly is_default: boolean;
     readonly quotas: Readonly<Record<string, number>>;
-    readonly created_at: number;
-    readonly updated_at: number;
-}
+};
 
 export type SignageAIUsageRow = SignageAiJobUsageRow;
-
-export type SignageAITestResult = SignageAiProvidersTestResult;
 
 /** The number fields of the quotas JSON */
 function quotaValues(value: JsonValue | null): Record<string, number> {
@@ -53,20 +40,10 @@ function quotaValues(value: JsonValue | null): Record<string, number> {
 /** A provider for the app, from the data of the API */
 export function signageAIProvider(data: ProviderData): SignageAIProvider {
     return {
-        id: data.id,
-        name: data.name,
+        ...data,
         // The API document gives the type as any string
         provider: data.provider as SignageAIProviderType,
-        authority_id: data.authority_id,
-        endpoint: data.endpoint,
-        location: data.location,
-        default_model: data.default_model,
-        allowed_models: data.allowed_models,
-        enabled: data.enabled,
-        is_default: data.is_default,
         quotas: quotaValues(data.quotas),
-        created_at: data.created_at,
-        updated_at: data.updated_at,
     };
 }
 

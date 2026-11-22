@@ -16,10 +16,9 @@ import { Settings, settings as settings_v7 } from '@placeos/ts-client';
 import { EncryptionLevel, orThrow } from '@placeos/ts-client/compat';
 
 import { AsyncHandler } from '../../common/async-handler.class';
-import { cleanObject } from '../../common/general';
 import { HotkeysService } from '../../common/hotkeys.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
-import { newItem, toBody } from '../../common/placeos';
+import { newItem, settingsLevels, toBody } from '../../common/placeos';
 import { HashMap, Identity } from '../../common/types';
 import { validateYAML } from '../../systems/systems.utilities';
 import { BackofficeUsersService } from '../../users/users.service';
@@ -41,14 +40,11 @@ import { TranslatePipe } from '../translate.pipe';
 type SettingsArray = Settings[];
 
 /**
- * Request body to save a settings level. Leaves out the empty fields of a
- * new level, as the 6.x `PlaceSettings.toJSON` did.
+ * Request body to save a settings level. `toBody` leaves out the empty fields
+ * of a new level, as the 6.x `PlaceSettings.toJSON` did.
  */
 function settingsBody(item: Settings, settings_string: string) {
-    return cleanObject(toBody(Settings, { ...item, settings_string }), [
-        null,
-        undefined,
-    ]);
+    return toBody(Settings, { ...item, settings_string });
 }
 
 @Component({
@@ -597,19 +593,9 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
 
     private _processSettings(settings: Settings[]): Settings[] {
         if (!settings.length) return [];
-        const processed_settings = [];
-        for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
-            const setting = settings?.find((_) => _.encryption_level === i);
-            if (!setting) {
-                processed_settings.push(
-                    this._processSetting(
-                        newItem(Settings, { encryption_level: i }),
-                    ),
-                );
-                continue;
-            }
-            processed_settings.push(this._processSetting(setting));
-        }
+        const processed_settings = settingsLevels(settings).map((setting) =>
+            this._processSetting(setting),
+        );
         processed_settings.push(
             this.merge()
                 ? this._generateMergedSettings(processed_settings)

@@ -32,7 +32,7 @@ import { describeError } from './errors';
 import { escapeHtml, log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
-import { newItem } from './placeos';
+import { newItem, settingsLevels } from './placeos';
 import { waitForEvent, waitForSignalValue } from './signals';
 import {
     canAccessSection,
@@ -842,17 +842,6 @@ export class ActiveItemService extends AsyncHandler {
             .query({ parent_id: [id] })
             .then(orThrowPage)
             .catch(() => null);
-        if (!response) return null;
-        // Remove duplicate encryption_level
-        // Encryption levels are 0 to 3: None, Support, Admin and NeverDisplay
-        return new Array(4).fill(0).map(
-            (_, idx) =>
-                response.data.find((_) => _.encryption_level === idx) ||
-                newItem(Settings, {
-                    encryption_level: idx,
-                    settings_string: '',
-                    keys: [],
-                }),
-        );
+        return response ? settingsLevels(response.data) : null;
     }
 }

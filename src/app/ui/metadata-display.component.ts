@@ -15,7 +15,7 @@ import { orThrow } from '@placeos/ts-client/compat';
 import { VERSION } from '../../env/version';
 import { AsyncHandler } from '../common/async-handler.class';
 import { describeError, readError } from '../common/errors';
-import { escapeHtml } from '../common/general';
+import { escapeHtml, parseMetadataDetails } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { newItem } from '../common/placeos';
 import { HashMap, PlaceResource } from '../common/types';
@@ -464,16 +464,13 @@ export class MetadataDisplayComponent
                 this.edited.update((m) => ({ ...m, [group.name]: true }));
                 return;
             }
-            const details =
-                typeof group.details === 'string'
-                    ? JSON.parse(group.details)
-                    : group.details;
+            const details = parseMetadataDetails(group.details);
             this.form_map.update((m) => {
                 m[group.name] = {
                     name: group.name,
                     description: group.description,
                     editors: [...(group.editors || [])],
-                    details: JSON.stringify(details || {}, undefined, 4),
+                    details: JSON.stringify(details, undefined, 4),
                     schema: group.schema_id,
                 };
                 return m;

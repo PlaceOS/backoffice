@@ -4,7 +4,6 @@ import { form, FormField } from '@angular/forms/signals';
 import { Domain, domains } from '@placeos/ts-client';
 import { orThrow } from '@placeos/ts-client/compat';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
-import { cleanObject } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
 import { toBody } from '../common/placeos';
@@ -255,11 +254,7 @@ export class DomainFormComponent {
                     this.formModel(),
                 );
                 const id = this._data.item.id;
-                // A new item has `null` fields. 6.x removed them before it sent the item
-                const body = toBody(
-                    Domain,
-                    id ? form_item : cleanObject(form_item, [null]),
-                );
+                const body = toBody(Domain, form_item);
                 return id
                     ? domains.update({ id, body }).then(orThrow)
                     : domains.create({ body }).then(orThrow);

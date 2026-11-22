@@ -326,11 +326,7 @@ export class GroupFormComponent implements OnInit {
                     ['', undefined],
                 );
                 const id = this._data.item.id;
-                // A new item has `null` fields. 6.x removed them before it sent the item
-                const body = toBody(
-                    Group,
-                    id ? form_item : cleanObject(form_item, [null]),
-                );
+                const body = toBody(Group, form_item);
                 return id
                     ? groups.update({ id, body }).then(orThrow)
                     : groups.create({ body }).then(orThrow);

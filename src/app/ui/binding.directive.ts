@@ -3,7 +3,6 @@ import {
     ElementRef,
     OnChanges,
     OnDestroy,
-    OnInit,
     Renderer2,
     SimpleChanges,
     effect,
@@ -23,7 +22,7 @@ import { online, realtime } from '../common/placeos';
 })
 export class BindingDirective<T = unknown>
     extends AsyncHandler
-    implements OnInit, OnChanges, OnDestroy
+    implements OnChanges, OnDestroy
 {
     private _element = inject<ElementRef<HTMLElement>>(ElementRef);
     private _renderer = inject(Renderer2);
@@ -57,13 +56,10 @@ export class BindingDirective<T = unknown>
 
     constructor() {
         super();
+        // Runs once at creation, and again each time the client comes online
         effect(() => {
             if (online()) untracked(() => this.bindVariable());
         });
-    }
-
-    public ngOnInit(): void {
-        if (online()) this.bindVariable();
     }
 
     /**

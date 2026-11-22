@@ -21,7 +21,6 @@ import { orThrow } from '@placeos/ts-client/compat';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { readError } from '../common/errors';
-import { cleanObject } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { newItem, toBody } from '../common/placeos';
@@ -205,8 +204,7 @@ export class AuthSourceModalComponent implements OnInit {
     }
 
     public updateMethod(item: { id?: string }) {
-        // A new item has `null` fields. 6.x removed them before it sent the item
-        const data = cleanObject({ ...item }, [null, undefined]);
+        const data = item;
         const id = item.id;
         switch (this.type()) {
             case 'saml': {
