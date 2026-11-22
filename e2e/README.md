@@ -32,10 +32,10 @@ bunx nx e2e e2e -- --ui                             # UI mode
 
 The config starts the dev server, or uses the server that runs on port 4200.
 
-| Project                            | Specs                    |
-| ---------------------------------- | ------------------------ |
-| `chromium`, `firefox`, `webkit`    | `*.spec.ts`              |
-| `mobile-chrome`, `mobile-safari`   | `*.mobile.spec.ts`       |
+| Project                          | Specs              |
+| -------------------------------- | ------------------ |
+| `chromium`, `firefox`, `webkit`  | `*.spec.ts`        |
+| `mobile-chrome`, `mobile-safari` | `*.mobile.spec.ts` |
 
 CI runs `chromium` and `mobile-chrome` only. Run the other projects locally
 before you change code that is specific to a browser.
@@ -49,21 +49,21 @@ backend, use the [local backend](#local-backend) suite.
 Tests use the ids from `user-stories/*.md` (e.g. `AC-ZON-004-5`) in their
 names.
 
-| Spec                     | Covers                                                         |
-| ------------------------ | -------------------------------------------------------------- |
-| `systems.spec.ts`        | List, search, create, edit, delete, tabs, start and stop       |
-| `zones.spec.ts`          | List, search, create, edit, delete, parent link, child zones   |
-| `cascade-delete.spec.ts` | Optional removal of the systems inside a deleted zone          |
-| `modules.spec.ts`        | List, create from a driver, edit, delete, start and stop       |
-| `drivers.spec.ts`        | List, readme, modules, edit, delete, recompile and reload      |
-| `repositories.spec.ts`   | List, details, edit, delete, add a driver from a repository    |
-| `triggers.spec.ts`       | List, search, create, edit, delete, instances                  |
-| `users.spec.ts`          | List, search, create, edit, delete, metadata, history          |
-| `groups.spec.ts`         | Group tree, create, edit, delete, members, zone access         |
-| `domains.spec.ts`        | List, create, edit, delete, applications, auth methods, users  |
-| `admin.spec.ts`          | Every admin section, brokers, extensions, tenants, API keys    |
-| `navigation.spec.ts`     | Main menu, redirects, deep links, browser back                 |
-| `mobile.mobile.spec.ts`  | Hamburger menu, item picker, system details on phones          |
+| Spec                     | Covers                                                        |
+| ------------------------ | ------------------------------------------------------------- |
+| `systems.spec.ts`        | List, search, create, edit, delete, tabs, start and stop      |
+| `zones.spec.ts`          | List, search, create, edit, delete, parent link, child zones  |
+| `cascade-delete.spec.ts` | Optional removal of the systems inside a deleted zone         |
+| `modules.spec.ts`        | List, create from a driver, edit, delete, start and stop      |
+| `drivers.spec.ts`        | List, readme, modules, edit, delete, recompile and reload     |
+| `repositories.spec.ts`   | List, details, edit, delete, add a driver from a repository   |
+| `triggers.spec.ts`       | List, search, create, edit, delete, instances                 |
+| `users.spec.ts`          | List, search, create, edit, delete, metadata, history         |
+| `groups.spec.ts`         | Group tree, create, edit, delete, members, zone access        |
+| `domains.spec.ts`        | List, create, edit, delete, applications, auth methods, users |
+| `admin.spec.ts`          | Every admin section, brokers, extensions, tenants, API keys   |
+| `navigation.spec.ts`     | Main menu, redirects, deep links, browser back                |
+| `mobile.mobile.spec.ts`  | Hamburger menu, item picker, system details on phones         |
 
 ## Write a test
 
@@ -198,21 +198,21 @@ in `PlaceOS/user-interfaces`, with these changes:
 ### Write a local spec
 
 ```typescript
-import { ENGINE_API, uniqueName } from '../../support/api';
+import { createResource, ENGINE_API, uniqueName } from '../../support/api';
 import { expect, test } from '../../support/fixtures';
 import { FeaturePage } from '../pages';
 
-test('AC-ZON-004-5: a renamed zone is saved', async ({ page, api }) => {
-    const res = await api.post(`${ENGINE_API}/zones`, {
-        data: { name: uniqueName('E2E Zone') },
+test('AC-ZON-004-5: a renamed zone is saved', async ({
+    page,
+    api,
+    cleanup,
+}) => {
+    const zone = await createResource(api, `${ENGINE_API}/zones`, {
+        name: uniqueName('E2E Zone'),
     });
-    const zone = await res.json();
-    try {
-        // ...change the zone in the UI with FeaturePage...
-        // ...then check the result through `api`, not only on the page
-    } finally {
-        await api.delete(`${ENGINE_API}/zones/${zone.id}`);
-    }
+    cleanup.add(`${ENGINE_API}/zones/${zone.id}`);
+    // ...change the zone in the UI with FeaturePage...
+    // ...then check the result through `api`, not only on the page
 });
 ```
 
@@ -220,9 +220,11 @@ Rules:
 
 1. Import `test` and `expect` from `support/fixtures`. The fixtures are:
    `page` (signed in as the admin), `staffPage` (signed in as a user that is
-   not an admin) and `api` (an API context with an admin bearer).
-2. Each spec makes its own data with `uniqueName()` and removes it in a
-   `finally`. Specs run in parallel on the same stack.
+   not an admin), `api` (an API context with an admin bearer) and `cleanup`
+   (`cleanup.add(path)` deletes that API path after the test).
+2. Each spec makes its own data with `uniqueName()` and gives it to
+   `cleanup`. Specs run in parallel on the same stack. Do not change the
+   seeded authority, admin user or zone tree.
 3. Check the result through the API. The page can show a change that the
    backend did not save.
 4. Check access rules as `staffPage`. A sys_admin passes every check, so the
@@ -233,8 +235,31 @@ Rules:
 6. Make the new assertion fail one time, and make sure that it fails for the
    correct reason.
 
-| Spec                   | Covers                                               |
-| ---------------------- | ---------------------------------------------------- |
-| `local/login.spec.ts`  | Sign-in through the platform login page              |
-| `local/access.spec.ts` | An admin opens domains; other users get the 403 page |
-| `local/zones.spec.ts`  | Create, rename and delete a zone, checked on the API |
+| Spec                         | Covers                                                                                                          |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `local/login.spec.ts`        | Sign-in through the platform login page                                                                         |
+| `local/access.spec.ts`       | An admin opens domains; other users get the 403 page                                                            |
+| `local/zones.spec.ts`        | Zone CRUD, parent, child zones, systems, triggers, metadata, history, cascade, import                           |
+| `local/systems.spec.ts`      | System CRUD, modules, zones, triggers, metadata, history, start and stop, import                                |
+| `local/users.spec.ts`        | User CRUD, roles, metadata, groups, CSV import                                                                  |
+| `local/groups.spec.ts`       | Group tree, CRUD, members, zone access                                                                          |
+| `local/domains.spec.ts`      | Domain CRUD, applications, OAuth, SAML and LDAP sources, domain users                                           |
+| `local/triggers.spec.ts`     | Trigger CRUD, conditions, email actions, instances, enable and disable                                          |
+| `local/admin.spec.ts`        | Platform info, zone tree export and import, brokers, edges, extensions, tenants, API keys, data stores, schemas |
+| `local/repositories.spec.ts` | Repository details, edit and delete                                                                             |
+| `local/drivers.spec.ts`      | Driver details, readme, modules, settings, history, update, delete                                              |
+| `local/modules.spec.ts`      | Module CRUD, settings, systems, history, the `running` flag                                                     |
+
+Each spec makes its data through the API with `uniqueName()` and gives each
+resource to the `cleanup` fixture, which deletes it after the test.
+
+Without core, the build service and an upload store, these stories have no
+local test: cluster status and tasks, module execute and live status, driver
+recompile and reload, repository create (it needs the remote branches), pull,
+commits and branches, interfaces, build jobs, uploads, resource imports and
+function actions on triggers. Some stories have no control in the app, for
+example user enable and disable, user history and the trigger test button.
+
+A test that is marked `test.fail()` keeps the correct behaviour of an app bug.
+Its comment names the bug. When the bug is fixed, the test fails, so remove
+the mark.

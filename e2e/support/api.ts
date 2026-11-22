@@ -49,6 +49,21 @@ export async function apiFor(
     });
 }
 
+/** POST a resource and give its JSON body, or throw with the status and body */
+export async function createResource<T = { id: string }>(
+    api: APIRequestContext,
+    path: string,
+    data: unknown,
+): Promise<T> {
+    const res = await api.post(path, { data });
+    if (!res.ok()) {
+        throw new Error(
+            `POST ${path} failed: HTTP ${res.status()} ${await res.text()}`,
+        );
+    }
+    return res.json() as Promise<T>;
+}
+
 /** A name no other spec or run uses */
 export function uniqueName(prefix: string): string {
     return `${prefix} ${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;

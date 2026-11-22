@@ -9,9 +9,23 @@ import { APIRequestContext, Page, test as base } from '@playwright/test';
 import { apiFor } from './api';
 import { APP_URL, roleFor } from './env';
 
+/** Resources that a test made, which the `cleanup` fixture deletes */
+export interface Cleanup {
+    /** Delete the resource at this API path after the test */
+    add(path: string): void;
+}
+
+/** Most resources one test can ask `cleanup` to delete */
+const CLEANUP_MAX = 100;
+
 interface TestFixtures {
     /** A page signed in as the non-admin user */
     staffPage: Page;
+    /**
+     * Deletes the API paths given to `add` after the test, last added first,
+     * also when the test fails. A path that is already gone is ignored.
+     */
+    cleanup: Cleanup;
 }
 
 interface WorkerFixtures {
@@ -30,6 +44,23 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
         },
         { scope: 'worker' },
     ],
+
+    cleanup: async ({ api }, use) => {
+        const paths: string[] = [];
+        await use({
+            add: (path) => {
+                if (paths.length >= CLEANUP_MAX) {
+                    throw new Error(
+                        `cleanup holds ${CLEANUP_MAX} paths at most`,
+                    );
+                }
+                paths.push(path);
+            },
+        });
+        for (const path of paths.reverse()) {
+            await api.delete(path).catch(() => undefined);
+        }
+    },
 
     staffPage: async ({ browser }, use) => {
         const ctx = await browser.newContext({
