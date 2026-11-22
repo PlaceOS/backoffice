@@ -1,18 +1,23 @@
+import { CallFailed } from '@placeos/ts-client/compat';
+
 /** Longest body text to show in a notification */
 const MAX_BODY_LENGTH = 300;
 
 /**
  * Readable text for a caught error. Use it wherever an error is shown to the
- * user.
+ * user. For an HTTP error it gives the status only, as 6.x did. Use
+ * `readError` when the message from the API in the body is wanted.
  *
- * ts-client throws the raw `Response` for any non-OK status. Interpolating it
- * yields "[object Response]" and `JSON.stringify` yields "{}", so read the
- * status from it instead. Use `readError` when the body text is wanted too.
+ * `orThrow` throws a `CallFailed`. A `fetch` can still give a raw
+ * `Response`, so read its status too.
  */
 export function describeError(error: unknown): string {
     if (!error) return 'Unknown error';
     if (typeof error === 'string') return error;
     if (typeof error !== 'object') return String(error);
+    if (error instanceof CallFailed && error.error.kind === 'http') {
+        return `${error.error.status} request failed`;
+    }
     if (typeof Response !== 'undefined' && error instanceof Response) {
         return `${error.status} ${error.statusText || 'request failed'}`.trim();
     }
@@ -29,26 +34,35 @@ export function describeError(error: unknown): string {
 }
 
 /**
- * Like `describeError`, but also reads the body of a `Response` that is not
- * read yet, so the message from the API reaches the user.
- *
- * Reads a clone, so other handlers can still read the original body.
+ * Like `describeError`, but also adds the message from the body of an HTTP
+ * error, so the message from the API reaches the user. For a `Response` that
+ * is not read yet, it reads a clone, so other handlers can still read it.
  */
 export async function readError(error: unknown): Promise<string> {
     const summary = describeError(error);
+    const body = await errorBody(error);
+    const detail = bodyMessage(body);
+    return detail ? `${summary}: ${detail}` : summary;
+}
+
+/** The body of an HTTP error as text, or `''` */
+async function errorBody(error: unknown): Promise<string> {
+    if (error instanceof CallFailed && error.error.kind === 'http') {
+        const { body } = error.error;
+        if (typeof body === 'string') return body;
+        return body == null ? '' : JSON.stringify(body);
+    }
     if (
         typeof Response === 'undefined' ||
         !(error instanceof Response) ||
         error.bodyUsed
     ) {
-        return summary;
+        return '';
     }
-    const body = await error
+    return error
         .clone()
         .text()
         .catch(() => '');
-    const detail = bodyMessage(body);
-    return detail ? `${summary}: ${detail}` : summary;
 }
 
 /** Pulls the useful message out of an error body, JSON or plain text */

@@ -1,10 +1,13 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
-import { addDomain, PlaceDomain, updateDomain } from '@placeos/ts-client';
+import { Domain, domains } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
+import { cleanObject } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
+import { toBody } from '../common/placeos';
 import { DialogEvent } from '../common/types';
 import { isValidDomain } from '../common/validation';
 import { ChipListComponent } from '../ui/controls/chip-list.component';
@@ -206,9 +209,7 @@ import {
 export class DomainFormComponent {
     private _dialog_ref =
         inject<DialogRef<unknown, DomainFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceDomain; readonly?: string }>(
-        DIALOG_DATA,
-    );
+    private _data = inject<{ item: Domain; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'DOMAINS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -252,10 +253,16 @@ export class DomainFormComponent {
                 const form_item = mergeFormItem(
                     this._data.item,
                     this.formModel(),
-                ) as unknown as PlaceDomain;
-                return form_item.id
-                    ? updateDomain(form_item.id, form_item)
-                    : addDomain(form_item);
+                );
+                const id = this._data.item.id;
+                // A new item has `null` fields. 6.x removed them before it sent the item
+                const body = toBody(
+                    Domain,
+                    id ? form_item : cleanObject(form_item, [null]),
+                );
+                return id
+                    ? domains.update({ id, body }).then(orThrow)
+                    : domains.create({ body }).then(orThrow);
             },
         );
     }

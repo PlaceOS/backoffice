@@ -6,8 +6,8 @@ import {
     inject,
     input,
 } from '@angular/core';
-import { apiKey, authority, token } from '@placeos/ts-client';
 import { AsyncHandler } from '../common/async-handler.class';
+import { authority, setAuthCookie } from '../common/placeos';
 
 const IMAGE_STORE = new Map<string, string>();
 /** Tries to wait for the API authority before giving up (300ms apart) */
@@ -50,14 +50,9 @@ export class AuthenticatedImageDirective
             this._image_el.nativeElement.src = IMAGE_STORE.get(source);
             return;
         }
-        const tkn = token();
-        document.cookie = `${
-            tkn === 'x-api-key'
-                ? 'api-key=' + encodeURIComponent(apiKey())
-                : 'bearer_token=' + encodeURIComponent(tkn)
-        };max-age=60;path=/api/;samesite=strict;${
-            location.protocol === 'https:' ? 'secure;' : ''
-        }`;
+        if (!(await setAuthCookie('/api/'))) {
+            throw new Error('Not signed in');
+        }
         const response = await fetch(source);
         // Do not cache an error body, such as a 401, as the image
         if (!response.ok) {

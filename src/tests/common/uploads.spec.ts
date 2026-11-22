@@ -11,7 +11,10 @@ import { uploadFile } from '../../app/common/uploads';
 import { UploadsService } from '../../app/common/uploads.service';
 
 const mocks = vi.hoisted(() => ({
-    token: vi.fn(() => 'token-0'),
+    validCredential: vi.fn(async () => ({
+        kind: 'bearer' as const,
+        token: 'token-0',
+    })),
     initUploads: vi.fn(),
     uploadNewFile:
         vi.fn<
@@ -26,11 +29,8 @@ vi.mock('@placeos/cloud-uploads', () => ({
     initUploads: mocks.initUploads,
     uploadFile: mocks.uploadNewFile,
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    token: mocks.token,
+vi.mock('../../app/common/placeos', () => ({
+    validCredential: mocks.validCredential,
 }));
 vi.mock('../../app/ui/upload-permissions-modal.component', () => ({
     UploadPermissionsModalComponent: class {},
@@ -84,7 +84,7 @@ describe('uploadFile', () => {
     it('starts the upload service again when the PlaceOS token changes', async () => {
         mocks.uploadNewFile.mockResolvedValue(fakeUpload());
         for (const token of ['token-1', 'token-1', 'token-2']) {
-            mocks.token.mockReturnValue(token);
+            mocks.validCredential.mockResolvedValue({ kind: 'bearer', token });
             uploadFile(file).subscribe(vi.fn());
         }
         await vi.waitFor(() =>
@@ -94,6 +94,55 @@ describe('uploadFile', () => {
             'token-1',
             'token-2',
         ]);
+    });
+});
+
+describe('uploadFile before the upload starts', () => {
+    it('reports "Not signed in" and starts no upload without a token', async () => {
+        mocks.validCredential.mockResolvedValueOnce(null);
+        const error = vi.fn();
+        uploadFile(file).subscribe(vi.fn(), error);
+        await vi.waitFor(() =>
+            expect(error).toHaveBeenCalledWith(
+                expect.objectContaining({ error: 'Not signed in' }),
+            ),
+        );
+        expect(mocks.uploadNewFile).not.toHaveBeenCalled();
+    });
+
+    it('reports "Upload failed" when the upload service does not start, and starts it on the next try', async () => {
+        mocks.validCredential.mockResolvedValue({
+            kind: 'bearer',
+            token: 'token-start',
+        });
+        mocks.initUploads.mockImplementationOnce(() => {
+            throw new Error('no worker');
+        });
+        const error = vi.fn();
+        uploadFile(file).subscribe(vi.fn(), error);
+        await vi.waitFor(() =>
+            expect(error).toHaveBeenCalledWith(
+                expect.objectContaining({ error: 'Upload failed' }),
+            ),
+        );
+        expect(mocks.uploadNewFile).not.toHaveBeenCalled();
+
+        // The same token starts the service again, as the failed start was not kept
+        mocks.uploadNewFile.mockResolvedValue(fakeUpload());
+        uploadFile(file).subscribe(vi.fn());
+        await vi.waitFor(() => expect(mocks.uploadNewFile).toHaveBeenCalled());
+        expect(mocks.initUploads).toHaveBeenCalledTimes(2);
+    });
+
+    it('reports "Upload failed" when the upload cannot be made', async () => {
+        mocks.uploadNewFile.mockRejectedValueOnce(new Error('offline'));
+        const error = vi.fn();
+        uploadFile(file).subscribe(vi.fn(), error);
+        await vi.waitFor(() =>
+            expect(error).toHaveBeenCalledWith(
+                expect.objectContaining({ error: 'Upload failed' }),
+            ),
+        );
     });
 });
 

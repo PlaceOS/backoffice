@@ -1,17 +1,12 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixtureAutoDetect, TestBed } from '@angular/core/testing';
-import {
-    executeOnSystem,
-    PlaceModuleFunction,
-    PlaceSystem,
-} from '@placeos/ts-client';
+import { type System, systems } from '@placeos/ts-client';
+import { mockReply } from '@placeos/ts-client/compat';
 import { describe, expect, it, vi } from 'vitest';
 import { ExecuteMethodFieldComponent } from '../../../app/ui/custom-fields/system-exec/execute-method-field.component';
+import type { ModuleFunction } from '../../../app/ui/custom-fields/system-exec/select-method.component';
 
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<object>('@placeos/ts-client/dist/index.es.js')),
-    executeOnSystem: vi.fn(() => Promise.resolve('ok')),
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 
 vi.mock('../../../app/common/notifications', () => ({
     notifyError: vi.fn(),
@@ -20,6 +15,7 @@ vi.mock('../../../app/common/notifications', () => ({
 
 describe('ExecuteMethodFieldComponent', () => {
     it('sends arguments in method order with JSON values and defaults', async () => {
+        vi.mocked(systems.execute).mockResolvedValue(mockReply('ok'));
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
@@ -28,14 +24,15 @@ describe('ExecuteMethodFieldComponent', () => {
             ],
         });
         const fixture = TestBed.createComponent(ExecuteMethodFieldComponent);
-        fixture.componentRef.setInput('system', { id: 'sys-1' } as PlaceSystem);
+        fixture.componentRef.setInput('system', { id: 'sys-1' } as System);
         const field = fixture.componentInstance;
         field.module.set({ module: 'Display', index: 2 } as never);
         field.fn.set({
             name: 'power',
             order: ['level', 'enabled', 'label', 'mode'],
+            arity: 4,
             params: { mode: { default: 'auto' } },
-        } as unknown as PlaceModuleFunction);
+        } as ModuleFunction);
         field.arguments.set({
             mode: '',
             label: 'hello',
@@ -45,12 +42,11 @@ describe('ExecuteMethodFieldComponent', () => {
 
         await field.execute();
 
-        expect(executeOnSystem).toHaveBeenCalledWith(
-            'sys-1',
-            'power',
-            'Display',
-            2,
-            [0, false, 'hello', 'auto'],
-        );
+        expect(systems.execute).toHaveBeenCalledWith({
+            sys_id: 'sys-1',
+            module_slug: 'Display_2',
+            method: 'power',
+            body: [0, false, 'hello', 'auto'],
+        });
     });
 });

@@ -8,9 +8,11 @@ import {
     signal,
 } from '@angular/core';
 import { FormField, form } from '@angular/forms/signals';
-import { PlaceTrigger, addTrigger, updateTrigger } from '@placeos/ts-client';
+import { Trigger, triggers } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
+import { toBody } from '../common/placeos';
 import { DialogEvent } from '../common/types';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { OptionComponent } from '../ui/controls/option.component';
@@ -163,9 +165,7 @@ import {
 export class TriggerFormComponent implements OnInit {
     private _dialog_ref =
         inject<DialogRef<unknown, TriggerFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceTrigger; readonly?: string }>(
-        DIALOG_DATA,
-    );
+    private _data = inject<{ item: Trigger; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'TRIGGERS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -202,10 +202,11 @@ export class TriggerFormComponent implements OnInit {
                 const form_item = mergeFormItem(
                     this._data.item,
                     this.formModel(),
-                ) as unknown as PlaceTrigger;
+                ) as unknown as Trigger;
+                const body = toBody(Trigger, form_item);
                 return form_item.id
-                    ? updateTrigger(form_item.id, form_item)
-                    : addTrigger(form_item);
+                    ? triggers.update({ id: form_item.id, body }).then(orThrow)
+                    : triggers.create({ body }).then(orThrow);
             },
         );
     }

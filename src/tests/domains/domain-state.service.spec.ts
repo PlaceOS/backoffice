@@ -7,14 +7,16 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
 import {
-    PlaceDomain,
-    PlaceLDAPSource,
-    PlaceOAuthSource,
-    PlaceUser,
+    Domain,
+    LdapAuthentication,
+    OauthAuthentication,
+    User,
 } from '@placeos/ts-client';
+import { mockPage } from '@placeos/ts-client/compat';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
+import { newItem } from '../../app/common/placeos';
 import { DomainStateService } from '../../app/domains/domain-state.service';
 
 const mocks = vi.hoisted(() => ({
@@ -24,12 +26,29 @@ const mocks = vi.hoisted(() => ({
     queryOAuthSources: vi.fn(),
     queryLDAPSources: vi.fn(),
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    ...mocks,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        users: { ...actual.users, query: mocks.queryUsers },
+        oauth_applications: {
+            ...actual.oauth_applications,
+            query: mocks.queryApplications,
+        },
+        saml_authentications: {
+            ...actual.saml_authentications,
+            query: mocks.querySAMLSources,
+        },
+        oauth_authentications: {
+            ...actual.oauth_authentications,
+            query: mocks.queryOAuthSources,
+        },
+        ldap_authentications: {
+            ...actual.ldap_authentications,
+            query: mocks.queryLDAPSources,
+        },
+    };
+});
 vi.mock('../../app/common/item.service', () => ({
     ActiveItemService: class {},
 }));
@@ -47,7 +66,7 @@ vi.mock('../../app/overlays/confirm-modal.component', () => ({
 }));
 
 describe('domain tab loading', () => {
-    const active = signal<PlaceDomain | null>(null);
+    const active = signal<Domain | null>(null);
     let navigation: Subject<NavigationEnd>;
     let service: DomainStateService;
     const settle = async () => {
@@ -60,12 +79,19 @@ describe('domain tab loading', () => {
         active.set(null);
         navigation = new Subject();
         for (const query of Object.values(mocks))
-            query.mockResolvedValue({ data: [], total: 25 });
+            query.mockResolvedValue(mockPage({ data: [], total: 25 }));
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
                 DomainStateService,
-                { provide: ActiveItemService, useValue: { item: active } },
+                {
+                    provide: ActiveItemService,
+                    useValue: {
+                        item: active,
+                        activeOf: (type: string) =>
+                            type === 'domains' ? active() : null,
+                    },
+                },
                 { provide: Dialog, useValue: {} },
                 {
                     provide: Router,
@@ -81,7 +107,7 @@ describe('domain tab loading', () => {
     it('uses count queries until a tab opens, reuses totals, and retains loaded tabs', async () => {
         await settle();
         expect(mocks.queryUsers).not.toHaveBeenCalled();
-        active.set(new PlaceDomain({ id: 'domain-1' }));
+        active.set(newItem(Domain, { id: 'domain-1' }));
         await settle();
         for (const query of Object.values(mocks)) {
             expect(query).toHaveBeenCalledExactlyOnceWith({
@@ -95,10 +121,12 @@ describe('domain tab loading', () => {
             auth_sources: 75,
         });
         expect(service.users()).toEqual([]);
-        mocks.queryUsers.mockResolvedValue({
-            data: [new PlaceUser({ id: 'user-1', name: 'Alex' })],
-            total: 1000,
-        });
+        mocks.queryUsers.mockResolvedValue(
+            mockPage({
+                data: [newItem(User, { id: 'user-1', name: 'Alex' })],
+                total: 1000,
+            }),
+        );
         navigation.next(
             new NavigationEnd(
                 1,
@@ -132,18 +160,22 @@ describe('domain tab loading', () => {
         await settle();
         expect(mocks.queryUsers).toHaveBeenCalledTimes(2);
         active.set(
-            new PlaceDomain({ id: 'domain-1', name: 'Updated settings' }),
+            newItem(Domain, { id: 'domain-1', name: 'Updated settings' }),
         );
         await settle();
         expect(mocks.queryUsers).toHaveBeenCalledTimes(2);
     });
     it('keeps the other authentication sources when one source type fails', async () => {
-        const oauth = new PlaceOAuthSource({ id: 'oauth-1' });
-        const ldap = new PlaceLDAPSource({ id: 'ldap-1' });
+        const oauth = newItem(OauthAuthentication, { id: 'oauth-1' });
+        const ldap = newItem(LdapAuthentication, { id: 'ldap-1' });
         mocks.querySAMLSources.mockRejectedValue(new Error('Forbidden'));
-        mocks.queryOAuthSources.mockResolvedValue({ data: [oauth], total: 1 });
-        mocks.queryLDAPSources.mockResolvedValue({ data: [ldap], total: 1 });
-        active.set(new PlaceDomain({ id: 'domain-1' }));
+        mocks.queryOAuthSources.mockResolvedValue(
+            mockPage({ data: [oauth], total: 1 }),
+        );
+        mocks.queryLDAPSources.mockResolvedValue(
+            mockPage({ data: [ldap], total: 1 }),
+        );
+        active.set(newItem(Domain, { id: 'domain-1' }));
         const url = '/domains/domain-1/authentication';
         navigation.next(new NavigationEnd(1, url, url));
         await settle();
@@ -151,7 +183,7 @@ describe('domain tab loading', () => {
         expect(service.counts().auth_sources).toBe(2);
     });
     it('clears loaded tabs when selecting another domain', async () => {
-        active.set(new PlaceDomain({ id: 'domain-1' }));
+        active.set(newItem(Domain, { id: 'domain-1' }));
         navigation.next(
             new NavigationEnd(
                 1,
@@ -160,7 +192,7 @@ describe('domain tab loading', () => {
             ),
         );
         await settle();
-        active.set(new PlaceDomain({ id: 'domain-2' }));
+        active.set(newItem(Domain, { id: 'domain-2' }));
         navigation.next(
             new NavigationEnd(
                 2,

@@ -5,8 +5,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock @placeos/ts-client
 vi.mock('@placeos/ts-client', () => ({
-    showMetadata: vi.fn(() => Promise.resolve({ details: {} })),
-    updateMetadata: vi.fn(() => Promise.resolve({})),
+    metadata: {
+        show: vi.fn(
+            fromV1Mock(
+                () => Promise.resolve({ details: {} }),
+                ['id', 'name'],
+                'data',
+                'name',
+            ),
+        ),
+        update: vi.fn(fromV1Mock(() => Promise.resolve({}), ['id', 'body'])),
+    },
 }));
 
 // Mock version info
@@ -25,7 +34,10 @@ vi.mock('../../app/common/user-state', () => ({
 }));
 
 // Mock general.ts
-vi.mock('../../app/common/general', () => ({
+vi.mock('../../app/common/general', async (importOriginal) => ({
+    metadataDetails: (
+        await importOriginal<typeof import('../../app/common/general')>()
+    ).metadataDetails,
     getItemWithKeys: vi.fn((keys: string[], obj: any) => {
         if (!obj) return null;
         let result = obj;
@@ -41,8 +53,10 @@ vi.mock('../../app/common/general', () => ({
     log: vi.fn(),
 }));
 
-import type { PlaceMetadata } from '@placeos/ts-client';
-import { showMetadata, updateMetadata } from '@placeos/ts-client';
+import { metadata, type Metadata } from '@placeos/ts-client';
+const { fromV1Mock } = await vi.hoisted(
+    () => import('@placeos/ts-client/compat'),
+);
 
 import { log } from '../../app/common/general';
 import { DEFAULT_SETTINGS } from '../../app/common/settings';
@@ -108,7 +122,7 @@ describe('SettingsService', () => {
         });
 
         it('should not reject when user settings fail to load', async () => {
-            vi.mocked(showMetadata).mockRejectedValueOnce(
+            vi.mocked(metadata.show).mockRejectedValueOnce(
                 new TypeError('Load failed'),
             );
             await expect(service.init()).resolves.toBeUndefined();
@@ -347,10 +361,19 @@ describe('SettingsService saving', () => {
 
     beforeEach(async () => {
         vi.useFakeTimers();
-        // A saved theme stops `init()` saving the OS theme as a change
-        vi.mocked(showMetadata).mockResolvedValueOnce({
-            details: { theme: 'dark', columns: 3 },
-        } as Partial<PlaceMetadata> as PlaceMetadata);
+        // A saved theme stops `init()` saving the OS theme as a change. The
+        // API can send the details as JSON text
+        vi.mocked(metadata.show).mockImplementationOnce(
+            fromV1Mock(
+                () =>
+                    ({
+                        details: '{"theme":"dark","columns":3}',
+                    }) as Partial<Metadata> as Metadata,
+                ['id', 'name'],
+                'data',
+                'name',
+            ),
+        );
         TestBed.configureTestingModule({
             providers: [
                 SettingsService,
@@ -374,34 +397,42 @@ describe('SettingsService saving', () => {
         service.saveUserSetting('compact', true);
         service.saveUserSetting('page_size', 50);
         await vi.advanceTimersByTimeAsync(4999);
-        expect(updateMetadata).not.toHaveBeenCalled();
+        expect(metadata.update).not.toHaveBeenCalled();
         await vi.advanceTimersByTimeAsync(1);
-        expect(updateMetadata).toHaveBeenCalledExactlyOnceWith('user-123', {
-            name: 'settings',
-            description: '',
-            details: {
-                theme: 'dark',
-                columns: 3,
-                compact: true,
-                page_size: 50,
+        expect(metadata.update).toHaveBeenCalledExactlyOnceWith({
+            id: 'user-123',
+            body: {
+                name: 'settings',
+                description: '',
+                details: {
+                    theme: 'dark',
+                    columns: 3,
+                    compact: true,
+                    page_size: 50,
+                },
             },
         });
     });
 
     it('saves the newer value of a setting after a failed save', async () => {
         let failSave: (error: Error) => void;
-        vi.mocked(updateMetadata).mockReturnValueOnce(
-            new Promise((_, reject) => (failSave = reject)),
+        vi.mocked(metadata.update).mockImplementationOnce(
+            fromV1Mock(
+                () => new Promise((_, reject) => (failSave = reject)),
+                ['id', 'body'],
+            ),
         );
         service.saveUserSetting('columns', 4);
         await vi.advanceTimersByTimeAsync(5000);
         service.saveUserSetting('columns', 5);
         failSave(new Error('Offline'));
         await vi.advanceTimersByTimeAsync(5000);
-        expect(updateMetadata).toHaveBeenCalledTimes(2);
-        expect(updateMetadata).toHaveBeenLastCalledWith(
-            'user-123',
-            expect.objectContaining({ details: { theme: 'dark', columns: 5 } }),
-        );
+        expect(metadata.update).toHaveBeenCalledTimes(2);
+        expect(metadata.update).toHaveBeenLastCalledWith({
+            id: 'user-123',
+            body: expect.objectContaining({
+                details: { theme: 'dark', columns: 5 },
+            }),
+        });
     });
 });

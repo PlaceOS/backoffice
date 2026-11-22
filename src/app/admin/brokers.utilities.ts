@@ -1,5 +1,6 @@
 import { required, SchemaFn } from '@angular/forms/signals';
-import { AuthType, PlaceMQTTBroker } from '@placeos/ts-client';
+import { type Broker } from '@placeos/ts-client';
+import { AuthType } from '@placeos/ts-client/compat';
 
 export interface BrokerFormModel {
     name: string;
@@ -15,20 +16,21 @@ export interface BrokerFormModel {
 }
 
 export function generateBrokerFormModel(
-    broker: Partial<PlaceMQTTBroker> = {},
+    broker: Partial<Broker> = {},
 ): BrokerFormModel {
-    const auth_type = broker.auth_type ?? AuthType.NoAuth;
+    // A new broker uses the 6.x defaults: user and password on port 1883
+    const auth_type = broker.auth_type ?? AuthType.UserPassword;
     return {
         name: broker.name || '',
         description: broker.description || '',
         auth_type,
         host: broker.host || '',
-        port: broker.port || 0,
+        port: broker.port || 1883,
         tls: !!broker.tls,
         username: broker.username || '',
         password: broker.password || '',
         certificate: broker.certificate || '',
-        filters: broker.filters || [],
+        filters: [...(broker.filters || [])],
     };
 }
 

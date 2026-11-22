@@ -1,27 +1,23 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
 import {
-    addGroupUser,
-    addGroupZone,
-    PlaceGroup,
-    PlaceGroupUser,
-    PlaceGroupZone,
-    PlaceUser,
-    PlaceZone,
-    queryGroupUsers,
-    queryGroupZones,
-    queryUsers,
-    queryZones,
-    removeGroupUser,
-    removeGroupZone,
-    updateGroupUser,
-    updateGroupZone,
+    type Group,
+    groups_users,
+    groups_zones,
+    type GroupUser,
+    type GroupZone,
+    User,
+    users,
+    type Zone,
+    zones,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
 import { openedTabs } from '../common/opened-tabs';
+import { newItem } from '../common/placeos';
 import { groupMembership } from './group-membership';
 
 @Service()
@@ -31,7 +27,7 @@ export class GroupStateService {
     private _changed = signal(0);
 
     public readonly item = computed(
-        () => this._state.item() as unknown as PlaceGroup,
+        () => this._state.item() as unknown as Group,
     );
     public readonly loading = computed(
         () =>
@@ -41,10 +37,9 @@ export class GroupStateService {
             this._zones.isLoading(),
     );
 
-    private readonly _group_id = computed(() => {
-        const item = this.item();
-        return item instanceof PlaceGroup ? item.id : undefined;
-    });
+    private readonly _group_id = computed(
+        () => this._state.activeOf('groups')?.id || undefined,
+    );
     // Member lists only load once their tab is opened. Until then a single
     // row query gives the tab count.
     private readonly _opened_tabs = openedTabs(this._group_id);
@@ -57,25 +52,25 @@ export class GroupStateService {
 
     private readonly _users = resource({
         params: () => ({
-            item: this.item(),
+            item: this._state.activeOf('groups'),
             changed: this._changed(),
             full: this._load_users(),
         }),
         loader: async ({ params }) => {
             const { item, full } = params;
-            const empty = { data: [] as PlaceGroupUser[], total: 0 };
-            if (!(item instanceof PlaceGroup)) return empty;
-            const response = await queryGroupUsers({
-                group_id: item.id,
-                limit: full ? 1000 : 1,
-            }).catch((error) => {
-                notifyError(
-                    i18n('GROUPS.USERS_LOAD_ERROR', {
-                        error: describeError(error),
-                    }),
-                );
-                return empty;
-            });
+            const empty = { data: [] as GroupUser[], total: 0 };
+            if (!item) return empty;
+            const response = await groups_users
+                .query({ group_id: item.id, limit: full ? 1000 : 1 })
+                .then(orThrowPage)
+                .catch((error) => {
+                    notifyError(
+                        i18n('GROUPS.USERS_LOAD_ERROR', {
+                            error: describeError(error),
+                        }),
+                    );
+                    return empty;
+                });
             if (!full) return { ...empty, total: response.total };
             return {
                 total: response.total,
@@ -92,25 +87,25 @@ export class GroupStateService {
 
     private readonly _zones = resource({
         params: () => ({
-            item: this.item(),
+            item: this._state.activeOf('groups'),
             changed: this._changed(),
             full: this._load_zones(),
         }),
         loader: async ({ params }) => {
             const { item, full } = params;
-            const empty = { data: [] as PlaceGroupZone[], total: 0 };
-            if (!(item instanceof PlaceGroup)) return empty;
-            const response = await queryGroupZones({
-                group_id: item.id,
-                limit: full ? 1000 : 1,
-            }).catch((error) => {
-                notifyError(
-                    i18n('GROUPS.ZONES_LOAD_ERROR', {
-                        error: describeError(error),
-                    }),
-                );
-                return empty;
-            });
+            const empty = { data: [] as GroupZone[], total: 0 };
+            if (!item) return empty;
+            const response = await groups_zones
+                .query({ group_id: item.id, limit: full ? 1000 : 1 })
+                .then(orThrowPage)
+                .catch((error) => {
+                    notifyError(
+                        i18n('GROUPS.ZONES_LOAD_ERROR', {
+                            error: describeError(error),
+                        }),
+                    );
+                    return empty;
+                });
             if (!full) return { ...empty, total: response.total };
             return {
                 total: response.total,
@@ -133,11 +128,11 @@ export class GroupStateService {
     );
 
     public get active_item() {
-        return this._state.active_item as unknown as PlaceGroup;
+        return this._state.active_item as unknown as Group;
     }
 
     /** User memberships of the active group */
-    public readonly user_members = groupMembership<PlaceGroupUser, PlaceUser>(
+    public readonly user_members = groupMembership<GroupUser, User>(
         this._dialog,
         {
             one: 'GROUPS.USER',
@@ -150,29 +145,47 @@ export class GroupStateService {
             rows: () => this.users(),
             authority_id: () => this.active_item?.authority_id,
             query: (q, authority_id) =>
-                queryUsers({ q, limit: 20, authority_id }).then(
-                    (response) => response.data,
-                ),
+                users
+                    .query({ q, limit: 20, authority_id })
+                    .then(orThrowPage)
+                    .then((response) =>
+                        response.data.map((user) => newItem(User, user)),
+                    ),
             member_id: (row) => row.user_id,
             member_name: (row) => row.user?.name || row.user_id,
             member_detail: (row) => row.user?.email,
             item_authority: (user) => user.authority_id,
             bulk_permissions: () => this.active_item?.default_permissions,
             add: (user_id, permissions) =>
-                addGroupUser({
-                    group_id: this.active_item.id,
-                    user_id,
-                    ...(permissions === undefined ? {} : { permissions }),
-                }),
-            remove: (row) => removeGroupUser(row.user_id, row.group_id),
+                groups_users
+                    .create({
+                        body: {
+                            group_id: this.active_item.id,
+                            user_id,
+                            ...(permissions === undefined
+                                ? {}
+                                : { permissions }),
+                        },
+                    })
+                    .then(orThrow),
+            remove: (row) =>
+                groups_users
+                    .destroy({ user_id: row.user_id, group_id: row.group_id })
+                    .then(orThrow),
             update: (row, { permissions }) =>
-                updateGroupUser(row.user_id, row.group_id, { permissions }),
+                groups_users
+                    .update({
+                        user_id: row.user_id,
+                        group_id: row.group_id,
+                        body: { permissions },
+                    })
+                    .then(orThrow),
             changed: () => this.changed(),
         },
     );
 
     /** Zone memberships of the active group */
-    public readonly zone_members = groupMembership<PlaceGroupZone, PlaceZone>(
+    public readonly zone_members = groupMembership<GroupZone, Zone>(
         this._dialog,
         {
             one: 'GROUPS.ZONE',
@@ -185,24 +198,37 @@ export class GroupStateService {
             show_deny: true,
             rows: () => this.zones(),
             authority_id: () => this.active_item?.authority_id,
-            query: (q, authority_id) =>
-                queryZones({ q, limit: 20, authority_id } as Record<
-                    string,
-                    unknown
-                >).then((response) => response.data),
+            // Zones have no domain, so the search is not filtered by it
+            query: (q) =>
+                zones
+                    .query({ q, limit: 20 })
+                    .then(orThrowPage)
+                    .then((response) => [...response.data]),
             member_id: (row) => row.zone_id,
             member_name: (row) => row.zone?.name || row.zone_id,
             member_detail: (row) => row.zone_id,
-            item_authority: (zone) =>
-                (zone as PlaceZone & { authority_id?: string }).authority_id,
+            item_authority: () => undefined,
             add: (zone_id) =>
-                addGroupZone({ group_id: this.active_item.id, zone_id }),
-            remove: (row) => removeGroupZone(row.group_id, row.zone_id),
+                groups_zones
+                    .create({
+                        body: { group_id: this.active_item.id, zone_id },
+                    })
+                    .then(orThrow),
+            remove: (row) =>
+                groups_zones
+                    .destroy({ group_id: row.group_id, zone_id: row.zone_id })
+                    .then(orThrow),
             update: (row, { permissions, deny }) =>
-                updateGroupZone(row.group_id, row.zone_id, {
-                    permissions,
-                    deny,
-                }),
+                groups_zones
+                    .update({
+                        group_id: row.group_id,
+                        zone_id: row.zone_id,
+                        body: {
+                            permissions,
+                            deny,
+                        },
+                    })
+                    .then(orThrow),
             changed: () => this.changed(),
         },
     );

@@ -1,28 +1,26 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
 import {
-    addGroupZone,
-    authority,
-    listMetadata,
-    listZoneTriggers,
-    PlaceGroup,
-    PlaceGroupZone,
-    PlaceSystem,
-    PlaceTrigger,
-    PlaceZone,
-    queryGroups,
-    queryGroupZones,
-    queryTriggers,
-    removeGroupZone,
-    updateGroupZone,
-    updateZone,
+    type Group,
+    groups,
+    groups_zones,
+    type GroupZone,
+    metadata,
+    type Settings,
+    type System,
+    type Trigger,
+    triggers,
+    Zone,
+    zones,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { describeError, readError } from '../common/errors';
 import { escapeHtml, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { openedTabs } from '../common/opened-tabs';
+import { authority, toBody } from '../common/placeos';
 import { waitForDialog } from '../common/signals';
 import {
     collectPages,
@@ -55,14 +53,15 @@ export class ZonesStateService {
             this._groups.isLoading(),
     );
 
+    /** Active zone. `ActiveItemService` adds its settings of each encryption level */
     public readonly item = computed(
-        () => this._service.item() as unknown as PlaceZone,
+        () =>
+            this._service.item() as unknown as Zone & { settings?: Settings[] },
     );
 
-    private readonly _zone_id = computed(() => {
-        const item = this.item();
-        return item instanceof PlaceZone ? item.id : undefined;
-    });
+    private readonly _zone_id = computed(
+        () => this._service.activeOf('zones')?.id || undefined,
+    );
     // Lists that can be long only load once their tab is opened. Until then
     // a single row query gives the tab count.
     private readonly _opened_tabs = openedTabs(this._zone_id);
@@ -92,23 +91,23 @@ export class ZonesStateService {
 
     private readonly _systems = resource({
         params: () => ({
-            item: this.item(),
+            item: this._service.activeOf('zones'),
             changed: this._change(),
             full: this._load_systems(),
         }),
         loader: async ({ params }) => {
             const { item, full } = params;
-            const empty = { data: [] as PlaceSystem[], total: 0 };
-            if (!(item instanceof PlaceZone)) return empty;
+            const empty = { data: [] as System[], total: 0 };
+            if (!item) return empty;
             if (!full) {
-                return querySystems({ zone_id: item.id, limit: 1 })
+                return querySystems({ zone_id: [item.id], limit: 1 })
                     .then(({ total }) => ({ ...empty, total }))
                     .catch(() => empty);
             }
             // Load every page so the list matches the tab count
             const data = await collectPages(
-                querySystems({ zone_id: item.id, limit: 500 }),
-            ).catch(reportLoadError([] as PlaceSystem[]));
+                querySystems({ zone_id: [item.id], limit: 500 }),
+            ).catch(reportLoadError([] as System[]));
             return { data, total: data.length };
         },
     });
@@ -116,12 +115,19 @@ export class ZonesStateService {
     public readonly systems = computed(() => this._systems.value()?.data || []);
 
     private readonly _triggers = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
+        params: () => ({
+            item: this._service.activeOf('zones'),
+            changed: this._change(),
+        }),
         loader: async ({ params }) => {
             const { item } = params;
-            const empty = { data: [] as PlaceTrigger[], total: 0 };
-            if (!(item instanceof PlaceZone) || isSubsystemUser()) return empty;
-            return listZoneTriggers(item.id).catch(reportLoadError(empty));
+            const empty = { data: [] as Trigger[], total: 0 };
+            if (!item || isSubsystemUser()) return empty;
+            const data = await zones
+                .triggerInstances({ id: item.id })
+                .then(orThrow)
+                .catch(reportLoadError([] as Trigger[]));
+            return { data, total: data.length };
         },
     });
 
@@ -131,35 +137,40 @@ export class ZonesStateService {
 
     /** The metadata tab loads its own list, so only the count is needed */
     private readonly _metadata_count = resource({
-        params: () => ({ item: this.item(), changed: this._change() }),
+        params: () => ({
+            item: this._service.activeOf('zones'),
+            changed: this._change(),
+        }),
         loader: async ({ params }) => {
             const { item } = params;
-            if (!(item instanceof PlaceZone)) return 0;
-            return listMetadata(item.id)
-                .then((list) => list.length)
+            if (!item) return 0;
+            return metadata
+                .show({ id: item.id })
+                .then(orThrow)
+                .then((by_name) => Object.keys(by_name).length)
                 .catch(() => 0);
         },
     });
 
     private readonly _children = resource({
         params: () => ({
-            item: this.item(),
+            item: this._service.activeOf('zones'),
             changed: this._change(),
             full: this._load_children(),
         }),
         loader: async ({ params }) => {
             const { item, full } = params;
-            const empty = { data: [] as PlaceZone[], total: 0 };
-            if (!(item instanceof PlaceZone)) return empty;
+            const empty = { data: [] as Zone[], total: 0 };
+            if (!item) return empty;
             if (!full) {
-                return queryZones({ parent_id: item.id, limit: 1 })
+                return queryZones({ parent_id: [item.id], limit: 1 })
                     .then(({ total }) => ({ ...empty, total }))
                     .catch(() => empty);
             }
             // Load every page so the list matches the tab count
             const data = await collectPages(
-                queryZones({ parent_id: item.id, limit: 500 }),
-            ).catch(reportLoadError([] as PlaceZone[]));
+                queryZones({ parent_id: [item.id], limit: 500 }),
+            ).catch(reportLoadError([] as Zone[]));
             return { data, total: data.length };
         },
     });
@@ -170,18 +181,18 @@ export class ZonesStateService {
 
     private readonly _groups = resource({
         params: () => ({
-            item: this.item(),
+            item: this._service.activeOf('zones'),
             changed: this._change(),
             full: this._load_groups(),
         }),
         loader: async ({ params }) => {
             const { item, full } = params;
-            const empty = { data: [] as PlaceGroupZone[], total: 0 };
-            if (!(item instanceof PlaceZone)) return empty;
-            const response = await queryGroupZones({
-                zone_id: item.id,
-                limit: full ? 1000 : 1,
-            }).catch(reportLoadError(empty));
+            const empty = { data: [] as GroupZone[], total: 0 };
+            if (!item) return empty;
+            const response = await groups_zones
+                .query({ zone_id: item.id, limit: full ? 1000 : 1 })
+                .then(orThrowPage)
+                .catch(reportLoadError(empty));
             if (!full) return { ...empty, total: response.total };
             return {
                 total: response.total,
@@ -196,17 +207,13 @@ export class ZonesStateService {
 
     public readonly groups = computed(() => this._groups.value()?.data || []);
 
-    public get active_item(): PlaceZone {
-        return this._service.active_item as unknown as PlaceZone;
+    public get active_item(): Zone {
+        return this._service.active_item as unknown as Zone;
     }
 
+    /** Zones have no domain, so groups of the current domain can be added */
     private get authority_id() {
-        return (
-            (this.active_item as PlaceZone & { authority_id?: string })
-                ?.authority_id ||
-            authority()?.id ||
-            undefined
-        );
+        return authority()?.id || undefined;
     }
 
     public async selectTrigger() {
@@ -218,14 +225,17 @@ export class ZonesStateService {
             data: {
                 service_name: 'Triggers',
                 query_fn: (_) =>
-                    queryTriggers({ q: _ }).then((resp) => resp.data),
+                    triggers
+                        .query({ q: _ })
+                        .then(orThrowPage)
+                        .then((resp) => resp.data),
             },
         });
         const details = await waitForDialog(ref, 'action');
         if (details?.reason !== 'action') return ref.close();
         try {
             const zone = await this.addTrigger(
-                ref.componentInstance.item as PlaceTrigger,
+                ref.componentInstance.item as Trigger,
             );
             if (zone) this._service.replaceItem(zone as unknown as Identity);
         } catch (err) {
@@ -237,20 +247,23 @@ export class ZonesStateService {
         }
     }
 
-    public async addTrigger(
-        trigger: PlaceTrigger,
-    ): Promise<PlaceZone | undefined> {
+    public async addTrigger(trigger: Trigger): Promise<Zone | undefined> {
         const triggers_list = unique([
             ...this.active_item.triggers,
             trigger.id,
         ]) as string[];
-        return updateZone(this.active_item.id, {
-            ...this.active_item,
-            triggers: triggers_list,
-        });
+        return zones
+            .update({
+                id: this.active_item.id,
+                body: toBody(Zone, {
+                    ...this.active_item,
+                    triggers: triggers_list,
+                }),
+            })
+            .then(orThrow);
     }
 
-    public async removeTrigger(trigger: PlaceTrigger) {
+    public async removeTrigger(trigger: Trigger) {
         const details = await openConfirmModal(
             {
                 title: `Remove trigger`,
@@ -260,14 +273,19 @@ export class ZonesStateService {
             this._dialog,
         );
         if (details.reason !== 'done') return;
-        let zone: PlaceZone;
+        let zone: Zone;
         try {
-            zone = await updateZone(this.active_item.id, {
-                ...this.active_item,
-                triggers: this.active_item.triggers.filter(
-                    (t) => t !== trigger.id,
-                ),
-            });
+            zone = await zones
+                .update({
+                    id: this.active_item.id,
+                    body: toBody(Zone, {
+                        ...this.active_item,
+                        triggers: this.active_item.triggers.filter(
+                            (t) => t !== trigger.id,
+                        ),
+                    }),
+                })
+                .then(orThrow);
         } catch (err) {
             return notifyError(
                 `Error removing trigger ${trigger.id} from zone. Error: ${await readError(
@@ -282,7 +300,7 @@ export class ZonesStateService {
     }
 
     /** Group memberships of the active zone */
-    public readonly group_members = groupMembership<PlaceGroupZone, PlaceGroup>(
+    public readonly group_members = groupMembership<GroupZone, Group>(
         this._dialog,
         {
             one: 'ZONES.GROUP',
@@ -295,23 +313,37 @@ export class ZonesStateService {
             show_deny: true,
             rows: () => this.groups(),
             authority_id: () => this.authority_id,
-            query: (q, authority_id) =>
-                queryGroups({ q, limit: 20, authority_id } as Record<
-                    string,
-                    unknown
-                >).then((response) => response.data),
+            // The API lists the groups of the current domain only
+            query: (q) =>
+                groups
+                    .query({ q, limit: 20 })
+                    .then(orThrowPage)
+                    .then((response) => [...response.data]),
             member_id: (row) => row.group_id,
             member_name: (row) => row.group?.name || row.group_id,
             member_detail: (row) => row.group_id,
             item_authority: (group) => group.authority_id,
             add: (group_id) =>
-                addGroupZone({ group_id, zone_id: this.active_item.id }),
-            remove: (row) => removeGroupZone(row.group_id, row.zone_id),
+                groups_zones
+                    .create({
+                        body: { group_id, zone_id: this.active_item.id },
+                    })
+                    .then(orThrow),
+            remove: (row) =>
+                groups_zones
+                    .destroy({ group_id: row.group_id, zone_id: row.zone_id })
+                    .then(orThrow),
             update: (row, { permissions, deny }) =>
-                updateGroupZone(row.group_id, row.zone_id, {
-                    permissions,
-                    deny,
-                }),
+                groups_zones
+                    .update({
+                        group_id: row.group_id,
+                        zone_id: row.zone_id,
+                        body: {
+                            permissions,
+                            deny,
+                        },
+                    })
+                    .then(orThrow),
             changed: () => this.changed(),
         },
     );

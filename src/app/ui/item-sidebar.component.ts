@@ -15,14 +15,14 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import {
-    PlaceDriverRole,
-    PlaceGroup,
-    PlaceModule,
-    PlaceRepository,
-    PlaceSystem,
-    PlaceZone,
-    queryGroups,
+    type Group,
+    groups as groups_v7,
+    type Module,
+    type Repository,
+    type System,
+    type Zone,
 } from '@placeos/ts-client';
+import { orThrowPage, PlaceDriverRole } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
@@ -38,7 +38,7 @@ import { TranslatePipe } from './translate.pipe';
 import { VirtualScrollComponent } from './virtual-scroll.component';
 
 interface GroupTreeItem {
-    group: PlaceGroup;
+    group: Group;
     depth: number;
 }
 
@@ -401,8 +401,8 @@ export class ItemSidebarComponent
 
     public readonly title = input('Systems');
     public readonly route = input('systems');
-    public readonly filter_options = input<string[]>([]);
-    public readonly group_hierarchy = signal<PlaceGroup[]>([]);
+    public readonly filter_options = input<readonly string[]>([]);
+    public readonly group_hierarchy = signal<Group[]>([]);
     /** Whether the group tree is loading */
     public readonly group_hierarchy_loading = signal(false);
     public readonly expanded_groups = signal<Record<string, boolean>>({});
@@ -418,6 +418,7 @@ export class ItemSidebarComponent
     /** List of items for the active route */
     public readonly items = computed(() =>
         this._processItems(
+            this._service.type,
             this._service.list() as ({
                 id?: string;
                 name?: string;
@@ -440,7 +441,7 @@ export class ItemSidebarComponent
         return this._router.url.split('/')[2] || '';
     });
     public readonly group_children_lookup = computed(() => {
-        const lookup: Record<string, PlaceGroup[]> = {};
+        const lookup: Record<string, Group[]> = {};
         for (const group of this.group_hierarchy()) {
             if (!group.parent_id) continue;
             lookup[group.parent_id] ||= [];
@@ -461,7 +462,7 @@ export class ItemSidebarComponent
         const children = this.group_children_lookup();
         const roots = groups.filter(({ parent_id }) => !parent_id);
         const items: GroupTreeItem[] = [];
-        const addGroup = (group: PlaceGroup, depth: number) => {
+        const addGroup = (group: Group, depth: number) => {
             items.push({ group, depth });
             if (!this.isGroupExpanded(group.id)) return;
             for (const child of children[group.id] || [])
@@ -523,7 +524,7 @@ export class ItemSidebarComponent
         return item.display_name || item.name || '<Unnamed>';
     }
 
-    public childCount(group: PlaceGroup) {
+    public childCount(group: Group) {
         return (
             this.group_child_count_lookup()[group.id] ||
             group.children_count ||
@@ -572,7 +573,9 @@ export class ItemSidebarComponent
         ); // 150ms debounce for smooth feel
     }
 
+    /** Add the display name and details of each item of the `type` section */
     private _processItems(
+        type: string,
         list: ({
             id?: string;
             name?: string;
@@ -580,48 +583,56 @@ export class ItemSidebarComponent
             custom_name?: string;
         } & Record<string, unknown>)[],
     ) {
+        // The list has the items of the active section, so `type` gives their type
         for (const item of list) {
-            if (item instanceof PlaceModule) {
-                const name = item.system?.display_name || item.system?.name;
+            const fields = item as Record<string, unknown>;
+            if (type === 'modules') {
+                const mod = item as unknown as Module;
+                // The module list has the system name only
+                const name = mod.control_system?.name;
                 const detail =
-                    item.role === PlaceDriverRole.Service
-                        ? item.uri
-                        : item.role === PlaceDriverRole.Logic
+                    mod.role === PlaceDriverRole.Service
+                        ? mod.uri
+                        : mod.role === PlaceDriverRole.Logic
                           ? name
-                              ? `${name} | ${item.control_system_id} `
-                              : item.control_system_id
-                          : item.ip;
-                (item as Record<string, unknown>).display_name =
-                    item.custom_name || item.name || '<Unnamed>';
-                (item as Record<string, unknown>).extra = detail;
-            } else if (item instanceof PlaceRepository) {
-                (item as Record<string, unknown>).display_name =
-                    item.name || '<Unnamed>';
-                (item as Record<string, unknown>).extra = item.repo_type;
-            } else if (item instanceof PlaceSystem) {
-                (item as Record<string, unknown>).display_name =
-                    item.display_name || item.name || '<Unnamed>';
-                (item as Record<string, unknown>).zone_issues =
-                    (item.email || item.map_id) && item.zones.length < 3
+                              ? `${name} | ${mod.control_system_id} `
+                              : mod.control_system_id
+                          : mod.ip;
+                fields.display_name =
+                    mod.custom_name || mod.name || '<Unnamed>';
+                fields.extra = detail;
+            } else if (type === 'repositories') {
+                const repo = item as unknown as Repository;
+                fields.display_name = repo.name || '<Unnamed>';
+                fields.extra = repo.repo_type;
+            } else if (type === 'systems') {
+                const system = item as unknown as System;
+                fields.display_name =
+                    system.display_name || system.name || '<Unnamed>';
+                fields.zone_issues =
+                    (system.email || system.map_id) &&
+                    (system.zones?.length ?? 0) < 3
                         ? 'system'
                         : '';
-            } else if (item instanceof PlaceZone) {
-                (item as Record<string, unknown>).display_name =
-                    item.display_name || item.name || '<Unnamed>';
-                (item as Record<string, unknown>).zone_issues =
-                    (item.tags.includes('level') ||
-                        item.tags.includes('building') ||
-                        item.tags.includes('region')) &&
-                    !item.parent_id
+            } else if (type === 'zones') {
+                const zone = item as unknown as Zone;
+                const tags = zone.tags || [];
+                fields.display_name =
+                    zone.display_name || zone.name || '<Unnamed>';
+                fields.zone_issues =
+                    (tags.includes('level') ||
+                        tags.includes('building') ||
+                        tags.includes('region')) &&
+                    !zone.parent_id
                         ? 'zone'
                         : '';
             } else {
-                (item as Record<string, unknown>).display_name =
+                fields.display_name =
                     item.display_name ||
                     item.custom_name ||
                     item.name ||
                     '<Unnamed>';
-                (item as Record<string, unknown>).extra = item.id;
+                fields.extra = item.id;
             }
         }
         return list;
@@ -629,18 +640,21 @@ export class ItemSidebarComponent
 
     private async loadGroupHierarchy() {
         this.group_hierarchy_loading.set(true);
-        const response = await queryGroups({
-            limit: 2500,
-            fields: [
-                'id',
-                'name',
-                'description',
-                'authority_id',
-                'parent_id',
-                'children_count',
-            ].join(','),
-        }).catch(reportLoadError({ data: [] }));
-        const groups = response.data.sort((a, b) =>
+        const response = await groups_v7
+            .query({
+                limit: 2500,
+                fields: [
+                    'id',
+                    'name',
+                    'description',
+                    'authority_id',
+                    'parent_id',
+                    'children_count',
+                ],
+            })
+            .then(orThrowPage)
+            .catch(reportLoadError({ data: [] }));
+        const groups = [...response.data].sort((a, b) =>
             this.displayName(a).localeCompare(this.displayName(b)),
         );
         this.group_hierarchy.set(groups);

@@ -1,5 +1,4 @@
 import { Component, computed, inject } from '@angular/core';
-import { PlaceUser } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -29,11 +28,9 @@ export class UsersComponent {
     public readonly counts = this._state.counts;
 
     public userActions() {
-        const item = this.item();
+        const item = this._service.activeOf('users');
         return [
-            ...(item instanceof PlaceUser &&
-            item.deleted &&
-            this._service.canMutate(4)
+            ...(item?.deleted && this._service.canMutate(4)
                 ? [
                       {
                           label: 'USERS.REVIVE',

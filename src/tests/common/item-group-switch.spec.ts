@@ -9,28 +9,32 @@ import { ActiveItemService } from '../../app/common/item.service';
 import { SettingsService } from '../../app/common/settings.service';
 import { BackofficeUsersService } from '../../app/users/users.service';
 
+/** A 7.x result of `settings.query` with one page */
+function settingsReply(data: object[]) {
+    return {
+        ok: true as const,
+        value: { status: 200, headers: new Headers(), data },
+    };
+}
+
 const mocks = vi.hoisted(() => ({
     query: vi.fn(),
     show: vi.fn(),
-    settings: vi.fn(async () => ({ data: [] as object[] })),
+    settings: vi.fn(async () => settingsReply([])),
     group: 'group-1',
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    querySettings: mocks.settings,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        settings: { ...actual.settings, query: mocks.settings },
+    };
+});
 vi.mock('../../app/common/actions', () => ({
     ACTIONS: {
         systems: {
             query: mocks.query,
             show: mocks.show,
-            itemConstructor: class {
-                constructor(data: object) {
-                    Object.assign(this, data);
-                }
-            },
         },
         users: { query: mocks.query, show: mocks.show },
     },
@@ -196,12 +200,12 @@ it('shows a saved item with its current settings', async () => {
     mocks.query.mockResolvedValue({ data: [], total: 0, next: null });
     mocks.show.mockResolvedValue({ id: 'sys-1', name: 'Room' });
     mocks.settings
-        .mockResolvedValueOnce({
-            data: [{ encryption_level: 0, settings_string: 'a: 1' }],
-        })
-        .mockResolvedValueOnce({
-            data: [{ encryption_level: 0, settings_string: 'a: 2' }],
-        });
+        .mockResolvedValueOnce(
+            settingsReply([{ encryption_level: 0, settings_string: 'a: 1' }]),
+        )
+        .mockResolvedValueOnce(
+            settingsReply([{ encryption_level: 0, settings_string: 'a: 2' }]),
+        );
     const router = {
         url: '/systems/sys-1',
         events: new Subject<NavigationEnd>(),

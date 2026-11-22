@@ -1,250 +1,66 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Mock @placeos/ts-client
-vi.mock('@placeos/ts-client', () => ({
-    cleanObject: vi.fn((obj, excludes) => {
-        const result = { ...obj };
-        for (const key of Object.keys(result)) {
-            if (excludes.includes(result[key])) {
-                delete result[key];
-            }
-        }
-        return result;
-    }),
-    create: vi.fn(() => Promise.resolve({})),
-    query: vi.fn(() => Promise.resolve({ data: [], total: 0 })),
-    remove: vi.fn(() => Promise.resolve({})),
-    show: vi.fn(() => Promise.resolve({})),
-    update: vi.fn(() => Promise.resolve({})),
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 
-import * as client from '@placeos/ts-client';
+import { Storage, storages } from '@placeos/ts-client';
+import { mockPage, mockReply } from '@placeos/ts-client/compat';
 import {
-    addStorage,
-    PlaceStorage,
     queryStorage,
     removeStorage,
     saveStorage,
-    updateStorage,
 } from '../../app/admin/storage/storage.fn';
+import { newItem } from '../../app/common/placeos';
 
 describe('storage.fn', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.mocked(storages.query).mockResolvedValue(
+            mockPage({ data: [], total: 0 }),
+        );
+        vi.mocked(storages.create).mockResolvedValue(
+            mockReply(newItem(Storage, { id: 'new' })),
+        );
+        vi.mocked(storages.update).mockResolvedValue(
+            mockReply(newItem(Storage, { id: 'old' })),
+        );
+        vi.mocked(storages.destroy).mockResolvedValue(mockReply(''));
     });
 
-    describe('PlaceStorage class', () => {
-        it('should create empty storage', () => {
-            const storage = new PlaceStorage();
-            expect(storage).toBeDefined();
-        });
-
-        it('should create storage with id', () => {
-            const storage = new PlaceStorage({ id: 'storage-123' });
-            expect(storage.id).toBe('storage-123');
-        });
-
-        it('should create storage with all properties', () => {
-            const storage = new PlaceStorage({
-                id: 'storage-123',
-                authority_id: 'auth-456',
-                storage_type: 's3',
-                bucket_name: 'my-bucket',
-                region: 'us-east-1',
-                access_key: 'AKIAIOSFODNN7EXAMPLE',
-                access_secret: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-                endpoint: 'https://s3.amazonaws.com',
-                ext_filter: ['.exe', '.bat'],
-                mime_filter: ['application/x-msdownload'],
-                is_default: true,
-            });
-
-            expect(storage.id).toBe('storage-123');
-            expect(storage.authority_id).toBe('auth-456');
-            expect(storage.storage_type).toBe('s3');
-            expect(storage.bucket_name).toBe('my-bucket');
-            expect(storage.region).toBe('us-east-1');
-            expect(storage.access_key).toBe('AKIAIOSFODNN7EXAMPLE');
-            expect(storage.access_secret).toBe(
-                'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-            );
-            expect(storage.endpoint).toBe('https://s3.amazonaws.com');
-            expect(storage.ext_filter).toEqual(['.exe', '.bat']);
-            expect(storage.mime_filter).toEqual(['application/x-msdownload']);
-            expect(storage.is_default).toBe(true);
+    it('queries storage with the given parameters', async () => {
+        await queryStorage({ auth_id: 'auth-123', limit: 10, offset: 5 });
+        expect(storages.query).toHaveBeenCalledWith({
+            auth_id: 'auth-123',
+            limit: 10,
+            offset: 5,
         });
     });
 
-    describe('queryStorage', () => {
-        it('should call query with correct path', () => {
-            queryStorage();
-            expect(client.query).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    path: 'storages',
-                }),
-            );
+    it('creates a storage without an id, without empty values', async () => {
+        await saveStorage({ bucket_name: 'new-bucket', region: '' });
+        expect(storages.create).toHaveBeenCalledWith({
+            body: { bucket_name: 'new-bucket' },
         });
+        expect(storages.update).not.toHaveBeenCalled();
+    });
 
-        it('should pass query_params', () => {
-            queryStorage({ auth_id: 'auth-123', limit: 10, offset: 5 });
-            expect(client.query).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    query_params: { auth_id: 'auth-123', limit: 10, offset: 5 },
-                }),
-            );
-        });
-
-        it('should pass empty query_params by default', () => {
-            queryStorage();
-            expect(client.query).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    query_params: {},
-                }),
-            );
-        });
-
-        it('should include process function', () => {
-            queryStorage();
-            expect(client.query).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    fn: expect.any(Function),
-                }),
-            );
+    it('updates a storage with an id', async () => {
+        await saveStorage({ id: 'storage-123', bucket_name: 'bucket' });
+        expect(storages.update).toHaveBeenCalledWith({
+            id: 'storage-123',
+            body: { id: 'storage-123', bucket_name: 'bucket' },
         });
     });
 
-    describe('updateStorage', () => {
-        it('should call update with id and form_data', () => {
-            updateStorage('storage-123', { bucket_name: 'new-bucket' });
-            expect(client.update).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    id: 'storage-123',
-                    form_data: { bucket_name: 'new-bucket' },
-                    path: 'storages',
-                }),
-            );
-        });
-
-        it('should default to patch method', () => {
-            updateStorage('storage-123', { bucket_name: 'new-bucket' });
-            expect(client.update).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    method: 'patch',
-                }),
-            );
-        });
-
-        it('should allow put method', () => {
-            updateStorage('storage-123', { bucket_name: 'new-bucket' }, 'put');
-            expect(client.update).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    method: 'put',
-                }),
-            );
-        });
-
-        it('should include process function', () => {
-            updateStorage('storage-123', {});
-            expect(client.update).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    fn: expect.any(Function),
-                }),
-            );
+    it('leaves out fields that the storage schema does not have', async () => {
+        const item = { bucket_name: 'bucket', extra: true };
+        await saveStorage(item);
+        expect(storages.create).toHaveBeenCalledWith({
+            body: { bucket_name: 'bucket' },
         });
     });
 
-    describe('addStorage', () => {
-        it('should call create with form_data and path', () => {
-            addStorage({ bucket_name: 'new-bucket', region: 'us-west-2' });
-            expect(client.create).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    form_data: {
-                        bucket_name: 'new-bucket',
-                        region: 'us-west-2',
-                    },
-                    path: 'storages',
-                }),
-            );
-        });
-
-        it('should pass empty query_params', () => {
-            addStorage({});
-            expect(client.create).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    query_params: {},
-                }),
-            );
-        });
-
-        it('should include process function', () => {
-            addStorage({});
-            expect(client.create).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    fn: expect.any(Function),
-                }),
-            );
-        });
-    });
-
-    describe('removeStorage', () => {
-        it('should call remove with id and path', () => {
-            removeStorage('storage-123');
-            expect(client.remove).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    id: 'storage-123',
-                    path: 'storages',
-                }),
-            );
-        });
-
-        it('should pass empty query_params by default', () => {
-            removeStorage('storage-123');
-            expect(client.remove).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    query_params: {},
-                }),
-            );
-        });
-
-        it('should pass custom query_params', () => {
-            removeStorage('storage-123', { force: true });
-            expect(client.remove).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    query_params: { force: true },
-                }),
-            );
-        });
-    });
-
-    describe('saveStorage', () => {
-        it('should call addStorage for new items without id', () => {
-            const item = new PlaceStorage({ bucket_name: 'new-bucket' });
-            saveStorage(item);
-            expect(client.create).toHaveBeenCalled();
-        });
-
-        it('should call updateStorage for existing items with id', () => {
-            const item = new PlaceStorage({
-                id: 'storage-123',
-                bucket_name: 'existing-bucket',
-            });
-            saveStorage(item);
-            expect(client.update).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    id: 'storage-123',
-                    method: 'put',
-                }),
-            );
-        });
-
-        it('should clean object before saving', () => {
-            const item = new PlaceStorage({ id: 'storage-123' });
-            saveStorage(item);
-            expect(client.cleanObject).toHaveBeenCalledWith(item, [
-                '',
-                undefined,
-                null,
-            ]);
-        });
+    it('removes a storage by id', async () => {
+        await removeStorage('storage-123');
+        expect(storages.destroy).toHaveBeenCalledWith({ id: 'storage-123' });
     });
 });

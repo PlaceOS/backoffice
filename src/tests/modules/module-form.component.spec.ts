@@ -1,36 +1,51 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PlaceDriverRole, type PlaceDriver } from '@placeos/ts-client';
+import {
+    type Driver,
+    drivers,
+    edges,
+    Module,
+    modules,
+    Settings,
+    settings,
+    System,
+    systems,
+} from '@placeos/ts-client';
+import {
+    mockPage,
+    mockReply,
+    PlaceDriverRole,
+} from '@placeos/ts-client/compat';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import { ModuleFormComponent } from '../../app/modules/module-form.component';
 
-let resolve_system: (system: unknown) => void;
+let resolve_system: (system: System) => void;
 
-const mocks = vi.hoisted(() => ({
-    addModule: vi.fn(),
-    addSettings: vi.fn(),
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 
-// Mock the ts-client to avoid CJS/ESM issues and control network calls
-vi.mock('@placeos/ts-client', () => ({
-    PlaceDriverRole: { SSH: 0, Device: 1, Service: 2, Websocket: 3, Logic: 99 },
-    PlaceModule: class PlaceModule {},
-    PlaceSettings: class PlaceSettings {},
-    EncryptionLevel: { Support: 2 },
-    cleanObject: (obj: unknown) => obj,
-    addModule: mocks.addModule,
-    updateModule: vi.fn(),
-    addSettings: mocks.addSettings,
-    showMetadata: vi.fn(() => Promise.resolve({})),
-    queryDrivers: vi.fn(() => Promise.resolve({ data: [] })),
-    querySystems: vi.fn(() => Promise.resolve({ data: [] })),
-    queryEdges: vi.fn(() => Promise.resolve({ data: [] })),
-    showSystem: vi.fn(
-        () => new Promise((resolve) => (resolve_system = resolve)),
-    ),
-}));
+/** Body of the first `modules.create` call */
+const createdBody = () => vi.mocked(modules.create).mock.calls[0][0].body;
+
+beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(modules.create).mockResolvedValue(
+        mockReply(newItem(Module, { id: 'mod-1', name: 'New module' })),
+    );
+    vi.mocked(modules.update).mockResolvedValue(mockReply(newItem(Module)));
+    vi.mocked(settings.create).mockResolvedValue(mockReply(newItem(Settings)));
+    vi.mocked(drivers.query).mockResolvedValue(mockPage({ data: [] }));
+    vi.mocked(systems.query).mockResolvedValue(mockPage({ data: [] }));
+    vi.mocked(edges.query).mockResolvedValue(mockPage({ data: [] }));
+    vi.mocked(systems.show).mockImplementation(
+        () =>
+            new Promise((resolve) => {
+                resolve_system = (system) => resolve(mockReply(system));
+            }),
+    );
+});
 
 vi.mock('../../app/common/notifications', () => ({
     notifyError: vi.fn(),
@@ -42,17 +57,14 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 describe('ModuleFormComponent', () => {
     let fixture: ComponentFixture<ModuleFormComponent>;
 
-    // A logic module as returned by `showModule` — `system` is always
-    // constructed by PlaceModule, empty when the API omits `control_system`
-    const item = {
+    // A logic module as `modules.show` returns it, without `control_system`
+    const item = newItem(Module, {
         id: 'mod-1',
         name: 'A Module',
         role: 99,
         driver_id: 'driver-1',
         control_system_id: 'sys-1',
-        system: { id: '', name: '' },
-        toJSON: () => ({}),
-    };
+    });
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -86,7 +98,7 @@ describe('ModuleFormComponent', () => {
     it('should show the system name once loaded', async () => {
         fixture.detectChanges();
         await sleep(10);
-        resolve_system({ id: 'sys-1', name: 'Test System' });
+        resolve_system(newItem(System, { id: 'sys-1', name: 'Test System' }));
         await sleep(400);
         fixture.detectChanges();
         expect(systemInput().value).toBe('Test System');
@@ -113,31 +125,20 @@ describe('ModuleFormComponent', () => {
 describe('creating a module', () => {
     let fixture: ComponentFixture<ModuleFormComponent>;
 
+    // A new module from a system page, with the settings the item service adds
     const item = {
-        id: '',
-        name: '',
-        role: 99,
-        driver_id: 'driver-1',
-        control_system_id: 'sys-1',
-        system: { id: 'sys-1', name: 'Test System' },
-        toJSON: () => ({
+        ...newItem(Module, {
+            role: 99,
+            driver_id: 'driver-1',
             control_system_id: 'sys-1',
-            settings: [
-                { encryption_level: 0 },
-                { encryption_level: 1 },
-                { encryption_level: 2 },
-                { encryption_level: 3 },
-            ],
+            control_system: { name: 'Test System', zone_data: [] },
         }),
+        settings: [0, 1, 2, 3].map((encryption_level) =>
+            newItem(Settings, { encryption_level }),
+        ),
     };
 
     beforeEach(async () => {
-        vi.clearAllMocks();
-        mocks.addModule.mockResolvedValue({
-            id: 'mod-1',
-            name: 'New module',
-        });
-        mocks.addSettings.mockResolvedValue({});
         await TestBed.configureTestingModule({
             imports: [ModuleFormComponent],
             providers: [
@@ -160,17 +161,16 @@ describe('creating a module', () => {
         await fixture.whenStable();
         await fixture.componentInstance.submit();
 
-        expect(mocks.addModule).toHaveBeenCalledOnce();
-        expect(mocks.addSettings).not.toHaveBeenCalled();
+        expect(modules.create).toHaveBeenCalledOnce();
+        expect(createdBody()).not.toHaveProperty('settings');
+        expect(settings.create).not.toHaveBeenCalled();
     });
 
     it('should retain the control system when creating a logic module', async () => {
         await fixture.whenStable();
         await fixture.componentInstance.submit();
 
-        expect(mocks.addModule).toHaveBeenCalledWith(
-            expect.objectContaining({ control_system_id: 'sys-1' }),
-        );
+        expect(createdBody()).toMatchObject({ control_system_id: 'sys-1' });
     });
 
     it('should keep user edits after applying driver defaults', async () => {
@@ -183,7 +183,7 @@ describe('creating a module', () => {
                 role: PlaceDriverRole.Device,
                 default_uri: 'tcp://default',
                 default_port: 4999,
-            } as PlaceDriver,
+            } as Driver,
         }));
         await fixture.whenStable();
         expect(instance.formModel()).toMatchObject({
@@ -223,7 +223,7 @@ describe('creating a module', () => {
                     role,
                     default_uri: 'https://example.com',
                     default_port: 4999,
-                } as PlaceDriver,
+                } as Driver,
                 ip: '10.0.0.2',
                 port: 4999,
             }));
@@ -231,11 +231,9 @@ describe('creating a module', () => {
 
             await fixture.componentInstance.submit();
 
-            expect(mocks.addModule).toHaveBeenCalledOnce();
-            expect(mocks.addModule.mock.calls[0][0]).toMatchObject({ role });
-            expect(mocks.addModule.mock.calls[0][0]).not.toHaveProperty(
-                'control_system_id',
-            );
+            expect(modules.create).toHaveBeenCalledOnce();
+            expect(createdBody()).toMatchObject({ role });
+            expect(createdBody()).not.toHaveProperty('control_system_id');
         },
     );
 });

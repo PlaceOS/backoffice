@@ -1,5 +1,6 @@
 import { Component, computed, inject, resource } from '@angular/core';
-import { listZoneTags, PlaceZone } from '@placeos/ts-client';
+import { type Zone, zones } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { extensionsForItem } from '../common/api';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -29,7 +30,7 @@ export class ZonesComponent {
     private _users = inject(BackofficeUsersService);
 
     public readonly item = computed(
-        () => this._item.active_item$() as PlaceZone | null,
+        () => this._item.active_item$() as Zone | null,
     );
     public readonly name = 'zones';
     public readonly counts = this._service.counts;
@@ -96,7 +97,11 @@ export class ZonesComponent {
     });
 
     private readonly _zone_tags = resource({
-        loader: async () => listZoneTags().catch(() => []),
+        loader: async () =>
+            zones
+                .tags({})
+                .then(orThrow)
+                .catch(() => []),
     });
     public readonly zone_tags = computed(() => this._zone_tags.value() || []);
 }

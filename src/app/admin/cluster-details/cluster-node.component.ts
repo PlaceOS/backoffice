@@ -10,8 +10,8 @@ import {
     viewChild,
     WritableSignal,
 } from '@angular/core';
-import { humanReadableByteCount } from '@placeos/ts-client';
 
+import { humanReadableByteCount } from '../../common/general';
 import { Point } from '../../common/types';
 import { BasicLineGraphComponent } from '../../ui/basic-line-graph.component';
 import { TranslatePipe } from '../../ui/translate.pipe';

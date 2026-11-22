@@ -1,20 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
 
-// Mock @placeos/ts-client before importing the module
-vi.mock('@placeos/ts-client', () => ({
-    authority: vi.fn(() => ({ domain: 'example.com' })),
-    PlaceModule: class {},
-    PlaceResource: class {},
+vi.mock('../../app/common/placeos', () => ({
+    backofficeConfig: vi.fn(() => ({})),
 }));
 
-import { authority, PlaceResource } from '@placeos/ts-client';
 import {
     allowedEmbedUrl,
     calculateModuleIndex,
     extensionsForItem,
     toQueryString,
 } from '../../app/common/api';
-import { AppComponentExtension } from '../../app/common/types';
+import { backofficeConfig } from '../../app/common/placeos';
+import { AppComponentExtension, PlaceResource } from '../../app/common/types';
 
 describe('api.ts utilities', () => {
     describe('toQueryString', () => {
@@ -143,17 +140,17 @@ describe('api.ts utilities', () => {
             expect(index).toBe(3);
         });
 
-        it('should count only modules with same class name', () => {
+        it('counts modules without a driver as System modules', () => {
             const modules = [
-                { id: 'mod-1', driver: { class_name: 'Display' } },
-                { id: 'mod-2', driver: { class_name: 'Lighting' } },
-                { id: 'mod-3', driver: { class_name: 'Display' } },
+                { id: 'mod-1' },
+                { id: 'mod-2', driver: { name: 'Lighting' } },
+                { id: 'mod-3' },
             ];
             const index = calculateModuleIndex(
                 modules as any,
                 modules[2] as any,
             );
-            expect(index).toBe(2); // Second Display module
+            expect(index).toBe(2); // Second System module
         });
 
         it('should use custom_name for matching if available', () => {
@@ -280,21 +277,17 @@ describe('api.ts utilities', () => {
         } as unknown as PlaceResource;
 
         const setExtension = (extension: Partial<AppComponentExtension>) =>
-            vi.mocked(authority).mockReturnValue({
-                config: {
-                    backoffice: {
-                        extend: {
-                            systems: {
-                                'Room Booking': {
-                                    url: 'https://ext.example/',
-                                    conditions: [],
-                                    ...extension,
-                                },
-                            },
+            vi.mocked(backofficeConfig).mockReturnValue({
+                extend: {
+                    systems: {
+                        'Room Booking': {
+                            url: 'https://ext.example/',
+                            conditions: [],
+                            ...extension,
                         },
                     },
                 },
-            } as unknown as ReturnType<typeof authority>);
+            });
 
         const tabsFor = (extension: Partial<AppComponentExtension>) => {
             setExtension(extension);

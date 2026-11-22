@@ -1,13 +1,7 @@
 import { Service, inject, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { PlaceResource } from '@placeos/ts-client';
-
-import {
-    PlaceSettings,
-    QueryResponse,
-    querySettings,
-    removeUser,
-} from '@placeos/ts-client';
+import { Settings, settings as settings_v7, users } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
 import {
@@ -15,6 +9,9 @@ import {
     FormModalComponent,
     HashMap,
     Identity,
+    PlaceResource,
+    QueryResponse,
+    staticPage,
 } from '../common/types';
 // Modals load on demand to keep them out of the first page load
 import { Dialog } from '@angular/cdk/dialog';
@@ -23,7 +20,7 @@ import type {
     ConfirmModalData,
 } from '../overlays/confirm-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
-import { ACTIONS, ItemActions } from './actions';
+import { ACTIONS, ItemActions, ItemTypes } from './actions';
 import { AsyncHandler } from './async-handler.class';
 import {
     CascadeOutcome,
@@ -35,6 +32,7 @@ import { describeError } from './errors';
 import { escapeHtml, log } from './general';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
+import { newItem } from './placeos';
 import { waitForEvent, waitForSignalValue } from './signals';
 import {
     canAccessSection,
@@ -160,6 +158,18 @@ export class ActiveItemService extends AsyncHandler {
         return this._active_item();
     }
 
+    /**
+     * The active item, when the active section is `type`. `null` for other
+     * sections. Use it in place of `instanceof` checks of the 6.x classes.
+     */
+    public activeOf<K extends keyof ItemTypes>(type: K): ItemTypes[K] | null {
+        const item = this._active_item();
+        // `updateType` clears the item when the section changes, so an item of the section has its type
+        return this._type === type && item
+            ? (item as unknown as ItemTypes[K])
+            : null;
+    }
+
     public get type() {
         return this._type;
     }
@@ -264,10 +274,7 @@ export class ActiveItemService extends AsyncHandler {
                 return;
             this._active_item.set(
                 (item && settings
-                    ? new actions.itemConstructor({
-                          ...(item as PlaceResource),
-                          settings,
-                      })
+                    ? { ...(item as PlaceResource), settings }
                     : item) as PlaceResource,
             );
             const name = this._type[0].toUpperCase() + this._type.slice(1);
@@ -285,18 +292,11 @@ export class ActiveItemService extends AsyncHandler {
     public create(item?: PlaceResource, copy = false) {
         if (!(copy ? this.canCopy() : this.canMutate(2))) return;
         item = item || this._active_item();
-        const actions =
-            Object.values(ACTIONS).find(
-                (v) => item instanceof v.itemConstructor,
-            ) || this.actions;
+        const actions = this.actions;
         return this.edit(
             copy
-                ? (new actions.itemConstructor({
-                      ...item,
-                      id: '',
-                      name: `${item.name} (1)`,
-                  }) as PlaceResource)
-                : (new actions.itemConstructor() as PlaceResource),
+                ? { ...item, id: '', name: `${item.name} (1)` }
+                : (newItem(actions.schema) as PlaceResource),
         );
     }
 
@@ -313,7 +313,7 @@ export class ActiveItemService extends AsyncHandler {
             maxHeight: '100vh',
             maxWidth: '100vw',
             data: {
-                constr: actions.itemConstructor,
+                schema: actions.schema,
                 name: this.type,
                 save: actions.save,
             },
@@ -324,17 +324,25 @@ export class ActiveItemService extends AsyncHandler {
         });
     }
 
+    /**
+     * Open the form of an item and save it.
+     * @param item Item to edit. Defaults to the active item
+     * @param options Extra data for the form
+     * @param type Type of `item` when it is not the type of the section,
+     * such as a module on the system page
+     */
     public async edit<T extends PlaceResource = PlaceResource>(
         item?: T,
         options: HashMap = {},
+        type: keyof ItemTypes = this._type as keyof ItemTypes,
     ) {
         if (!this.canMutate((item || this.active_item)?.id ? 4 : 2)) return;
         item = item || (this._active_item() as T);
         if (item) {
-            const actions =
-                Object.values(ACTIONS).find(
-                    (v) => item instanceof v.itemConstructor,
-                ) || this.actions;
+            // The section or the support group can change before the form closes
+            const section = this._type;
+            const scope_version = this._scope_version;
+            const actions: ItemActions<unknown> = ACTIONS[type];
             // The active item was already fully loaded by `setItem`; only
             // reload items passed in from lists (partial `fields` queries)
             if (item.id && item !== this._active_item()) {
@@ -344,7 +352,7 @@ export class ActiveItemService extends AsyncHandler {
             return new Promise<T>((resolve) => {
                 const ref = this._dialog.open(component, {
                     data: {
-                        item: new actions.itemConstructor({ ...item }),
+                        item: { ...item },
                         ...options,
                     },
                 });
@@ -354,19 +362,18 @@ export class ActiveItemService extends AsyncHandler {
                     (e: DialogEvent) => e.reason === 'done',
                 ).then((event: DialogEvent<{ item: T }>) => {
                     resolve(event.metadata.item);
-                    this.replaceItem(
-                        event.metadata.item as unknown as Identity,
-                    );
+                    const saved = event.metadata.item as unknown as Identity;
+                    // Show the item only in the section of its type, if that section still shows
                     if (
-                        event.metadata.item instanceof
-                        this.actions.itemConstructor
+                        type !== section ||
+                        this._type !== section ||
+                        this._scope_version !== scope_version
                     ) {
-                        this._router.navigate([
-                            `/${this._type}`,
-                            (event.metadata.item as unknown as Identity).id,
-                            'about',
-                        ]);
+                        this._items_changed.update((count) => count + 1);
+                        return;
                     }
+                    this.replaceItem(saved);
+                    this._router.navigate([`/${section}`, saved.id, 'about']);
                 });
             });
         }
@@ -509,7 +516,9 @@ export class ActiveItemService extends AsyncHandler {
                     }
                     await (
                         force_removal
-                            ? removeUser(item.id, { force_removal: true })
+                            ? users
+                                  .destroy({ id: item.id, force_removal: true })
+                                  .then(orThrow)
                             : actions.remove(item)
                     )
                         .then(() => {
@@ -628,17 +637,14 @@ export class ActiveItemService extends AsyncHandler {
     public replaceItem(item: Identity | PlaceResource) {
         this._items_changed.update((count) => count + 1);
         const current = this.active_item as PlaceResource & {
-            settings?: PlaceSettings[];
+            settings?: Settings[];
         };
         if (!item?.id || (current && current.id !== item.id)) return;
         // Save responses have blank settings, so show the loaded ones until
         // the refresh below confirms them
         this._active_item.set(
-            (current?.settings && this.actions?.itemConstructor
-                ? new this.actions.itemConstructor({
-                      ...item,
-                      settings: current.settings,
-                  })
+            (current?.settings
+                ? { ...item, settings: current.settings }
                 : item) as PlaceResource,
         );
         const list = this._list().filter((i) => (i as Identity).id !== item.id);
@@ -737,7 +743,14 @@ export class ActiveItemService extends AsyncHandler {
                         );
                     this._list.set([]);
                 }
-                const resp = await next().catch((err) => {
+                // `next()` gives `null` when the offset does not move forward
+                const resp = await (
+                    next() ??
+                    Promise.resolve({
+                        ...staticPage<unknown>([]),
+                        total: this._count(),
+                    })
+                ).catch((err) => {
                     log(
                         'Service',
                         `Error loading ${type} list.`,
@@ -764,9 +777,8 @@ export class ActiveItemService extends AsyncHandler {
                         resp.next ||
                             (() =>
                                 Promise.resolve({
-                                    data: [],
+                                    ...staticPage<unknown>([]),
                                     total: resp.total,
-                                    next: null,
                                 })),
                     );
                     this._count.set(resp.total);
@@ -798,13 +810,12 @@ export class ActiveItemService extends AsyncHandler {
         const request = ++this._settings_request;
         const settings = await this.loadSettings(id);
         const active = this.active_item as PlaceResource & {
-            settings?: PlaceSettings[];
+            settings?: Settings[];
         };
         if (
             !settings ||
             request !== this._settings_request ||
-            active?.id !== id ||
-            !this.actions?.itemConstructor
+            active?.id !== id
         )
             return;
         // Masked levels have a blank settings_string, so also compare the
@@ -819,12 +830,7 @@ export class ActiveItemService extends AsyncHandler {
             );
         });
         if (unchanged) return;
-        this._active_item.set(
-            new this.actions.itemConstructor({
-                ...active,
-                settings,
-            }) as PlaceResource,
-        );
+        this._active_item.set({ ...active, settings } as PlaceResource);
     }
 
     /**
@@ -832,17 +838,21 @@ export class ActiveItemService extends AsyncHandler {
      * missing levels. Resolves `null` if they cannot be loaded.
      */
     private async loadSettings(id: string) {
-        const response = await querySettings({ parent_id: id }).catch(
-            () => null,
-        );
+        const response = await settings_v7
+            .query({ parent_id: [id] })
+            .then(orThrowPage)
+            .catch(() => null);
         if (!response) return null;
         // Remove duplicate encryption_level
-        return new Array(5)
-            .fill(0)
-            .map(
-                (_, idx) =>
-                    response.data.find((_) => _.encryption_level === idx) ||
-                    new PlaceSettings({ encryption_level: idx }),
-            );
+        // Encryption levels are 0 to 3: None, Support, Admin and NeverDisplay
+        return new Array(4).fill(0).map(
+            (_, idx) =>
+                response.data.find((_) => _.encryption_level === idx) ||
+                newItem(Settings, {
+                    encryption_level: idx,
+                    settings_string: '',
+                    keys: [],
+                }),
+        );
     }
 }

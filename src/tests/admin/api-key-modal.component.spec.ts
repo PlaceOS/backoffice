@@ -1,17 +1,14 @@
 import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { ApiKeysResponse } from '@placeos/ts-client';
 import { describe, expect, it, vi } from 'vitest';
-import { PlaceAPIKeyDetails } from '../../app/admin/api-keys/api-key-details.class';
 import { APIKeyModalComponent } from '../../app/admin/api-keys/api-key-modal.component';
 import { APIKeyService } from '../../app/admin/api-keys/api-keys.service';
+import { newItem } from '../../app/common/placeos';
 import { DialogEvent } from '../../app/common/types';
 
-vi.mock('@placeos/ts-client', () => ({
-    queryUsers: vi.fn(() => Promise.resolve({ data: [] })),
-    showMetadata: vi.fn(() => Promise.resolve({})),
-    showUser: vi.fn(() => Promise.resolve(null)),
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 // The real service loads scopes and the current user, which this test does not use
 vi.mock('../../app/admin/api-keys/api-keys.service', () => ({
     APIKeyService: class {},
@@ -22,7 +19,7 @@ vi.mock('../../app/common/notifications', () => ({
 
 describe('APIKeyModalComponent', () => {
     it('drops the TTL but keeps the expiry when a key is edited', async () => {
-        const key = new PlaceAPIKeyDetails({
+        const key = newItem(ApiKeysResponse, {
             id: 'key-1',
             name: 'Kiosk',
             user_id: 'user-1',

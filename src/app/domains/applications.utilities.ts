@@ -1,5 +1,5 @@
 import { required, SchemaFn, validate } from '@angular/forms/signals';
-import { PlaceApplication } from '@placeos/ts-client';
+import { type Application } from '@placeos/ts-client';
 import { isValidUrl } from '../common/validation';
 
 export interface ApplicationFormModel {
@@ -13,17 +13,17 @@ export interface ApplicationFormModel {
 }
 
 export function generateApplicationFormModel(
-    app?: PlaceApplication,
+    app?: Application,
 ): ApplicationFormModel {
-    const application = app as PlaceApplication & { subsystems?: string[] };
     return {
         name: app?.name || '',
         scopes: app?.scopes || '',
-        subsystems: application?.subsystems || [],
+        subsystems: [...(app?.subsystems || [])],
         skip_authorization: !!app?.skip_authorization,
         redirect_uri: app?.redirect_uri || '',
         client_id: app?.uid || '',
-        preserve_client_id: !!app?.preserve_client_id,
+        // The API has no such field, so it is not saved. It starts off for each form
+        preserve_client_id: false,
     };
 }
 

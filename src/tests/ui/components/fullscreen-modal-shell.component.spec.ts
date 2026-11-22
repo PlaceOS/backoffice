@@ -16,9 +16,6 @@ import { SelectComponent } from '../../../app/ui/controls/select.component';
 import { FullscreenModalShellComponent } from '../../../app/ui/fullscreen-modal-shell.component';
 import { TranslatePipe } from '../../../app/ui/translate.pipe';
 
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
 vi.mock('../../../app/overlays/confirm-modal.component', () => ({
     openConfirmModal: vi.fn(),
 }));

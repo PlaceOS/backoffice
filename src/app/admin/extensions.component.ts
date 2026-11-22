@@ -1,9 +1,11 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { PlaceDomain, updateDomain } from '@placeos/ts-client';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Domain, domains, type JsonValue } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { readError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { notifyError } from '../common/notifications';
+import { toBody } from '../common/placeos';
 import { waitForEvent } from '../common/signals';
 import {
     AppComponentExtension,
@@ -33,6 +35,20 @@ export interface BackofficeExtension extends AppComponentExtension {
 const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
     a.type === b?.type && a.name === b?.name;
 
+/** The `config.backoffice` JSON of a domain */
+function backofficeOf(domain: Domain): JsonValue | undefined {
+    return domain.config?.['backoffice'];
+}
+
+/** The fields of a JSON object, or `{}` for other JSON values */
+function jsonObject(
+    value: JsonValue | null | undefined,
+): Readonly<Record<string, JsonValue>> {
+    return value && typeof value === 'object' && !Array.isArray(value)
+        ? (value as Readonly<Record<string, JsonValue>>)
+        : {};
+}
+
 @Component({
     selector: '[app-extensions]',
     template: `
@@ -57,7 +73,7 @@ const isSameExtension = (a: BackofficeExtension, b?: BackofficeExtension) =>
                 </div>
             </div>
             <div
-                class="item-center border-info bg-info/10 mb-2 mx-4 flex gap-2 overflow-hidden rounded-sm border"
+                class="item-center border-info bg-info/10 mx-4 mb-2 flex gap-2 overflow-hidden rounded-sm border"
             >
                 <div
                     class="bg-info text-info-content flex h-full min-h-10 items-center p-1 text-2xl"
@@ -182,7 +198,11 @@ export class PlaceExtensionsComponent implements OnInit {
 
     public readonly extensions = computed(() => {
         if (!this.domain()) return [];
-        const config = this.domain().config?.backoffice?.extend || {};
+        // The domain admin writes this JSON. Its shape is not in the API schema
+        const config = (jsonObject(backofficeOf(this.domain()))['extend'] ||
+            {}) as unknown as Partial<
+            Record<ExtensionSection, AppComponentExtensions>
+        >;
         const extensions: BackofficeExtension[] = [];
         for (const type in config) {
             if (!config[type]) {
@@ -265,17 +285,19 @@ export class PlaceExtensionsComponent implements OnInit {
         for (const { type, name, ...data } of extension_list) {
             extensions[type] = { ...extensions[type], [name]: data };
         }
-        const updated = new PlaceDomain({
+        const updated = {
             ...domain,
             config: {
                 ...domain.config,
                 backoffice: {
-                    ...(domain.config.backoffice || {}),
+                    ...jsonObject(backofficeOf(domain)),
                     extend: extensions,
                 },
             },
-        });
-        const new_domain = await updateDomain(domain.id, updated);
+        };
+        const new_domain = await domains
+            .update({ id: domain.id, body: toBody(Domain, updated) })
+            .then(orThrow);
         this._admin_data.replaceDomain(new_domain);
     }
 }

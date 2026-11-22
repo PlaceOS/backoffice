@@ -3,10 +3,6 @@ import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ChipListComponent } from '../../../app/ui/controls/chip-list.component';
 
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
-
 describe('ChipListComponent', () => {
     let component: ChipListComponent;
     let input: HTMLInputElement;

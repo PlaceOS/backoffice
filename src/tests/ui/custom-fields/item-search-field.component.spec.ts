@@ -5,15 +5,10 @@ import {
 } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { form, FormField } from '@angular/forms/signals';
-import { PlaceModule } from '@placeos/ts-client';
+import { Module } from '@placeos/ts-client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { newItem } from '../../../app/common/placeos';
 import { ItemSearchFieldComponent } from '../../../app/ui/custom-fields/item-search-field.component';
-
-// Mock the ts-client to avoid CJS/ESM issues
-vi.mock('@placeos/ts-client', () => ({
-    PlaceDriverRole: { SSH: 0, Device: 1, Service: 2, Websocket: 3, Logic: 99 },
-    PlaceModule: class PlaceModule {},
-}));
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -68,7 +63,7 @@ describe('ItemSearchFieldComponent', () => {
 
     it('should escape item names in option labels', async () => {
         const field = TestBed.createComponent(ItemSearchFieldComponent);
-        const mod = Object.assign(new PlaceModule(), {
+        const mod = newItem(Module, {
             id: 'mod-1',
             name: '<img src=x>',
             role: 2,

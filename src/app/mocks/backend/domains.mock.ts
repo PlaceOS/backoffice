@@ -1,4 +1,4 @@
-import { registerMockEndpoint } from '@placeos/ts-client';
+import { registerMockEndpoint } from '@placeos/ts-client/compat';
 import { API, DOMAIN, generateBasicHandlers, nameFilter } from '../common.mock';
 
 /** Id of the authority the ts-client mock signs in to. Every mock user and

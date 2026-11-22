@@ -2,12 +2,14 @@ import { Dialog } from '@angular/cdk/dialog';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { DefaultUrlSerializer, Router } from '@angular/router';
-import { PlaceUser, removeUser, reviveUser } from '@placeos/ts-client';
+import { User, users } from '@placeos/ts-client';
+import { mockReply } from '@placeos/ts-client/compat';
 import { Subject } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HotkeysService } from '../../app/common/hotkeys.service';
 import { ActiveItemService } from '../../app/common/item.service';
 import { notifyError } from '../../app/common/notifications';
+import { newItem } from '../../app/common/placeos';
 import { SettingsService } from '../../app/common/settings.service';
 import { DialogEvent } from '../../app/common/types';
 import { openConfirmModal } from '../../app/overlays/confirm-modal.component';
@@ -15,11 +17,7 @@ import { UsersStateService } from '../../app/users/users-state.service';
 import { BackofficeUsersService } from '../../app/users/users.service';
 
 const mocks = vi.hoisted(() => ({ remove: vi.fn(), query: vi.fn() }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual('@placeos/ts-client/dist/index.es.js')),
-    removeUser: vi.fn(),
-    reviveUser: vi.fn(),
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 vi.mock('../../app/common/actions', () => ({
     ACTIONS: {
         users: { name: 'USERS', remove: mocks.remove, query: mocks.query },
@@ -53,7 +51,7 @@ vi.mock('../../app/overlays/confirm-modal.component', async () => ({
     openConfirmModal: vi.fn(),
 }));
 
-const item = new PlaceUser({ id: 'user-1', name: 'Alex', deleted: true });
+const item = newItem(User, { id: 'user-1', name: 'Alex', deleted: true });
 const user = signal({ sys_admin: true });
 const event = new Subject<DialogEvent>();
 const dialog = { open: vi.fn() };
@@ -65,10 +63,15 @@ beforeEach(async () => {
     vi.useFakeTimers();
     vi.clearAllMocks();
     user.set({ sys_admin: true });
-    mocks.query.mockResolvedValue({ data: [item], total: 1 });
+    mocks.query.mockResolvedValue({
+        data: [item],
+        total: 1,
+        next_offset: null,
+        next: null,
+    });
     mocks.remove.mockResolvedValue(undefined);
-    vi.mocked(removeUser).mockResolvedValue(undefined);
-    vi.mocked(reviveUser).mockResolvedValue(item);
+    vi.mocked(users.destroy).mockResolvedValue(mockReply(''));
+    vi.mocked(users.revive).mockResolvedValue(mockReply(''));
     vi.mocked(openConfirmModal).mockResolvedValue({
         reason: 'done',
         close,
@@ -120,18 +123,19 @@ describe('user deletion', () => {
         'requires confirmation and passes force removal only when requested: %s',
         async (force) => {
             await service.delete(force);
-            expect(removeUser).not.toHaveBeenCalled();
+            expect(users.destroy).not.toHaveBeenCalled();
             expect(mocks.remove).not.toHaveBeenCalled();
             event.next({ reason: 'done' });
             await vi.advanceTimersByTimeAsync(0);
             if (force) {
-                expect(removeUser).toHaveBeenCalledExactlyOnceWith(item.id, {
+                expect(users.destroy).toHaveBeenCalledExactlyOnceWith({
+                    id: item.id,
                     force_removal: true,
                 });
                 expect(mocks.remove).not.toHaveBeenCalled();
             } else {
                 expect(mocks.remove).toHaveBeenCalledExactlyOnceWith(item);
-                expect(removeUser).not.toHaveBeenCalled();
+                expect(users.destroy).not.toHaveBeenCalled();
             }
             expect(service.active_item).toBeNull();
             expect(service.list()).not.toContain(item);
@@ -142,14 +146,14 @@ describe('user deletion', () => {
         user.set({ sys_admin: false });
         await service.delete(true);
         expect(dialog.open).not.toHaveBeenCalled();
-        expect(removeUser).not.toHaveBeenCalled();
+        expect(users.destroy).not.toHaveBeenCalled();
     });
 });
 
 describe('user restoration', () => {
     it('restores the selected user after confirmation', async () => {
         await TestBed.inject(UsersStateService).revive();
-        expect(reviveUser).toHaveBeenCalledExactlyOnceWith(item.id);
+        expect(users.revive).toHaveBeenCalledExactlyOnceWith({ id: item.id });
         expect(service.active_item).toMatchObject({
             id: item.id,
             deleted: false,
@@ -157,14 +161,14 @@ describe('user restoration', () => {
         expect(service.list()).toContain(service.active_item);
         expect(close).toHaveBeenCalledOnce();
         await TestBed.inject(UsersStateService).revive();
-        expect(reviveUser).toHaveBeenCalledOnce();
+        expect(users.revive).toHaveBeenCalledOnce();
     });
 
     it('does not offer restoration for an active user', async () => {
-        service.replaceItem(new PlaceUser({ ...item, deleted: false }));
+        service.replaceItem({ ...item, deleted: false });
         await TestBed.inject(UsersStateService).revive();
         expect(openConfirmModal).not.toHaveBeenCalled();
-        expect(reviveUser).not.toHaveBeenCalled();
+        expect(users.revive).not.toHaveBeenCalled();
     });
 
     it('does not restore after cancellation', async () => {
@@ -174,11 +178,11 @@ describe('user restoration', () => {
             loading,
         });
         await TestBed.inject(UsersStateService).revive();
-        expect(reviveUser).not.toHaveBeenCalled();
+        expect(users.revive).not.toHaveBeenCalled();
     });
 
     it('reports failure and closes the loading dialog', async () => {
-        vi.mocked(reviveUser).mockRejectedValue(new Error('Unavailable'));
+        vi.mocked(users.revive).mockRejectedValue(new Error('Unavailable'));
         await TestBed.inject(UsersStateService).revive();
         expect(notifyError).toHaveBeenCalledOnce();
         expect(close).toHaveBeenCalledOnce();
@@ -189,6 +193,6 @@ describe('user restoration', () => {
         user.set({ sys_admin: false });
         await TestBed.inject(UsersStateService).revive();
         expect(openConfirmModal).not.toHaveBeenCalled();
-        expect(reviveUser).not.toHaveBeenCalled();
+        expect(users.revive).not.toHaveBeenCalled();
     });
 });

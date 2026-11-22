@@ -18,10 +18,11 @@ import {
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 import {
-    functionList,
-    PlaceModuleFunction,
-    PlaceSystem,
+    type System,
+    type SystemsFunctionDetails,
+    systems,
 } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../../../common/async-handler.class';
 import { FormFieldComponent } from '../../controls/form-field.component';
 import { OptionComponent } from '../../controls/option.component';
@@ -30,7 +31,8 @@ import { SpinnerComponent } from '../../controls/spinner.component';
 import { TranslatePipe } from '../../translate.pipe';
 import { ModuleLike } from './select-module.component';
 
-interface MethodOption extends PlaceModuleFunction {
+/** A function of a module, with its name */
+export interface ModuleFunction extends SystemsFunctionDetails {
     name: string;
 }
 
@@ -112,14 +114,14 @@ export class SelectMethodComponent
     implements OnChanges, ControlValueAccessor
 {
     /** ID of the system to select the module from */
-    public readonly system = input<PlaceSystem>(undefined);
+    public readonly system = input<System>(undefined);
     /** ID of the system to select the module from */
     public readonly module = input<ModuleLike>(undefined);
 
     private _system = signal('');
     private _module = signal<ModuleLike>({} as ModuleLike);
 
-    public readonly method = signal<PlaceModuleFunction>(undefined);
+    public readonly method = signal<ModuleFunction>(undefined);
     public readonly method_filter = signal('');
     public readonly disabled = model(false);
 
@@ -132,14 +134,16 @@ export class SelectMethodComponent
         }),
         loader: async ({ params }) => {
             const { id, module } = params;
-            if (!id || !module?.module) return [] as MethodOption[];
+            if (!id || !module?.module) return [] as ModuleFunction[];
             this.loading.set(true);
             try {
-                const fn_mapping = await functionList(
-                    id,
-                    module.module,
-                    module.index,
-                ).catch(() => ({}));
+                const fn_mapping = await systems
+                    .functions({
+                        sys_id: id,
+                        module_slug: `${module.module}_${module.index}`,
+                    })
+                    .then(orThrow)
+                    .catch(() => ({}));
                 return Object.keys(fn_mapping || {})
                     .map((i) => ({
                         name: i,
@@ -167,9 +171,9 @@ export class SelectMethodComponent
         viewChild<ElementRef<HTMLInputElement>>('method_search');
 
     /** Form control on change handler */
-    private _onChange: (_: PlaceModuleFunction) => void;
+    private _onChange: (_: ModuleFunction) => void;
     /** Form control on touch handler */
-    private _onTouch: (_: PlaceModuleFunction) => void;
+    private _onTouch: (_: ModuleFunction) => void;
 
     constructor() {
         super();
@@ -194,7 +198,7 @@ export class SelectMethodComponent
      * Update the form field value
      * @param new_value New value to set on the form field
      */
-    public setValue(new_value: PlaceModuleFunction): void {
+    public setValue(new_value: ModuleFunction): void {
         if (this.disabled()) return;
         this.method.set(new_value);
         if (this._onChange && !this.loading()) {
@@ -220,7 +224,7 @@ export class SelectMethodComponent
      * Update local value when form control value is changed
      * @param value The new value for the component
      */
-    public writeValue(value: PlaceModuleFunction) {
+    public writeValue(value: ModuleFunction) {
         if (!value) return;
         this.method.set(value);
     }

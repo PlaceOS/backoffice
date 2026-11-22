@@ -1,4 +1,4 @@
-import { registerMockEndpoint } from '@placeos/ts-client';
+import { registerMockEndpoint } from '@placeos/ts-client/compat';
 import { HashMap } from '../../common/types';
 import {
     API,
@@ -213,12 +213,12 @@ registerMockEndpoint({
     callback: (event) => {
         const system = findSystem(event.route_params.id);
         const drivers = endpointData(`${API}/modules`)
-            .filter((mod) => system.modules.includes(mod.id))
+            .filter((mod) => (system.modules ?? []).includes(mod.id))
             .map((mod) => mod.driver_id);
         const parents = [
             system.id,
-            ...system.zones,
-            ...system.modules,
+            ...(system.zones ?? []),
+            ...(system.modules ?? []),
             ...drivers,
         ];
         return endpointData(`${API}/settings`).filter((setting) =>

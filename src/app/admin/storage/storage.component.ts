@@ -175,7 +175,7 @@ export class StorageComponent implements OnInit {
     private _admin_data = inject(AdminDataService);
 
     public readonly loading = signal('');
-    public readonly store_list = signal<PlaceStorage[]>([]);
+    public readonly store_list = signal<readonly PlaceStorage[]>([]);
     public readonly domain_list = this._admin_data.domain_list;
     public readonly domain = this._admin_data.selectedDomain('storage');
 
@@ -226,7 +226,7 @@ export class StorageComponent implements OnInit {
         this.loading.set('Loading storage...');
         const { data } = await queryStorage({
             auth_id: this.domain()?.id,
-        }).catch(reportLoadError({ data: [] }));
+        }).catch(reportLoadError({ data: [] as readonly PlaceStorage[] }));
         this.store_list.set(data);
         this.loading.set('');
     }

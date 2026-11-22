@@ -2,13 +2,15 @@ import { Dialog } from '@angular/cdk/dialog';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { DefaultUrlSerializer, NavigationEnd, Router } from '@angular/router';
-import { PlaceDomain, PlaceGroup, PlaceUser } from '@placeos/ts-client';
+import { Domain, Group, User } from '@placeos/ts-client';
+import { mockPage, mockReply } from '@placeos/ts-client/compat';
 import { Subject } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CascadePlan } from '../../app/common/cascade-delete';
 import { HotkeysService } from '../../app/common/hotkeys.service';
 import { ActiveItemService } from '../../app/common/item.service';
 import { notifyError } from '../../app/common/notifications';
+import { newItem } from '../../app/common/placeos';
 import { SettingsService } from '../../app/common/settings.service';
 import { loadSupportAccess } from '../../app/common/support-access';
 import { DialogEvent } from '../../app/common/types';
@@ -24,13 +26,17 @@ const mocks = vi.hoisted(() => ({
     current_groups: vi.fn(),
     query_groups: vi.fn(),
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    currentGroups: mocks.current_groups,
-    queryGroups: mocks.query_groups,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        groups: {
+            ...actual.groups,
+            current: mocks.current_groups,
+            query: mocks.query_groups,
+        },
+    };
+});
 vi.mock('../../app/common/actions', () => {
     const query = () => Promise.resolve({ data: [], total: 0, next: null });
     return {
@@ -76,8 +82,8 @@ const confirmRef = () => ({
     close: vi.fn(),
 });
 
-const item = new PlaceDomain({ id: 'domain-1', name: 'Campus' });
-const user = signal<Partial<PlaceUser>>({ sys_admin: true });
+const item = newItem(Domain, { id: 'domain-1', name: 'Campus' });
+const user = signal<Partial<User>>({ sys_admin: true });
 const router_events = new Subject<NavigationEnd>();
 const router = {
     url: '/domains/-',
@@ -194,7 +200,7 @@ describe('cascade delete', () => {
 
 describe('edit permissions', () => {
     const support_group = (permissions: number) => ({
-        group: new PlaceGroup({
+        group: newItem(Group, {
             id: 'group-1',
             name: 'Support',
             subsystems: ['support'],
@@ -231,13 +237,9 @@ describe('edit permissions', () => {
     ])(
         'limits $role to the sections they can change',
         async ({ account, groups, allowed }) => {
-            mocks.current_groups.mockResolvedValue(groups);
-            mocks.query_groups.mockResolvedValue({
-                data: [],
-                total: 0,
-                next: null,
-            });
-            await loadSupportAccess(new PlaceUser(account));
+            mocks.current_groups.mockResolvedValue(mockReply(groups));
+            mocks.query_groups.mockResolvedValue(mockPage({ data: [] }));
+            await loadSupportAccess(newItem(User, account));
             user.set(account);
             const result = ['systems', 'domains'].map((section) => {
                 openSection(section);

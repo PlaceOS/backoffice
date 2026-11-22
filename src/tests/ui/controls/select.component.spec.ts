@@ -5,13 +5,9 @@ import {
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { OptionComponent } from '../../../app/ui/controls/option.component';
 import { SelectComponent } from '../../../app/ui/controls/select.component';
-
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
 
 @Component({
     template: `

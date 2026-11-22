@@ -1,14 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
     applyDriverFormSchema,
     generateDriverFormModel,
 } from '../../app/drivers/drivers.utilities';
 import { createTestForm } from '../common/form-test.helpers';
-
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
 
 describe('driver form validation', () => {
     beforeEach(() => TestBed.configureTestingModule({}));

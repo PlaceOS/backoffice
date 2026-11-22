@@ -7,10 +7,11 @@ import {
     signal,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { showMetadata, updateMetadata } from '@placeos/ts-client';
+import { metadata } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { AsyncHandler } from './async-handler.class';
-import { getItemWithKeys, log } from './general';
+import { getItemWithKeys, log, metadataDetails } from './general';
 import { DEFAULT_SETTINGS } from './settings';
 import { waitForSignalValue } from './signals';
 import { HashMap } from './types';
@@ -118,18 +119,22 @@ export class SettingsService extends AsyncHandler {
         if (!user) return;
         // Nothing awaits init(), so a failed load must not reject.
         // The defaults stay in use until the next page load.
-        const data = await showMetadata(user.id, 'settings').catch((err) => {
-            log(
-                'Settings',
-                'Failed to load user settings',
-                [err as object],
-                'warn',
-                true,
-            );
-            return null;
-        });
+        const data = await metadata
+            .show({ id: user.id, name: 'settings' })
+            .then(orThrow)
+            .then((data) => data['settings'])
+            .catch((err) => {
+                log(
+                    'Settings',
+                    'Failed to load user settings',
+                    [err as object],
+                    'warn',
+                    true,
+                );
+                return null;
+            });
         if (!data) return;
-        this._user_settings.set((data.details || {}) as HashMap);
+        this._user_settings.set(metadataDetails(data.details) as HashMap);
         this._initDarkMode();
         this._applyTheme();
         this._setFontSize();
@@ -203,11 +208,16 @@ export class SettingsService extends AsyncHandler {
         const details = { ...this._user_settings(), ...pending } as HashMap;
         this._user_settings.set(details);
         try {
-            await updateMetadata(user.id, {
-                name: 'settings',
-                description: '',
-                details,
-            });
+            await metadata
+                .update({
+                    id: user.id,
+                    body: {
+                        name: 'settings',
+                        description: '',
+                        details,
+                    },
+                })
+                .then(orThrow);
         } catch (err) {
             // Newer changes win over the failed ones
             this._pending_settings = { ...pending, ...this._pending_settings };

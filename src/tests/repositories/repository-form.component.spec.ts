@@ -1,15 +1,15 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-    PlaceRepositoryType,
-    listRepositoryBranches,
-    updateRepository,
-} from '@placeos/ts-client';
+import { repositories } from '@placeos/ts-client';
+import { mockReply, PlaceRepositoryType } from '@placeos/ts-client/compat';
 import { EMPTY } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { notifyError } from '../../app/common/notifications';
 import { RepositoryFormComponent } from '../../app/repositories/repository-form.component';
+const { fromV1Mock } = await vi.hoisted(
+    () => import('@placeos/ts-client/compat'),
+);
 
 vi.mock('../../app/common/notifications', async (importOriginal) => ({
     ...(await importOriginal<object>()),
@@ -20,17 +20,30 @@ vi.mock('@placeos/ts-client', () => ({
     EncryptionLevel: { Support: 2 },
     PlaceRepositoryType: { Driver: 'driver', Interface: 'interface' },
     PlaceSettings: class PlaceSettings {},
-    addRepository: vi.fn(),
-    addSettings: vi.fn(),
     cleanObject: (value: unknown) => value,
-    listRemoteRepositoryBranches: vi.fn(),
-    listRemoteRepositoryCommits: vi.fn(),
-    listRemoteRepositoryDefaultBranch: vi.fn(),
-    listRepositoryBranches: vi.fn(() => Promise.resolve(['main', 'dev'])),
-    listRepositoryCommits: vi.fn(() => Promise.resolve([])),
-    listRepositoryDefaultBranch: vi.fn(() => Promise.resolve('main')),
-    showMetadata: vi.fn(() => Promise.resolve({})),
-    updateRepository: vi.fn(),
+    repositories: {
+        create: vi.fn(fromV1Mock(undefined, ['body'])),
+        remoteBranches: vi.fn(fromV1Mock(undefined, ['...'])),
+        remoteCommits: vi.fn(fromV1Mock(undefined, ['...'])),
+        remoteDefaultBranch: vi.fn(fromV1Mock(undefined, ['...'])),
+        branches: vi.fn(
+            fromV1Mock(() => Promise.resolve(['main', 'dev']), ['id']),
+        ),
+        commits: vi.fn(fromV1Mock(() => Promise.resolve([]), ['id', '...'])),
+        defaultBranch: vi.fn(fromV1Mock(() => Promise.resolve('main'), ['id'])),
+        update: vi.fn(fromV1Mock(undefined, ['id', 'body'])),
+    },
+    settings: { create: vi.fn(fromV1Mock(undefined, ['body', '...'])) },
+    metadata: {
+        show: vi.fn(
+            fromV1Mock(
+                () => Promise.resolve({}),
+                ['id', 'name'],
+                'data',
+                'name',
+            ),
+        ),
+    },
 }));
 
 describe('RepositoryFormComponent', () => {
@@ -38,7 +51,9 @@ describe('RepositoryFormComponent', () => {
 
     beforeEach(async () => {
         vi.clearAllMocks();
-        vi.mocked(listRepositoryBranches).mockResolvedValue(['main', 'dev']);
+        vi.mocked(repositories.branches).mockResolvedValue(
+            mockReply(['main', 'dev']),
+        );
         await TestBed.configureTestingModule({
             imports: [RepositoryFormComponent],
             providers: [
@@ -69,20 +84,20 @@ describe('RepositoryFormComponent', () => {
         fixture = TestBed.createComponent(RepositoryFormComponent);
         await fixture.whenStable();
         await vi.waitFor(() =>
-            expect(listRepositoryBranches).toHaveBeenCalledTimes(1),
+            expect(repositories.branches).toHaveBeenCalledTimes(1),
         );
     });
 
     afterEach(() => fixture.destroy());
 
     it('does not loop branch loads when the select opens after credential blur', async () => {
-        vi.mocked(listRepositoryBranches).mockResolvedValue(['dev']);
+        vi.mocked(repositories.branches).mockResolvedValue(mockReply(['dev']));
         fixture.componentInstance.markCredentialsBlur();
         fixture.componentInstance.setBranchOpen(true);
 
         await new Promise((resolve) => setTimeout(resolve, 750));
 
-        expect(listRepositoryBranches).toHaveBeenCalledTimes(2);
+        expect(repositories.branches).toHaveBeenCalledTimes(2);
     });
 
     it('does not save without a branch when the branch list is empty', async () => {
@@ -92,7 +107,7 @@ describe('RepositoryFormComponent', () => {
 
         await component.submit();
 
-        expect(updateRepository).not.toHaveBeenCalled();
+        expect(repositories.update).not.toHaveBeenCalled();
         expect(notifyError).toHaveBeenCalledWith('REPOS.BRANCH_REQUIRED');
     });
 
@@ -147,7 +162,7 @@ describe('RepositoryFormComponent', () => {
 
             component.markCredentialsBlur();
             await vi.waitFor(() => {
-                expect(listRepositoryBranches).toHaveBeenCalledTimes(2);
+                expect(repositories.branches).toHaveBeenCalledTimes(2);
                 expect(component.loading_branches()).toBe(false);
             });
 

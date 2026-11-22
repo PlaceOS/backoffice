@@ -5,7 +5,7 @@ import {
     SchemaFn,
     validate,
 } from '@angular/forms/signals';
-import { PlaceUser } from '@placeos/ts-client';
+import { type User } from '@placeos/ts-client';
 import { isValidUrl } from '../common/validation';
 
 export interface UserFormModel {
@@ -24,7 +24,7 @@ export interface UserFormModel {
     image: string;
 }
 
-export function generateUserFormModel(user: PlaceUser): UserFormModel {
+export function generateUserFormModel(user: User): UserFormModel {
     return {
         authority_id: user?.authority_id || '',
         first_name: user?.first_name || user?.name || '',
@@ -33,8 +33,9 @@ export function generateUserFormModel(user: PlaceUser): UserFormModel {
         staff_id: user?.staff_id || '',
         support: user?.support || false,
         sys_admin: user?.sys_admin || false,
-        locatable: user?.locatable || false,
-        groups: user?.groups || [],
+        // A new user is locatable, as in 6.x
+        locatable: user?.id ? !!user.locatable : true,
+        groups: [...(user?.groups || [])],
         password: '',
         confirm_password: '',
         card_number: user?.card_number || '',
@@ -43,7 +44,7 @@ export function generateUserFormModel(user: PlaceUser): UserFormModel {
 }
 
 export function userFormSchema(
-    user?: PlaceUser,
+    user?: User,
     lock_authority = false,
 ): SchemaFn<UserFormModel> {
     return (path) => {

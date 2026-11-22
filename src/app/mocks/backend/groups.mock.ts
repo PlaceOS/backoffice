@@ -1,4 +1,7 @@
-import { MockHttpRequest, registerMockEndpoint } from '@placeos/ts-client';
+import {
+    type MockHttpRequest,
+    registerMockEndpoint,
+} from '@placeos/ts-client/compat';
 import { HashMap } from '../../common/types';
 import {
     API,
@@ -136,7 +139,20 @@ registerMockEndpoint({
 const groups = generateBasicHandlers<MockGroup>(`${API}/groups`, GROUP_DATA, {
     filter: GROUP_FILTER_FN,
     id_prefix: 'group-',
+    // The groups API sends RFC 3339 times, not Unix seconds
+    prepare: (group) => ({
+        ...group,
+        created_at: isoTime(group.created_at),
+        updated_at: isoTime(group.updated_at),
+    }),
 });
+
+/** RFC 3339 text of a Unix time in seconds, or the text as is */
+function isoTime(value: string | number) {
+    return typeof value === 'number'
+        ? new Date(value * 1000).toISOString()
+        : value;
+}
 
 /** Count of direct children, which the API adds to group details */
 function withChildCount(group: MockGroup) {

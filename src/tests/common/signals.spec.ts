@@ -1,14 +1,6 @@
 import { signal } from '@angular/core';
-import { createSignal } from '@placeos/ts-client';
 import { describe, expect, it, vi } from 'vitest';
-import {
-    waitForClientSignalValue,
-    waitForSignalValue,
-} from '../../app/common/signals';
-
-vi.mock('@placeos/ts-client', async () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
+import { waitForSignalValue } from '../../app/common/signals';
 
 describe('signals.ts utilities', () => {
     describe('waitForSignalValue', () => {
@@ -44,26 +36,5 @@ describe('signals.ts utilities', () => {
                 vi.useRealTimers();
             }
         });
-    });
-});
-
-describe('client signal waits', () => {
-    it('uses notifications and removes the subscription on the first match', async () => {
-        const value = createSignal(false);
-        const unsubscribe = vi.fn();
-        const subscribe = value.subscribe.bind(value);
-        vi.spyOn(value, 'subscribe').mockImplementation((listener, options) => {
-            const dispose = subscribe(listener, options);
-            return () => {
-                unsubscribe();
-                dispose();
-            };
-        });
-        const pending = waitForClientSignalValue(value, Boolean);
-        value.set(true);
-        expect(await pending).toBe(true);
-        expect(unsubscribe).toHaveBeenCalledTimes(1);
-        expect(await waitForClientSignalValue(value, Boolean)).toBe(true);
-        expect(unsubscribe).toHaveBeenCalledTimes(2);
     });
 });

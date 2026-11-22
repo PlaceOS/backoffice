@@ -1,20 +1,14 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { PlaceModule } from '@placeos/ts-client';
+import { Module, modules } from '@placeos/ts-client';
+import { mockReply } from '@placeos/ts-client/compat';
 import { describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
+import { newItem } from '../../app/common/placeos';
 import { ModuleStateService } from '../../app/modules/module-state.service';
 
-const mocks = vi.hoisted(() => ({
-    startModule: vi.fn(),
-}));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    ...mocks,
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 vi.mock('../../app/common/item.service', () => ({
     ActiveItemService: class {},
 }));
@@ -31,9 +25,13 @@ vi.mock('../../app/overlays/view-response-modal.component', () => ({
 
 describe('ModuleStateService', () => {
     it('changes the power state of the module the request started for', async () => {
-        const module_a = new PlaceModule({ id: 'mod-a' });
-        const module_b = new PlaceModule({ id: 'mod-b' });
-        const state = { item: signal(null), active_item: module_a };
+        const module_a = newItem(Module, { id: 'mod-a', running: false });
+        const module_b = newItem(Module, { id: 'mod-b', running: false });
+        const state = {
+            item: signal(null),
+            activeOf: () => null,
+            active_item: module_a,
+        };
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
@@ -43,8 +41,10 @@ describe('ModuleStateService', () => {
             ],
         });
         let resolve_power: () => void;
-        mocks.startModule.mockReturnValue(
-            new Promise<void>((resolve) => (resolve_power = resolve)),
+        vi.mocked(modules.start).mockReturnValue(
+            new Promise(
+                (resolve) => (resolve_power = () => resolve(mockReply(''))),
+            ),
         );
 
         const request = TestBed.inject(ModuleStateService).toggleModuleState();
@@ -52,7 +52,7 @@ describe('ModuleStateService', () => {
         resolve_power();
         await request;
 
-        expect(mocks.startModule).toHaveBeenCalledWith('mod-a');
+        expect(modules.start).toHaveBeenCalledWith({ id: 'mod-a' });
         expect(module_a.running).toBe(true);
         expect(module_b.running).toBe(false);
     });

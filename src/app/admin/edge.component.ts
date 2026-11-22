@@ -2,7 +2,8 @@ import { Clipboard } from '@angular/cdk/clipboard';
 
 import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { PlaceEdge, queryEdges, removeEdge } from '@placeos/ts-client';
+import { type Edge, type EdgeKeyResponse, edges } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -190,8 +191,9 @@ export class PlaceEdgeComponent implements OnInit {
     private _clipboard = inject(Clipboard);
 
     public readonly loading = signal('');
-    public readonly edge_list = signal<PlaceEdge[]>([]);
-    public readonly last_change = signal<PlaceEdge>(null);
+    public readonly edge_list = signal<Edge[]>([]);
+    /** The last created edge, with its one-time API key */
+    public readonly last_change = signal<EdgeKeyResponse>(null);
 
     public ngOnInit() {
         const edge_data = sessionStorage.getItem('BACKOFFICE.last_edge');
@@ -203,15 +205,19 @@ export class PlaceEdgeComponent implements OnInit {
         this.loadEdges();
     }
 
-    public async edit(edge?: PlaceEdge) {
-        const ref = this._dialog.open<PlaceEdge>(EdgeModalComponent, {
-            data: { edge },
-        });
+    public async edit(edge?: Edge) {
+        // A create gives the edge with its API key
+        const ref = this._dialog.open<Edge | EdgeKeyResponse>(
+            EdgeModalComponent,
+            {
+                data: { edge },
+            },
+        );
         ref.closed.subscribe((_) => {
             // Cancel keeps the last saved edge and its one-time API key
             if (!_) return;
             // Only creates return a key; edits must not hide the last one
-            if (_.x_api_key) {
+            if ('x_api_key' in _ && _.x_api_key) {
                 sessionStorage.setItem(
                     'BACKOFFICE.last_edge',
                     JSON.stringify(_),
@@ -222,7 +228,7 @@ export class PlaceEdgeComponent implements OnInit {
         });
     }
 
-    public async remove(i: PlaceEdge) {
+    public async remove(i: Edge) {
         const removed = await confirmAndRun(
             this._dialog,
             {
@@ -232,7 +238,7 @@ export class PlaceEdgeComponent implements OnInit {
             },
             {
                 loading: 'Removing edge...',
-                action: () => removeEdge(i.id),
+                action: () => edges.destroy({ id: i.id }).then(orThrow),
                 error: (reason) => `Error removing edge. Error: ${reason}`,
                 success: 'Successfully removed Edge.',
             },
@@ -252,9 +258,9 @@ export class PlaceEdgeComponent implements OnInit {
     public async loadEdges() {
         this.loading.set('Loading edge node list...');
         try {
-            const { data } = await queryEdges();
+            const { data } = await edges.query({}).then(orThrowPage);
             this.edge_list.set(
-                (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
+                [...(data || [])].sort((a, b) => a.id?.localeCompare(b.id)),
             );
         } catch (err) {
             notifyError(

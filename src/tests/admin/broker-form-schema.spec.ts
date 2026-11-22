@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { AuthType } from '@placeos/ts-client';
+import { AuthType } from '@placeos/ts-client/compat';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     applyBrokerFormSchema,
@@ -8,9 +8,7 @@ import {
 import { createTestForm } from '../common/form-test.helpers';
 
 // Use the browser entry because the client marks its CommonJS entry as ESM.
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
+vi.mock('@placeos/ts-client', () => vi.importActual('@placeos/ts-client'));
 
 describe('broker authentication validation', () => {
     beforeEach(() => TestBed.configureTestingModule({}));
@@ -21,6 +19,7 @@ describe('broker authentication validation', () => {
                 name: 'Broker',
                 host: 'mqtt.example.com',
                 port: 1883,
+                auth_type: AuthType.NoAuth,
             }),
             applyBrokerFormSchema,
         );

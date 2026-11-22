@@ -1,18 +1,70 @@
 import { AbstractControl, Validators } from '@angular/forms';
 import { required, SchemaFn, validate } from '@angular/forms/signals';
 import {
-    PlaceTrigger,
-    TriggerAtTimeCondition,
-    TriggerComparison,
-    TriggerConditionOperator,
-    TriggerCronTimeCondition,
-    TriggerFunction,
-    TriggerMailer,
-    TriggerStatusVariable,
-    TriggerTimeCondition,
-    TriggerTimeConditionType,
+    type Trigger,
+    type TriggerInstance,
+    TriggerActionsEmail,
+    TriggerActionsFunction,
+    TriggerConditionsComparison,
+    TriggerConditionsComparisonStatusVariable,
+    TriggerConditionsTimeDependent,
 } from '@placeos/ts-client';
+import {
+    TriggerConditionOperator,
+    TriggerTimeConditionType,
+} from '@placeos/ts-client/compat';
 import { validateJSONString } from '../common/validation';
+
+/** Lists of the actions of a trigger */
+export interface TriggerActionLists {
+    functions: TriggerActionsFunction[];
+    mailers: TriggerActionsEmail[];
+}
+
+/** Lists of the conditions of a trigger */
+export interface TriggerConditionLists {
+    comparisons: TriggerConditionsComparison[];
+    time_dependents: TriggerConditionsTimeDependent[];
+}
+
+/**
+ * Copies of the actions of a trigger, with an empty list for a missing one.
+ * The 6.x `PlaceTrigger.actions` getter did this.
+ */
+export function triggerActions(trigger?: Trigger): TriggerActionLists {
+    const actions = trigger?.actions;
+    return {
+        // Copies keep `null` values, so a copy matches its source as JSON
+        functions: (actions?.functions || []).map((_) => ({
+            ..._,
+            args: _.args && { ..._.args },
+        })),
+        mailers: (actions?.mailers || []).map((_) => ({
+            ..._,
+            emails: _.emails && [..._.emails],
+        })),
+    };
+}
+
+/**
+ * Copies of the conditions of a trigger, with an empty list for a missing
+ * one. The 6.x `PlaceTrigger.conditions` getter did this.
+ */
+export function triggerConditions(trigger?: Trigger): TriggerConditionLists {
+    const conditions = trigger?.conditions;
+    const copy = (value: TriggerConditionsComparison['left']) =>
+        value && typeof value === 'object' ? { ...value } : value;
+    return {
+        comparisons: (conditions?.comparisons || []).map((_) => ({
+            ..._,
+            left: copy(_.left),
+            right: copy(_.right),
+        })),
+        time_dependents: (conditions?.time_dependents || []).map((_) => ({
+            ..._,
+        })),
+    };
+}
 
 export interface TriggerFormModel {
     name: string;
@@ -22,14 +74,12 @@ export interface TriggerFormModel {
     debounce_period: number;
 }
 
-export function generateTriggerFormModel(
-    trigger?: PlaceTrigger,
-): TriggerFormModel {
+export function generateTriggerFormModel(trigger?: Trigger): TriggerFormModel {
     return {
         name: trigger?.name || '',
         description: trigger?.description || '',
         enable_webhook: trigger?.enable_webhook || false,
-        supported_methods: [...(trigger?.supported_methods || [])],
+        supported_methods: [...(trigger?.supported_methods ?? ['POST'])],
         debounce_period: Math.max(0, trigger?.debounce_period || 0),
     };
 }
@@ -49,12 +99,12 @@ export interface TriggerSettingsFormModel {
 }
 
 export function generateTriggerSettingsFormModel(
-    trigger?: PlaceTrigger,
+    trigger?: TriggerInstance,
 ): TriggerSettingsFormModel {
     return {
         name: trigger?.name || '',
         playlists: [...(trigger?.playlists || [])],
-        triggered: +trigger?.activated_count > 0,
+        triggered: +trigger?.trigger_count > 0,
         exec_enabled: !!trigger?.exec_enabled,
         enabled: !!trigger?.enabled,
         important: !!trigger?.important,
@@ -63,9 +113,13 @@ export function generateTriggerSettingsFormModel(
 
 export interface TriggerConditionFormModel {
     condition_type: 'compare' | 'time';
-    left: TriggerStatusVariable | string | number | boolean;
+    left: TriggerConditionsComparisonStatusVariable | string | number | boolean;
     operator: TriggerConditionOperator;
-    right: TriggerStatusVariable | string | number | boolean;
+    right:
+        | TriggerConditionsComparisonStatusVariable
+        | string
+        | number
+        | boolean;
     time_type: TriggerTimeConditionType | string;
     time: number;
     cron: string;
@@ -73,41 +127,45 @@ export interface TriggerConditionFormModel {
 }
 
 export function generateTriggerConditionFormModel(
-    condition: TriggerComparison | TriggerTimeCondition = {} as
-        | TriggerComparison
-        | TriggerTimeCondition,
+    condition:
+        | TriggerConditionsComparison
+        | TriggerConditionsTimeDependent = {} as
+        | TriggerConditionsComparison
+        | TriggerConditionsTimeDependent,
 ): TriggerConditionFormModel {
-    const type = (condition as TriggerTimeCondition).type ? 'time' : 'compare';
+    const type = (condition as TriggerConditionsTimeDependent).type
+        ? 'time'
+        : 'compare';
     const left =
-        typeof (condition as TriggerComparison).left === 'object'
+        typeof (condition as TriggerConditionsComparison).left === 'object'
             ? {
-                  ...((condition as TriggerComparison)
-                      .left as TriggerStatusVariable),
+                  ...((condition as TriggerConditionsComparison)
+                      .left as TriggerConditionsComparisonStatusVariable),
               }
-            : (condition as TriggerComparison).left;
+            : (condition as TriggerConditionsComparison).left;
     const right =
-        typeof (condition as TriggerComparison).right === 'object'
+        typeof (condition as TriggerConditionsComparison).right === 'object'
             ? {
-                  ...((condition as TriggerComparison)
-                      .right as TriggerStatusVariable),
+                  ...((condition as TriggerConditionsComparison)
+                      .right as TriggerConditionsComparisonStatusVariable),
               }
-            : (condition as TriggerComparison).right;
+            : (condition as TriggerConditionsComparison).right;
     return {
         condition_type: type,
         left:
             typeof left === 'object'
-                ? { ...(left as TriggerStatusVariable) }
-                : (left ?? ({} as TriggerStatusVariable)),
+                ? { ...(left as TriggerConditionsComparisonStatusVariable) }
+                : (left ?? ({} as TriggerConditionsComparisonStatusVariable)),
         operator:
-            (condition as TriggerComparison).operator ||
+            (condition as TriggerConditionsComparison).operator ||
             TriggerConditionOperator.EQ,
         right: right ?? undefined,
-        time_type: (condition as TriggerTimeCondition).type || 'at',
+        time_type: (condition as TriggerConditionsTimeDependent).type || 'at',
         time:
-            (+(condition as TriggerAtTimeCondition).time || 0) * 1000 ||
+            (+(condition as TriggerConditionsTimeDependent).time || 0) * 1000 ||
             Date.now(),
-        cron: (condition as TriggerCronTimeCondition).cron || '',
-        timezone: (condition as TriggerCronTimeCondition).timezone || '',
+        cron: (condition as TriggerConditionsTimeDependent).cron || '',
+        timezone: (condition as TriggerConditionsTimeDependent).timezone || '',
     };
 }
 
@@ -116,9 +174,9 @@ export function applyTriggerConditionFormSchema(
 ): ReturnType<SchemaFn<TriggerConditionFormModel>> {
     const valid_compare_value = (value) => {
         if (value instanceof Object) {
-            return !(value as TriggerStatusVariable).mod
+            return !(value as TriggerConditionsComparisonStatusVariable).mod
                 ? { kind: 'module', message: 'Module is required' }
-                : !(value as TriggerStatusVariable).status
+                : !(value as TriggerConditionsComparisonStatusVariable).status
                   ? { kind: 'status', message: 'Status is required' }
                   : undefined;
         }
@@ -160,21 +218,23 @@ export interface TriggerActionFormModel {
     action_type: 'emails' | 'function';
     emails: string[];
     content: string;
-    method_call: TriggerFunction;
+    method_call: TriggerActionsFunction;
 }
 
 export function generateTriggerActionFormModel(
-    action: TriggerFunction | TriggerMailer = {} as
-        | TriggerFunction
-        | TriggerMailer,
+    action: TriggerActionsFunction | TriggerActionsEmail = {} as
+        | TriggerActionsFunction
+        | TriggerActionsEmail,
 ): TriggerActionFormModel {
     const type =
-        action && (action as TriggerMailer)?.emails ? 'emails' : 'function';
+        action && (action as TriggerActionsEmail)?.emails
+            ? 'emails'
+            : 'function';
     return {
         action_type: type,
-        emails: (action as TriggerMailer)?.emails || [],
-        content: (action as TriggerMailer)?.content || '',
-        method_call: (action as TriggerFunction) || null,
+        emails: [...((action as TriggerActionsEmail)?.emails || [])],
+        content: (action as TriggerActionsEmail)?.content || '',
+        method_call: (action as TriggerActionsFunction) || null,
     };
 }
 

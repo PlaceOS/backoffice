@@ -1,16 +1,13 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
 import {
-    driverReadme,
-    PlaceDriver,
-    PlaceModule,
-    queryDrivers,
-    queryModules,
-    recompileDriver,
-    reloadDriver,
-    removeModule,
-    updateDriver,
+    type Driver,
+    drivers,
+    type Module,
+    modules,
+    type Settings,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
@@ -24,6 +21,7 @@ import { Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 import { DriverUpdateListModalComponent } from './driver-update-list-modal.component';
+import { recompileDriver, reloadDriver } from './drivers.utilities';
 
 @Service()
 export class DriverStateService {
@@ -33,8 +31,10 @@ export class DriverStateService {
     private _poll = signal(0);
     private _modules_change = signal(0);
 
+    /** Active driver. `ActiveItemService` adds its settings of each encryption level */
     public readonly item = computed(
-        () => this._state.item() as unknown as PlaceDriver,
+        () =>
+            this._state.item() as unknown as Driver & { settings?: Settings[] },
     );
 
     public readonly loading = computed(
@@ -44,10 +44,10 @@ export class DriverStateService {
     private readonly _updates_available = resource({
         params: () => this._poll(),
         loader: async () => {
-            const response = await queryDrivers({
-                update_available: true,
-                limit: 1,
-            }).catch(() => ({ total: 0 }));
+            const response = await drivers
+                .query({ update_available: true, limit: 1 })
+                .then(orThrowPage)
+                .catch(() => ({ total: 0 }));
             return response.total > 0;
         },
     });
@@ -57,14 +57,18 @@ export class DriverStateService {
     );
 
     private readonly _modules = resource({
-        params: () => ({ item: this.item(), changed: this._modules_change() }),
+        params: () => ({
+            item: this._state.activeOf('drivers'),
+            changed: this._modules_change(),
+        }),
         loader: async ({ params: { item } }) => {
-            if (!(item instanceof PlaceDriver))
-                return { data: [] as PlaceModule[], total: 0 };
+            if (!item) return { data: [] as Module[], total: 0 };
             // Load every page so the list matches the tab count
             const data = await collectPages(
-                queryModules({ driver_id: item.id, limit: 500 }),
-            ).catch(reportLoadError([] as PlaceModule[]));
+                modules
+                    .query({ driver_id: item.id, limit: 500 })
+                    .then(orThrowPage),
+            ).catch(reportLoadError([] as Module[]));
             return { data, total: data.length };
         },
     });
@@ -76,10 +80,13 @@ export class DriverStateService {
     );
 
     private readonly _docs = resource({
-        params: () => this.item(),
+        params: () => this._state.activeOf('drivers'),
         loader: async ({ params: item }) => {
-            if (!(item instanceof PlaceDriver)) return '';
-            return driverReadme(item.id).catch(() => '');
+            if (!item) return '';
+            return drivers
+                .readme({ id: item.id })
+                .then(orThrow)
+                .catch(() => '');
         },
     });
 
@@ -95,7 +102,7 @@ export class DriverStateService {
     }
 
     public async updateDriver() {
-        const item = this._state.active_item as PlaceDriver;
+        const item = this._state.active_item as Driver;
         if (!item.update_available) return notifyInfo('No update available.');
         const details = await openConfirmModal(
             {
@@ -107,10 +114,14 @@ export class DriverStateService {
         );
         if (details.reason !== 'done') return details.close();
         details.loading('Updating driver...');
-        const updated = await updateDriver(item.id, {
-            ...item,
-            commit: item.update_info.commit,
-        }).catch(() => null);
+        const updated = await drivers
+            .update({
+                id: item.id,
+                // Only the commit: other fields of this copy can be older than the server
+                body: { commit: item.update_info.commit },
+            })
+            .then(orThrow)
+            .catch(() => null);
         if (!updated) {
             notifyError('Failed to update driver.');
         } else {
@@ -121,7 +132,7 @@ export class DriverStateService {
     }
 
     public async recompileDriver() {
-        const item = this._state.active_item as PlaceDriver;
+        const item = this._state.active_item as Driver;
         const details = await openConfirmModal(
             {
                 title: `Recompile Driver`,
@@ -135,8 +146,7 @@ export class DriverStateService {
         const success = await recompileDriver(item.id)
             .then(() => true)
             .catch(async (e) => {
-                console.log('Error:', e);
-                const content = e instanceof Response ? await e.text() : e;
+                const content = describeError(e);
                 notifyError('Failed to recompile driver.', 'View Error', () =>
                     this._dialog.open<
                         unknown,
@@ -152,7 +162,7 @@ export class DriverStateService {
     }
 
     public async reloadDriver() {
-        const item = this._state.active_item as PlaceDriver;
+        const item = this._state.active_item as Driver;
         const details = await openConfirmModal(
             {
                 title: `Reload Driver`,
@@ -163,7 +173,9 @@ export class DriverStateService {
         );
         if (details.reason !== 'done') return details.close();
         details.loading('Reload driver... This may take a while.');
-        const success = await reloadDriver(item.id).catch(() => false);
+        const success = await reloadDriver(item.id)
+            .then(orThrow)
+            .catch(() => false);
         if (success === false) {
             notifyError(
                 'Failed to reload driver. Driver may not be compiled. Try recompiling first.',
@@ -174,7 +186,7 @@ export class DriverStateService {
         details.close();
     }
 
-    public async removeModule(device: PlaceModule) {
+    public async removeModule(device: Module) {
         const details = await openConfirmModal(
             {
                 title: 'Remove module?',
@@ -188,7 +200,9 @@ export class DriverStateService {
             this._dialog,
         );
         if (details.reason !== 'done') return;
-        const removed = await removeModule(device.id)
+        const removed = await modules
+            .destroy({ id: device.id })
+            .then(orThrow)
             .then(() => true)
             .catch((err) => {
                 notifyError(

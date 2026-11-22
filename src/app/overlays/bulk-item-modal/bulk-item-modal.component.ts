@@ -1,17 +1,18 @@
-import { Component, Type, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
-    PlaceDriver,
-    PlaceModule,
-    PlaceResource,
-    PlaceSystem,
-    PlaceUser,
-    PlaceZone,
+    Driver,
+    Module,
+    type Schema,
+    System,
+    User,
+    Zone,
 } from '@placeos/ts-client';
 import { unique } from '../../common/general';
 import { notifyError, notifyWarn } from '../../common/notifications';
-import { HashMap, Identity } from '../../common/types';
+import { newItem } from '../../common/placeos';
+import { HashMap, Identity, PlaceResource } from '../../common/types';
 import { DialogCloseDirective } from '../../ui/controls/dialog';
 import { DialogTitleDirective } from '../../ui/dialog-title.directive';
 import { IconComponent } from '../../ui/icon.component';
@@ -38,8 +39,47 @@ const IGNORE_FIELDS = [
 
 type BulkItemFlowStep = 'upload' | 'match-fields' | 'list' | 'status';
 
+type BulkItemKind = 'systems' | 'modules' | 'drivers' | 'users' | 'zones';
+
+/** Types that support bulk add, with their template and required fields */
+const BULK_KINDS = new Map<
+    Schema<unknown, unknown>,
+    {
+        kind: BulkItemKind;
+        template: Record<string, unknown>;
+        required: string[];
+    }
+>([
+    [
+        System,
+        { kind: 'systems', template: SYSTEM_TEMPLATE, required: ['name'] },
+    ],
+    [
+        Module,
+        { kind: 'modules', template: MODULE_TEMPLATE, required: ['driver_id'] },
+    ],
+    [
+        Driver,
+        {
+            kind: 'drivers',
+            template: DRIVER_TEMPLATE,
+            required: ['name', 'module_name', 'role'],
+        },
+    ],
+    [
+        User,
+        {
+            kind: 'users',
+            template: USER_TEMPLATE,
+            required: ['email', 'authority_id'],
+        },
+    ],
+    [Zone, { kind: 'zones', template: ZONE_TEMPLATE, required: ['name'] }],
+]);
+
 export interface BulkItemModalData<T = HashMap<unknown>> {
-    constr: Type<T>;
+    /** Schema of the items. `ActiveItemService` gives `ItemActions.schema` */
+    schema: Schema<T, unknown>;
     name: string;
     save: (item: Record<string, unknown>) => Promise<PlaceResource>;
 }
@@ -168,6 +208,7 @@ export class BulkItemModalComponent<
     private _dialog_ref =
         inject<DialogRef<unknown, BulkItemModalComponent>>(DialogRef);
     private _data = inject<BulkItemModalData<T>>(DIALOG_DATA);
+    private _kind = BULK_KINDS.get(this._data.schema);
 
     /** Current step in the bulk add flow */
     public readonly flow_step = signal<BulkItemFlowStep>('upload');
@@ -202,7 +243,7 @@ export class BulkItemModalComponent<
     }
 
     public get is_system(): boolean {
-        return this._data.constr === (PlaceSystem as unknown);
+        return this._kind?.kind === 'systems';
     }
 
     public get required_fields(): string[] {
@@ -230,14 +271,9 @@ export class BulkItemModalComponent<
             return;
         }
         if (is_mapped) {
-            const Resource = this._data.constr;
-            this.item_list.set(
-                data.map((item) => {
-                    // Values are already parsed by parseCSV,
-                    // so no need for additional JSON.parse here
-                    return new Resource(item);
-                }),
-            );
+            // Values are already parsed by parseCSV. Rows stay plain objects,
+            // as the save of a system reads columns that are not in the schema
+            this.item_list.set(data.map((item) => ({ ...item })));
             this.goTo('list');
         } else {
             // A new file may have different columns, so drop old mappings
@@ -290,7 +326,7 @@ export class BulkItemModalComponent<
     }
 
     private getAvailableFields(): Identity[] {
-        const list: readonly string[] = Object.keys(new this._data.constr());
+        const list: readonly string[] = Object.keys(newItem(this._data.schema));
         const identity_list = list.map((i) => ({
             id: i,
             name: i.split('_').join(' '),
@@ -303,36 +339,25 @@ export class BulkItemModalComponent<
         );
     }
 
+    /** Template row with the template fields that the schema has */
     private generateTemplate(): HashMap<unknown>[] {
-        switch (this._data.constr as unknown) {
-            case PlaceSystem:
-                return [new PlaceSystem(SYSTEM_TEMPLATE).toJSON()];
-            case PlaceModule:
-                return [new PlaceModule(MODULE_TEMPLATE).toJSON()];
-            case PlaceDriver:
-                return [new PlaceDriver(DRIVER_TEMPLATE).toJSON()];
-            case PlaceUser:
-                return [new PlaceUser(USER_TEMPLATE).toJSON()];
-            case PlaceZone:
-                return [new PlaceZone(ZONE_TEMPLATE).toJSON()];
-        }
+        if (!this._kind) return [];
+        const blank = newItem(this._data.schema);
+        return [
+            Object.fromEntries(
+                Object.entries(this._kind.template).filter(
+                    ([key, value]) =>
+                        key in blank &&
+                        key !== 'created_at' &&
+                        value !== '' &&
+                        value != null,
+                ),
+            ),
+        ];
     }
 
     private getRequiredFields(): string[] {
-        switch (this._data.constr as unknown) {
-            case PlaceUser:
-                return ['email', 'authority_id'];
-            case PlaceSystem:
-                return ['name'];
-            case PlaceModule:
-                return ['driver_id'];
-            case PlaceDriver:
-                return ['name', 'module_name', 'role'];
-            case PlaceZone:
-                return ['name'];
-            default:
-                return [];
-        }
+        return this._kind?.required || [];
     }
 
     private validateItems(): string[] {
@@ -353,8 +378,7 @@ export class BulkItemModalComponent<
     private findDuplicates(): string[] {
         const warnings: string[] = [];
         const seen_keys = new Map<string, number>();
-        const dedup_field =
-            this._data.constr === (PlaceUser as unknown) ? 'email' : 'name';
+        const dedup_field = this._kind?.kind === 'users' ? 'email' : 'name';
 
         this.item_list().forEach((item, index) => {
             const key = String(item[dedup_field] || '')

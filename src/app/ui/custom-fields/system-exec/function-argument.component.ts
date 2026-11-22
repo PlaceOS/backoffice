@@ -13,10 +13,10 @@ import {
     FormsModule,
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { PlaceModuleFunction } from '@placeos/ts-client';
 import { HashMap } from '../../../common/types';
 import { FormFieldComponent } from '../../controls/form-field.component';
 import { TranslatePipe } from '../../translate.pipe';
+import type { ModuleFunction } from './select-method.component';
 
 const validateType = (type: string, raw_value: unknown) => {
     let value: unknown = '';
@@ -110,7 +110,7 @@ const validateType = (type: string, raw_value: unknown) => {
 export class FunctionArgumentComponent
     implements OnChanges, ControlValueAccessor
 {
-    public readonly method = input<PlaceModuleFunction>(undefined);
+    public readonly method = input<ModuleFunction>(undefined);
     public readonly valid = output<boolean>();
     public readonly disabled = model(false);
 

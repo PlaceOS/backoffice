@@ -18,22 +18,17 @@ import { FormField, disabled, form } from '@angular/forms/signals';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { DatePipe, SlicePipe } from '@angular/common';
 import {
-    GitCommitDetails,
-    PlaceRepository,
-    PlaceRepositoryType,
-    addRepository,
-    listRemoteRepositoryBranches,
-    listRemoteRepositoryCommits,
-    listRemoteRepositoryDefaultBranch,
-    listRepositoryBranches,
-    listRepositoryCommits,
-    listRepositoryDefaultBranch,
-    updateRepository,
+    type GitRepositoryCommit,
+    Repository,
+    repositories,
 } from '@placeos/ts-client';
+import { PlaceRepositoryType, orThrow } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../common/async-handler.class';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
+import { cleanObject } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
+import { toBody } from '../common/placeos';
 import { DialogEvent, Identity } from '../common/types';
 import { isValidUrl } from '../common/validation';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -53,7 +48,7 @@ import {
     generateRepositoryFormModel,
 } from './repositories.utilities';
 
-interface RepositoryCommit extends Partial<GitCommitDetails> {
+interface RepositoryCommit extends Partial<GitRepositoryCommit> {
     hash: string;
     subject: string;
 }
@@ -499,7 +494,7 @@ interface RepositoryCommit extends Partial<GitCommitDetails> {
 export class RepositoryFormComponent extends AsyncHandler implements OnInit {
     private _dialog_ref =
         inject<DialogRef<unknown, RepositoryFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceRepository; readonly?: string }>(
+    private _data = inject<{ item: Repository; readonly?: string }>(
         DIALOG_DATA,
     );
     private _injector = inject(Injector);
@@ -643,13 +638,15 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
                 if (item.id) {
                     delete form_value.folder_name;
                 }
-                const form_item = mergeFormItem(
-                    item,
-                    form_value,
-                ) as unknown as PlaceRepository;
-                return form_item.id
-                    ? updateRepository(form_item.id, form_item)
-                    : addRepository(form_item);
+                const form_item = mergeFormItem(item, form_value);
+                // A new item has `null` fields. 6.x removed them before it sent the item
+                const body = toBody(
+                    Repository,
+                    item.id ? form_item : cleanObject(form_item, [null]),
+                );
+                return item.id
+                    ? repositories.update({ id: item.id, body }).then(orThrow)
+                    : repositories.create({ body }).then(orThrow);
             },
         );
     }
@@ -733,14 +730,16 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         try {
             const list = await (
                 id
-                    ? listRepositoryBranches(id)
-                    : listRemoteRepositoryBranches({
-                          repository_url: uri,
-                          username,
-                          password,
-                      })
+                    ? repositories.branches({ id }).then(orThrow)
+                    : repositories
+                          .remoteBranches({
+                              repository_url: uri,
+                              username,
+                              password,
+                          })
+                          .then(orThrow)
             ).catch(() => [] as string[]);
-            this.branch_list.set(list);
+            this.branch_list.set([...list]);
             const branch = await this._loadDefaultBranch();
             if (
                 branch &&
@@ -758,13 +757,15 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         const { id, uri, username, password } = this.formModel();
         return (
             id
-                ? listRepositoryDefaultBranch(id)
+                ? repositories.defaultBranch({ id }).then(orThrow)
                 : isValidUrl(uri) && uri.startsWith('http')
-                  ? listRemoteRepositoryDefaultBranch({
-                        repository_url: uri,
-                        username,
-                        password,
-                    })
+                  ? repositories
+                        .remoteDefaultBranch({
+                            repository_url: uri,
+                            username,
+                            password,
+                        })
+                        .then(orThrow)
                   : Promise.resolve('')
         ).catch(() => '');
     }
@@ -784,14 +785,16 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         try {
             const list = await (
                 id
-                    ? listRepositoryCommits(id, { branch })
-                    : listRemoteRepositoryCommits({
-                          repository_url: uri,
-                          username,
-                          password,
-                          branch,
-                      })
-            ).catch(() => [] as GitCommitDetails[]);
+                    ? repositories.commits({ id, branch }).then(orThrow)
+                    : repositories
+                          .remoteCommits({
+                              repository_url: uri,
+                              username,
+                              password,
+                              branch,
+                          })
+                          .then(orThrow)
+            ).catch(() => [] as GitRepositoryCommit[]);
             const commit_list: RepositoryCommit[] = [
                 {
                     hash: 'HEAD',
@@ -810,7 +813,7 @@ export class RepositoryFormComponent extends AsyncHandler implements OnInit {
         }
     }
 
-    private _normaliseCommit(commit: GitCommitDetails): RepositoryCommit {
+    private _normaliseCommit(commit: GitRepositoryCommit): RepositoryCommit {
         return {
             ...commit,
             hash: commit.commit,

@@ -1,8 +1,8 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { Component, inject, input } from '@angular/core';
-import { PlaceDriverRole } from '@placeos/ts-client';
-import { downloadFile, jsonToCsv } from '../common/general';
+import { PlaceDriverRole } from '@placeos/ts-client/compat';
+import { cleanObject, downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifySuccess } from '../common/notifications';
@@ -21,8 +21,7 @@ export interface DisplayItem {
     running?: boolean;
     role?: number;
     domain?: string;
-    tags?: unknown[];
-    toJSON: () => Record<string, unknown>;
+    tags?: readonly unknown[];
 }
 
 /** Extra entry for the item actions menu */
@@ -285,9 +284,20 @@ export class ItemDetailsComponent {
      * Export the active item as a CSV
      */
     public exportAsTSV() {
-        const item = this.item()?.toJSON();
+        // Drop empty values, as the 6.x `toJSON` of the item did
+        const item: Record<string, unknown> = cleanObject({ ...this.item() }, [
+            undefined,
+            null,
+            '',
+        ]);
         const filename = `${(item?.name as string).toLowerCase().split(' ').join('_')}.${this.type()}.tsv`;
-        const ignore_keys = ['module_list', 'settings', '_type', 'version'];
+        const ignore_keys = [
+            'module_list',
+            'settings',
+            '_type',
+            'version',
+            'created_at',
+        ];
         const csv_data = jsonToCsv(
             [item],
             Object.keys(item).filter((key) => ignore_keys.indexOf(key) < 0),

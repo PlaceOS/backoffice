@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { PlaceResource } from '@placeos/ts-client';
 import { ActiveItemService } from '../common/item.service';
+import { PlaceResource } from '../common/types';
 import { MetadataDisplayComponent } from './metadata-display.component';
 
 /** Metadata tab of the active item */

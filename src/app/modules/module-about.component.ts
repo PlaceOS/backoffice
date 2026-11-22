@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { PlaceModule } from '@placeos/ts-client';
+import { type Module } from '@placeos/ts-client';
 import { hasSupportRole } from '../common/support-access';
 
 import { Dialog } from '@angular/cdk/dialog';
@@ -190,12 +190,12 @@ import { ModuleStateService } from './module-state.service';
             </section>
             <hr class="my-4" />
             @let other_settings_value = other_settings();
-            @if (item.settings && other_settings_value) {
+            @if (settings() && other_settings_value) {
                 <section>
                     <a-settings-form
                         [id]="item.id"
                         [merge]="true"
-                        [settings]="item.settings"
+                        [settings]="settings()"
                         [merge_settings]="other_settings_value || []"
                     />
                 </section>
@@ -248,8 +248,10 @@ export class ModuleAboutComponent {
     /** Whether module is being stopped */
     public readonly stopping = signal(false);
 
-    public get item(): PlaceModule {
-        return this._service.active_item as PlaceModule;
+    public readonly settings = this._service.settings;
+
+    public get item(): Module {
+        return this._service.active_item as Module;
     }
 
     public async toggleModuleState() {

@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { listInterfaceRepositories } from '@placeos/ts-client';
+import { repositories } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
@@ -71,7 +72,7 @@ export class AdminInterfacesComponent implements OnInit {
     public async loadInterfaces() {
         this.loading.set(true);
         try {
-            const mapping = await listInterfaceRepositories();
+            const mapping = await repositories.loadedInterfaces().then(orThrow);
             const list = Object.keys(mapping).map((id) => ({
                 id,
                 name: mapping[id],

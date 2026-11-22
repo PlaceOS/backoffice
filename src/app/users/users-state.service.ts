@@ -1,17 +1,15 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
 import {
-    addGroupUser,
-    listMetadata,
-    PlaceGroup,
-    PlaceGroupUser,
-    PlaceUser,
-    queryGroups,
-    queryGroupUsers,
-    removeGroupUser,
-    reviveUser,
-    updateGroupUser,
+    type Group,
+    groups,
+    groups_users,
+    type GroupUser,
+    metadata,
+    type User,
+    users,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
@@ -40,14 +38,16 @@ export class UsersStateService {
     // The metadata tab loads its own list, so only the count is needed here
     private readonly _metadata_count = resource({
         params: () => ({
-            item: this._service.active_item$(),
+            item: this._service.activeOf('users'),
             change: this._change(),
         }),
         loader: async ({ params }) => {
             const { item } = params;
-            if (!(item instanceof PlaceUser)) return 0;
-            return listMetadata(item.id)
-                .then((d) => d.length)
+            if (!item) return 0;
+            return metadata
+                .show({ id: item.id })
+                .then(orThrow)
+                .then((by_name) => Object.keys(by_name).length)
                 .catch((_err) => 0);
         },
     });
@@ -59,10 +59,9 @@ export class UsersStateService {
         }),
     );
 
-    private readonly _user_id = computed(() => {
-        const item = this.item();
-        return item instanceof PlaceUser ? item.id : undefined;
-    });
+    private readonly _user_id = computed(
+        () => this._service.activeOf('users')?.id || undefined,
+    );
     // The group list only loads once its tab is opened. Until then a single
     // row query gives the tab count.
     private readonly _opened_tabs = openedTabs(this._user_id);
@@ -72,25 +71,25 @@ export class UsersStateService {
 
     private readonly _groups = resource({
         params: () => ({
-            item: this.item(),
+            item: this._service.activeOf('users'),
             change: this._change(),
             full: this._load_groups(),
         }),
         loader: async ({ params }) => {
             const { item, full } = params;
-            const empty = { data: [] as PlaceGroupUser[], total: 0 };
-            if (!(item instanceof PlaceUser)) return empty;
-            const response = await queryGroupUsers({
-                user_id: item.id,
-                limit: full ? 1000 : 1,
-            }).catch((error) => {
-                notifyError(
-                    i18n('USERS.GROUPS_LOAD_ERROR', {
-                        error: describeError(error),
-                    }),
-                );
-                return empty;
-            });
+            const empty = { data: [] as GroupUser[], total: 0 };
+            if (!item) return empty;
+            const response = await groups_users
+                .query({ user_id: item.id, limit: full ? 1000 : 1 })
+                .then(orThrowPage)
+                .catch((error) => {
+                    notifyError(
+                        i18n('USERS.GROUPS_LOAD_ERROR', {
+                            error: describeError(error),
+                        }),
+                    );
+                    return empty;
+                });
             if (!full) return { ...empty, total: response.total };
             return {
                 total: response.total,
@@ -105,12 +104,12 @@ export class UsersStateService {
 
     public readonly groups = computed(() => this._groups.value()?.data || []);
 
-    public get active_item(): PlaceUser {
-        return this._service.active_item as unknown as PlaceUser;
+    public get active_item(): User {
+        return this._service.active_item as unknown as User;
     }
 
     /** Group memberships of the active user */
-    public readonly group_members = groupMembership<PlaceGroupUser, PlaceGroup>(
+    public readonly group_members = groupMembership<GroupUser, Group>(
         this._dialog,
         {
             one: 'USERS.GROUP',
@@ -122,20 +121,34 @@ export class UsersStateService {
             no_permissions: 'COMMON.DEFAULT',
             rows: () => this.groups(),
             authority_id: () => this.active_item?.authority_id,
-            query: (q, authority_id) =>
-                queryGroups({ q, limit: 20, authority_id } as Record<
-                    string,
-                    unknown
-                >).then((response) => response.data),
+            // The API lists the groups of the current domain only
+            query: (q) =>
+                groups
+                    .query({ q, limit: 20 })
+                    .then(orThrowPage)
+                    .then((response) => [...response.data]),
             member_id: (row) => row.group_id,
             member_name: (row) => row.group?.name || row.group_id,
             member_detail: (row) => row.group_id,
             item_authority: (group) => group.authority_id,
             add: (group_id) =>
-                addGroupUser({ user_id: this.active_item.id, group_id }),
-            remove: (row) => removeGroupUser(row.user_id, row.group_id),
+                groups_users
+                    .create({
+                        body: { user_id: this.active_item.id, group_id },
+                    })
+                    .then(orThrow),
+            remove: (row) =>
+                groups_users
+                    .destroy({ user_id: row.user_id, group_id: row.group_id })
+                    .then(orThrow),
             update: (row, { permissions }) =>
-                updateGroupUser(row.user_id, row.group_id, { permissions }),
+                groups_users
+                    .update({
+                        user_id: row.user_id,
+                        group_id: row.group_id,
+                        body: { permissions },
+                    })
+                    .then(orThrow),
             changed: () => this.changed(),
         },
     );
@@ -158,11 +171,9 @@ export class UsersStateService {
         if (details.reason !== 'done') return;
         details.loading(i18n('USERS.REVIVE_LOADING'));
         try {
-            await reviveUser(item.id);
+            await users.revive({ id: item.id }).then(orThrow);
             if (this._service.active_item === item) {
-                this._service.replaceItem(
-                    new PlaceUser({ ...item, deleted: false }),
-                );
+                this._service.replaceItem({ ...item, deleted: false });
             }
             this.changed();
             notifySuccess(i18n('USERS.REVIVE_SUCCESS'));

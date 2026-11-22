@@ -10,17 +10,18 @@ import {
 } from '@angular/core';
 import { FormField, form } from '@angular/forms/signals';
 import {
-    PlaceUser,
-    addUser,
-    authority,
-    queryDomains,
-    updateUser,
+    User,
+    domains as domains_v7,
+    users,
+    type JsonValue,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { isSubsystemUser } from '../common/support-access';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
+import { authority, newItem } from '../common/placeos';
 import { DialogEvent } from '../common/types';
 import { ChipListComponent } from '../ui/controls/chip-list.component';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -379,7 +380,7 @@ export class UserFormComponent {
     public readonly isSubsystemUser = isSubsystemUser;
     private _dialog_ref =
         inject<DialogRef<unknown, UserFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceUser; readonly?: string }>(DIALOG_DATA);
+    private _data = inject<{ item: User; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'USERS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -402,7 +403,7 @@ export class UserFormComponent {
         loader: async () =>
             isSubsystemUser()
                 ? [authority()].filter(Boolean)
-                : (await queryDomains()).data,
+                : (await domains_v7.query({}).then(orThrowPage)).data,
     });
     public readonly domain_list = computed(
         () => this._domain_list.value() || [],
@@ -445,8 +446,15 @@ export class UserFormComponent {
                         delete form_item[key];
                     form_item.authority_id = authority()?.id;
                 }
-                const user = form_item as unknown as PlaceUser;
-                return user.id ? updateUser(user.id, user) : addUser(user);
+                // The body is any JSON, so it keeps the password fields. The round
+                // trip sends what 6.x sent, without `undefined` values
+                const body: JsonValue = JSON.parse(JSON.stringify(form_item));
+                const id = this._data.item.id;
+                return (
+                    id
+                        ? users.update({ id, body }).then(orThrow)
+                        : users.create({ body }).then(orThrow)
+                ).then((user) => newItem(User, user));
             },
         );
     }

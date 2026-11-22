@@ -2,7 +2,8 @@ import { DialogRef } from '@angular/cdk/dialog';
 import { SlicePipe } from '@angular/common';
 import { Component, computed, inject, resource, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { queryDrivers, updateDriver } from '@placeos/ts-client';
+import { type Driver, drivers as drivers_v7 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
 import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
@@ -111,8 +112,9 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                             >
                                             <div class="text-xs opacity-60">
                                                 {{
-                                                    driver.update_info.date
-                                                        | dateFrom
+                                                    updateTime(
+                                                        driver.update_info.date
+                                                    ) | dateFrom
                                                 }}
                                             </div>
                                         </td>
@@ -183,28 +185,27 @@ export class DriverUpdateListModalComponent {
         params: () => this._change(),
         loader: async () => {
             this.loading.set(i18n('DRIVERS.LOADING'));
-            const response = await queryDrivers({
-                update_available: true,
-                limit: 1000,
-            }).catch(reportLoadError({ data: [], total: 0 }));
-            response.data = response.data.filter(
-                (_) => _.commit !== _.update_info.commit,
-            );
-            response.data = response.data.sort((a, b) =>
-                a.name.localeCompare(b.name),
-            );
-            // Keep total in sync with the filtered list for select all
-            response.total = response.data.length;
+            const response = await drivers_v7
+                .query({ update_available: true, limit: 1000 })
+                .then(orThrowPage)
+                .catch(reportLoadError({ data: [] as Driver[], total: 0 }));
+            const data = response.data
+                .filter((_) => _.commit !== _.update_info?.commit)
+                .sort((a, b) => a.name.localeCompare(b.name));
             // Updates reload live modules, so the user picks them on purpose
             this.selected_drivers.set([]);
             this.loading.set('');
-            return response;
+            // Keep total in sync with the filtered list for select all
+            return { ...response, data, total: data.length };
         },
     });
     public readonly drivers_with_updates = computed(
         () => this._drivers_with_updates.value() || { data: [], total: 0 },
     );
     public readonly selected_drivers = signal<string[]>([]);
+    /** The API gives the commit date as text */
+    public readonly updateTime = (date: string | null) =>
+        date ? Date.parse(date) : 0;
 
     public readonly all_selected = computed(
         () =>
@@ -242,10 +243,15 @@ export class DriverUpdateListModalComponent {
         const results = await Promise.allSettled(
             selected.map((driver) =>
                 driver.commit !== driver.update_info.commit
-                    ? updateDriver(driver.id, {
-                          ...driver,
-                          commit: driver.update_info.commit,
-                      })
+                    ? drivers_v7
+                          .update({
+                              id: driver.id,
+                              body: {
+                                  ...driver,
+                                  commit: driver.update_info.commit,
+                              },
+                          })
+                          .then(orThrow)
                     : Promise.resolve(),
             ),
         );

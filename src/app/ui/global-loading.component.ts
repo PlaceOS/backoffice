@@ -1,8 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { authority, token } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../common/async-handler.class';
-import { getLoadingMessage } from '../common/placeos';
+import { getLoadingMessage, online } from '../common/placeos';
 import { SettingsService } from '../common/settings.service';
 import { waitForSignalValue } from '../common/signals';
 import { ProgressBarComponent } from './controls/progress-bar.component';
@@ -59,14 +58,14 @@ export class GlobalLoadingComponent extends AsyncHandler implements OnInit {
 
     public async ngOnInit() {
         this.loading.set(true);
-        // Keep checking for a token even if settings are slow to load
+        // Keep checking for a login even if settings are slow to load
         await waitForSignalValue(this._settings.initialised, (_) => _).catch(
             () => null,
         );
         this.interval(
             'has_token',
             () => {
-                if (!authority() || !token()) return;
+                if (!online()) return;
                 this.loading.set(false);
                 this.clearInterval('has_token');
             },

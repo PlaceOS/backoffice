@@ -5,10 +5,8 @@ import { AuthenticatedImageDirective } from '../../../app/ui/authenticated-image
 import { UserAvatarComponent } from '../../../app/ui/user-avatar.component';
 
 // Mock the ts-client to avoid CJS/ESM issues
-vi.mock('@placeos/ts-client', () => ({
-    apiKey: vi.fn(() => ''),
+vi.mock('../../../app/common/placeos', () => ({
     authority: vi.fn(() => null),
-    token: vi.fn(() => ''),
 }));
 
 // Define a local type since we can't import from mocked module

@@ -1,7 +1,9 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { addSystem, query, querySystemsWithEmails } from '@placeos/ts-client';
+import { systems as systems_v7 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
+import { place } from '@placeos/ts-client/staff';
 import { mapLimit } from '../common/cascade-delete';
 import { readError } from '../common/errors';
 import { escapeHtml } from '../common/general';
@@ -258,22 +260,27 @@ export class ResourceImportsComponent implements OnInit {
     ): Promise<boolean> {
         const domain = this.domain();
         if (!domain) return false;
-        const system = await addSystem({
-            name: `[${domain.name}] ${resource.display_name}`,
-            email: resource.email,
-            display_name: resource.display_name,
-            capacity: resource.capacity,
-        }).catch(async (error) => {
-            if (notify) {
-                notifyError(
-                    i18n('ADMIN.RESOURCE_IMPORTS_ERROR', {
-                        name: resource.display_name,
-                        error: await readError(error),
-                    }),
-                );
-            }
-            return null;
-        });
+        const system = await systems_v7
+            .create({
+                body: {
+                    name: `[${domain.name}] ${resource.display_name}`,
+                    email: resource.email,
+                    display_name: resource.display_name,
+                    capacity: resource.capacity,
+                },
+            })
+            .then(orThrow)
+            .catch(async (error) => {
+                if (notify) {
+                    notifyError(
+                        i18n('ADMIN.RESOURCE_IMPORTS_ERROR', {
+                            name: resource.display_name,
+                            error: await readError(error),
+                        }),
+                    );
+                }
+                return null;
+            });
         if (!system) return false;
         // Replace the row so the zoneless table updates
         this.resource_list.update((list) =>
@@ -297,15 +304,13 @@ export class ResourceImportsComponent implements OnInit {
         this.resource_list.set([]);
         if (!this.domain()) return;
         this.loading.set(true);
-        const result = await query<ExternalResource>({
-            path: 'place',
-            endpoint: '/api/staff/v1',
-            query_params: {
-                limit: 1000,
-                authority_id: this.domain().id,
-            },
-        }).catch((__) => ({ data: [] }));
-        const list = result.data.map((_) => ({
+        // The staff API lists the rooms of the tenant of this domain. It
+        // ignored the `limit` and `authority_id` that 6.x sent, so they are gone
+        const rooms = await place
+            .query({})
+            .then(orThrow)
+            .catch(() => []);
+        const list: ExternalResource[] = rooms.map((_) => ({
             id: _.id || '',
             booking_type: _.bookingType,
             capacity: _.capacity,
@@ -314,7 +319,7 @@ export class ResourceImportsComponent implements OnInit {
             is_accessible: _.isWheelChairAccessible ?? false,
             nickname: _.nickname || '',
             phone: _.phone || '',
-            tags: _.tags || [],
+            tags: [...(_.tags || [])],
             imported: false,
             system_id: '',
         }));
@@ -324,9 +329,11 @@ export class ResourceImportsComponent implements OnInit {
             // Send the emails in chunks to keep each URL under common 8 KB limits
             for (let i = 0; i < emails.length; i += EMAIL_CHUNK_SIZE) {
                 const systems = await collectPages(
-                    querySystemsWithEmails({
-                        in: emails.slice(i, i + EMAIL_CHUNK_SIZE).join(','),
-                    }),
+                    systems_v7
+                        .findByEmail({
+                            in: emails.slice(i, i + EMAIL_CHUNK_SIZE),
+                        })
+                        .then(orThrowPage),
                 );
                 for (const system of systems) {
                     const email = system.email?.toLowerCase();

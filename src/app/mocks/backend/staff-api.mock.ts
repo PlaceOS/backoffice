@@ -1,4 +1,4 @@
-import { registerMockEndpoint } from '@placeos/ts-client';
+import { registerMockEndpoint } from '@placeos/ts-client/compat';
 import { HashMap } from '../../common/types';
 import {
     API,
@@ -15,7 +15,7 @@ import { UI_MOCKS } from '../data/ui-mocks';
 
 const TENANT_DATA = [
     {
-        id: 'tenant-default',
+        id: 1,
         name: 'Default Tenant',
         domain: DOMAIN,
         platform: 'google',
@@ -34,13 +34,16 @@ const TENANT_FILTER = (item: Record<string, unknown>, q: HashMap) =>
 
 generateBasicHandlers(`${STAFF_API}/tenants`, TENANT_DATA, {
     filter: TENANT_FILTER,
-    id_prefix: 'tenant-',
+    // Staff API tenants have number IDs
+    new_id: () =>
+        Math.max(0, ...endpointData(`${STAFF_API}/tenants`).map((_) => +_.id)) +
+        1,
 });
 
 /** Find a tenant, or fail with a 404 */
 function findTenant(id: string) {
     const tenant = endpointData(`${STAFF_API}/tenants`).find(
-        (item) => item.id === id,
+        (item) => `${item.id}` === id,
     );
     if (!tenant) throw { status: 404, message: 'Tenant not found' };
     return tenant;

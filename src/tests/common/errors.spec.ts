@@ -1,3 +1,4 @@
+import { CallFailed } from '@placeos/ts-client/compat';
 import { describe, expect, it } from 'vitest';
 import { describeError, readError } from '../../app/common/errors';
 
@@ -23,6 +24,18 @@ describe('describeError', () => {
     it('never renders an empty reason or "{}"', () => {
         expect(describeError(undefined)).toBe('Unknown error');
         expect(describeError({})).toBe('Unknown error');
+    });
+});
+
+describe('a v7 call that failed', () => {
+    it('shows the status and the message of the JSON body', async () => {
+        const error = new CallFailed({
+            kind: 'http',
+            status: 422,
+            message: null,
+            body: { message: 'name taken' },
+        });
+        expect(await readError(error)).toBe('422 request failed: name taken');
     });
 });
 

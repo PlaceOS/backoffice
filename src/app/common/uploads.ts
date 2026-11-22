@@ -3,9 +3,9 @@ import {
     initUploads,
     uploadFile as uploadNewFile,
 } from '@placeos/cloud-uploads';
-import { token } from '@placeos/ts-client';
 
 import { randomInt } from './general';
+import { validCredential } from './placeos';
 import { SubscriptionLike } from './signals';
 
 /** Token last passed to the upload service */
@@ -15,17 +15,22 @@ let upload_token = '';
  * Initialise the upload service with the current PlaceOS token.
  * Call before each upload. The upload library has no token setter, so it is
  * initialised again only when the token has changed since the last call.
+ * Resolves `false` when there is no valid token, so the upload must not start.
  */
-export function syncUploadToken() {
-    const current_token = token();
-    if (!current_token || current_token === upload_token) return;
-    upload_token = current_token;
+export async function syncUploadToken(): Promise<boolean> {
+    const credential = await validCredential();
+    const current_token = credential?.kind === 'bearer' ? credential.token : '';
+    if (!current_token) return false;
+    if (current_token === upload_token) return true;
     initUploads({
         auto_start: true,
         token: current_token,
         endpoint: '/api/engine/v2/uploads',
         worker_url: 'assets/md5_worker.js',
     });
+    // Only after the upload service starts, so a failed start tries again
+    upload_token = current_token;
+    return true;
 }
 
 function uploadURL(id: string) {
@@ -77,13 +82,29 @@ export function uploadFile(
             let cancelled = false;
             let state_subscription: SubscriptionLike | null = null;
             // Pass the File as is. The upload library reads it in chunks.
+            const fail = (reason: string) =>
+                error?.({
+                    id: randomInt(9999_9999_9999),
+                    name: file.name,
+                    progress: 0,
+                    link: '',
+                    formatted_size: humanReadableByteCount(file.size),
+                    size: file.size,
+                    error: reason,
+                    upload: null,
+                });
             (async () => {
-                syncUploadToken();
+                // `null`: the upload service did not start
+                const authorised = await syncUploadToken().catch(() => null);
+                if (cancelled) return;
+                if (authorised === null) return fail('Upload failed');
+                if (!authorised) return fail('Not signed in');
                 const upload = await uploadNewFile(file, {
                     permissions,
                     public: is_public,
-                } as Record<string, unknown>);
+                } as Record<string, unknown>).catch(() => null);
                 if (cancelled) return;
+                if (!upload) return fail('Upload failed');
                 const upload_details: UploadDetails = {
                     id: randomInt(9999_9999_9999),
                     name: file.name,

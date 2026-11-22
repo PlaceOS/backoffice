@@ -1,18 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { PlaceUser } from '@placeos/ts-client';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { User } from '@placeos/ts-client';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import {
     generateUserFormModel,
     userFormSchema,
 } from '../../app/users/users.utilities';
 import { createTestForm } from '../common/form-test.helpers';
 
-// Use the browser entry because the client marks its CommonJS entry as ESM.
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
-
-const user = new PlaceUser({
+const user = newItem(User, {
     id: 'user-1',
     authority_id: 'domain-1',
     first_name: 'Alex',
@@ -55,7 +51,7 @@ describe('user form validation', () => {
 
     it('locks the authority when a subsystem user creates an account', () => {
         const { fields } = createTestForm(
-            generateUserFormModel(new PlaceUser({ authority_id: 'domain-1' })),
+            generateUserFormModel(newItem(User, { authority_id: 'domain-1' })),
             userFormSchema(undefined, true),
         );
         expect(fields.authority_id().disabled()).toBe(true);

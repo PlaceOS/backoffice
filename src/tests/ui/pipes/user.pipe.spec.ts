@@ -1,18 +1,25 @@
+import { users } from '@placeos/ts-client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UserPipe } from '../../../app/ui/pipes/user.pipe';
 
-// Mock the @placeos/ts-client module
-vi.mock('@placeos/ts-client', () => ({
-    showUser: vi.fn((id: string) =>
-        Promise.resolve({
-            id,
-            name: `User ${id}`,
-            email: `${id}@example.com`,
-            card_number: `card-${id}`,
-        }),
-    ),
-    PlaceUser: class {},
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    const { mockReply } = await import('@placeos/ts-client/compat');
+    return {
+        ...actual,
+        users: {
+            ...actual.users,
+            show: vi.fn(async ({ id }: { id: string }) =>
+                mockReply({
+                    id,
+                    name: `User ${id}`,
+                    email: `${id}@example.com`,
+                    card_number: `card-${id}`,
+                }),
+            ),
+        },
+    };
+});
 
 describe('UserPipe', () => {
     let pipe: UserPipe;
@@ -45,22 +52,22 @@ describe('UserPipe', () => {
         });
 
         it('should cache user after first fetch', async () => {
-            const { showUser } = await import('@placeos/ts-client');
+            const showUser = users.show;
 
             // First call
             await pipe.transform('user-456');
-            const first_call_count = (showUser as any).mock.calls.length;
+            const first_call_count = vi.mocked(showUser).mock.calls.length;
 
             // Second call with same id should use cache
             await pipe.transform('user-456');
-            const second_call_count = (showUser as any).mock.calls.length;
+            const second_call_count = vi.mocked(showUser).mock.calls.length;
 
             // showUser should only be called once due to caching
             expect(second_call_count).toBe(first_call_count);
         });
 
         it('should share a request that is in flight', async () => {
-            const { showUser } = await import('@placeos/ts-client');
+            const showUser = users.show;
 
             await Promise.all([
                 pipe.transform('user-789'),
@@ -71,7 +78,7 @@ describe('UserPipe', () => {
         });
 
         it('should retry a lookup that failed', async () => {
-            const { showUser } = await import('@placeos/ts-client');
+            const showUser = users.show;
             vi.mocked(showUser).mockRejectedValueOnce(new Error('offline'));
 
             expect(await pipe.transform('user-retry')).toEqual({});

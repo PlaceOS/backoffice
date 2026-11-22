@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { TriggerConditionOperator } from '@placeos/ts-client';
+import { TriggerConditionOperator } from '@placeos/ts-client/compat';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     applyTriggerActionFormSchema,
@@ -9,9 +9,7 @@ import {
 } from '../../app/triggers/triggers.utilities';
 import { createTestForm } from '../common/form-test.helpers';
 
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
+vi.mock('@placeos/ts-client', () => vi.importActual('@placeos/ts-client'));
 
 describe('trigger conditions and actions', () => {
     beforeEach(() => TestBed.configureTestingModule({}));
@@ -73,7 +71,7 @@ describe('trigger conditions and actions', () => {
         fields.action_type().value.set('function');
         fields
             .method_call()
-            .value.set({ mod: 'Display_1', method: 'power_on' });
+            .value.set({ mod: 'Display_1', method: 'power_on', args: null });
         expect(fields().valid()).toBe(true);
     });
 });

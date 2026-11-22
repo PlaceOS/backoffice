@@ -265,11 +265,10 @@ export class StorageProviderModalComponent {
         await submit(this.form, async () => undefined);
         if (this.form().invalid()) return;
         this.loading.set('Saving storage provider...');
-        const details = { ...this.formModel() } as PlaceStorage;
-        if (details.id && !details.access_secret) {
-            delete (details as PlaceStorage & { access_secret?: unknown })
-                .access_secret;
-        }
+        const { access_secret, ...model } = this.formModel();
+        // An edit without a new secret keeps the stored one
+        const details: Partial<PlaceStorage> =
+            model.id && !access_secret ? model : { ...model, access_secret };
         try {
             await saveStorage(details);
         } catch (err) {

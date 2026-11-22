@@ -19,12 +19,10 @@ vi.mock('../../../app/common/support-access', () => ({
 }));
 
 const connection = await vi.hoisted(async () => {
-    const { createSignal } = await import(
-        '@placeos/ts-client/dist/index.es.js'
-    );
-    return createSignal(true);
+    const { signal } = await import('@angular/core');
+    return signal(true);
 });
-vi.mock('@placeos/ts-client', () => ({ onlineState: () => connection }));
+vi.mock('../../../app/common/placeos', () => ({ online: connection }));
 vi.mock('../../../app/users/users.service', () => ({
     BackofficeUsersService: class {},
 }));

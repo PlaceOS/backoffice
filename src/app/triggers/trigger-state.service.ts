@@ -1,17 +1,18 @@
-import { Service, computed, inject, resource, signal } from '@angular/core';
+import { computed, inject, resource, Service, signal } from '@angular/core';
 import {
-    PlaceSystem,
-    PlaceTrigger,
-    TriggerComparison,
-    TriggerFunction,
-    TriggerMailer,
-    TriggerTimeCondition,
-    listTriggerInstances,
-    removeSystemTrigger,
-    showZone,
-    updateTrigger,
-    updateZone,
+    type System,
+    system_triggers,
+    Trigger,
+    TriggerActionsEmail,
+    TriggerActionsFunction,
+    TriggerConditionsComparison,
+    TriggerConditionsTimeDependent,
+    type TriggerInstance,
+    triggers,
+    Zone,
+    zones,
 } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { Dialog } from '@angular/cdk/dialog';
 import { describeError } from '../common/errors';
@@ -20,6 +21,7 @@ import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { toBody } from '../common/placeos';
 import { waitForDialog } from '../common/signals';
 import { DialogEvent, Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -31,6 +33,11 @@ import {
     TriggerConditionData,
     TriggerConditionModalComponent,
 } from '../ui/forms/trigger-condition-modal.component';
+import {
+    type TriggerActionLists,
+    triggerActions,
+    triggerConditions,
+} from './triggers.utilities';
 
 @Service()
 export class TriggerStateService {
@@ -38,9 +45,7 @@ export class TriggerStateService {
     private _dialog = inject(Dialog);
 
     private _change = signal(0);
-    public readonly item = computed(
-        () => this._service.item() as unknown as PlaceTrigger,
-    );
+    public readonly item = computed(() => this._service.activeOf('triggers'));
 
     public readonly loading = computed(() => this._instances.isLoading());
 
@@ -48,25 +53,28 @@ export class TriggerStateService {
         params: () => ({ item: this.item(), changed: this._change() }),
         loader: async ({ params }) => {
             const { item } = params;
-            if (!(item instanceof PlaceTrigger)) return [] as PlaceTrigger[];
-            return listTriggerInstances(item.id).catch(
-                reportLoadError([] as PlaceTrigger[]),
-            );
+            if (!item) return [] as readonly TriggerInstance[];
+            return triggers
+                .instances({ id: item.id })
+                .then(orThrow)
+                .catch(reportLoadError([] as readonly TriggerInstance[]));
         },
     });
 
     public readonly instances = computed(() => this._instances.value() || []);
 
-    public get active_item(): PlaceTrigger {
-        return this._service.active_item as PlaceTrigger;
+    public get active_item(): Trigger {
+        return this._service.active_item as Trigger;
     }
 
     /**
      * Add new condition to trigger
      */
     public async editCondition(
-        condition: TriggerComparison | TriggerTimeCondition = null,
-        template: PlaceSystem,
+        condition:
+            | TriggerConditionsComparison
+            | TriggerConditionsTimeDependent = null,
+        template: System,
     ) {
         if (!template) return;
         const ref = this._dialog.open<
@@ -84,9 +92,9 @@ export class TriggerStateService {
                 system: template,
             },
         });
-        const result: DialogEvent<{ trigger: PlaceTrigger }> | null =
+        const result: DialogEvent<{ trigger: Trigger }> | null =
             (await waitForDialog(ref, 'done')) as DialogEvent<{
-                trigger: PlaceTrigger;
+                trigger: Trigger;
             }> | null;
         if (!result?.reason || !result.metadata?.trigger) return;
         this._service.replaceItem(
@@ -99,8 +107,8 @@ export class TriggerStateService {
      * @param action Action to edit
      */
     public async editAction(
-        action: TriggerFunction | TriggerMailer = null,
-        template: PlaceSystem,
+        action: TriggerActionsFunction | TriggerActionsEmail = null,
+        template: System,
     ) {
         if (!template) return;
         const ref = this._dialog.open<
@@ -114,9 +122,9 @@ export class TriggerStateService {
                 system: template,
             },
         });
-        const result: DialogEvent<{ trigger: PlaceTrigger }> | null =
+        const result: DialogEvent<{ trigger: Trigger }> | null =
             (await waitForDialog(ref, 'done')) as DialogEvent<{
-                trigger: PlaceTrigger;
+                trigger: Trigger;
             }> | null;
         if (!result?.reason || !result.metadata?.trigger) return;
         this._service.replaceItem(
@@ -143,32 +151,22 @@ export class TriggerStateService {
             this._dialog,
         );
         if (details.reason !== 'done') return;
-        const list: Array<TriggerFunction | TriggerMailer> = [
-            ...(type === 'function'
-                ? this.active_item.actions.functions
-                : this.active_item.actions.mailers),
-        ];
-        moveItemInArray(list, fst, snd);
-        const actions: {
-            functions: TriggerFunction[];
-            mailers: TriggerMailer[];
-        } = {
-            functions:
-                type === 'function'
-                    ? (list as TriggerFunction[])
-                    : this.active_item.actions.functions,
-            mailers:
-                type === 'function'
-                    ? this.active_item.actions.mailers
-                    : (list as TriggerMailer[]),
-        };
+        const actions: TriggerActionLists = triggerActions(this.active_item);
+        if (type === 'function') {
+            moveItemInArray(actions.functions, fst, snd);
+        } else {
+            moveItemInArray(actions.mailers, fst, snd);
+        }
         details.loading(i18n('TRIGGERS.REORDER_CONFIRM_LOADING'));
-        const resp = await updateTrigger(this.active_item.id, {
-            ...this.active_item.toJSON(),
-            actions,
-        }).catch((_) => _);
+        const resp = await triggers
+            .update({
+                id: this.active_item.id,
+                body: { ...toBody(Trigger, this.active_item), actions },
+            })
+            .then(orThrow)
+            .catch((_) => _);
         details.close();
-        if (!(resp instanceof PlaceTrigger)) {
+        if (!resp?.id) {
             return notifyError(
                 i18n('TRIGGERS.REORDER_CONFIRM_ERROR', {
                     error: describeError(resp),
@@ -180,7 +178,7 @@ export class TriggerStateService {
     }
 
     public async removeCondition(
-        condition: TriggerComparison | TriggerTimeCondition,
+        condition: TriggerConditionsComparison | TriggerConditionsTimeDependent,
     ) {
         const details = await openConfirmModal(
             {
@@ -193,11 +191,9 @@ export class TriggerStateService {
         if (details.reason !== 'done') return;
         details.loading(i18n('TRIGGERS.REMOVE_CONDITION_LOADING'));
         const item = this.active_item;
-        const conditions = {
-            comparisons: [...item.conditions.comparisons],
-            time_dependents: [...item.conditions.time_dependents],
-        };
-        const list = (condition as TriggerTimeCondition).type
+        const conditions = triggerConditions(item);
+        const list: unknown[] = (condition as TriggerConditionsTimeDependent)
+            .type
             ? conditions.time_dependents
             : conditions.comparisons;
         const index = list.findIndex(
@@ -212,12 +208,15 @@ export class TriggerStateService {
             );
         }
         list.splice(index, 1);
-        const resp = await updateTrigger(item.id, {
-            ...item.toJSON(),
-            conditions,
-        }).catch((err) => err);
+        const resp = await triggers
+            .update({
+                id: item.id,
+                body: { ...toBody(Trigger, item), conditions },
+            })
+            .then(orThrow)
+            .catch((err) => err);
         details.close();
-        if (!(resp instanceof PlaceTrigger)) {
+        if (!resp?.id) {
             return notifyError(
                 i18n('TRIGGERS.REMOVE_CONDITION_ERROR', {
                     error: describeError(resp),
@@ -228,7 +227,9 @@ export class TriggerStateService {
         notifySuccess(i18n('TRIGGERS.REMOVE_CONDITION_SUCCESS'));
     }
 
-    public async removeAction(action: TriggerFunction | TriggerMailer) {
+    public async removeAction(
+        action: TriggerActionsFunction | TriggerActionsEmail,
+    ) {
         const details = await openConfirmModal(
             {
                 title: i18n('TRIGGERS.REMOVE_ACTION_TITLE'),
@@ -240,14 +241,11 @@ export class TriggerStateService {
         if (details.reason !== 'done') return;
         details.loading(i18n('TRIGGERS.REMOVE_ACTION_LOADING'));
         const item = this.active_item;
-        const actions = {
-            functions: [...item.actions.functions],
-            mailers: [...item.actions.mailers],
-        };
+        const actions = triggerActions(item);
         const index = (
-            (action as TriggerMailer).emails
-                ? item.actions.mailers
-                : item.actions.functions
+            (action as TriggerActionsEmail).emails
+                ? actions.mailers
+                : actions.functions
         ).findIndex((i) => JSON.stringify(i) === JSON.stringify(action));
         if (index < 0) {
             details.close();
@@ -257,16 +255,19 @@ export class TriggerStateService {
                 }),
             );
         }
-        ((action as TriggerMailer).emails
+        ((action as TriggerActionsEmail).emails
             ? actions.mailers
             : actions.functions
         ).splice(index, 1);
-        const resp = await updateTrigger(item.id, {
-            ...item.toJSON(),
-            actions,
-        }).catch((err) => err);
+        const resp = await triggers
+            .update({
+                id: item.id,
+                body: { ...toBody(Trigger, item), actions },
+            })
+            .then(orThrow)
+            .catch((err) => err);
         details.close();
-        if (!(resp instanceof PlaceTrigger)) {
+        if (!resp?.id) {
             return notifyError(
                 i18n('TRIGGERS.REMOVE_ACTION_ERROR', {
                     error: describeError(resp),
@@ -277,7 +278,7 @@ export class TriggerStateService {
         notifySuccess(i18n('TRIGGERS.REMOVE_ACTION_SUCCESS'));
     }
 
-    public async removeTriggerFromParent(instance: PlaceTrigger) {
+    public async removeTriggerFromParent(instance: TriggerInstance) {
         const type = (
             instance.zone_id ? i18n('ZONES.SINGULAR') : i18n('SYSTEMS.SINGULAR')
         ).toLowerCase();
@@ -302,19 +303,28 @@ export class TriggerStateService {
         // Zone instances come from the zone's trigger list, so remove it there
         const remove = instance.zone_id
             ? async () => {
-                  const zone = await showZone(instance.zone_id);
-                  await updateZone(zone.id, {
-                      ...zone,
-                      triggers: (zone.triggers || []).filter(
-                          (id) => id !== this.active_item.id,
-                      ),
-                  });
+                  const zone = await zones
+                      .show({ id: instance.zone_id })
+                      .then(orThrow);
+                  await zones
+                      .update({
+                          id: zone.id,
+                          body: {
+                              ...toBody(Zone, zone),
+                              triggers: (zone.triggers || []).filter(
+                                  (id) => id !== this.active_item.id,
+                              ),
+                          },
+                      })
+                      .then(orThrow);
               }
             : () =>
-                  removeSystemTrigger(
-                      instance.control_system_id,
-                      instance?.id || this.active_item.id,
-                  );
+                  system_triggers
+                      .destroy({
+                          sys_id: instance.control_system_id,
+                          trig_id: instance?.id || this.active_item.id,
+                      })
+                      .then(orThrow);
         let err: unknown = await remove().catch((_) => ({ error: _ }));
         details.close();
         if ((err as Record<string, unknown>)?.error) {

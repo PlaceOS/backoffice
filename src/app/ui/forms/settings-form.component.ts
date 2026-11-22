@@ -12,16 +12,14 @@ import {
     WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-    addSettings,
-    EncryptionLevel,
-    PlaceSettings,
-    updateSettings,
-} from '@placeos/ts-client';
+import { Settings, settings as settings_v7 } from '@placeos/ts-client';
+import { EncryptionLevel, orThrow } from '@placeos/ts-client/compat';
 
 import { AsyncHandler } from '../../common/async-handler.class';
+import { cleanObject } from '../../common/general';
 import { HotkeysService } from '../../common/hotkeys.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { newItem, toBody } from '../../common/placeos';
 import { HashMap, Identity } from '../../common/types';
 import { validateYAML } from '../../systems/systems.utilities';
 import { BackofficeUsersService } from '../../users/users.service';
@@ -39,12 +37,19 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
 import { UserPipe } from '../pipes/user.pipe';
 import { TranslatePipe } from '../translate.pipe';
 
-type SettingsArray = [
-    PlaceSettings,
-    PlaceSettings,
-    PlaceSettings,
-    PlaceSettings,
-];
+/** Settings of each encryption level, by level */
+type SettingsArray = Settings[];
+
+/**
+ * Request body to save a settings level. Leaves out the empty fields of a
+ * new level, as the 6.x `PlaceSettings.toJSON` did.
+ */
+function settingsBody(item: Settings, settings_string: string) {
+    return cleanObject(toBody(Settings, { ...item, settings_string }), [
+        null,
+        undefined,
+    ]);
+}
 
 @Component({
     selector: 'a-settings-form',
@@ -226,7 +231,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
     /** Whether to display merged settings */
     public readonly merge = input<boolean>(undefined);
     /** List of settings to merge into the main settings */
-    public readonly merge_settings = input<PlaceSettings[]>(undefined);
+    public readonly merge_settings = input<readonly Settings[]>(undefined);
     /** Form fields for settings */
     public readonly form = signal<HashMap>({
         settings0: '',
@@ -245,10 +250,10 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         false,
         false,
     ]);
-    /** Currently displayed encryption level */
-    public readonly encryption_level = signal<EncryptionLevel>(undefined);
+    /** Currently displayed encryption level. `NeverDisplay + 1` shows the merged settings */
+    public readonly encryption_level = signal<number>(undefined);
     /** Settings available to display on the UI */
-    public readonly used_settings = signal<PlaceSettings[]>([]);
+    public readonly used_settings = signal<Settings[]>([]);
     /** Index of the active settings tab */
     public readonly level_index = computed(() => {
         const current_level = this.encryption_level();
@@ -386,7 +391,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         });
     }
 
-    public type(level: EncryptionLevel) {
+    public type(level: number) {
         switch (level) {
             case EncryptionLevel.None:
                 return i18n('COMMON.SETTINGS_PLAINTEXT');
@@ -435,7 +440,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
     }
 
     /** Save changes to the given setting level */
-    public save(level: EncryptionLevel) {
+    public save(level: number) {
         const item = this.used_settings()[level];
         if (!item || this.saving()[level]) return;
         if (this._hasMaskedValues(level)) {
@@ -443,15 +448,12 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         }
         if (!this._canSave(level)) return;
         this._setSaving(level, true);
-        const details = {
-            ...item,
-            settings_string: this.settingValue(level),
-        };
+        const details = settingsBody(item, this.settingValue(level));
         (item.id
-            ? updateSettings(item.id, details)
-            : addSettings(details)
+            ? settings_v7.update({ id: item.id, body: details }).then(orThrow)
+            : settings_v7.create({ body: details }).then(orThrow)
         ).then(
-            (new_settings: PlaceSettings) => {
+            (new_settings: Settings) => {
                 this._setSaving(level, false);
                 this._clearDirty([level]);
                 this._setSettings(level, new_settings);
@@ -486,19 +488,18 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             if (!item || this.saving()[i] || !this._canSave(i)) continue;
             this._setSaving(i, true);
             saved_levels.push(i);
-            const details = {
-                ...item,
-                settings_string: this.settingValue(i),
-            };
+            const details = settingsBody(item, this.settingValue(i));
             promises.push(
                 item.id
-                    ? updateSettings(item.id, details)
-                    : addSettings(details),
+                    ? settings_v7
+                          .update({ id: item.id, body: details })
+                          .then(orThrow)
+                    : settings_v7.create({ body: details }).then(orThrow),
             );
         }
         if (promises.length) {
             Promise.all(promises).then(
-                (results: PlaceSettings[]) => {
+                (results: Settings[]) => {
                     this._clearDirty(saved_levels);
                     results.forEach((result, index) => {
                         this._setSaving(saved_levels[index], false);
@@ -552,7 +553,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         );
     }
 
-    private _setSettings(level: number, new_settings: PlaceSettings) {
+    private _setSettings(level: number, new_settings: Settings) {
         this.settings.update((s) => {
             const next = [...(s || [])] as SettingsArray;
             next[level] = new_settings;
@@ -594,7 +595,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         });
     }
 
-    private _processSettings(settings: PlaceSettings[]): PlaceSettings[] {
+    private _processSettings(settings: Settings[]): Settings[] {
         if (!settings.length) return [];
         const processed_settings = [];
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
@@ -602,7 +603,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             if (!setting) {
                 processed_settings.push(
                     this._processSetting(
-                        new PlaceSettings({ encryption_level: i }),
+                        newItem(Settings, { encryption_level: i }),
                     ),
                 );
                 continue;
@@ -617,7 +618,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         return processed_settings;
     }
 
-    private _processSetting(setting: PlaceSettings): PlaceSettings {
+    private _processSetting(setting: Settings): Settings {
         if (
             (setting.encryption_level === EncryptionLevel.Admin &&
                 !this.is_admin()) ||
@@ -626,25 +627,23 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             setting.encryption_level === EncryptionLevel.NeverDisplay
         ) {
             const obj = {};
-            for (const key of setting.keys) {
+            for (const key of setting.keys ?? []) {
                 obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
             }
             const settings_string = (setting.keys || []).length
                 ? yaml.dump(obj)
                 : '';
-            return new PlaceSettings({
+            return newItem(Settings, {
                 ...setting,
                 parent_id: this.id(),
                 settings_string,
             });
         }
-        return new PlaceSettings({ ...setting, parent_id: this.id() });
+        return newItem(Settings, { ...setting, parent_id: this.id() });
     }
 
     /** Genereate merged settings from all available settings */
-    private _generateMergedSettings(
-        settings: PlaceSettings[] = [],
-    ): PlaceSettings {
+    private _generateMergedSettings(settings: Settings[] = []): Settings {
         const merge_settings =
             this.merge_settings()?.filter(
                 (item) => item.parent_id !== this.id(),
@@ -654,7 +653,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             try {
                 obj = yaml.load(item.settings_string) || {};
             } catch {
-                for (const key of item.keys) {
+                for (const key of item.keys ?? []) {
                     obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
                 }
             }
@@ -665,7 +664,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             try {
                 obj = yaml.load(item.settings_string) || {};
             } catch {
-                for (const key of item.keys) {
+                for (const key of item.keys ?? []) {
                     obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
                 }
             }
@@ -684,7 +683,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
                 remote_settings.concat(local_settings),
             ),
         );
-        return new PlaceSettings({
+        return newItem(Settings, {
             id: 'merged',
             settings_string,
             parent_id: this.id(),
@@ -694,7 +693,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
 
     private _decorationForSettings(
         display: string,
-        settings: PlaceSettings[],
+        settings: Settings[],
         setting_maps: HashMap[],
     ) {
         const decorations: HashMap = {};
@@ -717,7 +716,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         decorations: HashMap<unknown>,
         obj: HashMap<unknown>,
         display: string,
-        settings: PlaceSettings,
+        settings: Settings,
         type: number,
         prefix = '',
         level = 0,
@@ -758,7 +757,7 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
         }
     }
 
-    private _generateHoverMessage(type: number, settings: PlaceSettings) {
+    private _generateHoverMessage(type: number, settings: Settings) {
         if (type === -1) {
             return i18n('COMMON.SETTINGS_INHERITED', {
                 parent: settings.parent_id,

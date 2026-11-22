@@ -1,16 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { PlaceDriverRole, PlaceSystem } from '@placeos/ts-client';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { System } from '@placeos/ts-client';
+import { PlaceDriverRole } from '@placeos/ts-client/compat';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import {
     applyModuleFormSchema,
     generateModuleFormModel,
 } from '../../app/modules/modules.utilities';
 import { createTestForm } from '../common/form-test.helpers';
-
-// Use the browser entry because the client marks its CommonJS entry as ESM.
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
 
 describe('module form validation', () => {
     beforeEach(() => TestBed.configureTestingModule({}));
@@ -83,7 +80,7 @@ describe('module form validation', () => {
         expect(fields.system().invalid()).toBe(true);
         fields
             .system()
-            .value.set(new PlaceSystem({ id: 'sys-1', name: 'Room' }));
+            .value.set(newItem(System, { id: 'sys-1', name: 'Room' }));
         expect(fields().valid()).toBe(true);
         fields.driver_id().value.set('');
         expect(fields.driver_id().invalid()).toBe(true);

@@ -6,32 +6,36 @@ import {
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
-import { PlaceModule, PlaceSystem, PlaceZone } from '@placeos/ts-client';
+import {
+    metadata,
+    Module,
+    modules,
+    System,
+    system_triggers,
+    systems,
+    Zone,
+    zones,
+} from '@placeos/ts-client';
+import { mockPage, mockReply } from '@placeos/ts-client/compat';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PlaceDebugService } from '../../app/common/debug.service';
 import { ActiveItemService } from '../../app/common/item.service';
 import { notifyError } from '../../app/common/notifications';
+import { newItem } from '../../app/common/placeos';
 import { openConfirmModal } from '../../app/overlays/confirm-modal.component';
 import { SystemStateService } from '../../app/systems/system-state.service';
 
 const mocks = vi.hoisted(() => ({
     isSubsystemUser: vi.fn(),
-    listMetadata: vi.fn(),
-    listSystemTriggers: vi.fn(),
-    listSystemZones: vi.fn(),
-    queryModules: vi.fn(),
-    showZone: vi.fn(),
-    startModule: vi.fn(),
-    stopSystem: vi.fn(),
-    systemSettings: vi.fn(),
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    ...mocks,
-}));
+vi.mock('@placeos/ts-client', { spy: true });
+
+/** Module list page for `modules.query` */
+const modulePage = (ids: string[]) =>
+    mockPage({
+        data: ids.map((id) => newItem(Module, { id, running: false })),
+    });
 vi.mock('../../app/common/item.service', () => ({
     ActiveItemService: class {},
 }));
@@ -60,12 +64,12 @@ vi.mock('../../app/systems/system-trigger-form.component', () => ({
 }));
 
 describe('SystemStateService', () => {
-    const system = new PlaceSystem({
+    const system = newItem(System, {
         id: 'sys-1',
         modules: ['mod-1'],
         zones: ['zone-1'],
     });
-    const active = signal<PlaceSystem | null>(null);
+    const active = signal<System | null>(null);
     let router: { url: string; events: Subject<NavigationEnd> };
     let service: SystemStateService;
 
@@ -83,21 +87,25 @@ describe('SystemStateService', () => {
         active.set(null);
         router = { url: '/systems/sys-1/about', events: new Subject() };
         mocks.isSubsystemUser.mockReturnValue(false);
-        mocks.listMetadata.mockResolvedValue([]);
-        mocks.listSystemTriggers.mockResolvedValue({ data: [], total: 3 });
-        mocks.listSystemZones.mockResolvedValue({ data: [] });
-        mocks.queryModules.mockResolvedValue({
-            data: [new PlaceModule({ id: 'mod-1' })],
-        });
-        mocks.startModule.mockResolvedValue(undefined);
-        mocks.systemSettings.mockResolvedValue([]);
+        vi.mocked(metadata.show).mockResolvedValue(mockReply({}));
+        vi.mocked(system_triggers.query).mockResolvedValue(
+            mockPage({ data: [], total: 3 }),
+        );
+        vi.mocked(systems.sysZones).mockResolvedValue(mockPage({ data: [] }));
+        vi.mocked(modules.query).mockResolvedValue(modulePage(['mod-1']));
+        vi.mocked(modules.start).mockResolvedValue(mockReply(''));
+        vi.mocked(systems.settings).mockResolvedValue(mockReply([]));
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
                 SystemStateService,
                 {
                     provide: ActiveItemService,
-                    useValue: { item: active, active_item: system },
+                    useValue: {
+                        item: active,
+                        activeOf: () => active(),
+                        active_item: system,
+                    },
                 },
                 { provide: PlaceDebugService, useValue: {} },
                 { provide: Dialog, useValue: { open: vi.fn() } },
@@ -107,6 +115,18 @@ describe('SystemStateService', () => {
         service = TestBed.inject(SystemStateService);
     });
 
+    it('debugs a shared module through the open system', () => {
+        const debug = TestBed.inject(PlaceDebugService);
+        const bind = vi.fn();
+        Object.assign(debug, { isListening: () => false, bind });
+        // A shared module has no `control_system_id`
+        const shared = newItem(Module, { id: 'mod-shared', name: 'Display' });
+
+        service.toggleModuleDebug(shared);
+
+        expect(bind).toHaveBeenCalledWith(shared, 'Display_1', 'sys-1');
+    });
+
     it('loads tab lists only once their tab is opened', async () => {
         service.counts();
         service.modules();
@@ -114,9 +134,10 @@ describe('SystemStateService', () => {
         active.set(system);
         await stable();
 
-        expect(mocks.queryModules).not.toHaveBeenCalled();
-        expect(mocks.listSystemZones).not.toHaveBeenCalled();
-        expect(mocks.listSystemTriggers).toHaveBeenCalledWith('sys-1', {
+        expect(modules.query).not.toHaveBeenCalled();
+        expect(systems.sysZones).not.toHaveBeenCalled();
+        expect(system_triggers.query).toHaveBeenCalledWith({
+            sys_id: 'sys-1',
             limit: 1,
         });
         expect(service.counts().triggers).toBe(3);
@@ -124,20 +145,18 @@ describe('SystemStateService', () => {
         openTab('modules');
         await stable();
 
-        expect(mocks.queryModules).toHaveBeenCalledTimes(1);
+        expect(modules.query).toHaveBeenCalledTimes(1);
         expect(moduleIds()).toEqual(['mod-1']);
     });
 
     it('orders modules by the system module list', async () => {
-        mocks.queryModules.mockResolvedValue({
-            data: ['mod-3', 'mod-1', 'mod-2'].map(
-                (id) => new PlaceModule({ id }),
-            ),
-        });
+        vi.mocked(modules.query).mockResolvedValue(
+            modulePage(['mod-3', 'mod-1', 'mod-2']),
+        );
         openTab('modules');
         service.modules();
         active.set(
-            new PlaceSystem({
+            newItem(System, {
                 id: 'sys-1',
                 modules: ['mod-1', 'mod-2', 'mod-3'],
             }),
@@ -148,24 +167,25 @@ describe('SystemStateService', () => {
     });
 
     it('ignores a module response for a system that is no longer active', async () => {
-        let resolve_old: (response: { data: PlaceModule[] }) => void;
-        mocks.queryModules
+        let resolve_old: (ids: string[]) => void;
+        vi.mocked(modules.query)
             .mockReturnValueOnce(
-                new Promise((resolve) => (resolve_old = resolve)),
+                new Promise(
+                    (resolve) =>
+                        (resolve_old = (ids) => resolve(modulePage(ids))),
+                ),
             )
-            .mockResolvedValueOnce({
-                data: [new PlaceModule({ id: 'mod-2' })],
-            });
+            .mockResolvedValueOnce(modulePage(['mod-2']));
         openTab('modules');
         service.modules();
         active.set(system);
         TestBed.tick();
-        active.set(new PlaceSystem({ id: 'sys-2', modules: ['mod-2'] }));
+        active.set(newItem(System, { id: 'sys-2', modules: ['mod-2'] }));
         await stable();
-        resolve_old({ data: [new PlaceModule({ id: 'mod-1' })] });
+        resolve_old(['mod-1']);
         await flush();
 
-        expect(mocks.queryModules).toHaveBeenCalledTimes(2);
+        expect(modules.query).toHaveBeenCalledTimes(2);
         expect(moduleIds()).toEqual(['mod-2']);
     });
 
@@ -174,14 +194,12 @@ describe('SystemStateService', () => {
         service.modules();
         active.set(system);
         await stable();
-        const loaded = service.modules()[0] as PlaceModule & {
+        const loaded = service.modules()[0] as Module & {
             connected?: boolean;
         };
         // Bindings set this, and only emit again when it changes
         loaded.connected = true;
-        mocks.queryModules.mockResolvedValue({
-            data: [new PlaceModule({ id: 'mod-1' })],
-        });
+        vi.mocked(modules.query).mockResolvedValue(modulePage(['mod-1']));
 
         await service.toggleModulePower(loaded);
         await stable();
@@ -192,14 +210,23 @@ describe('SystemStateService', () => {
 
     it('shows the readable zones when a subsystem user cannot read one', async () => {
         mocks.isSubsystemUser.mockReturnValue(true);
-        mocks.showZone.mockImplementation(async (id: string) => {
-            if (id === 'zone-2') throw new Error('Forbidden');
-            return new PlaceZone({ id });
-        });
+        vi.mocked(zones.show).mockImplementation(async ({ id }) =>
+            id === 'zone-2'
+                ? {
+                      ok: false,
+                      error: {
+                          kind: 'http',
+                          status: 403,
+                          message: null,
+                          body: null,
+                      },
+                  }
+                : mockReply(newItem(Zone, { id })),
+        );
         openTab('zones');
         service.zones();
         active.set(
-            new PlaceSystem({
+            newItem(System, {
                 id: 'sys-1',
                 zones: ['zone-1', 'zone-2', 'zone-3'],
             }),
@@ -210,7 +237,7 @@ describe('SystemStateService', () => {
             'zone-1',
             'zone-3',
         ]);
-        expect(mocks.listSystemZones).not.toHaveBeenCalled();
+        expect(systems.sysZones).not.toHaveBeenCalled();
     });
 
     it('does not stop the system when the user cancels', async () => {
@@ -221,7 +248,7 @@ describe('SystemStateService', () => {
 
         await service.stopSystem();
 
-        expect(mocks.stopSystem).not.toHaveBeenCalled();
+        expect(systems.stop).not.toHaveBeenCalled();
     });
 
     it('reloads only the module list after a module power change', async () => {
@@ -236,10 +263,10 @@ describe('SystemStateService', () => {
         await service.toggleModulePower(service.modules()[0]);
         await stable();
 
-        expect(mocks.queryModules).toHaveBeenCalledTimes(1);
-        expect(mocks.listSystemTriggers).not.toHaveBeenCalled();
-        expect(mocks.systemSettings).not.toHaveBeenCalled();
-        expect(mocks.listMetadata).not.toHaveBeenCalled();
+        expect(modules.query).toHaveBeenCalledTimes(1);
+        expect(system_triggers.query).not.toHaveBeenCalled();
+        expect(systems.settings).not.toHaveBeenCalled();
+        expect(metadata.show).not.toHaveBeenCalled();
     });
 
     it('keeps the running state and module list when a power change fails', async () => {
@@ -248,7 +275,15 @@ describe('SystemStateService', () => {
         active.set(system);
         await stable();
         vi.clearAllMocks();
-        mocks.startModule.mockRejectedValue('Module offline');
+        vi.mocked(modules.start).mockResolvedValue({
+            ok: false,
+            error: {
+                kind: 'http',
+                status: 500,
+                message: 'Module offline',
+                body: { error: 'Module offline' },
+            },
+        });
         const [device] = service.modules();
 
         await service.toggleModulePower(device);
@@ -256,6 +291,6 @@ describe('SystemStateService', () => {
 
         expect(device.running).toBe(false);
         expect(notifyError).toHaveBeenCalledWith('Module offline');
-        expect(mocks.queryModules).not.toHaveBeenCalled();
+        expect(modules.query).not.toHaveBeenCalled();
     });
 });

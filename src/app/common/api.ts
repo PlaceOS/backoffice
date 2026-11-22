@@ -1,10 +1,12 @@
-import { authority, PlaceModule, PlaceResource } from '@placeos/ts-client';
+import { type Module } from '@placeos/ts-client';
 
+import { backofficeConfig } from './placeos';
 import {
     AppComponentExtensions,
     ApplicationIcon,
     ExtensionCondition,
     HashMap,
+    PlaceResource,
 } from './types';
 
 /**
@@ -66,16 +68,16 @@ export function allowedEmbedUrl(
  * @param module Module to work out index
  */
 export function calculateModuleIndex(
-    module_list: PlaceModule[],
-    module: PlaceModule,
+    module_list: readonly Module[],
+    module: Module,
 ): number {
-    const driver = module.driver || { class_name: 'System' };
-    const module_class = module.custom_name || module.name || driver.class_name;
-    const modules_with_class = module_list.filter((mod) => {
-        const d = mod.driver || { class_name: 'System' };
-        const mod_class = mod.custom_name || mod.name || d.class_name;
-        return mod_class === module_class;
-    });
+    // A module without a driver is the `System` module
+    const moduleClass = (mod: Module) =>
+        mod.custom_name || mod.name || (mod.driver ? '' : 'System');
+    const module_class = moduleClass(module);
+    const modules_with_class = module_list.filter(
+        (mod) => moduleClass(mod) === module_class,
+    );
     return Math.max(
         1,
         modules_with_class.findIndex((mod) => mod.id === module.id) + 1,
@@ -150,7 +152,7 @@ export function extensionsForItem(
     type: string,
 ): ExtensionTab[] {
     const extend: HashMap<AppComponentExtensions> =
-        authority()?.config?.backoffice?.extend || {};
+        backofficeConfig().extend || {};
     if (!item) return [];
     const tabs: ExtensionTab[] = [];
     for (const [name, extension] of Object.entries(extend[type] || {})) {

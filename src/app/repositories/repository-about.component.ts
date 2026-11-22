@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { PlaceRepositoryType } from '@placeos/ts-client';
+import { PlaceRepositoryType } from '@placeos/ts-client/compat';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { IconComponent } from '../ui/icon.component';
@@ -36,9 +36,9 @@ import { maskUriCredentials } from './repositories.utilities';
                         </div>
                         <div
                             class="select-all"
-                            [class.underline]="item().type === 'interface'"
+                            [class.underline]="item().repo_type === 'interface'"
                             [class.pointer-events-none]="
-                                item().type !== 'interface'
+                                item().repo_type !== 'interface'
                             "
                         >
                             <a [href]="local_url()" target="_blank">
@@ -212,7 +212,7 @@ export class RepositoryAboutComponent {
     public readonly item = this._service.item;
 
     public readonly local_url = computed(() =>
-        this.item()?.type === PlaceRepositoryType.Interface
+        this.item()?.repo_type === PlaceRepositoryType.Interface
             ? `${location.origin}/${this.item()?.folder_name}/`
             : `${location.hash}`,
     );
@@ -221,7 +221,7 @@ export class RepositoryAboutComponent {
         maskUriCredentials(this.item()?.uri),
     );
     public readonly is_interface = computed(
-        () => this.item()?.type === PlaceRepositoryType.Interface,
+        () => this.item()?.repo_type === PlaceRepositoryType.Interface,
     );
     /**
      * Send request to server to pull the latest commit for the active repository

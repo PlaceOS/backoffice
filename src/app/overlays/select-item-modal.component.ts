@@ -11,7 +11,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface SelectItemModalData<T = unknown> {
     service_name: string;
-    query_fn: (query: string) => Promise<T[]>;
+    query_fn: (query: string) => Promise<readonly T[]>;
 }
 
 @Component({
@@ -92,7 +92,7 @@ export class SelectItemModalComponent {
 
     public readonly filter_fn = () => false;
 
-    public get query_fn(): (query: string) => Promise<unknown[]> {
+    public get query_fn(): (query: string) => Promise<readonly unknown[]> {
         return this._data.query_fn;
     }
 

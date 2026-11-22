@@ -2,7 +2,7 @@ import { AsyncPipe } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { form, FormField, submit, validate } from '@angular/forms/signals';
 
-import { PlaceDomain } from '@placeos/ts-client';
+import { type Domain } from '@placeos/ts-client';
 
 import { Clipboard } from '@angular/cdk/clipboard';
 import { readError } from '../common/errors';
@@ -146,7 +146,7 @@ export class DomainAboutComponent {
     public index = 0;
 
     private readonly _item = this._service.item;
-    public get item(): PlaceDomain | null {
+    public get item(): Domain | null {
         return this._item();
     }
 
@@ -171,11 +171,11 @@ export class DomainAboutComponent {
         try {
             const { config, internals } = this.formModel();
             // An empty editor is valid and means no settings
-            const domain = new PlaceDomain({
+            const domain: Domain = {
                 ...this.item,
                 config: JSON.parse(config || '{}'),
                 internals: JSON.parse(internals || '{}'),
-            });
+            };
             await this._service.update(domain);
             notifySuccess(i18n('DOMAINS.SETTINGS_SAVED'));
         } catch (err) {

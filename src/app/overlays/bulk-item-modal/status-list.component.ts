@@ -7,9 +7,9 @@ import {
     signal,
     SimpleChanges,
 } from '@angular/core';
-import { PlaceResource } from '@placeos/ts-client';
-import { readError } from '../../common/errors';
-import { notifyError } from '../../common/notifications';
+import { describeError, readError } from '../../common/errors';
+import { notify } from '../../common/notifications';
+import { PlaceResource } from '../../common/types';
 import { SpinnerComponent } from '../../ui/controls/spinner.component';
 import { TooltipDirective } from '../../ui/controls/tooltip.directive';
 import { IconComponent } from '../../ui/icon.component';
@@ -176,10 +176,14 @@ export class StatusListComponent implements OnChanges {
                     const index = i + batch_index;
                     this.setStatus(index, 'loading');
                     try {
-                        const saved_item = await this.save()({
-                            ...item,
-                            id: '',
-                        });
+                        // A blank cell gets the default of the server. 6.x
+                        // classes filled them, and v7 rejects `''` for a number
+                        const row = Object.fromEntries(
+                            Object.entries(item).filter(
+                                ([key, value]) => key !== 'id' && value !== '',
+                            ),
+                        );
+                        const saved_item = await this.save()(row);
                         this.setStatus(index, 'done');
                         success_count++;
                         this.completed_count.set(success_count);
@@ -187,8 +191,12 @@ export class StatusListComponent implements OnChanges {
                     } catch (err) {
                         const message = `Error: ${await readError(err)}`;
                         this.setStatus(index, message);
-                        console.error(`Failed to save item ${index}:`, err);
-                        notifyError(message);
+                        // The message can have data from the response, so log the status only
+                        console.error(
+                            `Failed to save item ${index}: ${describeError(err)}`,
+                        );
+                        // `notify`, not `notifyError`: the message stays out of the console
+                        notify('error', message);
                         fail_count++;
                         this.error_count.set(fail_count);
                     }

@@ -1,15 +1,13 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { PlaceTrigger, updateTrigger } from '@placeos/ts-client';
+import { Trigger, triggers } from '@placeos/ts-client';
 import { describe, expect, it, vi } from 'vitest';
 import { notifyError } from '../../../app/common/notifications';
+import { newItem } from '../../../app/common/placeos';
 import { TriggerActionModalComponent } from '../../../app/ui/forms/trigger-action-modal.component';
 
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<object>('@placeos/ts-client/dist/index.es.js')),
-    updateTrigger: vi.fn(),
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 
 vi.mock('../../../app/common/notifications', () => ({
     notifyError: vi.fn(),
@@ -18,13 +16,13 @@ vi.mock('../../../app/common/notifications', () => ({
 
 describe('TriggerActionModalComponent', () => {
     it('does not save an edited mailer that was removed elsewhere', async () => {
-        const trigger = {
+        const trigger = newItem(Trigger, {
             id: 'trigger-1',
             actions: {
                 functions: [],
                 mailers: [{ emails: ['other@example.com'], content: 'Other' }],
             },
-        } as unknown as PlaceTrigger;
+        });
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
@@ -45,7 +43,7 @@ describe('TriggerActionModalComponent', () => {
 
         await modal.save();
 
-        expect(updateTrigger).not.toHaveBeenCalled();
+        expect(triggers.update).not.toHaveBeenCalled();
         expect(notifyError).toHaveBeenCalledWith(
             expect.stringContaining('changed or removed elsewhere'),
         );

@@ -106,7 +106,7 @@ import { TranslatePipe } from './translate.pipe';
                                             >
                                         </button>
                                     }
-                                    @if (item.error) {
+                                    @if (item.error && item.upload) {
                                         <button
                                             icon
                                             default
@@ -310,11 +310,12 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     }
 
     /**
-     * Retry a failed upload
+     * Retry a failed upload. An upload that failed before it started, such
+     * as without a login, has nothing to resume
      * @param details Details of the failed upload
      */
     public retry(details: UploadDetails) {
-        if (details.error) {
+        if (details.error && details.upload) {
             details.error = null;
             details.upload.resume();
         }

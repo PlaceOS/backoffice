@@ -1,10 +1,13 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { del, get } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
+import {
+    tenants as tenants_v7,
+    type TenantResponder,
+} from '@placeos/ts-client/staff';
 import { escapeHtml } from '../common/general';
 import { reportLoadError } from '../common/load-error';
-import { HashMap } from '../common/types';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';
@@ -21,21 +24,16 @@ import {
 } from './staff-api.utilities';
 import { StaffTenantModalComponent } from './staff-tenant-modal.component';
 
-export interface PlaceTenant {
-    id: string;
-    name: string;
-    domain: string;
-    email_domain: string;
-    platform: string;
-    delegated?: boolean;
-    service_account?: string;
-    booking_limits: Record<string, number>;
-    booking_range?: Record<string, number>;
-    /** Booking type => maximum length of a booking in minutes */
-    booking_period?: Record<string, number>;
-    credentials?: HashMap<string>;
-    secret_expiry?: number;
-    early_checkin?: number;
+/**
+ * A staff API tenant. `booking_period` maps a booking type to the longest
+ * booking in minutes.
+ */
+export interface PlaceTenant extends TenantResponder {
+    /**
+     * Unix time in seconds. The staff API document does not have this field,
+     * so the 7.x client removes it from responses.
+     */
+    readonly secret_expiry?: number | null;
 }
 
 @Component({
@@ -266,7 +264,8 @@ export class PlaceStaffAPIComponent implements OnInit {
             },
             {
                 loading: 'Removing tenant from domain...',
-                action: () => del(`/api/staff/v1/tenants/${tenant.id}`),
+                action: () =>
+                    tenants_v7.destroy({ id: tenant.id }).then(orThrow),
                 error: (reason) =>
                     `Error removing tenant ${tenant.name}. Error: ${reason}`,
                 success: 'Successfully removed tenant from domain.',
@@ -281,11 +280,12 @@ export class PlaceStaffAPIComponent implements OnInit {
             return;
         }
         this.loading.set('Loading tenants for domain...');
-        const tenants = await get('/api/staff/v1/tenants').catch(
-            reportLoadError([]),
-        );
+        const tenants: readonly PlaceTenant[] = await tenants_v7
+            .query({})
+            .then(orThrow)
+            .catch(reportLoadError([]));
         this.tenants.set(
-            (tenants || []).filter((t) => t.domain === this.domain()?.domain),
+            tenants.filter((t) => t.domain === this.domain()?.domain),
         );
         this.loading.set('');
     }

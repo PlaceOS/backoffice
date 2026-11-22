@@ -8,10 +8,6 @@ import {
     TableColumn,
 } from '../../../app/ui/simple-table.component';
 
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
-
 describe('SimpleTableComponent', () => {
     let component: SimpleTableComponent<Record<string, unknown>>;
     let fixture: ComponentFixture<

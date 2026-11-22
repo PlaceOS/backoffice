@@ -6,14 +6,17 @@ import {
     OnInit,
     Renderer2,
     SimpleChanges,
+    effect,
     inject,
     input,
     linkedSignal,
     output,
+    untracked,
 } from '@angular/core';
-import { authority, getModule, onlineState } from '@placeos/ts-client';
+import type { JsonValue, RealtimeTarget } from '@placeos/ts-client';
 
 import { AsyncHandler } from '../common/async-handler.class';
+import { online, realtime } from '../common/placeos';
 
 @Directive({
     selector: 'i[bind], [binding], co-bind',
@@ -39,8 +42,8 @@ export class BindingDirective<T = unknown>
     public readonly delay = input(100);
     /** Event to listen for on the parent */
     public readonly onEvent = input('');
-    /** ID of the system to bind to */
-    public readonly params = input<unknown[] | null>(null);
+    /** JSON arguments of the module method to execute */
+    public readonly params = input<JsonValue[] | null>(null);
     public readonly ignore = input(false);
     /** Current value of the binding */
     // eslint-disable-next-line @angular-eslint/no-input-rename
@@ -52,16 +55,31 @@ export class BindingDirective<T = unknown>
     private _binding = false;
     private _old_model: T | null = null;
 
+    constructor() {
+        super();
+        effect(() => {
+            if (online()) untracked(() => this.bindVariable());
+        });
+    }
+
     public ngOnInit(): void {
-        this.subscription(
-            'online',
-            onlineState().subscribe(
-                (online) => {
-                    if (online) this.bindVariable();
-                },
-                { emitCurrent: true },
-            ),
-        );
+        if (online()) this.bindVariable();
+    }
+
+    /**
+     * Realtime target of the module function or status variable. A module
+     * with an index suffix, such as `_TRIGGER__1`, gives that index, as in 6.x
+     */
+    private _target(name: string): RealtimeTarget {
+        const slug = /^(.+)_(\d+)$/.exec(this.mod());
+        return slug
+            ? {
+                  sys: this.sys(),
+                  mod: slug[1],
+                  index: Math.max(1, +slug[2]),
+                  name,
+              }
+            : { sys: this.sys(), mod: this.mod(), index: this.index(), name };
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -89,8 +107,7 @@ export class BindingDirective<T = unknown>
     /** Bind to set status variable */
     private bindVariable() {
         if (
-            onlineState().value &&
-            authority() &&
+            online() &&
             this.bind() &&
             this.sys() &&
             this.mod() &&
@@ -99,28 +116,24 @@ export class BindingDirective<T = unknown>
             this.timeout(
                 'bind',
                 () => {
-                    const module = getModule(
-                        this.sys(),
-                        this.mod(),
-                        this.index(),
-                    );
-                    const binding = module.binding(this.bind());
                     this._binding = true;
-                    this.subscription('binding', binding.bind());
-                    this.subscription(
-                        'on_changes',
-                        binding.listen().subscribe((value) => {
-                            if (value == null) return;
+                    const release = realtime().bind(
+                        this._target(this.bind()),
+                        (state) => {
+                            if (state.kind !== 'value' || state.value == null)
+                                return;
                             setTimeout(() => {
                                 this._binding = false;
                                 this.clearTimeout('bound');
                                 if (this.ignore()) return;
-                                this.model.set(value);
+                                // The module sends JSON. `T` is the type the template expects
+                                this.model.set(state.value as T);
                                 this._old_model = this.model();
                                 this.modelChange.emit(this.model());
                             }, 10);
-                        }),
+                        },
                     );
+                    this.subscription('binding', release);
                     this.timeout('bound', () => (this._binding = false), 200);
                 },
                 20,
@@ -131,7 +144,7 @@ export class BindingDirective<T = unknown>
     /** Excute the set method on the module */
     private execute() {
         if (
-            authority() &&
+            online() &&
             this.exec() &&
             this.sys() &&
             this.mod() &&
@@ -140,21 +153,19 @@ export class BindingDirective<T = unknown>
             this.timeout(
                 'execute',
                 () => {
-                    const module = getModule(
-                        this.sys(),
-                        this.mod(),
-                        this.index(),
-                    );
                     let params = this.params();
-                    if (this.bind()) params = this.params() || [this.model()];
-                    module.execute(this.exec(), params || []).then((result) => {
-                        // Emit exec result if not bound to status variable
-                        if (!this.bind()) {
-                            this.model.set(result);
+                    // The model of a bound variable came from the module as JSON
+                    if (this.bind())
+                        params = this.params() || [this.model() as JsonValue];
+                    realtime()
+                        .exec(this._target(this.exec()), params || [])
+                        .then((result) => {
+                            // Emit exec result if not bound to status variable
+                            if (result.ok === false || this.bind()) return;
+                            this.model.set(result.value as T);
                             this._old_model = this.model();
                             this.modelChange.emit(this.model());
-                        }
-                    });
+                        });
                 },
                 this.delay(),
             );

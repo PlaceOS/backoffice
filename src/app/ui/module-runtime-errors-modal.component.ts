@@ -1,11 +1,8 @@
 import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-    moduleRuntimeError,
-    PlaceModule,
-    showModule,
-} from '@placeos/ts-client';
+import { type Module, modules } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { DialogCloseDirective } from './controls/dialog';
 import { SpinnerComponent } from './controls/spinner.component';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
@@ -85,8 +82,8 @@ export class ModuleRuntimeErrorsModalComponent {
     private _module_id = inject<string>(DIALOG_DATA);
 
     public readonly loading = signal(true);
-    public readonly module = signal<PlaceModule | null>(null);
-    public readonly errors = signal<string[]>([]);
+    public readonly module = signal<Module | null>(null);
+    public readonly errors = signal<readonly string[]>([]);
 
     public readonly formatted_errors = computed(() => {
         const errors = this.errors();
@@ -107,10 +104,14 @@ export class ModuleRuntimeErrorsModalComponent {
     private async _loadData() {
         this.loading.set(true);
         try {
-            const module = await showModule(this._module_id);
+            const module = await modules
+                .show({ id: this._module_id })
+                .then(orThrow);
             this.module.set(module);
             try {
-                const errors = await moduleRuntimeError(module.id);
+                const errors = await modules
+                    .showError({ id: module.id })
+                    .then(orThrow);
                 this.errors.set(errors);
             } catch {
                 this.errors.set([]);

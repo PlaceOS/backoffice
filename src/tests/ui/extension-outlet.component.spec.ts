@@ -2,14 +2,18 @@ import { Location } from '@angular/common';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { PlaceResource, updateMetadata } from '@placeos/ts-client';
+import { metadata } from '@placeos/ts-client';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
+import { PlaceResource } from '../../app/common/types';
 import {
     ExtensionOutletComponent,
     FrameMessage,
 } from '../../app/ui/extension-outlet.component';
+const { fromV1Mock } = await vi.hoisted(
+    () => import('@placeos/ts-client/compat'),
+);
 
 const EXTENSION_URL = 'https://ext.example/view?id=sys-1';
 
@@ -23,32 +27,35 @@ vi.mock('../../app/common/notifications', () => ({
     notifySuccess: vi.fn(),
 }));
 
-vi.mock('@placeos/ts-client', () => ({
-    apiKey: vi.fn(() => ''),
-    token: vi.fn(() => ''),
-    authority: vi.fn(() => ({
-        config: {
-            backoffice: {
-                extend: {
-                    systems: {
-                        Booking: {
-                            url: 'https://ext.example/view?id={{id}}',
-                            conditions: [],
-                        },
+vi.mock('../../app/common/placeos', async () => {
+    const { signal } = await import('@angular/core');
+    return {
+        online: signal(true),
+        backofficeConfig: vi.fn(() => ({
+            extend: {
+                systems: {
+                    Booking: {
+                        url: 'https://ext.example/view?id={{id}}',
+                        conditions: [],
                     },
                 },
             },
-        },
-    })),
-    onlineState: vi.fn(() => ({
-        value: true,
-        subscribe: (next: (value: boolean) => void) => {
-            next(true);
-            return () => undefined;
-        },
-    })),
-    showMetadata: vi.fn(() => Promise.resolve({ details: { theme: 'dark' } })),
-    updateMetadata: vi.fn(() => Promise.resolve({})),
+        })),
+    };
+});
+
+vi.mock('@placeos/ts-client', () => ({
+    metadata: {
+        show: vi.fn(
+            fromV1Mock(
+                () => Promise.resolve({ details: { theme: 'dark' } }),
+                ['id', 'name'],
+                'data',
+                'name',
+            ),
+        ),
+        update: vi.fn(fromV1Mock(() => Promise.resolve({}), ['id', 'body'])),
+    },
 }));
 
 describe('ExtensionOutletComponent', () => {
@@ -150,7 +157,7 @@ describe('ExtensionOutletComponent', () => {
     });
 
     it('replies with an error when a request fails', async () => {
-        vi.mocked(updateMetadata).mockRejectedValueOnce(new Error('403'));
+        vi.mocked(metadata.update).mockRejectedValueOnce(new Error('403'));
         const failed = await send({ action: 'metadata', name: 'settings' });
         expect(failed).toMatchObject({ id: '1', status: 'error' });
 

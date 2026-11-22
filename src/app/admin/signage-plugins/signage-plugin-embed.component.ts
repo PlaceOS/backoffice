@@ -12,7 +12,7 @@ import {
     SimpleChanges,
     viewChild,
 } from '@angular/core';
-import { SignagePlugin } from '@placeos/ts-client';
+import { type SignagePlugin } from '@placeos/ts-client';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { SafePipe } from '../../ui/pipes/safe.pipe';
 

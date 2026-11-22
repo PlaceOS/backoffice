@@ -1,10 +1,8 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
-import { PlaceUser, onlineState } from '@placeos/ts-client';
-import {
-    waitForClientSignalValue,
-    waitForSignalValue,
-} from '../../common/signals';
+import { type User } from '@placeos/ts-client';
+import { online } from '../../common/placeos';
+import { waitForSignalValue } from '../../common/signals';
 import { hasSupportSubsystem } from '../../common/support-access';
 import { BackofficeUsersService } from '../../users/users.service';
 
@@ -13,16 +11,19 @@ import { BackofficeUsersService } from '../../users/users.service';
  * user when `allowed` returns true. Other users go to `/unauthorised`.
  */
 function authorisedGuard(
-    allowed: (user: PlaceUser, route: ActivatedRouteSnapshot) => boolean,
+    allowed: (user: User, route: ActivatedRouteSnapshot) => boolean,
 ): CanActivateFn {
     return async (route) => {
         const router = inject(Router);
         const users = inject(BackofficeUsersService);
-        await waitForClientSignalValue(onlineState(), (_) => _);
-        const user: PlaceUser = await waitForSignalValue(
-            users.user,
-            (_) => !!_,
-        ).catch(() => null);
+        const is_online = await waitForSignalValue(online, (_) => _).catch(
+            () => false,
+        );
+        const user: User = !is_online
+            ? null
+            : await waitForSignalValue(users.user, (_) => !!_).catch(
+                  () => null,
+              );
         const can_activate = !!user && allowed(user, route);
         if (!can_activate) router.navigate(['/unauthorised']);
         return can_activate;

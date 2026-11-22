@@ -10,28 +10,23 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import {
-    apiKey,
-    onlineState,
-    PlaceResource,
-    showMetadata,
-    token,
-    updateMetadata,
-} from '@placeos/ts-client';
+import { type JsonValue, metadata as metadata_v7 } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { allowedEmbedUrl, extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { signalFromClient } from '../common/signals';
-import { HashMap } from '../common/types';
+import { online, setAuthCookie } from '../common/placeos';
+import { HashMap, PlaceResource } from '../common/types';
 import { SafePipe } from './pipes/safe.pipe';
 
 const RESOURCE_STORE = new Map<string, string>();
 
 /** Request sent by the extension frame */
-export interface FrameMessage<T = unknown> {
+/** A message from the frame. `postMessage` data is JSON, as the frame sends it to PlaceOS */
+export interface FrameMessage<T = JsonValue> {
     id: string;
     type: 'backoffice';
     action: 'update' | 'load' | 'metadata' | 'resource' | 'result';
@@ -65,7 +60,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
     private _location = inject(Location);
     private _service = inject(ActiveItemService);
 
-    private readonly _online = signalFromClient(onlineState(), false);
+    private readonly _online = online;
     private readonly _query_params = toSignal(this._route.queryParamMap, {
         initialValue: undefined,
     });
@@ -194,15 +189,19 @@ export class ExtensionOutletComponent extends AsyncHandler {
     private async updateMetadata(item: PlaceResource, message: FrameMessage) {
         if (!item.id || !message.name)
             throw new Error('Metadata not available');
-        await updateMetadata(item.id, {
-            id: item.id,
-            name: message.name,
-            description: `Metadata from ${this.url()}`,
-            details:
-                message.content && typeof message.content === 'object'
-                    ? message.content
-                    : {},
-        });
+        await metadata_v7
+            .update({
+                id: item.id,
+                body: {
+                    name: message.name,
+                    description: `Metadata from ${this.url()}`,
+                    details:
+                        message.content && typeof message.content === 'object'
+                            ? message.content
+                            : {},
+                },
+            })
+            .then(orThrow);
         notifySuccess(i18n('COMMON.METADATA_SAVE'));
     }
 
@@ -213,7 +212,10 @@ export class ExtensionOutletComponent extends AsyncHandler {
     ) {
         const id = message.parent ? item.parent_id : item.id;
         if (!message.name || !id) throw new Error('Metadata not available');
-        const metadata = await showMetadata(id, message.name);
+        const metadata = await metadata_v7
+            .show({ id, name: message.name })
+            .then(orThrow)
+            .then((data) => data[message.name]);
         return metadata.details as FrameMessage['content'];
     }
 
@@ -228,14 +230,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
         // If image has already been loaded, just use the cached version
         if (RESOURCE_STORE.has(src)) return RESOURCE_STORE.get(src);
 
-        const tkn = token();
-        document.cookie = `${
-            tkn === 'x-api-key'
-                ? 'api-key=' + encodeURIComponent(apiKey())
-                : 'bearer_token=' + encodeURIComponent(tkn)
-        };max-age=60;path=/api/;samesite=strict;${
-            location.protocol === 'https:' ? 'secure;' : ''
-        }`;
+        if (!(await setAuthCookie('/api/'))) throw new Error('Not signed in');
         const response = await fetch(src);
         if (!response.ok) throw new Error(`Failed to load ${src}`);
         const blob = await response.blob();

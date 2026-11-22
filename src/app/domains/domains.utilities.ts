@@ -1,5 +1,5 @@
 import { pattern, required, SchemaFn } from '@angular/forms/signals';
-import { PlaceDomain } from '@placeos/ts-client';
+import { type Domain } from '@placeos/ts-client';
 
 export interface DomainFormModel {
     name: string;
@@ -12,16 +12,17 @@ export interface DomainFormModel {
     email_domains: string[];
 }
 
-export function generateDomainFormModel(domain?: PlaceDomain): DomainFormModel {
+export function generateDomainFormModel(domain?: Domain): DomainFormModel {
     return {
         name: domain?.name || '',
         domain: domain?.domain || '',
         login_url: domain?.login_url || '',
         logout_url: domain?.logout_url || '',
-        config: domain?.config || '',
-        internals: domain?.internals || '',
+        // An object: the API rejects text. 6.x dropped the `''` before it sent it
+        config: domain?.config || {},
+        internals: domain?.internals || {},
         description: domain?.description || '',
-        email_domains: domain?.email_domains || [],
+        email_domains: [...(domain?.email_domains || [])],
     };
 }
 

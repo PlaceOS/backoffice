@@ -8,25 +8,11 @@ import {
     SignagePluginModalData,
 } from '../../app/admin/signage-plugins/signage-plugin-modal.component';
 import { HotkeysService } from '../../app/common/hotkeys.service';
+import { newItem } from '../../app/common/placeos';
 
 vi.mock('../../app/common/notifications', () => ({
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),
-}));
-
-vi.mock('@placeos/ts-client', () => ({
-    authority: vi.fn(() => null),
-    SignagePlugin: class SignagePlugin {
-        public readonly id: string;
-        public readonly uri: string;
-        public readonly playback_type: string;
-
-        constructor(data: Record<string, unknown> = {}) {
-            this.id = (data.id as string) || '';
-            this.uri = (data.uri as string) || '';
-            this.playback_type = (data.playback_type as string) || 'static';
-        }
-    },
 }));
 
 describe('SignagePluginModalComponent', () => {
@@ -38,7 +24,7 @@ describe('SignagePluginModalComponent', () => {
                 {
                     provide: DIALOG_DATA,
                     useValue: {
-                        item: new SignagePlugin({
+                        item: newItem(SignagePlugin, {
                             id: 'plugin-1',
                             uri: '../plugins/news-ticker.html',
                             playback_type: 'static',

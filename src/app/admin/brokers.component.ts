@@ -1,16 +1,14 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 
 import { JsonPipe } from '@angular/common';
-import {
-    PlaceMQTTBroker,
-    queryBrokers,
-    removeBroker,
-} from '@placeos/ts-client';
+import { Broker, brokers as brokers_v7 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 
 import { Dialog } from '@angular/cdk/dialog';
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { notifyError } from '../common/notifications';
+import { newItem } from '../common/placeos';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { ProgressBarComponent } from '../ui/controls/progress-bar.component';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';
@@ -194,21 +192,21 @@ export class AdminBrokersComponent implements OnInit {
 
     public readonly loading = signal(false);
 
-    public readonly brokers = signal<PlaceMQTTBroker[]>([]);
+    public readonly brokers = signal<Broker[]>([]);
 
     public ngOnInit() {
         this.loadBrokers();
     }
 
     /** Open the broker form for a new or existing broker */
-    public editBroker(item = new PlaceMQTTBroker()): void {
+    public editBroker(item = newItem(Broker)): void {
         const ref = this._dialog.open(BrokerFormComponent, { data: { item } });
         ref.componentInstance.event.subscribe((event) => {
             if (event.reason === 'done') this.loadBrokers();
         });
     }
 
-    public async deleteBroker(item: PlaceMQTTBroker): Promise<void> {
+    public async deleteBroker(item: Broker): Promise<void> {
         if (item) {
             const removed = await confirmAndRun(
                 this._dialog,
@@ -220,7 +218,8 @@ export class AdminBrokersComponent implements OnInit {
                 },
                 {
                     loading: 'Deleting broker...',
-                    action: () => removeBroker(item.id),
+                    action: () =>
+                        brokers_v7.destroy({ id: item.id }).then(orThrow),
                     error: (reason) =>
                         `Error deleting broker. Error: ${reason}`,
                     success: `Successfully deleted broker "${item.name}".`,
@@ -233,7 +232,10 @@ export class AdminBrokersComponent implements OnInit {
     public async loadBrokers() {
         this.loading.set(true);
         try {
-            const brokers = await queryBrokers().then((r) => r.data);
+            const brokers = await brokers_v7
+                .collection({})
+                .then(orThrowPage)
+                .then((r) => [...r.data]);
             this.brokers.set(brokers);
         } catch (err) {
             notifyError(`Failed to load brokers. Error: ${describeError(err)}`);

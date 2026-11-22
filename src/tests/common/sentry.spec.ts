@@ -1,11 +1,13 @@
 /** @vitest-environment-options { "url": "https://placeos.example/backoffice/" } */
 import { Injector } from '@angular/core';
-import { authority } from '@placeos/ts-client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@placeos/ts-client', () => ({
-    authority: vi.fn(),
-    isMock: vi.fn(() => false),
+const authority = vi.hoisted(() => vi.fn());
+
+vi.mock('../../app/common/placeos', () => ({
+    authority,
+    backofficeConfig: () => authority()?.config?.backoffice ?? {},
+    isMock: () => false,
 }));
 
 const handle_error = vi.fn();
@@ -23,10 +25,10 @@ vi.mock('@sentry/angular', () => ({
 const injector = { get: vi.fn() } as unknown as Injector;
 
 function setAuthorityDsn(sentry_dsn: unknown) {
-    vi.mocked(authority).mockReturnValue({
+    authority.mockReturnValue({
         domain: 'placeos.example',
         config: { backoffice: { sentry_dsn } },
-    } as unknown as ReturnType<typeof authority>);
+    });
 }
 
 /** Load a new copy of the module, so each test starts with an empty queue */
@@ -99,6 +101,41 @@ describe('sentry', () => {
         handler.handleError(unhandled);
         expect(handle_error).toHaveBeenCalledWith(unhandled);
         vi.mocked(console.error).mockRestore();
+    });
+
+    it('logs and reports a failed API call without its response body', async () => {
+        const { initSentry, SentryReportingErrorHandler } = await loadSentry();
+        // The module copy that sentry.ts loaded, so `instanceof` matches
+        const { CallFailed } = await import('@placeos/ts-client/compat');
+        setAuthorityDsn(undefined);
+        await initSentry(injector, 'user-1');
+        const console_error = vi
+            .spyOn(console, 'error')
+            .mockImplementation(() => undefined);
+        new SentryReportingErrorHandler().handleError(
+            new CallFailed({
+                kind: 'http',
+                status: 500,
+                // A message over many lines, with a stack trace of the server
+                // that looks like frames: no line of it may stay in the stack
+                message:
+                    'secret-detail\n    at Handler.call (person@example.com.cr:1:2)',
+                body: { email: 'person@example.com' },
+            }),
+        );
+        const [reported] = handle_error.mock.calls[0];
+        expect(reported.message).toBe('API call failed: http 500');
+        expect(JSON.stringify(console_error.mock.calls)).not.toMatch(
+            /person@example\.com|secret-detail/,
+        );
+        expect(`${reported.message} ${reported.stack}`).not.toMatch(
+            /person@example\.com|secret-detail/,
+        );
+        // The console gets the same sanitized error
+        expect(console_error).toHaveBeenCalledWith(reported);
+        // The frames of the original error stay, so Sentry shows the caller
+        expect(reported.stack).toMatch(/\n\s+at\s/);
+        console_error.mockRestore();
     });
 
     it('does not load Sentry when the authority turns it off', async () => {

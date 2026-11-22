@@ -1,46 +1,41 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { PlaceSystem, query, querySystemsWithEmails } from '@placeos/ts-client';
+import { configure } from '@placeos/ts-client';
+import {
+    clearEndpointMocks,
+    endpointMocks,
+    mockEndpoint,
+} from '@placeos/ts-client/mock';
 import { describe, expect, it, vi } from 'vitest';
 import { AdminDataService } from '../../app/admin/admin-data.service';
 import { ResourceImportsComponent } from '../../app/admin/resource-imports.component';
 
-vi.mock('@placeos/ts-client', () => ({
-    addSystem: vi.fn(),
-    query: vi.fn(),
-    querySystemsWithEmails: vi.fn(),
-    showMetadata: vi.fn(() => Promise.resolve({})),
-}));
-
 describe('ResourceImportsComponent', () => {
-    it('marks a resource imported when a later page has its system', async () => {
+    it('marks a resource imported when a system has its email in any case', async () => {
         const domain = signal({ id: 'domain-1', name: 'Place' });
-        vi.mocked(query).mockResolvedValue({
-            data: [
-                {
-                    id: 'room-1',
-                    displayName: 'Room 1',
-                    emailAddress: 'Room.1@Place.tech',
-                },
-                {
-                    id: 'room-2',
-                    displayName: 'Room 2',
-                    emailAddress: 'room.2@place.tech',
-                },
-            ],
-        } as Awaited<ReturnType<typeof query>>);
-        const page = (data: Partial<PlaceSystem>[], next?: () => unknown) =>
-            ({ data, next }) as Awaited<
-                ReturnType<typeof querySystemsWithEmails>
-            >;
-        vi.mocked(querySystemsWithEmails).mockResolvedValue(
-            page([{ id: 'sys-other', email: 'other@place.tech' }], () =>
-                Promise.resolve(
-                    page([{ id: 'sys-1', email: 'ROOM.1@place.tech' }]),
-                ),
-            ),
-        );
+        configure({
+            base_url: '',
+            auth: { kind: 'none' },
+            mock: endpointMocks,
+        });
+        clearEndpointMocks();
+        mockEndpoint('staff.place.query', () => [
+            {
+                id: 'room-1',
+                displayName: 'Room 1',
+                emailAddress: 'Room.1@Place.tech',
+            },
+            {
+                id: 'room-2',
+                displayName: 'Room 2',
+                emailAddress: 'room.2@place.tech',
+            },
+        ]);
+        mockEndpoint('systems.findByEmail', () => [
+            { id: 'sys-other', email: 'other@place.tech' },
+            { id: 'sys-1', email: 'ROOM.1@place.tech' },
+        ]);
         await TestBed.configureTestingModule({
             imports: [ResourceImportsComponent],
             providers: [

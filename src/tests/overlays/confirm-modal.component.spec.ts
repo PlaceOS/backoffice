@@ -3,20 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Mock the ts-client - factory must be self-contained
-vi.mock('@placeos/ts-client', () => {
-    class MockPlaceUser {
-        id = '';
-        name = '';
-    }
-    return {
-        authority: vi.fn(() => null),
-        PlaceUser: MockPlaceUser,
-        apiKey: vi.fn(() => ''),
-        token: vi.fn(() => ''),
-    };
-});
-
 // The receipt's copy helpers raise notifications; the snackbar is not wired up
 // in unit tests.
 vi.mock('../../app/common/notifications', () => ({

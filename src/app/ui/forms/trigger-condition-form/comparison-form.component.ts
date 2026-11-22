@@ -1,22 +1,26 @@
 import {
     Component,
+    input,
     OnChanges,
     OnInit,
+    signal,
     SimpleChanges,
     WritableSignal,
-    input,
-    signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
 import {
-    PlaceModule,
-    PlaceSystem,
-    TriggerConditionOperator,
-    TriggerStatusVariable,
-    queryModules,
-    systemModuleState,
+    type Module,
+    modules,
+    type System,
+    systems,
+    TriggerConditionsComparisonStatusVariable,
 } from '@placeos/ts-client';
+import {
+    orThrow,
+    orThrowPage,
+    TriggerConditionOperator,
+} from '@placeos/ts-client/compat';
 
 import { NgTemplateOutlet } from '@angular/common';
 import { calculateModuleIndex } from '../../../common/api';
@@ -228,9 +232,9 @@ export class TriggerConditionComparisonFormComponent
     public readonly formModel =
         input<WritableSignal<TriggerConditionFormModel>>(undefined);
     /** Systems used for templating the status variables */
-    public readonly system = input<PlaceSystem>(undefined);
+    public readonly system = input<System>(undefined);
     /** List of modules associated with the template system */
-    public modules: PlaceModule[] = [];
+    public modules: Module[] = [];
     /** List of status variables associated with the selected module */
     public readonly module_list = signal<Identity[]>([]);
     /** List of status variables associated with the selected module */
@@ -241,9 +245,13 @@ export class TriggerConditionComparisonFormComponent
     public readonly rhs_type: WritableSignal<'constant' | 'status_var'> =
         signal('constant');
     /** Status variable details for the left side of the comparison */
-    public left_side: TriggerStatusVariable = { mod: '', status: '', keys: [] };
+    public left_side: TriggerConditionsComparisonStatusVariable = {
+        mod: '',
+        status: '',
+        keys: [],
+    };
     /** Status variable details for the right side of the comparison */
-    public right_side: TriggerStatusVariable = {
+    public right_side: TriggerConditionsComparisonStatusVariable = {
         mod: '',
         status: '',
         keys: [],
@@ -336,19 +344,21 @@ export class TriggerConditionComparisonFormComponent
     ) {
         const name = (mod_name || '').split('_');
         if (!name[0]?.length) return;
-        await systemModuleState(
-            this.system().id,
-            name.length > 1
-                ? name.slice(0, name.length - 1).join('_')
-                : name[0],
-            +name[name.length - 1] || 1,
-        )
+        await systems
+            .state({
+                sys_id: this.system().id,
+                module_slug: `${
+                    name.length > 1
+                        ? name.slice(0, name.length - 1).join('_')
+                        : name[0]
+                }_${+name[name.length - 1] || 1}`,
+            })
+            .then(orThrow)
             .then((var_map) => {
-                if (Object.keys(var_map || {}).length <= 0) {
-                    var_map = { connected: true };
-                }
+                const keys = Object.keys(var_map || {});
+                // A module without state still has `connected`
                 this.statusVariables(side).set(
-                    Object.keys(var_map).map((key) => ({
+                    (keys.length ? keys : ['connected']).map((key) => ({
                         id: key,
                         name: key,
                     })),
@@ -373,9 +383,9 @@ export class TriggerConditionComparisonFormComponent
         if (!system) {
             return;
         }
-        const module_list = await queryModules({
-            control_system_id: system.id,
-        })
+        const module_list = await modules
+            .query({ control_system_id: system.id })
+            .then(orThrowPage)
             .then((resp) => resp.data)
             .catch((err) => {
                 notifyError(
@@ -410,7 +420,9 @@ export class TriggerConditionComparisonFormComponent
         const form = this.form();
         const model = this.formModel()();
         if (form.left && model.left) {
-            const module = (model.left as TriggerStatusVariable).mod;
+            const module = (
+                model.left as TriggerConditionsComparisonStatusVariable
+            ).mod;
             if (!this.module_list().find((mod) => mod.name === module)) {
                 this.module_list.update((list) => [
                     {
@@ -422,15 +434,18 @@ export class TriggerConditionComparisonFormComponent
                 ]);
             }
             this.loadSystemStatusVariables(module, 'left');
-            this.left_side = model.left as TriggerStatusVariable;
+            this.left_side =
+                model.left as TriggerConditionsComparisonStatusVariable;
         }
         if (
             form.right &&
             model.right &&
-            (model.right as TriggerStatusVariable).mod
+            (model.right as TriggerConditionsComparisonStatusVariable).mod
         ) {
             this.rhs_type.set('status_var');
-            const module = (model.right as TriggerStatusVariable).mod;
+            const module = (
+                model.right as TriggerConditionsComparisonStatusVariable
+            ).mod;
             if (!this.module_list().find((mod) => mod.name === module)) {
                 this.module_list.update((list) => [
                     {
@@ -442,7 +457,8 @@ export class TriggerConditionComparisonFormComponent
                 ]);
             }
             this.loadSystemStatusVariables(module, 'right');
-            this.right_side = model.right as TriggerStatusVariable;
+            this.right_side =
+                model.right as TriggerConditionsComparisonStatusVariable;
         }
     }
 

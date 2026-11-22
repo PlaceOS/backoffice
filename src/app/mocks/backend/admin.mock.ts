@@ -1,4 +1,4 @@
-import { registerMockEndpoint } from '@placeos/ts-client';
+import { registerMockEndpoint } from '@placeos/ts-client/compat';
 import { HashMap } from '../../common/types';
 import {
     API,
@@ -142,7 +142,8 @@ registerMockEndpoint({
 
 // ============ BUILD JOBS ============
 
-const BUILD_API = '/api/build/v1';
+/** The REST API passes these to the build service */
+const BUILD_API = `${API}/build`;
 
 /** Build jobs of the build service. Cancelled jobs stay in the list */
 const build_jobs = createMockStore('build_jobs', [
@@ -171,13 +172,12 @@ const build_jobs = createMockStore('build_jobs', [
 registerMockEndpoint({
     path: `${BUILD_API}/monitor`,
     method: 'GET',
-    callback: (event) => ({
-        data: build_jobs().filter(
+    callback: (event) =>
+        build_jobs().filter(
             (job) =>
                 !event.query_params.state ||
                 job.state === event.query_params.state,
         ),
-    }),
 });
 
 registerMockEndpoint({
@@ -193,6 +193,6 @@ registerMockEndpoint({
                     : item,
             ),
         );
-        return null;
+        return { status: 'cancelled', message: 'Cancelled' };
     },
 });

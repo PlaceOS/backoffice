@@ -1,7 +1,12 @@
 import { Component, computed, inject, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
+import {
+    type Module,
+    type System,
+    systems as systems_v7,
+} from '@placeos/ts-client';
+import { orThrowPage } from '@placeos/ts-client/compat';
 
 import { BindingDirective } from '../ui/binding.directive';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -257,7 +262,7 @@ export class DriverModulesComponent {
     /** Currently active driver */
     public readonly item = this._service.item;
     /** List of systems associated with modules */
-    public readonly systems = signal<Record<string, PlaceSystem[]>>({});
+    public readonly systems = signal<Record<string, readonly System[]>>({});
     /** List of modules */
     public readonly module_list = this._service.modules;
     public readonly modules = computed(() => {
@@ -276,11 +281,13 @@ export class DriverModulesComponent {
     public readonly systemCount = (module_id: string) =>
         this.systems()[module_id]?.length || 0;
 
-    public async loadSystems(mod: PlaceModule) {
+    public async loadSystems(mod: Module) {
         this.loading_systems.set(mod.id);
         this.systems.update((state) => ({ ...state, [mod.id]: [] }));
         try {
-            const { data: systems } = await querySystems({ module_id: mod.id });
+            const { data: systems } = await systems_v7
+                .query({ module_id: mod.id })
+                .then(orThrowPage);
             this.systems.update((state) => ({
                 ...state,
                 [mod.id]: systems || [],

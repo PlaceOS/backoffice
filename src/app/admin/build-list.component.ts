@@ -1,7 +1,7 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { del, get } from '@placeos/ts-client';
-import { toQueryString } from '../common/api';
+import { build_monitor, type BuildMonitorTaskStatus } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
@@ -11,29 +11,16 @@ import { IconComponent } from '../ui/icon.component';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
-interface BuildJob {
-    state: 'pending' | 'running' | 'cancelled' | 'error' | 'done';
-    id: string;
-    message: string;
-    driver: string;
-    repo: string;
-    branch: string;
-    commit: string;
-    timestamp: string;
+type BuildJob = BuildMonitorTaskStatus;
+
+/** Build jobs. The server sends a message in place of the list when it has none */
+async function queryBuildJobs(): Promise<BuildJob[]> {
+    const data = await build_monitor.monitor().then(orThrow);
+    return Array.isArray(data) ? [...data] : [];
 }
 
-function queryBuildJobs(
-    q: Record<string, string> = {},
-): Promise<{ data: BuildJob[] }> {
-    const query = toQueryString(q);
-    return get(`/api/build/v1/monitor${query ? '?' + query : ''}`) as Promise<{
-        data: BuildJob[];
-    }>;
-}
-
-function cancelBuildJob(id, q = {}) {
-    const query = toQueryString(q);
-    return del(`/api/build/v1/cancel/${id}${query ? '?' + query : ''}`);
+function cancelBuildJob(job: string) {
+    return build_monitor.cancel({ job }).then(orThrow);
 }
 
 @Component({
@@ -176,12 +163,8 @@ export class PlaceBuildListComponent implements OnInit {
 
     public async loadJobList() {
         this.loading.set('Loading build jobs...');
-        const { data }: { data: BuildJob[] } = await queryBuildJobs().catch(
-            () => ({ data: [] }),
-        );
-        this.job_list.set(
-            (data || []).sort((a, b) => a.id?.localeCompare(b.id)),
-        );
+        const data = await queryBuildJobs().catch((): BuildJob[] => []);
+        this.job_list.set(data.sort((a, b) => a.id?.localeCompare(b.id)));
         this.loading.set('');
     }
 }

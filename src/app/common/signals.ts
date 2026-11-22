@@ -1,5 +1,4 @@
-import { DestroyRef, Signal, inject, signal } from '@angular/core';
-import type { Signal as ClientSignal } from '@placeos/ts-client';
+import { Signal } from '@angular/core';
 import type { DialogEvent } from './types';
 
 export interface SubscriptionLike {
@@ -16,19 +15,6 @@ function disposeSubscription(subscription: SubscriptionLike | (() => void)) {
     } else {
         subscription.unsubscribe();
     }
-}
-
-export function signalFromClient<T>(
-    source: ClientSignal<T>,
-    initialValue: T = source.value,
-): Signal<T> {
-    const destroyRef = inject(DestroyRef);
-    const state = signal(initialValue);
-    const unsubscribe = source.subscribe((value) => state.set(value), {
-        emitCurrent: true,
-    });
-    destroyRef.onDestroy(unsubscribe);
-    return state.asReadonly();
 }
 
 export function waitForEvent<T>(
@@ -74,19 +60,6 @@ export function waitForSignalValue<T>(
         };
         check();
     });
-}
-
-/** Wait for a client signal without scheduling repeated timer checks. */
-export function waitForClientSignalValue<T>(
-    source: ClientSignal<T>,
-    predicate: (value: T) => boolean = () => true,
-): Promise<T> {
-    return waitForEvent(
-        {
-            subscribe: (next) => source.subscribe(next, { emitCurrent: true }),
-        },
-        predicate,
-    );
 }
 
 /**

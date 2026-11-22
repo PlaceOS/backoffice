@@ -5,8 +5,8 @@ import {
     WritableSignal,
 } from '@angular/core';
 import { FieldTree, submit } from '@angular/forms/signals';
-import { cleanObject } from '@placeos/ts-client';
 import { readError } from './errors';
+import { cleanObject } from './general';
 import { HotkeysService } from './hotkeys.service';
 import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
@@ -36,11 +36,11 @@ export function getInvalidSignalFields<T extends object>(
  * `empty`, so unset fields keep their saved value.
  */
 export function mergeFormItem<T extends object>(
-    item: { id?: string; toJSON?: () => object },
+    item: { id?: string },
     form_value: T,
     empty: unknown[] = [undefined],
 ): Identity & T {
-    const merged = { ...(item.toJSON ? item.toJSON() : item), ...form_value };
+    const merged = { ...item, ...form_value };
     return (item.id ? cleanObject(merged, empty) : merged) as Identity & T;
 }
 

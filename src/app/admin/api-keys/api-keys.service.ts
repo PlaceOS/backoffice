@@ -1,31 +1,37 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
-import {
-    create,
-    get,
-    PlaceUser,
-    query,
-    remove,
-    showUser,
-    update,
-} from '@placeos/ts-client';
+import { api_keys, ApiKey, root, User, users } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { addDays, getUnixTime } from 'date-fns';
 import { describeError } from '../../common/errors';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { toBody } from '../../common/placeos';
 import { waitForDialog } from '../../common/signals';
 import { currentUser } from '../../common/user-state';
 import { confirmAndRun } from '../../overlays/confirm-modal.component';
 import { AdminDataService } from '../admin-data.service';
-import { PlaceAPIKeyDetails } from './api-key-details.class';
+import { permissionNumber, PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyModalComponent } from './api-key-modal.component';
+
+/** Values the API key modal saves */
+type APIKeyFormData = Partial<Omit<PlaceAPIKeyDetails, 'permissions'>> & {
+    permissions?: string | null;
+    ttl?: number | null;
+};
+
+/** The request body of an API key, from the values of the modal */
+function keyBody(data: APIKeyFormData) {
+    const body = toBody(ApiKey, data);
+    // `null` means no permissions. `toBody` leaves out nulls, so set it here
+    return 'permissions' in data
+        ? { ...body, permissions: permissionNumber(data.permissions) }
+        : body;
+}
 
 /**
  * Expiry for a new API key in unix seconds, or `undefined` if it never expires.
  * An explicit `expires_at` wins. Otherwise `ttl` (seconds) counts from `now` (ms).
  */
-/** Values the API key modal saves */
-type APIKeyFormData = Partial<PlaceAPIKeyDetails> & { ttl?: number | null };
-
 export function apiKeyExpiry(
     { expires_at, ttl }: { expires_at?: number | null; ttl?: number | null },
     now = Date.now(),
@@ -48,7 +54,7 @@ export class APIKeyService {
     public readonly loading = this._loading.asReadonly();
 
     private readonly _available_scopes = resource({
-        loader: async () => (await get('/api/engine/v2/scopes')) as string[],
+        loader: () => root.scopes().then(orThrow),
     });
 
     public readonly available_scopes = computed(() =>
@@ -65,12 +71,10 @@ export class APIKeyService {
             this._loading.set(true);
             try {
                 if (!domain) return [] as PlaceAPIKeyDetails[];
-                const response = await query({
-                    query_params: { authority_id: domain.id },
-                    fn: (d) => new PlaceAPIKeyDetails(d),
-                    path: 'api_keys',
-                });
-                return response.data as PlaceAPIKeyDetails[];
+                const response = await api_keys
+                    .query({ authority_id: domain.id })
+                    .then(orThrowPage);
+                return [...response.data];
             } finally {
                 this._loading.set(false);
             }
@@ -94,22 +98,22 @@ export class APIKeyService {
         ref.componentInstance.loading.set('Creating new API key...');
         const domain = this._domain();
         const api_key = details.metadata;
-        const key = await create<PlaceAPIKeyDetails>({
-            query_params: {},
-            fn: (d) => new PlaceAPIKeyDetails(d),
-            path: 'api_keys',
-            form_data: {
-                ...api_key,
-                expires_at: apiKeyExpiry(api_key),
-                authority_id: domain.id,
-            },
-        }).catch((_) => {
-            ref.close();
-            notifyError(describeError(_));
-            return null;
-        });
+        const key = await api_keys
+            .create({
+                body: keyBody({
+                    ...api_key,
+                    expires_at: apiKeyExpiry(api_key),
+                    authority_id: domain.id,
+                }),
+            })
+            .then(orThrow)
+            .catch((_) => {
+                ref.close();
+                notifyError(describeError(_));
+                return null;
+            });
         if (!key) return;
-        this._last_key.set(key as PlaceAPIKeyDetails);
+        this._last_key.set(key);
         this._change.set(Date.now());
         notifySuccess('Successfully created new API key.');
         ref.close();
@@ -130,25 +134,25 @@ export class APIKeyService {
                 notifyError('Unable to load API key scopes.');
                 return;
             }
-            const key = await create<PlaceAPIKeyDetails>({
-                query_params: {},
-                fn: (d) => new PlaceAPIKeyDetails(d),
-                path: 'api_keys',
-                form_data: {
-                    name: `${this._userLabel(user)} API Key`,
-                    description: `Created for ${this._userLabel(user)}`,
-                    scopes: ['public'],
-                    user_id: user.id,
-                    permissions: 'user',
-                    authority_id: domain.id,
-                    expires_at: getUnixTime(addDays(Date.now(), 1)), // expire 1 day from creation
-                },
-            }).catch((_) => {
-                notifyError(describeError(_));
-                return null;
-            });
+            const key = await api_keys
+                .create({
+                    body: keyBody({
+                        name: `${this._userLabel(user)} API Key`,
+                        description: `Created for ${this._userLabel(user)}`,
+                        scopes: ['public'],
+                        user_id: user.id,
+                        permissions: 'user',
+                        authority_id: domain.id,
+                        expires_at: getUnixTime(addDays(Date.now(), 1)), // expire 1 day from creation
+                    }),
+                })
+                .then(orThrow)
+                .catch((_) => {
+                    notifyError(describeError(_));
+                    return null;
+                });
             if (!key) return;
-            this._last_key.set(key as PlaceAPIKeyDetails);
+            this._last_key.set(key);
             this._change.set(Date.now());
             notifySuccess('Successfully created new API key.');
         } finally {
@@ -165,17 +169,15 @@ export class APIKeyService {
         ref.componentInstance.loading.set('Updating API key...');
         const domain = this._domain();
         try {
-            await update({
-                id: key.id,
-                query_params: {},
-                fn: (d) => new PlaceAPIKeyDetails(d),
-                path: 'api_keys',
-                method: 'patch',
-                form_data: {
-                    ...details.metadata,
-                    authority_id: domain.id,
-                },
-            });
+            await api_keys
+                .update({
+                    id: key.id,
+                    body: keyBody({
+                        ...details.metadata,
+                        authority_id: domain.id,
+                    }),
+                })
+                .then(orThrow);
         } catch (_) {
             ref.close();
             return notifyError(describeError(_));
@@ -196,8 +198,7 @@ export class APIKeyService {
             },
             {
                 loading: 'Removing API key...',
-                action: () =>
-                    remove({ id: key.id, query_params: {}, path: 'api_keys' }),
+                action: () => api_keys.destroy({ id: key.id }).then(orThrow),
                 error: (reason) => reason,
                 success: 'Successfully removed API key.',
             },
@@ -208,18 +209,22 @@ export class APIKeyService {
     private async _currentUser() {
         const cached_user = currentUser();
         if (cached_user?.id) return cached_user;
-        return showUser('current').catch(() => null);
+        return users
+            .current({})
+            .then(orThrow)
+            .catch(() => null);
     }
 
     private async _scopes() {
         const scopes = this.available_scopes();
         if (scopes.length) return scopes;
-        return get('/api/engine/v2/scopes').catch(() => []) as Promise<
-            string[]
-        >;
+        return root
+            .scopes()
+            .then(orThrow)
+            .catch((): readonly string[] => []);
     }
 
-    private _userLabel(user: PlaceUser) {
+    private _userLabel(user: User) {
         return user?.name || user?.email || 'Current User';
     }
 }

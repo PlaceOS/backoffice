@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { SignagePlugin } from '@placeos/ts-client';
+import { type SignagePlugin } from '@placeos/ts-client';
 import { describe, expect, it } from 'vitest';
 import {
     resolveSignagePluginUrl,

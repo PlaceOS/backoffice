@@ -1,13 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import {
-    addZone,
-    PlaceZone,
-    queryZones,
-    sourceResync,
-    sourceResyncStatus,
-} from '@placeos/ts-client';
+import { root, Zone, zones } from '@placeos/ts-client';
+import { mockPage, mockReply } from '@placeos/ts-client/compat';
 import { of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+const { fromV1Mock } = await vi.hoisted(
+    () => import('@placeos/ts-client/compat'),
+);
 
 import { Dialog } from '@angular/cdk/dialog';
 import { PlaceDatabaseDetailsComponent } from '../../app/admin/database-details.component';
@@ -17,14 +15,21 @@ import {
     notifyInfo,
     notifySuccess,
 } from '../../app/common/notifications';
+import { newItem } from '../../app/common/placeos';
 import { openConfirmModal } from '../../app/overlays/confirm-modal.component';
 
-vi.mock('@placeos/ts-client', () => ({
-    addZone: vi.fn(),
-    queryZones: vi.fn(),
-    showZone: vi.fn(),
-    sourceResync: vi.fn(),
-    sourceResyncStatus: vi.fn(),
+// Keep the schemas, which `toBody` reads
+vi.mock('@placeos/ts-client', async (importOriginal) => ({
+    ...(await importOriginal<object>()),
+    zones: {
+        create: vi.fn(fromV1Mock(undefined, ['body'])),
+        query: vi.fn(fromV1Mock(undefined, ['...'], 'page')),
+        show: vi.fn(fromV1Mock(undefined, ['id', '...'])),
+    },
+    root: {
+        sourceResync: vi.fn(fromV1Mock(undefined, ['clear'])),
+        sourceResyncStatus: vi.fn(fromV1Mock(undefined, [])),
+    },
 }));
 vi.mock('../../app/common/general', async (importOriginal) => ({
     ...(await importOriginal<object>()),
@@ -53,7 +58,9 @@ describe('Database details: MQTT re-sync', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.useFakeTimers();
-        vi.mocked(sourceResyncStatus).mockResolvedValue(status('idle'));
+        vi.mocked(root.sourceResyncStatus).mockResolvedValue(
+            mockReply(status('idle')),
+        );
     });
 
     afterEach(() => {
@@ -84,20 +91,26 @@ describe('Database details: MQTT re-sync', () => {
 
     it('re-syncs without asking, and follows it until it finishes', async () => {
         const fixture = await createComponent();
-        vi.mocked(sourceResync).mockResolvedValue(status('resyncing'));
-        vi.mocked(sourceResyncStatus).mockResolvedValue(status('resyncing'));
+        vi.mocked(root.sourceResync).mockResolvedValue(
+            mockReply(status('resyncing')),
+        );
+        vi.mocked(root.sourceResyncStatus).mockResolvedValue(
+            mockReply(status('resyncing')),
+        );
 
         buttons(fixture).resync.click();
         await vi.advanceTimersByTimeAsync(0);
         fixture.detectChanges();
 
         expect(openConfirmModal).not.toHaveBeenCalled();
-        expect(sourceResync).toHaveBeenCalledWith(false);
+        expect(root.sourceResync).toHaveBeenCalledWith({ clear: false });
         expect(buttons(fixture).resync.disabled).toBe(true);
         expect(buttons(fixture).clear.disabled).toBe(true);
 
-        vi.mocked(sourceResyncStatus).mockResolvedValue(
-            status('complete', { finished_at: '2026-10-15T00:00:00Z' }),
+        vi.mocked(root.sourceResyncStatus).mockResolvedValue(
+            mockReply(
+                status('complete', { finished_at: '2026-10-15T00:00:00Z' }),
+            ),
         );
         await vi.advanceTimersByTimeAsync(2000);
         fixture.detectChanges();
@@ -121,7 +134,7 @@ describe('Database details: MQTT re-sync', () => {
         await vi.advanceTimersByTimeAsync(0);
 
         expect(openConfirmModal).toHaveBeenCalled();
-        expect(sourceResync).not.toHaveBeenCalled();
+        expect(root.sourceResync).not.toHaveBeenCalled();
     });
 
     it('clears and re-syncs once confirmed, and reports a failure', async () => {
@@ -131,16 +144,16 @@ describe('Database details: MQTT re-sync', () => {
             loading: vi.fn(),
             close: vi.fn(),
         });
-        vi.mocked(sourceResync).mockResolvedValue(
-            status('clearing', { clear: true }),
+        vi.mocked(root.sourceResync).mockResolvedValue(
+            mockReply(status('clearing', { clear: true })),
         );
-        vi.mocked(sourceResyncStatus).mockResolvedValue(
-            status('failed', { clear: true, error: 'broker down' }),
+        vi.mocked(root.sourceResyncStatus).mockResolvedValue(
+            mockReply(status('failed', { clear: true, error: 'broker down' })),
         );
 
         buttons(fixture).clear.click();
         await vi.advanceTimersByTimeAsync(0);
-        expect(sourceResync).toHaveBeenCalledWith(true);
+        expect(root.sourceResync).toHaveBeenCalledWith({ clear: true });
 
         await vi.advanceTimersByTimeAsync(2000);
         expect(notifyError).toHaveBeenCalledWith(
@@ -150,7 +163,7 @@ describe('Database details: MQTT re-sync', () => {
 
     it('says when one is already running', async () => {
         const fixture = await createComponent();
-        vi.mocked(sourceResync).mockRejectedValue({ status: 409 });
+        vi.mocked(root.sourceResync).mockRejectedValue({ status: 409 });
 
         buttons(fixture).resync.click();
         await vi.advanceTimersByTimeAsync(0);
@@ -161,19 +174,23 @@ describe('Database details: MQTT re-sync', () => {
     });
 
     it('follows a re-sync that was already running when opened', async () => {
-        vi.mocked(sourceResyncStatus).mockResolvedValue(status('clearing'));
+        vi.mocked(root.sourceResyncStatus).mockResolvedValue(
+            mockReply(status('clearing')),
+        );
         const fixture = await createComponent();
         expect(buttons(fixture).clear.disabled).toBe(true);
 
-        vi.mocked(sourceResyncStatus).mockResolvedValue(
-            status('complete', { finished_at: '2026-10-15T00:00:00Z' }),
+        vi.mocked(root.sourceResyncStatus).mockResolvedValue(
+            mockReply(
+                status('complete', { finished_at: '2026-10-15T00:00:00Z' }),
+            ),
         );
         await vi.advanceTimersByTimeAsync(2000);
         expect(notifySuccess).toHaveBeenCalled();
     });
 
     it('hides the status when it cannot be read', async () => {
-        vi.mocked(sourceResyncStatus).mockRejectedValue({ status: 403 });
+        vi.mocked(root.sourceResyncStatus).mockRejectedValue({ status: 403 });
         const fixture = await createComponent();
         expect(fixture.nativeElement.querySelector('[mqtt-status]')).toBeNull();
         expect(buttons(fixture).resync.disabled).toBe(false);
@@ -186,7 +203,7 @@ describe('Database details: zone tree', () => {
     afterEach(() => TestBed.resetTestingModule());
 
     /** Creates the component with an export modal that picks `selected` */
-    async function createComponent(selected: PlaceZone[] = []) {
+    async function createComponent(selected: Zone[] = []) {
         await TestBed.configureTestingModule({
             imports: [PlaceDatabaseDetailsComponent],
             providers: [
@@ -211,8 +228,8 @@ describe('Database details: zone tree', () => {
             loading: vi.fn(),
             close: vi.fn(),
         });
-        vi.mocked(addZone).mockImplementation((zone) =>
-            Promise.resolve({ id: `new-${zone.name}` } as PlaceZone),
+        vi.mocked(zones.create).mockImplementation(async ({ body }) =>
+            mockReply(newItem(Zone, { id: `new-${body.name}` })),
         );
         const csv = [
             'id,parent_id,name',
@@ -227,25 +244,25 @@ describe('Database details: zone tree', () => {
 
         await component.importZoneTreeFile(event);
 
-        expect(addZone).toHaveBeenCalledTimes(2);
-        expect(addZone).toHaveBeenCalledWith(
-            expect.objectContaining({ name: 'Child', parent_id: 'new-Parent' }),
-        );
+        expect(zones.create).toHaveBeenCalledTimes(2);
+        expect(zones.create).toHaveBeenCalledWith({
+            body: expect.objectContaining({
+                name: 'Child',
+                parent_id: 'new-Parent',
+            }),
+        });
     });
 
     it('exports each zone once when roots overlap and parents loop', async () => {
-        const zone_a = { id: 'zone-a', name: 'A' } as PlaceZone;
-        const zone_b = { id: 'zone-b', parent_id: 'zone-a' } as PlaceZone;
-        const zone_c = { id: 'zone-c', parent_id: 'zone-b' } as PlaceZone;
-        const children: Record<string, PlaceZone[]> = {
+        const zone_a = { id: 'zone-a', name: 'A' } as Zone;
+        const zone_b = { id: 'zone-b', parent_id: 'zone-a' } as Zone;
+        const zone_c = { id: 'zone-c', parent_id: 'zone-b' } as Zone;
+        const children: Record<string, Zone[]> = {
             'zone-a,zone-b': [zone_b, zone_c],
             'zone-c': [zone_a],
         };
-        vi.mocked(queryZones).mockImplementation(
-            ({ parent_id }) =>
-                Promise.resolve({
-                    data: children[parent_id] || [],
-                }) as ReturnType<typeof queryZones>,
+        vi.mocked(zones.query).mockImplementation(async ({ parent_id }) =>
+            mockPage({ data: children[parent_id.join(',')] || [] }),
         );
         const component = await createComponent([zone_a, zone_b]);
 

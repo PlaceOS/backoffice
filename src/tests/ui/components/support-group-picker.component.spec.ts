@@ -10,10 +10,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SupportGroupPickerComponent } from '../../../app/ui/support-group-picker.component';
 import { TranslatePipe } from '../../../app/ui/translate.pipe';
 
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
-
 const state = vi.hoisted(() => ({
     role: false,
     selected: 'group-2',

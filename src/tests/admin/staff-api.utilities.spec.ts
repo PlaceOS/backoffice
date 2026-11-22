@@ -21,8 +21,14 @@ const NOW = new Date('2026-06-01T00:00:00Z').valueOf();
 const DAY = 24 * 60 * 60;
 const now_s = NOW / 1000;
 
-const tenant = (id: string, secret_expiry?: number) =>
-    ({ id, name: `Tenant ${id}`, secret_expiry }) as PlaceTenant;
+const tenant = (
+    id: string,
+    secret_expiry?: number,
+): Pick<PlaceTenant, 'id' | 'name' | 'secret_expiry'> => ({
+    id: Number(id),
+    name: `Tenant ${id}`,
+    secret_expiry,
+});
 
 describe('staff-api.utilities', () => {
     it.each([

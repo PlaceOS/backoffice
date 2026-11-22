@@ -1,38 +1,50 @@
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Mock @placeos/ts-client before importing the service
-vi.mock('@placeos/ts-client', () => {
-    const listeners = new Set<(event: unknown) => void>();
-    return {
-        debug: vi.fn(() => Promise.resolve()),
-        ignore: vi.fn(),
-        debug_events: {
-            subscribe: vi.fn((listener: (event: unknown) => void) => {
-                listeners.add(listener);
-                return () => listeners.delete(listener);
-            }),
-            next: (event: unknown) => {
-                for (const listener of listeners) listener(event);
-            },
+/** Debug listeners of the fake realtime client, by module ID */
+const debug_listeners = vi.hoisted(
+    () => new Map<string, Set<(message: unknown) => void>>(),
+);
+/** Targets of the debug calls, in order */
+const debug_targets = vi.hoisted(
+    (): { sys: string; module_id: string }[] => [],
+);
+
+vi.mock('../../app/common/placeos', () => ({
+    realtime: () => ({
+        debug: (
+            target: { sys: string; module_id: string },
+            listener: (message: unknown) => void,
+        ) => {
+            debug_targets.push(target);
+            const set = debug_listeners.get(target.module_id) || new Set();
+            set.add(listener);
+            debug_listeners.set(target.module_id, set);
+            return () => set.delete(listener);
         },
-        PlaceModule: class {},
-    };
-});
+    }),
+}));
+
+/** Send a debug message of a module to its listeners */
+function emitDebug(event: { mod_id: string; level: string; message: string }) {
+    const { mod_id, ...message } = event;
+    for (const listener of debug_listeners.get(mod_id) || []) {
+        listener({ ...message, received_at_ms: Date.now() });
+    }
+}
 
 // Mock date-fns format
 vi.mock('date-fns', () => ({
     format: vi.fn(() => '12:00 PM'),
 }));
 
-import { debug_events } from '@placeos/ts-client';
 import { format } from 'date-fns';
 import { PlaceDebugService } from '../../app/common/debug.service';
 
 // Mock PlaceModule interface
 interface MockPlaceModule {
     id: string;
-    system_id?: string;
+    control_system_id?: string;
     name?: string;
 }
 
@@ -48,6 +60,7 @@ describe('PlaceDebugService', () => {
 
     afterEach(() => {
         service.ngOnDestroy();
+        debug_listeners.clear();
         vi.clearAllMocks();
     });
 
@@ -129,10 +142,22 @@ describe('PlaceDebugService', () => {
             expect(service.enabled()).toBe(false);
         });
 
+        it('listens to a shared module through the system that shows it', () => {
+            const shared: MockPlaceModule = {
+                id: 'mod-shared',
+                control_system_id: null,
+            };
+            service.bind(shared as any, 'Shared_1', 'sys-9');
+            expect(debug_targets.at(-1)).toEqual({
+                sys: 'sys-9',
+                module_id: 'mod-shared',
+            });
+        });
+
         it('should enable debug when binding module', async () => {
             const module: MockPlaceModule = {
                 id: 'mod-1',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
             service.bind(module as any, 'TestModule_1');
 
@@ -145,7 +170,7 @@ describe('PlaceDebugService', () => {
         it('should add module to bound_modules after binding', async () => {
             const module: MockPlaceModule = {
                 id: 'mod-1',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
             service.bind(module as any, 'TestModule_1');
 
@@ -158,7 +183,7 @@ describe('PlaceDebugService', () => {
         it('should store module name', async () => {
             const module: MockPlaceModule = {
                 id: 'mod-1',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
             service.bind(module as any, 'TestModule_1');
 
@@ -172,7 +197,7 @@ describe('PlaceDebugService', () => {
 
             const module: MockPlaceModule = {
                 id: 'mod-1',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
             service.bind(module as any, 'TestModule_1');
 
@@ -190,7 +215,7 @@ describe('PlaceDebugService', () => {
         it('should remove module from bound_modules', async () => {
             const module: MockPlaceModule = {
                 id: 'mod-1',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
             service.bind(module as any, 'TestModule_1');
 
@@ -205,7 +230,7 @@ describe('PlaceDebugService', () => {
         it('should emit changed event after unbinding', async () => {
             const module: MockPlaceModule = {
                 id: 'mod-1',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
             service.bind(module as any, 'TestModule_1');
 
@@ -224,11 +249,11 @@ describe('PlaceDebugService', () => {
         it('should remove all bound modules', async () => {
             const module1: MockPlaceModule = {
                 id: 'mod-1',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
             const module2: MockPlaceModule = {
                 id: 'mod-2',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
 
             service.bind(module1 as any, 'TestModule_1');
@@ -256,7 +281,7 @@ describe('PlaceDebugService', () => {
         it('should be true when enabled and has modules', async () => {
             const module: MockPlaceModule = {
                 id: 'mod-1',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
             service.bind(module as any, 'TestModule_1');
 
@@ -334,7 +359,7 @@ describe('PlaceDebugService', () => {
         it('should add event when received for bound module', async () => {
             const module: MockPlaceModule = {
                 id: 'mod-1',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
             service.bind(module as any, 'TestModule_1');
 
@@ -343,7 +368,7 @@ describe('PlaceDebugService', () => {
             });
 
             // Emit event via the mocked debug_events
-            (debug_events as { next: (event: unknown) => void }).next({
+            emitDebug({
                 mod_id: 'mod-1',
                 level: 'info',
                 message: 'Test event',
@@ -354,7 +379,7 @@ describe('PlaceDebugService', () => {
         });
 
         it('should ignore events for unbound modules', () => {
-            (debug_events as { next: (event: unknown) => void }).next({
+            emitDebug({
                 mod_id: 'unbound-mod',
                 level: 'info',
                 message: 'Should be ignored',
@@ -366,7 +391,7 @@ describe('PlaceDebugService', () => {
         it('should limit events to 2000', async () => {
             const module: MockPlaceModule = {
                 id: 'mod-1',
-                system_id: 'sys-1',
+                control_system_id: 'sys-1',
             };
             service.bind(module as any, 'TestModule_1');
 
@@ -386,7 +411,7 @@ describe('PlaceDebugService', () => {
             service.events.set(events as any);
 
             // Add one more event via subscription
-            (debug_events as { next: (event: unknown) => void }).next({
+            emitDebug({
                 mod_id: 'mod-1',
                 level: 'info',
                 message: 'New event',
@@ -404,20 +429,13 @@ describe('PlaceDebugService', () => {
     it('batches a burst and formats each event only once', async () => {
         vi.useFakeTimers();
         try {
-            const module = { id: 'mod-1', system_id: 'sys-1' };
+            const module = { id: 'mod-1', control_system_id: 'sys-1' };
             await service.bind(
                 module as Parameters<typeof service.bind>[0],
                 'Test_1',
             );
-            const emit = debug_events as unknown as {
-                next(event: {
-                    mod_id: string;
-                    level: string;
-                    message: string;
-                }): void;
-            };
             for (let i = 0; i < 100; i++) {
-                emit.next({
+                emitDebug({
                     mod_id: 'mod-1',
                     level: 'info',
                     message: `Event ${i}`,
@@ -428,11 +446,11 @@ describe('PlaceDebugService', () => {
             expect(service.event_count()).toBe(100);
             const first = service.terminal_lines()[0];
             expect(format).toHaveBeenCalledTimes(100);
-            emit.next({ mod_id: 'mod-1', level: 'info', message: 'Next' });
+            emitDebug({ mod_id: 'mod-1', level: 'info', message: 'Next' });
             vi.advanceTimersByTime(16);
             expect(service.terminal_lines()[0]).toBe(first);
             expect(format).toHaveBeenCalledTimes(101);
-            emit.next({ mod_id: 'mod-1', level: 'info', message: 'Clear me' });
+            emitDebug({ mod_id: 'mod-1', level: 'info', message: 'Clear me' });
             service.clearEvents();
             vi.advanceTimersByTime(16);
             expect(service.events()).toEqual([]);

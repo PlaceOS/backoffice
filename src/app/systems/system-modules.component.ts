@@ -11,13 +11,15 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import {
-    loadModule,
-    PlaceDriverRole,
-    PlaceModule,
-    PlaceSystem,
-    queryModules,
-    showModule,
+    type Module,
+    modules as modules_v7,
+    type System,
 } from '@placeos/ts-client';
+import {
+    orThrow,
+    orThrowPage,
+    PlaceDriverRole,
+} from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -218,7 +220,7 @@ import { SystemStateService } from './system-state.service';
                         "
                         [class.bg-success]="row.running && !!row.connected"
                         [class.bg-pending]="
-                            row.running && row.connected === undefined
+                            moduleStatus(row) === 'MODULES.STATUS_CONNECTING'
                         "
                         (click)="setActive(index)"
                         [cdkMenuTriggerFor]="context_menu"
@@ -228,7 +230,7 @@ import { SystemStateService } from './system-state.service';
                         [appTooltip]="status_label"
                         appTooltipPosition="right"
                     ></button>
-                    @if (row.running && row.connected === undefined) {
+                    @if (moduleStatus(row) === 'MODULES.STATUS_CONNECTING') {
                         <app-spinner
                             class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                             diameter="32"
@@ -416,15 +418,15 @@ export class SystemModulesComponent {
     /** Whether to show exec block */
     public hide_exec: boolean;
 
-    public readonly active_item = signal<PlaceModule>(null);
+    public readonly active_item = signal<Module>(null);
     /**
      * Module of the open menu. Set when the menu opens, so hovering another
      * row while it is open does not change it
      */
-    public readonly menu_item = signal<PlaceModule>(null);
+    public readonly menu_item = signal<Module>(null);
 
     public readonly item_signal = computed(
-        () => this._service.item() as PlaceSystem,
+        () => this._service.item() as System,
     );
     private readonly _item_id = computed(() => this.item_signal()?.id);
     public readonly loading = this._service.loading;
@@ -523,18 +525,14 @@ export class SystemModulesComponent {
     ];
     /** Query method for modules */
     public readonly query_fn = (_: string) =>
-        queryModules({ q: _, no_logic: true }).then(
-            (resp) =>
-                resp.data.map((mod: PlaceModule) => ({
-                    ...mod,
-                    extra: mod.driver?.name,
-                })) as (PlaceModule & { extra?: string })[],
-        );
+        modules_v7
+            .query({ q: _, no_logic: true })
+            .then(orThrowPage)
+            .then((resp) =>
+                resp.data.map((mod) => ({ ...mod, extra: mod.driver?.name })),
+            );
     /** Function for excluding modules already within this system */
-    public readonly exclude_fn = (
-        item: PlaceModule & { role?: number },
-        __: string,
-    ) =>
+    public readonly exclude_fn = (item: Module, __: string) =>
         !!this.item.modules?.includes(item.id) ||
         item.role === PlaceDriverRole.Logic;
 
@@ -572,8 +570,8 @@ export class SystemModulesComponent {
         });
     }
 
-    public get item(): PlaceSystem {
-        return this._service.active_item as PlaceSystem;
+    public get item(): System {
+        return this._service.active_item as System;
     }
 
     /**
@@ -581,7 +579,7 @@ export class SystemModulesComponent {
      * @param event Event posted by the context menu
      * @param device Module associated with the context menu event
      */
-    public handleContextEvent(event: AppLink, device: PlaceModule) {
+    public handleContextEvent(event: AppLink, device: Module) {
         if (event) {
             switch (event.id) {
                 case 'power':
@@ -613,14 +611,14 @@ export class SystemModulesComponent {
      * Update the state of the module
      * @param device Module to reload
      */
-    public async reload(device: PlaceModule) {
-        const item = await showModule(device.id);
+    public async reload(device: Module) {
+        const item = await modules_v7.show({ id: device.id }).then(orThrow);
         for (const k in item) {
             if (k in item) device[k] = item[k];
         }
     }
 
-    public async viewState(device: PlaceModule) {
+    public async viewState(device: Module) {
         const modules = this._service.getModules();
         this._dialog.open<
             unknown,
@@ -637,17 +635,20 @@ export class SystemModulesComponent {
         else this.active_item.set(modules[idx]);
     }
 
-    public async loadModule(device: PlaceModule) {
-        await loadModule(device.id).then(
-            () =>
-                notifySuccess(
-                    `Successfully loaded module "${device.name || device.id}"`,
-                ),
-            (err) =>
-                notifyError(
-                    `Error loading module. Error: ${describeError(err)}`,
-                ),
-        );
+    public async loadModule(device: Module) {
+        await modules_v7
+            .load({ id: device.id })
+            .then(orThrow)
+            .then(
+                () =>
+                    notifySuccess(
+                        `Successfully loaded module "${device.name || device.id}"`,
+                    ),
+                (err) =>
+                    notifyError(
+                        `Error loading module. Error: ${describeError(err)}`,
+                    ),
+            );
     }
 
     /**
@@ -660,9 +661,9 @@ export class SystemModulesComponent {
     }
 
     /** Locale key for the state the status dot shows by colour */
-    public moduleStatus(module: PlaceModule) {
+    public moduleStatus(module: Module) {
         if (!module.running) return 'MODULES.STATUS_STOPPED';
-        if (module.connected === undefined) return 'MODULES.STATUS_CONNECTING';
+        if (module.connected == null) return 'MODULES.STATUS_CONNECTING';
         return module.connected
             ? 'MODULES.STATUS_CONNECTED'
             : 'MODULES.STATUS_DISCONNECTED';
@@ -674,7 +675,7 @@ export class SystemModulesComponent {
         this.new_module.set('');
     }
 
-    public viewRuntimeError(device: PlaceModule) {
+    public viewRuntimeError(device: Module) {
         this._dialog.open<unknown, unknown, ModuleRuntimeErrorsModalComponent>(
             ModuleRuntimeErrorsModalComponent,
             { data: device.id },

@@ -8,23 +8,26 @@ import {
     WritableSignal,
 } from '@angular/core';
 import {
-    PlaceSystem,
-    PlaceTrigger,
+    type System,
+    Trigger,
     TriggerActions,
-    TriggerFunction,
-    TriggerMailer,
-    updateTrigger,
+    TriggerActionsEmail,
+    TriggerActionsFunction,
+    triggers,
 } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { form, FormField, submit } from '@angular/forms/signals';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { toBody } from '../../common/placeos';
 import { DialogEvent, Identity } from '../../common/types';
 import {
     applyTriggerActionFormSchema,
     generateTriggerActionFormModel,
+    triggerActions,
 } from '../../triggers/triggers.utilities';
 import { ChipListComponent } from '../controls/chip-list.component';
 import { FormFieldComponent } from '../controls/form-field.component';
@@ -36,11 +39,11 @@ import { TranslatePipe } from '../translate.pipe';
 
 export interface TriggerActionModalData {
     /** Item to add/update the trigger on */
-    system: PlaceSystem;
+    system: System;
     /** Trigger to add/update */
-    trigger: PlaceTrigger;
+    trigger: Trigger;
     /** Trigger Condition to edit */
-    action?: TriggerMailer | TriggerFunction;
+    action?: TriggerActionsEmail | TriggerActionsFunction;
 }
 
 @Component({
@@ -180,12 +183,12 @@ export class TriggerActionModalComponent implements OnInit {
     }
 
     /** Template system to use for status variable bindings */
-    public get system(): PlaceSystem {
+    public get system(): System {
         return this._data.system;
     }
 
     /** Template system to use for status variable bindings */
-    public get trigger(): PlaceTrigger {
+    public get trigger(): Trigger {
         return this._data.trigger;
     }
 
@@ -211,31 +214,34 @@ export class TriggerActionModalComponent implements OnInit {
             );
         }
         this.loading.set('Save trigger action...');
-        await updateTrigger(this.trigger.id, {
-            ...this.trigger,
-            actions,
-        }).then(
-            (item) => {
-                this.event.emit({
-                    reason: 'done',
-                    metadata: { trigger: item },
-                });
-                notifySuccess(
-                    `Successfully ${
-                        this.is_new ? 'added' : 'updated'
-                    } action to trigger`,
-                );
-                this._dialog.close();
-            },
-            (err) => {
-                this.loading.set('');
-                notifyError(
-                    `Error ${
-                        this.is_new ? 'adding' : 'updating'
-                    } action to trigger. Error: ${describeError(err)}`,
-                );
-            },
-        );
+        await triggers
+            .update({
+                id: this.trigger.id,
+                body: { ...toBody(Trigger, this.trigger), actions },
+            })
+            .then(orThrow)
+            .then(
+                (item) => {
+                    this.event.emit({
+                        reason: 'done',
+                        metadata: { trigger: item },
+                    });
+                    notifySuccess(
+                        `Successfully ${
+                            this.is_new ? 'added' : 'updated'
+                        } action to trigger`,
+                    );
+                    this._dialog.close();
+                },
+                (err) => {
+                    this.loading.set('');
+                    notifyError(
+                        `Error ${
+                            this.is_new ? 'adding' : 'updating'
+                        } action to trigger. Error: ${describeError(err)}`,
+                    );
+                },
+            );
     }
 
     /**
@@ -243,7 +249,8 @@ export class TriggerActionModalComponent implements OnInit {
      * `null` if the edited mailer is no longer on the trigger.
      */
     private updateMailers(): TriggerActions | null {
-        const mailers = [...(this.trigger.actions.mailers || [])];
+        const current = triggerActions(this.trigger);
+        const mailers = current.mailers;
         const new_mailer = {
             emails: this.formModel().emails,
             content: this.formModel().content,
@@ -258,7 +265,7 @@ export class TriggerActionModalComponent implements OnInit {
         } else {
             mailers.push(new_mailer);
         }
-        return { ...this.trigger.actions, mailers };
+        return { ...current, mailers };
     }
 
     /**
@@ -266,7 +273,8 @@ export class TriggerActionModalComponent implements OnInit {
      * `null` if the edited function is no longer on the trigger.
      */
     private updateFunctions(): TriggerActions | null {
-        const functions = [...(this.trigger.actions.functions || [])];
+        const current = triggerActions(this.trigger);
+        const functions = current.functions;
         if (this._data.action) {
             const old_function = JSON.stringify(this._data.action);
             const index = functions.findIndex(
@@ -277,6 +285,6 @@ export class TriggerActionModalComponent implements OnInit {
         } else {
             functions.push(this.formModel().method_call);
         }
-        return { ...this.trigger.actions, functions };
+        return { ...current, functions };
     }
 }

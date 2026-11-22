@@ -1,22 +1,19 @@
 import {
-    del,
-    get,
-    PlaceDomain,
-    PlaceSystem,
-    PlaceZone,
-    queryApplications,
-    queryDomains,
-    QueryResponse,
-    querySystems,
-    queryZones,
-    removeApplication,
-    removeSystem,
-    removeZone,
-    showSystem,
-    showZone,
+    Application,
+    type Domain,
+    domains,
+    oauth_applications,
+    type System,
+    systems,
+    type Zone,
+    zones as zones_v7,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
+import { tenants as tenants_v7 } from '@placeos/ts-client/staff';
 import type { PlaceTenant } from '../admin/staff-api.component';
 import { i18n } from './locale.service';
+import { newItem } from './placeos';
+import { mapPage, type QueryResponse } from './types';
 
 /**
  * Resolution and execution of "delete the things associated with this item".
@@ -112,7 +109,7 @@ const emptyPlan = (): CascadePlan => ({
  * the requests in flight settle, so callers see everything that happened.
  */
 export async function mapLimit<T, R>(
-    list: T[],
+    list: readonly T[],
     limit: number,
     fn: (item: T) => Promise<R>,
 ): Promise<R[]> {
@@ -181,7 +178,9 @@ export async function zoneSubtreeIds(zone_id: string): Promise<string[]> {
             );
         }
         const children = await collectPages(
-            queryZones({ parent_id: level.join(','), limit: PAGE_SIZE }),
+            zones_v7
+                .query({ parent_id: level, limit: PAGE_SIZE })
+                .then(orThrowPage),
         );
         level = [];
         for (const zone of children) {
@@ -197,9 +196,9 @@ export async function zoneSubtreeIds(zone_id: string): Promise<string[]> {
 /** Systems in a zone subtree, split by whether they survive its removal. */
 export interface ZoneSystemSplit {
     /** Systems whose every zone is inside the subtree — these would be orphaned */
-    orphaned: PlaceSystem[];
+    orphaned: System[];
     /** Systems that also belong to a zone outside the subtree — these are kept */
-    retained: PlaceSystem[];
+    retained: System[];
 }
 
 /**
@@ -223,32 +222,39 @@ export async function splitZoneSystems(
     // has no relationship to it. `[].every()` is `true`, so without the length
     // check a system whose zones were just cleared, and which the search index
     // still lists under this zone, would be treated as orphaned and deleted.
-    const inside = (system: PlaceSystem) => {
+    const inside = (system: System) => {
         const zones = system.zones || [];
         return zones.length > 0 && zones.every((id) => subtree.has(id));
     };
 
-    const found = new Map<string, PlaceSystem>();
+    const found = new Map<string, System>();
     // Not caught, for the same reason as the domain listings: a zone whose
     // systems cannot be listed would contribute nothing to the plan, and the
     // zone would then be deleted with those systems still inside it.
     const pages = await mapLimit(zone_ids, READ_CONCURRENCY, (zone_id) =>
-        collectPages(querySystems({ zone_id, limit: PAGE_SIZE })),
+        collectPages(
+            systems
+                .query({ zone_id: [zone_id], limit: PAGE_SIZE })
+                .then(orThrowPage),
+        ),
     );
     for (const list of pages) {
         for (const system of list) if (system?.id) found.set(system.id, system);
     }
 
-    const candidates: PlaceSystem[] = [];
-    const retained: PlaceSystem[] = [];
+    const candidates: System[] = [];
+    const retained: System[] = [];
     for (const system of found.values()) {
         (inside(system) ? candidates : retained).push(system);
     }
 
     const confirmed = await mapLimit(candidates, READ_CONCURRENCY, (system) =>
-        showSystem(system.id).catch(() => null),
+        systems
+            .show({ sys_id: system.id })
+            .then(orThrow)
+            .catch(() => null),
     );
-    const orphaned: PlaceSystem[] = [];
+    const orphaned: System[] = [];
     confirmed.forEach((current) => {
         // A system that has since been deleted, or that has picked up a zone
         // outside the subtree, is left alone.
@@ -316,7 +322,7 @@ export async function planZoneCascade(
             id: system.id,
             name: system.name,
         },
-        run: () => removeSystem(system.id),
+        run: () => systems.destroy({ sys_id: system.id }).then(orThrow),
     }));
     return plan;
 }
@@ -334,12 +340,12 @@ export async function planZoneCascade(
  */
 async function domainTenants(domain: string): Promise<PlaceTenant[]> {
     if (!domain) return [];
-    const tenants = (await get('/api/staff/v1/tenants')) as PlaceTenant[];
-    return (tenants || []).filter((tenant) => tenant?.domain === domain);
+    const tenants = await tenants_v7.query({}).then(orThrow);
+    return tenants.filter((tenant) => tenant?.domain === domain);
 }
 
 /** The `org_zone` a domain points at, if it declares one. */
-function orgZoneId(domain: PlaceDomain): string {
+function orgZoneId(domain: Domain): string {
     return `${domain?.config?.org_zone || ''}`;
 }
 
@@ -358,9 +364,7 @@ function orgZoneId(domain: PlaceDomain): string {
  * same org zone — so the zone tree is only included when no other domain
  * references it.
  */
-export async function planDomainCascade(
-    domain: PlaceDomain,
-): Promise<CascadePlan> {
+export async function planDomainCascade(domain: Domain): Promise<CascadePlan> {
     const plan = emptyPlan();
     const org_zone_id = orgZoneId(domain);
     // None of these are caught. A failed or truncated listing used to read as
@@ -371,12 +375,20 @@ export async function planDomainCascade(
     // been able to size.
     const [applications, tenants, all_domains] = await Promise.all([
         collectPages(
-            queryApplications({ authority_id: domain.id, limit: PAGE_SIZE }),
+            oauth_applications
+                .query({ authority_id: domain.id, limit: PAGE_SIZE })
+                .then(orThrowPage)
+                // The API document gives the list items as plain JSON
+                .then((page) =>
+                    mapPage(page, (item) => newItem(Application, item)),
+                ),
         ),
         domainTenants(domain.domain),
         org_zone_id
-            ? collectPages(queryDomains({ limit: PAGE_SIZE }))
-            : Promise.resolve([] as PlaceDomain[]),
+            ? collectPages(
+                  domains.query({ limit: PAGE_SIZE }).then(orThrowPage),
+              )
+            : Promise.resolve([] as Domain[]),
     ]);
 
     if (applications.length) {
@@ -394,7 +406,10 @@ export async function planDomainCascade(
                     id: `${application.id}`,
                     name: application.name,
                 },
-                run: () => removeApplication(application.id),
+                run: () =>
+                    oauth_applications
+                        .destroy({ id: application.id })
+                        .then(orThrow),
             })),
         );
     }
@@ -414,7 +429,7 @@ export async function planDomainCascade(
                     id: `${tenant.id}`,
                     name: tenant.name || tenant.domain,
                 },
-                run: () => del(`/api/staff/v1/tenants/${tenant.id}`),
+                run: () => tenants_v7.destroy({ id: tenant.id }).then(orThrow),
             })),
         );
     }
@@ -445,9 +460,10 @@ export async function planDomainCascade(
         return plan;
     }
 
-    const org_zone: PlaceZone | null = await showZone(org_zone_id).catch(
-        () => null,
-    );
+    const org_zone: Zone | null = await zones_v7
+        .show({ id: org_zone_id })
+        .then(orThrow)
+        .catch(() => null);
     if (!org_zone) {
         plan.warnings.push(
             i18n('CASCADE.ORG_ZONE_MISSING', { id: org_zone_id }),
@@ -468,7 +484,7 @@ export async function planDomainCascade(
             id: org_zone_id,
             name: org_zone.name,
         },
-        run: () => removeZone(org_zone_id),
+        run: () => zones_v7.destroy({ id: org_zone_id }).then(orThrow),
     });
     return plan;
 }

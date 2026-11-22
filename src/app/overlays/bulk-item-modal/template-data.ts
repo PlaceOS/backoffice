@@ -1,4 +1,4 @@
-import { PlaceDriverRole } from '@placeos/ts-client';
+import { PlaceDriverRole } from '@placeos/ts-client/compat';
 
 export const SYSTEM_TEMPLATE: Record<string, unknown> = {
     name: 'A System',

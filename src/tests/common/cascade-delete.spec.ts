@@ -7,37 +7,64 @@ vi.mock('../../app/common/locale.service', () => ({
         Object.keys(args).length ? `${key}:${JSON.stringify(args)}` : key,
 }));
 
-vi.mock('@placeos/ts-client', () => ({
-    PlaceApplication: class {},
-    PlaceDomain: class {},
-    PlaceSystem: class {},
-    PlaceZone: class {},
-    del: vi.fn(() => Promise.resolve()),
-    get: vi.fn(() => Promise.resolve([])),
-    queryApplications: vi.fn(() => Promise.resolve({ data: [], total: 0 })),
-    queryDomains: vi.fn(() => Promise.resolve({ data: [], total: 0 })),
-    querySystems: vi.fn(() => Promise.resolve({ data: [], total: 0 })),
-    queryZones: vi.fn(() => Promise.resolve({ data: [], total: 0 })),
-    removeApplication: vi.fn(() => Promise.resolve()),
-    removeSystem: vi.fn(() => Promise.resolve()),
-    removeZone: vi.fn(() => Promise.resolve()),
-    showSystem: vi.fn(() => Promise.resolve(null)),
-    showZone: vi.fn(() => Promise.resolve(null)),
+vi.mock('@placeos/ts-client/staff', () => ({
+    tenants: { query: vi.fn(), destroy: vi.fn() },
+}));
+
+// Keep the schemas, which `newItem` reads
+vi.mock('@placeos/ts-client', async (importOriginal) => ({
+    ...(await importOriginal<object>()),
+    oauth_applications: {
+        query: vi.fn(
+            fromV1Mock(
+                () => Promise.resolve({ data: [], total: 0 }),
+                ['...'],
+                'page',
+            ),
+        ),
+        destroy: vi.fn(fromV1Mock(() => Promise.resolve(), ['id'])),
+    },
+    domains: {
+        query: vi.fn(
+            fromV1Mock(
+                () => Promise.resolve({ data: [], total: 0 }),
+                ['...'],
+                'page',
+            ),
+        ),
+    },
+    systems: {
+        query: vi.fn(
+            fromV1Mock(
+                () => Promise.resolve({ data: [], total: 0 }),
+                ['...'],
+                'page',
+            ),
+        ),
+        destroy: vi.fn(fromV1Mock(() => Promise.resolve(), ['sys_id'])),
+        show: vi.fn(fromV1Mock(() => Promise.resolve(null), ['sys_id', '...'])),
+    },
+    zones: {
+        query: vi.fn(
+            fromV1Mock(
+                () => Promise.resolve({ data: [], total: 0 }),
+                ['...'],
+                'page',
+            ),
+        ),
+        destroy: vi.fn(fromV1Mock(() => Promise.resolve(), ['id'])),
+        show: vi.fn(fromV1Mock(() => Promise.resolve(null), ['id', '...'])),
+    },
 }));
 
 import {
-    del,
-    get,
-    queryApplications,
-    queryDomains,
-    querySystems,
-    queryZones,
-    removeApplication,
-    removeSystem,
-    removeZone,
-    showSystem,
-    showZone,
+    domains,
+    oauth_applications,
+    systems as systems_v7,
+    zones as zones_v7,
 } from '@placeos/ts-client';
+import { mockReply } from '@placeos/ts-client/compat';
+import { tenants } from '@placeos/ts-client/staff';
 import {
     planDomainCascade,
     planZoneCascade,
@@ -45,6 +72,9 @@ import {
     splitZoneSystems,
     zoneSubtreeIds,
 } from '../../app/common/cascade-delete';
+const { fromV1Mock } = await vi.hoisted(
+    () => import('@placeos/ts-client/compat'),
+);
 
 type Query = ReturnType<typeof vi.fn>;
 
@@ -55,11 +85,11 @@ const page = (data: unknown[], next: unknown = null) =>
         next: next ? () => next : null,
     });
 
-/** Zones keyed by their `parent_id`, matching the API's comma separated filter */
+/** Zones keyed by their `parent_id`. The filter takes many parents */
 const zonesByParent =
     (tree: Record<string, { id: string }[]>) =>
-    (params: { parent_id?: string }) => {
-        const parents = (params?.parent_id || '').split(',').filter((_) => !!_);
+    (params: { parent_id?: readonly string[] }) => {
+        const parents = (params?.parent_id || []).filter((_) => !!_);
         return page(parents.flatMap((parent) => tree[parent] || []));
     };
 
@@ -75,8 +105,8 @@ const systemsByZone = (map: Record<string, unknown[]>) => {
             system_index.set(item.id, item);
         }
     }
-    return (params: { zone_id?: string }) =>
-        page(map[params?.zone_id || ''] || []);
+    return (params: { zone_id?: readonly string[] }) =>
+        page(map[params?.zone_id?.[0] || ''] || []);
 };
 
 const system = (id: string, zones: string[], modules: string[] = []) => ({
@@ -89,16 +119,32 @@ const system = (id: string, zones: string[], modules: string[] = []) => ({
 describe('cascade-delete', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        (queryZones as Query).mockImplementation(() => page([]));
-        (querySystems as Query).mockImplementation(() => page([]));
-        (queryApplications as Query).mockImplementation(() => page([]));
-        (queryDomains as Query).mockImplementation(() => page([]));
-        (get as Query).mockImplementation(() => Promise.resolve([]));
+        (zones_v7.query as Query).mockImplementation(
+            fromV1Mock(() => page([]), ['...'], 'page'),
+        );
+        (systems_v7.query as Query).mockImplementation(
+            fromV1Mock(() => page([]), ['...'], 'page'),
+        );
+        (oauth_applications.query as Query).mockImplementation(
+            fromV1Mock(() => page([]), ['...'], 'page'),
+        );
+        (domains.query as Query).mockImplementation(
+            fromV1Mock(() => page([]), ['...'], 'page'),
+        );
+        (tenants.query as Query).mockImplementation(() =>
+            Promise.resolve(mockReply([])),
+        );
+        (tenants.destroy as Query).mockResolvedValue(mockReply(''));
         // Removal candidates are re-read from the database; by default the
         // authoritative copy matches what the index returned.
-        (showSystem as Query).mockImplementation((id: string) =>
-            Promise.resolve(
-                [...system_index.values()].find((_) => _.id === id) || null,
+        (systems_v7.show as Query).mockImplementation(
+            fromV1Mock(
+                (id: string) =>
+                    Promise.resolve(
+                        [...system_index.values()].find((_) => _.id === id) ||
+                            null,
+                    ),
+                ['sys_id', '...'],
             ),
         );
     });
@@ -113,11 +159,15 @@ describe('cascade-delete', () => {
         });
 
         it('walks the whole tree breadth first', async () => {
-            (queryZones as Query).mockImplementation(
-                zonesByParent({
-                    'zone-a': [{ id: 'zone-b' }, { id: 'zone-c' }],
-                    'zone-b': [{ id: 'zone-d' }],
-                }),
+            (zones_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    zonesByParent({
+                        'zone-a': [{ id: 'zone-b' }, { id: 'zone-c' }],
+                        'zone-b': [{ id: 'zone-d' }],
+                    }),
+                    ['...'],
+                    'page',
+                ),
             );
             expect(await zoneSubtreeIds('zone-a')).toEqual([
                 'zone-a',
@@ -128,25 +178,33 @@ describe('cascade-delete', () => {
         });
 
         it('queries a whole level in a single request', async () => {
-            (queryZones as Query).mockImplementation(
-                zonesByParent({
-                    'zone-a': [{ id: 'zone-b' }, { id: 'zone-c' }],
-                }),
+            (zones_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    zonesByParent({
+                        'zone-a': [{ id: 'zone-b' }, { id: 'zone-c' }],
+                    }),
+                    ['...'],
+                    'page',
+                ),
             );
             await zoneSubtreeIds('zone-a');
             // one request for zone-a's children, one for `zone-b,zone-c`
-            expect((queryZones as Query).mock.calls.length).toBe(2);
-            expect((queryZones as Query).mock.calls[1][0].parent_id).toBe(
-                'zone-b,zone-c',
-            );
+            expect((zones_v7.query as Query).mock.calls.length).toBe(2);
+            expect(
+                (zones_v7.query as Query).mock.calls[1][0].parent_id,
+            ).toEqual(['zone-b', 'zone-c']);
         });
 
         it('terminates when a zone is its own ancestor', async () => {
-            (queryZones as Query).mockImplementation(
-                zonesByParent({
-                    'zone-a': [{ id: 'zone-b' }],
-                    'zone-b': [{ id: 'zone-a' }],
-                }),
+            (zones_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    zonesByParent({
+                        'zone-a': [{ id: 'zone-b' }],
+                        'zone-b': [{ id: 'zone-a' }],
+                    }),
+                    ['...'],
+                    'page',
+                ),
             );
             expect(await zoneSubtreeIds('zone-a')).toEqual([
                 'zone-a',
@@ -158,8 +216,12 @@ describe('cascade-delete', () => {
             // A truncated subtree understates both what gets deleted and
             // whether another domain shares it, so it must not look complete.
             let next = 0;
-            (queryZones as Query).mockImplementation(() =>
-                page([{ id: `zone-${next++}` }]),
+            (zones_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    () => page([{ id: `zone-${next++}` }]),
+                    ['...'],
+                    'page',
+                ),
             );
             await expect(zoneSubtreeIds('zone-root')).rejects.toThrow(
                 /exceeds/,
@@ -167,8 +229,12 @@ describe('cascade-delete', () => {
         });
 
         it('follows pagination', async () => {
-            (queryZones as Query).mockImplementation(() =>
-                page([{ id: 'zone-b' }], page([{ id: 'zone-c' }])),
+            (zones_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    () => page([{ id: 'zone-b' }], page([{ id: 'zone-c' }])),
+                    ['...'],
+                    'page',
+                ),
             );
             const ids = await zoneSubtreeIds('zone-a');
             expect(ids).toContain('zone-b');
@@ -178,10 +244,14 @@ describe('cascade-delete', () => {
 
     describe('splitZoneSystems', () => {
         it('orphans a system whose every zone is inside the subtree', async () => {
-            (querySystems as Query).mockImplementation(
-                systemsByZone({
-                    'zone-a': [system('sys-1', ['zone-a', 'zone-b'])],
-                }),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({
+                        'zone-a': [system('sys-1', ['zone-a', 'zone-b'])],
+                    }),
+                    ['...'],
+                    'page',
+                ),
             );
             const split = await splitZoneSystems(['zone-a', 'zone-b']);
             expect(split.orphaned.map((_) => _.id)).toEqual(['sys-1']);
@@ -193,8 +263,12 @@ describe('cascade-delete', () => {
             // read as "entirely inside this subtree". A system whose zones
             // were just cleared, still listed here by the lagging search
             // index, has no relationship to the zone being deleted.
-            (querySystems as Query).mockImplementation(
-                systemsByZone({ 'zone-a': [system('sys-detached', [])] }),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({ 'zone-a': [system('sys-detached', [])] }),
+                    ['...'],
+                    'page',
+                ),
             );
             const split = await splitZoneSystems(['zone-a']);
             expect(split.orphaned).toEqual([]);
@@ -202,10 +276,16 @@ describe('cascade-delete', () => {
         });
 
         it('retains a system that also lives outside the subtree', async () => {
-            (querySystems as Query).mockImplementation(
-                systemsByZone({
-                    'zone-a': [system('sys-1', ['zone-a', 'zone-elsewhere'])],
-                }),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({
+                        'zone-a': [
+                            system('sys-1', ['zone-a', 'zone-elsewhere']),
+                        ],
+                    }),
+                    ['...'],
+                    'page',
+                ),
             );
             const split = await splitZoneSystems(['zone-a']);
             expect(split.orphaned).toEqual([]);
@@ -214,20 +294,34 @@ describe('cascade-delete', () => {
 
         it('deduplicates a system found through several zones', async () => {
             const shared = system('sys-1', ['zone-a', 'zone-b']);
-            (querySystems as Query).mockImplementation(
-                systemsByZone({ 'zone-a': [shared], 'zone-b': [shared] }),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({ 'zone-a': [shared], 'zone-b': [shared] }),
+                    ['...'],
+                    'page',
+                ),
             );
             const split = await splitZoneSystems(['zone-a', 'zone-b']);
             expect(split.orphaned.length).toBe(1);
         });
 
         it('keeps a system the database says has moved outside the subtree', async () => {
-            (querySystems as Query).mockImplementation(
-                systemsByZone({ 'zone-a': [system('sys-1', ['zone-a'])] }),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({ 'zone-a': [system('sys-1', ['zone-a'])] }),
+                    ['...'],
+                    'page',
+                ),
             );
             // The index is stale — the database has it in another zone too.
-            (showSystem as Query).mockImplementation(() =>
-                Promise.resolve(system('sys-1', ['zone-a', 'zone-elsewhere'])),
+            (systems_v7.show as Query).mockImplementation(
+                fromV1Mock(
+                    () =>
+                        Promise.resolve(
+                            system('sys-1', ['zone-a', 'zone-elsewhere']),
+                        ),
+                    ['sys_id', '...'],
+                ),
             );
             const split = await splitZoneSystems(['zone-a']);
             expect(split.orphaned).toEqual([]);
@@ -235,11 +329,18 @@ describe('cascade-delete', () => {
         });
 
         it('skips a system that has already been deleted', async () => {
-            (querySystems as Query).mockImplementation(
-                systemsByZone({ 'zone-a': [system('sys-1', ['zone-a'])] }),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({ 'zone-a': [system('sys-1', ['zone-a'])] }),
+                    ['...'],
+                    'page',
+                ),
             );
-            (showSystem as Query).mockImplementation(() =>
-                Promise.reject(new Error('404')),
+            (systems_v7.show as Query).mockImplementation(
+                fromV1Mock(
+                    () => Promise.reject(new Error('404')),
+                    ['sys_id', '...'],
+                ),
             );
             const split = await splitZoneSystems(['zone-a']);
             expect(split.orphaned).toEqual([]);
@@ -250,8 +351,12 @@ describe('cascade-delete', () => {
             // Reporting no systems would let the zone be deleted with its
             // systems still inside it, which is the outcome this whole flow
             // exists to prevent.
-            (querySystems as Query).mockImplementation(() =>
-                Promise.reject(new Error('nope')),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    () => Promise.reject(new Error('nope')),
+                    ['...'],
+                    'page',
+                ),
             );
             await expect(splitZoneSystems(['zone-a'])).rejects.toThrow('nope');
         });
@@ -264,16 +369,24 @@ describe('cascade-delete', () => {
         });
 
         it('only removes systems that would be left without a zone', async () => {
-            (queryZones as Query).mockImplementation(
-                zonesByParent({ 'zone-a': [{ id: 'zone-b' }] }),
+            (zones_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    zonesByParent({ 'zone-a': [{ id: 'zone-b' }] }),
+                    ['...'],
+                    'page',
+                ),
             );
-            (querySystems as Query).mockImplementation(
-                systemsByZone({
-                    'zone-a': [system('sys-inside', ['zone-a'], ['mod-1'])],
-                    'zone-b': [
-                        system('sys-straddle', ['zone-b', 'zone-other']),
-                    ],
-                }),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({
+                        'zone-a': [system('sys-inside', ['zone-a'], ['mod-1'])],
+                        'zone-b': [
+                            system('sys-straddle', ['zone-b', 'zone-other']),
+                        ],
+                    }),
+                    ['...'],
+                    'page',
+                ),
             );
             const plan = await planZoneCascade('zone-a');
 
@@ -284,7 +397,9 @@ describe('cascade-delete', () => {
                 name: 'sys-inside',
             });
             await plan.steps[0].run();
-            expect(removeSystem).toHaveBeenCalledExactlyOnceWith('sys-inside');
+            expect(systems_v7.destroy).toHaveBeenCalledExactlyOnceWith({
+                sys_id: 'sys-inside',
+            });
 
             expect(plan.summary).toContain(
                 'CASCADE.REMOVE_SYSTEMS:{"count":1}',
@@ -297,13 +412,17 @@ describe('cascade-delete', () => {
         });
 
         it('counts each module once across the removed systems', async () => {
-            (querySystems as Query).mockImplementation(
-                systemsByZone({
-                    'zone-a': [
-                        system('sys-1', ['zone-a'], ['mod-1', 'mod-2']),
-                        system('sys-2', ['zone-a'], ['mod-2']),
-                    ],
-                }),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({
+                        'zone-a': [
+                            system('sys-1', ['zone-a'], ['mod-1', 'mod-2']),
+                            system('sys-2', ['zone-a'], ['mod-2']),
+                        ],
+                    }),
+                    ['...'],
+                    'page',
+                ),
             );
             const plan = await planZoneCascade('zone-a');
             expect(plan.summary).toContain(
@@ -312,12 +431,16 @@ describe('cascade-delete', () => {
         });
 
         it('never removes the zone itself', async () => {
-            (querySystems as Query).mockImplementation(
-                systemsByZone({ 'zone-a': [system('sys-1', ['zone-a'])] }),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({ 'zone-a': [system('sys-1', ['zone-a'])] }),
+                    ['...'],
+                    'page',
+                ),
             );
             const plan = await planZoneCascade('zone-a');
             await Promise.all(plan.steps.map((step) => step.run()));
-            expect(removeZone).not.toHaveBeenCalled();
+            expect(zones_v7.destroy).not.toHaveBeenCalled();
         });
     });
 
@@ -331,8 +454,12 @@ describe('cascade-delete', () => {
             }) as never;
 
         it('removes the domain OAuth applications', async () => {
-            (queryApplications as Query).mockImplementation(() =>
-                page([{ id: '7', name: 'Workplace' }]),
+            (oauth_applications.query as Query).mockImplementation(
+                fromV1Mock(
+                    () => page([{ id: 7, name: 'Workplace' }]),
+                    ['...'],
+                    'page',
+                ),
             );
             const plan = await planDomainCascade(domain());
             expect(plan.summary).toContain(
@@ -344,15 +471,19 @@ describe('cascade-delete', () => {
                 name: 'Workplace',
             });
             await plan.steps[0].run();
-            expect(removeApplication).toHaveBeenCalledExactlyOnceWith('7');
+            expect(oauth_applications.destroy).toHaveBeenCalledExactlyOnceWith({
+                id: 7,
+            });
         });
 
         it('removes only the staff API tenants matching the domain name', async () => {
-            (get as Query).mockImplementation(() =>
-                Promise.resolve([
-                    { id: '1', name: 'Acme', domain: 'acme.example.com' },
-                    { id: '2', name: 'Other', domain: 'other.example.com' },
-                ]),
+            (tenants.query as Query).mockImplementation(() =>
+                Promise.resolve(
+                    mockReply([
+                        { id: 1, name: 'Acme', domain: 'acme.example.com' },
+                        { id: 2, name: 'Other', domain: 'other.example.com' },
+                    ]),
+                ),
             );
             const plan = await planDomainCascade(domain());
             expect(plan.summary).toContain(
@@ -364,29 +495,32 @@ describe('cascade-delete', () => {
                 name: 'Acme',
             });
             await plan.steps[0].run();
-            expect(del).toHaveBeenCalledExactlyOnceWith(
-                '/api/staff/v1/tenants/1',
-            );
+            expect(tenants.destroy).toHaveBeenCalledExactlyOnceWith({ id: 1 });
         });
 
         it('warns and touches no zones when the domain has no org_zone', async () => {
             const plan = await planDomainCascade(domain());
             expect(plan.warnings).toContain('CASCADE.NO_ORG_ZONE');
-            expect(queryZones).not.toHaveBeenCalled();
+            expect(zones_v7.query).not.toHaveBeenCalled();
             expect(plan.steps).toEqual([]);
         });
 
         it('leaves the org zone alone when another domain shares it', async () => {
-            (queryDomains as Query).mockImplementation(() =>
-                page([
-                    domain({ org_zone: 'zone-org' }),
-                    {
-                        id: 'authority-2',
-                        name: 'Beta',
-                        domain: 'beta.example.com',
-                        config: { org_zone: 'zone-org' },
-                    },
-                ]),
+            (domains.query as Query).mockImplementation(
+                fromV1Mock(
+                    () =>
+                        page([
+                            domain({ org_zone: 'zone-org' }),
+                            {
+                                id: 'authority-2',
+                                name: 'Beta',
+                                domain: 'beta.example.com',
+                                config: { org_zone: 'zone-org' },
+                            },
+                        ]),
+                    ['...'],
+                    'page',
+                ),
             );
             const plan = await planDomainCascade(
                 domain({ org_zone: 'zone-org' }),
@@ -398,7 +532,7 @@ describe('cascade-delete', () => {
             ).toBe(true);
             expect(plan.warnings[0]).toContain('Beta');
             expect(plan.steps).toEqual([]);
-            expect(showZone).not.toHaveBeenCalled();
+            expect(zones_v7.show).not.toHaveBeenCalled();
         });
 
         it('fails rather than planning an org zone it could not check ownership of', async () => {
@@ -406,40 +540,50 @@ describe('cascade-delete', () => {
             // deleting another domain's zone tree. If the domain list is
             // unavailable, "no other domain shares it" is not something we
             // know — so no plan may be produced at all.
-            (queryDomains as Query).mockImplementation(() =>
-                Promise.reject(new Error('gateway')),
+            (domains.query as Query).mockImplementation(
+                fromV1Mock(
+                    () => Promise.reject(new Error('gateway')),
+                    ['...'],
+                    'page',
+                ),
             );
             await expect(
                 planDomainCascade(domain({ org_zone: 'zone-org' })),
             ).rejects.toThrow('gateway');
-            expect(removeZone).not.toHaveBeenCalled();
+            expect(zones_v7.destroy).not.toHaveBeenCalled();
         });
 
         it('fails rather than planning an ownership check it could only read part of', async () => {
             // A list that stops early is indistinguishable from a short one,
             // and a sharing domain could be sitting on any unread page.
             let served = 0;
-            (queryDomains as Query).mockImplementation(() => {
-                const next = () => {
-                    served += 1;
-                    return (queryDomains as Query)();
-                };
-                return Promise.resolve({
+            // A 6.x page whose `next` always gives one more page
+            const endlessPage = (): Promise<unknown> =>
+                Promise.resolve({
                     data: [domain({ org_zone: 'zone-other' })],
                     total: 100000,
-                    next,
+                    next: () => {
+                        served += 1;
+                        return endlessPage();
+                    },
                 });
-            });
+            (domains.query as Query).mockImplementation(
+                fromV1Mock(endlessPage, ['...'], 'page'),
+            );
             await expect(
                 planDomainCascade(domain({ org_zone: 'zone-org' })),
             ).rejects.toThrow(/did not complete/);
             expect(served).toBeGreaterThan(1);
-            expect(removeZone).not.toHaveBeenCalled();
+            expect(zones_v7.destroy).not.toHaveBeenCalled();
         });
 
         it('fails rather than reporting a domain as having no applications', async () => {
-            (queryApplications as Query).mockImplementation(() =>
-                Promise.reject(new Error('gateway')),
+            (oauth_applications.query as Query).mockImplementation(
+                fromV1Mock(
+                    () => Promise.reject(new Error('gateway')),
+                    ['...'],
+                    'page',
+                ),
             );
             await expect(planDomainCascade(domain())).rejects.toThrow(
                 'gateway',
@@ -451,30 +595,39 @@ describe('cascade-delete', () => {
             // reasons unrelated to the domain having no tenant. Reporting none
             // deletes the domain and leaves the tenant holding its encrypted
             // calendar credentials.
-            (get as Query).mockImplementation(() =>
+            (tenants.query as Query).mockImplementation(() =>
                 Promise.reject(new Error('502 Bad Gateway')),
             );
             await expect(planDomainCascade(domain())).rejects.toThrow('502');
-            expect(del).not.toHaveBeenCalled();
+            expect(tenants.destroy).not.toHaveBeenCalled();
         });
 
         it('leaves the org zone alone when another domain points inside its subtree', async () => {
             // Deleting the org zone destroys everything beneath it, so a
             // domain whose own org zone is a CHILD of this one is just as
             // affected as one pointing at the same id.
-            (queryZones as Query).mockImplementation(
-                zonesByParent({ 'zone-org': [{ id: 'zone-bldg2' }] }),
+            (zones_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    zonesByParent({ 'zone-org': [{ id: 'zone-bldg2' }] }),
+                    ['...'],
+                    'page',
+                ),
             );
-            (queryDomains as Query).mockImplementation(() =>
-                page([
-                    domain({ org_zone: 'zone-org' }),
-                    {
-                        id: 'authority-2',
-                        name: 'Beta',
-                        domain: 'beta.example.com',
-                        config: { org_zone: 'zone-bldg2' },
-                    },
-                ]),
+            (domains.query as Query).mockImplementation(
+                fromV1Mock(
+                    () =>
+                        page([
+                            domain({ org_zone: 'zone-org' }),
+                            {
+                                id: 'authority-2',
+                                name: 'Beta',
+                                domain: 'beta.example.com',
+                                config: { org_zone: 'zone-bldg2' },
+                            },
+                        ]),
+                    ['...'],
+                    'page',
+                ),
             );
             const plan = await planDomainCascade(
                 domain({ org_zone: 'zone-org' }),
@@ -489,11 +642,18 @@ describe('cascade-delete', () => {
         });
 
         it('warns when the configured org zone no longer exists', async () => {
-            (queryDomains as Query).mockImplementation(() =>
-                page([domain({ org_zone: 'zone-org' })]),
+            (domains.query as Query).mockImplementation(
+                fromV1Mock(
+                    () => page([domain({ org_zone: 'zone-org' })]),
+                    ['...'],
+                    'page',
+                ),
             );
-            (showZone as Query).mockImplementation(() =>
-                Promise.reject(new Error('404')),
+            (zones_v7.show as Query).mockImplementation(
+                fromV1Mock(
+                    () => Promise.reject(new Error('404')),
+                    ['id', '...'],
+                ),
             );
             const plan = await planDomainCascade(
                 domain({ org_zone: 'zone-org' }),
@@ -505,19 +665,34 @@ describe('cascade-delete', () => {
         });
 
         it('removes the org zone tree when no other domain uses it', async () => {
-            (queryDomains as Query).mockImplementation(() =>
-                page([domain({ org_zone: 'zone-org' })]),
+            (domains.query as Query).mockImplementation(
+                fromV1Mock(
+                    () => page([domain({ org_zone: 'zone-org' })]),
+                    ['...'],
+                    'page',
+                ),
             );
-            (showZone as Query).mockImplementation(() =>
-                Promise.resolve({ id: 'zone-org', name: 'ORG Acme' }),
+            (zones_v7.show as Query).mockImplementation(
+                fromV1Mock(
+                    () => Promise.resolve({ id: 'zone-org', name: 'ORG Acme' }),
+                    ['id', '...'],
+                ),
             );
-            (queryZones as Query).mockImplementation(
-                zonesByParent({ 'zone-org': [{ id: 'zone-level' }] }),
+            (zones_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    zonesByParent({ 'zone-org': [{ id: 'zone-level' }] }),
+                    ['...'],
+                    'page',
+                ),
             );
-            (querySystems as Query).mockImplementation(
-                systemsByZone({
-                    'zone-level': [system('sys-1', ['zone-level'])],
-                }),
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({
+                        'zone-level': [system('sys-1', ['zone-level'])],
+                    }),
+                    ['...'],
+                    'page',
+                ),
             );
 
             const plan = await planDomainCascade(
@@ -541,9 +716,13 @@ describe('cascade-delete', () => {
                 name: 'ORG Acme',
             });
             await plan.steps[0].run();
-            expect(removeSystem).toHaveBeenCalledExactlyOnceWith('sys-1');
+            expect(systems_v7.destroy).toHaveBeenCalledExactlyOnceWith({
+                sys_id: 'sys-1',
+            });
             await plan.steps[1].run();
-            expect(removeZone).toHaveBeenCalledExactlyOnceWith('zone-org');
+            expect(zones_v7.destroy).toHaveBeenCalledExactlyOnceWith({
+                id: 'zone-org',
+            });
         });
     });
 

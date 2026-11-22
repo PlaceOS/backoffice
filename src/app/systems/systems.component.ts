@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { PlaceSystem } from '@placeos/ts-client';
+import { type System } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -26,7 +26,7 @@ export class SystemsComponent {
     private _item = inject(ActiveItemService);
 
     public readonly item = computed(
-        () => this._item.active_item$() as PlaceSystem | null,
+        () => this._item.active_item$() as System | null,
     );
     public readonly name = 'systems';
     public readonly counts = this._service.counts;

@@ -11,14 +11,17 @@ import {
 } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import {
-    addModule,
-    PlaceDriverRole,
-    PlaceModule,
-    queryDrivers,
-    queryEdges,
-    showSystem,
-    updateModule,
+    drivers,
+    edges,
+    type Module,
+    modules,
+    systems,
 } from '@placeos/ts-client';
+import {
+    orThrow,
+    orThrowPage,
+    PlaceDriverRole,
+} from '@placeos/ts-client/compat';
 import {
     clearSupportModuleCache,
     isSubsystemUser,
@@ -39,6 +42,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 import {
     applyModuleFormSchema,
     generateModuleFormModel,
+    moduleBody,
     type ModuleFormModel,
 } from './modules.utilities';
 
@@ -356,9 +360,7 @@ import {
 export class ModuleFormComponent implements OnInit {
     private _dialog_ref =
         inject<DialogRef<unknown, ModuleFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceModule; readonly?: string }>(
-        DIALOG_DATA,
-    );
+    private _data = inject<{ item: Module; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'MODULES';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -384,18 +386,24 @@ export class ModuleFormComponent implements OnInit {
     ];
 
     public readonly driver_query_fn = (_: string) =>
-        queryDrivers({
-            q: _,
-            ...(isSubsystemUser() && !this.formModel().id
-                ? { role: 'logic' as const }
-                : {}),
-        }).then((resp) => resp.data);
+        drivers
+            .query({
+                q: _,
+                ...(isSubsystemUser() && !this.formModel().id
+                    ? { role: 'logic' as const }
+                    : {}),
+            })
+            .then(orThrowPage)
+            .then((resp) => resp.data);
 
     public readonly system_query_fn = (_: string) =>
         querySystems({ q: _ }).then((resp) => resp.data);
 
     public readonly edge_query_fn = (_: string) =>
-        queryEdges({ q: _ }).then((resp) => resp.data);
+        edges
+            .query({ q: _ })
+            .then(orThrowPage)
+            .then((resp) => resp.data);
 
     /** Role of the selected driver */
     public role = computed(() => {
@@ -416,10 +424,14 @@ export class ModuleFormComponent implements OnInit {
     public ngOnInit(): void {
         const { system, control_system_id } = this.formModel();
         if (control_system_id && !system) {
-            showSystem(control_system_id).then(
-                (sys) => this.formModel.update((v) => ({ ...v, system: sys })),
-                () => null,
-            );
+            systems
+                .show({ sys_id: control_system_id })
+                .then(orThrow)
+                .then(
+                    (sys) =>
+                        this.formModel.update((v) => ({ ...v, system: sys })),
+                    () => null,
+                );
         }
     }
 
@@ -507,10 +519,12 @@ export class ModuleFormComponent implements OnInit {
                 if (form_item.role !== PlaceDriverRole.Logic) {
                     delete form_item.control_system_id;
                 }
-                const module = form_item as unknown as PlaceModule;
-                const saved = await (module.id
-                    ? updateModule(module.id, module)
-                    : addModule(module));
+                const body = moduleBody(form_item);
+                const saved = await (form_item.id
+                    ? modules
+                          .update({ id: `${form_item.id}`, body })
+                          .then(orThrow)
+                    : modules.create({ body }).then(orThrow));
                 clearSupportModuleCache();
                 return saved;
             },

@@ -1,9 +1,11 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { PlaceDomain } from '@placeos/ts-client';
+import { Domain } from '@placeos/ts-client';
+import { mockReply } from '@placeos/ts-client/compat';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import {
     AuthSourceModalComponent,
     AuthSourceTypes,
@@ -14,12 +16,24 @@ const mocks = vi.hoisted(() => ({
     addSAMLSource: vi.fn(),
     addLDAPSource: vi.fn(),
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    ...mocks,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        oauth_authentications: {
+            ...actual.oauth_authentications,
+            create: mocks.addOAuthSource,
+        },
+        saml_authentications: {
+            ...actual.saml_authentications,
+            create: mocks.addSAMLSource,
+        },
+        ldap_authentications: {
+            ...actual.ldap_authentications,
+            create: mocks.addLDAPSource,
+        },
+    };
+});
 vi.mock('../../app/common/notifications', () => ({
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),
@@ -30,7 +44,8 @@ describe('saving authentication sources', () => {
 
     beforeEach(async () => {
         vi.resetAllMocks();
-        for (const add of Object.values(mocks)) add.mockResolvedValue({});
+        for (const add of Object.values(mocks))
+            add.mockResolvedValue(mockReply({}));
         TestBed.configureTestingModule({
             imports: [AuthSourceModalComponent],
             providers: [
@@ -46,7 +61,7 @@ describe('saving authentication sources', () => {
                 },
                 {
                     provide: DIALOG_DATA,
-                    useValue: { domain: new PlaceDomain({ id: 'domain-1' }) },
+                    useValue: { domain: newItem(Domain, { id: 'domain-1' }) },
                 },
             ],
         });
@@ -104,9 +119,12 @@ describe('saving authentication sources', () => {
             component.setType(type);
             edit();
             await component.save();
-            expect(add).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ ...saved, authority_id: 'domain-1' }),
-            );
+            expect(add).toHaveBeenCalledExactlyOnceWith({
+                body: expect.objectContaining({
+                    ...saved,
+                    authority_id: 'domain-1',
+                }),
+            });
             for (const other of Object.values(mocks)) {
                 if (other !== add) expect(other).not.toHaveBeenCalled();
             }

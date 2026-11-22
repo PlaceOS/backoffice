@@ -9,7 +9,8 @@ import {
 import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
+import { metadata, type Metadata } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { DialogCloseDirective } from '../ui/controls/dialog';
@@ -214,7 +215,7 @@ export class MetadataHistoryModalComponent implements OnInit {
     public readonly parent_name = this._data.parent_name;
     public readonly name = this._data.name;
 
-    public readonly history: WritableSignal<PlaceMetadata[]> = signal([]);
+    public readonly history: WritableSignal<Metadata[]> = signal([]);
 
     public first = null;
     public readonly second = signal(null);
@@ -228,19 +229,21 @@ export class MetadataHistoryModalComponent implements OnInit {
     public readonly second_details = signal('');
 
     public async ngOnInit() {
-        const history = await listMetadataHistory(this._data.id, {
-            name: this._data.name,
-            limit: 5000,
-        }).catch((err) => {
-            notifyError(
-                `Failed to load metadata history. Error: ${describeError(err)}`,
-            );
-            return [] as PlaceMetadata[];
-        });
+        const history = await metadata
+            .history({ id: this._data.id, name: this._data.name, limit: 5000 })
+            .then(orThrow)
+            // The API groups the versions by metadata name. 6.x gave them in one list, last first
+            .then((by_name) => Object.values(by_name).flat().reverse())
+            .catch((err) => {
+                notifyError(
+                    `Failed to load metadata history. Error: ${describeError(err)}`,
+                );
+                return [] as Metadata[];
+            });
         this.history.set(history);
     }
 
-    public select(idx: 0 | 1, item: PlaceMetadata) {
+    public select(idx: 0 | 1, item: Metadata) {
         if (idx === 0) {
             this.first_details.set(JSON.stringify(item.details, undefined, 4));
             if (this.first === this.second()) {

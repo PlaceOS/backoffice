@@ -10,12 +10,14 @@ import {
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { apiKey, cleanObject, query, remove, token } from '@placeos/ts-client';
+import { type Upload, uploads } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../common/async-handler.class';
 import { readError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { setAuthCookie } from '../common/placeos';
 import { UploadsService } from '../common/uploads.service';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -67,16 +69,9 @@ function getMimeType(filename: string): string {
     return mimeTypes[extension] || 'application/octet-stream';
 }
 
-export interface UploadInfo {
-    id: string;
-    file_name: string;
-    file_size: number;
+/** An upload, with the MIME type from its file name */
+export interface UploadInfo extends Upload {
     mime_type: string;
-    created_at: number;
-    permissions: string;
-    public: boolean;
-    uploaded_by: string;
-    uploaded_email: number;
 }
 
 /** Interval between upload progress checks */
@@ -289,24 +284,24 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         loader: async ({ params }) => {
             const { domain, search } = params;
             if (!domain) return [] as UploadInfo[];
-            const response = await query<UploadInfo>({
-                path: 'uploads',
-                query_params: cleanObject(
-                    {
-                        limit: 1000,
-                        file_search: search,
-                        authority_id: domain.id,
-                    },
-                    [null, '', undefined],
-                ),
-            }).catch(async (err) => {
-                notifyError(
-                    `Failed to load uploads. Error: ${await readError(err)}`,
-                );
-                return { data: [] as UploadInfo[] };
-            });
+            // The server lists the uploads of the authority of the request.
+            // It ignored the `authority_id` that 6.x sent
+            const response = await uploads
+                .query({ limit: 1000, file_search: search || null })
+                .then(orThrowPage)
+                .catch(async (err) => {
+                    notifyError(
+                        `Failed to load uploads. Error: ${await readError(err)}`,
+                    );
+                    return { data: [] as readonly Upload[] };
+                });
             return response.data
-                .map((_) => ({ ..._, mime_type: getMimeType(_.file_name) }))
+                .map(
+                    (_): UploadInfo => ({
+                        ..._,
+                        mime_type: getMimeType(_.file_name),
+                    }),
+                )
                 .sort((a, b) => a.file_name.localeCompare(b.file_name));
         },
     });
@@ -398,14 +393,11 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     }
 
     public async downloadUpload(upload: UploadInfo) {
-        const tkn = token();
-        document.cookie = `${
-            tkn === 'x-api-key'
-                ? 'api-key=' + encodeURIComponent(apiKey())
-                : 'bearer_token=' + encodeURIComponent(tkn)
-        };max-age=60;path=/api/engine/v2/uploads;samesite=strict;${
-            location.protocol === 'https:' ? 'secure;' : ''
-        }`;
+        if (!(await setAuthCookie('/api/engine/v2/uploads'))) {
+            return notifyError(
+                i18n('ADMIN.UPLOADS_LIB_DOWNLOAD_ERROR', { error: 401 }),
+            );
+        }
         const url = `/api/engine/v2/uploads/${upload.id}/url`;
         const result = await fetch(url);
         if (!result.ok) {
@@ -445,12 +437,7 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
             },
             {
                 loading: i18n('ADMIN.UPLOADS_LIB_REMOVE_LOADING'),
-                action: () =>
-                    remove({
-                        id: upload.id,
-                        query_params: {},
-                        path: 'uploads',
-                    }),
+                action: () => uploads.destroy({ id: upload.id }).then(orThrow),
                 error: (reason) => `Failed to remove upload. Error: ${reason}`,
             },
         );

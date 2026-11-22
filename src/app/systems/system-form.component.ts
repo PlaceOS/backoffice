@@ -8,20 +8,18 @@ import {
     signal,
 } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
-import {
-    addSystem,
-    PlaceResource,
-    PlaceSystem,
-    updateSystem,
-} from '@placeos/ts-client';
+import { System, systems } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { querySupportZones as queryZones } from '../common/support-access';
 
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
+import { toBody } from '../common/placeos';
 import { TIMEZONES_IANA } from '../common/timezones';
 import { DialogEvent } from '../common/types';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { PlaceResource } from '../common/types';
 import {
     AutocompleteComponent,
     AutocompleteTriggerDirective,
@@ -517,9 +515,7 @@ const TIMEZONE_OPTION_LIMIT = 50;
 export class SystemFormComponent {
     private _dialog_ref =
         inject<DialogRef<unknown, SystemFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceSystem; readonly?: string }>(
-        DIALOG_DATA,
-    );
+    private _data = inject<{ item: System; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'SYSTEMS';
     public readonly item = signal(this._data.item);
 
@@ -581,22 +577,30 @@ export class SystemFormComponent {
                 const form_item = mergeFormItem(
                     this._data.item as unknown as PlaceResource,
                     form_value,
-                ) as unknown as PlaceSystem;
+                ) as unknown as System;
                 const processed_item = {
                     ...form_item,
                     support_url: this.processURL(
                         form_item,
                         form_item.support_url || '',
                     ),
-                } as unknown as PlaceSystem;
+                } as unknown as System;
+                // The item can have fields that the API does not take, such as `settings`
+                const body = toBody(System, processed_item);
                 return processed_item.id
-                    ? updateSystem(processed_item.id, processed_item)
-                    : addSystem(processed_item);
+                    ? systems
+                          .update({
+                              sys_id: processed_item.id,
+                              version: processed_item.version ?? 0,
+                              body,
+                          })
+                          .then(orThrow)
+                    : systems.create({ body }).then(orThrow);
             },
         );
     }
 
-    private processURL(system: PlaceSystem, url: string): string {
+    private processURL(system: System, url: string): string {
         for (const key in system) {
             url = url.replace(
                 new RegExp(`{{${key}}}`, 'g'),

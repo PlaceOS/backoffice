@@ -1,39 +1,43 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PlaceTrigger, SignagePlaylist } from '@placeos/ts-client';
+import {
+    Playlist,
+    playlist as playlist_v7,
+    TriggerInstance,
+} from '@placeos/ts-client';
+import { mockPage, mockReply } from '@placeos/ts-client/compat';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import { SystemTriggerFormComponent } from '../../app/systems/system-trigger-form.component';
 
-const mocks = vi.hoisted(() => ({
-    querySignagePlaylists: vi.fn(),
-    showSignagePlaylist: vi.fn(),
-}));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    querySignagePlaylists: mocks.querySignagePlaylists,
-    showSignagePlaylist: mocks.showSignagePlaylist,
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 vi.mock('@placeos/cloud-uploads', () =>
     vi.importActual('@placeos/cloud-uploads/dist/index.es.js'),
 );
 
-const playlist = (id: string, name: string) =>
-    new SignagePlaylist({ id, name });
+const playlist = (id: string, name: string) => newItem(Playlist, { id, name });
 
 describe('system trigger playlists', () => {
     let fixture: ComponentFixture<SystemTriggerFormComponent>;
 
     beforeEach(async () => {
         vi.resetAllMocks();
-        mocks.querySignagePlaylists.mockResolvedValue({ data: [] });
-        mocks.showSignagePlaylist.mockImplementation(async (id: string) => {
-            if (id === 'playlist-missing') throw new Error('Not found');
-            return playlist(id, 'Lobby loop');
-        });
+        vi.mocked(playlist_v7.query).mockResolvedValue(mockPage({ data: [] }));
+        vi.mocked(playlist_v7.show).mockImplementation(async ({ id }) =>
+            id === 'playlist-missing'
+                ? {
+                      ok: false,
+                      error: {
+                          kind: 'http',
+                          status: 404,
+                          message: null,
+                          body: null,
+                      },
+                  }
+                : mockReply(playlist(id, 'Lobby loop')),
+        );
         TestBed.configureTestingModule({
             imports: [SystemTriggerFormComponent],
             providers: [
@@ -49,11 +53,11 @@ describe('system trigger playlists', () => {
                 {
                     provide: DIALOG_DATA,
                     useValue: {
-                        item: new PlaceTrigger({
+                        item: newItem(TriggerInstance, {
                             id: 'trig-1',
                             name: 'Fire alarm',
                             playlists: ['playlist-1', 'playlist-missing'],
-                        } as Partial<PlaceTrigger>),
+                        }),
                     },
                 },
             ],

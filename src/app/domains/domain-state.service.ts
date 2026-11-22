@@ -10,26 +10,18 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import {
-    addApplication,
-    get,
-    PlaceApplication,
-    PlaceDomain,
-    PlaceLDAPSource,
-    PlaceOAuthSource,
-    PlaceSAMLSource,
-    PlaceUser,
-    queryApplications,
-    queryLDAPSources,
-    queryOAuthSources,
-    querySAMLSources,
-    queryUsers,
-    removeApplication,
-    removeLDAPSource,
-    removeOAuthSource,
-    removeSAMLSource,
-    updateApplication,
-    updateDomain,
+    Application,
+    Domain,
+    domains,
+    ldap_authentications,
+    oauth_applications,
+    oauth_authentications,
+    saml_authentications,
+    tenant_consent,
+    User,
+    users,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { filter, map } from 'rxjs';
 import { describeError } from '../common/errors';
 import { escapeHtml } from '../common/general';
@@ -37,16 +29,15 @@ import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { newItem, toBody } from '../common/placeos';
 import { waitForDialog } from '../common/signals';
-import { FormModalComponent, Identity } from '../common/types';
+import { Identity } from '../common/types';
 import { AuthSourceModalComponent } from '../overlays/auth-source-modal.component';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ApplicationFormComponent } from './application-form.component';
+import { authSourceType, type PlaceAuthSource } from './auth-sources.utilities';
 
-export type PlaceAuthSource =
-    | PlaceOAuthSource
-    | PlaceSAMLSource
-    | PlaceLDAPSource;
+export type { PlaceAuthSource } from './auth-sources.utilities';
 
 @Service()
 export class DomainStateService {
@@ -68,13 +59,12 @@ export class DomainStateService {
     private _changed = signal(0);
 
     public readonly item = computed(
-        () => this._state.item() as unknown as PlaceDomain,
+        () => this._state.item() as unknown as Domain,
     );
 
-    private readonly _domain_id = computed(() => {
-        const item = this.item();
-        return item instanceof PlaceDomain ? item.id : undefined;
-    });
+    private readonly _domain_id = computed(
+        () => this._state.activeOf('domains')?.id || undefined,
+    );
     private readonly _tab = computed(
         () => this._url().split(/[?#]/)[0].split('/')[3],
     );
@@ -114,15 +104,18 @@ export class DomainStateService {
                   }
                 : undefined,
         loader: async ({ params }) => {
-            const response = await queryUsers({
-                authority_id: params.id,
-                limit: params.full ? 1000 : 1,
-            }).catch(reportLoadError({ data: [] as PlaceUser[], total: 0 }));
+            const response = await users
+                .query({
+                    authority_id: params.id,
+                    limit: params.full ? 1000 : 1,
+                })
+                .then(orThrowPage)
+                .catch(reportLoadError({ data: [] as User[], total: 0 }));
             return {
                 ...response,
-                data: [...response.data].sort((a, b) =>
-                    a.name.localeCompare(b.name),
-                ),
+                data: response.data
+                    .map((user) => newItem(User, user))
+                    .sort((a, b) => a.name.localeCompare(b.name)),
             };
         },
     });
@@ -146,16 +139,16 @@ export class DomainStateService {
             };
             // One failing source type should not hide the others
             const results = await Promise.allSettled([
-                querySAMLSources(q),
-                queryOAuthSources(q),
-                queryLDAPSources(q),
+                saml_authentications.query(q).then(orThrowPage),
+                oauth_authentications.query(q).then(orThrowPage),
+                ldap_authentications.query(q).then(orThrowPage),
             ]);
             const responses = results
                 .filter((result) => result.status === 'fulfilled')
                 .map((result) => result.value);
             return {
                 data: responses.flatMap(
-                    (response): PlaceAuthSource[] => response.data,
+                    (response): readonly PlaceAuthSource[] => response.data,
                 ),
                 total: responses
                     .map((response) => response.total)
@@ -177,17 +170,21 @@ export class DomainStateService {
                   }
                 : undefined,
         loader: async ({ params }) => {
-            const response = await queryApplications({
-                authority_id: params.id,
-                ...(params.full ? {} : { limit: 1 }),
-            }).catch(
-                reportLoadError({ data: [] as PlaceApplication[], total: 0 }),
-            );
+            const response = await oauth_applications
+                .query({
+                    authority_id: params.id,
+                    ...(params.full ? {} : { limit: 1 }),
+                })
+                .then(orThrowPage)
+                .catch(
+                    reportLoadError({ data: [] as Application[], total: 0 }),
+                );
+            // The API document gives no schema for the list, so parse each item
             return {
                 ...response,
-                data: [...response.data].sort((a, b) =>
-                    a.name.localeCompare(b.name),
-                ),
+                data: response.data
+                    .map((app) => newItem(Application, app))
+                    .sort((a, b) => a.name.localeCompare(b.name)),
             };
         },
     });
@@ -211,24 +208,27 @@ export class DomainStateService {
         return this._state.active_item;
     }
 
-    public async update(domain: PlaceDomain) {
-        const item = await updateDomain(domain.id, domain);
+    public async update(domain: Domain) {
+        const item = await domains
+            .update({ id: domain.id, body: toBody(Domain, domain) })
+            .then(orThrow);
         this._state.replaceItem(item as unknown as Identity);
     }
 
     public async performAzureIntegration() {
-        const item = this.active_item;
-        if (!(item instanceof PlaceDomain)) return;
-        const result = await get(
-            `/api/engine/v2/admin_consent/${encodeURIComponent(item.id)}`,
-        ).catch((error) => {
-            notifyError(
-                i18n('DOMAINS.AZURE_INTEGRATION_ERROR', {
-                    error: describeError(error),
-                }),
-            );
-            return null;
-        });
+        const item = this._state.activeOf('domains');
+        if (!item) return;
+        const result = await tenant_consent
+            .query({ id: item.id })
+            .then(orThrow)
+            .catch((error) => {
+                notifyError(
+                    i18n('DOMAINS.AZURE_INTEGRATION_ERROR', {
+                        error: describeError(error),
+                    }),
+                );
+                return null;
+            });
         if (result?.url) {
             window.open(result.url, '_blank', 'noopener noreferrer');
         }
@@ -237,21 +237,11 @@ export class DomainStateService {
     /**
      * Open the modal to create a new system
      */
-    public async editApplication(item?: PlaceApplication) {
-        item = item || new PlaceApplication({ owner_id: this.active_item.id });
+    public async editApplication(item?: Application) {
+        item = item || newItem(Application, { owner_id: this.active_item.id });
         const ref = this._dialog.open(ApplicationFormComponent, {
-            data: {
-                item,
-                name: 'DOMAINS.APPLICATION',
-                save: (i) => {
-                    delete i.client_id;
-                    return i.id
-                        ? updateApplication(i.id, i)
-                        : addApplication(i);
-                },
-            },
+            data: { item, name: 'DOMAINS.APPLICATION' },
         });
-        const instance = ref.componentInstance as unknown as FormModalComponent;
         const details = await waitForDialog(ref, 'done');
         if (details?.reason !== 'done') return;
         this._changed.set(new Date().valueOf());
@@ -261,7 +251,7 @@ export class DomainStateService {
      * Remove application from domain
      * @param item Application to delete
      */
-    public async deleteApplication(item: PlaceApplication) {
+    public async deleteApplication(item: Application) {
         const details = await openConfirmModal(
             {
                 title: `Delete application`,
@@ -272,7 +262,10 @@ export class DomainStateService {
         );
         if (details.reason !== 'done') return;
         details.loading('Deleting domain application...');
-        const err = await removeApplication(item.id).catch((_) => _);
+        const err = await oauth_applications
+            .destroy({ id: item.id })
+            .then(orThrow)
+            .catch((_) => _);
         details.close();
         if (err)
             return notifyError(
@@ -314,13 +307,16 @@ export class DomainStateService {
         );
         if (details.reason !== 'done') return;
         details?.loading('Deleting domain auth source...');
-        const method =
-            item instanceof PlaceSAMLSource
-                ? removeSAMLSource
-                : item instanceof PlaceOAuthSource
-                  ? removeOAuthSource
-                  : removeLDAPSource;
-        const err = await method(item.id).catch((_) => _);
+        const api = {
+            saml: saml_authentications,
+            oauth: oauth_authentications,
+            ldap: ldap_authentications,
+        }[authSourceType(item)];
+        const err = await api
+            .destroy({ id: item.id })
+            .then(orThrow)
+            .then(() => null)
+            .catch((_) => _);
         details.close();
         if (err)
             return notifyError(

@@ -1,20 +1,15 @@
-import { Service, inject, signal } from '@angular/core';
-import {
-    PlaceUser,
-    PlaceUserQueryOptions,
-    currentUser,
-    logout,
-    onlineState,
-    queryUsers,
-} from '@placeos/ts-client';
+import { effect, inject, Service, signal, untracked } from '@angular/core';
+import { User, users } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 
 import { AsyncHandler } from '../common/async-handler.class';
+import { logout, newItem, online } from '../common/placeos';
 import { SettingsService } from '../common/settings.service';
 import { loadSupportAccess } from '../common/support-access';
 import { FilterFn } from '../common/types';
 import { current_user, setCurrentUser } from '../common/user-state';
 
-type ServiceItem = PlaceUser;
+type ServiceItem = User;
 
 /** Attempts `load` makes before it waits for the next reconnect */
 const MAX_LOAD_ATTEMPTS = 12;
@@ -63,24 +58,24 @@ export class BackofficeUsersService extends AsyncHandler {
 
     constructor() {
         super();
-        const unsubscribe = onlineState().subscribe((online) => {
-            if (online) this.load();
+        effect(() => {
+            if (online()) untracked(() => this.load());
         });
-        this.subscription('online', unsubscribe);
     }
 
     /**
      * Get the available list of zones
      * @param predicate Function to filter the zone list on
      */
-    public list(predicate: FilterFn<PlaceUser> = this._filter_fn): PlaceUser[] {
+    public list(predicate: FilterFn<User> = this._filter_fn): User[] {
         return (this.listing() || []).filter(predicate);
     }
 
     public async query(
-        query_params?: PlaceUserQueryOptions,
-    ): Promise<PlaceUser[]> {
-        return (await queryUsers(query_params)).data;
+        query_params?: Parameters<typeof users.query>[0],
+    ): Promise<User[]> {
+        const page = await users.query(query_params).then(orThrowPage);
+        return page.data.map((user) => newItem(User, user));
     }
 
     /**
@@ -102,7 +97,9 @@ export class BackofficeUsersService extends AsyncHandler {
                     Math.min(600 * 2 ** attempt, 30 * 1000),
                 );
             };
-            currentUser()
+            users
+                .current({})
+                .then(orThrow)
                 .then(async (user) => {
                     if (!user) return retry();
                     await loadSupportAccess(user);

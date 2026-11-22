@@ -14,17 +14,19 @@ vi.mock('../../../app/common/notifications', () => ({
     notifySuccess: vi.fn(),
 }));
 
-vi.mock('@placeos/ts-client', () => ({
-    EncryptionLevel: { None: 0, Support: 1, Admin: 2, NeverDisplay: 3 },
-    PlaceSettings: class {
-        constructor(data: Record<string, unknown> = {}) {
-            Object.assign(this, { keys: [], settings_string: '', ...data });
-        }
-    },
-    PlaceUser: class {},
-    updateSettings: mocks.updateSettings,
-    addSettings: mocks.addSettings,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        settings: {
+            ...actual.settings,
+            update: vi.fn(
+                fromV1Mock(mocks.updateSettings, ['id', 'body', '...']),
+            ),
+            create: vi.fn(fromV1Mock(mocks.addSettings, ['body', '...'])),
+        },
+    };
+});
 
 vi.mock('../../../app/users/users.service', () => ({
     BackofficeUsersService: class {
@@ -34,9 +36,13 @@ vi.mock('../../../app/users/users.service', () => ({
     },
 }));
 
-import { PlaceSettings } from '@placeos/ts-client';
+import { Settings } from '@placeos/ts-client';
+import { newItem } from '../../../app/common/placeos';
 import { SettingsFormComponent } from '../../../app/ui/forms/settings-form.component';
 import { BackofficeUsersService } from '../../../app/users/users.service';
+const { fromV1Mock } = await vi.hoisted(
+    () => import('@placeos/ts-client/compat'),
+);
 
 const MASK = '<COMMON.SETTINGS_MASKED>';
 
@@ -45,14 +51,13 @@ function createForm() {
         () => new SettingsFormComponent(),
     );
     component.settings.set(
-        [0, 1, 2, 3].map(
-            (level) =>
-                new PlaceSettings({
-                    id: `settings-${level}`,
-                    encryption_level: level,
-                    settings_string: `level${level}: value`,
-                    keys: [`level${level}`],
-                } as never),
+        [0, 1, 2, 3].map((level) =>
+            newItem(Settings, {
+                id: `settings-${level}`,
+                encryption_level: level,
+                settings_string: `level${level}: value`,
+                keys: [`level${level}`],
+            }),
         ) as never,
     );
     TestBed.tick();
@@ -103,7 +108,8 @@ describe('SettingsFormComponent', () => {
         component.updateSetting(0, 'level0: changed');
         component.updateSetting(1, 'level1: changed');
         component.save(0);
-        await Promise.resolve();
+        // The 7.x call settles after more than one microtask
+        await new Promise((resolve) => setTimeout(resolve));
         TestBed.tick();
         expect(component.settingDirty(0)).toBe(false);
         expect(component.settingValue(1)).toBe('level1: changed');

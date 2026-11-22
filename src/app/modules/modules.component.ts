@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { PlaceModule } from '@placeos/ts-client';
+import { type Module } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
@@ -25,7 +25,7 @@ export class ModulesComponent {
 
     public readonly name = 'modules';
     public readonly item = computed(
-        () => this._service.item() as PlaceModule | null,
+        () => this._service.item() as Module | null,
     );
     /** Number of systems for the active device */
     public readonly system_count = this._module_state.system_total;

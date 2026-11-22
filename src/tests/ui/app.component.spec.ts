@@ -8,26 +8,20 @@ import { LocaleService } from '../../app/common/locale.service';
 import { SettingsService } from '../../app/common/settings.service';
 import { BackofficeUsersService } from '../../app/users/users.service';
 
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<object>('@placeos/ts-client/dist/index.es.js')),
-    isMock: () => true,
-    onlineState: () => ({
-        value: true,
-        subscribe: (next: (value: boolean) => void) => {
-            next(true);
-            return () => undefined;
-        },
-    }),
-}));
-
 vi.mock('@placeos/cloud-uploads', () =>
     vi.importActual('@placeos/cloud-uploads/dist/index.es.js'),
 );
 
-vi.mock('../../app/common/placeos', () => ({
-    setLoadingMessage: vi.fn(),
-    setupPlace: vi.fn(() => Promise.resolve()),
-}));
+vi.mock('../../app/common/placeos', async (importOriginal) => {
+    const { signal } = await import('@angular/core');
+    return {
+        ...(await importOriginal<object>()),
+        isMock: () => true,
+        online: signal(true),
+        setLoadingMessage: vi.fn(),
+        setupPlace: vi.fn(() => Promise.resolve()),
+    };
+});
 
 vi.mock('../../app/common/sentry', async () => ({
     ...(await vi.importActual<object>('../../app/common/sentry')),

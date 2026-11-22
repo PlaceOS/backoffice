@@ -1,13 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import {
-    PlaceSystem,
-    PlaceTrigger,
-    TriggerComparison,
-    TriggerFunction,
-    TriggerMailer,
-    TriggerTimeCondition,
-    querySystems,
+    type System,
+    systems,
+    type Trigger,
+    TriggerActionsEmail,
+    TriggerActionsFunction,
+    TriggerConditionsComparison,
+    TriggerConditionsTimeDependent,
 } from '@placeos/ts-client';
+import { orThrowPage } from '@placeos/ts-client/compat';
 
 import { AsyncPipe, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -312,45 +313,50 @@ export class TriggerAboutComponent {
     private _service = inject(TriggerStateService);
 
     /** System to use for conditions with systen variables and functions */
-    public readonly template_system = signal<PlaceSystem | undefined>(
-        undefined,
-    );
+    public readonly template_system = signal<System | undefined>(undefined);
     private readonly _item = this._service.item;
-    public get item(): PlaceTrigger {
+    public get item(): Trigger {
         return this._item();
     }
     /** List of variable comparison trigger conditions */
     public readonly comparisons = computed(
-        () => this.item.conditions?.comparisons || ([] as TriggerComparison[]),
+        () =>
+            this.item.conditions?.comparisons ||
+            ([] as TriggerConditionsComparison[]),
     );
     /** List of time dependent trigger conditions */
     public readonly time_dependents = computed(
         () =>
             this.item.conditions?.time_dependents ||
-            ([] as TriggerTimeCondition[]),
+            ([] as TriggerConditionsTimeDependent[]),
     );
     /** List of function call trigger actions */
     public readonly functions = computed(
-        () => this.item.actions?.functions || ([] as TriggerFunction[]),
+        () => this.item.actions?.functions || ([] as TriggerActionsFunction[]),
     );
     /** List of email trigger actions */
     public readonly mailers = computed(
-        () => this.item.actions?.mailers || ([] as TriggerMailer[]),
+        () => this.item.actions?.mailers || ([] as TriggerActionsEmail[]),
     );
     /** Query function for systems */
     public readonly query_fn = (q: string) =>
-        querySystems({ q }).then((resp) => resp.data as PlaceSystem[]);
+        systems
+            .query({ q })
+            .then(orThrowPage)
+            .then((resp) => resp.data as System[]);
 
     public readonly editCondition = (
-        c?: TriggerComparison | TriggerTimeCondition,
+        c?: TriggerConditionsComparison | TriggerConditionsTimeDependent,
     ) => this._service.editCondition(c, this.template_system());
     public readonly removeCondition = (
-        c: TriggerComparison | TriggerTimeCondition,
+        c: TriggerConditionsComparison | TriggerConditionsTimeDependent,
     ) => this._service.removeCondition(c);
-    public readonly editAction = (a?: TriggerFunction | TriggerMailer) =>
-        this._service.editAction(a, this.template_system());
-    public readonly removeAction = (a: TriggerFunction | TriggerMailer) =>
-        this._service.removeAction(a);
+    public readonly editAction = (
+        a?: TriggerActionsFunction | TriggerActionsEmail,
+    ) => this._service.editAction(a, this.template_system());
+    public readonly removeAction = (
+        a: TriggerActionsFunction | TriggerActionsEmail,
+    ) => this._service.removeAction(a);
 
     /**
      * Open confirmation modal for re-ordering action for active trigger

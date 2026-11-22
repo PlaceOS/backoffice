@@ -1,5 +1,6 @@
-import { PlaceGroup, PlaceUser } from '@placeos/ts-client';
+import { Group, User } from '@placeos/ts-client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import {
     canAccessSection,
     canUseSupportAction,
@@ -23,16 +24,37 @@ const api = vi.hoisted(() => ({
     queryGroups: vi.fn(),
     queryModules: vi.fn(),
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await import('@placeos/ts-client/dist/index.es.js')),
-    ...api,
-}));
+// The doubles give 6.x values. `mockReply` and `mockPage` make the 7.x results of them
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    const { mockPage, mockReply } = await import('@placeos/ts-client/compat');
+    // A double without a value gives an empty list
+    const reply =
+        (fn: (input: unknown) => Promise<unknown> | undefined) =>
+        async (input: unknown) =>
+            mockReply((await fn(input)) ?? []);
+    const page =
+        (fn: (input: unknown) => Promise<{ data: unknown }> | undefined) =>
+        async (input: unknown) =>
+            mockPage((await fn(input)) ?? { data: [] });
+    return {
+        ...actual,
+        groups: {
+            ...actual.groups,
+            current: reply(api.currentGroups),
+            query: page(api.queryGroups),
+        },
+        systems: { ...actual.systems, query: page(api.querySystems) },
+        zones: { ...actual.zones, query: page(api.queryZones) },
+        modules: { ...actual.modules, query: page(api.queryModules) },
+    };
+});
 const membership = (
     permissions: number,
     subsystem = 'support',
     id = 'group-1',
 ) => ({
-    group: new PlaceGroup({ id, subsystems: [subsystem] }),
+    group: newItem(Group, { id, name: id, subsystems: [subsystem] }),
     permissions,
 });
 
@@ -41,7 +63,7 @@ beforeEach(async () => {
     localStorage.clear();
     api.queryGroups.mockResolvedValue({ data: [], total: 0, next: null });
     api.currentGroups.mockResolvedValue([]);
-    await loadSupportAccess(new PlaceUser());
+    await loadSupportAccess(newItem(User));
 });
 
 describe('support subsystem access', () => {
@@ -51,7 +73,7 @@ describe('support subsystem access', () => {
             membership(64, 'signage'),
             membership(4),
         ]);
-        await loadSupportAccess(new PlaceUser());
+        await loadSupportAccess(newItem(User));
         expect(api.currentGroups).toHaveBeenLastCalledWith({
             subsystem: 'support',
         });
@@ -63,10 +85,10 @@ describe('support subsystem access', () => {
 
     it('accepts Manage for actions and clears access if membership loading fails', async () => {
         api.currentGroups.mockResolvedValue([membership(64)]);
-        await loadSupportAccess(new PlaceUser());
+        await loadSupportAccess(newItem(User));
         expect(canUseSupportAction(8)).toBe(true);
         api.currentGroups.mockRejectedValue(new Error('Forbidden'));
-        await loadSupportAccess(new PlaceUser());
+        await loadSupportAccess(newItem(User));
         expect(hasSupportSubsystem()).toBe(false);
     });
 
@@ -74,7 +96,7 @@ describe('support subsystem access', () => {
         'preserves JWT access: %o',
         async (role) => {
             api.currentGroups.mockClear();
-            await loadSupportAccess(new PlaceUser(role));
+            await loadSupportAccess(newItem(User, role));
             expect(canAccessSection('systems')).toBe(true);
             expect(isSubsystemUser()).toBe(false);
             querySupportSystems({ q: 'room' });
@@ -84,7 +106,7 @@ describe('support subsystem access', () => {
 
     it('scopes system searches without dropping other filters', async () => {
         api.currentGroups.mockResolvedValue([membership(1)]);
-        await loadSupportAccess(new PlaceUser());
+        await loadSupportAccess(newItem(User));
         querySupportSystems({ q: 'room', module_id: 'mod-1', limit: 1 });
         expect(api.querySystems).toHaveBeenCalledWith({
             q: 'room',
@@ -101,7 +123,7 @@ describe('support subsystem access', () => {
             membership(65, 'support', 'group-2'),
             membership(64, 'support', 'group-3'),
         ]);
-        await loadSupportAccess(new PlaceUser());
+        await loadSupportAccess(newItem(User));
         const zone = { id: 'zone-1', name: 'First' };
         const second = { id: 'zone-2', name: 'Second' };
         const next = vi
@@ -124,7 +146,7 @@ describe('support subsystem access', () => {
 
     it('keeps the latest user access when an earlier admin group list arrives late', async () => {
         let resolveAdminGroups: (page: {
-            data: PlaceGroup[];
+            data: Group[];
             total: number;
             next: null;
         }) => void;
@@ -132,12 +154,12 @@ describe('support subsystem access', () => {
             new Promise((resolve) => (resolveAdminGroups = resolve)),
         );
         await loadSupportAccess(
-            new PlaceUser({ id: 'admin', sys_admin: true }),
+            newItem(User, { id: 'admin', sys_admin: true }),
         );
         api.currentGroups.mockResolvedValue([
             membership(1, 'support', 'group-2'),
         ]);
-        await loadSupportAccess(new PlaceUser({ id: 'user-2' }));
+        await loadSupportAccess(newItem(User, { id: 'user-2' }));
         resolveAdminGroups({
             data: [membership(1).group],
             total: 1,
@@ -153,12 +175,12 @@ describe('support subsystem access', () => {
 
     it('returns an empty zone list without an unscoped request when there are no readable groups', async () => {
         api.currentGroups.mockResolvedValue([membership(64)]);
-        await loadSupportAccess(new PlaceUser());
+        await loadSupportAccess(newItem(User));
         expect((await querySupportZones()).data).toEqual([]);
         expect(api.queryZones).not.toHaveBeenCalled();
         api.queryZones.mockResolvedValue({ data: [], total: 0, next: null });
-        await querySupportZones({ parent_id: 'zone-1' });
-        expect(api.queryZones).toHaveBeenCalledWith({ parent_id: 'zone-1' });
+        await querySupportZones({ parent_id: ['zone-1'] });
+        expect(api.queryZones).toHaveBeenCalledWith({ parent_id: ['zone-1'] });
     });
 });
 
@@ -168,7 +190,7 @@ describe('selected support group', () => {
             membership(1),
             membership(4, 'support', 'group-2'),
         ]);
-        await loadSupportAccess(new PlaceUser());
+        await loadSupportAccess(newItem(User));
         expect(canAccessSection('modules')).toBe(true);
         expect(canAccessSection('repositories')).toBe(false);
         expect(canAccessSection('drivers')).toBe(false);
@@ -191,13 +213,13 @@ describe('selected support group', () => {
             membership(1),
             membership(1, 'support', 'group-2'),
         ]);
-        const user = new PlaceUser({ id: 'user-1', authority_id: 'domain-1' });
+        const user = newItem(User, { id: 'user-1', authority_id: 'domain-1' });
         await loadSupportAccess(user);
         selectSupportGroup('group-2');
         await loadSupportAccess(user);
         expect(selected_support_group_id()).toBe('group-2');
         await loadSupportAccess(
-            new PlaceUser({ id: 'user-2', authority_id: 'domain-1' }),
+            newItem(User, { id: 'user-2', authority_id: 'domain-1' }),
         );
         expect(selected_support_group_id()).toBe('group-1');
         api.currentGroups.mockResolvedValue([membership(1)]);
@@ -211,7 +233,7 @@ describe('selected support group', () => {
             total: 1,
             next: null,
         });
-        await loadSupportAccess(new PlaceUser({ sys_admin: true }));
+        await loadSupportAccess(newItem(User, { sys_admin: true }));
         // Admins are published at once and their groups arrive after
         expect(canAccessSection('admin')).toBe(true);
         await vi.waitFor(() => expect(support_groups()).toHaveLength(1));
@@ -230,7 +252,7 @@ describe('selected support group', () => {
 
     it('lists modules through group systems and removes shared duplicates', async () => {
         api.currentGroups.mockResolvedValue([membership(1)]);
-        await loadSupportAccess(new PlaceUser());
+        await loadSupportAccess(newItem(User));
         const next = vi.fn().mockResolvedValue({
             data: [{ id: 'sys-2' }],
             total: 2,
@@ -272,7 +294,7 @@ describe('selected support group', () => {
 
     it('lists modules from readable systems when another system has no read grant', async () => {
         api.currentGroups.mockResolvedValue([membership(1)]);
-        await loadSupportAccess(new PlaceUser());
+        await loadSupportAccess(newItem(User));
         api.querySystems.mockResolvedValue({
             data: [{ id: 'sys-1' }, { id: 'sys-2' }],
             total: 2,
@@ -298,7 +320,7 @@ describe('selected support group', () => {
 
     it('walks the group systems once for every search on the same group', async () => {
         api.currentGroups.mockResolvedValue([membership(1)]);
-        await loadSupportAccess(new PlaceUser());
+        await loadSupportAccess(newItem(User));
         api.querySystems.mockResolvedValue({
             data: [{ id: 'sys-1' }],
             total: 1,

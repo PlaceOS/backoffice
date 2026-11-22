@@ -1,4 +1,7 @@
-import { PlaceRepositoryType, registerMockEndpoint } from '@placeos/ts-client';
+import {
+    PlaceRepositoryType,
+    registerMockEndpoint,
+} from '@placeos/ts-client/compat';
 
 import { DISCOVERY as DISCOVERY_DATA } from '../data/discovery';
 
@@ -61,10 +64,15 @@ const INTERFACE_FILES = ['weather/index.html', 'clock/index.html'];
 registerMockEndpoint({
     path: `${API}/repositories/interfaces`,
     method: 'GET',
+    // The API sends folder name => commit of each loaded interface
     callback: () =>
-        endpointData(`${API}/repositories`)
-            .filter((repo) => repo.repo_type === PlaceRepositoryType.Interface)
-            .map((repo) => repo.name),
+        Object.fromEntries(
+            endpointData(`${API}/repositories`)
+                .filter(
+                    (repo) => repo.repo_type === PlaceRepositoryType.Interface,
+                )
+                .map((repo) => [repo.folder_name, repo.commit_hash || 'HEAD']),
+        ),
 });
 
 /** Details of a repository that is not added yet */

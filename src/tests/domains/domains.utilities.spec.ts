@@ -9,8 +9,8 @@ describe('domains.utilities', () => {
                 domain: '',
                 login_url: '',
                 logout_url: '',
-                config: '',
-                internals: '',
+                config: {},
+                internals: {},
                 description: '',
                 email_domains: [],
             });

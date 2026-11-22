@@ -1,12 +1,8 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import {
-    PlaceDomain,
-    PlaceGroup,
-    showDomain,
-    showGroup,
-} from '@placeos/ts-client';
+import { type Domain, domains, type Group, groups } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { MarkdownPipe } from '../ui/pipes/markdown.pipe';
@@ -193,8 +189,8 @@ export class GroupAboutComponent {
     private _service = inject(GroupStateService);
 
     public readonly item = this._service.item;
-    public readonly parent = signal<PlaceGroup | null>(null);
-    public readonly authority = signal<PlaceDomain | null>(null);
+    public readonly parent = signal<Group | null>(null);
+    public readonly authority = signal<Domain | null>(null);
     public readonly permissionLabels = groupPermissionLabels;
     public readonly ad_groups = computed(() =>
         Object.entries(this.item()?.ad_group_mappings || {}).map(
@@ -221,14 +217,20 @@ export class GroupAboutComponent {
     }
 
     private async loadAuthority(authority_id: string) {
-        const authority = await showDomain(authority_id).catch(() => null);
+        const authority = await domains
+            .show({ id: authority_id })
+            .then(orThrow)
+            .catch(() => null);
         if (this.item()?.authority_id === authority_id) {
             this.authority.set(authority);
         }
     }
 
     private async loadParent(parent_id: string) {
-        const parent = await showGroup(parent_id).catch(() => null);
+        const parent = await groups
+            .show({ id: parent_id })
+            .then(orThrow)
+            .catch(() => null);
         if (this.item()?.parent_id === parent_id) this.parent.set(parent);
     }
 }

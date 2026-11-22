@@ -1,12 +1,12 @@
 import { required, SchemaFn } from '@angular/forms/signals';
-import { PlaceZone } from '@placeos/ts-client';
+import { type Zone } from '@placeos/ts-client';
 
 export interface ZoneFormModel {
     id: string;
     name: string;
     tags: string[];
     description: string;
-    parent_zone?: PlaceZone | null;
+    parent_zone?: Zone | null;
     parent_id: string;
     location: string;
     display_name: string;
@@ -19,11 +19,11 @@ export interface ZoneFormModel {
     images: string[];
 }
 
-export function generateZoneFormModel(zone?: PlaceZone): ZoneFormModel {
+export function generateZoneFormModel(zone?: Zone): ZoneFormModel {
     return {
         id: zone?.id || '',
         name: zone?.name || '',
-        tags: zone?.tags || [],
+        tags: [...(zone?.tags || [])],
         description: zone?.description || '',
         // `null` (not `undefined`) so signal forms materialise the field;
         // otherwise `form.parent_zone` is undefined and the picker never renders.
@@ -37,7 +37,7 @@ export function generateZoneFormModel(zone?: PlaceZone): ZoneFormModel {
         capacity: zone?.capacity || 0,
         map_id: zone?.map_id || '',
         timezone: zone?.timezone || '',
-        images: zone?.images || [],
+        images: [...(zone?.images || [])],
     };
 }
 

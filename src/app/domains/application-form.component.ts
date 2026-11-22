@@ -10,18 +10,15 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
-import {
-    addApplication,
-    PlaceApplication,
-    PlaceResource,
-    updateApplication,
-} from '@placeos/ts-client';
+import { Application, oauth_applications } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Md5 } from 'ts-md5';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
-import { DialogEvent } from '../common/types';
+import { toBody } from '../common/placeos';
+import { DialogEvent, PlaceResource } from '../common/types';
 import { ChipListComponent } from '../ui/controls/chip-list.component';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
@@ -185,7 +182,7 @@ import {
 export class ApplicationFormComponent implements OnInit {
     private _dialog_ref =
         inject<DialogRef<unknown, ApplicationFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceApplication; readonly?: string }>(
+    private _data = inject<{ item: Application; readonly?: string }>(
         DIALOG_DATA,
     );
     private readonly _name = 'DOMAINS.APPLICATION';
@@ -251,11 +248,14 @@ export class ApplicationFormComponent implements OnInit {
                         this.formModel(),
                     ),
                     uid: this.client_id(),
-                } as unknown as PlaceApplication & { client_id?: unknown };
-                delete save_item.client_id;
-                return save_item.id
-                    ? updateApplication(save_item.id, save_item)
-                    : addApplication(save_item);
+                };
+                // `toBody` drops the form fields that the API does not have, such as `client_id`
+                const body = toBody(Application, save_item);
+                return this._data.item.id
+                    ? oauth_applications
+                          .update({ id: this._data.item.id, body })
+                          .then(orThrow)
+                    : oauth_applications.create({ body }).then(orThrow);
             },
         );
     }
