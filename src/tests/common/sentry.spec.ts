@@ -65,6 +65,22 @@ describe('sentry', () => {
         expect(handle_error).toHaveBeenCalledWith('late');
     });
 
+    it('does not record console output, where error toasts put server text', async () => {
+        const { initSentry } = await loadSentry();
+        setAuthorityDsn(undefined);
+        await initSentry(injector, 'user-1');
+        const { integrations } = sentry_init.mock.calls[0][0];
+        const names = integrations([
+            { name: 'Breadcrumbs' },
+            { name: 'Console' },
+            { name: 'GlobalHandlers' },
+        ]).map(
+            (integration: { name: string } | undefined) => integration?.name,
+        );
+        expect(names).toContain('Breadcrumbs');
+        expect(names).not.toContain('Console');
+    });
+
     it('ignores Monaco cancellation errors', async () => {
         const { initSentry, SentryReportingErrorHandler } = await loadSentry();
         setAuthorityDsn(undefined);

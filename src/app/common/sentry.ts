@@ -60,15 +60,15 @@ export class SentryReportingErrorHandler implements ErrorHandler {
     }
 }
 
-/**
- * A failed API call as an error with its kind and status only. The body of
- * the response can have personal data, and Sentry keeps console output.
- */
 /** A frame of a V8 stack (`    at fn (url:1:2)`) or a Firefox and Safari stack (`fn@url:1:2`) */
 function isStackFrame(line: string) {
     return /^\s+at\s/.test(line) || /^[^\s@]*@\S+:\d+:\d+$/.test(line);
 }
 
+/**
+ * A failed API call as an error with its kind and status only. The body of
+ * the response can have personal data.
+ */
 function withoutBody(error: unknown) {
     if (!(error instanceof CallFailed)) return error;
     const status = error.status === null ? '' : ` ${error.status}`;
@@ -118,8 +118,12 @@ export async function initSentry(injector: Injector, user_id: string) {
         ignoreErrors: [/ResizeObserver loop/],
         integrations: (defaults) => [
             // Angular's global error listeners already send window errors
-            // to the error handler. This prevents duplicate events.
-            ...defaults.filter(({ name }) => name !== 'GlobalHandlers'),
+            // to the error handler. This prevents duplicate events. Console
+            // output is not recorded: error toasts log the message of the
+            // server, which can have personal data.
+            ...defaults.filter(
+                ({ name }) => name !== 'GlobalHandlers' && name !== 'Console',
+            ),
             Sentry.browserTracingIntegration(),
             Sentry.replayIntegration(),
         ],

@@ -15,6 +15,7 @@ import { orThrow } from '@placeos/ts-client/compat';
 import { allowedEmbedUrl, extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { describeError } from '../common/errors';
+import { parseMetadataDetails } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -216,7 +217,10 @@ export class ExtensionOutletComponent extends AsyncHandler {
             .show({ id, name: message.name })
             .then(orThrow)
             .then((data) => data[message.name]);
-        return metadata.details as FrameMessage['content'];
+        // 6.x gave the frame parsed details, also when the API sent JSON text
+        return parseMetadataDetails(
+            metadata.details,
+        ) as FrameMessage['content'];
     }
 
     /** Resolve a URL that the frame can show without credentials */

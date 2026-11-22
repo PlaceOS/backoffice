@@ -1,3 +1,4 @@
+import type { JsonValue } from '@placeos/ts-client';
 import { HashMap, Point } from './types';
 
 /** Available console output streams. */
@@ -401,19 +402,26 @@ export function humanReadableByteCount(bytes: number, si = false) {
 }
 
 /**
- * The `details` of a metadata entry as an object. The API can send them as
- * JSON text, which the 6.x `PlaceMetadata` class parsed. Gives `{}` for text
- * that is not a JSON object, and for other values.
+ * The `details` of a metadata entry as data. The API can send them as JSON
+ * text, which the 6.x `PlaceMetadata` class parsed. Text that is not JSON
+ * stays as it is. `null` gives `{}`, as in 6.x.
+ */
+export function parseMetadataDetails(details: JsonValue | null): JsonValue {
+    if (typeof details !== 'string') return details ?? {};
+    try {
+        return JSON.parse(details) as JsonValue;
+    } catch {
+        return details;
+    }
+}
+
+/**
+ * The `details` of a metadata entry as an object. Gives `{}` for text that is
+ * not a JSON object, and for other values.
  */
 export function metadataDetails(details: unknown): Record<string, unknown> {
-    let value = details;
-    if (typeof value === 'string') {
-        try {
-            value = JSON.parse(value);
-        } catch {
-            return {};
-        }
-    }
+    const value =
+        typeof details === 'string' ? parseMetadataDetails(details) : details;
     return value && typeof value === 'object' && !Array.isArray(value)
         ? (value as Record<string, unknown>)
         : {};

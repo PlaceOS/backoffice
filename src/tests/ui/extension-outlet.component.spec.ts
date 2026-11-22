@@ -48,7 +48,8 @@ vi.mock('@placeos/ts-client', () => ({
     metadata: {
         show: vi.fn(
             fromV1Mock(
-                () => Promise.resolve({ details: { theme: 'dark' } }),
+                // The API can send the details as JSON text
+                () => Promise.resolve({ details: '{"theme":"dark"}' }),
                 ['id', 'name'],
                 'data',
                 'name',

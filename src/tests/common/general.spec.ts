@@ -10,6 +10,7 @@ import {
     log,
     numberToPosition,
     parseCSV,
+    parseMetadataDetails,
     randomInt,
     unique,
 } from '../../app/common/general';
@@ -228,6 +229,21 @@ describe('general.ts utilities', () => {
 
         it('should return "101st" for 101', () => {
             expect(numberToPosition(101)).toBe('101st');
+        });
+    });
+
+    describe('parseMetadataDetails', () => {
+        it('parses JSON text, as 6.x did', () => {
+            expect(parseMetadataDetails('{"theme":"dark"}')).toEqual({
+                theme: 'dark',
+            });
+            expect(parseMetadataDetails('[1,2]')).toEqual([1, 2]);
+        });
+
+        it('keeps text that is not JSON, and gives {} for null', () => {
+            expect(parseMetadataDetails('not json')).toBe('not json');
+            expect(parseMetadataDetails(null)).toEqual({});
+            expect(parseMetadataDetails({ a: 1 })).toEqual({ a: 1 });
         });
     });
 

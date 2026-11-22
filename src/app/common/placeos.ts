@@ -173,7 +173,7 @@ globalThis.addEventListener?.('online', restartFailedRealtime);
  * The 6.x style debug log, when `window.debug` is set. It leaves out the
  * text that the server sent, such as the JSON or plain-text body of a failed
  * response or the description of a refused token, which can have personal
- * data. Sentry keeps console output. The kind and the status of an error stay.
+ * data. The kind and the status of an error stay.
  */
 const debugLog: LogFunction = (entry) =>
     consoleLog({ ...entry, args: entry.args.map(withoutServerText) });

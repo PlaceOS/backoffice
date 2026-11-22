@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { metadata, type Metadata } from '@placeos/ts-client';
 import { orThrow } from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
+import { parseMetadataDetails } from '../common/general';
 import { notifyError } from '../common/notifications';
 import { DialogCloseDirective } from '../ui/controls/dialog';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -101,11 +102,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                     >
                                         <div class="">
                                             {{
-                                                item.updated_at
+                                                item.updated_at * 1000
                                                     | date: 'mediumDate'
                                             }},
                                             {{
-                                                item.updated_at
+                                                item.updated_at * 1000
                                                     | date: 'shortTime'
                                             }}
                                         </div>
@@ -148,11 +149,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                     >
                                         <div class="">
                                             {{
-                                                item.updated_at
+                                                item.updated_at * 1000
                                                     | date: 'mediumDate'
                                             }},
                                             {{
-                                                item.updated_at
+                                                item.updated_at * 1000
                                                     | date: 'shortTime'
                                             }}
                                         </div>
@@ -245,13 +246,18 @@ export class MetadataHistoryModalComponent implements OnInit {
 
     public select(idx: 0 | 1, item: Metadata) {
         if (idx === 0) {
-            this.first_details.set(JSON.stringify(item.details, undefined, 4));
+            this.first_details.set(detailsText(item));
             if (this.first === this.second()) {
                 this.second.set(null);
                 this.second_details.set('');
             }
         } else {
-            this.second_details.set(JSON.stringify(item.details, undefined, 4));
+            this.second_details.set(detailsText(item));
         }
     }
+}
+
+/** The details of a version as formatted JSON. JSON text from the API is parsed first */
+function detailsText(item: Metadata) {
+    return JSON.stringify(parseMetadataDetails(item.details), undefined, 4);
 }
