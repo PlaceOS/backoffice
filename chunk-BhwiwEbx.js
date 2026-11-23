@@ -1,0 +1,2 @@
+import{D as E,gt as Oe,hn as Yl,x as Ct,z as Ge}from"./chunk-5SXX6MVK.js";import{g as q,u as O}from"./main-6AP2FDEL.js";import{t as T}from"./chunk-CxvOicWQ.js";function D(u){let i=E(q),m=T(i.events.pipe(Ge(t=>t instanceof O),Oe(t=>t.urlAfterRedirects)),{initialValue:i.url}),p=Ct(()=>m().split(/[?#]/)[0].split(`/`)[3]),b=Yl({source:()=>({id:u(),tab:p()}),computation:(t,n)=>({id:t.id,tabs:new Set([...n&&n.value.id===t.id?n.value.tabs:[],t.tab])})});return Ct(()=>b().tabs)}export{D as t};
+//# debugId=08b64dde-15b7-5456-9ecb-aa50b82fb645

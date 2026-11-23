@@ -116,9 +116,10 @@
         "SETTINGS_ENCRYPTED": "Encriptado",
         "SETTINGS_MERGED": "Combinado",
         "SETTINGS_MASKED": "OCULTO",
+        "SETTINGS_MASKED_ERROR": "Reemplace todos los valores ocultos antes de guardar la configuración cifrada",
         "SETTINGS_INHERITED": "Configuración heredada de [{{ parent }}]({{ path }})({{ type }})",
         "SETTINGS_LOCAL": "Configuración local de {{ type }}",
-        "SETTINGS_SAVE_ERROR": "No se pudo guardar las configuraciones. Error {{ error }}",
+        "SETTINGS_SAVE_ERROR": "No se pudo guardar las configuraciones. Error: {{ error }}",
         "SETTINGS_SAVE_SUCCESS": "Cambios en configuraciones de {{ type }} guardados correctamente",
         "SETTINGS_SAVE_SUCCESS_ALL": "Todos los cambios de configuraciones guardados correctamente",
         "ADD_EXISTING": "Agregar existente",
@@ -340,7 +341,6 @@
         "ADD": "Agregar zona",
         "EDIT": "Editar zona",
         "DELETE": "Eliminar zona",
-        "DELETE_MSG": "<p>¿Estás seguro de que deseas eliminar esta zona?</p><p>Al eliminar esta zona, se <strong>eliminarán inmediatamente</strong> los sistemas que no tengan otra zona</p>",
         "DELETE_LOADING": "Eliminando zona...",
         "DELETE_SUCCESS": "Zona eliminada correctamente.",
         "DELETE_ERROR": "No se pudo eliminar la zona. Error: {{ error }}",
@@ -532,7 +532,7 @@
         "FIELD_ACTION_FN_CALL": "Acción de llamada a función",
         "FIELD_ACTION_EMAIL": "Acción de correo electrónico",
         "REORDER_CONFIRM_TITLE": "Reordenar acción {{ type }} del disparador",
-        "REORDER_CONFIRM_MSG": "¿Estás seguro de que deseas eliminar esta condición del disparador?<br>Todos los sistemas que utilizan este disparador se actualizarán <strong>inmediatamente</strong>.",
+        "REORDER_CONFIRM_MSG": "¿Estás seguro de que deseas reordenar las acciones del disparador?<br>Todos los sistemas que utilizan este disparador se actualizarán <strong>inmediatamente</strong>.",
         "REORDER_CONFIRM_LOADING": "Reordenando acciones del disparador...",
         "REORDER_CONFIRM_ERROR": "No se pudo reordenar la acción del disparador. Error: {{ error }}",
         "REORDER_CONFIRM_SUCCESS": "Acción del disparador reordenada correctamente",
@@ -626,7 +626,7 @@
         "STAFF_CARD": "Número de tarjeta",
         "PASSWORD_REQUIRED": "Se requiere una contraseña válida",
         "PASSWORD_CONFIRM": "Confirmar contraseña",
-        "PASSOWRD_MATCH": "Las contraseñas no coinciden"
+        "PASSWORDS_MATCH": "Las contraseñas no coinciden"
     },
     "DOMAINS": {
         "SINGULAR": "Dominio",
@@ -686,8 +686,8 @@
         "AUTHENTICATION_EMPTY": "No hay métodos de autenticación para este dominio",
         "AUTHENTICATION_SOURCE_TYPE": "Tipo de fuente de autenticación",
         "AUTHENTICATION_SOURCE_SELECT": "Seleccionar fuente de autenticación...",
-        "AUTHENTICATION_SAVE_ERROR": "Fuente de autenticación actualizada correctamente",
-        "AUTHENTICATION_SAVE_SUCCESS": "Error al actualizar la fuente de autenticación. Error: {{ error }}",
+        "AUTHENTICATION_SAVE_SUCCESS": "Fuente de autenticación actualizada correctamente",
+        "AUTHENTICATION_SAVE_ERROR": "Error al actualizar la fuente de autenticación. Error: {{ error }}",
         "AUTHENTICATION_NAME_REQUIRED": "Se requiere un nombre de fuente de autenticación",
         "OAUTH_SITE": "Sitio",
         "OAUTH_SITE_PLACEHOLDER": "URL del proveedor SSO",
@@ -765,10 +765,6 @@
         "SELECT_DOMAIN": "Seleccionar dominio...",
         "BACKEND_SERVICES_EMPTY": "No hay detalles del servicio API disponibles.",
         "BACKEND_SERVICES_ERROR": "No se pudieron cargar detalles de la API. Error: {{ error }}",
-        "DATABASE_REINDEX": "Re-indexar",
-        "DATABASE_REINDEX_MSG": "Re-indexar Elasticsearch con el estado actual de la base de datos",
-        "DATABASE_BACKFILL": "Rellenar",
-        "DATABASE_BACKFILL_MSG": "Rellenar Elasticsearch con el estado actual de la base de datos",
         "CLUSTERS": "Clústeres de PlaceOS",
         "CLUSTERS_VIEW_PROCESSES": "Ver procesos",
         "CLUSTERS_LIST_EMPTY": "No hay detalles de clúster disponibles",
@@ -913,7 +909,7 @@
         "APP_KEYS_TTL_MONTH": "30 Días",
         "APP_KEYS_TTL_90_DAYS": "90 Días",
         "APP_KEYS_TTL_YEAR": "1 Año",
-        "APP_KEYS_SCOPES_REQUIRE": "Se requiere al menos un alcance",
+        "APP_KEYS_SCOPES_REQUIRED": "Se requiere al menos un alcance",
         "APP_KEYS_NAME_REQUIRED": "Se requiere un nombre",
         "APP_KEYS_PERMISSIONS_EMPTY": "Sin permisos",
         "APP_KEYS_COPIED": "Clave de aplicación copiada al portapapeles",
@@ -966,5 +962,11 @@
         "UPLOADS_LIB_FIELD_TYPE": "Tipo de archivo",
         "UPLOADS_LIB_FIELD_SIZE": "Tamaño",
         "UPLOADS_LIB_LIST_EMPTY": "No hay cargas para el dominio seleccionado"
+    },
+    "GROUPS": {
+        "SWITCH_GROUP": "Cambiar de grupo",
+        "ALL_GROUPS": "Todos los grupos",
+        "SEARCH_GROUPS": "Buscar grupos",
+        "NO_MATCHING_GROUPS": "No hay grupos coincidentes"
     }
 }

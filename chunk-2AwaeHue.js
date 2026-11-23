@@ -1,0 +1,2 @@
+async function c(i,t,s){let r=i;for(let e=0;r&&e<32;e++){if(r===t)return!0;r=await s(r)}return!1}function f(i){let t=new Map,s=r=>(t.has(r)||t.set(r,i(r).then(e=>e?.parent_id||``,()=>``)),t.get(r));return async(r,e)=>{if(!e)return r;for(let n of r)t.set(n.id,Promise.resolve(n.parent_id||``));let o=await Promise.all(r.map(n=>c(n.id,e,s)));return r.filter((n,a)=>!o[a])}}export{f as t};
+//# debugId=ea220f09-37b6-560d-9613-0496e48184bc

@@ -116,9 +116,10 @@
         "SETTINGS_ENCRYPTED": "مشفر",
         "SETTINGS_MERGED": "تم الدمج",
         "SETTINGS_MASKED": "تم إخفاؤه",
+        "SETTINGS_MASKED_ERROR": "استبدل جميع القيم المخفية قبل حفظ الإعدادات المشفرة",
         "SETTINGS_INHERITED": "إعداد موروث من [{{ parent }}]({{ path }})({{ type }})",
         "SETTINGS_LOCAL": "إعداد محلي من {{ type }}",
-        "SETTINGS_SAVE_ERROR": "فشل حفظ الإعدادات. الخطأ {{ error }}",
+        "SETTINGS_SAVE_ERROR": "فشل حفظ الإعدادات. الخطأ: {{ error }}",
         "SETTINGS_SAVE_SUCCESS": "تم حفظ تغييرات إعدادات {{ type }} بنجاح",
         "SETTINGS_SAVE_SUCCESS_ALL": "تم حفظ جميع تغييرات الإعدادات بنجاح",
         "ADD_EXISTING": "إضافة موجود",
@@ -340,7 +341,6 @@
         "ADD": "إضافة منطقة",
         "EDIT": "تحرير منطقة",
         "DELETE": "حذف منطقة",
-        "DELETE_MSG": "<p>هل أنت متأكد أنك تريد حذف هذه المنطقة؟</p><p>سيؤدي حذف هذه المنطقة إلى <strong>الإزالة الفورية</strong> للأنظمة دون منطقة أخرى</p>",
         "DELETE_LOADING": "جاري حذف المنطقة...",
         "DELETE_SUCCESS": "تم حذف المنطقة بنجاح.",
         "DELETE_ERROR": "فشل حذف المنطقة. الخطأ: {{ error }}",
@@ -532,7 +532,7 @@
         "FIELD_ACTION_FN_CALL": "إجراء استدعاء وظيفة",
         "FIELD_ACTION_EMAIL": "إجراء بريد إلكتروني",
         "REORDER_CONFIRM_TITLE": "إعادة ترتيب إجراء {{ type }} للمحفز",
-        "REORDER_CONFIRM_MSG": "هل أنت متأكد أنك تريد إزالة شرط المحفز هذا؟<br>سيتم تحديث جميع الأنظمة التي تستخدم هذا المحفز <strong>فوراً</strong>.",
+        "REORDER_CONFIRM_MSG": "هل أنت متأكد أنك تريد إعادة ترتيب إجراءات المحفز؟<br>سيتم تحديث جميع الأنظمة التي تستخدم هذا المحفز <strong>فوراً</strong>.",
         "REORDER_CONFIRM_LOADING": "جاري إعادة ترتيب إجراءات المحفز...",
         "REORDER_CONFIRM_ERROR": "فشل في إعادة ترتيب إجراء المحفز. الخطأ: {{ error }}",
         "REORDER_CONFIRM_SUCCESS": "تم إعادة ترتيب إجراء المحفز بنجاح",
@@ -626,7 +626,7 @@
         "STAFF_CARD": "رقم البطاقة",
         "PASSWORD_REQUIRED": "مطلوب كلمة مرور صالحة",
         "PASSWORD_CONFIRM": "تأكيد كلمة المرور",
-        "PASSOWRD_MATCH": "كلمات المرور غير متطابقة"
+        "PASSWORDS_MATCH": "كلمات المرور غير متطابقة"
     },
     "DOMAINS": {
         "SINGULAR": "مجال",
@@ -686,8 +686,8 @@
         "AUTHENTICATION_EMPTY": "لا توجد طرق مصادقة لهذا المجال",
         "AUTHENTICATION_SOURCE_TYPE": "نوع مصدر المصادقة",
         "AUTHENTICATION_SOURCE_SELECT": "اختر مصدر المصادقة...",
-        "AUTHENTICATION_SAVE_ERROR": "تم تحديث مصدر المصادقة بنجاح",
-        "AUTHENTICATION_SAVE_SUCCESS": "فشل تحديث مصدر المصادقة. الخطأ: {{ error }}",
+        "AUTHENTICATION_SAVE_SUCCESS": "تم تحديث مصدر المصادقة بنجاح",
+        "AUTHENTICATION_SAVE_ERROR": "فشل تحديث مصدر المصادقة. الخطأ: {{ error }}",
         "AUTHENTICATION_NAME_REQUIRED": "مطلوب اسم لمصدر المصادقة",
         "OAUTH_SITE": "الموقع",
         "OAUTH_SITE_PLACEHOLDER": "عنوان URL لموفر SSO",
@@ -765,10 +765,6 @@
         "SELECT_DOMAIN": "اختر مجال...",
         "BACKEND_SERVICES_EMPTY": "لا توجد تفاصيل خدمة API متاحة.",
         "BACKEND_SERVICES_ERROR": "فشل في تحميل تفاصيل API. الخطأ: {{ error }}",
-        "DATABASE_REINDEX": "إعادة الفهرسة",
-        "DATABASE_REINDEX_MSG": "إعادة فهرسة Elasticsearch للحالة الحالية لقاعدة البيانات",
-        "DATABASE_BACKFILL": "ملء لاحق",
-        "DATABASE_BACKFILL_MSG": "ملء Elasticsearch بالحالة الحالية لقاعدة البيانات",
         "CLUSTERS": "عناقيد PlaceOS",
         "CLUSTERS_VIEW_PROCESSES": "عرض العمليات",
         "CLUSTERS_LIST_EMPTY": "لا توجد تفاصيل عنقود متاحة",
@@ -900,7 +896,7 @@
         "APP_KEYS_LAST_DETAILS": "آخر تفاصيل مفتاح تطبيق",
         "APP_KEYS_FIELD_SCOPES": "نطاقات",
         "APP_KEYS_FIELD_PERMISSIONS": "الوصول",
-        "APP_KEYS_SCOPES_REQUIRE": "مطلوب نطاق واحد على الأقل",
+        "APP_KEYS_SCOPES_REQUIRED": "مطلوب نطاق واحد على الأقل",
         "APP_KEYS_NAME_REQUIRED": "مطلوب اسم",
         "APP_KEYS_PERMISSIONS_EMPTY": "لا توجد أذونات",
         "APP_KEYS_COPIED": "تم نسخ مفتاح التطبيق إلى الحافظة",
@@ -953,5 +949,11 @@
         "UPLOADS_LIB_FIELD_TYPE": "نوع الملف",
         "UPLOADS_LIB_FIELD_SIZE": "الحجم",
         "UPLOADS_LIB_LIST_EMPTY": "لا توجد تحميلات للمجال المحدد"
+    },
+    "GROUPS": {
+        "SWITCH_GROUP": "تبديل المجموعة",
+        "ALL_GROUPS": "كل المجموعات",
+        "SEARCH_GROUPS": "البحث عن مجموعات",
+        "NO_MATCHING_GROUPS": "لا توجد مجموعات مطابقة"
     }
 }

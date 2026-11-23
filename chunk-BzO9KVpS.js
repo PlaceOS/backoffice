@@ -1,0 +1,2 @@
+var t=[{path:`:id`,loadComponent:()=>import(`./chunk-DBHnsuWV.js`).then(o=>o.GroupsComponent),children:[{path:`about`,loadComponent:()=>import(`./chunk-4EQLKSv-.js`).then(o=>o.GroupAboutComponent)},{path:`users`,loadComponent:()=>import(`./chunk-Cl6F3XCv.js`).then(o=>o.GroupUsersComponent)},{path:`zones`,loadComponent:()=>import(`./chunk-DohFM_FR.js`).then(o=>o.GroupZonesComponent)},{path:`**`,redirectTo:`about`}]},{path:`**`,redirectTo:`-`}];export{t as ROUTES};
+//# debugId=e1389e9f-c0ea-515e-ac4a-8a79117dbf03

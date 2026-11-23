@@ -1,0 +1,2 @@
+import{D as E,I as Fw}from"./chunk-5SXX6MVK.js";import{f as br}from"./chunk-CRDxDWYq.js";var o=()=>import(`./chunk-D9Q4gb-I.js`);var m=class r{sanitizer=E(br);cache=new Map;transform(i){let e=i||``;return this.cache.has(e)||this.cache.set(e,o().then(({renderMarkdown:t})=>t(e)).then(t=>this.sanitizer.bypassSecurityTrustHtml(t))),this.cache.get(e)}static ɵfac=function(e){return new(e||r)};static ɵpipe=Fw({name:`markdown`,type:r,pure:!0})};export{m as t};
+//# debugId=22107fb3-60c0-5b59-8866-0269f17515a0
